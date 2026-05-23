@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quick Viz | Cosmic Intentions</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #111;
+  color: #FFF;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── FRAME ──────────────────────────────────────── */
+.frame {
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  max-height: 900px;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 0 0 4px #1a1a1a, 0 0 60px rgba(0,0,0,0.8);
+}
+
+/* ── SELECT SCREEN ──────────────────────────────── */
+.select-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  background: #000;
+  z-index: 20;
+  transition: opacity 0.5s;
+}
+.select-screen.hidden { opacity: 0; pointer-events: none; }
+
+.select-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+}
+
+.dur-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.dur-btn {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.05);
+  color: #FFF;
+  font-size: 30px;
+  font-weight: 200;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  letter-spacing: -1px;
+}
+.dur-btn:hover {
+  border-color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.12);
+  transform: scale(1.07);
+}
+.dur-btn:active { transform: scale(0.97); }
+
+/* ── IMAGE AREA ─────────────────────────────────── */
+.img-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.vibe-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-dim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25) 0%,
+    transparent 35%,
+    transparent 55%,
+    rgba(0,0,0,0.55) 100%
+  );
+}
+
+/* ── COUNTDOWN CIRCLE ───────────────────────────── */
+.cd-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.55);
+  background: rgba(0,0,0,0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.7s, border-color 0.4s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.cd-ring.show { opacity: 1; }
+.cd-ring.ending {
+  border-color: #C9A96E;
+  animation: ring-pulse 1s ease-in-out infinite;
+}
+@keyframes ring-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%       { transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.cd-number {
+  font-size: 64px;
+  font-weight: 200;
+  color: #FFF;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: color 0.4s;
+  letter-spacing: -2px;
+}
+.cd-ring.ending .cd-number { color: #C9A96E; }
+
+/* ── BOTTOM SECTION ─────────────────────────────── */
+.bottom {
+  background: #000;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 22px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+
+.iam-text {
+  font-size: clamp(16px, 4.5vw, 21px);
+  font-weight: 700;
+  color: #FFF;
+  text-align: center;
+  line-height: 1.45;
+  max-width: 340px;
+  min-height: 52px;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  letter-spacing: -0.2px;
+}
+.iam-text.show { opacity: 1; }
+
+/* ── HOME BUTTON ────────────────────────────────── */
+.home-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.28);
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.home-btn:hover {
+  border-color: rgba(255,255,255,0.65);
+  color: #FFF;
+  background: rgba(255,255,255,0.06);
+}
+.home-btn:active { transform: scale(0.94); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- PRE-START: DURATION SELECTOR -->
+  <div class="select-screen" id="selectScreen">
+    <div class="select-label">Quick Simple Visualizations</div>
+    <div class="dur-row">
+      <button class="dur-btn" onclick="start(60)">60</button>
+      <button class="dur-btn" onclick="start(30)">30</button>
+      <button class="dur-btn" onclick="start(15)">15</button>
+    </div>
+  </div>
+
+  <!-- IMAGE / VIBE -->
+  <div class="img-area">
+    <img class="vibe-img" id="vibeImg" src="" alt="" />
+    <div class="img-dim"></div>
+    <div class="cd-ring" id="cdRing">
+      <span class="cd-number" id="cdNum">–</span>
+    </div>
+  </div>
+
+  <!-- I AM + HOME -->
+  <div class="bottom">
+    <div class="iam-text" id="iamText"></div>
+    <button class="home-btn" onclick="exit()">⌂</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../shared/player-core.js"></script>
+<script>
+const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
+
+const IMAGES = Array.from({ length: 13 }, (_, i) =>
+  `../vision_stills/scene${String(i + 1).padStart(3, '0')}.jpg`
+);
+
+let tick    = null;
+let affTick = null;
+let secs    = 60;
+let affs    = [];
+let affIdx  = 0;
+
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const idx    = parseInt(params.get('idx'), 10) || 0;
+
+  affs = await loadAffirmations(idx);
+  setImage(0);
+
+  const urlDur = parseInt(params.get('duration'), 10);
+  const lsDur  = parseInt(localStorage.getItem('viz_quick_duration'), 10);
+  const preset = [15, 30, 60].includes(urlDur) ? urlDur
+               : [15, 30, 60].includes(lsDur)  ? lsDur
+               : null;
+  if (lsDur) localStorage.removeItem('viz_quick_duration');
+  if (preset) start(preset);
+}
+
+async function loadAffirmations(idx) {
+  // Try Supabase (user_content.core_blueprint.affirmations — 13 items)
+  try {
+    const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      const raw      = localStorage.getItem(`ci_intentions_${user.id}`) || localStorage.getItem('ci_intentions') || '[]';
+      const intns    = JSON.parse(raw);
+      const goal     = intns[idx]?.title;
+      if (goal) {
+        const { data } = await sb
+          .from('user_content')
+          .select('core_blueprint')
+          .eq('user_id', user.id)
+          .eq('goal', goal)
+          .order('generated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const list = data?.core_blueprint?.affirmations;
+        if (list?.length) return list;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: quick-gen affirmations from localStorage
+  try {
+    const raw  = localStorage.getItem('ci_intentions') || '[]';
+    const list = JSON.parse(raw)[idx]?.mindset?.affirmations;
+    if (list?.length) return list;
+  } catch(e) {}
+
+  return [
+    'I AM exactly who I was born to become.',
+    'I attract success, abundance, and deep purpose.',
+    'Every action I take moves me closer to my vision.',
+    'I am unstoppable. I am disciplined. I am free.',
+    'My future is already written — I am living into it now.',
+  ];
+}
+
+function setImage(i) {
+  const img = document.getElementById('vibeImg');
+  img.src = IMAGES[i % IMAGES.length];
+  img.onerror = () => { img.style.display = 'none'; };
+}
+
+function showAffirmation(i) {
+  const el = document.getElementById('iamText');
+  el.classList.remove('show');
+  setTimeout(() => {
+    el.textContent = affs[i % affs.length] || '';
+    el.classList.add('show');
+  }, 300);
+  setImage(i % IMAGES.length);
+}
+
+function start(duration) {
+  secs = duration;
+  document.getElementById('selectScreen').classList.add('hidden');
+
+  const ring  = document.getElementById('cdRing');
+  const numEl = document.getElementById('cdNum');
+  ring.classList.add('show');
+  numEl.textContent = secs;
+
+  setTimeout(() => showAffirmation(0), 500);
+  speakText('Close your eyes. Visualize your intention becoming real.');
+
+  // Spread affirmations evenly across the session (min 3s each)
+  const interval = Math.max(3000, Math.floor((duration * 1000) / Math.max(affs.length, 1)));
+  affIdx  = 0;
+  affTick = setInterval(() => {
+    affIdx++;
+    if (affIdx < affs.length) showAffirmation(affIdx);
+  }, interval);
+
+  tick = setInterval(() => {
+    secs--;
+    numEl.textContent = secs;
+    if (secs <= 5 && secs > 0) ring.classList.add('ending');
+    if (secs <= 0) { clearInterval(tick); clearInterval(affTick); done(); }
+  }, 1000);
+}
+
+function done() {
+  const ring  = document.getElementById('cdRing');
+  const numEl = document.getElementById('cdNum');
+  ring.classList.remove('ending');
+  numEl.textContent = '✓';
+  playBell();
+  speakText('Open your eyes. Your vision is planted.');
+  setTimeout(exit, 4500);
+}
+
+function exit() {
+  if (tick)    clearInterval(tick);
+  if (affTick) clearInterval(affTick);
+  stopSpeech();
+  window.close();
+  setTimeout(() => { window.location.href = '../index.html'; }, 300);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') exit(); });
+</script>
+
+</body>
+</html>

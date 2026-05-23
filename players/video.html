@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Player | Cosmic Intentions</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #000;
+  color: #FFF;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.controls {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 100;
+  background: rgba(0,0,0,0.8);
+  padding: 16px 24px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body:hover .controls,
+.controls:hover {
+  opacity: 1;
+}
+
+.control-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: #FFF;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.control-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.close-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: #FFF;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 100;
+  opacity: 0;
+}
+
+body:hover .close-btn,
+.close-btn:hover {
+  opacity: 1;
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+
+.fullscreen-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: #FFF;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 100;
+  opacity: 0;
+}
+
+body:hover .fullscreen-btn,
+.fullscreen-btn:hover {
+  opacity: 1;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: rgba(255,255,255,0.8);
+}
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">Loading video...</div>
+
+<div class="video-container" id="videoContainer">
+  <video id="videoPlayer" controls>
+    <source id="videoSource" src="" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<button class="close-btn" onclick="exitPlayer()" title="Exit">✕</button>
+<button class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+
+<div class="controls">
+  <button class="control-btn" onclick="skipBackward()">‹ 10s</button>
+  <button class="control-btn" id="playPauseBtn" onclick="togglePlayPause()">Pause</button>
+  <button class="control-btn" onclick="skipForward()">10s ›</button>
+</div>
+
+<script src="../shared/player-core.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   VIDEO PLAYER
+   ══════════════════════════════════════════════════════════ */
+
+let video = null;
+
+function init() {
+  video = document.getElementById('videoPlayer');
+  
+  // Get video URL from URL params or localStorage
+  const params = new URLSearchParams(window.location.search);
+  let videoUrl = params.get('url');
+  
+  if (!videoUrl) {
+    videoUrl = LS.get('video_url');
+    LS.remove('video_url');
+  }
+  
+  if (!videoUrl) {
+    // Default fallback video
+    videoUrl = '../videos/default.mp4';
+  }
+  
+  // Set video source
+  document.getElementById('videoSource').src = videoUrl;
+  video.load();
+  
+  // Event listeners
+  video.addEventListener('loadeddata', () => {
+    document.getElementById('loading').style.display = 'none';
+    video.play();
+  });
+  
+  video.addEventListener('play', () => {
+    document.getElementById('playPauseBtn').textContent = 'Pause';
+  });
+  
+  video.addEventListener('pause', () => {
+    document.getElementById('playPauseBtn').textContent = 'Play';
+  });
+  
+  video.addEventListener('ended', () => {
+    setTimeout(() => {
+      exitPlayer();
+    }, 2000);
+  });
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', handleKeyPress);
+}
+
+function togglePlayPause() {
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
+}
+
+function skipBackward() {
+  video.currentTime = Math.max(0, video.currentTime - 10);
+}
+
+function skipForward() {
+  video.currentTime = Math.min(video.duration, video.currentTime + 10);
+}
+
+function toggleFullscreen() {
+  const container = document.getElementById('videoContainer');
+  
+  if (!document.fullscreenElement) {
+    container.requestFullscreen?.() || 
+    container.webkitRequestFullscreen?.() ||
+    container.msRequestFullscreen?.();
+  } else {
+    document.exitFullscreen?.() ||
+    document.webkitExitFullscreen?.() ||
+    document.msExitFullscreen?.();
+  }
+}
+
+function exitPlayer() {
+  video.pause();
+  window.close();
+  setTimeout(() => { window.location.href = '../index.html'; }, 300);
+}
+
+function handleKeyPress(e) {
+  if (e.key === ' ') {
+    e.preventDefault();
+    togglePlayPause();
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    skipBackward();
+  }
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    skipForward();
+  }
+  if (e.key === 'f' || e.key === 'F') {
+    e.preventDefault();
+    toggleFullscreen();
+  }
+  if (e.key === 'Escape' && document.fullscreenElement) {
+    // Let browser handle fullscreen exit
+  } else if (e.key === 'Escape') {
+    exitPlayer();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

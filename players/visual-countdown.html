@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Countdown | Cosmic Intentions</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #000;
+  color: #FFF;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-container {
+  width: 90%;
+  max-width: 500px;
+  background: #000;
+  border: 8px solid #FFF;
+  border-radius: 12px;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  position: relative;
+}
+
+.vibe-image {
+  width: 100%;
+  max-width: 450px;
+  height: 400px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+}
+
+.countdown-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 13px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.countdown-number {
+  font-size: 48px;
+  font-weight: 300;
+  color: #FFF;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-circle.ending {
+  background: rgba(201,169,110,0.2);
+  border-color: rgba(201,169,110,0.6);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.countdown-circle.ending .countdown-number {
+  color: #C9A96E;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.iam-statement {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #FFF;
+  text-align: center;
+  max-width: 400px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.home-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #FFF;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.home-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(255,255,255,0.3);
+}
+
+.home-icon {
+  width: 32px;
+  height: 32px;
+  fill: #000;
+}
+
+.instruction {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  font-style: italic;
+  margin-top: -10px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.instruction.visible {
+  opacity: 1;
+}
+
+.close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  color: #FFF;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  z-index: 100;
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.1);
+}
+</style>
+</head>
+<body>
+
+<div class="player-container">
+  <div class="vibe-image" id="vibeImage"></div>
+  
+  <div class="countdown-circle" id="countdownCircle">
+    <div class="countdown-number" id="countdownNumber">60</div>
+  </div>
+  
+  <div class="instruction" id="instruction">Close your eyes and visualize</div>
+  
+  <div class="iam-statement" id="iamStatement">
+    I AM becoming the person I have decided to be.
+  </div>
+  
+  <button class="home-button" onclick="goHome()">
+    <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+  </button>
+</div>
+
+<button class="close-btn" onclick="exitPlayer()">✕</button>
+
+<script src="../shared/player-core.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   VISUAL COUNTDOWN TIMER - REDESIGNED
+   ══════════════════════════════════════════════════════════ */
+
+const VIBE_IMAGES = [
+  '../images/vibe/vibe2.jpg',
+  '../images/vibe/vibe3.jpg',
+  '../images/vibe/vibe4.jpg',
+  '../images/vibe/vibe5.jpg',
+  '../images/vibe/vibe6.jpg',
+  '../images/vibe/vibe7.jpg',
+  '../images/vibe/vibe8.jpg',
+  '../images/vibe/vibe9.jpg',
+  '../images/vibe/vibe1.jpg'
+];
+
+let countdown = 60;
+let countdownInterval = null;
+
+/* ══════════════════════════════════════════════════════════
+   INITIALIZATION
+   ══════════════════════════════════════════════════════════ */
+
+function init() {
+  // Pick random vibe image
+  const randomImage = VIBE_IMAGES[Math.floor(Math.random() * VIBE_IMAGES.length)];
+  document.getElementById('vibeImage').style.backgroundImage = `url(${randomImage})`;
+  
+  // Load user's I AM statement
+  const iamText = LS.get('user_iam_statement') || 'I AM becoming the person I have decided to be.';
+  document.getElementById('iamStatement').textContent = iamText;
+  
+  // Get duration from localStorage (set by dashboard button)
+  const storedDuration = localStorage.getItem('visual_countdown_duration');
+  if (storedDuration) {
+    countdown = parseInt(storedDuration);
+    localStorage.removeItem('visual_countdown_duration');
+    
+    // Auto-start after brief delay
+    setTimeout(() => {
+      startCountdown();
+    }, 800);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   COUNTDOWN
+   ══════════════════════════════════════════════════════════ */
+
+function startCountdown() {
+  const display = document.getElementById('countdownNumber');
+  const circle = document.getElementById('countdownCircle');
+  const instruction = document.getElementById('instruction');
+  const iamStatement = document.getElementById('iamStatement').textContent;
+  
+  display.textContent = countdown;
+  
+  // Fade in instruction text
+  setTimeout(() => {
+    instruction.classList.add('visible');
+  }, 100);
+  
+  // Voice prompt after 1 second (after text fades in)
+  setTimeout(() => {
+    speakText('Close your eyes. Visualize your intention.');
+  }, 1000);
+  
+  // Calculate when to repeat goal (30 seconds before end)
+  const initialCountdown = countdown;
+  const repeatAtSeconds = 30;
+  
+  countdownInterval = setInterval(() => {
+    countdown--;
+    display.textContent = countdown;
+    
+    // Repeat goal at 30 seconds remaining
+    if (countdown === repeatAtSeconds) {
+      speakText(iamStatement);
+    }
+    
+    // Ending state
+    if (countdown <= 5 && countdown > 0) {
+      circle.classList.add('ending');
+    }
+    
+    // Complete
+    if (countdown <= 0) {
+      clearInterval(countdownInterval);
+      complete();
+    }
+  }, 1000);
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPLETE
+   ══════════════════════════════════════════════════════════ */
+
+function complete() {
+  playBell();
+  
+  const instruction = document.getElementById('instruction');
+  instruction.textContent = 'Open your eyes. Your vision is planted.';
+  
+  speakText('Open your eyes. Your vision is planted.');
+  
+  // Auto-close after 4 seconds
+  setTimeout(() => {
+    goHome();
+  }, 4000);
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════════════════ */
+
+function goHome() {
+  clearInterval(countdownInterval);
+  stopSpeech();
+  window.location.href = '../index.html';
+}
+
+function exitPlayer() {
+  clearInterval(countdownInterval);
+  stopSpeech();
+  
+  if (window.opener) {
+    window.close();
+  } else {
+    goHome();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') exitPlayer();
+  if (e.key === 'h' || e.key === 'H') goHome();
+});
+</script>
+
+</body>
+</html>

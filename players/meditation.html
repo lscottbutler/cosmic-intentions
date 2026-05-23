@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditation Timer | Cosmic Intentions</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #000;
+  color: #FFF;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.idle-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+.idle-screen.hidden { opacity: 0; pointer-events: none; }
+
+.timer-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #FFF;
+}
+
+.duration-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 640px;
+}
+
+.duration-btn {
+  padding: 20px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  color: #FFF;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.duration-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+}
+.duration-btn.selected {
+  background: rgba(255,255,255,0.3);
+  border-color: #FFF;
+}
+
+.begin-btn {
+  padding: 18px 60px;
+  font-size: 20px;
+  font-weight: 700;
+  background: #FFF;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+.begin-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+}
+
+.active-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.active-screen.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.breathing-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin-bottom: 60px;
+}
+
+.breathing-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  animation: breathe 6s ease-in-out infinite;
+}
+.breathing-ring:nth-child(2) {
+  animation-delay: -3s;
+  border-color: rgba(255,255,255,0.2);
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  50%      { transform: translate(-50%, -50%) scale(1.4); opacity: 0.1; }
+}
+
+.countdown-number {
+  font-size: 96px;
+  font-weight: 700;
+  color: #FFF;
+  transition: all 0.3s;
+  text-align: center;
+  min-width: 280px;
+  font-variant-numeric: tabular-nums;
+}
+.countdown-number.ending {
+  color: #C9A96E;
+  text-shadow: 0 0 40px rgba(201, 169, 110, 0.6);
+}
+
+.countdown-label {
+  font-size: 18px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.end-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.end-screen.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.end-message {
+  font-size: 28px;
+  font-weight: 500;
+  color: #FFF;
+  text-align: center;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.reset-btn {
+  padding: 16px 48px;
+  font-size: 18px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  color: #FFF;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 24px;
+}
+.reset-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: #FFF;
+}
+
+.close-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: #FFF;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 1000;
+}
+.close-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+
+.pause-btn {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: #FFF;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+.active-screen.visible .pause-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+.pause-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+
+<div class="idle-screen" id="idleScreen">
+  <div class="timer-title">Meditation Timer</div>
+  
+  <div class="duration-grid">
+    <button class="duration-btn selected" data-duration="60">1 min</button>
+    <button class="duration-btn" data-duration="300">5 min</button>
+    <button class="duration-btn" data-duration="600">10 min</button>
+    <button class="duration-btn" data-duration="900">15 min</button>
+    <button class="duration-btn" data-duration="1200">20 min</button>
+    <button class="duration-btn" data-duration="1800">30 min</button>
+    <button class="duration-btn" data-duration="2700">45 min</button>
+    <button class="duration-btn" data-duration="3600">60 min</button>
+  </div>
+  
+  <button class="begin-btn" onclick="startSession()">Begin</button>
+</div>
+
+<div class="active-screen" id="activeScreen">
+  <div class="breathing-container">
+    <div class="breathing-ring"></div>
+    <div class="breathing-ring"></div>
+  </div>
+  
+  <div class="countdown-number" id="countdownNum">1:00</div>
+  <div class="countdown-label" id="countdownLabel">remaining</div>
+  
+  <button class="pause-btn" id="pauseBtn" onclick="togglePause()">Pause</button>
+</div>
+
+<div class="end-screen" id="endScreen">
+  <div class="end-message">Your meditation is complete. Return gently to the present.</div>
+  <button class="reset-btn" onclick="resetSession()">Begin Again</button>
+</div>
+
+<button class="close-btn" onclick="window.close()" title="Close">✕</button>
+
+<script src="../shared/player-core.js"></script>
+<script>
+let selectedDuration = 60; // in seconds
+let countdown = null;
+let countdownInterval = null;
+let isPaused = false;
+
+/* ── DURATION SELECTION ─────────────────────────────────── */
+document.querySelectorAll('.duration-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedDuration = parseInt(btn.dataset.duration);
+  });
+});
+
+/* ── START SESSION ──────────────────────────────────────── */
+function startSession() {
+  document.getElementById('idleScreen').classList.add('hidden');
+  speakText("Close your eyes and begin your meditation.");
+  
+  setTimeout(() => {
+    document.getElementById('activeScreen').classList.add('visible');
+    startCountdown();
+  }, 1000);
+}
+
+/* ── COUNTDOWN LOGIC ────────────────────────────────────── */
+function startCountdown() {
+  countdown = selectedDuration;
+  updateCountdownDisplay();
+  
+  countdownInterval = setInterval(() => {
+    if (!isPaused) {
+      countdown--;
+      updateCountdownDisplay();
+      
+      // Final minute - golden glow
+      if (countdown <= 60 && countdown > 0) {
+        document.getElementById('countdownNum').classList.add('ending');
+      }
+      
+      // End
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        endSession();
+      }
+    }
+  }, 1000);
+}
+
+function updateCountdownDisplay() {
+  const numEl = document.getElementById('countdownNum');
+  numEl.textContent = formatTime(countdown);
+}
+
+/* ── PAUSE/RESUME ───────────────────────────────────────── */
+function togglePause() {
+  isPaused = !isPaused;
+  const btn = document.getElementById('pauseBtn');
+  btn.textContent = isPaused ? 'Resume' : 'Pause';
+}
+
+/* ── END SESSION ────────────────────────────────────────── */
+function endSession() {
+  playBell();
+  document.getElementById('activeScreen').classList.remove('visible');
+  
+  setTimeout(() => {
+    document.getElementById('endScreen').classList.add('visible');
+    speakText("Your meditation is complete. Return gently to the present.");
+  }, 1000);
+}
+
+/* ── RESET ──────────────────────────────────────────────── */
+function resetSession() {
+  isPaused = false;
+  document.getElementById('pauseBtn').textContent = 'Pause';
+  document.getElementById('endScreen').classList.remove('visible');
+  document.getElementById('countdownNum').classList.remove('ending');
+  
+  setTimeout(() => {
+    document.getElementById('idleScreen').classList.remove('hidden');
+  }, 400);
+}
+</script>
+
+</body>
+</html>
