@@ -87,6 +87,13 @@ body {
   letter-spacing: 0.02em;
 }
 
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
 .home-button {
   width: 60px;
   height: 60px;
@@ -98,7 +105,6 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  margin-top: 10px;
 }
 
 .home-button:hover {
@@ -110,6 +116,26 @@ body {
   width: 32px;
   height: 32px;
   fill: #000;
+}
+
+.ctrl-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #FFF;
+  font-size: 22px;
+}
+
+.ctrl-button:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.1);
 }
 
 .instruction {
@@ -167,11 +193,15 @@ body {
 
   <div class="instruction" id="instruction">Close your eyes and visualize</div>
   
-  <button class="home-button" onclick="goHome()">
-    <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-    </svg>
-  </button>
+  <div class="btn-row">
+    <button class="ctrl-button" id="pauseBtn" onclick="togglePause()" title="Pause">⏸</button>
+    <button class="home-button" onclick="goHome()">
+      <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+    </button>
+    <button class="ctrl-button" onclick="replayPlayer()" title="Replay">▶</button>
+  </div>
 </div>
 
 <button class="close-btn" onclick="exitPlayer()">✕</button>
@@ -285,19 +315,55 @@ function startCountdown() {
    COMPLETE
    ══════════════════════════════════════════════════════════ */
 
+let autoCloseTimer = null;
+
 function complete() {
+  clearInterval(countdownInterval);
   playBell();
 
+  // 3s after bell: show text and speak
   setTimeout(() => {
     const instruction = document.getElementById('instruction');
     instruction.textContent = 'Open your eyes. Your vision is planted.';
+    instruction.classList.add('visible');
     speakText('Open your eyes. Your vision is planted.');
+
+    // 10s after speaking starts: auto-close
+    autoCloseTimer = setTimeout(() => {
+      goHome();
+    }, 10000);
   }, 3000);
-  
-  // Auto-close after 4 seconds
-  setTimeout(() => {
-    goHome();
-  }, 4000);
+}
+
+let isPaused = false;
+
+function togglePause() {
+  const btn = document.getElementById('pauseBtn');
+  isPaused = !isPaused;
+  if (isPaused) {
+    clearInterval(countdownInterval);
+    stopSpeech();
+    btn.textContent = '▶';
+    btn.title = 'Resume';
+  } else {
+    btn.textContent = '⏸';
+    btn.title = 'Pause';
+    // Resume the tick
+    countdownInterval = setInterval(() => {
+      countdown--;
+      document.getElementById('countdownNumber').textContent = countdown;
+      if (countdown === 30) speakText(document.getElementById('iamStatement').textContent);
+      if (countdown <= 5 && countdown > 0) document.getElementById('countdownCircle').classList.add('ending');
+      if (countdown <= 0) { clearInterval(countdownInterval); complete(); }
+    }, 1000);
+  }
+}
+
+function replayPlayer() {
+  clearInterval(countdownInterval);
+  clearTimeout(autoCloseTimer);
+  stopSpeech();
+  location.reload();
 }
 
 /* ══════════════════════════════════════════════════════════
