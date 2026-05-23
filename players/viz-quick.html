@@ -244,15 +244,23 @@ const IMAGES = Array.from({ length: 13 }, (_, i) =>
   `../vision_stills/scene${String(i + 1).padStart(3, '0')}.jpg`
 );
 
-let tick    = null;
-let affTick = null;
-let secs    = 60;
-let affs    = [];
-let affIdx  = 0;
+let tick      = null;
+let affTick   = null;
+let secs      = 60;
+let affs      = [];
+let affIdx    = 0;
+let goalTitle = '';
 
 async function init() {
   const params = new URLSearchParams(location.search);
   const idx    = parseInt(params.get('idx'), 10) || 0;
+
+  // Grab goal title for voice intro
+  try {
+    const raw  = localStorage.getItem('ci_intentions') || '[]';
+    const intn = JSON.parse(raw)[idx];
+    goalTitle  = (intn?.title || '').replace(/^(i am)\s+/i, 'I AM ');
+  } catch(e) {}
 
   affs = await loadAffirmations(idx);
   setImage(0);
@@ -332,7 +340,7 @@ function start(duration) {
   numEl.textContent = secs;
 
   setTimeout(() => showAffirmation(0), 500);
-  speakText('Close your eyes. Visualize your intention becoming real.');
+  speakText((goalTitle ? goalTitle + '. ' : '') + 'Close your eyes. Visualize your intention becoming real.');
 
   // Spread affirmations evenly across the session (min 3s each)
   const interval = Math.max(3000, Math.floor((duration * 1000) / Math.max(affs.length, 1)));

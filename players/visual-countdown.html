@@ -242,7 +242,7 @@ function startCountdown() {
   
   // Voice prompt after 1 second (after text fades in)
   setTimeout(() => {
-    speakText('Close your eyes. Visualize your intention.');
+    speakText((iamStatement ? iamStatement + '. ' : '') + 'Close your eyes. Visualize your intention.');
   }, 1000);
   
   // Calculate when to repeat goal (30 seconds before end)
