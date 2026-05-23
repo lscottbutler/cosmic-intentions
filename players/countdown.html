@@ -90,11 +90,19 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #000;
+  background: #000 center/cover no-repeat;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease;
 }
+.active-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 0;
+}
+.active-screen > * { position: relative; z-index: 1; }
 .active-screen.visible {
   opacity: 1;
   pointer-events: all;
@@ -280,7 +288,9 @@ function startSession() {
   
   // Show active screen after 1 second
   setTimeout(() => {
-    document.getElementById('activeScreen').classList.add('visible');
+    const screen = document.getElementById('activeScreen');
+    screen.style.backgroundImage = `url(${getDailyImage()})`;
+    screen.classList.add('visible');
     startCountdown();
   }, 1000);
 }
