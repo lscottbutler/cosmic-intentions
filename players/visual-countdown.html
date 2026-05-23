@@ -160,12 +160,12 @@ body {
   <div class="countdown-circle" id="countdownCircle">
     <div class="countdown-number" id="countdownNumber">60</div>
   </div>
-  
-  <div class="instruction" id="instruction">Close your eyes and visualize</div>
-  
+
   <div class="iam-statement" id="iamStatement">
     I AM becoming the person I have decided to be.
   </div>
+
+  <div class="instruction" id="instruction">Close your eyes and visualize</div>
   
   <button class="home-button" onclick="goHome()">
     <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -236,15 +236,18 @@ function startCountdown() {
   
   display.textContent = countdown;
   
-  // Fade in instruction text
+  // 1. Speak the goal first
+  setTimeout(() => {
+    speakText(iamStatement);
+  }, 1000);
+
+  // 2. After goal is read + 4s pause, show and speak the instruction
+  const wordCount = (iamStatement || '').split(/\s+/).length;
+  const readingMs = Math.max(2000, wordCount * 420);
   setTimeout(() => {
     instruction.classList.add('visible');
-  }, 100);
-  
-  // Voice prompt after 1 second (after text fades in)
-  setTimeout(() => {
-    speakText((iamStatement ? iamStatement + '. ' : '') + 'Close your eyes. Visualize your intention.');
-  }, 1000);
+    speakText('Close your eyes. Visualize your intention.');
+  }, 1000 + readingMs + 4000);
   
   // Calculate when to repeat goal (30 seconds before end)
   const initialCountdown = countdown;
