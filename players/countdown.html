@@ -261,7 +261,7 @@ body {
 </div>
 
 <!-- CLOSE BUTTON -->
-<button class="close-btn" onclick="window.close()" title="Close">✕</button>
+<button class="close-btn" onclick="returnToApp()" title="Close">✕</button>
 
 <script src="../shared/player-core.js"></script>
 <script>
@@ -329,10 +329,11 @@ function endSession() {
   // Hide active screen
   document.getElementById('activeScreen').classList.remove('visible');
   
-  // Show end screen with VO
+  // Show end screen with VO then return to app
   setTimeout(() => {
     document.getElementById('endScreen').classList.add('visible');
     speakText("Open your eyes and proceed.");
+    setTimeout(() => returnToApp(), 8000);
   }, 1000);
 }
 

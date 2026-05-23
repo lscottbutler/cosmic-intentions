@@ -362,19 +362,16 @@ function replayPlayer() {
 
 function goHome() {
   clearInterval(countdownInterval);
+  clearTimeout(autoCloseTimer);
   stopSpeech();
-  window.location.href = '../index.html';
+  returnToApp();
 }
 
 function exitPlayer() {
   clearInterval(countdownInterval);
+  clearTimeout(autoCloseTimer);
   stopSpeech();
-  
-  if (window.opener) {
-    window.close();
-  } else {
-    goHome();
-  }
+  returnToApp();
 }
 
 window.addEventListener('DOMContentLoaded', init);

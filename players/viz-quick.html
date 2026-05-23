@@ -370,8 +370,7 @@ function exit() {
   if (tick)    clearInterval(tick);
   if (affTick) clearInterval(affTick);
   stopSpeech();
-  window.close();
-  setTimeout(() => { window.location.href = '../index.html'; }, 300);
+  returnToApp();
 }
 
 window.addEventListener('DOMContentLoaded', init);

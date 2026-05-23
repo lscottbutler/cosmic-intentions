@@ -289,7 +289,7 @@ body {
   <button class="reset-btn" onclick="resetSession()">Begin Again</button>
 </div>
 
-<button class="close-btn" onclick="window.close()" title="Close">✕</button>
+<button class="close-btn" onclick="returnToApp()" title="Close">✕</button>
 
 <script src="../shared/player-core.js"></script>
 <script>
@@ -364,6 +364,7 @@ function endSession() {
   setTimeout(() => {
     document.getElementById('endScreen').classList.add('visible');
     speakText("Your meditation is complete. Return gently to the present.");
+    setTimeout(() => returnToApp(), 8000);
   }, 1000);
 }
 

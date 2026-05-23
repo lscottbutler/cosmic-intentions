@@ -244,8 +244,7 @@ function toggleFullscreen() {
 
 function exitPlayer() {
   video.pause();
-  window.close();
-  setTimeout(() => { window.location.href = '../index.html'; }, 300);
+  returnToApp();
 }
 
 function handleKeyPress(e) {

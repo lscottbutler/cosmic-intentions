@@ -3,6 +3,20 @@
    Shared functions for all 9 player types
    ══════════════════════════════════════════════════════════ */
 
+/* ── RETURN TO APP ───────────────────────────────────────── */
+function returnToApp() {
+  try {
+    if (window.opener && !window.opener.closed) {
+      window.opener.focus();
+      window.close();
+    } else {
+      window.location.href = '/index.html';
+    }
+  } catch(e) {
+    window.location.href = '/index.html';
+  }
+}
+
 /* ── DAILY IMAGE ROTATION ────────────────────────────────── */
 const PLAYER_IMAGES = Array.from({ length: 25 }, (_, i) =>
   `../images/players/player-${String(i + 1).padStart(2, '0')}.jpg`
