@@ -184,7 +184,8 @@ body {
   <div class="vibe-image" id="vibeImage"></div>
   
   <div class="countdown-circle" id="countdownCircle">
-    <div class="countdown-number" id="countdownNumber">60</div>
+    <img id="eyeIcon" src="../images/icons/eye-open.png" style="width:60px;height:60px;object-fit:contain;opacity:0.9;" />
+    <div class="countdown-number" id="countdownNumber" style="display:none;"></div>
   </div>
 
   <div class="iam-statement" id="iamStatement">
@@ -269,6 +270,8 @@ function startCountdown() {
   // 3. Start countdown 2s after the instruction sentence finishes (~3s to speak)
   const countdownStartDelay = instrDelay + 3000 + 2000;
   setTimeout(() => {
+    document.getElementById('eyeIcon').style.display = 'none';
+    display.style.display = 'block';
     display.textContent = countdown;
   }, countdownStartDelay);
 
@@ -294,7 +297,8 @@ function startCountdown() {
     if (countdown <= 0) {
       clearInterval(countdownInterval);
       circle.classList.remove('ending');
-      display.textContent = '';
+      display.style.display = 'none';
+      document.getElementById('eyeIcon').style.display = 'block';
       complete();
     }
   }, 1000);
