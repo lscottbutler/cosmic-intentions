@@ -212,17 +212,6 @@ body {
    VISUAL COUNTDOWN TIMER - REDESIGNED
    ══════════════════════════════════════════════════════════ */
 
-const VIBE_IMAGES = [
-  '../images/vibe/vibe2.jpg',
-  '../images/vibe/vibe3.jpg',
-  '../images/vibe/vibe4.jpg',
-  '../images/vibe/vibe5.jpg',
-  '../images/vibe/vibe6.jpg',
-  '../images/vibe/vibe7.jpg',
-  '../images/vibe/vibe8.jpg',
-  '../images/vibe/vibe9.jpg',
-  '../images/vibe/vibe1.jpg'
-];
 
 let countdown = 60;
 let countdownInterval = null;
@@ -232,9 +221,8 @@ let countdownInterval = null;
    ══════════════════════════════════════════════════════════ */
 
 function init() {
-  // Pick random vibe image
-  const randomImage = VIBE_IMAGES[Math.floor(Math.random() * VIBE_IMAGES.length)];
-  document.getElementById('vibeImage').style.backgroundImage = `url(${randomImage})`;
+  // Daily rotating image
+  document.getElementById('vibeImage').style.backgroundImage = `url(${getDailyImage()})`;
   
   // Load goal passed from dashboard
   const iamText = localStorage.getItem('visual_countdown_goal') || 'I AM becoming the person I have decided to be.';

@@ -3,6 +3,21 @@
    Shared functions for all 9 player types
    ══════════════════════════════════════════════════════════ */
 
+/* ── DAILY IMAGE ROTATION ────────────────────────────────── */
+const PLAYER_IMAGES = Array.from({ length: 25 }, (_, i) =>
+  `../images/players/player-${String(i + 1).padStart(2, '0')}.jpg`
+);
+
+function getDailyImage() {
+  const dayIndex = Math.floor(Date.now() / 86400000) % PLAYER_IMAGES.length;
+  return PLAYER_IMAGES[dayIndex];
+}
+
+function getDailyImageAbsolute() {
+  const dayIndex = Math.floor(Date.now() / 86400000) % PLAYER_IMAGES.length;
+  return `images/players/player-${String(dayIndex + 1).padStart(2, '0')}.jpg`;
+}
+
 /* ── 528Hz BELL GENERATOR ────────────────────────────────── */
 function playBell(freq = 528) {
   try {
