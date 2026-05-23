@@ -7229,8 +7229,11 @@ async function launch3Min(idx) {
   document.getElementById('manifestTitle').textContent =
     (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');
   
+  const title = (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');
+
   document.getElementById('manifestModal').classList.add('open');
   playBell();
+  setTimeout(() => speakText(title), 1200);
   fetchManifestAI(idx);
   showManifestSlide(0);
 }
@@ -7309,7 +7312,7 @@ function showManifestSlide(n) {
     bodyEl.textContent = b || '';
   }
   
-  if (type !== 'close') {
+  if (type !== 'close' && type !== 'intro') {
     speakText((h||'') + (b ? '. ' + b : ''));
   }
   
