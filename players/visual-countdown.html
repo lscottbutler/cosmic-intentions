@@ -206,8 +206,15 @@ function init() {
   const randomImage = VIBE_IMAGES[Math.floor(Math.random() * VIBE_IMAGES.length)];
   document.getElementById('vibeImage').style.backgroundImage = `url(${randomImage})`;
   
-  // Load user's I AM statement
-  const iamText = LS.get('user_iam_statement') || 'I AM becoming the person I have decided to be.';
+  // Load goal-specific I AM statement
+  let iamText = 'I AM becoming the person I have decided to be.';
+  try {
+    const idx  = parseInt(localStorage.getItem('visual_countdown_idx') || '0', 10);
+    localStorage.removeItem('visual_countdown_idx');
+    const raw  = localStorage.getItem('ci_intentions') || '[]';
+    const intn = JSON.parse(raw)[idx];
+    if (intn?.title) iamText = intn.title.replace(/^(i am)\s+/i, 'I AM ');
+  } catch(e) {}
   document.getElementById('iamStatement').textContent = iamText;
   
   // Get duration from localStorage (set by dashboard button)

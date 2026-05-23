@@ -7525,9 +7525,9 @@ function buildBuildSheet(intent, idx) {
     <div style="background:#22c55e;color:#fff;text-align:center;font-weight:700;font-size:12px;letter-spacing:0.12em;padding:10px 0;">QUICK SIMPLE VISUALIZATIONS</div>
     <div style="padding:18px 20px 16px;">
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-        <button class="card-timer-btn" onclick="launchVisualCountdown(60)">60</button>
-        <button class="card-timer-btn" onclick="launchVisualCountdown(30)">30</button>
-        <button class="card-timer-btn" onclick="launchVisualCountdown(15)">15</button>
+        <button class="card-timer-btn" onclick="launchVisualCountdown(60,${idx})">60</button>
+        <button class="card-timer-btn" onclick="launchVisualCountdown(30,${idx})">30</button>
+        <button class="card-timer-btn" onclick="launchVisualCountdown(15,${idx})">15</button>
       </div>
     </div>
 
@@ -8165,9 +8165,10 @@ function launchVideo(videoUrl) {
   launchPlayer('video');
 }
 
-function launchVisualCountdown(duration) {
-  // Store duration for visual countdown player to pick up
+function launchVisualCountdown(duration, idx = 0) {
+  // Store duration and goal index for visual countdown player to pick up
   localStorage.setItem('visual_countdown_duration', duration);
+  localStorage.setItem('visual_countdown_idx', idx);
   launchPlayer('visual-countdown');
 }
 
