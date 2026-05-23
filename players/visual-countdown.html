@@ -18,53 +18,61 @@ body {
 }
 
 .player-container {
-  width: 90%;
-  max-width: 500px;
+  width: 92%;
+  max-width: 520px;
   background: #000;
   border: 8px solid #FFF;
   border-radius: 12px;
-  padding: 40px 30px;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
+  padding-bottom: 28px;
+  position: relative;
+}
+
+.image-wrap {
+  width: 100%;
   position: relative;
 }
 
 .vibe-image {
   width: 100%;
-  max-width: 450px;
-  height: 400px;
-  background-size: contain;
+  height: 520px;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+  border-radius: 4px 4px 0 0;
+  display: block;
 }
 
 .countdown-circle {
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: 13px solid rgba(255,255,255,0.3);
+  background: #000;
+  border: 5px solid #FFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  backdrop-filter: blur(10px);
+  position: absolute;
+  bottom: -65px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
 .countdown-number {
-  font-size: 48px;
-  font-weight: 300;
+  font-size: 50px;
+  font-weight: 700;
+  font-style: italic;
   color: #FFF;
   font-variant-numeric: tabular-nums;
 }
 
 .countdown-circle.ending {
-  background: rgba(201,169,110,0.2);
-  border-color: rgba(201,169,110,0.6);
+  border-color: #C9A96E;
   animation: pulse 1s ease-in-out infinite;
 }
 
@@ -73,8 +81,8 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50%       { transform: translateX(-50%) scale(1.07); }
 }
 
 .iam-statement {
@@ -82,9 +90,11 @@ body {
   line-height: 1.6;
   color: #FFF;
   text-align: center;
-  max-width: 400px;
+  max-width: 420px;
   font-weight: 400;
   letter-spacing: 0.02em;
+  margin-top: 52px;
+  padding: 0 16px;
 }
 
 .btn-row {
@@ -181,12 +191,13 @@ body {
 <body>
 
 <div class="player-container">
-  <div class="vibe-image" id="vibeImage"></div>
-  
-  <div class="countdown-circle" id="countdownCircle">
-    <img id="eyeOpen"   src="../images/icons/eye-open.png"   style="width:60px;height:60px;object-fit:contain;position:absolute;transition:opacity 1.5s ease;" />
-    <img id="eyeClosed" src="../images/icons/eyes-closed.png" style="width:60px;height:60px;object-fit:contain;position:absolute;opacity:0;transition:opacity 1.5s ease;" />
-    <div class="countdown-number" id="countdownNumber" style="display:none;position:absolute;"></div>
+  <div class="image-wrap">
+    <div class="vibe-image" id="vibeImage"></div>
+    <div class="countdown-circle" id="countdownCircle">
+      <img id="eyeOpen"   src="../images/icons/eye-open.png"   style="width:65px;height:65px;object-fit:contain;position:absolute;transition:opacity 1.5s ease;" />
+      <img id="eyeClosed" src="../images/icons/eyes-closed.png" style="width:65px;height:65px;object-fit:contain;position:absolute;opacity:0;transition:opacity 1.5s ease;" />
+      <div class="countdown-number" id="countdownNumber" style="display:none;position:absolute;"></div>
+    </div>
   </div>
 
   <div class="iam-statement" id="iamStatement">
