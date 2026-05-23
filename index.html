@@ -8166,9 +8166,9 @@ function launchVideo(videoUrl) {
 }
 
 function launchVisualCountdown(duration, idx = 0) {
-  // Store duration and goal index for visual countdown player to pick up
+  const title = (intentions[idx]?.title || '').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('visual_countdown_duration', duration);
-  localStorage.setItem('visual_countdown_idx', idx);
+  localStorage.setItem('visual_countdown_goal', title);
   launchPlayer('visual-countdown');
 }
 
