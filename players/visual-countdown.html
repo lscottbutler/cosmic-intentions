@@ -293,7 +293,8 @@ function startCountdown() {
     // Complete
     if (countdown <= 0) {
       clearInterval(countdownInterval);
-      display.textContent = '✓';
+      circle.classList.remove('ending');
+      display.textContent = '';
       complete();
     }
   }, 1000);
@@ -308,7 +309,6 @@ let autoCloseTimer = null;
 
 function complete() {
   clearInterval(countdownInterval);
-  document.getElementById('countdownCircle').classList.add('ending');
   playBell();
 
   // 3s after bell: show text and speak
