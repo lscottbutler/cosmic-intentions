@@ -314,7 +314,7 @@ function startSession() {
   
   setTimeout(() => {
     const screen = document.getElementById('activeScreen');
-    screen.style.backgroundImage = `url(${getDailyImage()})`;
+    screen.style.backgroundImage = `url(${getDailyImage(PLAYER_OFFSETS['meditation'])})`;
     screen.classList.add('visible');
     startCountdown();
   }, 1000);

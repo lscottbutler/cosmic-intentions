@@ -235,7 +235,7 @@ let countdownInterval = null;
 
 function init() {
   // Daily rotating image
-  document.getElementById('vibeImage').style.backgroundImage = `url(${getDailyImage()})`;
+  document.getElementById('vibeImage').style.backgroundImage = `url(${getDailyImage(PLAYER_OFFSETS['visual-countdown'])})`;
   
   // Load goal passed from dashboard
   const iamText = localStorage.getItem('visual_countdown_goal') || 'I AM becoming the person I have decided to be.';

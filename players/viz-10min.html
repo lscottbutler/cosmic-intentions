@@ -391,18 +391,19 @@ async function loadAffirmations(idx) {
 /* ── IMAGE ─────────────────────────────────────── */
 function setImage(i, fade = true) {
   const img = document.getElementById('vibeImg');
+  const idx = (i + PLAYER_OFFSETS['viz-10min']) % NUM_SCENES;
   if (fade) {
     img.style.opacity = '0';
     setTimeout(() => {
-      img.src = IMAGES[i % NUM_SCENES];
+      img.src = IMAGES[idx];
       img.onerror = () => { img.style.display = 'none'; };
       img.style.opacity = '1';
     }, 600);
   } else {
-    img.src = IMAGES[i % NUM_SCENES];
+    img.src = IMAGES[idx];
     img.onerror = () => { img.style.display = 'none'; };
   }
-  updateDot(i % NUM_SCENES);
+  updateDot(idx);
   sceneIdx = i % NUM_SCENES;
 }
 

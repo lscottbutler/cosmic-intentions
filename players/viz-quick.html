@@ -314,7 +314,7 @@ async function loadAffirmations(idx) {
 
 function setImage(i) {
   const img = document.getElementById('vibeImg');
-  img.src = IMAGES[i % IMAGES.length];
+  img.src = IMAGES[(i + PLAYER_OFFSETS['viz-quick']) % IMAGES.length];
   img.onerror = () => { img.style.display = 'none'; };
 }
 

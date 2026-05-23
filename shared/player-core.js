@@ -22,14 +22,19 @@ const PLAYER_IMAGES = Array.from({ length: 25 }, (_, i) =>
   `../images/players/player-${String(i + 1).padStart(2, '0')}.jpg`
 );
 
-function getDailyImage() {
-  const dayIndex = Math.floor(Date.now() / 86400000) % PLAYER_IMAGES.length;
-  return PLAYER_IMAGES[dayIndex];
-}
+// Each player passes its own offset so they always show different images
+const PLAYER_OFFSETS = {
+  'visual-countdown': 0,
+  'viz-quick':        4,
+  'viz-10min':        8,
+  'countdown':        12,
+  'meditation':       16,
+  'gratitude':        20
+};
 
-function getDailyImageAbsolute() {
-  const dayIndex = Math.floor(Date.now() / 86400000) % PLAYER_IMAGES.length;
-  return `images/players/player-${String(dayIndex + 1).padStart(2, '0')}.jpg`;
+function getDailyImage(offset = 0) {
+  const dayIndex = (Math.floor(Date.now() / 86400000) + offset) % PLAYER_IMAGES.length;
+  return PLAYER_IMAGES[dayIndex];
 }
 
 /* ── 528Hz BELL GENERATOR ────────────────────────────────── */
