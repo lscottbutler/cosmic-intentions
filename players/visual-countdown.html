@@ -234,8 +234,6 @@ function startCountdown() {
   const instruction = document.getElementById('instruction');
   const iamStatement = document.getElementById('iamStatement').textContent;
   
-  display.textContent = countdown;
-  
   // 1. Speak the goal first
   setTimeout(() => {
     speakText(iamStatement);
@@ -244,16 +242,23 @@ function startCountdown() {
   // 2. After goal is read + 4s pause, show and speak the instruction
   const wordCount = (iamStatement || '').split(/\s+/).length;
   const readingMs = Math.max(2000, wordCount * 420);
+  const instrDelay = 1000 + readingMs + 4000;
   setTimeout(() => {
     instruction.classList.add('visible');
     speakText('Close your eyes. Visualize your intention.');
-  }, 1000 + readingMs + 4000);
-  
+  }, instrDelay);
+
+  // 3. Start countdown 2s after the instruction sentence finishes (~3s to speak)
+  const countdownStartDelay = instrDelay + 3000 + 2000;
+  setTimeout(() => {
+    display.textContent = countdown;
+  }, countdownStartDelay);
+
   // Calculate when to repeat goal (30 seconds before end)
-  const initialCountdown = countdown;
   const repeatAtSeconds = 30;
-  
-  countdownInterval = setInterval(() => {
+
+  setTimeout(() => {
+    countdownInterval = setInterval(() => {
     countdown--;
     display.textContent = countdown;
     
@@ -273,6 +278,7 @@ function startCountdown() {
       complete();
     }
   }, 1000);
+  }, countdownStartDelay);
 }
 
 /* ══════════════════════════════════════════════════════════
