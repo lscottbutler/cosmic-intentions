@@ -287,11 +287,12 @@ function startCountdown() {
 
 function complete() {
   playBell();
-  
-  const instruction = document.getElementById('instruction');
-  instruction.textContent = 'Open your eyes. Your vision is planted.';
-  
-  speakText('Open your eyes. Your vision is planted.');
+
+  setTimeout(() => {
+    const instruction = document.getElementById('instruction');
+    instruction.textContent = 'Open your eyes. Your vision is planted.';
+    speakText('Open your eyes. Your vision is planted.');
+  }, 3000);
   
   // Auto-close after 4 seconds
   setTimeout(() => {
