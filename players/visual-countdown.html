@@ -184,8 +184,9 @@ body {
   <div class="vibe-image" id="vibeImage"></div>
   
   <div class="countdown-circle" id="countdownCircle">
-    <img id="eyeIcon" src="../images/icons/eye-open.png" style="width:60px;height:60px;object-fit:contain;opacity:0.9;" />
-    <div class="countdown-number" id="countdownNumber" style="display:none;"></div>
+    <img id="eyeOpen"   src="../images/icons/eye-open.png"   style="width:60px;height:60px;object-fit:contain;position:absolute;transition:opacity 1.5s ease;" />
+    <img id="eyeClosed" src="../images/icons/eyes-closed.png" style="width:60px;height:60px;object-fit:contain;position:absolute;opacity:0;transition:opacity 1.5s ease;" />
+    <div class="countdown-number" id="countdownNumber" style="display:none;position:absolute;"></div>
   </div>
 
   <div class="iam-statement" id="iamStatement">
@@ -265,12 +266,16 @@ function startCountdown() {
   setTimeout(() => {
     instruction.classList.add('visible');
     speakText('Close your eyes. Visualize your intention.');
+    // Fade eye open → eyes closed
+    document.getElementById('eyeOpen').style.opacity   = '0';
+    document.getElementById('eyeClosed').style.opacity = '1';
   }, instrDelay);
 
   // 3. Start countdown 2s after the instruction sentence finishes (~3s to speak)
   const countdownStartDelay = instrDelay + 3000 + 2000;
   setTimeout(() => {
-    document.getElementById('eyeIcon').style.display = 'none';
+    document.getElementById('eyeOpen').style.display   = 'none';
+    document.getElementById('eyeClosed').style.display = 'none';
     display.style.display = 'block';
     display.textContent = countdown;
   }, countdownStartDelay);
@@ -298,7 +303,9 @@ function startCountdown() {
       clearInterval(countdownInterval);
       circle.classList.remove('ending');
       display.style.display = 'none';
-      document.getElementById('eyeIcon').style.display = 'block';
+      // Fade eyes closed → eye open as bell sounds
+      document.getElementById('eyeClosed').style.opacity = '0';
+      document.getElementById('eyeOpen').style.opacity   = '1';
       complete();
     }
   }, 1000);
