@@ -164,21 +164,62 @@ body {
 <script>
 /* ══════════════════════════════════════════════════════════
    GRATITUDE SLIDESHOW
-   5 sets × 5 images. Set rotates daily.
-   Image naming: images/gratitude/gratitude {1-5}/{1-5}.jpg
+   5 sets, daily rotation. 8 seconds per image.
    ══════════════════════════════════════════════════════════ */
 
-const TOTAL      = 5;
-const DURATION   = 8000; // ms per image
-const set        = (Math.floor(Date.now() / 86400000) % 5) + 1;
-const IMAGES     = Array.from({ length: TOTAL }, (_, i) =>
-  `../images/gratitude/gratitude ${set}/${i + 1}.jpg`
-);
+const DURATION = 8000;
 
-let current      = 0;
-let isPaused     = false;
-let slideTimer   = null;
-let autoClose    = null;
+const SETS = [
+  [ // Set 1
+    '../images/gratitude/GRATITUDE 1/A COMFY BED.jpg',
+    '../images/gratitude/GRATITUDE 1/FRIENDS.jpg',
+    '../images/gratitude/GRATITUDE 1/GOOD BOOK.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] CHOCOLATE.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] shutterstock_1174445812.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] shutterstock_1226912179.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] shutterstock_1831802821.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] shutterstock_1937340616.jpg',
+    '../images/gratitude/GRATITUDE 1/[000] indian-food-curry-butter-chicken-600w-1304901667.webp',
+  ],
+  [ // Set 2
+    '../images/gratitude/GRATITUDE 2/[000] A COMFY BED.jpg',
+    '../images/gratitude/GRATITUDE 2/[000] FRIENDS.jpg',
+    '../images/gratitude/GRATITUDE 2/[000] shutterstock_1625940874.jpg',
+    '../images/gratitude/GRATITUDE 2/[000] shutterstock_302106245.jpg',
+    '../images/gratitude/GRATITUDE 2/shutterstock_1174445812.jpg',
+    '../images/gratitude/GRATITUDE 2/shutterstock_765765574.jpg',
+  ],
+  [ // Set 3
+    '../images/gratitude/GRATITUDE 3/[000] shutterstock_1221827803.jpg',
+    '../images/gratitude/GRATITUDE 3/[000] shutterstock_1231591507.jpg',
+    '../images/gratitude/GRATITUDE 3/shutterstock_102543755.jpg',
+    '../images/gratitude/GRATITUDE 3/shutterstock_315931391.jpg',
+    '../images/gratitude/GRATITUDE 3/shutterstock_679440010.jpg',
+  ],
+  [ // Set 4
+    '../images/gratitude/GRATITUDE 4/A WALK IN NATURE.jpg',
+    '../images/gratitude/GRATITUDE 4/EXOTIC BEACH VACATION.jpg',
+    '../images/gratitude/GRATITUDE 4/[000] shutterstock_295907705.jpg',
+    '../images/gratitude/GRATITUDE 4/[000] shutterstock_404596120.jpg',
+    '../images/gratitude/GRATITUDE 4/[000] stock-photo-happy-family-mother-and-daughter-playing-at-home-in-a-tent-562342009.jpg',
+  ],
+  [ // Set 5
+    '../images/gratitude/GRATITUDE 5/CHOCOLATE.jpg',
+    '../images/gratitude/GRATITUDE 5/[000] shutterstock_1284393808.jpg',
+    '../images/gratitude/GRATITUDE 5/shutterstock_1205313667.jpg',
+    '../images/gratitude/GRATITUDE 5/shutterstock_1226912179.jpg',
+    '../images/gratitude/GRATITUDE 5/indian-food-curry-butter-chicken-600w-1304901667.webp',
+  ],
+];
+
+const setIdx = Math.floor(Date.now() / 86400000) % SETS.length;
+const IMAGES = SETS[setIdx];
+const TOTAL  = IMAGES.length;
+
+let current    = 0;
+let isPaused   = false;
+let slideTimer = null;
+let autoClose  = null;
 
 /* ── BUILD SLIDES ────────────────────────────────────────── */
 function buildSlides() {
