@@ -11,6 +11,7 @@ body {
   background: #000;
   min-height: 100vh;
   overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 /* ── SLIDES ──────────────────────────────────────────────── */
@@ -21,12 +22,44 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.4s ease;
   z-index: 1;
 }
 .slide.active {
   opacity: 1;
   z-index: 2;
+}
+
+/* ── GRATITUDE TEXT OVERLAY ──────────────────────────────── */
+.gratitude-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 48px 110px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.80));
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 1.2s ease 0.6s; /* delay so image fades in first */
+  pointer-events: none;
+}
+.gratitude-overlay.visible { opacity: 1; }
+
+.gratitude-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #C9A96E;
+  margin-bottom: 10px;
+}
+.gratitude-subject {
+  font-size: 44px;
+  font-weight: 800;
+  color: #FFF;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.6);
 }
 
 /* ── PROGRESS BAR ────────────────────────────────────────── */
@@ -49,8 +82,7 @@ body {
   position: fixed;
   top: 20px;
   right: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #FFF;
   background: rgba(0,0,0,0.55);
@@ -148,6 +180,11 @@ body {
 
 <div id="slideWrap"></div>
 
+<div class="gratitude-overlay" id="gratitudeOverlay">
+  <div class="gratitude-eyebrow">I am grateful for</div>
+  <div class="gratitude-subject" id="gratitudeSubject"></div>
+</div>
+
 <div class="btn-row">
   <button class="ctrl-button" id="pauseBtn" onclick="togglePause()" title="Pause">⏸</button>
   <button class="home-button" onclick="goHome()">
@@ -163,8 +200,9 @@ body {
 <script src="../shared/player-core.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════
-   GRATITUDE SLIDESHOW
-   5 sets, daily rotation. 8 seconds per image.
+   ASS GRATITUDE PLAYER
+   Full-screen image + audio gratitude statements.
+   5 sets, daily rotation, 8 seconds per image.
    ══════════════════════════════════════════════════════════ */
 
 const DURATION = 8000;
@@ -212,6 +250,23 @@ const SETS = [
   ],
 ];
 
+/* ── DERIVE LABEL FROM FILENAME ──────────────────────────── */
+function labelFromPath(src) {
+  let name = src.split('/').pop();
+  name = name.replace(/^\[000\]\s*/i, '');          // strip [000] prefix
+  name = name.replace(/\.(jpg|jpeg|png|webp|gif)(\.\w+)*$/i, ''); // strip extension(s)
+  name = name.replace(/\.psd\.?/i, '');             // strip .psd artifacts
+  if (/^shutterstock_/i.test(name)) return '';       // stock photo — no label
+  if (/^stock-photo/i.test(name))   return '';
+  name = name.replace(/-\d{3,4}w-\d+$/, '');        // strip -600w-1304901667
+  name = name.replace(/[-_]/g, ' ');                 // hyphens → spaces
+  return name.trim()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/* ── SETUP ───────────────────────────────────────────────── */
 const setIdx = Math.floor(Date.now() / 86400000) % SETS.length;
 const IMAGES = SETS[setIdx];
 const TOTAL  = IMAGES.length;
@@ -237,15 +292,32 @@ function buildSlides() {
 function showSlide(n) {
   if (n >= TOTAL) { complete(); return; }
   current = n;
+  const src   = IMAGES[n];
+  const label = labelFromPath(src);
 
+  // Switch image
   document.querySelectorAll('.slide').forEach((el, i) =>
     el.classList.toggle('active', i === n)
   );
 
+  // Counter + progress
   document.getElementById('counter').textContent = `${n + 1} / ${TOTAL}`;
   document.getElementById('progressFill').style.width =
     `${((n + 1) / TOTAL) * 100}%`;
 
+  // Gratitude text overlay
+  const overlay  = document.getElementById('gratitudeOverlay');
+  const subjectEl = document.getElementById('gratitudeSubject');
+  overlay.classList.remove('visible');
+
+  if (label) {
+    subjectEl.textContent = label;
+    // Small delay so the image fades in before the text appears
+    setTimeout(() => overlay.classList.add('visible'), 300);
+    speakText(`I am grateful for ${label.toLowerCase()}`);
+  }
+
+  // Auto-advance
   clearTimeout(slideTimer);
   if (!isPaused) {
     slideTimer = setTimeout(() => showSlide(current + 1), DURATION);
@@ -255,9 +327,10 @@ function showSlide(n) {
 /* ── COMPLETE ────────────────────────────────────────────── */
 function complete() {
   clearTimeout(slideTimer);
+  document.getElementById('gratitudeOverlay').classList.remove('visible');
   playBell();
-  speakText('Carry this gratitude with you.');
-  autoClose = setTimeout(() => goHome(), 6000);
+  speakText('Carry this gratitude with you today.');
+  autoClose = setTimeout(() => goHome(), 7000);
 }
 
 /* ── PAUSE / RESUME ──────────────────────────────────────── */
@@ -295,7 +368,7 @@ function goHome() {
 function init() {
   buildSlides();
   playBell();
-  setTimeout(() => showSlide(0), 600);
+  setTimeout(() => showSlide(0), 800);
 }
 
 window.addEventListener('DOMContentLoaded', init);
@@ -303,8 +376,8 @@ window.addEventListener('DOMContentLoaded', init);
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') goHome();
   if (e.key === ' ') { e.preventDefault(); togglePause(); }
-  if (e.key === 'ArrowRight') { clearTimeout(slideTimer); showSlide(current + 1); }
-  if (e.key === 'ArrowLeft')  { clearTimeout(slideTimer); showSlide(Math.max(0, current - 1)); }
+  if (e.key === 'ArrowRight') { clearTimeout(slideTimer); stopSpeech(); showSlide(current + 1); }
+  if (e.key === 'ArrowLeft')  { clearTimeout(slideTimer); stopSpeech(); showSlide(Math.max(0, current - 1)); }
 });
 </script>
 
