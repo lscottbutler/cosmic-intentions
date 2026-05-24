@@ -238,30 +238,32 @@ body {
 
 let countdown = 60;
 let countdownInterval = null;
+let pendingTimers = [];
+let isPaused = false;
+let autoCloseTimer = null;
+
+function addTimer(fn, delay) {
+  const id = setTimeout(fn, delay);
+  pendingTimers.push(id);
+  return id;
+}
 
 /* ══════════════════════════════════════════════════════════
    INITIALIZATION
    ══════════════════════════════════════════════════════════ */
 
 function init() {
-  // Daily rotating image
   document.getElementById('vibeImage').style.backgroundImage = `url(${getDailyImage(PLAYER_OFFSETS['visual-countdown'])})`;
-  
-  // Load goal passed from dashboard
+
   const iamText = localStorage.getItem('visual_countdown_goal') || 'I AM becoming the person I have decided to be.';
   localStorage.removeItem('visual_countdown_goal');
   document.getElementById('iamStatement').textContent = iamText;
-  
-  // Get duration from localStorage (set by dashboard button)
+
   const storedDuration = localStorage.getItem('visual_countdown_duration');
   if (storedDuration) {
     countdown = parseInt(storedDuration);
     localStorage.removeItem('visual_countdown_duration');
-    
-    // Auto-start after brief delay
-    setTimeout(() => {
-      startCountdown();
-    }, 800);
+    addTimer(() => startCountdown(), 800);
   }
 }
 
@@ -270,114 +272,94 @@ function init() {
    ══════════════════════════════════════════════════════════ */
 
 function startCountdown() {
-  const display = document.getElementById('countdownNumber');
-  const circle = document.getElementById('countdownCircle');
-  const instruction = document.getElementById('instruction');
   const iamStatement = document.getElementById('iamStatement').textContent;
-  
-  // 1. Speak the goal first
-  setTimeout(() => {
-    speakText(iamStatement);
-  }, 1000);
 
-  // 2. After goal is read + 4s pause, show and speak the instruction
+  addTimer(() => speakText(iamStatement), 1000);
+
   const wordCount = (iamStatement || '').split(/\s+/).length;
   const readingMs = Math.max(2000, wordCount * 420);
   const instrDelay = 1000 + readingMs + 4000;
-  setTimeout(() => {
-    instruction.classList.add('visible');
+
+  addTimer(() => {
+    document.getElementById('instruction').classList.add('visible');
     speakText('Close your eyes. Visualize your intention.');
-    // Fade eye open → eyes closed
     document.getElementById('eyeOpen').style.opacity   = '0';
     document.getElementById('eyeClosed').style.opacity = '1';
   }, instrDelay);
 
-  // 3. Start countdown 2s after the instruction sentence finishes (~3s to speak)
-  const countdownStartDelay = instrDelay + 3000 + 2000;
-  setTimeout(() => {
+  const countdownStartDelay = instrDelay + 5000;
+  addTimer(() => {
     document.getElementById('eyeOpen').style.display   = 'none';
     document.getElementById('eyeClosed').style.display = 'none';
+    const display = document.getElementById('countdownNumber');
     display.style.display = 'block';
     display.textContent = countdown;
+    startTick();
   }, countdownStartDelay);
+}
 
-  // Calculate when to repeat goal (30 seconds before end)
-  const repeatAtSeconds = 30;
+function startTick() {
+  clearInterval(countdownInterval);
+  const display  = document.getElementById('countdownNumber');
+  const circle   = document.getElementById('countdownCircle');
+  const iamText  = document.getElementById('iamStatement').textContent;
 
-  setTimeout(() => {
-    countdownInterval = setInterval(() => {
+  countdownInterval = setInterval(() => {
     countdown--;
     display.textContent = countdown;
-    
-    // Repeat goal at 30 seconds remaining
-    if (countdown === repeatAtSeconds) {
-      speakText(iamStatement);
-    }
-    
-    // Ending state
-    if (countdown <= 5) {
-      circle.classList.add('ending');
-    }
 
-    // Complete
+    if (countdown === 30) speakText(iamText);
+    if (countdown <= 5 && countdown > 0) circle.classList.add('ending');
+
     if (countdown <= 0) {
       clearInterval(countdownInterval);
+      countdownInterval = null;
       circle.classList.remove('ending');
       display.style.display = 'none';
-      // Fade eyes closed → eye open as bell sounds
       document.getElementById('eyeClosed').style.opacity = '0';
       document.getElementById('eyeOpen').style.opacity   = '1';
       complete();
     }
   }, 1000);
-  }, countdownStartDelay);
 }
 
 /* ══════════════════════════════════════════════════════════
    COMPLETE
    ══════════════════════════════════════════════════════════ */
 
-let autoCloseTimer = null;
-
 function complete() {
   clearInterval(countdownInterval);
+  countdownInterval = null;
   playBell();
 
-  // 3s after bell: show text and speak
-  setTimeout(() => {
+  autoCloseTimer = setTimeout(() => {
     const instruction = document.getElementById('instruction');
     instruction.textContent = 'Open your eyes. Your vision is planted.';
     instruction.classList.add('visible');
     speakText('Open your eyes. Your vision is planted.');
-
-    // 10s after speaking starts: auto-close
-    autoCloseTimer = setTimeout(() => {
-      goHome();
-    }, 10000);
+    autoCloseTimer = setTimeout(() => goHome(), 10000);
   }, 3000);
 }
 
-let isPaused = false;
+/* ══════════════════════════════════════════════════════════
+   PAUSE / RESUME
+   ══════════════════════════════════════════════════════════ */
 
 function togglePause() {
   const btn = document.getElementById('pauseBtn');
   isPaused = !isPaused;
   if (isPaused) {
     clearInterval(countdownInterval);
+    countdownInterval = null;
+    pendingTimers.forEach(id => clearTimeout(id));
+    pendingTimers = [];
     stopSpeech();
     btn.textContent = '▶';
     btn.title = 'Resume';
   } else {
     btn.textContent = '⏸';
     btn.title = 'Pause';
-    // Resume the tick
-    countdownInterval = setInterval(() => {
-      countdown--;
-      document.getElementById('countdownNumber').textContent = countdown;
-      if (countdown === 30) speakText(document.getElementById('iamStatement').textContent);
-      if (countdown <= 5 && countdown > 0) document.getElementById('countdownCircle').classList.add('ending');
-      if (countdown <= 0) { clearInterval(countdownInterval); complete(); }
-    }, 1000);
+    startTick();
   }
 }
 
