@@ -58,23 +58,23 @@ body {
 }
 
 .countdown-circle {
-  width: 130px;
-  height: 130px;
+  width: 91px;
+  height: 91px;
   border-radius: 50%;
   background: #000;
-  border: 5px solid #333;
+  border: 12px solid #000;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  bottom: -65px;
+  bottom: -46px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
 }
 
 .countdown-number {
-  font-size: 50px;
+  font-size: 35px;
   font-weight: 700;
   font-style: italic;
   color: #FFF;
@@ -204,8 +204,8 @@ body {
   <div class="image-wrap">
     <div class="vibe-image" id="vibeImage"></div>
     <div class="countdown-circle" id="countdownCircle">
-      <img id="eyeOpen"   src="../images/icons/eye-open.png"   style="width:65px;height:65px;object-fit:contain;position:absolute;transition:opacity 1.5s ease;" />
-      <img id="eyeClosed" src="../images/icons/eyes-closed.png" style="width:65px;height:65px;object-fit:contain;position:absolute;opacity:0;transition:opacity 1.5s ease;" />
+      <img id="eyeOpen"   src="../images/icons/eye-open.png"   style="width:45px;height:45px;object-fit:contain;position:absolute;transition:opacity 1.5s ease;filter:brightness(0) invert(1);" />
+      <img id="eyeClosed" src="../images/icons/eyes-closed.png" style="width:45px;height:45px;object-fit:contain;position:absolute;opacity:0;transition:opacity 1.5s ease;filter:brightness(0) invert(1);" />
       <div class="countdown-number" id="countdownNumber" style="display:none;position:absolute;"></div>
     </div>
   </div>
