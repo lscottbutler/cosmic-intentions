@@ -3,383 +3,267 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gratitude Player | Cosmic Intentions</title>
+<title>Gratitude | Cosmic Intentions</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
   background: #000;
-  color: #FFF;
   min-height: 100vh;
   overflow: hidden;
 }
 
-.slideshow-container {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-}
-
+/* ── SLIDES ──────────────────────────────────────────────── */
 .slide {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 1s ease;
+  position: fixed;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-.slide.active { opacity: 1; }
-
-.slide-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+  opacity: 0;
+  transition: opacity 1.2s ease;
   z-index: 1;
 }
-
-.slide-content {
-  position: relative;
+.slide.active {
+  opacity: 1;
   z-index: 2;
-  text-align: center;
-  max-width: 700px;
-  padding: 40px;
 }
 
-.gratitude-label {
-  font-size: 18px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.8);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-}
-
-.slide-title {
-  font-size: 56px;
-  font-weight: 700;
-  color: #FFF;
-  margin-bottom: 24px;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.8);
-  line-height: 1.2;
-}
-
-.slide-text {
-  font-size: 22px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.95);
-  line-height: 1.6;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-}
-
-.progress-container {
+/* ── PROGRESS BAR ────────────────────────────────────────── */
+.progress-track {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 4px;
   background: rgba(255,255,255,0.2);
   z-index: 100;
 }
-
-.progress-bar {
+.progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #C9A96E, #E8D5A3);
   width: 0%;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease;
 }
 
-.slide-counter {
+/* ── COUNTER ─────────────────────────────────────────────── */
+.counter {
   position: fixed;
-  top: 24px;
-  right: 24px;
-  font-size: 16px;
+  top: 20px;
+  right: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
   font-weight: 600;
   color: #FFF;
-  background: rgba(0,0,0,0.6);
-  padding: 8px 16px;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.55);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  letter-spacing: 0.04em;
+}
+
+/* ── CONTROLS ────────────────────────────────────────────── */
+.btn-row {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
   z-index: 100;
 }
 
-.close-btn {
-  position: fixed;
-  top: 24px;
-  left: 24px;
-  width: 44px;
-  height: 44px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+.home-button {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  color: #FFF;
-  font-size: 24px;
+  background: #FFF;
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  z-index: 100;
+  flex-shrink: 0;
 }
+.home-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(255,255,255,0.4);
+}
+.home-icon { width: 30px; height: 30px; fill: #000; }
 
-.close-btn:hover {
-  background: rgba(255,255,255,0.2);
+.ctrl-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #FFF;
+  font-size: 22px;
+  backdrop-filter: blur(6px);
+}
+.ctrl-button:hover {
+  background: rgba(255,255,255,0.3);
   transform: scale(1.1);
 }
 
-.controls {
+/* ── CLOSE ───────────────────────────────────────────────── */
+.close-btn {
   position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 16px;
-  z-index: 100;
-  background: rgba(0,0,0,0.6);
-  padding: 16px 24px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-}
-
-.control-btn {
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  background: rgba(255,255,255,0.1);
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 8px;
+  border-radius: 50%;
   color: #FFF;
+  font-size: 18px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
   transition: all 0.2s;
+  z-index: 100;
 }
-
-.control-btn:hover {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.5);
-}
-
-.control-btn.play-pause {
-  min-width: 100px;
+.close-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: scale(1.1);
 }
 </style>
 </head>
 <body>
 
-<div class="progress-container">
-  <div class="progress-bar" id="progressBar"></div>
+<div class="progress-track">
+  <div class="progress-fill" id="progressFill"></div>
 </div>
 
-<div class="slide-counter" id="slideCounter">1 / 5</div>
+<div class="counter" id="counter">1 / 5</div>
 
-<button class="close-btn" onclick="exitSlideshow()" title="Exit">✕</button>
+<div id="slideWrap"></div>
 
-<div class="slideshow-container" id="slideshowContainer"></div>
-
-<div class="controls">
-  <button class="control-btn" onclick="prevSlide()">‹ Prev</button>
-  <button class="control-btn play-pause" id="playPauseBtn" onclick="togglePlayPause()">Pause</button>
-  <button class="control-btn" onclick="nextSlide()">Next ›</button>
+<div class="btn-row">
+  <button class="ctrl-button" id="pauseBtn" onclick="togglePause()" title="Pause">⏸</button>
+  <button class="home-button" onclick="goHome()">
+    <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+  </button>
+  <button class="ctrl-button" onclick="restartPlayer()" title="Restart">↺</button>
 </div>
+
+<button class="close-btn" onclick="goHome()">✕</button>
 
 <script src="../shared/player-core.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════
-   GRATITUDE SLIDES CONFIGURATION
+   GRATITUDE SLIDESHOW
+   5 sets × 5 images. Set rotates daily.
+   Image naming: images/gratitude/gratitude {1-5}/{1-5}.jpg
    ══════════════════════════════════════════════════════════ */
 
-const GRATITUDE_SLIDES = [
-  {
-    image: '../images/gratitude/electricity.jpg',
-    title: 'Electricity',
-    text: 'I am grateful for the power that lights my home and connects me to the world.',
-    duration: 8000,
-    voiceOver: 'I am grateful for electricity. The power that lights my home and connects me to the world.'
-  },
-  {
-    image: '../images/gratitude/book.jpg',
-    title: 'A Good Book',
-    text: 'I am grateful for the wisdom of those who came before me, available at my fingertips.',
-    duration: 8000,
-    voiceOver: 'I am grateful for a good book. The wisdom of those who came before me, available at my fingertips.'
-  },
-  {
-    image: '../images/gratitude/chair.jpg',
-    title: 'A Comfortable Chair',
-    text: 'I am grateful for comfort and rest, for moments of peace in my day.',
-    duration: 8000,
-    voiceOver: 'I am grateful for a comfortable chair. For comfort and rest. For moments of peace in my day.'
-  },
-  {
-    image: '../images/gratitude/friends.jpg',
-    title: 'Friends',
-    text: 'I am grateful for the people who see me, support me, and walk beside me.',
-    duration: 8000,
-    voiceOver: 'I am grateful for friends. The people who see me, support me, and walk beside me.'
-  },
-  {
-    image: '../images/gratitude/vision.jpg',
-    title: 'My Vision',
-    text: 'I am grateful for the ability to see beauty, to witness life, to perceive possibility.',
-    duration: 8000,
-    voiceOver: 'I am grateful for my vision. The ability to see beauty, to witness life, to perceive possibility.'
-  }
-];
+const TOTAL      = 5;
+const DURATION   = 8000; // ms per image
+const set        = (Math.floor(Date.now() / 86400000) % 5) + 1;
+const IMAGES     = Array.from({ length: TOTAL }, (_, i) =>
+  `../images/gratitude/gratitude ${set}/${i + 1}.jpg`
+);
 
-/* ══════════════════════════════════════════════════════════
-   PLAYER STATE
-   ══════════════════════════════════════════════════════════ */
+let current      = 0;
+let isPaused     = false;
+let slideTimer   = null;
+let autoClose    = null;
 
-let currentSlide = 0;
-let isPlaying = true;
-let slideTimer = null;
-
-/* ══════════════════════════════════════════════════════════
-   INITIALIZATION
-   ══════════════════════════════════════════════════════════ */
-
-function init() {
-  generateSlides();
-  showSlide(0);
-  
-  // Opening voice-over
-  setTimeout(() => {
-    speakText('Take a moment to reflect on gratitude. Five simple things that make your life better.');
-  }, 1000);
-}
-
-function generateSlides() {
-  const container = document.getElementById('slideshowContainer');
-  container.innerHTML = '';
-  
-  GRATITUDE_SLIDES.forEach((slide, index) => {
-    const slideEl = document.createElement('div');
-    slideEl.className = 'slide';
-    slideEl.id = `slide-${index}`;
-    
-    if (slide.image) {
-      slideEl.style.backgroundImage = `url(${slide.image})`;
-    } else {
-      // Fallback gradient if image not found
-      slideEl.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    }
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'slide-overlay';
-    slideEl.appendChild(overlay);
-    
-    const content = document.createElement('div');
-    content.className = 'slide-content';
-    
-    const label = document.createElement('div');
-    label.className = 'gratitude-label';
-    label.textContent = 'I am grateful for';
-    content.appendChild(label);
-    
-    const title = document.createElement('div');
-    title.className = 'slide-title';
-    title.textContent = slide.title;
-    content.appendChild(title);
-    
-    if (slide.text) {
-      const text = document.createElement('div');
-      text.className = 'slide-text';
-      text.textContent = slide.text;
-      content.appendChild(text);
-    }
-    
-    slideEl.appendChild(content);
-    container.appendChild(slideEl);
+/* ── BUILD SLIDES ────────────────────────────────────────── */
+function buildSlides() {
+  const wrap = document.getElementById('slideWrap');
+  IMAGES.forEach((src, i) => {
+    const el = document.createElement('div');
+    el.className = 'slide';
+    el.id = `slide-${i}`;
+    el.style.backgroundImage = `url("${src}")`;
+    wrap.appendChild(el);
   });
 }
 
-function showSlide(index) {
-  if (index < 0) index = 0;
-  if (index >= GRATITUDE_SLIDES.length) {
-    endSession();
-    return;
-  }
-  
-  currentSlide = index;
-  const slide = GRATITUDE_SLIDES[index];
-  
-  document.querySelectorAll('.slide').forEach((el, i) => {
-    el.classList.toggle('active', i === index);
-  });
-  
-  document.getElementById('slideCounter').textContent = `${index + 1} / ${GRATITUDE_SLIDES.length}`;
-  updateProgress(index + 1, GRATITUDE_SLIDES.length, 'progressBar');
-  
-  if (slide.voiceOver) {
-    speakText(slide.voiceOver);
-  }
-  
-  if (isPlaying) {
-    clearTimeout(slideTimer);
-    slideTimer = setTimeout(() => {
-      showSlide(currentSlide + 1);
-    }, slide.duration || 8000);
-  }
-}
+/* ── SHOW SLIDE ──────────────────────────────────────────── */
+function showSlide(n) {
+  if (n >= TOTAL) { complete(); return; }
+  current = n;
 
-function nextSlide() {
+  document.querySelectorAll('.slide').forEach((el, i) =>
+    el.classList.toggle('active', i === n)
+  );
+
+  document.getElementById('counter').textContent = `${n + 1} / ${TOTAL}`;
+  document.getElementById('progressFill').style.width =
+    `${((n + 1) / TOTAL) * 100}%`;
+
   clearTimeout(slideTimer);
-  stopSpeech();
-  showSlide(currentSlide + 1);
+  if (!isPaused) {
+    slideTimer = setTimeout(() => showSlide(current + 1), DURATION);
+  }
 }
 
-function prevSlide() {
+/* ── COMPLETE ────────────────────────────────────────────── */
+function complete() {
   clearTimeout(slideTimer);
-  stopSpeech();
-  showSlide(currentSlide - 1);
+  playBell();
+  speakText('Carry this gratitude with you.');
+  autoClose = setTimeout(() => goHome(), 6000);
 }
 
-function togglePlayPause() {
-  isPlaying = !isPlaying;
-  const btn = document.getElementById('playPauseBtn');
-  
-  if (isPlaying) {
-    btn.textContent = 'Pause';
-    showSlide(currentSlide);
-  } else {
-    btn.textContent = 'Play';
+/* ── PAUSE / RESUME ──────────────────────────────────────── */
+function togglePause() {
+  const btn = document.getElementById('pauseBtn');
+  isPaused = !isPaused;
+  if (isPaused) {
     clearTimeout(slideTimer);
     stopSpeech();
+    btn.textContent = '▶';
+    btn.title = 'Resume';
+  } else {
+    btn.textContent = '⏸';
+    btn.title = 'Pause';
+    slideTimer = setTimeout(() => showSlide(current + 1), DURATION);
   }
 }
 
-function endSession() {
-  isPlaying = false;
+/* ── RESTART / HOME ──────────────────────────────────────── */
+function restartPlayer() {
   clearTimeout(slideTimer);
-  
-  setTimeout(() => {
-    speakText('Carry this gratitude with you throughout your day.');
-    setTimeout(() => {
-      exitSlideshow();
-    }, 4000);
-  }, 1000);
+  clearTimeout(autoClose);
+  stopSpeech();
+  location.reload();
 }
 
-function exitSlideshow() {
+function goHome() {
+  clearTimeout(slideTimer);
+  clearTimeout(autoClose);
   stopSpeech();
   returnToApp();
+}
+
+/* ── INIT ────────────────────────────────────────────────── */
+function init() {
+  buildSlides();
+  playBell();
+  setTimeout(() => showSlide(0), 600);
 }
 
 window.addEventListener('DOMContentLoaded', init);
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') prevSlide();
-  if (e.key === 'ArrowRight') nextSlide();
-  if (e.key === ' ') { e.preventDefault(); togglePlayPause(); }
-  if (e.key === 'Escape') exitSlideshow();
+  if (e.key === 'Escape') goHome();
+  if (e.key === ' ') { e.preventDefault(); togglePause(); }
+  if (e.key === 'ArrowRight') { clearTimeout(slideTimer); showSlide(current + 1); }
+  if (e.key === 'ArrowLeft')  { clearTimeout(slideTimer); showSlide(Math.max(0, current - 1)); }
 });
 </script>
 
