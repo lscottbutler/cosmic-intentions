@@ -255,7 +255,7 @@ function addTimer(fn, delay) {
 function init() {
   document.getElementById('vibeImage').style.backgroundImage = `url(${getDailyImage(PLAYER_OFFSETS['visual-countdown'])})`;
 
-  const iamText = localStorage.getItem('visual_countdown_goal') || 'I AM becoming the person I have decided to be.';
+  const iamText = localStorage.getItem('visual_countdown_goal') || '';
   localStorage.removeItem('visual_countdown_goal');
   document.getElementById('iamStatement').textContent = iamText;
 
@@ -274,7 +274,7 @@ function init() {
 function startCountdown() {
   const iamStatement = document.getElementById('iamStatement').textContent;
 
-  addTimer(() => speakText(iamStatement), 1000);
+  if (iamStatement) addTimer(() => speakText(iamStatement), 1000);
 
   const wordCount = (iamStatement || '').split(/\s+/).length;
   const readingMs = Math.max(2000, wordCount * 420);
@@ -308,7 +308,7 @@ function startTick() {
     countdown--;
     display.textContent = countdown;
 
-    if (countdown === 30) speakText(iamText);
+    if (countdown === 30 && iamText) speakText(iamText);
     if (countdown <= 5 && countdown > 0) circle.classList.add('ending');
 
     if (countdown <= 0) {
