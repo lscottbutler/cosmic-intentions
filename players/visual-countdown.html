@@ -21,7 +21,7 @@ body {
   width: 92%;
   max-width: 520px;
   background: #000;
-  border: 8px solid #FFF;
+  border: 14px solid #FFF;
   border-radius: 12px;
   overflow: visible;
   display: flex;
@@ -35,6 +35,16 @@ body {
 .image-wrap {
   width: 100%;
   position: relative;
+}
+.image-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: #FFF;
+  z-index: 5;
 }
 
 .vibe-image {
