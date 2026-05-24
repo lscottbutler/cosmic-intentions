@@ -240,8 +240,15 @@ function init() {
   countdown = totalDuration;
   halfPoint = Math.floor(totalDuration / 2);
 
+  const MEDITATION_IMAGES = [
+    '../images/MEDITATION BACKGROUNDS/shutterstock_361699901.jpg',
+    '../images/MEDITATION BACKGROUNDS/shutterstock_481891678.jpg',
+    '../images/MEDITATION BACKGROUNDS/shutterstock_1104834488 [Converted].jpg',
+    '../images/MEDITATION BACKGROUNDS/shutterstock_700657435 [Converted].jpg',
+  ];
+  const medIdx = Math.floor(Date.now() / 86400000) % MEDITATION_IMAGES.length;
   document.getElementById('vibeImage').style.backgroundImage =
-    `url(${getDailyImage(PLAYER_OFFSETS['meditation'])})`;
+    `url("${MEDITATION_IMAGES[medIdx]}")`;
 
   const mins = totalDuration / 60;
   document.getElementById('sessionLabel').textContent = `${mins} Minute Meditation`;
