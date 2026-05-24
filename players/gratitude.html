@@ -61,7 +61,7 @@ body {
   z-index: 5;
 }
 
-/* ── IC CIRCLE — identical to visual-countdown ───────────── */
+/* ── IC CIRCLE — home button at bottom of card ───────────── */
 .ic-circle {
   width: 91px;
   height: 91px;
@@ -71,21 +71,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  bottom: -46px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.ic-number {
-  font-size: 35px;
-  font-weight: 700;
-  font-style: italic;
-  color: #000;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
+.ic-circle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 20px rgba(255,255,255,0.3);
 }
+.ic-circle .home-icon { width: 32px; height: 32px; fill: #000; }
 
 /* ── TEXT SECTION ────────────────────────────────────────── */
 .gratitude-eyebrow {
@@ -94,7 +88,7 @@ body {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: #C9A96E;
-  margin-top: 62px; /* clears the IC circle (46px overhang + 16px gap) */
+  margin-top: 20px;
   text-align: center;
   padding: 0 16px;
 }
@@ -205,21 +199,16 @@ body {
 
   <div class="image-wrap">
     <div class="vibe-image" id="vibeImage"></div>
-    <div class="ic-circle">
-      <span class="ic-number" id="icNumber">1</span>
-    </div>
   </div>
 
   <div class="gratitude-eyebrow">I am grateful for</div>
   <div class="iam-statement" id="iamStatement">&nbsp;</div>
   <div class="dot-row" id="dotRow"></div>
 
-  <div class="btn-row">
-    <button class="home-button" onclick="goHome()">
-      <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
-    </button>
+  <div class="ic-circle" onclick="goHome()">
+    <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
   </div>
 
 </div>
@@ -322,9 +311,6 @@ function showSlide(n) {
     img.style.backgroundImage = `url("${src}")`;
     img.style.opacity = '1';
   }, 400);
-
-  // IC number
-  document.getElementById('icNumber').textContent = n + 1;
 
   // Statement text
   const stmt = document.getElementById('iamStatement');
