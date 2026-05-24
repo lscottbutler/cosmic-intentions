@@ -215,13 +215,11 @@ body {
   <div class="dot-row" id="dotRow"></div>
 
   <div class="btn-row">
-    <button class="ctrl-button" id="pauseBtn" onclick="togglePause()" title="Pause">⏸</button>
     <button class="home-button" onclick="goHome()">
       <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
       </svg>
     </button>
-    <button class="ctrl-button" onclick="restartPlayer()" title="Restart">↺</button>
   </div>
 
 </div>
@@ -296,7 +294,6 @@ const SLIDES = SETS[setIdx];
 const TOTAL  = SLIDES.length;
 
 let current    = 0;
-let isPaused   = false;
 let slideTimer = null;
 let autoClose  = null;
 
@@ -353,37 +350,13 @@ function showSlide(n) {
 /* ── COMPLETE ────────────────────────────────────────────── */
 function complete() {
   clearTimeout(slideTimer);
-  playBell();
   const stmt = document.getElementById('iamStatement');
   stmt.textContent = 'Carry this gratitude with you.';
   speakText('Carry this gratitude with you today.');
   autoClose = setTimeout(() => goHome(), 7000);
 }
 
-/* ── PAUSE / RESUME ──────────────────────────────────────── */
-function togglePause() {
-  const btn = document.getElementById('pauseBtn');
-  isPaused = !isPaused;
-  if (isPaused) {
-    clearTimeout(slideTimer);
-    stopSpeech();
-    btn.textContent = '▶';
-    btn.title = 'Resume';
-  } else {
-    btn.textContent = '⏸';
-    btn.title = 'Pause';
-    slideTimer = setTimeout(() => showSlide(current + 1), DURATION);
-  }
-}
-
-/* ── RESTART / HOME ──────────────────────────────────────── */
-function restartPlayer() {
-  clearTimeout(slideTimer);
-  clearTimeout(autoClose);
-  stopSpeech();
-  location.reload();
-}
-
+/* ── HOME ────────────────────────────────────────────────── */
 function goHome() {
   clearTimeout(slideTimer);
   clearTimeout(autoClose);
@@ -394,7 +367,6 @@ function goHome() {
 /* ── INIT ────────────────────────────────────────────────── */
 function init() {
   buildDots();
-  playBell();
   const img = document.getElementById('vibeImage');
   img.style.backgroundImage = `url("${SLIDES[0]}")`;
   setTimeout(() => showSlide(0), 800);
@@ -404,9 +376,6 @@ window.addEventListener('DOMContentLoaded', init);
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') goHome();
-  if (e.key === ' ')          { e.preventDefault(); togglePause(); }
-  if (e.key === 'ArrowRight') { clearTimeout(slideTimer); stopSpeech(); showSlide(current + 1); }
-  if (e.key === 'ArrowLeft')  { clearTimeout(slideTimer); stopSpeech(); showSlide(Math.max(0, current - 1)); }
 });
 </script>
 
