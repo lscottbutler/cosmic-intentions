@@ -6867,9 +6867,8 @@ async function speakText(text) {
   if (!text) return;
   stopSpeech();
   const safeText = text.trim().substring(0, 150);
-  const apiKey   = localStorage.getItem('openai_api_key')
-    || document.getElementById('openai_api_key')?.value.trim()
-    || null;
+  let apiKey = localStorage.getItem('openai_api_key');
+  if (!apiKey) { try { apiKey = window.opener?.localStorage?.getItem('openai_api_key') || null; } catch(e) {} }
 
   if (!apiKey) {
     console.warn('⚠️ OpenAI key missing. Falling back to Browser TTS.');
