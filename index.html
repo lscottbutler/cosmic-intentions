@@ -4104,6 +4104,57 @@ input, textarea, select {
 .countdown-pause-btn:hover { background: #DDDDDD; }
 /* ── END COUNTDOWN ───────────────────────────────────── */
 
+/* ── PEGBOARD LOOP WIDGET ────────────────────────────── */
+.pb-loop-card {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.pb-loop-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0.25;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.8s ease, background-image 0.8s ease;
+}
+.pb-loop-content { position: relative; z-index: 1; padding: 20px; max-width: 360px; }
+.pb-loop-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.pb-loop-body {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+}
+.pb-loop-play {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.pb-loop-play:hover { color: var(--accent); border-color: var(--accent); }
+
 </style>
 </head>
 <body>
@@ -4414,6 +4465,16 @@ input, textarea, select {
           <!-- NIGHT PROTOCOL -->
           <div class="vault-quick-btns" style="margin-top:16px;">
             <button class="vault-qbtn accent" onclick="launchPlayer('night-protocol')" style="width:100%;">🌙 Night Protocol - Before Sleep</button>
+          </div>
+
+          <!-- PEGBOARD LOOP WIDGET -->
+          <div class="pb-loop-card">
+            <div class="pb-loop-bg" id="pbLoopBg"></div>
+            <div class="pb-loop-content">
+              <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
+              <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
+            </div>
+            <button class="pb-loop-play" onclick="speakText(document.getElementById('pbLoopBody').textContent)">▶ Play</button>
           </div>
         </div>
 
@@ -8197,6 +8258,44 @@ function launchVisualCountdown(duration, idx = 0) {
 }
 
 /* ── END COUNTDOWN ───────────────────────────────────── */
+
+/* ── PEGBOARD LOOP WIDGET ────────────────────────────── */
+const PB_LOOP_FIELDS = [
+  { label: 'MY MISSION',    key: 'pb-mission'   },
+  { label: 'LIFE GOAL',     key: 'pb-lifegol'   },
+  { label: 'CORE VALUES',   key: 'pb-values'    },
+  { label: 'BELIEFS',       key: 'pb-beliefs'   },
+  { label: 'ATTITUDES',     key: 'pb-attitudes' },
+  { label: 'STOICISM',      key: 'pb-stoicism'  },
+  { label: 'TRAITS',        key: 'pb-traits'    },
+];
+
+let pbLoopIdx = 0;
+
+function updatePbLoop() {
+  const pb    = LS.get('ci_pegboard') || {};
+  const field = PB_LOOP_FIELDS[pbLoopIdx];
+  const value = pb[field.key] || '—';
+  const imgN  = String((Math.floor(Date.now() / 86400000) + pbLoopIdx) % 25 + 1).padStart(2, '0');
+
+  const bg   = document.getElementById('pbLoopBg');
+  const lbl  = document.getElementById('pbLoopLabel');
+  const body = document.getElementById('pbLoopBody');
+  if (!bg) return;
+
+  bg.style.opacity = '0';
+  setTimeout(() => {
+    bg.style.backgroundImage = `url("images/players/player-${imgN}.jpg")`;
+    bg.style.opacity = '0.25';
+    lbl.textContent  = field.label;
+    body.textContent = value;
+  }, 400);
+
+  pbLoopIdx = (pbLoopIdx + 1) % PB_LOOP_FIELDS.length;
+}
+
+setInterval(updatePbLoop, 60000);
+document.addEventListener('DOMContentLoaded', updatePbLoop);
 </script>
 
 </body>
