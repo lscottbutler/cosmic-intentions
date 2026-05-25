@@ -126,92 +126,99 @@ function playBase64AudioStream(audioBase64) {
   }
 }
 
-function speakText(text, config = {}) {
-  if (!text) return;
-  stopSpeech();
-
-  // Base64 cache shortcut — text unchanged and valid cache exists, bypass ElevenLabs entirely
-  if (config.audioBase64 && config.cachedText === text) {
-    playBase64AudioStream(config.audioBase64);
-    return;
-  }
-
-  try {
-    const { apiKey, voiceId } = getElevenLabsCreds(config);
-    console.log('🎤 ElevenLabs Check:', {
-      apiKey:  apiKey  ? 'SET' : 'MISSING',
-      voiceId: voiceId || 'MISSING'
-    });
-    if (apiKey && voiceId) {
-      speakElevenLabs(text, apiKey, voiceId);
-    } else {
-      console.warn('[Player] No credentials — browser TTS fallback');
-      speakBrowser(text);
-    }
-  } catch(e) {
-    console.error('[Player] speakText error:', e);
-    speakBrowser(text);
-  }
-}
-
 function speakBrowser(text) {
   if (!('speechSynthesis' in window)) return;
-  const utt  = new SpeechSynthesisUtterance(text);
+  const utt  = new SpeechSynthesisUtterance(text.substring(0, 150));
   utt.rate   = 0.82;
   utt.pitch  = 0.88;
   utt.volume = 0.9;
   window.speechSynthesis.speak(utt);
 }
 
-async function speakElevenLabs(text, apiKey, voiceId) {
-  if (DEV_MODE) {
-    console.log('[EL-DEV] DEV_MODE active — browser TTS mock (no API call)');
-    speakBrowser(text);
+async function speakText(text, goalIndex = null) {
+  if (!text) return;
+  stopSpeech();
+  const safeText = text.trim().substring(0, 150);
+
+  let key = null, voiceId = null;
+  try {
+    // Tier 0: window.parent (iframe sandbox)
+    if (window.parent && window.parent.localStorage) {
+      key     = window.parent.localStorage.getItem('ci_eleven_key');
+      voiceId = window.parent.localStorage.getItem('ci_voice_id');
+    }
+  } catch(e) { console.log('Cross-origin parent frame reading restricted.'); }
+
+  // Tier 1: own localStorage
+  if (!key)     key     = localStorage.getItem('ci_eleven_key');
+  if (!voiceId) voiceId = localStorage.getItem('ci_voice_id');
+
+  // Tier 2: ci_pegboard
+  if (!key || !voiceId) {
+    const pb = getPBLocal();
+    if (!key     && pb['pb-eleven'])  key     = pb['pb-eleven'];
+    if (!voiceId && pb['pb-voiceid']) voiceId = pb['pb-voiceid'];
+  }
+
+  // Tier 3: window.opener (player opened via window.open from dashboard)
+  if (!key || !voiceId) {
+    try {
+      if (window.opener && !window.opener.closed) {
+        if (!key)     key     = window.opener.localStorage.getItem('ci_eleven_key');
+        if (!voiceId) voiceId = window.opener.localStorage.getItem('ci_voice_id');
+      }
+    } catch(e) { console.log('Cross-origin opener reading restricted.'); }
+  }
+
+  if (!key || !voiceId) {
+    console.error('❌ ELEVENLABS ABORTED: Missing API Key or Voice ID. Falling back to Browser TTS.');
+    speakBrowser(safeText);
     return;
   }
 
-  // Isolated fetch — network errors never reach audio playback thread
+  // Cache guard — reuse base64 data URI if text unchanged
+  if (goalIndex !== null) {
+    try {
+      const pbRaw = localStorage.getItem('ci_pegboard');
+      const stored = pbRaw ? JSON.parse(pbRaw) : {};
+      const intentions = stored.intentions || [];
+      const cached = intentions[goalIndex];
+      if (cached && cached.title && cached.title.trim() === safeText && cached.audioBase64) {
+        new Audio(cached.audioBase64).play().catch(e => console.error('Audio cache play error:', e));
+        return;
+      }
+    } catch(err) { console.warn('Cache evaluation failed.'); }
+  }
+
+  if (DEV_MODE) {
+    console.log('🧪 DEV_MODE Active: Bypassing live API.');
+    speakBrowser(safeText);
+    return;
+  }
+
+  // Live ElevenLabs call
   try {
-    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId.trim()}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'xi-api-key':   apiKey
-      },
+      headers: { 'xi-api-key': key.trim(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text,
-        model_id:       'eleven_multilingual_v2',
-        voice_settings: { stability: 0.65, similarity_boost: 0.8 }
+        text: safeText,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
       })
     });
-
-    if (!res.ok) {
-      console.error('[EL] API error:', res.status, res.statusText);
-      const detail = await res.text().catch(() => '');
-      console.error('[EL] Detail:', detail);
-      speakBrowser(text);
-      return;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Rejected (${response.status}): ${errorText}`);
     }
-
-    console.log('[EL] Response received — converting to base64 stream...');
-
-    // Isolated audio setup — keeps fetch errors from silencing playback
-    try {
-      const buf    = await res.arrayBuffer();
-      const bytes  = new Uint8Array(buf);
-      let binary   = '';
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      const audioBase64 = btoa(binary);
-      playBase64AudioStream(audioBase64);
-      console.log('[EL] ✓ Live audio fetched, converted, and playing.');
-    } catch(audioErr) {
-      console.warn('[EL] Audio conversion/playback failed:', audioErr.message);
-      speakBrowser(text);
-    }
-
-  } catch(fetchErr) {
-    console.warn('[EL] Fetch failed:', fetchErr.message);
-    speakBrowser(text);
+    const buffer       = await response.arrayBuffer();
+    const base64String = btoa(new Uint8Array(buffer).reduce((d, b) => d + String.fromCharCode(b), ''));
+    const dataUri      = `data:audio/mp3;base64,${base64String}`;
+    new Audio(dataUri).play().catch(e => console.error('Live audio play error:', e));
+    console.log('[EL] ✓ Live audio playing.');
+  } catch(err) {
+    console.error('🚨 ElevenLabs failed — browser TTS fallback:', err.message);
+    speakBrowser(safeText);
   }
 }
 
