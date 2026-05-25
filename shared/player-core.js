@@ -3,7 +3,7 @@
    Shared functions for all player types
    ══════════════════════════════════════════════════════════ */
 
-const DEV_MODE = true; // true = mock ElevenLabs | false = live API calls
+const DEV_MODE = false; // true = mock ElevenLabs | false = live API calls
 
 const ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel — default baseline
 
