@@ -4436,6 +4436,16 @@ input, textarea, select {
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
 
+        <!-- PEGBOARD LOOP WIDGET -->
+        <div class="pb-loop-card">
+          <div class="pb-loop-bg" id="pbLoopBg"></div>
+          <div class="pb-loop-content">
+            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
+            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
+          </div>
+          <button class="pb-loop-play" onclick="speakText(document.getElementById('pbLoopBody').textContent)">▶ Play</button>
+        </div>
+
         <!-- WELCOME STATE -->
         <div id="vaultWelcome" class="vault-welcome">
 
@@ -4467,15 +4477,6 @@ input, textarea, select {
             <button class="vault-qbtn accent" onclick="launchPlayer('night-protocol')" style="width:100%;">🌙 Night Protocol - Before Sleep</button>
           </div>
 
-          <!-- PEGBOARD LOOP WIDGET -->
-          <div class="pb-loop-card">
-            <div class="pb-loop-bg" id="pbLoopBg"></div>
-            <div class="pb-loop-content">
-              <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
-              <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
-            </div>
-            <button class="pb-loop-play" onclick="speakText(document.getElementById('pbLoopBody').textContent)">▶ Play</button>
-          </div>
         </div>
 
         <!-- ADD INTENTION FORM -->
