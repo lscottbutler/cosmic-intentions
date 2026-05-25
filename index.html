@@ -5655,6 +5655,9 @@ function populateForm(pb) {
     if (el && pb[id] !== undefined) el.value = pb[id];
   });
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
+  // Write voice keys to raw LS every time form is populated — covers Supabase load, local load, and save
+  if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
+  if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
 }
 
 function setSpirituality(val, save = true) {
