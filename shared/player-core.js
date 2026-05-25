@@ -138,7 +138,7 @@ async function speakText(text) {
     const response = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'tts-1', input: safeText, voice: 'alloy' })
+      body: JSON.stringify({ model: 'tts-1', input: safeText, voice: localStorage.getItem('openai_voice') || 'alloy' })
     });
     if (!response.ok) {
       const error = await response.json();
