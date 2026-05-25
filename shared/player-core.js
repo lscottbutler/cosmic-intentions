@@ -119,11 +119,16 @@ async function speakText(text) {
     const blob  = new Blob([bytes], { type: 'audio/mpeg' });
     const audio = new Audio(URL.createObjectURL(blob));
     audio.volume = 0.6;
-    audio.play();
-    audio.onended = () => URL.revokeObjectURL(audio.src);
+    await new Promise((resolve) => {
+      audio.onended = resolve;
+      audio.onerror = resolve;
+      audio.play();
+    });
+    URL.revokeObjectURL(audio.src);
   } catch(err) {
     console.error('TTS failed:', err);
     speakBrowser(safeText);
+    await new Promise(r => setTimeout(r, 3000));
   }
 }
 

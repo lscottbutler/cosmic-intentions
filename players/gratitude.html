@@ -218,16 +218,11 @@ body {
 <script src="../shared/player-core.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════
-   ASS GRATITUDE PLAYER
-   Card layout, IC circle, TTS voice-over, 8s per slide.
-   Filename = label text. "I am grateful for" auto-prepended.
+   GRATITUDE PLAYER
+   Sequence per slide:
+     fade in image → 3s → text + VO → VO ends → 3s → fade out → 2s black → next
    ══════════════════════════════════════════════════════════ */
 
-const DURATION = 8000;
-
-/* Image paths — rename files to the label text you want displayed.
-   e.g. "A Good Book.jpg" → shows "I am grateful for A Good Book"
-   Blank string = silent slide (image only, no text, no TTS)        */
 const SETS = [
   [ // Set 1
     '../images/GRATITUDE/GRATITUDE 1/A COMFY BED.jpg',
@@ -262,7 +257,8 @@ const SETS = [
   ],
 ];
 
-/* ── LABEL FROM FILENAME ─────────────────────────────────── */
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
 function labelFromPath(src) {
   let name = src.split('/').pop();
   name = name.replace(/^\[000\]\s*/i, '');
@@ -277,16 +273,13 @@ function labelFromPath(src) {
     .join(' ');
 }
 
-/* ── SETUP ───────────────────────────────────────────────── */
 const setIdx = Math.floor(Date.now() / 86400000) % SETS.length;
 const SLIDES = SETS[setIdx];
 const TOTAL  = SLIDES.length;
 
-let current    = 0;
-let slideTimer = null;
-let autoClose  = null;
+let current = 0;
+let running = false;
 
-/* ── BUILD DOTS ──────────────────────────────────────────── */
 function buildDots() {
   const row = document.getElementById('dotRow');
   SLIDES.forEach((_, i) => {
@@ -297,72 +290,79 @@ function buildDots() {
   });
 }
 
-/* ── SHOW SLIDE ──────────────────────────────────────────── */
-function showSlide(n) {
+async function showSlide(n) {
+  if (!running) return;
   if (n >= TOTAL) { complete(); return; }
   current = n;
+
   const src   = SLIDES[n];
   const label = labelFromPath(src);
+  const img   = document.getElementById('vibeImage');
+  const stmt  = document.getElementById('iamStatement');
 
-  // Fade image
-  const img = document.getElementById('vibeImage');
-  img.style.opacity = '0';
-  setTimeout(() => {
-    img.style.backgroundImage = `url("${src}")`;
-    img.style.opacity = '1';
-  }, 400);
-
-  // Statement text
-  const stmt = document.getElementById('iamStatement');
-  stmt.style.opacity = '0';
-  setTimeout(() => {
-    stmt.textContent = label || ' ';
-    stmt.style.opacity = '1';
-    if (label) speakText(`I am grateful for ${label.toLowerCase()}`);
-  }, 400);
-
-  // Dots
+  // Update dots
   document.querySelectorAll('.dot').forEach((d, i) =>
     d.classList.toggle('active', i === n)
   );
 
-  // Auto-advance
-  clearTimeout(slideTimer);
-  if (!isPaused) {
-    slideTimer = setTimeout(() => showSlide(current + 1), DURATION);
-  }
+  // Fade in image
+  img.style.opacity  = '0';
+  stmt.style.opacity = '0';
+  stmt.textContent   = ' ';
+  await delay(50);
+  img.style.backgroundImage = `url("${src}")`;
+  img.style.opacity = '1';
+
+  // 3s — image visible, no text yet
+  await delay(3000);
+  if (!running) return;
+
+  // Show text + play VO (await until audio finishes)
+  stmt.textContent   = label || ' ';
+  stmt.style.opacity = '1';
+  if (label) await speakText(`I am grateful for ${label.toLowerCase()}`);
+  if (!running) return;
+
+  // 3s hold after VO
+  await delay(3000);
+  if (!running) return;
+
+  // Fade out slide
+  img.style.opacity  = '0';
+  stmt.style.opacity = '0';
+
+  // 0.8s fade transition + 2s black hold
+  await delay(2800);
+  if (!running) return;
+
+  showSlide(n + 1);
 }
 
-/* ── COMPLETE ────────────────────────────────────────────── */
-function complete() {
-  clearTimeout(slideTimer);
+async function complete() {
   const stmt = document.getElementById('iamStatement');
-  stmt.textContent = 'Carry this gratitude with you.';
-  speakText('Carry this gratitude with you today.');
-  autoClose = setTimeout(() => goHome(), 7000);
+  const img  = document.getElementById('vibeImage');
+  img.style.opacity  = '1';
+  stmt.textContent   = 'Carry this gratitude with you.';
+  stmt.style.opacity = '1';
+  await speakText('Carry this gratitude with you today.');
+  await delay(3000);
+  goHome();
 }
 
-/* ── HOME ────────────────────────────────────────────────── */
 function goHome() {
-  clearTimeout(slideTimer);
-  clearTimeout(autoClose);
+  running = false;
   stopSpeech();
   returnToApp();
 }
 
-/* ── INIT ────────────────────────────────────────────────── */
 function init() {
+  running = true;
   buildDots();
-  const img = document.getElementById('vibeImage');
-  img.style.backgroundImage = `url("${SLIDES[0]}")`;
-  setTimeout(() => showSlide(0), 800);
+  showSlide(0);
 }
 
 window.addEventListener('DOMContentLoaded', init);
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') goHome();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') goHome(); });
 </script>
 
 </body>
