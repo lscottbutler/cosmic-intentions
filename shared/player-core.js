@@ -66,25 +66,6 @@ function getPBLocal() {
   } catch(e) { return {}; }
 }
 
-function getOpenAIKey() {
-  // 1. Own localStorage
-  let key = localStorage.getItem('openai_api_key');
-  // 2. window.opener (player opened from dashboard)
-  if (!key) {
-    try {
-      if (window.opener && !window.opener.closed)
-        key = window.opener.localStorage.getItem('openai_api_key');
-    } catch(e) {}
-  }
-  // 3. ci_pegboard openai_api_key field
-  if (!key) {
-    try {
-      const pb = JSON.parse(localStorage.getItem('ci_pegboard') || '{}');
-      key = pb['openai_api_key'] || null;
-    } catch(e) {}
-  }
-  return key ? key.trim() : null;
-}
 
 /* ── VOICE ENGINE ────────────────────────────────────────── */
 function stopSpeech() {
@@ -120,37 +101,28 @@ async function speakText(text) {
   if (!text) return;
   stopSpeech();
   const safeText = text.trim().substring(0, 150);
-  const apiKey   = getOpenAIKey();
+  const voice    = localStorage.getItem('openai_voice') || 'alloy';
 
-  if (!apiKey) {
-    console.warn('⚠️ OpenAI key missing. Falling back to Browser TTS.');
-    speakBrowser(safeText);
-    return;
-  }
-
-  if (DEV_MODE) {
-    console.log('🧪 DEV_MODE Active: Bypassing live API.');
-    speakBrowser(safeText);
-    return;
-  }
+  if (DEV_MODE) { speakBrowser(safeText); return; }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/audio/speech', {
+    const res = await fetch('/api/tts', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'tts-1', input: safeText, voice: localStorage.getItem('openai_voice') || 'alloy' })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: safeText, voice })
     });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`OpenAI Error: ${error.error?.message}`);
-    }
-    const blob = await response.blob();
+    if (!res.ok) throw new Error(`TTS ${res.status}`);
+    const { audio: b64 } = await res.json();
+    const binary = atob(b64);
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob  = new Blob([bytes], { type: 'audio/mpeg' });
     const audio = new Audio(URL.createObjectURL(blob));
     audio.volume = 0.6;
     audio.play();
-    console.log('[OpenAI] ✓ Live audio playing.');
+    audio.onended = () => URL.revokeObjectURL(audio.src);
   } catch(err) {
-    console.error('🚨 OpenAI API Failed. Fallback to Browser TTS:', err);
+    console.error('TTS failed:', err);
     speakBrowser(safeText);
   }
 }
@@ -221,7 +193,6 @@ if (typeof module !== 'undefined' && module.exports) {
     speakBrowser,
     stopSpeech,
     playBase64AudioStream,
-    getOpenAIKey,
     getPBLocal,
     LS,
     createBreathingCircle,

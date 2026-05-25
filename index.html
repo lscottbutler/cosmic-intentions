@@ -4636,13 +4636,6 @@ input, textarea, select {
         <div class="setup-section-title">Voice Settings (Optional)</div>
 
         <div class="field-group">
-          <label class="field-label" for="openai_api_key">OpenAI API Key</label>
-          <span class="field-hint">For AI-voiced visualization sessions. Leave blank to use browser voice.</span>
-          <input class="field-input" type="password" id="openai_api_key" placeholder="sk-..." autocomplete="off"
-            oninput="const v=this.value.trim();if(v)localStorage.setItem('openai_api_key',v);" />
-        </div>
-
-        <div class="field-group">
           <label class="field-label" for="openai_voice">Voice</label>
           <span class="field-hint">Choose your AI voice.</span>
           <select class="field-input" id="openai_voice"
@@ -5643,7 +5636,7 @@ const PB_FIELDS = [
   'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
-  'openai_api_key', 'openai_voice'
+  'openai_voice'
 ];
 
 function readFormToPB() {
@@ -5662,8 +5655,7 @@ function populateForm(pb) {
     if (el && pb[id] !== undefined) el.value = pb[id];
   });
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
-  if (pb['openai_api_key']) localStorage.setItem('openai_api_key', pb['openai_api_key']);
-  if (pb['openai_voice'])   localStorage.setItem('openai_voice',   pb['openai_voice']);
+  if (pb['openai_voice']) localStorage.setItem('openai_voice', pb['openai_voice']);
 }
 
 function setSpirituality(val, save = true) {
@@ -5687,7 +5679,6 @@ async function saveSetup() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
   LS.set('ci_spirituality', pb['spirituality'] || '');
-  localStorage.setItem('openai_api_key', document.getElementById('openai_api_key').value.trim());
   setBtnLoading('btn-save-setup', true);
   try {
     await syncProfileToSupabase(pb);
@@ -5702,7 +5693,6 @@ async function saveSetup() {
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
-  localStorage.setItem('openai_api_key', document.getElementById('openai_api_key').value.trim());
   setBtnLoading('btn-save-bts', true);
   try {
     await syncProfileToSupabase(pb);
@@ -5742,7 +5732,6 @@ async function syncProfileToSupabase(pb) {
     bts_obstacles: pb['bts-obstacles'] || '',
     bts_why:       pb['bts-why']       || '',
     bts_context:   pb['bts-context']   || '',
-    openai_api_key: pb['openai_api_key'] || '',
     openai_voice:  pb['openai_voice']  || 'alloy',
     spirituality:  pb['spirituality']  || ''
   };
@@ -5782,14 +5771,12 @@ async function syncFromSupabase() {
       'bts-obstacles': data.bts_obstacles || '',
       'bts-why':       data.bts_why       || '',
       'bts-context':    data.bts_context    || '',
-      'openai_api_key': data.openai_api_key || '',
       'openai_voice':   data.openai_voice   || 'alloy',
       'spirituality':   data.spirituality   || ''
     };
     LS.set('ci_pegboard', pb);
     LS.set('ci_spirituality', pb['spirituality']);
-    if (pb['openai_api_key']) localStorage.setItem('openai_api_key', pb['openai_api_key']);
-    if (pb['openai_voice'])   localStorage.setItem('openai_voice',   pb['openai_voice']);
+    if (pb['openai_voice']) localStorage.setItem('openai_voice', pb['openai_voice']);
     populateForm(pb);
 
     // Free test access — all signed-in users treated as members
@@ -6885,33 +6872,48 @@ async function speakText(text) {
   if (!text) return;
   stopSpeech();
   const safeText = text.trim().substring(0, 150);
-  let apiKey = localStorage.getItem('openai_api_key');
-  if (!apiKey) { try { apiKey = window.opener?.localStorage?.getItem('openai_api_key') || null; } catch(e) {} }
+  const voice    = localStorage.getItem('openai_voice') || 'alloy';
+  try {
+    const res = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: safeText, voice })
+    });
+    if (!res.ok) throw new Error(`TTS ${res.status}`);
+    const { audio: b64 } = await res.json();
+    playBase64Audio(b64);
+    return b64;
+  } catch(err) {
+    console.error('TTS failed:', err);
+    speakBrowser(safeText);
+  }
+}
 
-  if (!apiKey) {
-    console.warn('⚠️ OpenAI key missing. Falling back to Browser TTS.');
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(safeText));
+async function speakCached(text, idx) {
+  if (!text) return;
+  const safeText = text.trim().substring(0, 150);
+  const intn = intentions[idx];
+  if (intn && intn.audioBase64 && intn.audioText === safeText) {
+    playBase64Audio(intn.audioBase64);
     return;
   }
-
-  try {
-    const response = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'tts-1', input: safeText, voice: localStorage.getItem('openai_voice') || 'alloy' })
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`OpenAI Error: ${error.error?.message}`);
-    }
-    const blob = await response.blob();
-    const audio = new Audio(URL.createObjectURL(blob));
-    audio.volume = 0.6;
-    audio.play();
-  } catch(err) {
-    console.error('🚨 OpenAI API Failed. Fallback to Browser TTS:', err);
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(safeText));
+  const b64 = await speakText(safeText);
+  if (b64 && intn) {
+    intn.audioBase64 = b64;
+    intn.audioText   = safeText;
+    saveIntentions();
   }
+}
+
+function playBase64Audio(b64) {
+  const binary = atob(b64);
+  const bytes  = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const blob  = new Blob([bytes], { type: 'audio/mpeg' });
+  const audio = new Audio(URL.createObjectURL(blob));
+  audio.volume = 0.6;
+  audio.play();
+  audio.onended = () => URL.revokeObjectURL(audio.src);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -7262,7 +7264,7 @@ async function launch3Min(idx) {
 
   document.getElementById('manifestModal').classList.add('open');
   playBell();
-  setTimeout(() => speakText(title), 1200);
+  setTimeout(() => speakCached(title, idx), 1200);
   fetchManifestAI(idx);
   showManifestSlide(0);
 }
@@ -7383,7 +7385,7 @@ const PB_FIELDS_DEF = [
   'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
-  'openai_api_key', 'openai_voice'
+  'openai_voice'
 ];
 
 /* ─────────────────────────────────────────────────────────
