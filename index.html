@@ -4638,13 +4638,15 @@ input, textarea, select {
         <div class="field-group">
           <label class="field-label" for="pb-eleven">ElevenLabs API Key</label>
           <span class="field-hint">For AI-voiced visualization sessions. Leave blank to use browser voice.</span>
-          <input class="field-input" type="password" id="pb-eleven" placeholder="sk-..." autocomplete="off" />
+          <input class="field-input" type="password" id="pb-eleven" placeholder="sk-..." autocomplete="off"
+            oninput="const v=this.value.trim();if(v){localStorage.setItem('ci_eleven_key',v);console.log('✓ ci_eleven_key written:',v.slice(0,8)+'...');}" />
         </div>
 
         <div class="field-group">
           <label class="field-label" for="pb-voiceid">ElevenLabs Voice ID</label>
           <span class="field-hint">The voice ID from your ElevenLabs account.</span>
-          <input class="field-input" type="text" id="pb-voiceid" placeholder="e.g. EXAVITQu4vr4xnSDxMaL" />
+          <input class="field-input" type="text" id="pb-voiceid" placeholder="e.g. EXAVITQu4vr4xnSDxMaL"
+            oninput="const v=this.value.trim();if(v){localStorage.setItem('ci_voice_id',v);console.log('✓ ci_voice_id written:',v);}" />
         </div>
       </div>
 
