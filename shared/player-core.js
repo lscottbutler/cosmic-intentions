@@ -66,38 +66,24 @@ function getPBLocal() {
   } catch(e) { return {}; }
 }
 
-function getElevenLabsCreds() {
-  let key     = null;
-  let voiceId = null;
-
-  // 1. Try to yank keys from the parent dashboard window (the bridge)
-  try {
-    if (window.opener && window.opener.localStorage) {
-      key     = window.opener.localStorage.getItem('ci_eleven_key');
-      voiceId = window.opener.localStorage.getItem('ci_voice_id');
-    }
-  } catch(e) { console.warn('Cross-origin restriction blocked parent window access.'); }
-
-  // 2. If parent window access is blocked (iframe), check local storage
-  if (!key)     key     = localStorage.getItem('ci_eleven_key');
-  if (!voiceId) voiceId = localStorage.getItem('ci_voice_id');
-
-  // 3. Fallback: Parse the pegboard object if the raw keys are missing
-  if (!key || !voiceId) {
+function getOpenAIKey() {
+  // 1. Own localStorage
+  let key = localStorage.getItem('openai_api_key');
+  // 2. window.opener (player opened from dashboard)
+  if (!key) {
     try {
-      const pbRaw = localStorage.getItem('ci_pegboard');
-      if (pbRaw) {
-        const pb = JSON.parse(pbRaw);
-        if (!key)     key     = pb['pb-eleven'];
-        if (!voiceId) voiceId = pb['pb-voiceid'];
-      }
+      if (window.opener && !window.opener.closed)
+        key = window.opener.localStorage.getItem('openai_api_key');
     } catch(e) {}
   }
-
-  return {
-    apiKey:  key     ? key.trim()     : null,
-    voiceId: voiceId ? voiceId.trim() : null
-  };
+  // 3. ci_pegboard pb-eleven field
+  if (!key) {
+    try {
+      const pb = JSON.parse(localStorage.getItem('ci_pegboard') || '{}');
+      key = pb['pb-eleven'] || null;
+    } catch(e) {}
+  }
+  return key ? key.trim() : null;
 }
 
 /* ── VOICE ENGINE ────────────────────────────────────────── */
@@ -133,16 +119,12 @@ function speakBrowser(text) {
 async function speakText(text) {
   if (!text) return;
   stopSpeech();
-  const safeText            = text.trim().substring(0, 150);
-  const { apiKey, voiceId } = getElevenLabsCreds();
+  const safeText = text.trim().substring(0, 150);
+  const apiKey   = getOpenAIKey();
 
-  console.log('=== ELEVENLABS DEBUG ===');
-  console.log('Found API Key:', apiKey ? 'YES' : 'NO');
-  console.log('Found Voice ID:', voiceId);
-
-  if (!apiKey || !voiceId) {
-    console.warn('Missing config. Dropping to browser TTS.');
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(safeText));
+  if (!apiKey) {
+    console.warn('⚠️ OpenAI key missing. Falling back to Browser TTS.');
+    speakBrowser(safeText);
     return;
   }
 
@@ -153,17 +135,20 @@ async function speakText(text) {
   }
 
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const response = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
-      headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: safeText, model_id: 'eleven_multilingual_v2' })
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'tts-1', input: safeText, voice: 'alloy' })
     });
-    if (!response.ok) throw new Error(`Status ${response.status}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`OpenAI Error: ${error.error?.message}`);
+    }
     const blob = await response.blob();
     new Audio(URL.createObjectURL(blob)).play();
-    console.log('[EL] ✓ Live audio playing.');
-  } catch(e) {
-    console.error('API Call failed. Fallback to Browser TTS:', e);
+    console.log('[OpenAI] ✓ Live audio playing.');
+  } catch(err) {
+    console.error('🚨 OpenAI API Failed. Fallback to Browser TTS:', err);
     speakBrowser(safeText);
   }
 }
