@@ -6941,12 +6941,17 @@ function stopSpeech() {
 function speakText(text) {
   if (!text) return;
   stopSpeech();
+  console.log("=== TTS DIAGNOSTIC ===");
+  console.log("getPB Key:", getPB()['pb-eleven'], " | Global Storage Key:", localStorage.getItem('ci_eleven_key'));
+  console.log("getPB Voice:", getPB()['pb-voiceid'], " | Global Storage Voice:", localStorage.getItem('ci_voice_id'));
   const pb   = getPB();
   const eKey = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
   const vId  = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')  || '';
+  console.log("Resolved eKey:", eKey ? 'SET' : 'EMPTY', "| Resolved vId:", vId || 'EMPTY');
   if (eKey && vId) {
     speakElevenLabs(text, eKey, vId);
   } else {
+    console.warn("TTS FALLBACK: missing eKey or vId — routing to browser TTS");
     speakBrowser(text);
   }
 }
