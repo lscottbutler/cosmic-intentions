@@ -5655,9 +5655,9 @@ function populateForm(pb) {
     if (el && pb[id] !== undefined) el.value = pb[id];
   });
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
-  // Write voice keys to raw LS every time form is populated — covers Supabase load, local load, and save
   if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
   if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
+  if (typeof syncElevenLabsStateToDOM === 'function') syncElevenLabsStateToDOM();
 }
 
 function setSpirituality(val, save = true) {
@@ -8203,19 +8203,41 @@ function closeCountdown() {
 /* ═══════════════════════════════════════════════════════════════
    ELEVENLABS VOICE AUTO-CONFIGURATION
    ═══════════════════════════════════════════════════════════════ */
-(function() {
-  // Unified credential bridge: pb profile → raw LS keys (priority), with raw LS as fallback
+
+function syncElevenLabsStateToDOM() {
+  const targetKey   = localStorage.getItem('ci_eleven_key') || '';
+  const targetVoice = localStorage.getItem('ci_voice_id')   || '21m00Tcm4TlvDq8ikWAM';
+  const keyEl   = document.getElementById('pb-eleven');
+  const voiceEl = document.getElementById('pb-voiceid');
+  if (keyEl)   keyEl.value   = targetKey;
+  if (voiceEl) voiceEl.value = targetVoice;
   try {
     const raw = localStorage.getItem('ci_pegboard');
     const pb  = raw ? JSON.parse(raw) : {};
-    // Priority 1: nested profile object
-    const pbKey = pb['pb-eleven']  || '';
-    const pbVid = pb['pb-voiceid'] || '';
-    // Priority 2: raw global localStorage strings
-    const lsKey = localStorage.getItem('ci_eleven_key') || '';
-    const lsVid = localStorage.getItem('ci_voice_id')   || '';
-    const key = pbKey || lsKey;
-    const vid = pbVid || lsVid;
+    pb['pb-eleven']  = targetKey;
+    pb['pb-voiceid'] = targetVoice;
+    localStorage.setItem('ci_pegboard', JSON.stringify(pb));
+    console.log('🌌 Storage Sync: Credentials anchored inside pegboard.');
+  } catch(e) {
+    console.error('💥 Storage Alignment Exception:', e);
+  }
+}
+
+function forceManualElevenLabsSave(keyString, voiceString) {
+  const cleanKey   = (keyString   || '').trim();
+  const cleanVoice = (voiceString || '').trim();
+  if (cleanKey)   localStorage.setItem('ci_eleven_key', cleanKey);
+  if (cleanVoice) localStorage.setItem('ci_voice_id',   cleanVoice);
+  syncElevenLabsStateToDOM();
+}
+
+(function() {
+  // Boot bridge: pb profile → raw LS keys, with raw LS as fallback
+  try {
+    const raw = localStorage.getItem('ci_pegboard');
+    const pb  = raw ? JSON.parse(raw) : {};
+    const key = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
+    const vid = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')   || '';
     if (key) localStorage.setItem('ci_eleven_key', key);
     if (vid) localStorage.setItem('ci_voice_id',   vid);
     console.log('✓ ElevenLabs:', key ? 'API Key SET' : 'No key — enter in My Pegboard > Voice Settings');
