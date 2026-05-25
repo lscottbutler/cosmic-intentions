@@ -66,42 +66,37 @@ function getPBLocal() {
   } catch(e) { return {}; }
 }
 
-function getElevenLabsCreds(config = {}) {
+function getElevenLabsCreds() {
   let key     = null;
   let voiceId = null;
 
-  // Tier 0: window.parent — catches iframe sandbox scope boundaries
+  // 1. Try to yank keys from the parent dashboard window (the bridge)
   try {
-    if (window.parent && window.parent.localStorage) {
-      key     = window.parent.localStorage.getItem('ci_eleven_key');
-      voiceId = window.parent.localStorage.getItem('ci_voice_id');
+    if (window.opener && window.opener.localStorage) {
+      key     = window.opener.localStorage.getItem('ci_eleven_key');
+      voiceId = window.opener.localStorage.getItem('ci_voice_id');
     }
-  } catch(e) { console.log('Cross-origin parent frame reading restricted.'); }
+  } catch(e) { console.warn('Cross-origin restriction blocked parent window access.'); }
 
-  // Tier 1: own localStorage raw keys
+  // 2. If parent window access is blocked (iframe), check local storage
   if (!key)     key     = localStorage.getItem('ci_eleven_key');
   if (!voiceId) voiceId = localStorage.getItem('ci_voice_id');
 
-  // Tier 2: ci_pegboard nested profile object
-  if (!key || !voiceId) {
-    const pb = getPBLocal();
-    if (!key     && pb['pb-eleven'])  key     = pb['pb-eleven'];
-    if (!voiceId && pb['pb-voiceid']) voiceId = pb['pb-voiceid'];
-  }
-
-  // Tier 3: window.opener — players opened via window.open() from dashboard
+  // 3. Fallback: Parse the pegboard object if the raw keys are missing
   if (!key || !voiceId) {
     try {
-      if (window.opener && !window.opener.closed) {
-        if (!key)     key     = window.opener.localStorage.getItem('ci_eleven_key');
-        if (!voiceId) voiceId = window.opener.localStorage.getItem('ci_voice_id');
+      const pbRaw = localStorage.getItem('ci_pegboard');
+      if (pbRaw) {
+        const pb = JSON.parse(pbRaw);
+        if (!key)     key     = pb['pb-eleven'];
+        if (!voiceId) voiceId = pb['pb-voiceid'];
       }
-    } catch(e) { console.log('Cross-origin opener reading restricted.'); }
+    } catch(e) {}
   }
 
   return {
     apiKey:  key     ? key.trim()     : null,
-    voiceId: voiceId ? voiceId.trim() : ELEVENLABS_VOICE_ID
+    voiceId: voiceId ? voiceId.trim() : null
   };
 }
 
