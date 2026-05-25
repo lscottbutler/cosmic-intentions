@@ -145,7 +145,9 @@ async function speakText(text) {
       throw new Error(`OpenAI Error: ${error.error?.message}`);
     }
     const blob = await response.blob();
-    new Audio(URL.createObjectURL(blob)).play();
+    const audio = new Audio(URL.createObjectURL(blob));
+    audio.volume = 0.6;
+    audio.play();
     console.log('[OpenAI] ✓ Live audio playing.');
   } catch(err) {
     console.error('🚨 OpenAI API Failed. Fallback to Browser TTS:', err);
