@@ -67,20 +67,42 @@ function getPBLocal() {
 }
 
 function getElevenLabsCreds(config = {}) {
-  // Priority 1: explicitly passed config
-  if (config.elevenLabsKey && config.elevenLabsVoice) {
-    return { apiKey: config.elevenLabsKey, voiceId: config.elevenLabsVoice };
+  let key     = null;
+  let voiceId = null;
+
+  // Tier 0: window.parent — catches iframe sandbox scope boundaries
+  try {
+    if (window.parent && window.parent.localStorage) {
+      key     = window.parent.localStorage.getItem('ci_eleven_key');
+      voiceId = window.parent.localStorage.getItem('ci_voice_id');
+    }
+  } catch(e) { console.log('Cross-origin parent frame reading restricted.'); }
+
+  // Tier 1: own localStorage raw keys
+  if (!key)     key     = localStorage.getItem('ci_eleven_key');
+  if (!voiceId) voiceId = localStorage.getItem('ci_voice_id');
+
+  // Tier 2: ci_pegboard nested profile object
+  if (!key || !voiceId) {
+    const pb = getPBLocal();
+    if (!key     && pb['pb-eleven'])  key     = pb['pb-eleven'];
+    if (!voiceId && pb['pb-voiceid']) voiceId = pb['pb-voiceid'];
   }
-  // Priority 2: nested profile object (getPB() equivalent)
-  const pb    = getPBLocal();
-  const pbKey = pb['pb-eleven']  || '';
-  const pbVid = pb['pb-voiceid'] || '';
-  if (pbKey && pbVid) return { apiKey: pbKey, voiceId: pbVid };
-  if (pbKey)          return { apiKey: pbKey, voiceId: ELEVENLABS_VOICE_ID };
-  // Priority 3: raw global localStorage strings
-  const lsKey = localStorage.getItem('ci_eleven_key') || '';
-  const lsVid = localStorage.getItem('ci_voice_id')   || ELEVENLABS_VOICE_ID;
-  return { apiKey: lsKey, voiceId: lsVid };
+
+  // Tier 3: window.opener — players opened via window.open() from dashboard
+  if (!key || !voiceId) {
+    try {
+      if (window.opener && !window.opener.closed) {
+        if (!key)     key     = window.opener.localStorage.getItem('ci_eleven_key');
+        if (!voiceId) voiceId = window.opener.localStorage.getItem('ci_voice_id');
+      }
+    } catch(e) { console.log('Cross-origin opener reading restricted.'); }
+  }
+
+  return {
+    apiKey:  key     ? key.trim()     : null,
+    voiceId: voiceId ? voiceId.trim() : ELEVENLABS_VOICE_ID
+  };
 }
 
 /* ── VOICE ENGINE ────────────────────────────────────────── */
@@ -134,10 +156,10 @@ function speakText(text, config = {}) {
 
 function speakBrowser(text) {
   if (!('speechSynthesis' in window)) return;
-  const utt    = new SpeechSynthesisUtterance(text);
-  utt.rate     = 0.82;
-  utt.pitch    = 0.88;
-  utt.volume   = 0.9;
+  const utt  = new SpeechSynthesisUtterance(text);
+  utt.rate   = 0.82;
+  utt.pitch  = 0.88;
+  utt.volume = 0.9;
   window.speechSynthesis.speak(utt);
 }
 
