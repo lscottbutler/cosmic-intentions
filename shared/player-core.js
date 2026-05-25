@@ -130,59 +130,20 @@ function speakBrowser(text) {
   window.speechSynthesis.speak(utt);
 }
 
-async function speakText(text, goalIndex = null) {
+async function speakText(text) {
   if (!text) return;
   stopSpeech();
-  const safeText = text.trim().substring(0, 150);
+  const safeText            = text.trim().substring(0, 150);
+  const { apiKey, voiceId } = getElevenLabsCreds();
 
-  let key = null, voiceId = null;
-  try {
-    // Tier 0: window.parent (iframe sandbox)
-    if (window.parent && window.parent.localStorage) {
-      key     = window.parent.localStorage.getItem('ci_eleven_key');
-      voiceId = window.parent.localStorage.getItem('ci_voice_id');
-    }
-  } catch(e) { console.log('Cross-origin parent frame reading restricted.'); }
+  console.log('=== ELEVENLABS DEBUG ===');
+  console.log('Found API Key:', apiKey ? 'YES' : 'NO');
+  console.log('Found Voice ID:', voiceId);
 
-  // Tier 1: own localStorage
-  if (!key)     key     = localStorage.getItem('ci_eleven_key');
-  if (!voiceId) voiceId = localStorage.getItem('ci_voice_id');
-
-  // Tier 2: ci_pegboard
-  if (!key || !voiceId) {
-    const pb = getPBLocal();
-    if (!key     && pb['pb-eleven'])  key     = pb['pb-eleven'];
-    if (!voiceId && pb['pb-voiceid']) voiceId = pb['pb-voiceid'];
-  }
-
-  // Tier 3: window.opener (player opened via window.open from dashboard)
-  if (!key || !voiceId) {
-    try {
-      if (window.opener && !window.opener.closed) {
-        if (!key)     key     = window.opener.localStorage.getItem('ci_eleven_key');
-        if (!voiceId) voiceId = window.opener.localStorage.getItem('ci_voice_id');
-      }
-    } catch(e) { console.log('Cross-origin opener reading restricted.'); }
-  }
-
-  if (!key || !voiceId) {
-    console.error('❌ ELEVENLABS ABORTED: Missing API Key or Voice ID. Falling back to Browser TTS.');
-    speakBrowser(safeText);
+  if (!apiKey || !voiceId) {
+    console.warn('Missing config. Dropping to browser TTS.');
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(safeText));
     return;
-  }
-
-  // Cache guard — reuse base64 data URI if text unchanged
-  if (goalIndex !== null) {
-    try {
-      const pbRaw = localStorage.getItem('ci_pegboard');
-      const stored = pbRaw ? JSON.parse(pbRaw) : {};
-      const intentions = stored.intentions || [];
-      const cached = intentions[goalIndex];
-      if (cached && cached.title && cached.title.trim() === safeText && cached.audioBase64) {
-        new Audio(cached.audioBase64).play().catch(e => console.error('Audio cache play error:', e));
-        return;
-      }
-    } catch(err) { console.warn('Cache evaluation failed.'); }
   }
 
   if (DEV_MODE) {
@@ -191,28 +152,18 @@ async function speakText(text, goalIndex = null) {
     return;
   }
 
-  // Live ElevenLabs call
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId.trim()}`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
-      headers: { 'xi-api-key': key.trim(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: safeText,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-      })
+      headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: safeText, model_id: 'eleven_multilingual_v2' })
     });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API Rejected (${response.status}): ${errorText}`);
-    }
-    const buffer       = await response.arrayBuffer();
-    const base64String = btoa(new Uint8Array(buffer).reduce((d, b) => d + String.fromCharCode(b), ''));
-    const dataUri      = `data:audio/mp3;base64,${base64String}`;
-    new Audio(dataUri).play().catch(e => console.error('Live audio play error:', e));
+    if (!response.ok) throw new Error(`Status ${response.status}`);
+    const blob = await response.blob();
+    new Audio(URL.createObjectURL(blob)).play();
     console.log('[EL] ✓ Live audio playing.');
-  } catch(err) {
-    console.error('🚨 ElevenLabs failed — browser TTS fallback:', err.message);
+  } catch(e) {
+    console.error('API Call failed. Fallback to Browser TTS:', e);
     speakBrowser(safeText);
   }
 }
