@@ -5657,7 +5657,6 @@ function populateForm(pb) {
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
   if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
   if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
-  if (typeof syncElevenLabsStateToDOM === 'function') syncElevenLabsStateToDOM();
 }
 
 function setSpirituality(val, save = true) {
@@ -6947,8 +6946,14 @@ function speakText(text) {
   if (!text) return;
   stopSpeech();
   const pb   = getPB();
-  const eKey = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
-  const vId  = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')  || '';
+  const eKey = pb['pb-eleven']
+    || localStorage.getItem('ci_eleven_key')
+    || document.getElementById('pb-eleven')?.value?.trim()
+    || '';
+  const vId  = pb['pb-voiceid']
+    || localStorage.getItem('ci_voice_id')
+    || document.getElementById('pb-voiceid')?.value?.trim()
+    || '';
   if (eKey && vId) {
     speakElevenLabs(text, eKey, vId);
   } else {
@@ -8201,18 +8206,19 @@ function closeCountdown() {
 
 function syncElevenLabsStateToDOM() {
   const targetKey   = localStorage.getItem('ci_eleven_key') || '';
-  const targetVoice = localStorage.getItem('ci_voice_id')   || '21m00Tcm4TlvDq8ikWAM';
+  const targetVoice = localStorage.getItem('ci_voice_id')   || '';
   const keyEl   = document.getElementById('pb-eleven');
   const voiceEl = document.getElementById('pb-voiceid');
-  if (keyEl)   keyEl.value   = targetKey;
-  if (voiceEl) voiceEl.value = targetVoice;
+  if (keyEl   && targetKey)   keyEl.value   = targetKey;
+  if (voiceEl && targetVoice) voiceEl.value = targetVoice;
+  // Only write into pegboard when we have real values — never overwrite with blanks
+  if (!targetKey && !targetVoice) return;
   try {
     const raw = localStorage.getItem('ci_pegboard');
     const pb  = raw ? JSON.parse(raw) : {};
-    pb['pb-eleven']  = targetKey;
-    pb['pb-voiceid'] = targetVoice;
+    if (targetKey)   pb['pb-eleven']  = targetKey;
+    if (targetVoice) pb['pb-voiceid'] = targetVoice;
     localStorage.setItem('ci_pegboard', JSON.stringify(pb));
-    console.log('🌌 Storage Sync: Credentials anchored inside pegboard.');
   } catch(e) {
     console.error('💥 Storage Alignment Exception:', e);
   }
