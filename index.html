@@ -5696,8 +5696,8 @@ async function saveSetup() {
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
-  if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
-  if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
+  localStorage.setItem('ci_eleven_key', document.getElementById('pb-eleven').value.trim());
+  localStorage.setItem('ci_voice_id',   document.getElementById('pb-voiceid').value.trim());
   setBtnLoading('btn-save-bts', true);
   try {
     await syncProfileToSupabase(pb);
