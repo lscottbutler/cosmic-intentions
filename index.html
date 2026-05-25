@@ -4126,7 +4126,13 @@ input, textarea, select {
   background-position: center;
   transition: opacity 0.8s ease, background-image 0.8s ease;
 }
-.pb-loop-content { position: relative; z-index: 1; padding: 20px; max-width: 360px; }
+.pb-loop-content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  max-width: 360px;
+  transition: opacity 1.2s ease;
+}
 .pb-loop-label {
   font-size: 10px;
   font-weight: 700;
@@ -4141,19 +4147,6 @@ input, textarea, select {
   color: var(--text);
   line-height: 1.5;
 }
-.pb-loop-play {
-  position: absolute;
-  bottom: 10px; right: 10px;
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-}
-.pb-loop-play:hover { color: var(--accent); border-color: var(--accent); }
 
 </style>
 </head>
@@ -4439,11 +4432,10 @@ input, textarea, select {
         <!-- PEGBOARD LOOP WIDGET -->
         <div class="pb-loop-card">
           <div class="pb-loop-bg" id="pbLoopBg"></div>
-          <div class="pb-loop-content">
+          <div class="pb-loop-content" id="pbLoopContent">
             <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
             <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
           </div>
-          <button class="pb-loop-play" onclick="speakText(document.getElementById('pbLoopBody').textContent)">▶ Play</button>
         </div>
 
         <!-- WELCOME STATE -->
@@ -8274,28 +8266,34 @@ const PB_LOOP_FIELDS = [
 let pbLoopIdx = 0;
 
 function updatePbLoop() {
-  const pb    = LS.get('ci_pegboard') || {};
-  const field = PB_LOOP_FIELDS[pbLoopIdx];
-  const value = pb[field.key] || '—';
-  const imgN  = String((Math.floor(Date.now() / 86400000) + pbLoopIdx) % 25 + 1).padStart(2, '0');
-
-  const bg   = document.getElementById('pbLoopBg');
-  const lbl  = document.getElementById('pbLoopLabel');
-  const body = document.getElementById('pbLoopBody');
+  const pb      = LS.get('ci_pegboard') || {};
+  const field   = PB_LOOP_FIELDS[pbLoopIdx];
+  const value   = pb[field.key] || '—';
+  const imgN    = String((Math.floor(Date.now() / 86400000) + pbLoopIdx) % 25 + 1).padStart(2, '0');
+  const bg      = document.getElementById('pbLoopBg');
+  const content = document.getElementById('pbLoopContent');
+  const lbl     = document.getElementById('pbLoopLabel');
+  const body    = document.getElementById('pbLoopBody');
   if (!bg) return;
 
-  bg.style.opacity = '0';
+  // Fade out
+  bg.style.opacity      = '0';
+  content.style.opacity = '0';
+
   setTimeout(() => {
+    // Swap content while invisible
     bg.style.backgroundImage = `url("images/players/player-${imgN}.jpg")`;
-    bg.style.opacity = '0.25';
-    lbl.textContent  = field.label;
-    body.textContent = value;
-  }, 400);
+    lbl.textContent          = field.label;
+    body.textContent         = value;
+    // Fade in
+    bg.style.opacity      = '0.25';
+    content.style.opacity = '1';
+  }, 1200);
 
   pbLoopIdx = (pbLoopIdx + 1) % PB_LOOP_FIELDS.length;
 }
 
-setInterval(updatePbLoop, 60000);
+setInterval(updatePbLoop, 120000);
 document.addEventListener('DOMContentLoaded', updatePbLoop);
 </script>
 
