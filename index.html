@@ -22,12 +22,12 @@ body {
 
 /* ── DESIGN TOKENS ────────────────────────────────────────── */
 :root {
-  --black:  #000000;
-  --white:  #FFFFFF;
-  --off:    #F8F7F5;
-  --border: #E8E5E0;
-  --muted:  #9A948F;
-  --mid:    #5A5550;
+  --black:  #EFEFEF;
+  --white:  #1A1A1A;
+  --off:    #252525;
+  --border: #383838;
+  --muted:  #888888;
+  --mid:    #AAAAAA;
   --accent: #3D7FD4;
   --teal:   #2E8B9A;
   --green:  #5C7A5C;
@@ -47,8 +47,8 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--hdr);
-  background: #FFFFFF;
-  border-bottom: 1px solid #000000;
+  background: #1A1A1A;
+  border-bottom: 1px solid #383838;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,7 +60,7 @@ body {
   font-weight: 700;
   letter-spacing: 5px;
   text-transform: uppercase;
-  color: #000000;
+  color: #EFEFEF;
   cursor: pointer;
   user-select: none;
 }
@@ -643,8 +643,8 @@ body {
   font-size: 12px;
   font-family: inherit;
   font-weight: 600;
-  background: #fff;
-  color: #1A1A1A;
+  background: #252525;
+  color: #EFEFEF;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -1188,9 +1188,9 @@ textarea.field-input.tall { min-height: 110px; }
   line-height: 1.4;
 }
 .meditation-box {
-  background: #FFFFFF;
-  color: #000000;
-  border: 1px solid #000000;
+  background: #252525;
+  color: #EFEFEF;
+  border: 1px solid #383838;
   border-radius: var(--radius);
   padding: 16px 18px;
   font-size: 14px;
@@ -1546,15 +1546,15 @@ textarea.field-input.tall { min-height: 110px; }
   justify-content: center;
   gap: 10px;
   padding: 10px 16px;
-  background: #FFFFFF;
-  border-top: 1px solid #000000;
+  background: #252525;
+  border-top: 1px solid #383838;
   flex-shrink: 0;
 }
 .player-ctrl-btn {
   padding: 8px 14px;
-  background: #FFFFFF;
-  color: #000000;
-  border: 1px solid #000000;
+  background: #252525;
+  color: #EFEFEF;
+  border: 1px solid #383838;
   border-radius: 6px;
   font-size: 15px;
   font-weight: 600;
@@ -1577,8 +1577,8 @@ textarea.field-input.tall { min-height: 110px; }
 }
 .manifest-left {
   width: 46%;
-  background: #FFFFFF;
-  border-right: 1px solid #000000;
+  background: #252525;
+  border-right: 1px solid #383838;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2170,12 +2170,12 @@ input, textarea, select {
 .today-will-text.done { text-decoration: line-through; color: var(--muted); }
 
 .having-card {
-  background: #FFFFFF;
-  border: 1px solid #000000;
+  background: #252525;
+  border: 1px solid #383838;
   border-radius: var(--radius);
   padding: 16px;
   margin-bottom: 10px;
-  color: #000000;
+  color: #EFEFEF;
 }
 .having-label {
   font-size: 10px;
@@ -2188,7 +2188,7 @@ input, textarea, select {
 .having-text {
   font-size: 14px;
   line-height: 1.6;
-  color: #000000;
+  color: #EFEFEF;
   font-style: italic;
 }
 .having-title {
@@ -2231,8 +2231,8 @@ input, textarea, select {
   letter-spacing: 0.4px;
 }
 .effort-score-wrap {
-  background: #FFFFFF;
-  border: 1px solid #000000;
+  background: #252525;
+  border: 1px solid #383838;
   border-radius: var(--radius);
   padding: 16px;
   text-align: center;
@@ -2249,7 +2249,7 @@ input, textarea, select {
 .effort-score-num {
   font-size: 48px;
   font-weight: 800;
-  color: #000000;
+  color: #EFEFEF;
   letter-spacing: -1px;
   line-height: 1;
 }
@@ -2462,9 +2462,9 @@ input, textarea, select {
   overflow: hidden;
 }
 .home-whats-new-hdr {
-  background: #FFFFFF;
-  color: #000000;
-  border-bottom: 1px solid #000000;
+  background: #252525;
+  color: #EFEFEF;
+  border-bottom: 1px solid #383838;
   padding: 10px 16px;
   font-size: 11px;
   font-weight: 700;
@@ -2896,7 +2896,7 @@ input, textarea, select {
 ═══════════════════════════════════════════════════════ */
 
 #page-dashboard.active {
-  background: #FFFFFF;
+  background: #252525;
   min-height: calc(100vh - var(--hdr));
 }
 .vault-layout {
@@ -2908,8 +2908,8 @@ input, textarea, select {
 .vault-sidebar {
   width: 272px;
   min-width: 272px;
-  background: #F8F7F5;
-  border-right: 1px solid #E8E5E0;
+  background: #252525;
+  border-right: 1px solid #383838;
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -2939,13 +2939,13 @@ input, textarea, select {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.6px;
-  color: #1A1A1A;
+  color: #EFEFEF;
   text-transform: uppercase;
   flex: 1;
 }
 .vault-count-badge {
-  background: #EEEEEE;
-  color: #1A1A1A;
+  background: #2E2E2E;
+  color: #EFEFEF;
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
@@ -2975,8 +2975,8 @@ input, textarea, select {
 /* ── GRAND GAUGE (Progress Bar) ─────────────────────── */
 .vault-grand-gauge {
   padding: 14px 14px 12px;
-  border-top: 1px solid #E8E5E0;
-  background: #F8F7F5;
+  border-top: 1px solid #383838;
+  background: #252525;
 }
 .vgg-header {
   display: flex;
@@ -3006,7 +3006,7 @@ input, textarea, select {
 .vgg-bar-track {
   flex: 1;
   height: 8px;
-  background: #E8E5E0;
+  background: #383838;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -3021,7 +3021,7 @@ input, textarea, select {
   font-family: var(--vault-mono);
   font-size: 13px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: #EFEFEF;
   white-space: nowrap;
   min-width: 38px;
   text-align: right;
@@ -3037,15 +3037,15 @@ input, textarea, select {
 .vault-gauge-tasks { font-family: var(--vault-mono); }
 
 /* Blueprint sidebar header override */
-.vault-sidebar-hd { background: #F8F7F5; }
+.vault-sidebar-hd { background: #252525; }
 .vault-title-txt {
   font-size: 9px;
   letter-spacing: 2px;
-  color: #1A1A1A;
+  color: #EFEFEF;
 }
 .vault-count-badge {
   font-family: var(--vault-mono);
-  background: #EEEEEE;
+  background: #2E2E2E;
   border: 1px solid #CCCCCC;
 }
 
@@ -3073,9 +3073,9 @@ input, textarea, select {
   border-bottom: 1px solid #EEEEEE;
   padding: 11px 20px 9px;
 }
-.bs-tabs { background: #FFFFFF; border-bottom: 1px solid #E8E5E0; }
+.bs-tabs { background: #252525; border-bottom: 1px solid #E8E5E0; }
 .bs-tab  { font-family: var(--vault-mono); font-size: 10px; letter-spacing: 1px; }
-.bs-dates { background: #FFFFFF; }
+.bs-dates { background: #252525; }
 
 /* Category filters */
 .vault-cats {
@@ -3175,7 +3175,7 @@ input, textarea, select {
   text-overflow: ellipsis;
   line-height: 1.4;
 }
-.vault-item.selected .vault-item-title { color: #000000; }
+.vault-item.selected .vault-item-title { color: #EFEFEF; }
 .vault-item-meta { display: none; }
 .vault-item-dates {
   display: flex;
@@ -3230,28 +3230,28 @@ input, textarea, select {
 
 .vault-add-wrap {
   padding: 10px 0 0;
-  border-top: 1px solid #E8E5E0;
+  border-top: 1px solid #383838;
 }
 .vault-add-btn {
   width: 100%;
   padding: 9px;
-  background: #FFFFFF;
-  border: 1px solid #000000;
+  background: #252525;
+  border: 1px solid #383838;
   border-radius: 8px;
-  color: #000000;
+  color: #EFEFEF;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
 }
-.vault-add-btn:hover { border-color: #000000; background: #F8F7F5; }
+.vault-add-btn:hover { border-color: #EFEFEF; background: #252525; }
 
 /* ── VAULT MAIN ────────────────────────────────────── */
 .vault-main {
   flex: 1;
   min-width: 0;
-  background: #FFFFFF;
+  background: #252525;
   overflow-y: auto;
   padding: 16px 20px;
 }
@@ -3272,7 +3272,7 @@ input, textarea, select {
 .vault-welcome-title {
   font-family: 'Dancing Script', cursive;
   font-size: 34px;
-  color: #1A1A1A;
+  color: #EFEFEF;
   margin-bottom: 8px;
   line-height: 1.2;
 }
@@ -3289,7 +3289,7 @@ input, textarea, select {
   margin-bottom: 24px;
 }
 .vault-stat {
-  background: #FFFFFF;
+  background: #252525;
   border: 1px solid #EEEEEE;
   border-radius: 10px;
   padding: 14px 8px;
@@ -3298,7 +3298,7 @@ input, textarea, select {
 .vs-num {
   font-size: 22px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: #EFEFEF;
   line-height: 1;
 }
 .vs-lbl {
@@ -3316,23 +3316,23 @@ input, textarea, select {
 .vault-qbtn {
   padding: 10px 16px;
   border-radius: 8px;
-  background: #FFFFFF;
-  border: 1px solid #000000;
-  color: #1A1A1A;
+  background: #252525;
+  border: 1px solid #383838;
+  color: #EFEFEF;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
 }
-.vault-qbtn:hover { background: #F8F7F5; border-color: #000000; color: #000000; }
-.vault-qbtn.accent { background: #000000; border-color: #000000; color: #fff; }
+.vault-qbtn:hover { background: #252525; border-color: #EFEFEF; color: #EFEFEF; }
+.vault-qbtn.accent { background: #000000; border-color: #EFEFEF; color: #fff; }
 .vault-qbtn.accent:hover { opacity: 0.88; }
 
 /* Add form (vault style) */
 .vault-add-form { padding: 24px 32px; max-width: 580px; margin: 0 auto; }
 .vault-add-form-inner {
-  background: #FFFFFF;
+  background: #252525;
   border: 1px solid #E8E5E0;
   border-radius: 12px;
   padding: 20px;
@@ -3348,12 +3348,12 @@ input, textarea, select {
 .vaf-input {
   width: 100%;
   padding: 12px 14px;
-  background: #FFFFFF;
-  border: 1px solid #000000;
+  background: #252525;
+  border: 1px solid #383838;
   border-radius: 8px;
   font-size: 15px;
   font-family: inherit;
-  color: #1A1A1A;
+  color: #EFEFEF;
   outline: none;
   margin-bottom: 12px;
   transition: border-color 0.15s;
@@ -3372,7 +3372,7 @@ input, textarea, select {
   font-family: inherit;
   transition: all 0.15s;
 }
-.vaf-cancel:hover { border-color: #888888; color: #1A1A1A; }
+.vaf-cancel:hover { border-color: #888888; color: #EFEFEF; }
 .vaf-confirm {
   flex: 1;
   padding: 10px;
@@ -3422,7 +3422,7 @@ input, textarea, select {
 .bs-intention-title {
   font-size: 20px;
   font-weight: 400;
-  color: #000000;
+  color: #EFEFEF;
   line-height: 1.3;
   letter-spacing: -0.2px;
   text-align: left;
@@ -3449,7 +3449,7 @@ input, textarea, select {
   background: rgba(0,0,0,0.06);
   border: 1px solid rgba(0,0,0,0.3);
   border-radius: 20px;
-  color: #000000;
+  color: #EFEFEF;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -3491,7 +3491,7 @@ input, textarea, select {
 .bs-date-field {
   flex: 1;
   padding: 10px 16px;
-  background: #FFFFFF;
+  background: #252525;
 }
 .bs-date-field label {
   display: block;
@@ -3505,20 +3505,20 @@ input, textarea, select {
 .bs-date-field input[type="date"] {
   background: transparent;
   border: none;
-  color: #1A1A1A;
+  color: #EFEFEF;
   font-size: 11px;
   font-family: inherit;
   outline: none;
   cursor: pointer;
   padding: 0;
   width: 100%;
-  -webkit-text-fill-color: #1A1A1A;
+  -webkit-text-fill-color: #EFEFEF;
 }
 .bs-date-field input[type="date"]::-webkit-datetime-edit-text,
 .bs-date-field input[type="date"]::-webkit-datetime-edit-month-field,
 .bs-date-field input[type="date"]::-webkit-datetime-edit-day-field,
 .bs-date-field input[type="date"]::-webkit-datetime-edit-year-field {
-  color: #1A1A1A;
+  color: #EFEFEF;
 }
 .bs-date-field input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.4;
@@ -3532,7 +3532,7 @@ input, textarea, select {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 10px;
-  background: #FFFFFF;
+  background: #252525;
   border-bottom: 1px solid #E8E5E0;
 }
 .bs-tab {
@@ -3550,7 +3550,7 @@ input, textarea, select {
   font-family: inherit;
   text-align: center;
 }
-.bs-tab:hover { color: #1A1A1A; }
+.bs-tab:hover { color: #EFEFEF; }
 .bs-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
 .bs-panel { display: none; }
@@ -3668,11 +3668,11 @@ input, textarea, select {
 .bs-attitude-card {
   margin: 5px 20px;
   padding: 12px 14px;
-  background: #F8F7F5;
+  background: #252525;
   border: 1px solid #E8E5E0;
   border-radius: 8px;
 }
-.bs-attitude-title { font-size: 13px; font-weight: 700; color: #1A1A1A; margin-bottom: 3px; }
+.bs-attitude-title { font-size: 13px; font-weight: 700; color: #EFEFEF; margin-bottom: 3px; }
 .bs-attitude-body  { font-size: 12px; color: #5A5550; line-height: 1.5; }
 .bs-meditation-box {
   margin: 5px 20px 14px;
@@ -3734,7 +3734,7 @@ input, textarea, select {
 .bs-nav-row { display: flex; gap: 7px; }
 .bs-nav-btn {
   padding: 7px 11px;
-  background: #FFFFFF;
+  background: #252525;
   border: 1px solid #CCCCCC;
   border-radius: 6px;
   color: #5A5550;
@@ -3743,7 +3743,7 @@ input, textarea, select {
   font-family: inherit;
   transition: all 0.15s;
 }
-.bs-nav-btn:hover { border-color: #888888; color: #1A1A1A; }
+.bs-nav-btn:hover { border-color: #888888; color: #EFEFEF; }
 
 /* ── MOBILE ─────────────────────────────────────────── */
 @media (max-width: 760px) {
@@ -3947,7 +3947,7 @@ input, textarea, select {
 }
 .arsenal-progress-fill {
   height: 100%;
-  background: #FFFFFF;
+  background: #252525;
   border-radius: 2px;
   width: 0%;
   pointer-events: none;
@@ -3981,7 +3981,7 @@ input, textarea, select {
   width: 66px;
   height: 66px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: #252525;
   border: none;
   display: flex;
   align-items: center;
@@ -4002,8 +4002,8 @@ input, textarea, select {
   margin-top: 8px;
   padding: 9px 12px;
   background: transparent;
-  border: 1px solid #000000;
-  color: #000000;
+  border: 1px solid #383838;
+  color: #EFEFEF;
   font-family: 'Courier New', monospace;
   font-size: 10px;
   letter-spacing: 2px;
@@ -4091,9 +4091,9 @@ input, textarea, select {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: #252525;
   border: none;
-  color: #000000;
+  color: #EFEFEF;
   font-size: 22px;
   cursor: pointer;
   display: flex;
@@ -7597,7 +7597,7 @@ function buildBuildSheet(intent, idx) {
   const nextIdx    = idx < intentions.length - 1 ? idx + 1 : null;
 
   return `
-    <div class="bs-header" style="background: #FFFFFF; border: 4px solid ${color}; border-radius: 10px; position: relative;">
+    <div class="bs-header" style="background: #252525; border: 4px solid ${color}; border-radius: 10px; position: relative;">
       <div class="bs-title-col">
         <div class="bs-intention-title">${esc(intent.title)}</div>
       </div>
