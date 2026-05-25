@@ -7614,8 +7614,17 @@ function buildBuildSheet(intent, idx) {
         <button class="card-timer-btn" onclick="launchVisualCountdown(30,${idx})"><img src="images/icons/30-seconds-button.png" alt="30 sec"></button>
         <button class="card-timer-btn" onclick="launchVisualCountdown(15,${idx})"><img src="images/icons/15-seconds-button.png" alt="15 sec"></button>
       </div>
+      <div style="display:flex;justify-content:center;margin-top:10px;">
+        <button class="card-timer-btn" onclick="launchPlayer('countdown')"><img src="images/icons/viz-button.png" alt="Countdown"></button>
+      </div>
     </div>
 
+
+    <div style="background:#3b82f6;color:#fff;text-align:center;font-weight:700;font-size:12px;letter-spacing:0.12em;padding:10px 0;">VISUALIZATIONS</div>
+    <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('viz-3min')">3 MIN<br>VISUALIZATION</button>
+      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('viz-10min')">10 MIN<br>VISUALIZATION</button>
+    </div>
 
     <div style="background:#f59e0b;color:#fff;text-align:center;font-weight:700;font-size:12px;letter-spacing:0.12em;padding:10px 0;">MEDITATIONS</div>
     <div style="padding:18px 20px 16px;">
@@ -7629,13 +7638,8 @@ function buildBuildSheet(intent, idx) {
 
     <div style="background:#ec4899;color:#fff;text-align:center;font-weight:700;font-size:12px;letter-spacing:0.12em;padding:10px 0;">BANNER 3</div>
     <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('viz-3min')">3 MIN<br>VISUALIZATION</button>
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('viz-10min')">10 MIN<br>VISUALIZATION</button>
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('countdown')">COUNTDOWN</button>
       <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('gratitude')">GRATITUDE</button>
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('pegboard-loop')">PEGBOARD LOOP</button>
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('slideshow')">SLIDESHOW</button>
-      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="launchPlayer('video')">VIDEO</button>
+      <button style="background:#000;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;" onclick="closeVaultBuildSheet();navTo('setup')">PEGBOARD</button>
     </div>
 
     <div style="background:#8b5cf6;color:#fff;text-align:center;font-weight:700;font-size:12px;letter-spacing:0.12em;padding:10px 0;">BANNER 4</div>
