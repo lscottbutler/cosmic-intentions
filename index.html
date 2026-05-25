@@ -4636,10 +4636,10 @@ input, textarea, select {
         <div class="setup-section-title">Voice Settings (Optional)</div>
 
         <div class="field-group">
-          <label class="field-label" for="pb-eleven">OpenAI API Key</label>
+          <label class="field-label" for="openai_api_key">OpenAI API Key</label>
           <span class="field-hint">For AI-voiced visualization sessions. Leave blank to use browser voice.</span>
-          <input class="field-input" type="password" id="pb-eleven" placeholder="sk-..." autocomplete="off"
-            oninput="const v=this.value.trim();if(v){localStorage.setItem('openai_api_key',v);console.log('✓ openai_api_key written:',v.slice(0,8)+'...');}" />
+          <input class="field-input" type="password" id="openai_api_key" placeholder="sk-..." autocomplete="off"
+            oninput="const v=this.value.trim();if(v)localStorage.setItem('openai_api_key',v);" />
         </div>
       </div>
 
@@ -5629,7 +5629,7 @@ const PB_FIELDS = [
   'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
-  'pb-eleven','pb-voiceid'
+  'openai_api_key'
 ];
 
 function readFormToPB() {
@@ -5648,8 +5648,7 @@ function populateForm(pb) {
     if (el && pb[id] !== undefined) el.value = pb[id];
   });
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
-  if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
-  if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
+  if (pb['openai_api_key']) localStorage.setItem('openai_api_key', pb['openai_api_key']);
 }
 
 function setSpirituality(val, save = true) {
@@ -5673,7 +5672,7 @@ async function saveSetup() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
   LS.set('ci_spirituality', pb['spirituality'] || '');
-  localStorage.setItem('openai_api_key', document.getElementById('pb-eleven').value.trim());
+  localStorage.setItem('openai_api_key', document.getElementById('openai_api_key').value.trim());
   setBtnLoading('btn-save-setup', true);
   try {
     await syncProfileToSupabase(pb);
@@ -5688,7 +5687,7 @@ async function saveSetup() {
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
-  localStorage.setItem('openai_api_key', document.getElementById('pb-eleven').value.trim());
+  localStorage.setItem('openai_api_key', document.getElementById('openai_api_key').value.trim());
   setBtnLoading('btn-save-bts', true);
   try {
     await syncProfileToSupabase(pb);
@@ -5728,8 +5727,7 @@ async function syncProfileToSupabase(pb) {
     bts_obstacles: pb['bts-obstacles'] || '',
     bts_why:       pb['bts-why']       || '',
     bts_context:   pb['bts-context']   || '',
-    pb_eleven:     pb['pb-eleven']     || '',
-    pb_voiceid:    pb['pb-voiceid']    || '',
+    openai_api_key: pb['openai_api_key'] || '',
     spirituality:  pb['spirituality']  || ''
   };
   const { error } = await sb.from('profiles').upsert(payload);
@@ -5767,16 +5765,13 @@ async function syncFromSupabase() {
       'bts-authors':   data.bts_authors   || '',
       'bts-obstacles': data.bts_obstacles || '',
       'bts-why':       data.bts_why       || '',
-      'bts-context':   data.bts_context   || '',
-      'pb-eleven':     data.pb_eleven     || '',
-      'pb-voiceid':    data.pb_voiceid    || '',
-      'spirituality':  data.spirituality  || ''
+      'bts-context':    data.bts_context    || '',
+      'openai_api_key': data.openai_api_key || '',
+      'spirituality':   data.spirituality   || ''
     };
     LS.set('ci_pegboard', pb);
     LS.set('ci_spirituality', pb['spirituality']);
-    // Bridge voice keys immediately after Supabase sync so players always read fresh credentials
-    if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
-    if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
+    if (pb['openai_api_key']) localStorage.setItem('openai_api_key', pb['openai_api_key']);
     populateForm(pb);
 
     // Free test access — all signed-in users treated as members
@@ -6311,7 +6306,6 @@ async function confirmAddIntention() {
 
   hideAddForm();
   await saveIntentions();
-  generateIntentionAudio(intentions.length - 1);
   renderDashboard();
   selectVaultIntention(intentions.length - 1);
   toast('Intention added ✓', 'success');
@@ -6385,7 +6379,6 @@ async function pbConfirmAddIntention() {
   if (startEl)  startEl.value  = '';
   if (targetEl) targetEl.value = '';
   await saveIntentions();
-  generateIntentionAudio(intentions.length - 1);
   renderPBIntentionList();
   renderVaultSidebar();
   toast('Intention added ✓', 'success');
@@ -6397,79 +6390,8 @@ async function pbSaveIntentionTitle(idx, newTitle) {
   intentions[idx].title = t;
   await saveIntentions();
   renderVaultSidebar();
-  generateIntentionAudio(idx);
 }
 
-/* ─────────────────────────────────────────────────────────
-   ELEVENLABS — MARGIN-PROTECTED AUDIO GENERATION
-   Rules: cache reuse · 150-char input · 3-gen throttle · DEV_MODE stub
-───────────────────────────────────────────────────────── */
-async function generateIntentionAudio(idx) {
-  const intention = intentions[idx];
-  if (!intention) return;
-
-  const text = intention.title.trim();
-
-  // Rule 3: zero-token reuse — text unchanged and valid cache exists
-  if (intention.audioText === text && intention.audioBase64) {
-    console.log(`[EL] slot ${idx}: cache hit — $0.00`);
-    return;
-  }
-
-  // Rule 4: throttle — more than 3 generations → browser TTS fallback
-  const genCount = intention.generation_count || 0;
-  if (genCount >= 3) {
-    console.warn(`[EL] slot ${idx}: gen limit (${genCount}/3) — browser TTS fallback`);
-    speakBrowser(text);
-    return;
-  }
-
-  const pb   = getPB();
-  const eKey = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
-  const vId  = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')  || '';
-
-  if (!eKey || !vId) {
-    speakBrowser(text);
-    return;
-  }
-
-  try {
-    let audioBase64;
-
-    if (DEV_MODE) {
-      // Rule 5: simulate latency + mock base64 stream, never hits live API
-      await new Promise(r => setTimeout(r, 900));
-      audioBase64 = btoa('MOCK_EL_AUDIO::' + text.slice(0, 30));
-      console.log(`[EL-DEV] slot ${idx}: mock audio ready`);
-    } else {
-      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'xi-api-key': eKey },
-        body: JSON.stringify({
-          text,
-          model_id: 'eleven_multilingual_v2',
-          voice_settings: { stability: 0.65, similarity_boost: 0.8 }
-        })
-      });
-      if (!res.ok) throw new Error(`EL API ${res.status}`);
-      const buf   = await res.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-      let binary  = '';
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      audioBase64 = btoa(binary);
-    }
-
-    intention.audioBase64      = audioBase64;
-    intention.audioText        = text;
-    intention.generation_count = genCount + 1;
-    await saveIntentions();
-    console.log(`[EL] slot ${idx}: cached (gen ${intention.generation_count}/3)`);
-
-  } catch(e) {
-    console.warn('[EL] generateIntentionAudio failed:', e.message);
-    speakBrowser(text);
-  }
-}
 
 async function pbDeleteIntention(idx) {
   if (!confirm(`Remove "${intentions[idx]?.title}"?`)) { renderPBIntentionList(); return; }
@@ -6946,8 +6868,7 @@ async function speakText(text) {
   stopSpeech();
   const safeText = text.trim().substring(0, 150);
   const apiKey   = localStorage.getItem('openai_api_key')
-    || getPB()['pb-eleven']
-    || document.getElementById('pb-eleven')?.value.trim()
+    || document.getElementById('openai_api_key')?.value.trim()
     || null;
 
   if (!apiKey) {
@@ -7443,7 +7364,7 @@ const PB_FIELDS_DEF = [
   'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
-  'pb-eleven','pb-voiceid'
+  'openai_api_key'
 ];
 
 /* ─────────────────────────────────────────────────────────
@@ -8178,52 +8099,6 @@ function closeCountdown() {
   document.getElementById('countdownOverlay').classList.remove('open');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ELEVENLABS VOICE AUTO-CONFIGURATION
-   ═══════════════════════════════════════════════════════════════ */
-
-function syncElevenLabsStateToDOM() {
-  const targetKey   = localStorage.getItem('ci_eleven_key') || '';
-  const targetVoice = localStorage.getItem('ci_voice_id')   || '';
-  const keyEl   = document.getElementById('pb-eleven');
-  const voiceEl = document.getElementById('pb-voiceid');
-  if (keyEl   && targetKey)   keyEl.value   = targetKey;
-  if (voiceEl && targetVoice) voiceEl.value = targetVoice;
-  // Only write into pegboard when we have real values — never overwrite with blanks
-  if (!targetKey && !targetVoice) return;
-  try {
-    const raw = localStorage.getItem('ci_pegboard');
-    const pb  = raw ? JSON.parse(raw) : {};
-    if (targetKey)   pb['pb-eleven']  = targetKey;
-    if (targetVoice) pb['pb-voiceid'] = targetVoice;
-    localStorage.setItem('ci_pegboard', JSON.stringify(pb));
-  } catch(e) {
-    console.error('💥 Storage Alignment Exception:', e);
-  }
-}
-
-function forceManualElevenLabsSave(keyString, voiceString) {
-  const cleanKey   = (keyString   || '').trim();
-  const cleanVoice = (voiceString || '').trim();
-  if (cleanKey)   localStorage.setItem('ci_eleven_key', cleanKey);
-  if (cleanVoice) localStorage.setItem('ci_voice_id',   cleanVoice);
-  syncElevenLabsStateToDOM();
-}
-
-(function() {
-  // Boot bridge: pb profile → raw LS keys, with raw LS as fallback
-  try {
-    const raw = localStorage.getItem('ci_pegboard');
-    const pb  = raw ? JSON.parse(raw) : {};
-    const key = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
-    const vid = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')   || '';
-    if (key) localStorage.setItem('ci_eleven_key', key);
-    if (vid) localStorage.setItem('ci_voice_id',   vid);
-    console.log('✓ ElevenLabs:', key ? 'API Key SET' : 'No key — enter in My Pegboard > Voice Settings');
-  } catch(e) {
-    console.error('ElevenLabs config failed:', e);
-  }
-})();
 
 /* ═══════════════════════════════════════════════════════════════
    PLAYER LAUNCHER FUNCTIONS

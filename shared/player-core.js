@@ -76,11 +76,11 @@ function getOpenAIKey() {
         key = window.opener.localStorage.getItem('openai_api_key');
     } catch(e) {}
   }
-  // 3. ci_pegboard pb-eleven field
+  // 3. ci_pegboard openai_api_key field
   if (!key) {
     try {
       const pb = JSON.parse(localStorage.getItem('ci_pegboard') || '{}');
-      key = pb['pb-eleven'] || null;
+      key = pb['openai_api_key'] || null;
     } catch(e) {}
   }
   return key ? key.trim() : null;
