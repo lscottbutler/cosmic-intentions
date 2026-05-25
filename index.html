@@ -4423,6 +4423,7 @@ input, textarea, select {
             <div class="vaf-label">New I AM Statement</div>
             <input type="text" id="newIntentionInput" class="vaf-input"
               placeholder="I AM a financially free entrepreneur..."
+              maxlength="150"
               onkeydown="if(event.key==='Enter')confirmAddIntention()" />
             <div class="vaf-btns">
               <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
@@ -4494,7 +4495,7 @@ input, textarea, select {
         <div id="pbIntentionList" style="margin-bottom:10px;"></div>
         <div id="pbAddIntentionRow">
           <input type="text" id="pbNewIntentionInput" class="field-input"
-            placeholder="I AM …" style="margin-bottom:10px;" />
+            placeholder="I AM …" style="margin-bottom:10px;" maxlength="150" />
           <div class="pb-add-dates-row">
             <div class="pb-add-date-field">
               <label class="field-label" style="font-size:10px;margin-bottom:4px;">Started</label>
@@ -5171,7 +5172,7 @@ input, textarea, select {
 
   <!-- Hero vision-still frame (portrait center-stage) -->
   <div class="arsenal-hero-frame">
-    <img id="arsenalHeroImg0" class="arsenal-hero-img" alt="" src="images/shutterstock_584993260%20%5BConverted%5D.jpg" style="opacity:1" />
+    <img id="arsenalHeroImg0" class="arsenal-hero-img" alt="" src="" style="opacity:0" />
     <img id="arsenalHeroImg1" class="arsenal-hero-img" alt="" style="opacity:0" />
   </div>
 
@@ -5675,6 +5676,9 @@ async function saveSetup() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
   LS.set('ci_spirituality', pb['spirituality'] || '');
+  // Bridge voice keys so all players read the latest values immediately
+  if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
+  if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
   setBtnLoading('btn-save-setup', true);
   try {
     await syncProfileToSupabase(pb);
@@ -5689,6 +5693,8 @@ async function saveSetup() {
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
+  if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
+  if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
   setBtnLoading('btn-save-bts', true);
   try {
     await syncProfileToSupabase(pb);
@@ -6294,7 +6300,7 @@ function hideAddForm() {
 }
 
 async function confirmAddIntention() {
-  let title = document.getElementById('newIntentionInput')?.value.trim();
+  let title = document.getElementById('newIntentionInput')?.value.trim().slice(0, 150);
   if (!title) { toast('Enter your intention.', 'error'); return; }
   if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
 
@@ -6308,6 +6314,7 @@ async function confirmAddIntention() {
 
   hideAddForm();
   await saveIntentions();
+  generateIntentionAudio(intentions.length - 1);
   renderDashboard();
   selectVaultIntention(intentions.length - 1);
   toast('Intention added ✓', 'success');
@@ -6340,6 +6347,7 @@ function renderPBIntentionList() {
       <div class="pb-intention-text" contenteditable="true"
         onblur="pbSaveIntentionTitle(${idx}, this.textContent)"
         onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+        oninput="if(this.textContent.length>150){const s=window.getSelection();this.textContent=this.textContent.slice(0,150);s.collapse(this.firstChild||this,Math.min(150,(this.firstChild||this).length||0));}"
         style="flex:1;min-width:0;"
       >${esc(i.title)}</div>
       <button class="pb-intention-del" onclick="pbDeleteIntention(${idx})" title="Remove">✕</button>
@@ -6364,7 +6372,7 @@ async function pbConfirmAddIntention() {
   const targetEl = document.getElementById('pbNewTargetDate');
   const catEl    = document.getElementById('pbNewCategory');
   if (!inp) return;
-  let title = inp.value.trim();
+  let title = inp.value.trim().slice(0, 150);
   if (!title) { toast('Enter your intention.', 'error'); return; }
   if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
   intentions.push({
@@ -6380,17 +6388,90 @@ async function pbConfirmAddIntention() {
   if (startEl)  startEl.value  = '';
   if (targetEl) targetEl.value = '';
   await saveIntentions();
+  generateIntentionAudio(intentions.length - 1);
   renderPBIntentionList();
   renderVaultSidebar();
   toast('Intention added ✓', 'success');
 }
 
 async function pbSaveIntentionTitle(idx, newTitle) {
-  const t = newTitle.trim();
+  const t = newTitle.trim().slice(0, 150);
   if (!t || !intentions[idx] || intentions[idx].title === t) return;
   intentions[idx].title = t;
   await saveIntentions();
   renderVaultSidebar();
+  generateIntentionAudio(idx);
+}
+
+/* ─────────────────────────────────────────────────────────
+   ELEVENLABS — MARGIN-PROTECTED AUDIO GENERATION
+   Rules: cache reuse · 150-char input · 3-gen throttle · DEV_MODE stub
+───────────────────────────────────────────────────────── */
+async function generateIntentionAudio(idx) {
+  const intention = intentions[idx];
+  if (!intention) return;
+
+  const text = intention.title.trim();
+
+  // Rule 3: zero-token reuse — text unchanged and valid cache exists
+  if (intention.audioText === text && intention.audioBase64) {
+    console.log(`[EL] slot ${idx}: cache hit — $0.00`);
+    return;
+  }
+
+  // Rule 4: throttle — more than 3 generations → browser TTS fallback
+  const genCount = intention.generation_count || 0;
+  if (genCount >= 3) {
+    console.warn(`[EL] slot ${idx}: gen limit (${genCount}/3) — browser TTS fallback`);
+    speakBrowser(text);
+    return;
+  }
+
+  const pb   = getPB();
+  const eKey = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
+  const vId  = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')  || '';
+
+  if (!eKey || !vId) {
+    speakBrowser(text);
+    return;
+  }
+
+  try {
+    let audioBase64;
+
+    if (DEV_MODE) {
+      // Rule 5: simulate latency + mock base64 stream, never hits live API
+      await new Promise(r => setTimeout(r, 900));
+      audioBase64 = btoa('MOCK_EL_AUDIO::' + text.slice(0, 30));
+      console.log(`[EL-DEV] slot ${idx}: mock audio ready`);
+    } else {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'xi-api-key': eKey },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.65, similarity_boost: 0.8 }
+        })
+      });
+      if (!res.ok) throw new Error(`EL API ${res.status}`);
+      const buf   = await res.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      let binary  = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      audioBase64 = btoa(binary);
+    }
+
+    intention.audioBase64      = audioBase64;
+    intention.audioText        = text;
+    intention.generation_count = genCount + 1;
+    await saveIntentions();
+    console.log(`[EL] slot ${idx}: cached (gen ${intention.generation_count}/3)`);
+
+  } catch(e) {
+    console.warn('[EL] generateIntentionAudio failed:', e.message);
+    speakBrowser(text);
+  }
 }
 
 async function pbDeleteIntention(idx) {
@@ -6857,9 +6938,9 @@ function stopSpeech() {
 function speakText(text) {
   if (!text) return;
   stopSpeech();
-  const pb      = getPB();
-  const eKey    = pb['pb-eleven']  || '';
-  const vId     = pb['pb-voiceid'] || '';
+  const pb   = getPB();
+  const eKey = pb['pb-eleven']  || localStorage.getItem('ci_eleven_key') || '';
+  const vId  = pb['pb-voiceid'] || localStorage.getItem('ci_voice_id')  || '';
   if (eKey && vId) {
     speakElevenLabs(text, eKey, vId);
   } else {
@@ -6883,17 +6964,23 @@ async function speakElevenLabs(text, apiKey, voiceId) {
       headers: { 'Content-Type': 'application/json', 'xi-api-key': apiKey },
       body: JSON.stringify({
         text,
-        model_id: 'eleven_monolingual_v1',
+        model_id: 'eleven_multilingual_v2',
         voice_settings: { stability: 0.65, similarity_boost: 0.8 }
       })
     });
     if (!res.ok) { speakBrowser(text); return; }
-    const blob  = await res.blob();
-    const url   = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.play();
-    audio.onended = () => URL.revokeObjectURL(url);
-  } catch { speakBrowser(text); }
+    const blob = await res.blob();
+    // Isolated audio setup — network errors above never reach here
+    try {
+      const url   = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.play();
+      audio.onended = () => URL.revokeObjectURL(url);
+    } catch(audioErr) {
+      console.warn('[EL] audio playback failed:', audioErr.message);
+      speakBrowser(text);
+    }
+  } catch(e) { speakBrowser(text); }
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -7012,7 +7099,7 @@ function launchArsenal(mode) {
     if (el) { el.src = ''; el.style.opacity = '0'; el.classList.remove('kb-active'); }
   });
   const heroDefault = document.getElementById('arsenalHeroImg0');
-  if (heroDefault) { heroDefault.src = 'images/shutterstock_584993260%20%5BConverted%5D.jpg'; heroDefault.style.opacity = '1'; }
+  if (heroDefault) { heroDefault.src = ''; heroDefault.style.opacity = '0'; }
 
   const fill = document.getElementById('arsenalProgressFill');
   if (fill) fill.style.width = '0%';
@@ -7065,11 +7152,23 @@ function arsenalUpdateText(instant) {
   }
 }
 
+// Strip brackets and URL-encoded equivalents (%5B %5D %20) from any image path
+function sanitizeImageSrc(src) {
+  if (!src) return '';
+  return src
+    .replace(/%5B/gi, '').replace(/%5D/gi, '')
+    .replace(/%20/g, '-')
+    .replace(/[\[\]]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/[^a-zA-Z0-9_.\/:\-]/g, '')
+    .toLowerCase();
+}
+
 function arsenalLoadImage(n) {
   if (arsenalState.paused) return;
   const idx    = ((n - 1) % 13) + 1;
   const numStr = String(idx).padStart(5, '0');
-  const src    = `./vision_stills/scene${numStr}.jpg`;
+  const src    = sanitizeImageSrc(`./vision_stills/scene${numStr}.jpg`);
   const active = arsenalState.activeImg;
   const next   = 1 - active;
   const nextEl     = document.getElementById(`arsenalImg${next}`);
@@ -7100,7 +7199,7 @@ function arsenalLoadImage(n) {
       arsenalUpdateText(false);
       const nextIdx    = (idx % 13) + 1;
       const nextNumStr = String(nextIdx).padStart(5, '0');
-      const nextSrc    = `./vision_stills/scene${nextNumStr}.jpg`;
+      const nextSrc    = sanitizeImageSrc(`./vision_stills/scene${nextNumStr}.jpg`);
       const preload    = new Image();
       preload.onload = () => {
         if (arsenalState.paused) return;
@@ -8092,11 +8191,21 @@ function closeCountdown() {
    ELEVENLABS VOICE AUTO-CONFIGURATION
    ═══════════════════════════════════════════════════════════════ */
 (function() {
-  // Auto-configure ElevenLabs on page load
+  // Unified credential bridge: pb profile → raw LS keys (priority), with raw LS as fallback
   try {
-    localStorage.setItem('ci_eleven_key', 'sk_f8764941fa24334ab38693da5b07813c0f83ca1ab2a5a0fe');
-    localStorage.setItem('ci_voice_id', '1U02n4nD6AdIZ9CjF053');
-    console.log('✓ ElevenLabs configured:', localStorage.getItem('ci_eleven_key') ? 'API Key SET' : 'FAILED');
+    const raw = localStorage.getItem('ci_pegboard');
+    const pb  = raw ? JSON.parse(raw) : {};
+    // Priority 1: nested profile object
+    const pbKey = pb['pb-eleven']  || '';
+    const pbVid = pb['pb-voiceid'] || '';
+    // Priority 2: raw global localStorage strings
+    const lsKey = localStorage.getItem('ci_eleven_key') || '';
+    const lsVid = localStorage.getItem('ci_voice_id')   || '';
+    const key = pbKey || lsKey;
+    const vid = pbVid || lsVid;
+    if (key) localStorage.setItem('ci_eleven_key', key);
+    if (vid) localStorage.setItem('ci_voice_id',   vid);
+    console.log('✓ ElevenLabs:', key ? 'API Key SET' : 'No key — enter in My Pegboard > Voice Settings');
   } catch(e) {
     console.error('ElevenLabs config failed:', e);
   }
