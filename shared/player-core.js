@@ -60,17 +60,32 @@ function stopSpeech() {
   try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) {}
 }
 
+function getElevenLabsCreds(config = {}) {
+  // Priority 1: explicitly passed config
+  if (config.elevenLabsKey && config.elevenLabsVoice) {
+    return { apiKey: config.elevenLabsKey, voiceId: config.elevenLabsVoice };
+  }
+  // Priority 2: raw localStorage keys (set by dashboard bridge)
+  const lsKey = localStorage.getItem('ci_eleven_key') || '';
+  const lsVid = localStorage.getItem('ci_voice_id')   || '';
+  if (lsKey && lsVid) return { apiKey: lsKey, voiceId: lsVid };
+  // Priority 3: parse ci_pegboard directly — works even if dashboard bridge hasn't run
+  try {
+    const raw = localStorage.getItem('ci_pegboard');
+    const pb  = raw ? JSON.parse(raw) : {};
+    const pbKey = pb['pb-eleven']  || '';
+    const pbVid = pb['pb-voiceid'] || '';
+    if (pbKey && pbVid) return { apiKey: pbKey, voiceId: pbVid };
+  } catch(e) {}
+  return { apiKey: '', voiceId: '' };
+}
+
 function speakText(text, config = {}) {
   if (!text) return;
   stopSpeech();
-  
-  // Check for ElevenLabs API key & voice ID in config or localStorage
   try {
-    const apiKey  = config.elevenLabsKey  || localStorage.getItem('ci_eleven_key') || '';
-    const voiceId = config.elevenLabsVoice || localStorage.getItem('ci_voice_id')  || '';
-    
+    const { apiKey, voiceId } = getElevenLabsCreds(config);
     console.log('🎤 ElevenLabs Check:', { apiKey: apiKey ? 'SET' : 'MISSING', voiceId: voiceId || 'MISSING' });
-    
     if (apiKey && voiceId) {
       speakElevenLabs(text, apiKey, voiceId);
     } else {
