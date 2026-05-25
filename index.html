@@ -5780,6 +5780,9 @@ async function syncFromSupabase() {
     };
     LS.set('ci_pegboard', pb);
     LS.set('ci_spirituality', pb['spirituality']);
+    // Bridge voice keys immediately after Supabase sync so players always read fresh credentials
+    if (pb['pb-eleven'])  localStorage.setItem('ci_eleven_key', pb['pb-eleven']);
+    if (pb['pb-voiceid']) localStorage.setItem('ci_voice_id',   pb['pb-voiceid']);
     populateForm(pb);
 
     // Free test access — all signed-in users treated as members
