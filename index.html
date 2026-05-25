@@ -3170,9 +3170,8 @@ input, textarea, select {
   font-size: 12px;
   font-weight: 600;
   color: #5A5550;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
   line-height: 1.4;
 }
 .vault-item.selected .vault-item-title { color: #EFEFEF; }
@@ -7525,7 +7524,7 @@ function renderVaultSidebar() {
         return `<button class="vault-item${isSelected ? ' selected' : ''}"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="color:${shade.text};opacity:0.6">${i._idx + 1}</div>
+          <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
