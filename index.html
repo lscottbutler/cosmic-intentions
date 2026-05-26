@@ -4199,6 +4199,43 @@ input, textarea, select {
 }
 .med-dur-btn:hover { background: rgba(255,255,255,0.18); border-color: #fff; }
 
+.med-choice-screen {
+  display: flex;
+  gap: 14px;
+  width: calc(100% - 32px);
+}
+.med-choice-btn {
+  flex: 1;
+  padding: 22px 0;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid #555;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.med-choice-btn:hover { background: rgba(255,255,255,0.16); border-color: #fff; }
+
+.med-subview { display: none; width: calc(100% - 32px); flex-direction: column; gap: 14px; }
+.med-subview.active { display: flex; }
+
+.med-back-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+.med-back-btn:hover { color: #fff; }
+
 /* TIMER VIEW */
 .med-timer-view {
   display: none;
@@ -5557,10 +5594,26 @@ input, textarea, select {
   <div class="med-select-view" id="medSelectView">
     <div class="med-hero" id="medHeroBg"></div>
     <img class="med-icon-img" src="images/icons/meditations.png" alt="">
-    <div class="med-banner">UNGUIDED MEDITATIONS</div>
-    <div class="med-grid" id="medGridUnguided"></div>
-    <div class="med-banner">GUIDED MEDITATIONS</div>
-    <div class="med-grid" id="medGridGuided"></div>
+
+    <!-- CHOICE SCREEN: Guided / Unguided -->
+    <div class="med-choice-screen" id="medChoiceScreen">
+      <button class="med-choice-btn" onclick="showMedSubview('guided')">GUIDED</button>
+      <button class="med-choice-btn" onclick="showMedSubview('unguided')">UNGUIDED</button>
+    </div>
+
+    <!-- GUIDED SUBVIEW -->
+    <div class="med-subview" id="medSubGuided">
+      <button class="med-back-btn" onclick="medBackToChoice()">← Back</button>
+      <div class="med-banner">GUIDED MEDITATIONS</div>
+      <div class="med-grid" id="medGridGuided"></div>
+    </div>
+
+    <!-- UNGUIDED SUBVIEW -->
+    <div class="med-subview" id="medSubUnguided">
+      <button class="med-back-btn" onclick="medBackToChoice()">← Back</button>
+      <div class="med-banner">UNGUIDED MEDITATIONS</div>
+      <div class="med-grid" id="medGridUnguided"></div>
+    </div>
   </div>
 
   <!-- TIMER VIEW -->
@@ -8558,7 +8611,7 @@ const MED_DURATIONS = [
 ];
 const medSt = {
   duration: 0, countdown: 0, halfPoint: 0,
-  interval: null, autoClose: null, paused: false, timers: []
+  interval: null, autoClose: null, paused: false, timers: [], guided: false
 };
 
 function medDayImage() {
@@ -8569,38 +8622,52 @@ function medFmtTime(s) {
 }
 
 function openMeditationModal(duration) {
-  const modal = document.getElementById('medModal');
-  modal.classList.add('open');
+  document.getElementById('medModal').classList.add('open');
   document.body.style.overflow = 'hidden';
   document.getElementById('medHeroBg').style.backgroundImage = `url("${medDayImage()}")`;
 
-  ['medGridUnguided','medGridGuided'].forEach(id => {
+  // Build grids once — guided flag set per subview
+  [['medGridGuided', true], ['medGridUnguided', false]].forEach(([id, guided]) => {
     const grid = document.getElementById(id);
     if (!grid.hasChildNodes()) {
       MED_DURATIONS.forEach(d => {
         const btn = document.createElement('button');
         btn.className = 'med-dur-btn';
         btn.textContent = d.label;
-        btn.onclick = () => startMedTimer(d.s);
+        btn.onclick = () => startMedTimer(d.s, guided);
         grid.appendChild(btn);
       });
     }
   });
 
   if (duration) {
-    startMedTimer(duration);
+    startMedTimer(duration, false); // build-sheet shortcuts = unguided
   } else {
     document.getElementById('medSelectView').style.display = 'flex';
     document.getElementById('medTimerView').classList.remove('active');
+    medBackToChoice();
   }
 }
 
-function startMedTimer(seconds) {
+function showMedSubview(type) {
+  document.getElementById('medChoiceScreen').style.display = 'none';
+  document.getElementById('medSubGuided').classList.toggle('active', type === 'guided');
+  document.getElementById('medSubUnguided').classList.toggle('active', type === 'unguided');
+}
+
+function medBackToChoice() {
+  document.getElementById('medChoiceScreen').style.display = 'flex';
+  document.getElementById('medSubGuided').classList.remove('active');
+  document.getElementById('medSubUnguided').classList.remove('active');
+}
+
+function startMedTimer(seconds, guided = false) {
   medStopTimers();
   medSt.duration  = seconds;
   medSt.countdown = seconds;
   medSt.halfPoint = Math.floor(seconds / 2);
   medSt.paused    = false;
+  medSt.guided    = guided;
 
   document.getElementById('medSelectView').style.display = 'none';
   document.getElementById('medTimerView').classList.add('active');
@@ -8638,7 +8705,7 @@ function medTick() {
 
 function medComplete() {
   playBell();
-  speakText('Your meditation is complete. Well done.');
+  if (medSt.guided) speakText('Your meditation is complete. Well done.');
   medSt.autoClose = setTimeout(() => closeMeditationModal(), 10000);
 }
 
@@ -8673,6 +8740,7 @@ function closeMeditationModal() {
   document.getElementById('medTimerView').classList.remove('active');
   document.getElementById('medSelectView').style.display = 'flex';
   document.getElementById('medCountdownCircle').classList.remove('ending');
+  medBackToChoice();
 }
 
 /* ── TIMER PICKER ───────────────────────────────────── */
