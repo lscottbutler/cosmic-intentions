@@ -5699,6 +5699,7 @@ function readFormToPB() {
     if (el) pb[id] = el.value.trim();
   });
   pb['spirituality'] = LS.get('ci_spirituality') || '';
+  console.log('[PB] readFormToPB →', pb);
   return pb;
 }
 
@@ -5732,11 +5733,13 @@ async function saveSetup() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
   LS.set('ci_spirituality', pb['spirituality'] || '');
+  console.log('[Save] localStorage written:', LS.get('ci_pegboard'));
   setBtnLoading('btn-save-setup', true);
   try {
     await syncProfileToSupabase(pb);
     toast('Setup saved ✓', 'success');
   } catch(e) {
+    console.error('[Save] Supabase sync failed:', e);
     toast('Saved locally. Sync failed: ' + e.message, 'error');
   } finally {
     setBtnLoading('btn-save-setup', false);
@@ -5746,11 +5749,13 @@ async function saveSetup() {
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
+  console.log('[Save] localStorage written:', LS.get('ci_pegboard'));
   setBtnLoading('btn-save-bts', true);
   try {
     await syncProfileToSupabase(pb);
     toast('Behind the Scenes saved ✓', 'success');
   } catch(e) {
+    console.error('[Save] Supabase sync failed:', e);
     toast('Saved locally. Sync failed: ' + e.message, 'error');
   } finally {
     setBtnLoading('btn-save-bts', false);
@@ -5768,7 +5773,7 @@ function setBtnLoading(id, loading) {
    SUPABASE — PROFILES SYNC
 ───────────────────────────────────────────────────────── */
 async function syncProfileToSupabase(pb) {
-  if (!currentUser) return;
+  if (!currentUser) { console.warn('[Supabase] upsert skipped — no currentUser'); return; }
   const payload = {
     id:            currentUser.id,
     updated_at:    new Date().toISOString(),
@@ -5788,8 +5793,13 @@ async function syncProfileToSupabase(pb) {
     openai_voice:  pb['openai_voice']  || 'alloy',
     spirituality:  pb['spirituality']  || ''
   };
+  console.log('[Supabase] upsert payload:', payload);
   const { error } = await sb.from('profiles').upsert(payload);
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('[Supabase] upsert error:', error);
+    throw new Error(error.message);
+  }
+  console.log('[Supabase] upsert OK');
 }
 
 async function syncToSupabase() {
@@ -5806,10 +5816,12 @@ async function syncFromSupabase() {
       .eq('id', currentUser.id)
       .single();
     if (error || !data) {
-      currentMember = true; // free test access for all signed-in users
+      console.warn('[Supabase] syncFromSupabase — no row found:', error?.message);
+      currentMember = true;
       updateUI(currentUser);
       return;
     }
+    console.log('[Supabase] syncFromSupabase raw:', data);
     const pb = {
       'pb-name':       data.pb_name       || '',
       'pb-mission':    data.pb_mission    || '',
@@ -5823,20 +5835,33 @@ async function syncFromSupabase() {
       'bts-authors':   data.bts_authors   || '',
       'bts-obstacles': data.bts_obstacles || '',
       'bts-why':       data.bts_why       || '',
-      'bts-context':    data.bts_context    || '',
-      'openai_voice':   data.openai_voice   || 'alloy',
-      'spirituality':   data.spirituality   || ''
+      'bts-context':   data.bts_context   || '',
+      'openai_voice':  data.openai_voice  || 'alloy',
+      'spirituality':  data.spirituality  || ''
     };
+
+    // Guard: only overwrite localStorage if Supabase returned real data.
+    // Prevents a failed/empty Supabase row from wiping a good local save.
+    const hasData = Object.values(pb).some(v => v && v !== 'alloy');
+    const local   = LS.get('ci_pegboard') || {};
+    const hasLocal = Object.values(local).some(v => v && v !== 'alloy');
+    if (!hasData && hasLocal) {
+      console.warn('[Supabase] syncFromSupabase — Supabase row is empty, keeping localStorage data');
+      currentMember = data?.is_member === true;
+      updateUI(currentUser);
+      return;
+    }
+
     LS.set('ci_pegboard', pb);
     LS.set('ci_spirituality', pb['spirituality']);
     if (pb['openai_voice']) localStorage.setItem('openai_voice', pb['openai_voice']);
     populateForm(pb);
+    console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);
 
-    // Free test access — all signed-in users treated as members
     currentMember = data?.is_member === true;
-    updateUI(currentUser); // refresh badge/upgrade prompt
+    updateUI(currentUser);
   } catch(e) {
-    console.warn('syncFromSupabase failed:', e);
+    console.warn('[Supabase] syncFromSupabase failed:', e);
   }
 }
 
