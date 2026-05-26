@@ -4103,6 +4103,194 @@ input, textarea, select {
 .countdown-pause-btn:hover { background: #DDDDDD; }
 /* ── END COUNTDOWN ───────────────────────────────────── */
 
+/* ── MEDITATION MODAL (inline player) ───────────────── */
+.med-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: #000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+.med-modal.open { display: flex; }
+
+.med-close-fixed {
+  position: fixed;
+  top: 20px; right: 20px;
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid #333;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  z-index: 910;
+}
+.med-close-fixed:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+
+/* SELECT VIEW */
+.med-select-view {
+  width: 92%;
+  max-width: 520px;
+  background: #000;
+  border: 14px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 28px;
+  position: relative;
+}
+.med-hero {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.med-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 14px;
+  background: #333;
+  z-index: 5;
+}
+.med-icon-img {
+  width: 80px; height: 80px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  margin-top: 8px;
+}
+.med-banner {
+  width: calc(100% - 32px);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #333;
+  text-align: center;
+  padding: 7px 0;
+}
+.med-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  width: calc(100% - 32px);
+}
+.med-dur-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid #333;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px 4px;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.04em;
+  transition: background 0.15s, border-color 0.15s;
+}
+.med-dur-btn:hover { background: rgba(255,255,255,0.18); border-color: #fff; }
+
+/* TIMER VIEW */
+.med-timer-view {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.med-timer-view.active { display: flex; }
+
+.med-timer-card {
+  width: 92%;
+  max-width: 520px;
+  background: #000;
+  border: 14px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 28px;
+  position: relative;
+}
+.med-timer-image {
+  width: 100%;
+  height: 280px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.med-timer-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 14px;
+  background: #333;
+  z-index: 5;
+}
+.med-countdown-circle {
+  width: 91px; height: 91px;
+  border-radius: 50%;
+  background: #fff;
+  border: 12px solid #333;
+  display: flex; align-items: center; justify-content: center;
+  position: absolute;
+  bottom: -46px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.med-countdown-circle.ending {
+  border-color: #C9A96E;
+  animation: medPulse 1s ease-in-out infinite;
+}
+@keyframes medPulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50%       { transform: translateX(-50%) scale(1.07); }
+}
+.med-countdown-num {
+  font-size: 19px; font-weight: 900;
+  color: #000;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.med-countdown-circle.ending .med-countdown-num { color: #C9A96E; }
+.med-session-label {
+  font-size: 18px; color: #fff;
+  text-align: center; font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 52px;
+  padding: 0 16px;
+}
+.med-btn-row { display: flex; align-items: center; gap: 20px; margin-top: 10px; }
+.med-home-btn {
+  width: 60px; height: 60px;
+  border-radius: 50%; background: #fff;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.med-home-btn:hover { transform: scale(1.1); box-shadow: 0 4px 20px rgba(255,255,255,0.3); }
+.med-home-icon { width: 32px; height: 32px; fill: #000; }
+.med-ctrl-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid #333;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  color: #fff; font-size: 22px;
+}
+.med-ctrl-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+/* ── END MEDITATION MODAL ────────────────────────────── */
+
 /* ── TIMER PICKER MODAL ──────────────────────────────── */
 .timer-picker-bg {
   position: fixed;
@@ -4288,7 +4476,7 @@ input, textarea, select {
         <span>Countdown Timer</span>
         <span class="player-duration">1–60 min</span>
       </button>
-      <button class="player-launcher" onclick="launchMeditation(300)">
+      <button class="player-launcher" onclick="openMeditationModal()">
         <span class="player-icon">🧘</span>
         <span>Meditation</span>
         <span class="player-duration">5-60min</span>
@@ -4536,7 +4724,7 @@ input, textarea, select {
           <!-- PLAYER LAUNCHERS -->
           <div class="vault-quick-btns" style="margin-top:16px;">
             <button class="vault-qbtn" onclick="openTimerPicker()">⏱️ Timer</button>
-            <button class="vault-qbtn" onclick="launchPlayer('meditation-select')">🧘 Meditation</button>
+            <button class="vault-qbtn" onclick="openMeditationModal()">🧘 Meditation</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-3min')">✨ 3-Min Viz</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-10min')">🌟 10-Min Viz</button>
             <button class="vault-qbtn" onclick="launchPlayer('gratitude')">🙏 Gratitude</button>
@@ -5359,6 +5547,40 @@ input, textarea, select {
   <button class="countdown-pause-btn" id="countdownPauseBtn" onclick="toggleCountdownPause()">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="#000"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
+</div>
+
+<!-- ── MEDITATION MODAL (inline player) ─────────────── -->
+<div class="med-modal" id="medModal">
+  <button class="med-close-fixed" onclick="closeMeditationModal()">✕</button>
+
+  <!-- SELECT VIEW -->
+  <div class="med-select-view" id="medSelectView">
+    <div class="med-hero" id="medHeroBg"></div>
+    <img class="med-icon-img" src="images/icons/meditations.png" alt="">
+    <div class="med-banner">UNGUIDED MEDITATIONS</div>
+    <div class="med-grid" id="medGridUnguided"></div>
+    <div class="med-banner">GUIDED MEDITATIONS</div>
+    <div class="med-grid" id="medGridGuided"></div>
+  </div>
+
+  <!-- TIMER VIEW -->
+  <div class="med-timer-view" id="medTimerView">
+    <div class="med-timer-card">
+      <div class="med-timer-image" id="medTimerBg">
+        <div class="med-countdown-circle" id="medCountdownCircle">
+          <div class="med-countdown-num" id="medCountdownNum">—</div>
+        </div>
+      </div>
+      <div class="med-session-label" id="medSessionLabel">Meditation</div>
+      <div class="med-btn-row">
+        <button class="med-ctrl-btn" id="medPauseBtn" onclick="toggleMedPause()">⏸</button>
+        <button class="med-home-btn" onclick="closeMeditationModal()">
+          <svg class="med-home-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+        <button class="med-ctrl-btn" onclick="restartMeditation()">↺</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ── TIMER PICKER MODAL ─────────────────────────────── -->
@@ -8313,8 +8535,144 @@ function launchCountdownTimer(duration = 30) {
   launchPlayer('countdown', { duration });
 }
 
-function launchMeditation(duration = 300) {
-  launchPlayer('meditation-select');
+function launchMeditation(duration) {
+  openMeditationModal(duration);
+}
+
+/* ── MEDITATION MODAL (inline player) ─────────────────── */
+const MED_IMAGES = [
+  'images/meditations/bg-meditations-1.jpg',
+  'images/meditations/bg-meditations-2.jpg',
+  'images/meditations/bg-meditations-3.jpg',
+  'images/meditations/bg-meditations-4.jpg',
+];
+const MED_DURATIONS = [
+  { label: '1 min',  s: 60   }, { label: '2 min',  s: 120  },
+  { label: '3 min',  s: 180  }, { label: '5 min',  s: 300  },
+  { label: '7 min',  s: 420  }, { label: '10 min', s: 600  },
+  { label: '12 min', s: 720  }, { label: '15 min', s: 900  },
+  { label: '20 min', s: 1200 }, { label: '25 min', s: 1500 },
+  { label: '30 min', s: 1800 }, { label: '40 min', s: 2400 },
+  { label: '45 min', s: 2700 }, { label: '60 min', s: 3600 },
+  { label: '90 min', s: 5400 },
+];
+const medSt = {
+  duration: 0, countdown: 0, halfPoint: 0,
+  interval: null, autoClose: null, paused: false, timers: []
+};
+
+function medDayImage() {
+  return MED_IMAGES[Math.floor(Date.now() / 86400000) % MED_IMAGES.length];
+}
+function medFmtTime(s) {
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function openMeditationModal(duration) {
+  const modal = document.getElementById('medModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('medHeroBg').style.backgroundImage = `url("${medDayImage()}")`;
+
+  ['medGridUnguided','medGridGuided'].forEach(id => {
+    const grid = document.getElementById(id);
+    if (!grid.hasChildNodes()) {
+      MED_DURATIONS.forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'med-dur-btn';
+        btn.textContent = d.label;
+        btn.onclick = () => startMedTimer(d.s);
+        grid.appendChild(btn);
+      });
+    }
+  });
+
+  if (duration) {
+    startMedTimer(duration);
+  } else {
+    document.getElementById('medSelectView').style.display = 'flex';
+    document.getElementById('medTimerView').classList.remove('active');
+  }
+}
+
+function startMedTimer(seconds) {
+  medStopTimers();
+  medSt.duration  = seconds;
+  medSt.countdown = seconds;
+  medSt.halfPoint = Math.floor(seconds / 2);
+  medSt.paused    = false;
+
+  document.getElementById('medSelectView').style.display = 'none';
+  document.getElementById('medTimerView').classList.add('active');
+  document.getElementById('medTimerBg').style.backgroundImage = `url("${medDayImage()}")`;
+  document.getElementById('medPauseBtn').textContent = '⏸';
+
+  const mins = seconds / 60;
+  document.getElementById('medSessionLabel').textContent =
+    `${Number.isInteger(mins) ? mins : Math.round(mins)} Minute Meditation`;
+  document.getElementById('medCountdownNum').textContent = medFmtTime(seconds);
+  document.getElementById('medCountdownCircle').classList.remove('ending');
+
+  medSt.timers.push(setTimeout(medTick, 800));
+}
+
+function medTick() {
+  const display = document.getElementById('medCountdownNum');
+  const circle  = document.getElementById('medCountdownCircle');
+  medSt.interval = setInterval(() => {
+    medSt.countdown--;
+    display.textContent = medFmtTime(medSt.countdown);
+    if (medSt.countdown === medSt.halfPoint) playBell();
+    if (medSt.countdown === 300 && medSt.duration > 300) {
+      playBell();
+      medSt.timers.push(setTimeout(() => playBell(), 2500));
+    }
+    if (medSt.countdown <= 60 && medSt.countdown > 0) circle.classList.add('ending');
+    if (medSt.countdown <= 0) {
+      clearInterval(medSt.interval); medSt.interval = null;
+      circle.classList.remove('ending');
+      medComplete();
+    }
+  }, 1000);
+}
+
+function medComplete() {
+  playBell();
+  speakText('Your meditation is complete. Well done.');
+  medSt.autoClose = setTimeout(() => closeMeditationModal(), 10000);
+}
+
+function toggleMedPause() {
+  const btn = document.getElementById('medPauseBtn');
+  medSt.paused = !medSt.paused;
+  if (medSt.paused) {
+    clearInterval(medSt.interval); medSt.interval = null;
+    medSt.timers.forEach(id => clearTimeout(id)); medSt.timers = [];
+    btn.textContent = '▶';
+  } else {
+    btn.textContent = '⏸';
+    medTick();
+  }
+}
+
+function restartMeditation() {
+  medStopTimers();
+  startMedTimer(medSt.duration);
+}
+
+function medStopTimers() {
+  clearInterval(medSt.interval); medSt.interval = null;
+  clearTimeout(medSt.autoClose); medSt.autoClose = null;
+  medSt.timers.forEach(id => clearTimeout(id)); medSt.timers = [];
+}
+
+function closeMeditationModal() {
+  medStopTimers();
+  document.getElementById('medModal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('medTimerView').classList.remove('active');
+  document.getElementById('medSelectView').style.display = 'flex';
+  document.getElementById('medCountdownCircle').classList.remove('ending');
 }
 
 /* ── TIMER PICKER ───────────────────────────────────── */
