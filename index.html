@@ -3268,6 +3268,14 @@ input, textarea, select {
   opacity: 0.6;
   line-height: 1;
 }
+.vault-date-line {
+  font-family: 'Dancing Script', cursive;
+  font-size: 18px;
+  color: #9A948F;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
 .vault-welcome-title {
   font-family: 'Dancing Script', cursive;
   font-size: 34px;
@@ -4745,6 +4753,7 @@ input, textarea, select {
         <!-- WELCOME STATE -->
         <div id="vaultWelcome" class="vault-welcome">
 
+          <div class="vault-date-line" id="vaultDateLine"></div>
           <div class="vault-welcome-title" id="vaultWelcomeName">Welcome back</div>
           <p class="vault-welcome-sub">Your Knowledge Vault is ready. Select an intention from the Archive Index to open its Build Sheet — complete with your AI Roadmap and Library.</p>
           <div class="vault-stats-row">
@@ -7877,6 +7886,21 @@ function renderVaultSidebar() {
   setEl('vsStreak',    LS.get('ci_streak')     || 0);
   setEl('vsVizPlays', LS.get('ci_viz_plays')  || 0);
   setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
+
+  // Date line: "Monday, May 26  ·  146/365"
+  const _now      = new Date();
+  const _days     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const _months   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const _dayName  = _days[_now.getDay()];
+  const _month    = _months[_now.getMonth()];
+  const _date     = _now.getDate();
+  const _year     = _now.getFullYear();
+  const _isLeap   = (_year % 4 === 0 && _year % 100 !== 0) || _year % 400 === 0;
+  const _daysInYear = _isLeap ? 366 : 365;
+  const _start    = new Date(_year, 0, 0);
+  const _diff     = _now - _start;
+  const _dayOfYear = Math.floor(_diff / 86400000);
+  setEl('vaultDateLine', `${_dayName}, ${_month} ${_date}  ·  ${_dayOfYear}/${_daysInYear}`);
 
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
