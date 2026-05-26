@@ -4456,7 +4456,7 @@ input, textarea, select {
           <!-- PLAYER LAUNCHERS -->
           <div class="vault-quick-btns" style="margin-top:16px;">
             <button class="vault-qbtn" onclick="launchPlayer('countdown')">⏱️ Timer</button>
-            <button class="vault-qbtn" onclick="launchPlayer('meditation')">🧘 Meditation</button>
+            <button class="vault-qbtn" onclick="launchPlayer('meditation-select')">🧘 Meditation</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-3min')">✨ 3-Min Viz</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-10min')">🌟 10-Min Viz</button>
             <button class="vault-qbtn" onclick="launchPlayer('gratitude')">🙏 Gratitude</button>
@@ -8200,8 +8200,7 @@ function launchCountdownTimer(duration = 30) {
 }
 
 function launchMeditation(duration = 300) {
-  localStorage.setItem('meditation_duration', duration);
-  launchPlayer('meditation');
+  launchPlayer('meditation-select');
 }
 
 function launch3MinViz() {
