@@ -3283,7 +3283,7 @@ input, textarea, select {
 }
 .vault-stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 24px;
 }
@@ -3758,7 +3758,7 @@ input, textarea, select {
   }
   .vault-main { min-height: calc(100vh - var(--hdr)); }
   .vault-welcome { padding: 24px 16px 32px; }
-  .vault-stats-row { grid-template-columns: repeat(2, 1fr); }
+  .vault-stats-row { grid-template-columns: repeat(3, 1fr); }
   .bs-header { padding: 14px 16px 12px; }
   .bs-section-hd { padding: 11px 16px 8px; }
   .bs-roadmap-list { padding: 0 16px 12px; }
@@ -4748,9 +4748,9 @@ input, textarea, select {
           <div class="vault-welcome-title" id="vaultWelcomeName">Welcome back</div>
           <p class="vault-welcome-sub">Your Knowledge Vault is ready. Select an intention from the Archive Index to open its Build Sheet — complete with your AI Roadmap and Library.</p>
           <div class="vault-stats-row">
-            <div class="vault-stat"><div class="vs-num" id="vsIntentions">0</div><div class="vs-lbl">Intentions</div></div>
-            <div class="vault-stat"><div class="vs-num" id="vsAI">0</div><div class="vs-lbl">AI Enhanced</div></div>
             <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
+            <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
+            <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
           </div>
           <div class="vault-quick-btns">
             <button class="vault-qbtn accent" onclick="generateBlueprint()">◆ My Blueprint</button>
@@ -7874,9 +7874,9 @@ function renderVaultSidebar() {
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   setEl('vaultWelcomeName',      name);
   setEl('vaultIntentionCount',   intentions.length);
-  setEl('vsIntentions',          intentions.length);
-  setEl('vsAI',                  intentions.filter(i => i.mindset || i.achievers).length);
-  setEl('vsStreak',              LS.get('ci_streak') || 0);
+  setEl('vsStreak',    LS.get('ci_streak')     || 0);
+  setEl('vsVizPlays', LS.get('ci_viz_plays')  || 0);
+  setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
 
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
@@ -8562,6 +8562,11 @@ function closeCountdown() {
    ═══════════════════════════════════════════════════════════════ */
 
 function launchPlayer(playerType, config = {}) {
+  // Track viz plays
+  if (['viz-quick','viz-10min','viz-3min','visual-countdown'].includes(playerType)) {
+    LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
+    setEl('vsVizPlays', LS.get('ci_viz_plays'));
+  }
   // Close drawer
   closeDrawer();
   
@@ -8706,6 +8711,8 @@ function medTick() {
 function medComplete() {
   playBell();
   if (medSt.guided) speakText('Your meditation is complete. Well done.');
+  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
+  setEl('vsMedPlays', LS.get('ci_med_plays'));
   medSt.autoClose = setTimeout(() => closeMeditationModal(), 10000);
 }
 
