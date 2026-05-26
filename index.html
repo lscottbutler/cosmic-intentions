@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Cosmic Intentions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
@@ -3269,12 +3269,14 @@ input, textarea, select {
   line-height: 1;
 }
 .vault-date-line {
-  font-family: 'Dancing Script', cursive;
-  font-size: 18px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: #9A948F;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   line-height: 1.4;
-  letter-spacing: 0.01em;
 }
 .vault-welcome-title {
   font-family: 'Dancing Script', cursive;
@@ -7900,7 +7902,8 @@ function renderVaultSidebar() {
   const _start    = new Date(_year, 0, 0);
   const _diff     = _now - _start;
   const _dayOfYear = Math.floor(_diff / 86400000);
-  setEl('vaultDateLine', `${_dayName}, ${_month} ${_date}  ·  ${_dayOfYear}/${_daysInYear}`);
+  const _remaining = _daysInYear - _dayOfYear;
+  setEl('vaultDateLine', `Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
 
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
