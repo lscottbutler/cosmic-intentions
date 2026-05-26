@@ -4103,6 +4103,85 @@ input, textarea, select {
 .countdown-pause-btn:hover { background: #DDDDDD; }
 /* ── END COUNTDOWN ───────────────────────────────────── */
 
+/* ── TIMER PICKER MODAL ──────────────────────────────── */
+.timer-picker-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: rgba(0,0,0,0.82);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.timer-picker-bg.open { display: flex; }
+
+.timer-picker-card {
+  background: #111;
+  border: 14px solid #333;
+  width: 92%;
+  max-width: 480px;
+  padding: 24px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+}
+
+.timer-picker-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #333;
+  width: 100%;
+  text-align: center;
+  padding: 7px 0;
+}
+
+.timer-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.timer-pick-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid #333;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px 4px;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.04em;
+  transition: background 0.15s, border-color 0.15s;
+}
+.timer-pick-btn:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: #fff;
+}
+
+.timer-picker-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 36px;
+  height: 36px;
+  background: #333;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.timer-picker-close:hover { background: #555; }
+/* ── END TIMER PICKER ────────────────────────────────── */
+
 /* ── PEGBOARD LOOP WIDGET ────────────────────────────── */
 .pb-loop-card {
   position: relative;
@@ -4204,10 +4283,10 @@ input, textarea, select {
         <span>Quick Viz</span>
         <span class="player-duration">15/30/60s</span>
       </button>
-      <button class="player-launcher" onclick="launchPlayer('countdown')">
+      <button class="player-launcher" onclick="openTimerPicker()">
         <span class="player-icon">⏱️</span>
         <span>Countdown Timer</span>
-        <span class="player-duration">15-60s</span>
+        <span class="player-duration">1–60 min</span>
       </button>
       <button class="player-launcher" onclick="launchMeditation(300)">
         <span class="player-icon">🧘</span>
@@ -4455,7 +4534,7 @@ input, textarea, select {
           
           <!-- PLAYER LAUNCHERS -->
           <div class="vault-quick-btns" style="margin-top:16px;">
-            <button class="vault-qbtn" onclick="launchPlayer('countdown')">⏱️ Timer</button>
+            <button class="vault-qbtn" onclick="openTimerPicker()">⏱️ Timer</button>
             <button class="vault-qbtn" onclick="launchPlayer('meditation-select')">🧘 Meditation</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-3min')">✨ 3-Min Viz</button>
             <button class="vault-qbtn" onclick="launchPlayer('viz-10min')">🌟 10-Min Viz</button>
@@ -5279,6 +5358,15 @@ input, textarea, select {
   <button class="countdown-pause-btn" id="countdownPauseBtn" onclick="toggleCountdownPause()">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="#000"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
+</div>
+
+<!-- ── TIMER PICKER MODAL ─────────────────────────────── -->
+<div class="timer-picker-bg" id="timerPickerBg" onclick="closeTimerPicker(event)">
+  <div class="timer-picker-card">
+    <button class="timer-picker-close" onclick="closeTimerPicker()">✕</button>
+    <div class="timer-picker-title">Choose Duration</div>
+    <div class="timer-picker-grid" id="timerPickerGrid"></div>
+  </div>
 </div>
 
 <!-- ── AUTH MODAL ─────────────────────────────────────── -->
@@ -8226,6 +8314,47 @@ function launchCountdownTimer(duration = 30) {
 
 function launchMeditation(duration = 300) {
   launchPlayer('meditation-select');
+}
+
+/* ── TIMER PICKER ───────────────────────────────────── */
+const TIMER_DURATIONS = [
+  { label: '1 min',  s: 60   },
+  { label: '2 min',  s: 120  },
+  { label: '3 min',  s: 180  },
+  { label: '5 min',  s: 300  },
+  { label: '8 min',  s: 480  },
+  { label: '10 min', s: 600  },
+  { label: '12 min', s: 720  },
+  { label: '15 min', s: 900  },
+  { label: '20 min', s: 1200 },
+  { label: '25 min', s: 1500 },
+  { label: '30 min', s: 1800 },
+  { label: '35 min', s: 2100 },
+  { label: '45 min', s: 2700 },
+  { label: '50 min', s: 3000 },
+  { label: '60 min', s: 3600 },
+];
+
+function openTimerPicker() {
+  const grid = document.getElementById('timerPickerGrid');
+  if (!grid.hasChildNodes()) {
+    TIMER_DURATIONS.forEach(d => {
+      const btn = document.createElement('button');
+      btn.className = 'timer-pick-btn';
+      btn.textContent = d.label;
+      btn.onclick = () => {
+        closeTimerPicker();
+        launchPlayer('meditation-timer', { duration: d.s });
+      };
+      grid.appendChild(btn);
+    });
+  }
+  document.getElementById('timerPickerBg').classList.add('open');
+}
+
+function closeTimerPicker(e) {
+  if (e && e.target !== document.getElementById('timerPickerBg')) return;
+  document.getElementById('timerPickerBg').classList.remove('open');
 }
 
 function launch3MinViz() {
