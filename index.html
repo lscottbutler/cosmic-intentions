@@ -172,6 +172,21 @@ body {
   font-size: 16px;
   flex-shrink: 0;
 }
+.nav-count-dot {
+  margin-left: auto;
+  background: #38A038;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
 .drawer-divider {
   height: 1px;
   background: var(--border);
@@ -4504,6 +4519,7 @@ input, textarea, select {
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('setup')">
       <span class="nav-icon">📋</span> My Pegboard
+      <span class="nav-count-dot" id="vaultIntentionCount">0</span>
     </button>
     <button class="drawer-nav-item" onclick="navTo('bts')">
       <span class="nav-icon">🎬</span> Behind the Scenes
@@ -4718,14 +4734,8 @@ input, textarea, select {
   <div class="page" id="page-dashboard">
     <div class="vault-layout">
 
-      <!-- GRAND DEPOSITORY INDEX SIDEBAR -->
+      <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
-        <div class="vault-sidebar-hd">
-          <div class="vault-title-row">
-            <span class="vault-title-txt">GRAND DEPOSITORY</span>
-            <span class="vault-count-badge" id="vaultIntentionCount">0</span>
-          </div>
-        </div>
 
         <!-- Intention List -->
         <div class="vault-list" id="vaultList"></div>
