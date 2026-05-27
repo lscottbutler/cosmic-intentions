@@ -3137,8 +3137,7 @@ input, textarea, select {
 
 /* Intention list */
 .vault-list {
-  flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   padding: 6px 0;
   gap: 20px;
   display: flex;
@@ -7929,7 +7928,7 @@ function renderVaultSidebar() {
     catsEl.innerHTML = VAULT_CATEGORIES
       .filter(c => c.key === 'all' || counts[c.key])
       .map(c => `<button class="vault-cat-btn${c.key === 'all' ? ' all-btn' : ''}${vaultActiveCategory === c.key ? ' active' : ''}"
-        onclick="filterVaultCategory('${c.key}')">${c.label}${c.key !== 'all' ? ` <span class="vault-cat-count">${counts[c.key]||0}</span>` : ''}</button>`)
+        onclick="filterVaultCategory('${c.key}')">${c.label} <span class="vault-cat-count">${counts[c.key]||0}</span></button>`)
       .join('');
   }
 
