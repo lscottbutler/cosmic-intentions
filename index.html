@@ -2470,8 +2470,25 @@ input, textarea, select {
 }
 .btn-member-login:hover { opacity: 0.85; }
 
+.home-member-cols {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  align-items: flex-start;
+}
+.home-col-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.home-col-right {
+  width: 280px;
+  flex-shrink: 0;
+}
 .home-whats-new {
-  margin: 0 20px 20px;
+  margin: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
@@ -4751,37 +4768,42 @@ input, textarea, select {
 
     <!-- LOGGED IN: member home -->
     <div id="homeLoggedIn" style="display:none">
-      <div class="home-member-hero">
-        <h2>Welcome back ✦</h2>
-        <p>Your Personal Development Arsenal is ready.</p>
-        <button class="btn-member-login" onclick="navTo('dashboard')">✦ Member Dashboard</button>
-        <button class="btn-secondary" style="max-width:280px;margin:0 auto;display:block" onclick="navTo('community')">🌌 Community Feed</button>
-      </div>
+      <div class="home-member-cols">
 
-      <!-- WHAT'S NEW -->
-      <div class="home-whats-new">
-        <div class="home-whats-new-hdr">⚡ What's New</div>
-        <div class="home-whats-new-body">
-          <div class="home-new-item"><div class="home-new-dot"></div>3-Level Dashboard now live — Raw View, AI Enhanced &amp; AI Roadmap</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>"Today I Will" daily action system added to every intention card</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>"Having…Gives Me" emotional reward visualization launched</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>Effort Score progress tracking added to the AI Roadmap dashboard</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>Cosmic Community Pegboard feed — share wins, risks &amp; breakthroughs</div>
+        <!-- LEFT: news panels -->
+        <div class="home-col-left">
+          <div class="home-whats-new">
+            <div class="home-whats-new-hdr">⚡ What's New</div>
+            <div class="home-whats-new-body">
+              <div class="home-new-item"><div class="home-new-dot"></div>3-Level Dashboard now live — Raw View, AI Enhanced &amp; AI Roadmap</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>"Today I Will" daily action system added to every intention card</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>"Having…Gives Me" emotional reward visualization launched</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>Effort Score progress tracking added to the AI Roadmap dashboard</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>Cosmic Community Pegboard feed — share wins, risks &amp; breakthroughs</div>
+            </div>
+          </div>
+          <div class="home-whats-new">
+            <div class="home-whats-new-hdr">📚 New in Cosmic Library</div>
+            <div class="home-whats-new-body">
+              <div class="home-new-item"><div class="home-new-dot"></div>New Buddhist Teachings section added — 8 curated teachings on impermanence &amp; action</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>Stoic Philosophy expanded with 10 new Marcus Aurelius entries</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>Life Hacks &amp; Risks — new practical wisdom from Naval Ravikant</div>
+              <div class="home-new-item"><div class="home-new-dot"></div>Abundance section refreshed with Law of Attraction principles</div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- NEW IN COSMIC LIBRARY -->
-      <div class="home-whats-new">
-        <div class="home-whats-new-hdr">📚 New in Cosmic Library</div>
-        <div class="home-whats-new-body">
-          <div class="home-new-item"><div class="home-new-dot"></div>New Buddhist Teachings section added — 8 curated teachings on impermanence &amp; action</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>Stoic Philosophy expanded with 10 new Marcus Aurelius entries</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>Life Hacks &amp; Risks — new practical wisdom from Naval Ravikant</div>
-          <div class="home-new-item"><div class="home-new-dot"></div>Abundance section refreshed with Law of Attraction principles</div>
+        <!-- RIGHT: buttons -->
+        <div class="home-col-right">
+          <div class="home-member-hero">
+            <h2>Welcome back ✦</h2>
+            <p>Your Personal Development Arsenal is ready.</p>
+            <button class="btn-member-login" onclick="navTo('dashboard')">✦ Member Dashboard</button>
+            <button class="btn-secondary" style="max-width:280px;margin:0 auto;display:block" onclick="navTo('community')">🌌 Community Feed</button>
+          </div>
         </div>
-      </div>
 
-      <div style="height: 20px"></div>
+      </div>
     </div>
   </div>
 
