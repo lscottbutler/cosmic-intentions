@@ -3354,6 +3354,54 @@ input, textarea, select {
 .vault-qbtn.accent { background: #000000; border-color: #EFEFEF; color: #fff; }
 .vault-qbtn.accent:hover { opacity: 0.88; }
 
+/* ── PLAYER ACCORDIONS ──────────────────────────────── */
+.acc-list { margin-top: 16px; display: flex; flex-direction: column; gap: 5px; }
+.acc-item { border-radius: 10px; overflow: hidden; border: 1px solid #383838; }
+.acc-trigger {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 12px 16px;
+  background: #2E2E2E; border: none; cursor: pointer;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  color: #EFEFEF; text-align: left; transition: background 0.15s;
+}
+.acc-trigger:hover, .acc-trigger.open { background: #383838; }
+.acc-icon { font-size: 16px; flex-shrink: 0; }
+.acc-label { flex: 1; }
+.acc-arrow { font-size: 9px; color: #888; flex-shrink: 0; transition: transform 0.2s; }
+.acc-trigger.open .acc-arrow { transform: rotate(90deg); }
+.acc-panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #1E1E1E;
+}
+.acc-panel.open { max-height: 400px; }
+.acc-panel-inner { padding: 12px 14px 14px; }
+.acc-dur-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.acc-dur-btn {
+  padding: 6px 11px; background: #2A2A2A; color: #EFEFEF;
+  border: 1px solid #383838; border-radius: 6px;
+  cursor: pointer; font-size: 12px; font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.acc-dur-btn:hover { background: #38A038; border-color: #38A038; }
+.acc-med-choice { display: flex; gap: 8px; margin-bottom: 10px; }
+.acc-med-type-btn {
+  flex: 1; padding: 8px; background: #2A2A2A; color: #EFEFEF;
+  border: 1px solid #383838; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-family: inherit; font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
+}
+.acc-med-type-btn:hover { background: #333; }
+.acc-med-type-btn.active { background: #38A038; border-color: #38A038; }
+.acc-launch-btn {
+  width: 100%; padding: 10px; background: #38A038; color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  transition: opacity 0.15s;
+}
+.acc-launch-btn:hover { opacity: 0.85; }
+.acc-desc { font-size: 12px; color: #888; margin-bottom: 10px; line-height: 1.5; }
+
 /* Add form (vault style) */
 .vault-add-form { padding: 24px 32px; max-width: 580px; margin: 0 auto; }
 .vault-add-form-inner {
@@ -4781,19 +4829,93 @@ input, textarea, select {
             <button class="vault-qbtn" onclick="launchAlchemy()">⚗ Alchemy Reframe</button>
           </div>
           
-          <!-- PLAYER LAUNCHERS -->
-          <div class="vault-quick-btns" style="margin-top:16px;">
-            <button class="vault-qbtn" onclick="openTimerPicker()">⏱️ Timer</button>
-            <button class="vault-qbtn" onclick="openMeditationModal()">🧘 Meditation</button>
-            <button class="vault-qbtn" onclick="launchPlayer('viz-3min')">✨ 3-Min Viz</button>
-            <button class="vault-qbtn" onclick="launchPlayer('viz-10min')">🌟 10-Min Viz</button>
-            <button class="vault-qbtn" onclick="launchPlayer('gratitude')">🙏 Gratitude</button>
-            <button class="vault-qbtn" onclick="launchPlayer('pegboard-loop')">🔄 Pegboard</button>
-          </div>
-          
-          <!-- NIGHT PROTOCOL -->
-          <div class="vault-quick-btns" style="margin-top:16px;">
-            <button class="vault-qbtn accent" onclick="launchPlayer('night-protocol')" style="width:100%;">🌙 Night Protocol - Before Sleep</button>
+          <!-- PLAYER ACCORDIONS -->
+          <div class="acc-list">
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-timer" onclick="toggleAcc('timer')">
+                <span class="acc-icon">⏱️</span><span class="acc-label">Timer</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-timer">
+                <div class="acc-panel-inner"><div class="acc-dur-grid" id="accTimerGrid"></div></div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-meditation" onclick="toggleAcc('meditation')">
+                <span class="acc-icon">🧘</span><span class="acc-label">Meditation</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-meditation">
+                <div class="acc-panel-inner">
+                  <div class="acc-med-choice">
+                    <button class="acc-med-type-btn" id="accMedGuided" onclick="accMedType('guided')">🎧 Guided</button>
+                    <button class="acc-med-type-btn" id="accMedUnguided" onclick="accMedType('unguided')">🤫 Unguided</button>
+                  </div>
+                  <div class="acc-dur-grid" id="accMedGrid" style="display:none;flex-wrap:wrap;gap:6px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-viz3" onclick="toggleAcc('viz3')">
+                <span class="acc-icon">✨</span><span class="acc-label">3-Min Visualization</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-viz3">
+                <div class="acc-panel-inner">
+                  <div class="acc-desc">Focused 3-minute visualization with your intentions.</div>
+                  <button class="acc-launch-btn" onclick="launchPlayer('viz-3min')">Launch →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-viz10" onclick="toggleAcc('viz10')">
+                <span class="acc-icon">🌟</span><span class="acc-label">10-Min Visualization</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-viz10">
+                <div class="acc-panel-inner">
+                  <div class="acc-desc">Deep 10-minute visualization immersion with your goals.</div>
+                  <button class="acc-launch-btn" onclick="launchPlayer('viz-10min')">Launch →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-gratitude" onclick="toggleAcc('gratitude')">
+                <span class="acc-icon">🙏</span><span class="acc-label">Gratitude</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-gratitude">
+                <div class="acc-panel-inner">
+                  <div class="acc-desc">5-minute gratitude practice to anchor positive energy.</div>
+                  <button class="acc-launch-btn" onclick="launchPlayer('gratitude')">Launch →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-pegboard" onclick="toggleAcc('pegboard')">
+                <span class="acc-icon">🔄</span><span class="acc-label">Pegboard Loop</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-pegboard">
+                <div class="acc-panel-inner">
+                  <div class="acc-desc">Cycle through your mission, values, and core beliefs.</div>
+                  <button class="acc-launch-btn" onclick="launchPlayer('pegboard-loop')">Launch →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-night" onclick="toggleAcc('night')">
+                <span class="acc-icon">🌙</span><span class="acc-label">Night Protocol</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-night">
+                <div class="acc-panel-inner">
+                  <div class="acc-desc">Pre-sleep ritual to close the day with intention.</div>
+                  <button class="acc-launch-btn" onclick="launchPlayer('night-protocol')">Launch →</button>
+                </div>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -8828,6 +8950,56 @@ function openTimerPicker() {
 function closeTimerPicker(e) {
   if (e && e.target !== document.getElementById('timerPickerBg')) return;
   document.getElementById('timerPickerBg').classList.remove('open');
+}
+
+// ── PLAYER ACCORDIONS ─────────────────────────────────
+let _accMedGuided = false;
+
+function toggleAcc(key) {
+  const panel  = document.getElementById('accPanel-' + key);
+  const trig   = document.getElementById('accTrig-'  + key);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.acc-panel').forEach(p => { p.classList.remove('open'); p.style.maxHeight = ''; });
+  document.querySelectorAll('.acc-trigger').forEach(t => t.classList.remove('open'));
+  if (key === 'timer' && !document.getElementById('accTimerGrid').hasChildNodes()) {
+    TIMER_DURATIONS.forEach(d => {
+      const btn = document.createElement('button');
+      btn.className = 'acc-dur-btn';
+      btn.textContent = d.label;
+      btn.onclick = () => { closeAllAcc(); launchPlayer('meditation-timer', { duration: d.s }); };
+      document.getElementById('accTimerGrid').appendChild(btn);
+    });
+  }
+  if (!isOpen) { panel.classList.add('open'); trig.classList.add('open'); }
+}
+
+function closeAllAcc() {
+  document.querySelectorAll('.acc-panel').forEach(p => { p.classList.remove('open'); p.style.maxHeight = ''; });
+  document.querySelectorAll('.acc-trigger').forEach(t => t.classList.remove('open'));
+}
+
+function accMedType(type) {
+  _accMedGuided = (type === 'guided');
+  document.getElementById('accMedGuided').classList.toggle('active', type === 'guided');
+  document.getElementById('accMedUnguided').classList.toggle('active', type === 'unguided');
+  const grid = document.getElementById('accMedGrid');
+  grid.style.display = 'flex';
+  grid.innerHTML = '';
+  MED_DURATIONS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'acc-dur-btn';
+    btn.textContent = d.label;
+    btn.onclick = () => {
+      closeAllAcc();
+      document.getElementById('medModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('medHeroBg').style.backgroundImage = `url("${medDayImage()}")`;
+      document.getElementById('medSelectView').style.display = 'none';
+      startMedTimer(d.s, _accMedGuided);
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('accPanel-meditation').style.maxHeight = '500px';
 }
 
 function launch3MinViz() {
