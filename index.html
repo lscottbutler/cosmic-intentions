@@ -2470,6 +2470,28 @@ input, textarea, select {
 }
 .btn-member-login:hover { opacity: 0.85; }
 
+.home-astronaut-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 28px 0 8px;
+}
+.home-astronaut-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 19px solid #2DA8E0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.home-astronaut-circle img {
+  width: 175px;
+  height: 175px;
+  object-fit: contain;
+}
 .home-member-cols {
   display: flex;
   gap: 20px;
@@ -4768,6 +4790,13 @@ input, textarea, select {
 
     <!-- LOGGED IN: member home -->
     <div id="homeLoggedIn" style="display:none">
+
+      <div class="home-astronaut-wrap">
+        <div class="home-astronaut-circle">
+          <img src="images/astronaut-meditation.png" alt="Cosmic Intentions">
+        </div>
+      </div>
+
       <div class="home-member-cols">
 
         <!-- LEFT: news panels -->
