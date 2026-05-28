@@ -2539,6 +2539,16 @@ input, textarea, select {
   align-items: flex-start;
 }
 .home-new-item:last-child { border-bottom: none; }
+
+/* Home page video layout */
+.home-vid-block { border-radius: 10px; overflow: hidden; }
+.home-vid-block iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
+.home-vid-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--mid); margin: 6px 0 2px; }
+.home-vid-caption { font-size: 13px; color: var(--mid); line-height: 1.5; }
+.home-vid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.home-vid-text { padding: 14px 0; }
+.home-vid-text h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+.home-vid-text p { font-size: 13px; color: var(--mid); line-height: 1.6; margin: 0; }
 .home-new-dot {
   width: 6px;
   height: 6px;
@@ -4799,27 +4809,64 @@ input, textarea, select {
 
       <div class="home-member-cols">
 
-        <!-- LEFT: news panels -->
+        <!-- LEFT: video layout -->
         <div class="home-col-left">
-          <div class="home-whats-new">
-            <div class="home-whats-new-hdr">⚡ What's New</div>
-            <div class="home-whats-new-body">
-              <div class="home-new-item"><div class="home-new-dot"></div>3-Level Dashboard now live — Raw View, AI Enhanced &amp; AI Roadmap</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>"Today I Will" daily action system added to every intention card</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>"Having…Gives Me" emotional reward visualization launched</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>Effort Score progress tracking added to the AI Roadmap dashboard</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>Cosmic Community Pegboard feed — share wins, risks &amp; breakthroughs</div>
+
+          <!-- Video A — full width -->
+          <div class="home-vid-block">
+            <iframe src="https://iframe.cloudflarestream.com/7c488e507897f9c22e7f027f6ca74b6b"
+              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+          </div>
+          <div class="home-vid-text">
+            <h3>Video Title A</h3>
+            <p>Short description — replace this with real copy about what this video covers.</p>
+          </div>
+
+          <!-- Videos B + C — side by side -->
+          <div class="home-vid-grid">
+            <div>
+              <div class="home-vid-block">
+                <iframe src="https://iframe.cloudflarestream.com/f7b2cf9e57a6b29c97bdee0c99dcb3ec"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+              </div>
+              <div class="home-vid-label">Video B</div>
+              <div class="home-vid-caption">Short caption here.</div>
+            </div>
+            <div>
+              <div class="home-vid-block">
+                <iframe src="https://iframe.cloudflarestream.com/5c2e75172bfcfddf618c3715b332b6be"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+              </div>
+              <div class="home-vid-label">Video C</div>
+              <div class="home-vid-caption">Short caption here.</div>
             </div>
           </div>
-          <div class="home-whats-new">
-            <div class="home-whats-new-hdr">📚 New in Cosmic Library</div>
-            <div class="home-whats-new-body">
-              <div class="home-new-item"><div class="home-new-dot"></div>New Buddhist Teachings section added — 8 curated teachings on impermanence &amp; action</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>Stoic Philosophy expanded with 10 new Marcus Aurelius entries</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>Life Hacks &amp; Risks — new practical wisdom from Naval Ravikant</div>
-              <div class="home-new-item"><div class="home-new-dot"></div>Abundance section refreshed with Law of Attraction principles</div>
+
+          <div class="home-vid-text">
+            <h3>Section Title</h3>
+            <p>Replace this with a compelling line about the app — what it does, why it matters.</p>
+          </div>
+
+          <!-- Videos D + E — side by side -->
+          <div class="home-vid-grid">
+            <div>
+              <div class="home-vid-block">
+                <iframe src="https://iframe.cloudflarestream.com/3b456ab7735aa0e8aed6633e2385961d"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+              </div>
+              <div class="home-vid-label">Video D</div>
+              <div class="home-vid-caption">Short caption here.</div>
+            </div>
+            <div>
+              <div class="home-vid-block">
+                <iframe src="https://iframe.cloudflarestream.com/43813e0e2c419930e548850a9101cf6b"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+              </div>
+              <div class="home-vid-label">Video E</div>
+              <div class="home-vid-caption">Short caption here.</div>
             </div>
           </div>
+
         </div>
 
         <!-- RIGHT: buttons -->
