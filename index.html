@@ -2547,6 +2547,38 @@ input, textarea, select {
 }
 .home-new-item:last-child { border-bottom: none; }
 
+/* ── CONTENT BLOCKS (display) ─────────────────────────── */
+.cb-display {
+  background: #2A2A2A;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.cb-display:empty { display: none; }
+.cb-display strong { color: var(--black); font-weight: 700; }
+.cb-display em { font-style: italic; }
+.cb-display a { color: var(--accent); text-decoration: underline; }
+
+/* ── ADMIN PAGE ────────────────────────────────────────── */
+.admin-page { padding: 28px 24px; max-width: 820px; margin: 0 auto; }
+.admin-page h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.admin-page-sub { font-size: 13px; color: var(--mid); margin-bottom: 28px; }
+.admin-block { background: #222; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+.admin-block-hd { background: #252525; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.admin-block-slug { font-size: 10px; color: #555; font-family: monospace; }
+.admin-toolbar { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: #1E1E1E; }
+.admin-tb-btn { background: #333; border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.admin-tb-btn:hover { background: #444; }
+.admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; }
+.admin-editor a { color: var(--accent); }
+.admin-block-foot { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); background: #1E1E1E; }
+.admin-save-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 7px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.admin-save-btn:hover { opacity: 0.85; }
+.admin-save-status { font-size: 11px; color: var(--mid); }
+
 /* Home page video layout */
 .home-vid-block { border-radius: 10px; overflow: hidden; }
 .home-vid-block iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
@@ -4687,6 +4719,9 @@ input, textarea, select {
     <button class="drawer-nav-item" onclick="navTo('gettingstarted')">
       <span class="nav-icon">🚀</span> Getting Started
     </button>
+    <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
+      <span class="nav-icon">⚙</span> Admin
+    </button>
   </div>
   <div class="drawer-foot">
     <div id="drawerUpgrade" style="display:none">
@@ -4819,15 +4854,17 @@ input, textarea, select {
         <!-- LEFT: video layout -->
         <div class="home-col-left">
 
+          <!-- Block: home-welcome -->
+          <div class="cb-display" data-block="home-welcome"></div>
+
           <!-- Video A — full width -->
           <div class="home-vid-block">
             <iframe src="https://iframe.cloudflarestream.com/7c488e507897f9c22e7f027f6ca74b6b"
               allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
           </div>
-          <div class="home-vid-text">
-            <h3>Video Title A</h3>
-            <p>Short description — replace this with real copy about what this video covers.</p>
-          </div>
+
+          <!-- Block: home-video-1 -->
+          <div class="cb-display" data-block="home-video-1"></div>
 
           <!-- Videos B + C — side by side -->
           <div class="home-vid-grid">
@@ -4849,10 +4886,8 @@ input, textarea, select {
             </div>
           </div>
 
-          <div class="home-vid-text">
-            <h3>Section Title</h3>
-            <p>Replace this with a compelling line about the app — what it does, why it matters.</p>
-          </div>
+          <!-- Block: home-section-1 -->
+          <div class="cb-display" data-block="home-section-1"></div>
 
           <!-- Videos D + E — side by side -->
           <div class="home-vid-grid">
@@ -4873,6 +4908,9 @@ input, textarea, select {
               <div class="home-vid-caption">Short caption here.</div>
             </div>
           </div>
+
+          <!-- Block: home-section-2 -->
+          <div class="cb-display" data-block="home-section-2"></div>
 
         </div>
 
@@ -5686,6 +5724,175 @@ input, textarea, select {
   </div>
 
   <!-- COMMUNITY -->
+  <!-- ADMIN PAGE -->
+  <div class="page" id="page-admin">
+    <div class="admin-page">
+      <h2>⚙ Content Blocks</h2>
+      <p class="admin-page-sub">Write a paragraph for each block. Changes go live immediately on save. Leave empty to hide the block.</p>
+
+      <!-- Block: home-welcome -->
+      <div class="admin-block" id="adminBlock-home-welcome">
+        <div class="admin-block-hd">Home — Welcome Note <span class="admin-block-slug">home-welcome</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('home-welcome','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-welcome','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('home-welcome')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-welcome','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-home-welcome" contenteditable="true" data-slug="home-welcome"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-home-welcome" onclick="saveContentBlock('home-welcome')">Save</button>
+          <span class="admin-save-status" id="admin-status-home-welcome"></span>
+        </div>
+      </div>
+
+      <!-- Block: home-video-1 -->
+      <div class="admin-block" id="adminBlock-home-video-1">
+        <div class="admin-block-hd">Home — Below Video A <span class="admin-block-slug">home-video-1</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('home-video-1','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-video-1','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('home-video-1')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-video-1','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-home-video-1" contenteditable="true" data-slug="home-video-1"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-home-video-1" onclick="saveContentBlock('home-video-1')">Save</button>
+          <span class="admin-save-status" id="admin-status-home-video-1"></span>
+        </div>
+      </div>
+
+      <!-- Block: home-section-1 -->
+      <div class="admin-block" id="adminBlock-home-section-1">
+        <div class="admin-block-hd">Home — Between Videos B+C <span class="admin-block-slug">home-section-1</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-1','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-1','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('home-section-1')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-1','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-home-section-1" contenteditable="true" data-slug="home-section-1"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-home-section-1" onclick="saveContentBlock('home-section-1')">Save</button>
+          <span class="admin-save-status" id="admin-status-home-section-1"></span>
+        </div>
+      </div>
+
+      <!-- Block: home-section-2 -->
+      <div class="admin-block" id="adminBlock-home-section-2">
+        <div class="admin-block-hd">Home — Between Videos D+E <span class="admin-block-slug">home-section-2</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-2','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-2','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('home-section-2')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-2','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-home-section-2" contenteditable="true" data-slug="home-section-2"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-home-section-2" onclick="saveContentBlock('home-section-2')">Save</button>
+          <span class="admin-save-status" id="admin-status-home-section-2"></span>
+        </div>
+      </div>
+
+      <!-- Block: home-section-3 -->
+      <div class="admin-block" id="adminBlock-home-section-3">
+        <div class="admin-block-hd">Home — Bottom <span class="admin-block-slug">home-section-3</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-3','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-3','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('home-section-3')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('home-section-3','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-home-section-3" contenteditable="true" data-slug="home-section-3"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-home-section-3" onclick="saveContentBlock('home-section-3')">Save</button>
+          <span class="admin-save-status" id="admin-status-home-section-3"></span>
+        </div>
+      </div>
+
+      <!-- Block: dashboard-welcome -->
+      <div class="admin-block" id="adminBlock-dashboard-welcome">
+        <div class="admin-block-hd">Dashboard — Welcome Note <span class="admin-block-slug">dashboard-welcome</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-welcome','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-welcome','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('dashboard-welcome')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-welcome','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-dashboard-welcome" contenteditable="true" data-slug="dashboard-welcome"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-dashboard-welcome" onclick="saveContentBlock('dashboard-welcome')">Save</button>
+          <span class="admin-save-status" id="admin-status-dashboard-welcome"></span>
+        </div>
+      </div>
+
+      <!-- Block: dashboard-note-1 -->
+      <div class="admin-block" id="adminBlock-dashboard-note-1">
+        <div class="admin-block-hd">Dashboard — Note 1 <span class="admin-block-slug">dashboard-note-1</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-1','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-1','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('dashboard-note-1')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-1','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-dashboard-note-1" contenteditable="true" data-slug="dashboard-note-1"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-dashboard-note-1" onclick="saveContentBlock('dashboard-note-1')">Save</button>
+          <span class="admin-save-status" id="admin-status-dashboard-note-1"></span>
+        </div>
+      </div>
+
+      <!-- Block: dashboard-note-2 -->
+      <div class="admin-block" id="adminBlock-dashboard-note-2">
+        <div class="admin-block-hd">Dashboard — Note 2 <span class="admin-block-slug">dashboard-note-2</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-2','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-2','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('dashboard-note-2')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-note-2','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-dashboard-note-2" contenteditable="true" data-slug="dashboard-note-2"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-dashboard-note-2" onclick="saveContentBlock('dashboard-note-2')">Save</button>
+          <span class="admin-save-status" id="admin-status-dashboard-note-2"></span>
+        </div>
+      </div>
+
+      <!-- Block: site-wide-1 -->
+      <div class="admin-block" id="adminBlock-site-wide-1">
+        <div class="admin-block-hd">Site-Wide — Block 1 <span class="admin-block-slug">site-wide-1</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-1','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-1','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('site-wide-1')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-1','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-site-wide-1" contenteditable="true" data-slug="site-wide-1"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-site-wide-1" onclick="saveContentBlock('site-wide-1')">Save</button>
+          <span class="admin-save-status" id="admin-status-site-wide-1"></span>
+        </div>
+      </div>
+
+      <!-- Block: site-wide-2 -->
+      <div class="admin-block" id="adminBlock-site-wide-2">
+        <div class="admin-block-hd">Site-Wide — Block 2 <span class="admin-block-slug">site-wide-2</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-2','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-2','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('site-wide-2')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('site-wide-2','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-site-wide-2" contenteditable="true" data-slug="site-wide-2"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-site-wide-2" onclick="saveContentBlock('site-wide-2')">Save</button>
+          <span class="admin-save-status" id="admin-status-site-wide-2"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="page" id="page-community">
     <div class="community-page">
       <div class="community-header">
@@ -6309,6 +6516,10 @@ function updateUI(user) {
   // Show/hide upgrade prompt in drawer
   const drawerUpgrade = document.getElementById('drawerUpgrade');
   if (drawerUpgrade) drawerUpgrade.style.display = (loggedIn && !currentMember) ? 'block' : 'none';
+
+  // Admin nav — only for site owner
+  const navAdmin = document.getElementById('nav-admin');
+  if (navAdmin) navAdmin.style.display = (loggedIn && user.email === 'lscottbutler@gmail.com') ? 'flex' : 'none';
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -8350,6 +8561,72 @@ function switchBSTab(idx, tab) {
   });
 }
 
+/* ── CONTENT BLOCKS ─────────────────────────────────────
+   Load all blocks from Supabase and inject into [data-block] elements.
+   Admin: save individual blocks back.
+──────────────────────────────────────────────────────── */
+async function loadContentBlocks() {
+  const { data, error } = await sb.from('content_blocks').select('slug, body');
+  if (error || !data) return;
+  data.forEach(({ slug, body }) => {
+    // Inject into display elements
+    document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
+      if (body && body.trim()) {
+        el.innerHTML = body;
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+    // Pre-fill admin editors if open
+    const ed = document.getElementById(`admin-editor-${slug}`);
+    if (ed && !ed.dataset.dirty) ed.innerHTML = body || '';
+  });
+}
+
+async function saveContentBlock(slug) {
+  const ed  = document.getElementById(`admin-editor-${slug}`);
+  const btn = document.getElementById(`admin-save-${slug}`);
+  const st  = document.getElementById(`admin-status-${slug}`);
+  if (!ed || !btn) return;
+  const body = ed.innerHTML.trim();
+  btn.disabled = true; btn.textContent = 'Saving…';
+  st.textContent = '';
+  const { error } = await sb.from('content_blocks')
+    .upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+  if (error) {
+    btn.textContent = 'Save'; btn.disabled = false;
+    st.textContent = '✗ Error — ' + error.message;
+    return;
+  }
+  btn.textContent = 'Save'; btn.disabled = false;
+  st.textContent = '✓ Saved';
+  setTimeout(() => { st.textContent = ''; }, 3000);
+  // Push live immediately to any display elements on page
+  document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
+    if (body) { el.innerHTML = body; el.style.display = ''; }
+    else el.style.display = 'none';
+  });
+}
+
+function adminFmt(slug, cmd) {
+  const ed = document.getElementById(`admin-editor-${slug}`);
+  if (!ed) return;
+  ed.focus();
+  document.execCommand(cmd, false, null);
+  ed.dataset.dirty = '1';
+}
+
+function adminLink(slug) {
+  const ed = document.getElementById(`admin-editor-${slug}`);
+  if (!ed) return;
+  const url = prompt('Enter URL:');
+  if (!url) return;
+  ed.focus();
+  document.execCommand('createLink', false, url);
+  ed.dataset.dirty = '1';
+}
+
 /* ── ROADMAP PANEL (with Proven Paths + Tactical Log) ── */
 function buildBSRoadmapPanel(intent, idx) {
   let roadmapHTML = '';
@@ -8524,6 +8801,9 @@ async function init() {
 
   // Populate Setup/BTS forms
   loadPegboard();
+
+  // Load content blocks for all users (public read)
+  loadContentBlocks();
 }
 
 // Keyboard shortcuts
