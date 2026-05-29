@@ -2562,6 +2562,24 @@ input, textarea, select {
 .cb-display em { font-style: italic; }
 .cb-display a { color: var(--accent); text-decoration: underline; }
 
+/* ── NOTES PAGE ─────────────────────────────────────────── */
+.notes-page { padding: 24px 20px; max-width: 720px; margin: 0 auto; }
+.notes-page-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.notes-page-sub { font-size: 12px; color: var(--mid); margin-bottom: 24px; }
+.notes-block { background: #222; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+.notes-block-hd { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #252525; border-bottom: 1px solid var(--border); }
+.notes-block-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.notes-block-loc { font-size: 12px; font-weight: 700; color: var(--black); flex: 1; }
+.notes-block-slug { font-size: 10px; color: #555; font-family: monospace; }
+.notes-bold-input { display: block; width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 12px 16px; font-size: 14px; font-weight: 700; color: var(--black); font-family: inherit; outline: none; }
+.notes-bold-input::placeholder { color: #444; font-weight: 700; }
+.notes-body-input { display: block; width: 100%; background: transparent; border: none; padding: 12px 16px; font-size: 13px; color: var(--mid); font-family: inherit; outline: none; resize: vertical; min-height: 80px; line-height: 1.6; }
+.notes-body-input::placeholder { color: #444; }
+.notes-block-foot { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid var(--border); background: #1E1E1E; }
+.notes-save-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.notes-save-btn:hover { opacity: 0.85; }
+.notes-save-status { font-size: 11px; color: var(--mid); }
+
 /* ── ADMIN PAGE ────────────────────────────────────────── */
 .admin-page { padding: 28px 24px; max-width: 820px; margin: 0 auto; }
 .admin-page h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
@@ -4722,6 +4740,9 @@ input, textarea, select {
     <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
       <span class="nav-icon">⚙</span> Admin
     </button>
+    <button class="drawer-nav-item" id="nav-notes" style="display:none" onclick="navTo('notes')">
+      <span class="nav-icon">✏️</span> My Notes
+    </button>
   </div>
   <div class="drawer-foot">
     <div id="drawerUpgrade" style="display:none">
@@ -5724,6 +5745,95 @@ input, textarea, select {
   </div>
 
   <!-- COMMUNITY -->
+  <!-- NOTES PAGE -->
+  <div class="page" id="page-notes">
+    <div class="notes-page">
+      <div class="notes-page-title">✏️ My Notes</div>
+      <p class="notes-page-sub">First line displays bold. Second field is the paragraph. Save pushes live instantly.</p>
+
+      <!-- 1 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">1</span><span class="notes-block-loc">Home — Welcome Note</span><span class="notes-block-slug">home-welcome</span></div>
+        <input class="notes-bold-input" id="nb-bold-home-welcome" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-home-welcome" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-welcome')">Save</button><span class="notes-save-status" id="nb-status-home-welcome"></span></div>
+      </div>
+
+      <!-- 2 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">2</span><span class="notes-block-loc">Home — Below Video A</span><span class="notes-block-slug">home-video-1</span></div>
+        <input class="notes-bold-input" id="nb-bold-home-video-1" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-home-video-1" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-video-1')">Save</button><span class="notes-save-status" id="nb-status-home-video-1"></span></div>
+      </div>
+
+      <!-- 3 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">3</span><span class="notes-block-loc">Home — Between Videos B+C</span><span class="notes-block-slug">home-section-1</span></div>
+        <input class="notes-bold-input" id="nb-bold-home-section-1" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-home-section-1" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-1')">Save</button><span class="notes-save-status" id="nb-status-home-section-1"></span></div>
+      </div>
+
+      <!-- 4 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">4</span><span class="notes-block-loc">Home — Between Videos D+E</span><span class="notes-block-slug">home-section-2</span></div>
+        <input class="notes-bold-input" id="nb-bold-home-section-2" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-home-section-2" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-2')">Save</button><span class="notes-save-status" id="nb-status-home-section-2"></span></div>
+      </div>
+
+      <!-- 5 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">5</span><span class="notes-block-loc">Home — Bottom</span><span class="notes-block-slug">home-section-3</span></div>
+        <input class="notes-bold-input" id="nb-bold-home-section-3" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-home-section-3" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-3')">Save</button><span class="notes-save-status" id="nb-status-home-section-3"></span></div>
+      </div>
+
+      <!-- 6 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">6</span><span class="notes-block-loc">Dashboard — Welcome Note</span><span class="notes-block-slug">dashboard-welcome</span></div>
+        <input class="notes-bold-input" id="nb-bold-dashboard-welcome" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-dashboard-welcome" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-welcome')">Save</button><span class="notes-save-status" id="nb-status-dashboard-welcome"></span></div>
+      </div>
+
+      <!-- 7 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">7</span><span class="notes-block-loc">Dashboard — Note 1</span><span class="notes-block-slug">dashboard-note-1</span></div>
+        <input class="notes-bold-input" id="nb-bold-dashboard-note-1" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-dashboard-note-1" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-note-1')">Save</button><span class="notes-save-status" id="nb-status-dashboard-note-1"></span></div>
+      </div>
+
+      <!-- 8 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">8</span><span class="notes-block-loc">Dashboard — Note 2</span><span class="notes-block-slug">dashboard-note-2</span></div>
+        <input class="notes-bold-input" id="nb-bold-dashboard-note-2" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-dashboard-note-2" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-note-2')">Save</button><span class="notes-save-status" id="nb-status-dashboard-note-2"></span></div>
+      </div>
+
+      <!-- 9 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">9</span><span class="notes-block-loc">Site-Wide — Block 1</span><span class="notes-block-slug">site-wide-1</span></div>
+        <input class="notes-bold-input" id="nb-bold-site-wide-1" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-site-wide-1" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('site-wide-1')">Save</button><span class="notes-save-status" id="nb-status-site-wide-1"></span></div>
+      </div>
+
+      <!-- 10 -->
+      <div class="notes-block">
+        <div class="notes-block-hd"><span class="notes-block-num">10</span><span class="notes-block-loc">Site-Wide — Block 2</span><span class="notes-block-slug">site-wide-2</span></div>
+        <input class="notes-bold-input" id="nb-bold-site-wide-2" type="text" placeholder="Bold opening line…">
+        <textarea class="notes-body-input" id="nb-body-site-wide-2" placeholder="Paragraph text…"></textarea>
+        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('site-wide-2')">Save</button><span class="notes-save-status" id="nb-status-site-wide-2"></span></div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ADMIN PAGE -->
   <div class="page" id="page-admin">
     <div class="admin-page">
@@ -6517,9 +6627,12 @@ function updateUI(user) {
   const drawerUpgrade = document.getElementById('drawerUpgrade');
   if (drawerUpgrade) drawerUpgrade.style.display = (loggedIn && !currentMember) ? 'block' : 'none';
 
-  // Admin nav — only for site owner
+  // Admin + Notes nav — only for site owner
+  const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   const navAdmin = document.getElementById('nav-admin');
-  if (navAdmin) navAdmin.style.display = (loggedIn && user.email === 'lscottbutler@gmail.com') ? 'flex' : 'none';
+  const navNotes = document.getElementById('nav-notes');
+  if (navAdmin) navAdmin.style.display = isOwner ? 'flex' : 'none';
+  if (navNotes) navNotes.style.display = isOwner ? 'flex' : 'none';
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -8578,9 +8691,46 @@ async function loadContentBlocks() {
         el.style.display = 'none';
       }
     });
-    // Pre-fill admin editors if open
+    // Pre-fill admin editors
     const ed = document.getElementById(`admin-editor-${slug}`);
     if (ed && !ed.dataset.dirty) ed.innerHTML = body || '';
+    // Pre-fill notes page fields — parse bold line + body
+    const boldEl = document.getElementById(`nb-bold-${slug}`);
+    const bodyEl = document.getElementById(`nb-body-${slug}`);
+    if (boldEl && bodyEl && body) {
+      const m = body.match(/^<strong>([\s\S]*?)<\/strong>(?:<br><br>)?([\s\S]*)$/i);
+      if (m) {
+        boldEl.value = m[1].trim();
+        bodyEl.value = m[2].trim();
+      } else {
+        bodyEl.value = body.replace(/<[^>]+>/g, '').trim();
+      }
+    }
+  });
+}
+
+async function saveNoteBlock(slug) {
+  const boldEl = document.getElementById(`nb-bold-${slug}`);
+  const bodyEl = document.getElementById(`nb-body-${slug}`);
+  const st     = document.getElementById(`nb-status-${slug}`);
+  const btn    = document.querySelector(`#page-notes [onclick="saveNoteBlock('${slug}')"]`);
+  if (!boldEl || !bodyEl) return;
+  const boldText = boldEl.value.trim();
+  const bodyText = bodyEl.value.trim();
+  let body = '';
+  if (boldText && bodyText) body = `<strong>${boldText}</strong><br><br>${bodyText}`;
+  else if (boldText)        body = `<strong>${boldText}</strong>`;
+  else if (bodyText)        body = bodyText;
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  const { error } = await sb.from('content_blocks')
+    .upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+  if (btn) { btn.disabled = false; btn.textContent = 'Save'; }
+  if (error) { if (st) st.textContent = '✗ Error'; return; }
+  if (st) { st.textContent = '✓ Saved'; setTimeout(() => { st.textContent = ''; }, 3000); }
+  // Push live to display elements
+  document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
+    if (body) { el.innerHTML = body; el.style.display = ''; }
+    else el.style.display = 'none';
   });
 }
 
