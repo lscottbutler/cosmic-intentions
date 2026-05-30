@@ -6418,23 +6418,7 @@ function navTo(id) {
     openAuth('signin');
     return;
   }
-  // Must be a member for core app pages
-  const member_required = ['dashboard','setup','bts','community'];
-  if (member_required.includes(id) && !currentMember) {
-    if (syncPending) {
-      // Sync still in flight — wait for it, then retry
-      const poll = setInterval(() => {
-        if (!syncPending) {
-          clearInterval(poll);
-          navTo(id);
-        }
-      }, 100);
-      return;
-    }
-    closeDrawer();
-    openUpgrade();
-    return;
-  }
+  // Member gate disabled during development
   showPage(id);
 }
 
