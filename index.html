@@ -6312,6 +6312,7 @@ const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 let   currentUser   = null;
 let   currentMember = false; // true = active paying member
+let   syncPending   = false; // true while syncFromSupabase is in flight
 
 /* ─────────────────────────────────────────────────────────
    CLAUDE API (DEV_MODE stub + real fetch)
@@ -6420,6 +6421,16 @@ function navTo(id) {
   // Must be a member for core app pages
   const member_required = ['dashboard','setup','bts','community'];
   if (member_required.includes(id) && !currentMember) {
+    if (syncPending) {
+      // Sync still in flight — wait for it, then retry
+      const poll = setInterval(() => {
+        if (!syncPending) {
+          clearInterval(poll);
+          navTo(id);
+        }
+      }, 100);
+      return;
+    }
     closeDrawer();
     openUpgrade();
     return;
@@ -6767,6 +6778,7 @@ async function syncToSupabase() {
 
 async function syncFromSupabase() {
   if (!currentUser) return;
+  syncPending = true;
   try {
     const { data, error } = await sb
       .from('profiles')
@@ -6776,6 +6788,7 @@ async function syncFromSupabase() {
     if (error || !data) {
       console.warn('[Supabase] syncFromSupabase — no row found:', error?.message);
       currentMember = true;
+      syncPending = false;
       updateUI(currentUser);
       return;
     }
@@ -6806,6 +6819,7 @@ async function syncFromSupabase() {
     if (!hasData && hasLocal) {
       console.warn('[Supabase] syncFromSupabase — Supabase row is empty, keeping localStorage data');
       currentMember = data?.is_member === true;
+      syncPending = false;
       updateUI(currentUser);
       return;
     }
@@ -6817,9 +6831,11 @@ async function syncFromSupabase() {
     console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);
 
     currentMember = data?.is_member === true;
+    syncPending = false;
     updateUI(currentUser);
   } catch(e) {
     console.warn('[Supabase] syncFromSupabase failed:', e);
+    syncPending = false;
   }
 }
 
