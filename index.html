@@ -3356,6 +3356,19 @@ input, textarea, select {
   flex-shrink: 0;
 }
 .vault-item-body { flex: 1; min-width: 0; }
+/* ── DIGITAL VISION BOARD IMAGE ───────────────────────── */
+.dvb-image-wrap {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+.dvb-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
 .vault-item-title {
   font-size: 14px;
   font-weight: 600;
@@ -7611,19 +7624,43 @@ async function confirmAddIntention() {
   if (!title) { toast('Enter your intention.', 'error'); return; }
   if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
 
-  intentions.push({
+  const intention = {
     id:          crypto.randomUUID(),
     title,
     words:       { mission:'', affirmations:'', beliefs:'', quotes:'', insights:'' },
     mindset:     null,
     achievers:   null,
-  });
+    imageUrl:    null,
+  };
+  intentions.push(intention);
 
   hideAddForm();
   await saveIntentions();
   renderDashboard();
   selectVaultIntention(intentions.length - 1);
-  toast('Intention added ✓', 'success');
+  toast('Intention added ✓ — finding your vision image…', 'success');
+
+  // Fetch vision board image in background
+  fetchGoalImage(intentions.length - 1, title);
+}
+
+async function fetchGoalImage(idx, title) {
+  try {
+    const res = await fetch('/api/image-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ intention: title })
+    });
+    if (!res.ok) return;
+    const { imageUrl } = await res.json();
+    if (!imageUrl || !intentions[idx]) return;
+    intentions[idx].imageUrl = imageUrl;
+    await saveIntentions();
+    renderVaultSidebar();
+    toast('Vision image ready ✓', 'success');
+  } catch(e) {
+    console.error('Image fetch failed:', e);
+  }
 }
 
 function renderPBIntentionList() {
@@ -8843,7 +8880,8 @@ function renderVaultSidebar() {
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
-        return `<button class="vault-item${isSelected ? ' selected' : ''}"
+        return `${i.imageUrl ? `<div class="dvb-image-wrap"><img class="dvb-image" src="${i.imageUrl}" alt="${esc(i.title)}"></div>` : ''}
+        <button class="vault-item${isSelected ? ' selected' : ''}"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
           <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
