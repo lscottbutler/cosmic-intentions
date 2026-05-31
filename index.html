@@ -5066,7 +5066,10 @@ input, textarea, select {
         <!-- WELCOME STATE -->
         <div id="vaultWelcome" class="vault-welcome">
 
-          <div class="vault-welcome-title" id="vaultWelcomeName">Welcome back</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="vault-welcome-title" id="vaultWelcomeName">Welcome back</div>
+            <button onclick="navTo('home')" style="background:#1a1a1a;border:1px solid #383838;color:#aaa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⌂ Home</button>
+          </div>
           <p class="vault-welcome-sub">Your Knowledge Vault is ready. Select an intention from the Archive Index to open its Build Sheet — complete with your AI Roadmap and Library.</p>
           <div class="vault-stats-row">
             <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
