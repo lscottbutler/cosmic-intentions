@@ -5130,7 +5130,7 @@ input, textarea, select {
           </div>
           
           <!-- PLAYER ACCORDIONS -->
-          <div class="acc-list">
+          <div class="acc-list" id="vizAccList">
 
             <div class="acc-item">
               <button class="acc-trigger" id="accTrig-timer" onclick="toggleAcc('timer')">
@@ -8637,7 +8637,7 @@ function renderVaultSidebar() {
         </div>`;
 
       // Rescue acc-list before innerHTML wipes it
-      const accList = document.querySelector('.acc-list');
+      const accList = document.getElementById('vizAccList');
       if (accList) document.body.appendChild(accList);
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
