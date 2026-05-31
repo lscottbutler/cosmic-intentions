@@ -4526,9 +4526,12 @@ input, textarea, select {
 }
 .med-timer-image {
   width: 100%;
-  height: 280px;
-  background-size: cover;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
+  background-color: #000;
   position: relative;
 }
 .med-timer-image::after {
