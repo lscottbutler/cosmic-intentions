@@ -3282,27 +3282,26 @@ input, textarea, select {
 .vault-item-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 4px 6px 8px;
-  margin-top: -16px;
+  gap: 6px;
+  padding: 6px 6px 10px;
 }
 .vin-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #1a1a1a;
+  gap: 12px;
+  background: #1c1c1c;
   border: none;
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 11px 14px;
   cursor: pointer;
   width: 100%;
   text-align: left;
   transition: background 0.15s;
 }
-.vin-row:hover { background: #222; }
+.vin-row:hover { background: #272727; }
 .vin-icon {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: #000;
   display: flex;
@@ -3311,18 +3310,36 @@ input, textarea, select {
   flex-shrink: 0;
   overflow: hidden;
 }
-.vin-icon img { width: 22px; height: 22px; object-fit: contain; filter: invert(1); }
+.vin-icon img { width: 24px; height: 24px; object-fit: contain; filter: invert(1); }
 .vin-label {
   flex: 1;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #e0e0e0;
+  letter-spacing: 0.07em;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.vin-arrow { color: #666; font-size: 10px; flex-shrink: 0; }
+.vin-arrow { color: #555; font-size: 11px; flex-shrink: 0; }
+.vin-sub {
+  display: flex;
+  gap: 8px;
+  padding: 4px 6px 6px 60px;
+}
+.vin-sub-btn {
+  flex: 1;
+  background: #2a2a2a;
+  border: 1px solid #383838;
+  border-radius: 20px;
+  color: #e0e0e0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.vin-sub-btn:hover { background: #333; }
 .vault-item-dot { display: none; }
 .vault-item-num {
   width: 24px;
@@ -6473,6 +6490,15 @@ function navTo(id) {
 /* ─────────────────────────────────────────────────────────
    DRAWER
 ───────────────────────────────────────────────────────── */
+function toggleVinMed(idx) {
+  const sub   = document.getElementById(`vinMedSub-${idx}`);
+  const arrow = document.getElementById(`vinMedArrow-${idx}`);
+  if (!sub) return;
+  const open = sub.style.display === 'none';
+  sub.style.display   = open ? 'flex' : 'none';
+  arrow.textContent   = open ? '▼' : '▶';
+}
+
 function toggleDrawer() {
   const drawer  = document.getElementById('drawer');
   const overlay = document.getElementById('drawerOverlay');
@@ -8572,11 +8598,17 @@ function renderVaultSidebar() {
             <span class="vin-label">VISUALIZATION</span>
             <span class="vin-arrow">▶</span>
           </button>
-          <button class="vin-row" onclick="openMeditationModal()">
-            <span class="vin-icon"><img src="images/icons/meditations.png" alt=""></span>
-            <span class="vin-label">MEDITATION</span>
-            <span class="vin-arrow">▶</span>
-          </button>
+          <div>
+            <button class="vin-row" onclick="toggleVinMed(${idx})">
+              <span class="vin-icon"><img src="images/icons/meditations.png" alt=""></span>
+              <span class="vin-label">MEDITATION</span>
+              <span class="vin-arrow" id="vinMedArrow-${idx}">▶</span>
+            </button>
+            <div class="vin-sub" id="vinMedSub-${idx}" style="display:none">
+              <button class="vin-sub-btn" onclick="openMeditationModal('guided')">🎧 Guided</button>
+              <button class="vin-sub-btn" onclick="openMeditationModal('unguided')">🤫 Unguided</button>
+            </div>
+          </div>
           <button class="vin-row" onclick="launchVisualCountdown(180,${idx})">
             <span class="vin-icon"><img src="images/icons/head-brain.png" alt=""></span>
             <span class="vin-label">3-MIN VISUALIZATION</span>
