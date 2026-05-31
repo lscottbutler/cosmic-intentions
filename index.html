@@ -2639,7 +2639,22 @@ input, textarea, select {
 .admin-toolbar { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: #1E1E1E; }
 .admin-tb-btn { background: #333; border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .admin-tb-btn:hover { background: #444; }
-.admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; }
+.admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; width: 100%; max-width: 100%; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word; }
+.admin-editor *, .admin-editor p, .admin-editor div, .admin-editor span {
+  max-width: 100% !important;
+  width: auto !important;
+  column-count: 1 !important;
+  column-width: auto !important;
+  float: none !important;
+  display: block !important;
+}
+.admin-editor table, .admin-editor tbody, .admin-editor tr, .admin-editor td, .admin-editor th {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
 .admin-editor a { color: var(--accent); }
 .admin-block-foot { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); background: #1E1E1E; }
 .admin-save-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 7px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
