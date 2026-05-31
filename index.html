@@ -2517,20 +2517,27 @@ input, textarea, select {
 }
 .home-member-cols {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  gap: 32px;
+  padding: 32px 40px 48px;
   align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 .home-col-left {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  padding: 8px;
 }
 .home-col-right {
-  width: 280px;
+  width: 320px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px;
 }
 .home-whats-new {
   margin: 0;
@@ -2696,9 +2703,10 @@ input, textarea, select {
 @media (max-width: 760px) {
   .home-member-cols {
     flex-direction: column;
-    padding: 12px;
-    gap: 16px;
+    padding: 16px 14px 32px;
+    gap: 20px;
   }
+  .home-col-left, .home-col-right { padding: 0; }
   .home-col-right {
     width: 100%;
     order: -1; /* show buttons + welcome above videos on mobile */
