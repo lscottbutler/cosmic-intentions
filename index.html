@@ -3386,6 +3386,25 @@ input, textarea, select {
   transition: background 0.15s, transform 0.15s;
 }
 .dvb-regen-btn:hover { background: rgba(0,0,0,0.8); transform: rotate(90deg); }
+.dvb-loading {
+  aspect-ratio: 16 / 9;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  line-height: 1.4;
+}
+.dvb-spinner {
+  width: 28px; height: 28px;
+  border: 3px solid #333;
+  border-top-color: #888;
+  border-radius: 50%;
+  animation: dvbspin 0.8s linear infinite;
+}
+@keyframes dvbspin { to { transform: rotate(360deg); } }
+.dvb-loading-txt { font-size: 12px; color: #888; letter-spacing: 0.05em; }
 
 .vault-item-title {
   font-size: 14px;
@@ -7677,42 +7696,35 @@ async function confirmAddIntention() {
 }
 
 async function fetchGoalImage(idx, title) {
+  const intn = intentions[idx];
+  if (intn) intn._imgLoading = true;
+  renderVaultSidebar();
   try {
-    const res = await fetch('/api/image-search', {
+    const res = await fetch('/api/image-generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ intention: title })
     });
-    if (!res.ok) return;
-    const { imageUrl, images } = await res.json();
-    if (!imageUrl || !intentions[idx]) return;
-    intentions[idx].imageUrl     = imageUrl;
-    intentions[idx].imageOptions = images || [imageUrl];
-    intentions[idx].imageIdx     = 0;
+    if (!res.ok) throw new Error(`generate ${res.status}`);
+    const { b64 } = await res.json();
+    if (!b64 || !intentions[idx]) return;
+    intentions[idx].imageUrl = `data:image/png;base64,${b64}`;
     await saveIntentions();
-    renderVaultSidebar();
     toast('Vision image ready ✓', 'success');
   } catch(e) {
-    console.error('Image fetch failed:', e);
+    console.error('Image generation failed:', e);
+    toast('Image generation failed — try regenerate.', 'error');
+  } finally {
+    if (intentions[idx]) intentions[idx]._imgLoading = false;
+    renderVaultSidebar();
   }
 }
 
 async function regenerateGoalImage(idx, ev) {
   if (ev) ev.stopPropagation();
   const intn = intentions[idx];
-  if (!intn) return;
-
-  const opts = intn.imageOptions || [];
-  // Cycle to next option if we have a batch left
-  if (opts.length > 1) {
-    intn.imageIdx = ((intn.imageIdx || 0) + 1) % opts.length;
-    intn.imageUrl = opts[intn.imageIdx];
-    await saveIntentions();
-    renderVaultSidebar();
-    return;
-  }
-  // Otherwise pull a fresh batch
-  toast('Finding a new image…', 'success');
+  if (!intn || intn._imgLoading) return;
+  toast('Generating a new image…', 'success');
   await fetchGoalImage(idx, intn.title);
 }
 
@@ -8933,7 +8945,12 @@ function renderVaultSidebar() {
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
-        return `${i.imageUrl ? `<div class="dvb-image-wrap"><img class="dvb-image" src="${i.imageUrl}" alt="${esc(i.title)}"><button class="dvb-regen-btn" title="New image" onclick="regenerateGoalImage(${i._idx}, event)">↻</button></div>` : ''}
+        const dvb = i._imgLoading
+          ? `<div class="dvb-image-wrap dvb-loading"><span class="dvb-spinner"></span><span class="dvb-loading-txt">Generating your vision…</span></div>`
+          : (i.imageUrl
+            ? `<div class="dvb-image-wrap"><img class="dvb-image" src="${i.imageUrl}" alt="${esc(i.title)}"><button class="dvb-regen-btn" title="New image" onclick="regenerateGoalImage(${i._idx}, event)">↻</button></div>`
+            : '');
+        return `${dvb}
         <button class="vault-item${isSelected ? ' selected' : ''}"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
