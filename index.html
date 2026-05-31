@@ -9696,7 +9696,6 @@ function medTick() {
   medSt.interval = setInterval(() => {
     medSt.countdown--;
     display.textContent = medFmtTime(medSt.countdown);
-    if (medSt.countdown === medSt.halfPoint) playBell();
     if (medSt.countdown === 300 && medSt.duration > 300) {
       playBell();
       medSt.timers.push(setTimeout(() => playBell(), 2500));
