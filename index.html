@@ -8646,11 +8646,7 @@ function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
-        </button>${isSelected ? `<div class="bs-header" style="background:#252525;border:4px solid ${CARD_COLORS[i._idx % CARD_COLORS.length]};border-radius:10px;position:relative;margin:4px 6px 0;">
-  <div class="bs-title-col"><div class="bs-intention-title">${esc(i.title)}</div></div>
-  <div class="bs-header-btns"><button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button></div>
-  <div class="bs-num-circle">${i._idx + 1}</div>
-</div>` + playerNav(i._idx) : ''}`;
+        </button>${isSelected ? playerNav(i._idx) : ''}`;
       }).join('');
     }
   }
