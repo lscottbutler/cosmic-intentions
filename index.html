@@ -7157,7 +7157,21 @@ async function syncIntentionsFromSupabase() {
       .eq('user_id', currentUser.id);
     if (error || !data) return;
     if (Array.isArray(data)) {
-      intentions = data.map(row => ({ ...row }));
+      // Preserve client-only vision-board fields not stored in Supabase
+      const prevById = {};
+      (intentions || []).forEach(i => { if (i && i.id) prevById[i.id] = i; });
+      (LS.get(`ci_intentions_${currentUser.id}`) || []).forEach(i => {
+        if (i && i.id && !prevById[i.id]) prevById[i.id] = i;
+      });
+      intentions = data.map(row => {
+        const prev = prevById[row.id] || {};
+        return {
+          ...row,
+          imageUrl:     prev.imageUrl     || null,
+          imageOptions: prev.imageOptions || (prev.imageUrl ? [prev.imageUrl] : null),
+          imageIdx:     prev.imageIdx     || 0,
+        };
+      });
       LS.set(`ci_intentions_${currentUser.id}`, intentions);
     }
   } catch(e) {
