@@ -8637,6 +8637,10 @@ function renderVaultSidebar() {
           </button>
         </div>`;
 
+      // Rescue acc-list before innerHTML wipes it
+      const accList = document.querySelector('.acc-list');
+      if (accList) document.body.appendChild(accList);
+
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
@@ -8652,7 +8656,6 @@ function renderVaultSidebar() {
 
       // Move the acc-list into column B under the selected goal
       const slot = document.getElementById('goalNavSlot');
-      const accList = document.querySelector('.acc-list');
       if (slot && accList) slot.appendChild(accList);
     }
   }
