@@ -9701,7 +9701,7 @@ function medTick() {
       playBell();
       medSt.timers.push(setTimeout(() => playBell(), 2500));
     }
-    if (medSt.countdown <= 60 && medSt.countdown > 0) circle.classList.add('ending');
+    if (medSt.countdown <= 3 && medSt.countdown > 0) circle.classList.add('ending');
     if (medSt.countdown <= 0) {
       clearInterval(medSt.interval); medSt.interval = null;
       circle.classList.remove('ending');
