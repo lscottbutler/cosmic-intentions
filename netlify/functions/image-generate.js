@@ -41,11 +41,11 @@ Intention: "${intention}"`
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: 'gpt-image-1',
         prompt,
         n: 1,
-        size: '1792x1024',
-        quality: 'standard'
+        size: '1536x1024',
+        quality: 'medium'
       })
     });
 
@@ -55,13 +55,13 @@ Intention: "${intention}"`
     }
 
     const data = await imgRes.json();
-    const imageUrl = data.data?.[0]?.url;
-    if (!imageUrl) return { statusCode: 502, body: 'No image generated' };
+    const b64 = data.data?.[0]?.b64_json;
+    if (!b64) return { statusCode: 502, body: 'No image generated' };
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageUrl, prompt })
+      body: JSON.stringify({ b64, prompt })
     };
   } catch(e) {
     return { statusCode: 500, body: e.message };
