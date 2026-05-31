@@ -5393,6 +5393,115 @@ input, textarea, select {
         </div>
       </div>
 
+      <!-- LIFE AREAS -->
+      <div class="setup-section">
+        <div class="setup-section-title">Life Areas</div>
+        <span class="field-hint" style="display:block;margin-bottom:12px;">Rate each area: where you are now vs. where you want to be (1–10).</span>
+        <div style="display:grid;grid-template-columns:1fr 52px 52px;gap:6px 12px;align-items:center;">
+          <span style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.08em;">Area</span>
+          <span style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Now</span>
+          <span style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Target</span>
+
+          <span class="field-label" style="margin:0;">Health</span>
+          <input class="field-input" type="number" id="pb-area-health-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-health-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Wealth</span>
+          <input class="field-input" type="number" id="pb-area-wealth-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-wealth-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Relationships</span>
+          <input class="field-input" type="number" id="pb-area-relationships-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-relationships-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Spirituality</span>
+          <input class="field-input" type="number" id="pb-area-spirituality-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-spirituality-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Career</span>
+          <input class="field-input" type="number" id="pb-area-career-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-career-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Personal Growth</span>
+          <input class="field-input" type="number" id="pb-area-personalgrowth-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-personalgrowth-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+
+          <span class="field-label" style="margin:0;">Fun &amp; Adventure</span>
+          <input class="field-input" type="number" id="pb-area-funadventure-now" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+          <input class="field-input" type="number" id="pb-area-funadventure-target" min="1" max="10" placeholder="–" style="text-align:center;padding:6px;" />
+        </div>
+      </div>
+
+      <!-- LIMITING BELIEFS -->
+      <div class="setup-section">
+        <div class="setup-section-title">Limiting Beliefs</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-limiting">What's Holding You Back</label>
+          <span class="field-hint">The stories you tell yourself that keep you stuck. Be ruthlessly honest.</span>
+          <textarea class="field-input tall" id="pb-limiting" placeholder="e.g. I'm not smart enough. I don't deserve success. Money is hard to make. I always self-sabotage."></textarea>
+        </div>
+      </div>
+
+      <!-- ROLE MODELS -->
+      <div class="setup-section">
+        <div class="setup-section-title">Role Models</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-rolemodels">Who Do You Want to Model</label>
+          <span class="field-hint">People who embody what you're becoming. Include what you admire about them.</span>
+          <textarea class="field-input tall" id="pb-rolemodels" placeholder="e.g. David Goggins — relentless discipline. Elon Musk — vision at scale. My grandfather — integrity and calm under pressure."></textarea>
+        </div>
+      </div>
+
+      <!-- DAILY NON-NEGOTIABLES -->
+      <div class="setup-section">
+        <div class="setup-section-title">Daily Non-Negotiables</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-nonneg">Habits You Must Do Every Day</label>
+          <span class="field-hint">The minimum daily actions that keep you on track no matter what.</span>
+          <textarea class="field-input tall" id="pb-nonneg" placeholder="e.g. Morning visualization, 30 min exercise, read 20 pages, no phone first hour, gratitude journal."></textarea>
+        </div>
+      </div>
+
+      <!-- TIME TARGETS -->
+      <div class="setup-section">
+        <div class="setup-section-title">Time Targets</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-target6m">6-Month Target</label>
+          <span class="field-hint">Where will you be in 6 months if you execute perfectly?</span>
+          <textarea class="field-input" id="pb-target6m" placeholder="e.g. $10k/month revenue, lost 15kg, launched my podcast, daily meditation habit locked in."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="pb-target1y">1-Year Target</label>
+          <span class="field-hint">Your big 12-month vision.</span>
+          <textarea class="field-input" id="pb-target1y" placeholder="e.g. $150k year, team of 3, moved to my dream city, running a half marathon."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="pb-target5y">5-Year Target</label>
+          <span class="field-hint">The life you're building toward.</span>
+          <textarea class="field-input" id="pb-target5y" placeholder="e.g. 8-figure business, complete financial freedom, living abroad, speaking on global stages."></textarea>
+        </div>
+      </div>
+
+      <!-- BIGGEST FEAR -->
+      <div class="setup-section">
+        <div class="setup-section-title">Biggest Fear</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-fear">What Are You Most Afraid Of</label>
+          <span class="field-hint">Name it. Fear loses power when you look it in the eye.</span>
+          <textarea class="field-input" id="pb-fear" placeholder="e.g. Dying without having truly lived. Being ordinary. Letting my family down. Never reaching my potential."></textarea>
+        </div>
+      </div>
+
+      <!-- WHY STATEMENT -->
+      <div class="setup-section">
+        <div class="setup-section-title">Why Statement</div>
+        <div class="field-group">
+          <label class="field-label" for="pb-why">Your Deep Purpose</label>
+          <span class="field-hint">The emotional fuel behind everything. The reason you get up when it's hard.</span>
+          <textarea class="field-input tall" id="pb-why" placeholder="e.g. I do this so my children grow up seeing what's possible. So I can prove — to myself first — that I am capable of extraordinary things."></textarea>
+        </div>
+      </div>
+
       <div style="height: 20px;"></div>
     </div>
 
@@ -6783,6 +6892,16 @@ function updateUI(user) {
 const PB_FIELDS = [
   'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
+  'pb-limiting','pb-rolemodels','pb-nonneg',
+  'pb-target6m','pb-target1y','pb-target5y',
+  'pb-fear','pb-why',
+  'pb-area-health-now','pb-area-health-target',
+  'pb-area-wealth-now','pb-area-wealth-target',
+  'pb-area-relationships-now','pb-area-relationships-target',
+  'pb-area-spirituality-now','pb-area-spirituality-target',
+  'pb-area-career-now','pb-area-career-target',
+  'pb-area-personalgrowth-now','pb-area-personalgrowth-target',
+  'pb-area-funadventure-now','pb-area-funadventure-target',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
   'openai_voice'
 ];
