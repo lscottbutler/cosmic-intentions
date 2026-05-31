@@ -7644,7 +7644,50 @@ function renderRoadmapResult(a, idx) {
       <span class="roadmap-text">${esc(s)}</span>
     </li>`).join('');
 
+  const bulletSection = (title, arr) => {
+    if (!Array.isArray(arr) || !arr.length) return '';
+    return `
+      <div class="mindset-section">
+        <div class="mindset-section-title">${esc(title)}</div>
+        <ul class="roadmap-list">
+          ${arr.map(s => `<li class="roadmap-item"><span class="roadmap-num">•</span><span class="roadmap-text">${esc(s)}</span></li>`).join('')}
+        </ul>
+      </div>`;
+  };
+
+  let achieverBlock = '';
+  if (a.achiever && a.achiever.name) {
+    achieverBlock = `
+      <div class="mindset-section">
+        <div class="mindset-section-title">Famous Achiever</div>
+        <div class="roadmap-item"><span class="roadmap-text"><strong>${esc(a.achiever.name)}</strong>${a.achiever.tagline ? ` — ${esc(a.achiever.tagline)}` : ''}</span></div>
+      </div>`;
+  }
+
+  let mediaBlock = '';
+  if (a.media && (a.media.youtube || a.media.articles || a.media.podcasts)) {
+    const row = (label, arr) => {
+      if (!Array.isArray(arr) || !arr.length) return '';
+      return `<li class="roadmap-item"><span class="roadmap-num">${esc(label)}</span><span class="roadmap-text">${arr.map(s => esc(s)).join(' · ')}</span></li>`;
+    };
+    mediaBlock = `
+      <div class="mindset-section">
+        <div class="mindset-section-title">Where They Shared the Playbook</div>
+        <ul class="roadmap-list">
+          ${row('YouTube',  a.media.youtube)}
+          ${row('Articles', a.media.articles)}
+          ${row('Podcasts', a.media.podcasts)}
+        </ul>
+      </div>`;
+  }
+
   return `
+    ${achieverBlock}
+    ${mediaBlock}
+    ${bulletSection('Risks Taken',         a.risks_taken)}
+    ${bulletSection('Networking Strategy', a.networking_strategy)}
+    ${bulletSection('Critical Skills',     a.critical_skills)}
+    ${bulletSection('Mindset & Attitudes', a.mindset_attitudes)}
     <div class="mindset-section">
       <div class="mindset-section-title">Your Roadmap</div>
       <ul class="roadmap-list">${items}</ul>
@@ -7924,10 +7967,10 @@ async function generateAchievers(idx) {
     const context = buildContext(pb);
     const title   = intentions[idx]?.title || '';
 
-    const system = `You are a strategic life coach AI. User profile:\n${context}\n\nRespond ONLY with valid JSON — no other text:\n{"roadmap":["step 1","step 2",...]}`;
-    const user   = `Create a practical 7-step action roadmap for the intention: "${title}". Steps should be specific, actionable, and ordered logically.`;
+    const system = `You are a strategic life coach AI building a "Famous Achiever Blueprint". User profile:\n${context}\n\nFor the user's intention, identify the single most famous person who has accomplished a goal closely matching it, then extract the playbook they used. Be specific, name real people, real podcasts, real shows, real channels — no generic placeholders.\n\nRespond ONLY with valid JSON — no prose, no markdown fences:\n{\n  "achiever": {\n    "name": "Full Name",\n    "tagline": "One-line description of who they are and what they achieved relevant to this goal."\n  },\n  "media": {\n    "youtube":  ["specific channel or video title 1", "..."],\n    "articles": ["specific publication + topic 1", "..."],\n    "podcasts": ["specific show + episode/host 1", "..."]\n  },\n  "risks_taken":        ["specific risk 1", "specific risk 2", "..."],\n  "networking_strategy":["specific tactic 1", "..."],\n  "critical_skills":    ["skill 1", "skill 2", "..."],\n  "mindset_attitudes":  ["mindset 1", "mindset 2", "..."],\n  "roadmap": ["practical step 1 the user can take today", "step 2", "...", "step 7"]\n}\n\nRules: each array has 3-5 concrete entries; roadmap has exactly 7 steps the USER can act on (not the achiever); no entry exceeds 160 characters; output valid JSON only.`;
+    const user   = `Build the Famous Achiever Blueprint for intention: "${title}".`;
 
-    const raw    = await callClaude(system, user, 800);
+    const raw    = await callClaude(system, user, 1800);
     const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
 
     intentions[idx].achievers = result;
