@@ -43,27 +43,28 @@ Keywords:`
       // fall back to raw intention if extraction fails
     }
 
-    // Search Pexels for the image
+    // Search Pexels — fetch a batch so the client can regenerate without re-calling
     const pexelsRes = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=1&orientation=landscape`,
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=15&orientation=landscape`,
       { headers: { Authorization: process.env.PEXELS_API_KEY } }
     );
 
     if (!pexelsRes.ok) throw new Error(`Pexels error ${pexelsRes.status}`);
 
     const pexelsData = await pexelsRes.json();
-    const photo = pexelsData.photos?.[0];
+    const photos = pexelsData.photos || [];
 
-    if (!photo) return { statusCode: 404, body: 'No image found' };
+    if (photos.length === 0) return { statusCode: 404, body: 'No image found' };
+
+    const images = photos.map(p => p.src.large2x || p.src.large);
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        imageUrl:    photo.src.large2x || photo.src.large,
-        searchQuery,
-        photographer: photo.photographer,
-        pexelsUrl:   photo.url
+        imageUrl:  images[0],   // primary pick (back-compat)
+        images,                 // full batch for regenerate
+        searchQuery
       })
     };
   } catch(e) {
