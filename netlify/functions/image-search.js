@@ -6,37 +6,41 @@ exports.handler = async (event) => {
     const { intention } = JSON.parse(event.body || '{}');
     if (!intention) return { statusCode: 400, body: 'Missing intention' };
 
-    // Use Claude to extract the best visual search query from the I AM statement
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 50,
-        messages: [{
-          role: 'user',
-          content: `Extract the core visual subject from this I AM intention for an image search. Return ONLY 2-4 keywords, nothing else. No quotes, no explanation.
+    // Use OpenAI to extract the best visual search query from the I AM statement
+    let searchQuery = intention;
+    try {
+      const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPEN_AI_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          max_tokens: 30,
+          temperature: 0.2,
+          messages: [{
+            role: 'user',
+            content: `Extract the core visual subject from this "I AM" intention for an image search. Return ONLY 2-4 keywords, nothing else. No quotes, no explanation.
 
 Intention: "${intention}"
 
 Examples:
-"I AM the proud owner of a Rolex Submariner" → Rolex Submariner watch
-"I AM living in my dream home in Malibu" → luxury Malibu beach house
-"I AM a fit and healthy athlete" → fit athletic person running
+"I AM the proud owner of a Rolex Submariner" -> Rolex Submariner watch
+"I AM living in my dream home in Malibu" -> luxury Malibu beach house
+"I AM a fit and healthy athlete" -> fit athletic person running
 
 Keywords:`
-        }]
-      })
-    });
-
-    let searchQuery = intention;
-    if (claudeRes.ok) {
-      const claudeData = await claudeRes.json();
-      searchQuery = claudeData.content?.[0]?.text?.trim() || intention;
+          }]
+        })
+      });
+      if (aiRes.ok) {
+        const aiData = await aiRes.json();
+        const extracted = aiData.choices?.[0]?.message?.content?.trim();
+        if (extracted) searchQuery = extracted;
+      }
+    } catch(e) {
+      // fall back to raw intention if extraction fails
     }
 
     // Search Pexels for the image
