@@ -4374,6 +4374,14 @@ input, textarea, select {
   padding: 20px 0;
 }
 .med-modal.open { display: flex; }
+.med-modal.inline {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  border-radius: 12px;
+  margin-top: 16px;
+  min-height: 320px;
+}
 
 .med-close-fixed {
   position: fixed;
@@ -5064,6 +5072,8 @@ input, textarea, select {
 
 
         <!-- WELCOME STATE -->
+        <div id="medInlineSlot"></div>
+
         <div id="vaultWelcome" class="vault-welcome">
 
           <div style="display:flex;align-items:center;gap:10px;">
@@ -9731,12 +9741,14 @@ function medStopTimers() {
 
 function closeMeditationModal() {
   medStopTimers();
-  document.getElementById('medModal').classList.remove('open');
+  const modal = document.getElementById('medModal');
+  modal.classList.remove('open', 'inline');
   document.body.style.overflow = '';
   document.getElementById('medTimerView').classList.remove('active');
   document.getElementById('medSelectView').style.display = 'flex';
   document.getElementById('medCountdownCircle').classList.remove('ending');
   medBackToChoice();
+  if (modal.parentElement !== document.body) document.body.appendChild(modal);
 }
 
 /* ── TIMER PICKER ───────────────────────────────────── */
@@ -9819,8 +9831,16 @@ function accMedType(type) {
     btn.textContent = d.label;
     btn.onclick = () => {
       closeAllAcc();
-      document.getElementById('medModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
+      const modal = document.getElementById('medModal');
+      const slot  = document.getElementById('medInlineSlot');
+      if (slot) {
+        slot.appendChild(modal);
+        modal.classList.add('open', 'inline');
+        document.body.style.overflow = '';
+      } else {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
       document.getElementById('medHeroBg').style.backgroundImage = `url("${medDayImage()}")`;
       document.getElementById('medSelectView').style.display = 'none';
       startMedTimer(d.s, _accMedGuided);
