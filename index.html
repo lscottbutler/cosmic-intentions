@@ -2549,18 +2549,30 @@ input, textarea, select {
 
 /* ── CONTENT BLOCKS (display) ─────────────────────────── */
 .cb-display {
-  background: #2A2A2A;
+  background: #555 !important;
   border-radius: 8px;
   padding: 14px 18px;
-  font-size: 13px;
-  color: var(--mid);
+  font-size: 14px;
+  color: #fff !important;
   line-height: 1.7;
   margin: 14px 0;
+  width: 100% !important;
+  box-sizing: border-box;
 }
 .cb-display:empty { display: none; }
-.cb-display strong { color: var(--black); font-weight: 700; }
+/* Force all CMS-authored content inside to inherit our look and width */
+.cb-display *,
+.cb-display p,
+.cb-display div,
+.cb-display span {
+  background: transparent !important;
+  color: #fff !important;
+  max-width: 100% !important;
+  width: auto !important;
+}
+.cb-display strong { color: #fff !important; font-weight: 700; }
 .cb-display em { font-style: italic; }
-.cb-display a { color: var(--accent); text-decoration: underline; }
+.cb-display a { color: var(--accent) !important; text-decoration: underline; }
 
 /* ── NOTES PAGE ─────────────────────────────────────────── */
 .notes-page { padding: 24px 20px; max-width: 720px; margin: 0 auto; }
