@@ -45,8 +45,7 @@ Intention: "${intention}"`
         prompt,
         n: 1,
         size: '1792x1024',
-        quality: 'standard',
-        response_format: 'url'
+        quality: 'standard'
       })
     });
 
