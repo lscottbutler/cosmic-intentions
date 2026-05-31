@@ -3277,6 +3277,52 @@ input, textarea, select {
   background: rgba(56,160,56,0.07);
   border-left-color: var(--orange);
 }
+
+/* ── INLINE PLAYER NAV (accordion) ────────────────────── */
+.vault-item-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 6px 8px;
+  margin-top: -16px;
+}
+.vin-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+.vin-row:hover { background: #222; }
+.vin-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.vin-icon img { width: 22px; height: 22px; object-fit: contain; filter: invert(1); }
+.vin-label {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vin-arrow { color: #666; font-size: 10px; flex-shrink: 0; }
 .vault-item-dot { display: none; }
 .vault-item-num {
   width: 24px;
@@ -8519,6 +8565,45 @@ function renderVaultSidebar() {
           : 'No intentions in this category.'
       }</div>`;
     } else {
+      const playerNav = (idx) => `
+        <div class="vault-item-nav">
+          <button class="vin-row" onclick="launchPlayer('countdown')">
+            <span class="vin-icon"><img src="images/icons/viz-button.png" alt=""></span>
+            <span class="vin-label">VISUALIZATION</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="openMeditationModal()">
+            <span class="vin-icon"><img src="images/icons/meditations.png" alt=""></span>
+            <span class="vin-label">MEDITATION</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="launchVisualCountdown(180,${idx})">
+            <span class="vin-icon"><img src="images/icons/head-brain.png" alt=""></span>
+            <span class="vin-label">3-MIN VISUALIZATION</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="launchPlayer('viz-10min')">
+            <span class="vin-icon"><img src="images/icons/head-brain.png" alt=""></span>
+            <span class="vin-label">10-MIN VISUALIZATION</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="launchPlayer('gratitude')">
+            <span class="vin-icon"><img src="images/icons/praying-hands.png" alt=""></span>
+            <span class="vin-label">GRATITUDE</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="closeVaultBuildSheet();navTo('setup')">
+            <span class="vin-icon"><img src="images/icons/bullseye.png" alt=""></span>
+            <span class="vin-label">PEGBOARD LOOP</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+          <button class="vin-row" onclick="launchPlayer('night-protocol')">
+            <span class="vin-icon"><img src="images/icons/bell.png" alt=""></span>
+            <span class="vin-label">NIGHT PROTOCOL</span>
+            <span class="vin-arrow">▶</span>
+          </button>
+        </div>`;
+
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
@@ -8529,7 +8614,7 @@ function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
-        </button>`;
+        </button>${isSelected ? playerNav(i._idx) : ''}`;
       }).join('');
     }
   }
