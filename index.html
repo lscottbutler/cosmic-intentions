@@ -5079,28 +5079,6 @@ input, textarea, select {
             <button class="vault-qbtn" onclick="launchAlchemy()">⚗ Alchemy Reframe</button>
           </div>
 
-          <div class="acc-list">
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-meditation" onclick="toggleAcc('meditation')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M12,6A3,3,0,1,0,9,3,3,3,0,0,0,12,6Zm11.893,7.943a1.5,1.5,0,0,0-1.95-.836l-1.37.548-2.137-3.206A5.49,5.49,0,0,0,13.859,8H10.141a5.49,5.49,0,0,0-4.577,2.449L3.427,13.655l-1.37-.548A1.5,1.5,0,1,0,.943,15.893l3.63,1.452L8,12.205V18h8V12.2l3.427,5.141,3.63-1.452A1.5,1.5,0,0,0,23.893,13.943ZM19,20H5a2,2,0,0,0,0,4H19a2,2,0,0,0,0-4Z" fill="#FFFFFF"/></svg></span><span class="acc-label">Meditation</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-meditation">
-                <div class="acc-panel-inner">
-                  <div class="acc-med-choice">
-                    <button class="acc-med-type-btn" id="accMedGuided" onclick="accMedType('guided')">🎧 Guided</button>
-                    <button class="acc-med-type-btn" id="accMedUnguided" onclick="accMedType('unguided')">🤫 Unguided</button>
-                  </div>
-                  <div class="acc-dur-grid" id="accMedGrid" style="display:none;flex-wrap:wrap;gap:6px;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="vault-quick-btns" style="margin-top:8px;">
-            <button class="vault-qbtn" onclick="launchPlayer('gratitude')">🙏 Gratitude</button>
-            <button class="vault-qbtn" onclick="navTo('setup')">📋 Pegboard Loop</button>
-            <button class="vault-qbtn" onclick="launchPlayer('night-protocol')">🌙 Night Protocol</button>
-          </div>
-          
           <!-- PLAYER ACCORDIONS -->
           <div class="acc-list" id="vizAccList">
 
@@ -5137,6 +5115,28 @@ input, textarea, select {
               </div>
             </div>
 
+          </div>
+
+          <div class="acc-list">
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-meditation" onclick="toggleAcc('meditation')">
+                <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M12,6A3,3,0,1,0,9,3,3,3,0,0,0,12,6Zm11.893,7.943a1.5,1.5,0,0,0-1.95-.836l-1.37.548-2.137-3.206A5.49,5.49,0,0,0,13.859,8H10.141a5.49,5.49,0,0,0-4.577,2.449L3.427,13.655l-1.37-.548A1.5,1.5,0,1,0,.943,15.893l3.63,1.452L8,12.205V18h8V12.2l3.427,5.141,3.63-1.452A1.5,1.5,0,0,0,23.893,13.943ZM19,20H5a2,2,0,0,0,0,4H19a2,2,0,0,0,0-4Z" fill="#FFFFFF"/></svg></span><span class="acc-label">Meditation</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel" id="accPanel-meditation">
+                <div class="acc-panel-inner">
+                  <div class="acc-med-choice">
+                    <button class="acc-med-type-btn" id="accMedGuided" onclick="accMedType('guided')">🎧 Guided</button>
+                    <button class="acc-med-type-btn" id="accMedUnguided" onclick="accMedType('unguided')">🤫 Unguided</button>
+                  </div>
+                  <div class="acc-dur-grid" id="accMedGrid" style="display:none;flex-wrap:wrap;gap:6px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="vault-quick-btns" style="margin-top:8px;">
+            <button class="vault-qbtn" onclick="launchPlayer('gratitude')">🙏 Gratitude</button>
+            <button class="vault-qbtn" onclick="navTo('setup')">📋 Pegboard Loop</button>
+            <button class="vault-qbtn" onclick="launchPlayer('night-protocol')">🌙 Night Protocol</button>
           </div>
 
         </div>
