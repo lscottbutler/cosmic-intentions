@@ -5079,8 +5079,8 @@ input, textarea, select {
             <button class="vault-qbtn" onclick="launchAlchemy()">⚗ Alchemy Reframe</button>
           </div>
           
-          <!-- PLAYER ACCORDIONS REMOVED -->
-          <div class="acc-list" style="display:none">
+          <!-- PLAYER ACCORDIONS -->
+          <div class="acc-list">
 
             <div class="acc-item">
               <button class="acc-trigger" id="accTrig-timer" onclick="toggleAcc('timer')">
@@ -8647,8 +8647,13 @@ function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
-        </button>`;
+        </button>${isSelected ? '<div id="goalNavSlot"></div>' : ''}`;
       }).join('');
+
+      // Move the acc-list into column B under the selected goal
+      const slot = document.getElementById('goalNavSlot');
+      const accList = document.querySelector('.vault-welcome .acc-list');
+      if (slot && accList) slot.appendChild(accList);
     }
   }
 
