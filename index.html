@@ -3310,7 +3310,8 @@ input, textarea, select {
   flex-shrink: 0;
   overflow: hidden;
 }
-.vin-icon img { width: 24px; height: 24px; object-fit: contain; filter: invert(1); }
+.vin-icon img { width: 24px; height: 24px; object-fit: contain; }
+.vin-icon img.vin-invert { filter: invert(1); }
 .vin-label {
   flex: 1;
   font-size: 12px;
@@ -8610,27 +8611,27 @@ function renderVaultSidebar() {
             </div>
           </div>
           <button class="vin-row" onclick="launchVisualCountdown(180,${idx})">
-            <span class="vin-icon"><img src="images/icons/head-brain.png" alt=""></span>
+            <span class="vin-icon"><img src="images/icons/head-brain.png" alt="" class="vin-invert"></span>
             <span class="vin-label">3-MIN VISUALIZATION</span>
             <span class="vin-arrow">▶</span>
           </button>
           <button class="vin-row" onclick="launchPlayer('viz-10min')">
-            <span class="vin-icon"><img src="images/icons/head-brain.png" alt=""></span>
+            <span class="vin-icon"><img src="images/icons/head-brain.png" alt="" class="vin-invert"></span>
             <span class="vin-label">10-MIN VISUALIZATION</span>
             <span class="vin-arrow">▶</span>
           </button>
           <button class="vin-row" onclick="launchPlayer('gratitude')">
-            <span class="vin-icon"><img src="images/icons/praying-hands.png" alt=""></span>
+            <span class="vin-icon"><img src="images/icons/praying-hands.png" alt="" class="vin-invert"></span>
             <span class="vin-label">GRATITUDE</span>
             <span class="vin-arrow">▶</span>
           </button>
           <button class="vin-row" onclick="closeVaultBuildSheet();navTo('setup')">
-            <span class="vin-icon"><img src="images/icons/bullseye.png" alt=""></span>
+            <span class="vin-icon"><img src="images/icons/bullseye.png" alt="" class="vin-invert"></span>
             <span class="vin-label">PEGBOARD LOOP</span>
             <span class="vin-arrow">▶</span>
           </button>
           <button class="vin-row" onclick="launchPlayer('night-protocol')">
-            <span class="vin-icon"><img src="images/icons/bell.png" alt=""></span>
+            <span class="vin-icon"><img src="images/icons/bell.png" alt="" class="vin-invert"></span>
             <span class="vin-label">NIGHT PROTOCOL</span>
             <span class="vin-arrow">▶</span>
           </button>
