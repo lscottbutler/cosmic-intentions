@@ -19,9 +19,21 @@ body {
   overflow-x: hidden;
   font-size: 110%;
 }
-/* Site-wide font: anything that resets to system fonts inherits Roboto Condensed */
-button, input, select, textarea {
-  font-family: inherit;
+/* Site-wide font: force Roboto Condensed on every element, override CMS inline styles */
+*, *::before, *::after {
+  font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif !important;
+}
+/* Re-allow the cursive accent font for designated elements */
+.home-hero em,
+.home-welcome-title,
+.vault-welcome-title,
+.dancing-script,
+[style*="Dancing Script"] {
+  font-family: 'Dancing Script', cursive !important;
+}
+/* Re-allow monospace for code / mono displays */
+code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
+  font-family: 'Courier New', monospace !important;
 }
 
 /* ── DESIGN TOKENS ────────────────────────────────────────── */
