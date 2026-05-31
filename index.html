@@ -8674,7 +8674,7 @@ function filterVaultCategory(cat) {
 }
 
 function selectVaultIntention(idx) {
-  selectedVaultIdx = idx;
+  selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
 }
 
