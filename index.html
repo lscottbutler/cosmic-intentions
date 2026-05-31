@@ -9711,8 +9711,11 @@ function medTick() {
 
 function medComplete() {
   playBell();
+  const circle = document.getElementById('medCountdownCircle');
   document.getElementById('medCountdownNum').textContent = 'CLOSE';
   document.getElementById('medCountdownNum').style.fontSize = '11px';
+  circle.style.cursor = 'pointer';
+  circle.onclick = () => closeMeditationModal();
   if (medSt.guided) speakText('Your meditation is complete. Well done.');
   LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
   setEl('vsMedPlays', LS.get('ci_med_plays'));
