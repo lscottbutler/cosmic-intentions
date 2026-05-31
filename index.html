@@ -2608,6 +2608,26 @@ input, textarea, select {
 .home-vid-caption { font-size: 13px; color: var(--mid); line-height: 1.5; }
 .home-vid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+/* ── ENTREPRENEUR SLIDESHOW ─────────────────────────────── */
+.ent-slideshow {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+.ent-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+.ent-slide.active { opacity: 1; }
+
 /* ── HOME PAGE — MOBILE ─────────────────────────────────── */
 @media (max-width: 760px) {
   .home-member-cols {
@@ -5092,14 +5112,7 @@ input, textarea, select {
             <p>Your Personal Development Arsenal is ready.</p>
             <button class="btn-member-login" onclick="navTo('dashboard')">✦ Member Dashboard</button>
           </div>
-          <div style="margin-top:16px;border-radius:10px;overflow:hidden;">
-            <iframe
-              src="https://iframe.cloudflarestream.com/5f7e6f8f74f010148b22e3f4778204ff"
-              style="width:100%;aspect-ratio:16/9;border:none;display:block;"
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-              allowfullscreen="true"
-            ></iframe>
-          </div>
+          <div class="ent-slideshow" id="entSlideshow"></div>
         </div>
 
       </div>
@@ -10155,6 +10168,44 @@ function updatePbLoop() {
 
 setInterval(updatePbLoop, 120000);
 document.addEventListener('DOMContentLoaded', updatePbLoop);
+
+/* ── ENTREPRENEUR SLIDESHOW ─────────────────────────────── */
+const ENT_SLIDES = [
+  'ENT EXECUTING STRATEGY.PNG','ENT QUALITY PEOPLE.PNG','ENT EMPATHETIC.PNG',
+  'ENT EXECUTING CONCEPT.PNG','ENT SKILLFUL COMMUNICATOR.PNG','ENT GREAT SALES PERSON.PNG',
+  'ENT LIVING THE BRAND.PNG','ENT MANAGING TIME WISELY.PNG','ENT SUCCESSFUL NEGOTIATOR.PNG',
+  'ENT PASSIONATE.PNG','ENT FACILITATOR.PNG','ENT PROFITABLE.PNG',
+  'ENT RESPECTED MANAGER.PNG','ENT RISK TAKER.PNG','ENT SELF CONFIDENT.PNG',
+  'ENT SELF PROMOTER.PNG','ENT SELF STARTER.PNG','ENT STRATEGIC THINKER.PNG',
+  'ENT STRONG WORK ETHIC.PNG','ENT OUTSIDE BOX.PNG'
+];
+
+function startEntSlideshow() {
+  const host = document.getElementById('entSlideshow');
+  if (!host || host.dataset.started) return;
+  host.dataset.started = '1';
+
+  // Shuffle so the order varies between visits
+  const order = ENT_SLIDES.slice().sort(() => Math.random() - 0.5);
+
+  order.forEach((file, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'ent-slide' + (i === 0 ? ' active' : '');
+    slide.style.backgroundImage = `url("images/entrepreneur-library/${encodeURIComponent(file)}")`;
+    host.appendChild(slide);
+  });
+
+  let idx = 0;
+  setInterval(() => {
+    const slides = host.querySelectorAll('.ent-slide');
+    if (!slides.length) return;
+    slides[idx].classList.remove('active');
+    idx = (idx + 1) % slides.length;
+    slides[idx].classList.add('active');
+  }, 8000);
+}
+
+document.addEventListener('DOMContentLoaded', startEntSlideshow);
 </script>
 
 </body>
