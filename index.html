@@ -2627,6 +2627,10 @@ input, textarea, select {
   transition: opacity 1.2s ease-in-out;
 }
 .ent-slide.active { opacity: 1; }
+.ent-slideshow-hero {
+  max-width: 720px;
+  margin: 32px auto 0;
+}
 
 /* ── HOME PAGE — MOBILE ─────────────────────────────────── */
 @media (max-width: 760px) {
@@ -4983,6 +4987,7 @@ input, textarea, select {
           <button class="btn-primary" onclick="openAuth('signup')">Get Started Free</button>
           <button class="btn-secondary" onclick="openAuth('signin')">Member Log In</button>
         </div>
+        <div class="ent-slideshow ent-slideshow-hero"></div>
       </div>
 
       <div class="home-features">
@@ -6984,8 +6989,9 @@ function updateUI(user) {
   // Home page: show logged-in or logged-out section
   const homeLoggedIn  = document.getElementById('homeLoggedIn');
   const homeLoggedOut = document.getElementById('homeLoggedOut');
-  if (homeLoggedIn)  homeLoggedIn.style.display  = loggedIn ? 'block' : 'none';
-  if (homeLoggedOut) homeLoggedOut.style.display = loggedIn ? 'none'  : 'block';
+  // DEV: force logged-in view visible even when no user (so member home is reachable in dev)
+  if (homeLoggedIn)  homeLoggedIn.style.display  = 'block';
+  if (homeLoggedOut) homeLoggedOut.style.display = loggedIn ? 'none' : 'block';
 
   // Pricing section — only for logged-out visitors
   const hp = document.getElementById('homePricing');
@@ -10181,28 +10187,27 @@ const ENT_SLIDES = [
 ];
 
 function startEntSlideshow() {
-  const host = document.getElementById('entSlideshow');
-  if (!host || host.dataset.started) return;
-  host.dataset.started = '1';
+  document.querySelectorAll('.ent-slideshow').forEach(host => {
+    if (host.dataset.started) return;
+    host.dataset.started = '1';
 
-  // Shuffle so the order varies between visits
-  const order = ENT_SLIDES.slice().sort(() => Math.random() - 0.5);
+    const order = ENT_SLIDES.slice().sort(() => Math.random() - 0.5);
+    order.forEach((file, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'ent-slide' + (i === 0 ? ' active' : '');
+      slide.style.backgroundImage = `url("images/entrepreneur-library/${encodeURIComponent(file)}")`;
+      host.appendChild(slide);
+    });
 
-  order.forEach((file, i) => {
-    const slide = document.createElement('div');
-    slide.className = 'ent-slide' + (i === 0 ? ' active' : '');
-    slide.style.backgroundImage = `url("images/entrepreneur-library/${encodeURIComponent(file)}")`;
-    host.appendChild(slide);
+    let idx = 0;
+    setInterval(() => {
+      const slides = host.querySelectorAll('.ent-slide');
+      if (!slides.length) return;
+      slides[idx].classList.remove('active');
+      idx = (idx + 1) % slides.length;
+      slides[idx].classList.add('active');
+    }, 8000);
   });
-
-  let idx = 0;
-  setInterval(() => {
-    const slides = host.querySelectorAll('.ent-slide');
-    if (!slides.length) return;
-    slides[idx].classList.remove('active');
-    idx = (idx + 1) % slides.length;
-    slides[idx].classList.add('active');
-  }, 8000);
 }
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
