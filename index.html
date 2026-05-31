@@ -5078,7 +5078,7 @@ input, textarea, select {
           </div>
 
           <!-- PLAYER ACCORDIONS -->
-          <div class="acc-list" id="vizAccList">
+          <div class="acc-list" id="vizAccList" style="display:none">
 
             <div class="acc-item">
               <button class="acc-trigger" id="accTrig-timer" onclick="toggleAcc('timer')">
@@ -8825,7 +8825,7 @@ function renderVaultSidebar() {
 
       // Rescue acc-list before innerHTML wipes it
       const accList = document.getElementById('vizAccList');
-      if (accList) document.body.appendChild(accList);
+      if (accList) { accList.style.display = 'none'; document.body.appendChild(accList); }
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
@@ -8842,7 +8842,7 @@ function renderVaultSidebar() {
 
       // Move the acc-list into column B under the selected goal
       const slot = document.getElementById('goalNavSlot');
-      if (slot && accList) slot.appendChild(accList);
+      if (slot && accList) { slot.appendChild(accList); accList.style.display = ''; }
     }
   }
 
