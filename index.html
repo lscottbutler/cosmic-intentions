@@ -8614,7 +8614,7 @@ function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
-        </button>${isSelected ? playerNav(i._idx) : ''}`;
+        </button>${isSelected ? playerNav(i._idx) + buildBuildSheet(i, i._idx) : ''}`;
       }).join('');
     }
   }
