@@ -2607,6 +2607,20 @@ input, textarea, select {
 .home-vid-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--mid); margin: 6px 0 2px; }
 .home-vid-caption { font-size: 13px; color: var(--mid); line-height: 1.5; }
 .home-vid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ── HOME PAGE — MOBILE ─────────────────────────────────── */
+@media (max-width: 760px) {
+  .home-member-cols {
+    flex-direction: column;
+    padding: 12px;
+    gap: 16px;
+  }
+  .home-col-right {
+    width: 100%;
+    order: -1; /* show buttons + welcome above videos on mobile */
+  }
+  .home-vid-grid { grid-template-columns: 1fr; gap: 16px; }
+}
 .home-vid-text { padding: 14px 0; }
 .home-vid-text h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
 .home-vid-text p { font-size: 13px; color: var(--mid); line-height: 1.6; margin: 0; }
