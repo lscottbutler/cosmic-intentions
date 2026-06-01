@@ -8370,7 +8370,7 @@ function buildMissionControlPanel(intent, idx) {
         deep-dive on that item.
       </div>
       <button class="bs-gen-btn" id="mcGenBtn-${idx}" onclick="generateMissionControl(${idx})">
-        ⚡ Generate My 50-Item Mission Control
+        ⚡ Generate My Mission Control
       </button>`;
   }
   return renderMissionControlItems(mc.items, idx);
@@ -8436,7 +8436,7 @@ function renderMissionControlItems(items, idx) {
       </button>
     </div>
     <div style="padding:0 12px 8px;text-align:center;">
-      <button class="bs-gen-btn regen" onclick="generateMissionControl(${idx})">⚡ Generate Next 50</button>
+      <button class="bs-gen-btn regen" onclick="generateMissionControl(${idx})">⚡ Generate 15 More</button>
     </div>`;
 }
 
@@ -8444,7 +8444,7 @@ async function generateMissionControl(idx) {
   const intent = intentions[idx];
   if (!intent) return;
   const btn = document.getElementById(`mcGenBtn-${idx}`);
-  if (btn) { btn.disabled = true; btn.textContent = '⚡ Generating… (10–15 sec)'; }
+  if (btn) { btn.disabled = true; btn.textContent = '⚡ Generating 15 items… (5–8 sec)'; }
 
   const existing = intent.achievers?.missionControl?.items || [];
   const startNum  = existing.length + 1;
@@ -8453,9 +8453,16 @@ async function generateMissionControl(idx) {
 
   const userPrompt = `Goal: "${intent.title}"
 
-Generate 50 research-backed items (numbered ${startNum}–${startNum + 49}) to help achieve this goal.
+CRITICAL RULES — violating these makes the output useless:
+1. The user has ALREADY SET THIS GOAL. NEVER tell them to set a goal, write it down, define their vision, get clear on what they want, or create a goal statement. That is done. Skip it entirely.
+2. NEVER give generic advice that applies to any goal (e.g. "stay motivated", "believe in yourself", "be consistent"). Every item must be SPECIFIC to this exact goal.
+3. NEVER repeat variations of the same idea. Each of the 15 items must be distinct.
+4. Assume the user is past the planning phase. They want EXECUTION — what to do, how to think, what to watch out for.
+5. No filler. No obvious advice. No advice a 10-year-old could have given.
 
-Draw from these proven frameworks and thinkers — apply whichever are most relevant to this specific goal:
+Generate 15 research-backed items (numbered ${startNum}–${startNum + 14}) to help execute and achieve this goal.
+
+Draw from these proven frameworks — apply the most relevant to this specific goal:
 - James Clear (Atomic Habits): identity-based habits, habit stacking, 1% improvement, the two-minute rule
 - Simon Sinek (Start With Why): purpose drives behavior, find the why before the what
 - Stephen Covey (7 Habits): begin with end in mind, sharpen the saw, proactive vs reactive
@@ -8470,7 +8477,7 @@ Draw from these proven frameworks and thinkers — apply whichever are most rele
 - Naval Ravikant: specific knowledge, long-term thinking, play games where you have unique advantage
 - Alex Hormozi: speed of implementation, make the obvious move obvious, grand slam focus
 
-Mix these angles across the 50 items:
+Mix these angles across the 15 items:
 - Identity/mindset shifts required
 - Daily non-negotiable habits
 - Environment and context design
@@ -8485,17 +8492,17 @@ Mix these angles across the 50 items:
 Each item: action (1 punchy sentence), why (1–2 sentences — MUST use a famous person's SPECIFIC story or little-known quote, not the headline everyone already knows. Go deeper: not "Jim Carrey wrote a $10M check" but "Jim Carrey drove to Mulholland Drive every night with nothing in his pocket and sat there FEELING the success as real — he said 'visualization works if you work hard. That's the thing.'" Not "Kobe worked hard" but "Kobe arrived at 4am, took 800 shots before anyone else showed up — the edge is always in the hours nobody sees." Give the STORY behind the quote, not just the quote. Use people everyone knows: Ali, Kobe, Jordan, Carrey, Robbins, Oprah, Jobs, Bezos, Musk, Goggins, Buffett, Hill, Mandela, Carnegie, Lincoln, Tyson, Schwarzenegger, Federer. NEVER cite academic papers, studies, or unknown researchers.), category (Mindset/Habit/Environment/Social/Strategy/Action/Warning/Milestone).
 
 Return JSON: { "items": [ { "action": "...", "why": "...", "category": "..." } ] }
-Exactly 50 items. No filler. No repeated ideas.`;
+Exactly 15 items. No filler. No repeated ideas. No goal-setting advice.`;
 
   try {
     const res = await fetch('/.netlify/functions/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 3500 })
+      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 1800 })
     });
     const data = await res.json();
     const parsed = JSON.parse(data.text);
-    const items = (parsed.items || []).slice(0, 50).map(item => ({
+    const items = (parsed.items || []).slice(0, 15).map(item => ({
       action: item.action || '',
       why: item.why || '',
       category: item.category || 'Strategy',
