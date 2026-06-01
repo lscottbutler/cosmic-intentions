@@ -8993,11 +8993,32 @@ function sanitizeImageSrc(src) {
     .toLowerCase();
 }
 
+function getArsenalImageUrls() {
+  const urls = (intentions || []).map(i => i.imageUrl).filter(Boolean);
+  return urls.length ? urls : null;
+}
+
+function getArsenalImageSrc(n) {
+  const urls = getArsenalImageUrls();
+  if (!urls) return null;
+  return urls[(n - 1) % urls.length];
+}
+
 function arsenalLoadImage(n) {
   if (arsenalState.paused) return;
-  const idx    = ((n - 1) % 13) + 1;
-  const numStr = String(idx).padStart(5, '0');
-  const src    = sanitizeImageSrc(`./vision_stills/scene${numStr}.jpg`);
+  const src = getArsenalImageSrc(n);
+
+  // No intention images available — show solid dark background, skip image cycling
+  if (!src) {
+    arsenalStartProgress();
+    arsenalState.timer = setTimeout(() => {
+      if (arsenalState.paused) return;
+      arsenalUpdateText(false);
+      arsenalScheduleNext(n + 1);
+    }, 7000);
+    return;
+  }
+
   const active = arsenalState.activeImg;
   const next   = 1 - active;
   const nextEl     = document.getElementById(`arsenalImg${next}`);
@@ -9026,10 +9047,10 @@ function arsenalLoadImage(n) {
     arsenalState.timer = setTimeout(() => {
       if (arsenalState.paused) return;
       arsenalUpdateText(false);
-      const nextIdx    = (idx % 13) + 1;
-      const nextNumStr = String(nextIdx).padStart(5, '0');
-      const nextSrc    = sanitizeImageSrc(`./vision_stills/scene${nextNumStr}.jpg`);
-      const preload    = new Image();
+      const nextIdx = n + 1;
+      const nextSrc = getArsenalImageSrc(nextIdx);
+      if (!nextSrc) { arsenalScheduleNext(nextIdx); return; }
+      const preload = new Image();
       preload.onload = () => {
         if (arsenalState.paused) return;
         const nextActive = 1 - arsenalState.activeImg;
@@ -9058,7 +9079,7 @@ function arsenalLoadImage(n) {
           arsenalScheduleNext(nextIdx);
         }, 3000);
       };
-      preload.onerror = () => { arsenalHandleError(idx); };
+      preload.onerror = () => { arsenalHandleError(nextIdx); };
       preload.src = nextSrc;
     }, 7000);
 
