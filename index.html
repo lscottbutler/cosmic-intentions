@@ -8458,11 +8458,13 @@ async function generateMissionControl(idx) {
   const userPrompt = `Goal: "${intent.title}"
 
 CRITICAL RULES — violating these makes the output useless:
-1. The user has ALREADY SET THIS GOAL. NEVER tell them to set a goal, write it down, define their vision, get clear on what they want, or create a goal statement. That is done. Skip it entirely.
-2. NEVER give generic advice that applies to any goal (e.g. "stay motivated", "believe in yourself", "be consistent"). Every item must be SPECIFIC to this exact goal.
-3. NEVER repeat variations of the same idea. Each of the 15 items must be distinct.
-4. Assume the user is past the planning phase. They want EXECUTION — what to do, how to think, what to watch out for.
-5. No filler. No obvious advice. No advice a 10-year-old could have given.
+1. The user has ALREADY SET THIS GOAL. NEVER tell them to set a goal, write it down, define their vision, get clear on what they want, or create a goal statement. That is done.
+2. NEVER suggest creating a vision board, vision board exercises, or visualization boards. This app already does that — suggesting it is redundant and useless.
+3. NEVER suggest meditation, gratitude practice, or journaling as a primary action — this app already has those built in.
+4. NEVER give generic advice that applies to any goal (e.g. "stay motivated", "believe in yourself", "be consistent"). Every item must be brutally SPECIFIC to this exact goal.
+5. NEVER repeat variations of the same idea. Each of the 15 items must be completely distinct.
+6. Assume the user is past the planning phase. They want EXECUTION — what to do, how to think, what obstacles to destroy.
+7. No filler. No obvious advice. No advice a 10-year-old could have given.
 
 Generate 15 research-backed items (numbered ${startNum}–${startNum + 14}) to help execute and achieve this goal.
 
