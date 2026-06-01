@@ -13,6 +13,16 @@ Repo root: `C:\WORK\ROOT` | Main branch: `main`
 - `images/icons/` — all UI icons (PNG)
 - `GEMINI_STARTER.md` — paste this at top of every new Gemini chat
 
+## VERIFY BEFORE RELEASING — NON-NEGOTIABLE
+NEVER tell the user something works until ALL of these are confirmed:
+1. Start the preview server (`CI Local`) and load the page via `preview_eval`
+2. Render the actual component being changed with test data via `preview_eval`
+3. Take a `preview_screenshot` and visually confirm it looks correct
+4. If screenshot fails, use `preview_eval` to check computed styles and DOM state
+5. Only THEN commit, push, and report to the user
+
+If any step fails — fix it first. Do NOT push broken code. Do NOT tell the user it works until you have visual or eval proof.
+
 ## Output Format (ALWAYS follow this)
 - Step-by-step with exact app name, menu, button, or field name
 - No filler text. No "Great question!" Just the answer.
