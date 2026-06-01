@@ -4092,7 +4092,7 @@ input, textarea, select {
   display: none;
 }
 .mc-deepdive.visible { display: block; }
-.mc-deepdive-loading { color: #555; font-style: italic; }
+.mc-deepdive-loading { color: #aaaaaa; font-style: italic; }
 .mc-build-plan-wrap { padding: 16px 12px 20px; }
 .mc-build-plan-btn {
   width: 100%; padding: 13px;
@@ -8577,7 +8577,9 @@ Be specific, direct, and research-backed. No fluff.`;
     ddEl.innerHTML = text.replace(/\n/g, '<br>');
     syncIntentionsToSupabase();
   } catch {
-    ddEl.innerHTML = '<span class="mc-deepdive-loading">Failed — tap DEEPER again to retry</span>';
+    ddEl.classList.remove('visible');
+    ddEl.innerHTML = '';
+    toast('Deep dive failed — tap DEEPER again', 'error');
   }
 }
 
