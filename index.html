@@ -9477,6 +9477,11 @@ function filterVaultCategory(cat) {
 function selectVaultIntention(idx) {
   selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
+  if (selectedVaultIdx !== null) {
+    showVaultBuildSheet(selectedVaultIdx);
+  } else {
+    showVaultWelcome();
+  }
 }
 
 function showVaultWelcome() {
