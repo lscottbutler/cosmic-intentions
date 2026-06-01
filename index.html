@@ -4094,6 +4094,31 @@ input, textarea, select {
 }
 .mc-deepdive.visible { display: block; }
 .mc-deepdive-loading { color: #aaaaaa; font-style: italic; }
+/* ── MY COMMITMENTS ──────────────────────────────────── */
+.mc-commit-panel { margin: 0 12px 20px; }
+.mc-commit-hd {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+  color: #22c55e; text-transform: uppercase; margin-bottom: 10px;
+  padding-bottom: 6px; border-bottom: 1px solid #22c55e44;
+}
+.mc-commit-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid #1e1e1e;
+}
+.mc-commit-item:last-child { border-bottom: none; }
+.mc-commit-check {
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 2px solid #383838; background: transparent;
+  cursor: pointer; flex-shrink: 0; display: flex;
+  align-items: center; justify-content: center;
+  transition: all 0.15s; margin-top: 1px;
+}
+.mc-commit-check.done { background: #22c55e; border-color: #22c55e; }
+.mc-commit-check.done::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 800; }
+.mc-commit-body { flex: 1; }
+.mc-commit-text { font-size: 12px; color: #fff; font-weight: 600; line-height: 1.4; }
+.mc-commit-streak { font-size: 10px; color: #888; margin-top: 3px; }
+.mc-commit-streak.hot { color: #f59e0b; }
 .mc-build-plan-wrap { padding: 16px 12px 20px; }
 .mc-build-plan-btn {
   width: 100%; padding: 13px;
@@ -8430,15 +8455,17 @@ function renderMissionControlItems(items, idx) {
       </div>`;
   }).join('');
 
+  const commitsHTML = renderCommitmentsPanel(idx);
   return `
     <div class="mc-stats">${yesCount} YES · ${deeperCount} DEEPER selected</div>
     ${MC_FUCKUP_CARD}
     ${cards}
     <div class="mc-build-plan-wrap">
       <button class="mc-build-plan-btn" onclick="buildMCPlan(${idx})">
-        ✦ Build My Personalized Plan from Flagged Items
+        ✦ Lock In My YES Items as Daily Commitments
       </button>
     </div>
+    ${commitsHTML}
     <div style="padding:0 12px 8px;text-align:center;">
       <button class="bs-gen-btn regen" onclick="generateMissionControl(${idx})">⚡ Generate 15 More</button>
     </div>`;
@@ -8623,25 +8650,94 @@ function buildMCPlan(idx) {
   if (!mc || !mc.items) return;
 
   const flagged = mc.items.filter(i => i.flag === 'yes' || i.flag === 'deeper');
-  if (flagged.length === 0) {
-    toast('Flag some items with YES or DEEPER first', 'info'); return;
-  }
+  if (flagged.length === 0) { toast('Flag some items with YES or DEEPER first', 'info'); return; }
 
-  const lines = flagged.map((item, n) =>
-    `${n + 1}. [${item.flag.toUpperCase()}] ${item.action}\n   → ${item.why}`
-  ).join('\n\n');
+  // Merge into existing commitments (avoid duplicates)
+  if (!intent.achievers.commitments) intent.achievers.commitments = [];
+  const existing = intent.achievers.commitments.map(c => c.text);
+  const toAdd = flagged.filter(f => !existing.includes(f.action));
+  toAdd.forEach(f => {
+    intent.achievers.commitments.push({
+      text:    f.action,
+      addedAt: new Date().toISOString(),
+      checks:  {},
+      streak:  0
+    });
+  });
 
+  syncIntentionsToSupabase();
+
+  // Re-render Mission Control panel to show commitments
   const panel = document.getElementById(`bsPanel-mission-${idx}`);
-  const planDiv = document.createElement('div');
-  planDiv.style.cssText = 'margin:12px;padding:16px;background:#111;border-radius:10px;border-left:3px solid #22c55e;font-size:12px;color:#ccc;line-height:1.8;white-space:pre-wrap;';
-  planDiv.innerHTML = `<div style="font-weight:800;color:#22c55e;margin-bottom:12px;font-size:13px;">✦ YOUR PERSONALIZED PLAN (${flagged.length} items)</div>${esc(lines)}`;
+  if (panel) panel.innerHTML = renderMissionControlItems(mc.items, idx);
 
-  const existing = panel?.querySelector('.mc-plan-output');
-  if (existing) existing.remove();
-  planDiv.className = 'mc-plan-output';
-  panel?.querySelector('.mc-build-plan-wrap')?.after(planDiv);
+  toast(`${toAdd.length} commitment${toAdd.length !== 1 ? 's' : ''} added ✓`, 'success');
+}
 
-  toast(`Plan built from ${flagged.length} flagged items ✓`, 'success');
+function renderCommitmentsPanel(idx) {
+  const intent = intentions[idx];
+  const commits = intent?.achievers?.commitments;
+  if (!commits || commits.length === 0) return '';
+
+  const today = new Date().toISOString().slice(0,10);
+
+  const rows = commits.map((c, i) => {
+    const done   = !!c.checks?.[today];
+    const streak = c.streak || 0;
+    const streakLabel = streak === 0 ? 'Not started'
+      : streak === 1 ? '🔥 1 day streak'
+      : streak >= 7  ? `🔥🔥 ${streak} day streak`
+      : `🔥 ${streak} day streak`;
+    return `
+      <div class="mc-commit-item">
+        <div class="mc-commit-check${done ? ' done' : ''}"
+          onclick="toggleCommitmentCheck(${idx},${i})" id="mcCheck-${idx}-${i}"></div>
+        <div class="mc-commit-body">
+          <div class="mc-commit-text">${esc(c.text)}</div>
+          <div class="mc-commit-streak${streak >= 7 ? ' hot' : ''}">${streakLabel}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="mc-commit-panel">
+      <div class="mc-commit-hd">✦ My Daily Commitments (${commits.length})</div>
+      ${rows}
+    </div>`;
+}
+
+function toggleCommitmentCheck(idx, commitIdx) {
+  const intent = intentions[idx];
+  const commit = intent?.achievers?.commitments?.[commitIdx];
+  if (!commit) return;
+
+  const today = new Date().toISOString().slice(0,10);
+  if (!commit.checks) commit.checks = {};
+
+  const wasDone = !!commit.checks[today];
+  commit.checks[today] = !wasDone;
+
+  // Recalculate streak
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const key = d.toISOString().slice(0,10);
+    if (commit.checks[key]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  commit.streak = streak;
+
+  // Update UI
+  const checkEl = document.getElementById(`mcCheck-${idx}-${commitIdx}`);
+  if (checkEl) checkEl.classList.toggle('done', !wasDone);
+
+  // Re-render streak label
+  const panel = document.getElementById(`bsPanel-mission-${idx}`);
+  const commitPanel = panel?.querySelector('.mc-commit-panel');
+  if (commitPanel) commitPanel.outerHTML = renderCommitmentsPanel(idx).trim()
+    ? renderCommitmentsPanel(idx) : commitPanel.outerHTML;
+
+  syncIntentionsToSupabase();
 }
 
 async function generateBlueprint() {
