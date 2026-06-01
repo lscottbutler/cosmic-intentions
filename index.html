@@ -9505,6 +9505,7 @@ function showVaultBuildSheet(idx) {
   if (sheet) {
     sheet.classList.remove('hidden');
     sheet.innerHTML = buildBuildSheet(intent, idx);
+    setTimeout(() => sheet.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   }
 }
 
