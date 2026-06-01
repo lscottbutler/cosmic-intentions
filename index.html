@@ -4073,6 +4073,7 @@ input, textarea, select {
 }
 .mc-card-action { font-size: 13px; font-weight: 700; color: #ffffff; line-height: 1.4; margin-bottom: 5px; }
 .mc-card-why { font-size: 11px; color: #cccccc; line-height: 1.5; }
+.mc-why-bullet { margin-bottom: 5px; padding-left: 4px; }
 .mc-card-flags { display: flex; gap: 6px; padding: 0 14px 12px; }
 .mc-flag-btn {
   flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid #333;
@@ -8383,7 +8384,10 @@ const MC_FUCKUP_CARD = `
       <div class="mc-card-body">
         <div class="mc-card-cat" style="color:#f59e0b;">FOUNDATION</div>
         <div class="mc-card-action">The 5 Things I Ask Myself When I F*ck Up.</div>
-        <div class="mc-card-why">Nelson Mandela: "I never lose. I either win or I learn." Ray Dalio borrowed $4,000 from his dad after losing everything in 1982 — then wrote down every mistake and the rule to prevent it. That system became Bridgewater, the world's largest hedge fund. His formula: "Pain + Reflection = Progress. Every mistake you don't examine is a tax you pay twice."</div>
+        <div class="mc-card-why">
+          <div class="mc-why-bullet">• Nelson Mandela: "I never lose. I either win or I learn."</div>
+          <div class="mc-why-bullet">• Ray Dalio borrowed $4,000 from his dad after losing everything in 1982 — wrote down every mistake and the rule to prevent it. That system became Bridgewater, the world's largest hedge fund. His formula: "Pain + Reflection = Progress. Every mistake you don't examine is a tax you pay twice."</div>
+        </div>
       </div>
     </div>
     <div class="mc-deepdive visible" style="border-color:#f59e0b;">
@@ -8413,7 +8417,7 @@ function renderMissionControlItems(items, idx) {
           <div class="mc-card-body">
             <div class="mc-card-cat">${esc(item.category || '')}</div>
             <div class="mc-card-action">${esc(item.action)}</div>
-            <div class="mc-card-why">${esc(item.why)}</div>
+            <div class="mc-card-why">${item.why.split('|').map(b => `<div class="mc-why-bullet">${esc(b.trim())}</div>`).join('')}</div>
           </div>
         </div>
         <div class="mc-card-flags">
@@ -8489,7 +8493,7 @@ Mix these angles across the 15 items:
 - Long-term strategy year 1–3
 - The Sutherland Lens: 3–5 items that challenge the obvious approach and reframe the goal psychologically
 
-Each item: action (1 punchy sentence), why (1–2 sentences — MUST use a famous person's SPECIFIC story or little-known quote, not the headline everyone already knows. Go deeper: not "Jim Carrey wrote a $10M check" but "Jim Carrey drove to Mulholland Drive every night with nothing in his pocket and sat there FEELING the success as real — he said 'visualization works if you work hard. That's the thing.'" Not "Kobe worked hard" but "Kobe arrived at 4am, took 800 shots before anyone else showed up — the edge is always in the hours nobody sees." Give the STORY behind the quote, not just the quote. Use people everyone knows: Ali, Kobe, Jordan, Carrey, Robbins, Oprah, Jobs, Bezos, Musk, Goggins, Buffett, Hill, Mandela, Carnegie, Lincoln, Tyson, Schwarzenegger, Federer. NEVER cite academic papers, studies, or unknown researchers.), category (Mindset/Habit/Environment/Social/Strategy/Action/Warning/Milestone).
+Each item: action (1 punchy sentence), why (MUST cite 2 famous people with their SPECIFIC story or little-known quote — not the headline everyone knows. Format as 2 bullet points separated by the pipe character |. Example: "• Jim Carrey drove to Mulholland Drive every night with nothing in his pocket, feeling the success as real — 'visualization works if you work hard. That's the thing.'|• Kobe arrived at 4am, took 800 shots before anyone else showed up — the edge is always in the hours nobody sees." Use people everyone knows: Ali, Kobe, Jordan, Carrey, Robbins, Oprah, Jobs, Bezos, Musk, Goggins, Buffett, Hill, Mandela, Carnegie, Lincoln, Tyson, Schwarzenegger, Federer, Dalio. NEVER cite academic papers or unknown researchers.), category (Mindset/Habit/Environment/Social/Strategy/Action/Warning/Milestone).
 
 Return JSON: { "items": [ { "action": "...", "why": "...", "category": "..." } ] }
 Exactly 15 items. No filler. No repeated ideas. No goal-setting advice.`;
