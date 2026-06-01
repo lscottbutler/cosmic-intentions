@@ -4052,6 +4052,58 @@ input, textarea, select {
 }
 .bs-gen-btn.regen:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
 
+/* ── MISSION CONTROL ─────────────────────────────────── */
+.mc-intro { padding: 14px 20px 4px; font-size: 12px; color: #888; line-height: 1.6; }
+.mc-card {
+  margin: 6px 12px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.mc-card.flagged-yes  { border-color: #22c55e; }
+.mc-card.flagged-deeper { border-color: #1E90FF; }
+.mc-card-top { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px 8px; }
+.mc-card-num { font-size: 10px; font-weight: 800; color: #555; min-width: 22px; padding-top: 2px; }
+.mc-card-body { flex: 1; }
+.mc-card-cat {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.1em;
+  color: #888; text-transform: uppercase; margin-bottom: 4px;
+}
+.mc-card-action { font-size: 13px; font-weight: 700; color: #eee; line-height: 1.4; margin-bottom: 5px; }
+.mc-card-why { font-size: 11px; color: #777; line-height: 1.5; }
+.mc-card-flags { display: flex; gap: 6px; padding: 0 14px 12px; }
+.mc-flag-btn {
+  flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid #333;
+  background: transparent; color: #888; font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.mc-flag-btn.yes { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.08); }
+.mc-flag-btn.deeper { border-color: #1E90FF; color: #1E90FF; background: rgba(30,144,255,0.08); }
+.mc-flag-btn:hover { opacity: 0.8; }
+.mc-deepdive {
+  margin: 0 14px 12px;
+  padding: 12px;
+  background: #111;
+  border-radius: 8px;
+  border-left: 3px solid #1E90FF;
+  font-size: 11px; color: #bbb; line-height: 1.7;
+  display: none;
+}
+.mc-deepdive.visible { display: block; }
+.mc-deepdive-loading { color: #555; font-style: italic; }
+.mc-build-plan-wrap { padding: 16px 12px 20px; }
+.mc-build-plan-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #1E90FF, #0a6edf);
+  color: #fff; border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+  letter-spacing: 0.05em;
+}
+.mc-build-plan-btn:hover { opacity: 0.88; }
+.mc-build-plan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.mc-stats { font-size: 11px; color: #555; text-align: center; padding: 4px 0 12px; }
 /* AI Library (dark) */
 .bs-affirmation-pills {
   display: flex;
@@ -8303,6 +8355,241 @@ function openRoadmapForSelected() {
   openVaultBuildSheet(selectedVaultIdx);
 }
 
+/* ══════════════════════════════════════════════════════
+   MISSION CONTROL — 100-Item Research Roadmap
+══════════════════════════════════════════════════════ */
+
+function buildMissionControlPanel(intent, idx) {
+  const mc = intent.achievers?.missionControl;
+  if (!mc || !Array.isArray(mc.items) || mc.items.length === 0) {
+    return `
+      <div class="mc-intro">
+        Generate 100 research-backed actions, mindset shifts, and strategies
+        specific to your goal — then flag what resonates. Hit <strong>✓ YES</strong>
+        to add it to your plan, or <strong>⬇ DEEPER</strong> to get a full
+        deep-dive on that item.
+      </div>
+      <button class="bs-gen-btn" id="mcGenBtn-${idx}" onclick="generateMissionControl(${idx})">
+        ⚡ Generate My 100-Item Mission Control
+      </button>`;
+  }
+  return renderMissionControlItems(mc.items, idx);
+}
+
+function renderMissionControlItems(items, idx) {
+  const yesCount    = items.filter(i => i.flag === 'yes').length;
+  const deeperCount = items.filter(i => i.flag === 'deeper').length;
+  const cards = items.map((item, i) => {
+    const flagYes    = item.flag === 'yes';
+    const flagDeeper = item.flag === 'deeper';
+    const cardClass  = flagYes ? 'mc-card flagged-yes' : flagDeeper ? 'mc-card flagged-deeper' : 'mc-card';
+    const deepHtml   = item.deepDive
+      ? `<div class="mc-deepdive visible">${item.deepDive.replace(/\n/g,'<br>')}</div>`
+      : `<div class="mc-deepdive" id="mcDD-${idx}-${i}"></div>`;
+    return `
+      <div class="${cardClass}" id="mcCard-${idx}-${i}">
+        <div class="mc-card-top">
+          <div class="mc-card-num">${i + 1}</div>
+          <div class="mc-card-body">
+            <div class="mc-card-cat">${esc(item.category || '')}</div>
+            <div class="mc-card-action">${esc(item.action)}</div>
+            <div class="mc-card-why">${esc(item.why)}</div>
+          </div>
+        </div>
+        <div class="mc-card-flags">
+          <button class="mc-flag-btn${flagYes ? ' yes' : ''}"
+            onclick="flagMCItem(${idx},${i},'yes')">✓ YES</button>
+          <button class="mc-flag-btn${flagDeeper ? ' deeper' : ''}"
+            onclick="flagMCItem(${idx},${i},'deeper')">⬇ DEEPER</button>
+        </div>
+        ${deepHtml}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="mc-stats">${yesCount} YES · ${deeperCount} DEEPER selected</div>
+    ${cards}
+    <div class="mc-build-plan-wrap">
+      <button class="mc-build-plan-btn" onclick="buildMCPlan(${idx})">
+        ✦ Build My Personalized Plan from Flagged Items
+      </button>
+    </div>
+    <div style="padding:0 12px 8px;text-align:center;">
+      <button class="bs-gen-btn regen" onclick="generateMissionControl(${idx})">↺ Regenerate All 100</button>
+    </div>`;
+}
+
+async function generateMissionControl(idx) {
+  const intent = intentions[idx];
+  if (!intent) return;
+  const btn = document.getElementById(`mcGenBtn-${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = '⚡ Generating 100 items… (15–20 sec)'; }
+
+  const systemPrompt = `You are a world-class success researcher with deep expertise in psychology, neuroscience, biography, habit science, entrepreneurship, and peak performance. You generate highly specific, research-backed roadmaps for any human goal.`;
+
+  const userPrompt = `Goal: "${intent.title}"
+
+Generate exactly 100 research-backed items that will help someone achieve this goal. Cover ALL of these angles:
+- Mindset shifts required (identity, belief, self-image)
+- Daily habits and non-negotiables
+- Environment design
+- Social proof and accountability structures
+- What the most successful people in this exact space did (name them)
+- The most common reasons people FAIL at this goal (and how to avoid them)
+- Short-term actions (week 1–4)
+- Medium-term milestones (months 2–6)
+- Long-term strategy (year 1–3)
+- The single biggest leverage point most people miss
+
+For EACH item return:
+- action: the specific action, insight, or strategy (1–2 sentences, punchy)
+- why: the research or proof behind it (1 sentence — cite a study, name a person, reference a principle)
+- category: one of: Mindset / Habit / Environment / Social / Strategy / Action / Warning / Milestone
+
+Return as JSON: { "items": [ { "action": "...", "why": "...", "category": "..." }, ... ] }
+All 100 items. No shortcuts.`;
+
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 6000 })
+    });
+    const data = await res.json();
+    const parsed = JSON.parse(data.text);
+    const items = (parsed.items || []).slice(0, 100).map(item => ({
+      action: item.action || '',
+      why: item.why || '',
+      category: item.category || 'Strategy',
+      flag: null,
+      deepDive: null
+    }));
+
+    if (!intent.achievers) intent.achievers = {};
+    intent.achievers.missionControl = { items, generatedAt: new Date().toISOString() };
+    await syncIntentionsToSupabase();
+
+    const panel = document.getElementById(`bsPanel-mission-${idx}`);
+    if (panel) panel.innerHTML = renderMissionControlItems(items, idx);
+    toast('Mission Control ready ⚡', 'success');
+  } catch (err) {
+    toast('Generation failed — try again', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ Generate My 100-Item Mission Control'; }
+  }
+}
+
+function flagMCItem(idx, itemIdx, flag) {
+  const intent = intentions[idx];
+  const mc = intent?.achievers?.missionControl;
+  if (!mc || !mc.items[itemIdx]) return;
+
+  const item = mc.items[itemIdx];
+  // Toggle off if already flagged with same flag
+  item.flag = item.flag === flag ? null : flag;
+
+  // Update card classes and button states
+  const card = document.getElementById(`mcCard-${idx}-${itemIdx}`);
+  if (card) {
+    card.className = item.flag === 'yes' ? 'mc-card flagged-yes'
+                   : item.flag === 'deeper' ? 'mc-card flagged-deeper' : 'mc-card';
+    const [yesBtn, deeperBtn] = card.querySelectorAll('.mc-flag-btn');
+    if (yesBtn)    yesBtn.className    = 'mc-flag-btn' + (item.flag === 'yes'    ? ' yes'    : '');
+    if (deeperBtn) deeperBtn.className = 'mc-flag-btn' + (item.flag === 'deeper' ? ' deeper' : '');
+  }
+
+  // Update stats line
+  const statsEl = document.querySelector(`#bsPanel-mission-${idx} .mc-stats`);
+  if (statsEl) {
+    const yesCount    = mc.items.filter(i => i.flag === 'yes').length;
+    const deeperCount = mc.items.filter(i => i.flag === 'deeper').length;
+    statsEl.textContent = `${yesCount} YES · ${deeperCount} DEEPER selected`;
+  }
+
+  // If flagged DEEPER, trigger deep dive generation
+  if (item.flag === 'deeper') mcDeepDive(idx, itemIdx);
+
+  syncIntentionsToSupabase();
+}
+
+async function mcDeepDive(idx, itemIdx) {
+  const intent = intentions[idx];
+  const item = intent?.achievers?.missionControl?.items[itemIdx];
+  if (!item) return;
+
+  const ddEl = document.getElementById(`mcDD-${idx}-${itemIdx}`);
+  if (!ddEl) return;
+
+  // Already generated
+  if (item.deepDive) {
+    ddEl.innerHTML = item.deepDive.replace(/\n/g, '<br>');
+    ddEl.classList.add('visible');
+    return;
+  }
+
+  ddEl.innerHTML = '<span class="mc-deepdive-loading">⚡ Generating deep dive…</span>';
+  ddEl.classList.add('visible');
+
+  const systemPrompt = `You are a world-class success coach and researcher. Provide a detailed, practical, research-backed deep dive on a specific success strategy.`;
+
+  const userPrompt = `Goal: "${intent.title}"
+Strategy to deep-dive: "${item.action}"
+
+Provide a comprehensive deep dive covering:
+1. The full research and science behind why this works
+2. Real examples of people who used this exact approach (name them, be specific)
+3. The exact step-by-step process to implement this (numbered, actionable)
+4. Common mistakes people make with this strategy
+5. A 30-day micro-plan to put this into action immediately
+6. One counterintuitive insight most people miss about this
+
+Be specific, direct, and research-backed. No fluff.`;
+
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 1200 })
+    });
+    const data = await res.json();
+    let text = data.text || '';
+    // Strip JSON wrapper if model returned one
+    try { const p = JSON.parse(text); text = p.content || p.text || text; } catch {}
+
+    item.deepDive = text;
+    ddEl.innerHTML = text.replace(/\n/g, '<br>');
+    syncIntentionsToSupabase();
+  } catch {
+    ddEl.innerHTML = '<span class="mc-deepdive-loading">Failed — tap DEEPER again to retry</span>';
+  }
+}
+
+function buildMCPlan(idx) {
+  const intent = intentions[idx];
+  const mc = intent?.achievers?.missionControl;
+  if (!mc || !mc.items) return;
+
+  const flagged = mc.items.filter(i => i.flag === 'yes' || i.flag === 'deeper');
+  if (flagged.length === 0) {
+    toast('Flag some items with YES or DEEPER first', 'info'); return;
+  }
+
+  const lines = flagged.map((item, n) =>
+    `${n + 1}. [${item.flag.toUpperCase()}] ${item.action}\n   → ${item.why}`
+  ).join('\n\n');
+
+  const panel = document.getElementById(`bsPanel-mission-${idx}`);
+  const planDiv = document.createElement('div');
+  planDiv.style.cssText = 'margin:12px;padding:16px;background:#111;border-radius:10px;border-left:3px solid #22c55e;font-size:12px;color:#ccc;line-height:1.8;white-space:pre-wrap;';
+  planDiv.innerHTML = `<div style="font-weight:800;color:#22c55e;margin-bottom:12px;font-size:13px;">✦ YOUR PERSONALIZED PLAN (${flagged.length} items)</div>${esc(lines)}`;
+
+  const existing = panel?.querySelector('.mc-plan-output');
+  if (existing) existing.remove();
+  planDiv.className = 'mc-plan-output';
+  panel?.querySelector('.mc-build-plan-wrap')?.after(planDiv);
+
+  toast(`Plan built from ${flagged.length} flagged items ✓`, 'success');
+}
+
 async function generateBlueprint() {
   if (intentions.length === 0) {
     toast('Add at least one intention first.', 'error'); return;
@@ -9250,6 +9537,7 @@ function buildBuildSheet(intent, idx) {
       <button class="bs-tab active" id="bsTab-roadmap-${idx}" onclick="switchBSTab(${idx},'roadmap')">◈ Roadmap</button>
       <button class="bs-tab" id="bsTab-library-${idx}"  onclick="switchBSTab(${idx},'library')">✦ AI Library</button>
       <button class="bs-tab" id="bsTab-pegboard-${idx}" onclick="switchBSTab(${idx},'pegboard')">📋 Pegboard</button>
+      <button class="bs-tab" id="bsTab-mission-${idx}"  onclick="switchBSTab(${idx},'mission')" style="color:#1E90FF;font-weight:800;">⚡ Mission</button>
     </div>
 
     <div class="bs-panel active" id="bsPanel-roadmap-${idx}">
@@ -9260,6 +9548,9 @@ function buildBuildSheet(intent, idx) {
     </div>
     <div class="bs-panel" id="bsPanel-pegboard-${idx}">
       ${buildBSPegboardPanel(intent)}
+    </div>
+    <div class="bs-panel" id="bsPanel-mission-${idx}">
+      ${buildMissionControlPanel(intent, idx)}
     </div>
 
     <div class="bs-delete-row">
@@ -9273,7 +9564,7 @@ function buildBuildSheet(intent, idx) {
 }
 
 function switchBSTab(idx, tab) {
-  ['roadmap','library','pegboard'].forEach(t => {
+  ['roadmap','library','pegboard','mission'].forEach(t => {
     document.getElementById(`bsTab-${t}-${idx}`)?.classList.toggle('active', t === tab);
     const panel = document.getElementById(`bsPanel-${t}-${idx}`);
     if (panel) panel.classList.toggle('active', t === tab);
