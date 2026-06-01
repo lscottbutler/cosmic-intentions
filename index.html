@@ -5358,6 +5358,18 @@ input, textarea, select {
               </div>
             </div>
 
+            <div class="acc-item">
+              <button class="acc-trigger" id="accTrig-dailycommits" onclick="toggleAcc('dailycommits');loadDailyCommitsPanel()">
+                <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M9 11l3 3L22 4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="acc-label">My Daily Commitments</span><span class="acc-arrow">▶</span>
+              </button>
+              <div class="acc-panel acc-panel-tall" id="accPanel-dailycommits">
+                <div class="acc-panel-inner" id="dailyCommitsInner">
+                  <div class="acc-desc">Flag YES items in Mission Control then lock them in as daily commitments.</div>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <div class="acc-list">
@@ -8672,6 +8684,35 @@ function buildMCPlan(idx) {
   if (panel) panel.innerHTML = renderMissionControlItems(mc.items, idx);
 
   toast(`${toAdd.length} commitment${toAdd.length !== 1 ? 's' : ''} added ✓`, 'success');
+}
+
+function loadDailyCommitsPanel() {
+  const inner = document.getElementById('dailyCommitsInner');
+  if (!inner) return;
+  const idx = selectedVaultIdx;
+  if (idx === null || idx === undefined) {
+    inner.innerHTML = '<div class="acc-desc">Select an intention first.</div>'; return;
+  }
+  const commits = intentions[idx]?.achievers?.commitments;
+  if (!commits || commits.length === 0) {
+    inner.innerHTML = '<div class="acc-desc">No commitments yet. Go to ⚡ Mission, flag YES items, then hit "Lock In."</div>'; return;
+  }
+  const today = new Date().toISOString().slice(0,10);
+  inner.innerHTML = commits.map((c, i) => {
+    const done   = !!c.checks?.[today];
+    const streak = c.streak || 0;
+    const streakTxt = streak === 0 ? 'Not started' : streak >= 7 ? `🔥🔥 ${streak} days` : `🔥 ${streak} days`;
+    return `
+      <div class="mc-commit-item">
+        <div class="mc-commit-check${done ? ' done' : ''}"
+          onclick="toggleCommitmentCheck(${idx},${i});loadDailyCommitsPanel()"
+          id="sidebarCheck-${idx}-${i}"></div>
+        <div class="mc-commit-body">
+          <div class="mc-commit-text">${esc(c.text)}</div>
+          <div class="mc-commit-streak${streak >= 7 ? ' hot' : ''}">${streakTxt}</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function renderCommitmentsPanel(idx) {
