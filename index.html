@@ -50,6 +50,7 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
   --hdr:    56px;
+  --subnav: 40px;
 
   --mb1:#E8524A; --mb2:#E8893A; --mb3:#88B83A; --mb4:#52B896; --mb5:#4A9EAD;
   --p0:#E8524A;  --p1:#E8893A;  --p2:#E8B83A;  --p3:#88B83A;
@@ -234,10 +235,44 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
 }
 .btn-signout:hover { background: var(--border); }
 
+/* ── SUB-NAV BAR ──────────────────────────────────────────── */
+.subnav-bar {
+  position: fixed;
+  top: var(--hdr);
+  left: 0; right: 0;
+  height: var(--subnav);
+  background: #111111;
+  border-bottom: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 6px;
+  z-index: 99;
+}
+.subnav-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #EFEFEF;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.subnav-btn:hover:not(:disabled) { background: #222; border-color: #555; }
+.subnav-btn:disabled { opacity: 0.25; cursor: default; }
+.subnav-btn.home-btn { color: #EFEFEF; }
+
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
-  margin-top: var(--hdr);
-  min-height: calc(100vh - var(--hdr));
+  margin-top: calc(var(--hdr) + var(--subnav));
+  min-height: calc(100vh - var(--hdr) - var(--subnav));
 }
 .page { display: none; }
 .page.active { display: block; }
@@ -3233,8 +3268,8 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: var(--hdr);
-  height: calc(100vh - var(--hdr));
+  top: calc(var(--hdr) + var(--subnav));
+  height: calc(100vh - var(--hdr) - var(--subnav));
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
@@ -5063,6 +5098,13 @@ input, textarea, select {
     <span class="hdr-user" id="hdrUser"></span>
   </div>
 </header>
+
+<!-- ── SUB-NAV BAR ───────────────────────────────────────── -->
+<div class="subnav-bar">
+  <button class="subnav-btn" id="subnavBack"    onclick="subnavBack()"    disabled>← Back</button>
+  <button class="subnav-btn home-btn"            onclick="navTo('home')">🏠 Home</button>
+  <button class="subnav-btn" id="subnavForward" onclick="subnavForward()" disabled>Forward →</button>
+</div>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
 <nav class="drawer" id="drawer" style="display:none">
@@ -7066,6 +7108,31 @@ function showPage(id) {
   window.scrollTo(0, 0);
 }
 
+/* ── PAGE HISTORY (back / forward) ─────────────────────── */
+const _navHistory = [];
+let   _navIndex   = -1;
+
+function _updateSubnav() {
+  const back    = document.getElementById('subnavBack');
+  const forward = document.getElementById('subnavForward');
+  if (back)    back.disabled    = _navIndex <= 0;
+  if (forward) forward.disabled = _navIndex >= _navHistory.length - 1;
+}
+
+function subnavBack() {
+  if (_navIndex <= 0) return;
+  _navIndex--;
+  showPage(_navHistory[_navIndex]);
+  _updateSubnav();
+}
+
+function subnavForward() {
+  if (_navIndex >= _navHistory.length - 1) return;
+  _navIndex++;
+  showPage(_navHistory[_navIndex]);
+  _updateSubnav();
+}
+
 function navTo(id) {
   // Must be logged in for any non-home page
   const auth_required = ['dashboard','setup','bts','library','bestpractices','gettingstarted','community'];
@@ -7074,7 +7141,13 @@ function navTo(id) {
     openAuth('signin');
     return;
   }
-  // Member gate disabled during development
+  // Push to history, drop any forward stack
+  if (_navHistory[_navIndex] !== id) {
+    _navHistory.splice(_navIndex + 1);
+    _navHistory.push(id);
+    _navIndex = _navHistory.length - 1;
+  }
+  _updateSubnav();
   showPage(id);
 }
 
