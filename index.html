@@ -9889,7 +9889,8 @@ function selectVaultIntention(idx) {
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
     showVaultBuildSheet(selectedVaultIdx);
-    setTimeout(() => { window.scrollTo(0, 0); }, 0);
+    if (document.activeElement) document.activeElement.blur();
+    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' })));
   } else {
     showVaultWelcome();
   }
