@@ -9855,6 +9855,7 @@ function renderVaultSidebar() {
             : '');
         return `${dvb}
         <button class="vault-item${isSelected ? ' selected' : ''}"
+          onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
           <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
@@ -9889,8 +9890,6 @@ function selectVaultIntention(idx) {
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
     showVaultBuildSheet(selectedVaultIdx);
-    if (document.activeElement) document.activeElement.blur();
-    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' })));
   } else {
     showVaultWelcome();
   }
