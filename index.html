@@ -3268,13 +3268,10 @@ input, textarea, select {
   border-right: 1px solid #383838;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: calc(var(--hdr) + var(--subnav));
-  height: calc(100vh - var(--hdr) - var(--subnav));
-  overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
   padding: 8px;
+  align-self: flex-start;
 }
 .vault-sidebar::-webkit-scrollbar { width: 3px; }
 .vault-sidebar::-webkit-scrollbar-track { background: transparent; }
