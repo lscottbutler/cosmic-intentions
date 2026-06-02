@@ -9892,8 +9892,10 @@ function selectVaultIntention(idx) {
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
     showVaultBuildSheet(selectedVaultIdx);
-    const sidebar = document.getElementById('vaultSidebar');
-    if (sidebar) sidebar.scrollTop = 0;
+    setTimeout(() => {
+      const sidebar = document.getElementById('vaultSidebar');
+      if (sidebar) sidebar.scrollTop = 0;
+    }, 0);
   } else {
     showVaultWelcome();
   }
