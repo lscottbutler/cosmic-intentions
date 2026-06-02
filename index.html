@@ -50,7 +50,7 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
   --hdr:    56px;
-  --subnav: 75px;
+  --subnav: 90px;
 
   --mb1:#E8524A; --mb2:#E8893A; --mb3:#88B83A; --mb4:#52B896; --mb5:#4A9EAD;
   --p0:#E8524A;  --p1:#E8893A;  --p2:#E8B83A;  --p3:#88B83A;
@@ -271,8 +271,8 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
 
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
-  margin-top: calc(var(--hdr) + var(--subnav));
-  min-height: calc(100vh - var(--hdr) - var(--subnav));
+  margin-top: 160px;
+  min-height: calc(100vh - 160px);
 }
 .page { display: none; }
 .page.active { display: block; }
@@ -3256,6 +3256,7 @@ input, textarea, select {
 .vault-layout {
   display: flex;
   min-height: calc(100vh - var(--hdr));
+  padding-top: 16px;
 }
 .vault-sidebar { order: 2; border-right: none; border-left: 1px solid #383838; }
 .vault-main { order: 1; }
