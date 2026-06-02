@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Goal Success Playbook — Cosmic Intentions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Helvetica+Neue:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white:       #FFFFFF;
+  --black:       #0A0A0A;
+  --gray-light:  #F7F7F7;
+  --gray-mid:    #E8E8E8;
+  --gray-text:   #666666;
+  --gold:        #B8860B;
+  --font-serif:  'Cormorant Garamond', Georgia, serif;
+  --font-sans:   'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --max-width:   720px;
+  --side-pad:    32px;
+}
+
+html {
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  color-scheme: light only;
+}
+
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.75;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+.page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 80px var(--side-pad) 120px;
+}
+
+/* ── COVER ───────────────────────────────────────────── */
+.cover {
+  text-align: center;
+  padding: 80px 0 64px;
+  border-bottom: 1px solid var(--black);
+  margin-bottom: 72px;
+}
+
+.cover .eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin-bottom: 32px;
+}
+
+.cover h1 {
+  font-family: var(--font-serif);
+  font-size: 3.2rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+
+.cover .subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: var(--gray-text);
+  font-style: italic;
+  margin-bottom: 36px;
+  line-height: 1.5;
+}
+
+.cover .authors {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  line-height: 2;
+}
+
+/* ── SECTIONS ────────────────────────────────────────── */
+.section {
+  margin-bottom: 72px;
+}
+
+.section + .section {
+  padding-top: 72px;
+  border-top: 1px solid var(--gray-mid);
+}
+
+/* ── HEADINGS ────────────────────────────────────────── */
+.part-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+  display: block;
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.2;
+  margin-bottom: 28px;
+}
+
+h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-style: italic;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-mid);
+}
+
+h3 .num {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 4px;
+  font-style: normal;
+}
+
+/* ── BODY TEXT ───────────────────────────────────────── */
+p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+/* ── PULLQUOTE ───────────────────────────────────────── */
+blockquote {
+  margin: 36px 0;
+  padding: 28px 32px;
+  border-left: 3px solid var(--black);
+  background: var(--gray-light);
+}
+
+blockquote p {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+
+blockquote cite {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  font-style: normal;
+}
+
+/* ── META PATTERN ────────────────────────────────────── */
+.meta-pattern {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 36px 0;
+  padding: 32px;
+  background: var(--black);
+}
+
+.meta-pattern .step {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.meta-pattern .arrow {
+  color: var(--gold);
+  font-size: 0.8rem;
+}
+
+/* ── BULLET LISTS ────────────────────────────────────── */
+ul.ci-list {
+  list-style: none;
+  margin: 0 0 24px 0;
+  padding: 0;
+}
+
+ul.ci-list li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  padding: 8px 0 8px 24px;
+  position: relative;
+  border-bottom: 1px solid var(--gray-mid);
+  color: #222;
+}
+
+ul.ci-list li:last-child { border-bottom: none; }
+
+ul.ci-list li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+/* ── TABLES ──────────────────────────────────────────── */
+.ci-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-size: 0.85rem;
+}
+
+.ci-table thead tr {
+  background: var(--black);
+  color: var(--white);
+}
+
+.ci-table thead th {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.ci-table tbody tr:nth-child(even) { background: var(--gray-light); }
+.ci-table tbody tr:nth-child(odd)  { background: var(--white); }
+
+.ci-table tbody tr:hover { background: var(--gray-mid); }
+
+.ci-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gray-mid);
+  vertical-align: top;
+  line-height: 1.55;
+  color: #222;
+}
+
+.ci-table td:first-child {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ci-table .num-col {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+/* ── PHASE BLOCKS ────────────────────────────────────── */
+.phase-block {
+  padding: 32px;
+  margin: 24px 0;
+}
+
+.phase-block.ignition   { background: var(--black); }
+.phase-block.execution  { background: var(--gray-light); border: 1px solid var(--gray-mid); }
+
+.phase-block .phase-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.phase-block.ignition  .phase-label { color: var(--gold); }
+.phase-block.execution .phase-label { color: var(--gray-text); }
+
+.phase-block h4 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-style: italic;
+  font-weight: 300;
+  margin-bottom: 12px;
+}
+
+.phase-block.ignition  h4 { color: var(--white); }
+.phase-block.execution h4 { color: var(--black); }
+
+.phase-block p {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.phase-block.ignition  p { color: #ccc; }
+.phase-block.execution p { color: #555; }
+
+/* ── SOURCES ─────────────────────────────────────────── */
+.sources-group {
+  margin-bottom: 28px;
+}
+
+.sources-group h4 {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-mid);
+}
+
+.sources-group ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sources-group ul li {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 6px 0;
+  color: #333;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.sources-group ul li:last-child { border-bottom: none; }
+
+/* ── FOOTER ──────────────────────────────────────────── */
+.footer {
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid var(--black);
+  text-align: center;
+}
+
+.footer p {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin-bottom: 0;
+}
+
+.footer a {
+  color: var(--black);
+  text-decoration: none;
+  border-bottom: 1px solid var(--black);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  :root { --side-pad: 20px; }
+  .cover h1 { font-size: 2.2rem; }
+  h2 { font-size: 1.6rem; }
+  blockquote { padding: 20px 20px; }
+  .meta-pattern { gap: 6px; padding: 24px 16px; }
+  .meta-pattern .step { font-size: 0.78rem; }
+  .ci-table { font-size: 0.78rem; }
+  .ci-table td { padding: 10px 10px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── COVER ─────────────────────────────────────── -->
+  <div class="cover">
+    <span class="eyebrow">Cosmic Intentions</span>
+    <h1>The Goal Success Playbook</h1>
+    <p class="subtitle">A Centuries-Old Framework for Accomplishing Anything</p>
+    <div class="authors">
+      Marcus Aurelius &nbsp;·&nbsp; Napoleon Hill &nbsp;·&nbsp; Carnegie &nbsp;·&nbsp; Covey<br>
+      Drucker &nbsp;·&nbsp; Frankl &nbsp;·&nbsp; James Clear &nbsp;·&nbsp; Rory Sutherland
+    </div>
+  </div>
+
+
+  <!-- ── INTRODUCTION ───────────────────────────────── -->
+  <div class="section">
+    <span class="part-label">Introduction</span>
+    <h2>The Eternal Problem of Getting Things Done</h2>
+
+    <p>Human beings have been trying to accomplish goals since the first hunter aimed a spear. The strategies that work have not fundamentally changed in 3,000 years — only the language used to describe them has.</p>
+
+    <p>This framework distills the consistent patterns found across history's most effective thinkers: Stoic emperors, industrial titans, behavioral economists, and modern habit scientists. It is the skeleton on which every tool, tactic, and resource at Cosmic Intentions hangs.</p>
+
+    <blockquote>
+      <p>"He who has a why can bear almost any how."</p>
+      <cite>— Friedrich Nietzsche</cite>
+    </blockquote>
+
+    <p>The meta-pattern, confirmed across every era and tradition:</p>
+
+    <div class="meta-pattern">
+      <span class="step">Vivid Vision</span>
+      <span class="arrow">→</span>
+      <span class="step">Compelling Why</span>
+      <span class="arrow">→</span>
+      <span class="step">Credible Plan</span>
+      <span class="arrow">→</span>
+      <span class="step">Feedback Loops</span>
+      <span class="arrow">→</span>
+      <span class="step">Environment Design</span>
+      <span class="arrow">→</span>
+      <span class="step">Identity Alignment</span>
+    </div>
+  </div>
+
+
+  <!-- ── THE NINE COMPONENTS ────────────────────────── -->
+  <div class="section">
+    <span class="part-label">The Framework</span>
+    <h2>Nine Components of Goal Success</h2>
+
+    <p>Each component below represents a failure point. Remove any one of them and achievement collapses. Together they form a complete system.</p>
+
+    <table class="ci-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Component</th>
+          <th>What It Means</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num-col">01</td>
+          <td>Clarity</td>
+          <td>A defined, vivid picture of the end state</td>
+          <td>Napoleon — "picture of the end"</td>
+        </tr>
+        <tr>
+          <td class="num-col">02</td>
+          <td>Compelling Why</td>
+          <td>Emotional fuel that survives adversity</td>
+          <td>Nietzsche, Frankl</td>
+        </tr>
+        <tr>
+          <td class="num-col">03</td>
+          <td>Belief</td>
+          <td>Subconscious conviction it is achievable</td>
+          <td>Napoleon Hill — Think and Grow Rich</td>
+        </tr>
+        <tr>
+          <td class="num-col">04</td>
+          <td>Plan (with slack)</td>
+          <td>A map plus the habit of navigating</td>
+          <td>Eisenhower — "Planning is indispensable"</td>
+        </tr>
+        <tr>
+          <td class="num-col">05</td>
+          <td>Feedback Loops</td>
+          <td>Regular signal: am I on track?</td>
+          <td>Drucker — "What gets measured gets managed"</td>
+        </tr>
+        <tr>
+          <td class="num-col">06</td>
+          <td>Environment Design</td>
+          <td>Context shapes behavior more than willpower</td>
+          <td>Rory Sutherland — behavioral economics</td>
+        </tr>
+        <tr>
+          <td class="num-col">07</td>
+          <td>Accountability</td>
+          <td>External commitment mechanisms</td>
+          <td>Carnegie, Covey, every coaching tradition</td>
+        </tr>
+        <tr>
+          <td class="num-col">08</td>
+          <td>Resilience</td>
+          <td>Treating failure as data, not verdict</td>
+          <td>Edison, Churchill, the Stoics</td>
+        </tr>
+        <tr>
+          <td class="num-col">09</td>
+          <td>Identity Alignment</td>
+          <td>Becoming the person who achieves this</td>
+          <td>James Clear — Atomic Habits</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ── DEEP DIVES ──────────────────────────────────── -->
+  <div class="section">
+    <span class="part-label">Component Deep Dives</span>
+    <h2>Each One in Detail</h2>
+
+    <h3><span class="num">01</span>Clarity of Outcome</h3>
+    <p>Napoleon called it "the picture of the end." Covey called it "Begin with the end in mind." Every goal-setting tradition in recorded history begins here — because the brain cannot pursue a vague target.</p>
+    <p>The failure mode is wishes masquerading as goals. "I want to be healthier" is a wish. "I will run a 5K in under 30 minutes by October 1" is a goal. The specificity is not pedantry — it activates the reticular activating system, the brain's relevance filter.</p>
+    <blockquote>
+      <p>"A goal without a plan is just a wish."</p>
+      <cite>— Antoine de Saint-Exupéry</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Define the outcome in concrete, measurable terms</li>
+      <li>Set a deadline — open-ended goals drift indefinitely</li>
+      <li>Write it down. Research shows this alone increases follow-through by 42%</li>
+    </ul>
+
+    <h3><span class="num">02</span>Compelling Why</h3>
+    <p>Viktor Frankl survived three Nazi concentration camps. His conclusion: those who found meaning endured; those who lost their why perished. This is not metaphor — it is documented clinical observation under the most extreme conditions humans have faced.</p>
+    <p>Purpose is not motivational decoration. It is structural. When the plan breaks down — and it will — the why is the only thing that keeps someone moving.</p>
+    <blockquote>
+      <p>"Those who have a 'why' to live can bear with almost any 'how.'"</p>
+      <cite>— Viktor Frankl</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Identify what achieving this goal makes possible (second-order benefits)</li>
+      <li>Connect it to identity: who do you become by doing this?</li>
+      <li>Test it: would you still pursue this if no one ever knew?</li>
+    </ul>
+
+    <h3><span class="num">03</span>Belief It Is Possible</h3>
+    <p>Napoleon Hill called it Faith. Bandura called it self-efficacy. Rory Sutherland would call it perceived plausibility — the subconscious must believe the goal is achievable or it will sabotage every conscious effort.</p>
+    <p>This is why small wins matter structurally, not just psychologically. Each win rewrites the internal narrative from "I am someone who tries" to "I am someone who succeeds."</p>
+    <blockquote>
+      <p>"Whatever the mind can conceive and believe, it can achieve."</p>
+      <cite>— Napoleon Hill</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Stack early wins — design the first milestones to be achievable</li>
+      <li>Audit the internal narrative: what does your subconscious say about this goal?</li>
+      <li>Use social proof: find people who have done what you are attempting</li>
+    </ul>
+
+    <h3><span class="num">04</span>A Plan (With Slack)</h3>
+    <p>Eisenhower said plans are useless, but planning is indispensable. The distinction matters: the act of planning builds the mental models that enable real-time navigation when the plan inevitably fails.</p>
+    <p>Most plans fail not because they are wrong but because they have no slack. Every project management tradition from PERT charts to agile sprints builds in buffers. The amateurs do not.</p>
+    <blockquote>
+      <p>"In preparing for battle I have always found that plans are useless, but planning is indispensable."</p>
+      <cite>— Dwight D. Eisenhower</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Break the goal into phases with specific milestones</li>
+      <li>Add 20–30% buffer to every time estimate</li>
+      <li>Plan for the obstacle: "If X happens, I will do Y"</li>
+    </ul>
+
+    <h3><span class="num">05</span>Feedback Loops</h3>
+    <p>Drucker's dictum — what gets measured gets managed — is one of the most replicated findings in management science. Without signal, humans default to the path of least resistance, which is rarely the path toward the goal.</p>
+    <p>The cadence of feedback matters as much as the feedback itself. Annual reviews are nearly useless. Weekly check-ins work. Daily tracking is transformative for behavior change.</p>
+    <blockquote>
+      <p>"What gets measured gets managed."</p>
+      <cite>— Peter Drucker</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Choose 1–3 leading indicators (inputs you control) and 1 lagging indicator (the outcome)</li>
+      <li>Review weekly at minimum — monthly is too slow for course correction</li>
+      <li>Make the data visible: dashboards and scorecards work because they remove the need for memory</li>
+    </ul>
+
+    <h3><span class="num">06</span>Environment Design</h3>
+    <p>This is where Rory Sutherland parts company with most self-help tradition — and where the behavioral economics evidence is overwhelming. Context determines behavior far more reliably than willpower, intention, or motivation.</p>
+    <p>A person who puts their running shoes by the door will exercise more than a person with superior motivation and no visual cue. Design the environment, not the person.</p>
+    <blockquote>
+      <p>"The problem with logic is it can only be as good as the information it starts with. Psycho-logic can find solutions that logic will never discover."</p>
+      <cite>— Rory Sutherland</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Eliminate friction from desired behaviors; add friction to undesired ones</li>
+      <li>Use default settings to your advantage — what is the automatic path?</li>
+      <li>Design for the worst version of yourself, not the best</li>
+      <li>Cues and context are more reliable than willpower — build reminders into the environment</li>
+    </ul>
+
+    <h3><span class="num">07</span>Accountability</h3>
+    <p>Across every culture and era, humans perform better when they have made a commitment to another person. This is not weakness. It is how human social cognition works: we are wired to care about our standing in the tribe.</p>
+    <p>Public commitments, financial stakes, and accountability partners all dramatically outperform private resolve. Carnegie built an entire philosophy of success on this single insight.</p>
+    <blockquote>
+      <p>"You can make more friends in two months by becoming interested in other people than you can in two years by trying to get other people interested in you."</p>
+      <cite>— Dale Carnegie</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Name a specific accountability partner or coach</li>
+      <li>Make the commitment public where appropriate — stakes increase motivation</li>
+      <li>Schedule regular check-ins in advance; ad-hoc accountability fades</li>
+    </ul>
+
+    <h3><span class="num">08</span>Resilience and Iteration</h3>
+    <p>Edison failed 10,000 times before the lightbulb worked. Churchill's political career was effectively finished twice before his finest hour at age 65. The Stoics called it amor fati — love of fate, including its obstacles.</p>
+    <p>People who interpret failure as information rather than verdict consistently outperform those who do not. This is trainable.</p>
+    <blockquote>
+      <p>"Success is not final, failure is not fatal: it is the courage to continue that counts."</p>
+      <cite>— Winston Churchill</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Build a failure review process — after every setback, ask: what does this tell me?</li>
+      <li>Distinguish between strategy failure and execution failure — they require different responses</li>
+      <li>Normalize iteration: version 1 is not meant to be final</li>
+    </ul>
+
+    <h3><span class="num">09</span>Identity Alignment</h3>
+    <p>James Clear synthesized centuries of behavioral science into a single insight: you do not rise to your goals, you fall to your identity. The question is not "What do I want to achieve?" but "Who am I?"</p>
+    <p>The Stoics practiced this as character cultivation. Aristotle called it virtue — not an act but a habit. What they all understood is that sustained behavior requires a self-concept that makes the right action feel natural.</p>
+    <blockquote>
+      <p>"Every action you take is a vote for the type of person you wish to become."</p>
+      <cite>— James Clear</cite>
+    </blockquote>
+    <ul class="ci-list">
+      <li>Reframe goals as identity claims: "I am a runner" not "I am trying to run"</li>
+      <li>Use small daily behaviors to cast votes for the identity you are building</li>
+      <li>Audit for identity conflicts: what beliefs will this goal require you to change?</li>
+    </ul>
+  </div>
+
+
+  <!-- ── META PATTERN ────────────────────────────────── -->
+  <div class="section">
+    <span class="part-label">How It All Connects</span>
+    <h2>Two Phases, One System</h2>
+
+    <p>The nine components are not independent. They form a system with two distinct phases.</p>
+
+    <div class="phase-block ignition">
+      <span class="phase-label">Phase 1 — Ignition</span>
+      <h4>Clarity · Why · Belief</h4>
+      <p>These form the launch conditions. Without all three, the goal never really starts. Clarity without Why produces joyless execution. Why without Belief produces paralysis. Belief without Clarity produces unfocused energy.</p>
+    </div>
+
+    <div class="phase-block execution">
+      <span class="phase-label">Phase 2 — Sustained Execution</span>
+      <h4>Plan · Feedback · Environment · Accountability · Resilience · Identity</h4>
+      <p>These form the engine that keeps the goal moving after the initial motivation fades — and motivation always fades. This is the phase where most people fail and where most self-help advice is directed.</p>
+    </div>
+
+    <h3 style="margin-top:48px;">The Rory Sutherland Correction</h3>
+    <p>Classical goal frameworks assume rational actors who respond to logical incentives. Sutherland's contribution is the reminder that humans are not rational — and this is a feature, not a bug. The most effective goal systems work with human psychology rather than against it: they make right action easy, visible, and socially reinforced. They do not rely on willpower.</p>
+    <blockquote>
+      <p>"If you think the solution to your problem is obvious, you clearly don't understand the full complexity of the problem."</p>
+      <cite>— Rory Sutherland</cite>
+    </blockquote>
+  </div>
+
+
+  <!-- ── CI ROADMAP ──────────────────────────────────── -->
+  <div class="section">
+    <span class="part-label">Application</span>
+    <h2>The Cosmic Intentions Roadmap</h2>
+
+    <p>Each component maps directly to a section of the C.I. roadmap — providing both the sequence of what to build first, and the diagnostic for what is missing when progress stalls.</p>
+
+    <table class="ci-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Component</th>
+          <th>C.I. Roadmap Section</th>
+          <th>Diagnostic Question</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num-col">01</td>
+          <td>Clarity</td>
+          <td>Define Your Goal</td>
+          <td>Can you describe the outcome in one sentence?</td>
+        </tr>
+        <tr>
+          <td class="num-col">02</td>
+          <td>Compelling Why</td>
+          <td>Find Your Why</td>
+          <td>What does achieving this make possible?</td>
+        </tr>
+        <tr>
+          <td class="num-col">03</td>
+          <td>Belief</td>
+          <td>Build Conviction</td>
+          <td>Do you believe this is achievable for you?</td>
+        </tr>
+        <tr>
+          <td class="num-col">04</td>
+          <td>Plan</td>
+          <td>Map the Path</td>
+          <td>What are the milestones and buffers?</td>
+        </tr>
+        <tr>
+          <td class="num-col">05</td>
+          <td>Feedback</td>
+          <td>Track Progress</td>
+          <td>What are your leading indicators?</td>
+        </tr>
+        <tr>
+          <td class="num-col">06</td>
+          <td>Environment</td>
+          <td>Design Your Context</td>
+          <td>What friction have you removed?</td>
+        </tr>
+        <tr>
+          <td class="num-col">07</td>
+          <td>Accountability</td>
+          <td>Get Support</td>
+          <td>Who will hold you to this?</td>
+        </tr>
+        <tr>
+          <td class="num-col">08</td>
+          <td>Resilience</td>
+          <td>Prepare to Iterate</td>
+          <td>What will you do when the plan fails?</td>
+        </tr>
+        <tr>
+          <td class="num-col">09</td>
+          <td>Identity</td>
+          <td>Become the Person</td>
+          <td>Who do you need to be to achieve this?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ── SOURCES ─────────────────────────────────────── -->
+  <div class="section">
+    <span class="part-label">Primary Sources</span>
+    <h2>The Shoulders We Stand On</h2>
+
+    <div class="sources-group">
+      <h4>Ancient &amp; Classical</h4>
+      <ul>
+        <li>Marcus Aurelius — Meditations (170–180 AD)</li>
+        <li>Aristotle — Nicomachean Ethics (350 BC)</li>
+        <li>Epictetus — Discourses (108 AD)</li>
+      </ul>
+    </div>
+
+    <div class="sources-group">
+      <h4>20th Century Foundations</h4>
+      <ul>
+        <li>Napoleon Hill — Think and Grow Rich (1937)</li>
+        <li>Dale Carnegie — How to Win Friends and Influence People (1936)</li>
+        <li>Viktor Frankl — Man's Search for Meaning (1946)</li>
+        <li>Peter Drucker — The Effective Executive (1967)</li>
+        <li>Stephen Covey — The 7 Habits of Highly Effective People (1989)</li>
+      </ul>
+    </div>
+
+    <div class="sources-group">
+      <h4>Contemporary Science</h4>
+      <ul>
+        <li>James Clear — Atomic Habits (2018)</li>
+        <li>Carol Dweck — Mindset: The New Psychology of Success (2006)</li>
+        <li>Albert Bandura — Self-Efficacy: The Exercise of Control (1997)</li>
+        <li>Rory Sutherland — Alchemy (2019)</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ── FOOTER ──────────────────────────────────────── -->
+  <div class="footer">
+    <p><a href="https://cosmicintentions.com">cosmicintentions.com</a> &nbsp;·&nbsp; Built for Cosmic Intentions &nbsp;·&nbsp; 2026</p>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>
