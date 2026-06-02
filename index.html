@@ -50,7 +50,7 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
   --hdr:    56px;
-  --subnav: 90px;
+  --subnav: 0px;
 
   --mb1:#E8524A; --mb2:#E8893A; --mb3:#88B83A; --mb4:#52B896; --mb5:#4A9EAD;
   --p0:#E8524A;  --p1:#E8893A;  --p2:#E8B83A;  --p3:#88B83A;
@@ -235,24 +235,18 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
 }
 .btn-signout:hover { background: var(--border); }
 
-/* ── SUB-NAV BAR ──────────────────────────────────────────── */
-.subnav-bar {
-  position: fixed;
-  top: var(--hdr);
-  left: 0; right: 0;
-  height: var(--subnav);
-  background: transparent;
-  border-bottom: none;
+/* ── HEADER NAV BUTTONS ───────────────────────────────────── */
+.hdr-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
-  z-index: 99;
-  pointer-events: none;
+  gap: 12px;
 }
-.subnav-btn {
-  width: 55px;
-  height: 55px;
+.hdr-nav-btn {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: #000000;
   border: none;
@@ -262,17 +256,15 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   cursor: pointer;
   transition: opacity 0.15s, transform 0.15s;
   flex-shrink: 0;
-  pointer-events: all;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
-.subnav-btn:hover:not(:disabled) { opacity: 0.75; transform: scale(1.05); }
-.subnav-btn:disabled { opacity: 0.2; cursor: default; }
-.subnav-btn svg { width: 22px; height: 22px; fill: #FFFFFF; }
+.hdr-nav-btn:hover:not(:disabled) { opacity: 0.7; transform: scale(1.08); }
+.hdr-nav-btn:disabled { opacity: 0.25; cursor: default; }
+.hdr-nav-btn svg { width: 18px; height: 18px; fill: #FFFFFF; }
 
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
-  margin-top: 160px;
-  min-height: calc(100vh - 160px);
+  margin-top: var(--hdr);
+  min-height: calc(100vh - var(--hdr));
 }
 .page { display: none; }
 .page.active { display: block; }
@@ -3256,7 +3248,6 @@ input, textarea, select {
 .vault-layout {
   display: flex;
   min-height: calc(100vh - var(--hdr));
-  padding-top: 16px;
 }
 .vault-sidebar { order: 2; border-right: none; border-left: 1px solid #383838; }
 .vault-main { order: 1; }
@@ -5092,27 +5083,24 @@ input, textarea, select {
   <div class="hdr-logo" onclick="showPage('home')">
     COSMIC INTENTIONS
   </div>
+  <!-- ── NAV BUTTONS (center of header) ── -->
+  <div class="hdr-nav">
+    <button class="hdr-nav-btn" id="subnavBack" onclick="subnavBack()" disabled aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <button class="hdr-nav-btn" onclick="navTo('home')" aria-label="Home">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </button>
+    <button class="hdr-nav-btn" id="subnavForward" onclick="subnavForward()" disabled aria-label="Forward">
+      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </button>
+  </div>
+
   <div class="hdr-right">
     <span class="hdr-member-badge" id="hdrMemberBadge" style="display:none">✦ Member</span>
     <span class="hdr-user" id="hdrUser"></span>
   </div>
 </header>
-
-<!-- ── SUB-NAV BAR ───────────────────────────────────────── -->
-<div class="subnav-bar">
-  <!-- Back -->
-  <button class="subnav-btn" id="subnavBack" onclick="subnavBack()" disabled aria-label="Back">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-  </button>
-  <!-- Home -->
-  <button class="subnav-btn" onclick="navTo('home')" aria-label="Home">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-  </button>
-  <!-- Forward -->
-  <button class="subnav-btn" id="subnavForward" onclick="subnavForward()" disabled aria-label="Forward">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-  </button>
-</div>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
 <nav class="drawer" id="drawer" style="display:none">
