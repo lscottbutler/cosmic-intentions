@@ -9956,6 +9956,7 @@ function buildBuildSheet(intent, idx) {
       <button class="bs-tab" id="bsTab-library-${idx}"  onclick="switchBSTab(${idx},'library')">✦ AI Library</button>
       <button class="bs-tab" id="bsTab-pegboard-${idx}" onclick="switchBSTab(${idx},'pegboard')">📋 Pegboard</button>
       <button class="bs-tab" id="bsTab-mission-${idx}"  onclick="switchBSTab(${idx},'mission')" style="color:#1E90FF;font-weight:800;">⚡ Mission</button>
+      <button class="bs-tab" id="bsTab-themap-${idx}"  onclick="switchBSTab(${idx},'themap')" style="color:#F5A623;font-weight:800;">◉ The Map</button>
     </div>
 
     <div class="bs-panel active" id="bsPanel-roadmap-${idx}">
@@ -9970,6 +9971,9 @@ function buildBuildSheet(intent, idx) {
     <div class="bs-panel" id="bsPanel-mission-${idx}">
       ${buildMissionControlPanel(intent, idx)}
     </div>
+    <div class="bs-panel" id="bsPanel-themap-${idx}">
+      ${buildBSTheMapPanel(intent, idx)}
+    </div>
 
     <div class="bs-delete-row">
       <div class="bs-nav-row">
@@ -9982,7 +9986,7 @@ function buildBuildSheet(intent, idx) {
 }
 
 function switchBSTab(idx, tab) {
-  ['roadmap','library','pegboard','mission'].forEach(t => {
+  ['roadmap','library','pegboard','mission','themap'].forEach(t => {
     document.getElementById(`bsTab-${t}-${idx}`)?.classList.toggle('active', t === tab);
     const panel = document.getElementById(`bsPanel-${t}-${idx}`);
     if (panel) panel.classList.toggle('active', t === tab);
@@ -10201,6 +10205,94 @@ function buildBSPegboardPanel(intent) {
 }
 
 /* ── BS AI GENERATION WRAPPERS ──────────────────────── */
+/* ── THE MAP PANEL ──────────────────────────────────── */
+function buildBSTheMapPanel(intent, idx) {
+  if (!intent.theMap) {
+    return `
+      <div class="bs-section" style="border-bottom:none">
+        <div class="bs-section-hd">◉ THE MAP</div>
+        <p style="padding:8px 20px 4px;font-size:13px;color:#50505A;line-height:1.6">
+          Break down this goal through the 9 Components of Goal Success — then find the real person who proves it's possible.
+        </p>
+        <button class="bs-gen-btn" id="bsTheMapBtn-${idx}"
+          onclick="bsGenerateTheMap(${idx})">◉ Generate The Map</button>
+      </div>`;
+  }
+  const m = intent.theMap;
+  const components = (m.components || []).map(c => `
+    <div style="padding:12px 20px;border-bottom:1px solid #2A2A2A;">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
+        <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;min-width:18px">${c.number}</span>
+        <span style="font-family:var(--vault-mono);font-size:11px;color:#F5A623;font-weight:800;letter-spacing:1px">${esc(c.name)}</span>
+      </div>
+      <div style="font-size:13px;color:#C8C8D0;line-height:1.6;padding-left:26px;margin-bottom:4px">${esc(c.diagnosis)}</div>
+      <div style="font-size:12px;color:#60A0FF;padding-left:26px">→ ${esc(c.action)}</div>
+    </div>`).join('');
+
+  const proof = m.proof || {};
+  const proofComponents = (proof.components || []).map(c => {
+    const win = c.verdict === 'WIN';
+    return `
+      <div style="display:flex;gap:10px;padding:8px 20px;border-bottom:1px solid #1E1E1E;align-items:flex-start">
+        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;margin-top:2px;flex-shrink:0;background:${win?'#1A3A1A':'#3A1A1A'};color:${win?'#4ADE80':'#F87171'}">${win?'WIN':'LOSS'}</span>
+        <div>
+          <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:1px;margin-bottom:2px">${esc(c.name)}</div>
+          <div style="font-size:12px;color:#B0B0BC;line-height:1.5">${esc(c.detail)}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="bs-section">
+      <div class="bs-section-hd">◉ THE MAP — 9 COMPONENTS
+        <button class="bs-section-hd-action" onclick="bsGenerateTheMap(${idx})">↺ Regenerate</button>
+      </div>
+      ${components}
+    </div>
+    <div class="bs-section" style="border-bottom:none">
+      <div class="bs-section-hd">◉ THE HUMAN PROOF</div>
+      <div style="padding:14px 20px 10px;border-bottom:1px solid #2A2A2A">
+        <div style="font-family:var(--vault-mono);font-size:13px;color:#EFEFEF;font-weight:800;margin-bottom:4px">${esc(proof.name||'')}</div>
+        <div style="font-size:12px;color:#70707A;line-height:1.5">${esc(proof.tagline||'')}</div>
+        <div style="font-size:13px;color:#B0B0BC;line-height:1.6;margin-top:8px">${esc(proof.story||'')}</div>
+      </div>
+      ${proofComponents}
+    </div>`;
+}
+
+async function bsGenerateTheMap(idx) {
+  const btn = document.getElementById(`bsTheMapBtn-${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+  await generateTheMap(idx);
+  if (selectedVaultIdx === idx) {
+    const panel = document.getElementById(`bsPanel-themap-${idx}`);
+    if (panel) panel.innerHTML = buildBSTheMapPanel(intentions[idx], idx);
+  }
+}
+
+async function generateTheMap(idx) {
+  try {
+    const pb      = getPB();
+    const context = buildContext(pb);
+    const title   = intentions[idx]?.title || '';
+
+    const system = `You are a goal success strategist. User profile:\n${context}\n\nYou use the 9 Components of Goal Success framework:\n1. Clarity — vivid picture of the end state\n2. Compelling Why — emotional fuel that survives adversity\n3. Belief — subconscious conviction it's achievable\n4. Plan (with slack) — a map plus habit of navigating\n5. Feedback Loops — regular signal: am I on track?\n6. Environment Design — context shapes behavior more than willpower\n7. Accountability — external commitment mechanisms\n8. Resilience — treating failure as data, not verdict\n9. Identity Alignment — becoming the person who achieves this\n\nFor each component: diagnose the user's specific goal (what it means for THIS goal), then give one concrete action.\n\nAlso find the single most famous real person who achieved this exact goal (or the closest equivalent). Tell their story briefly, then map their actual journey against all 9 components — marking each as WIN or LOSS based on what they actually did or failed at.\n\nRespond ONLY with valid JSON — no prose, no markdown:\n{\n  "components": [\n    { "number": 1, "name": "Clarity", "diagnosis": "specific to this goal", "action": "one concrete thing to do now" },\n    { "number": 2, "name": "Compelling Why", "diagnosis": "...", "action": "..." },\n    { "number": 3, "name": "Belief", "diagnosis": "...", "action": "..." },\n    { "number": 4, "name": "Plan", "diagnosis": "...", "action": "..." },\n    { "number": 5, "name": "Feedback Loops", "diagnosis": "...", "action": "..." },\n    { "number": 6, "name": "Environment Design", "diagnosis": "...", "action": "..." },\n    { "number": 7, "name": "Accountability", "diagnosis": "...", "action": "..." },\n    { "number": 8, "name": "Resilience", "diagnosis": "...", "action": "..." },\n    { "number": 9, "name": "Identity Alignment", "diagnosis": "...", "action": "..." }\n  ],\n  "proof": {\n    "name": "Full Name",\n    "tagline": "One line: who they are and what they achieved",\n    "story": "2-3 sentence story of how they achieved this goal",\n    "components": [\n      { "number": 1, "name": "Clarity", "verdict": "WIN", "detail": "what they actually did" },\n      { "number": 2, "name": "Compelling Why", "verdict": "WIN", "detail": "..." },\n      { "number": 3, "name": "Belief", "verdict": "LOSS", "detail": "where they struggled" },\n      { "number": 4, "name": "Plan", "verdict": "WIN", "detail": "..." },\n      { "number": 5, "name": "Feedback Loops", "verdict": "WIN", "detail": "..." },\n      { "number": 6, "name": "Environment Design", "verdict": "WIN", "detail": "..." },\n      { "number": 7, "name": "Accountability", "verdict": "LOSS", "detail": "..." },\n      { "number": 8, "name": "Resilience", "verdict": "WIN", "detail": "..." },\n      { "number": 9, "name": "Identity Alignment", "verdict": "WIN", "detail": "..." }\n    ]\n  }\n}\n\nRules: diagnosis and action max 140 chars each; detail max 120 chars; story max 280 chars; output valid JSON only.`;
+    const user = `Generate The Map for intention: "${title}".`;
+
+    const raw    = await callClaude(system, user, 2400);
+    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    intentions[idx].theMap = result;
+    await saveIntentions();
+    toast('The Map generated ✓', 'success');
+  } catch(e) {
+    toast('Generation failed. Try again.', 'error');
+    console.error(e);
+    const btn = document.getElementById(`bsTheMapBtn-${idx}`);
+    if (btn) { btn.disabled = false; btn.textContent = '◉ Generate The Map'; }
+  }
+}
+
 async function bsGenerateRoadmap(idx) {
   const btn = document.getElementById(`bsRoadmapBtn-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
