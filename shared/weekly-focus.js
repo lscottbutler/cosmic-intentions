@@ -57,13 +57,18 @@ function _wfBuildPool(cycleComps) {
       if (!cycleComps.includes(c.number)) return;
       const todos = Array.isArray(c.todos) ? c.todos : (c.action ? [c.action] : []);
       todos.forEach((todo, todoIdx) => {
+        const text     = typeof todo === 'string' ? todo : (todo?.text || '');
+        const citation = typeof todo === 'string' ? '' : (todo?.citation || '');
+        if (!text) return;
         pool.push({
           key:       `${intentIdx}-${c.number}-${todoIdx}`,
-          text:      todo,
+          text,
+          citation,
           compNum:   c.number,
           compName:  WF_COMP_NAMES[c.number] || c.name,
           intention: intent.title,
           intentIdx,
+          anchor:    intent.theMap?.celebrity_anchor?.name || '',
         });
       });
     });
@@ -188,24 +193,31 @@ function renderWeeklyFocus() {
     const checked = !!checks[item.key];
     const emoji   = (typeof MAP_EMOJIS !== 'undefined' ? MAP_EMOJIS[item.compNum] : '') || '◈';
     return `
-      <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #1A1A1A;cursor:pointer;"
+      <div style="padding:10px 0;border-bottom:1px solid #1A1A1A;cursor:pointer;"
         onclick="wfToggle('${item.key}')">
-        <div id="wf-check-${safeKey}" class="wf-check${checked ? ' done' : ''}"
-          style="width:16px;height:16px;border-radius:3px;border:2px solid ${checked?cycleInfo.color:'#383840'};
-          background:${checked?cycleInfo.color:'transparent'};flex-shrink:0;margin-top:2px;
-          display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;transition:all 0.15s;">
-          ${checked ? '✓' : ''}
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div id="wf-label-${safeKey}"
-            style="font-size:13px;color:${checked?'#404048':'#C0C0C8'};line-height:1.5;
-            text-decoration:${checked?'line-through':''};transition:all 0.2s;">
-            ${esc(item.text)}
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div id="wf-check-${safeKey}"
+            style="width:16px;height:16px;border-radius:3px;border:2px solid ${checked?cycleInfo.color:'#383840'};
+            background:${checked?cycleInfo.color:'transparent'};flex-shrink:0;margin-top:2px;
+            display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;transition:all 0.15s;">
+            ${checked ? '✓' : ''}
           </div>
-          <div style="font-size:10px;color:#383840;margin-top:2px;font-family:var(--vault-mono);">
-            ${emoji} ${item.compName} · ${esc(item.intention.replace(/^i am /i,'').slice(0,35))}${item.intention.length>40?'…':''}
+          <div style="flex:1;min-width:0;">
+            <div id="wf-label-${safeKey}"
+              style="font-size:13px;color:${checked?'#404048':'#C0C0C8'};line-height:1.5;
+              text-decoration:${checked?'line-through':''};transition:all 0.2s;">
+              ${esc(item.text)}
+            </div>
+            <div style="font-size:10px;color:#404048;margin-top:2px;font-family:var(--vault-mono);">
+              ${emoji} ${item.compName}${item.anchor ? ` · ⚡ ${esc(item.anchor)}` : ''}
+            </div>
           </div>
         </div>
+        ${item.citation ? `
+        <div style="margin-top:5px;margin-left:26px;font-size:11px;color:#505850;font-style:italic;
+          line-height:1.5;padding-left:8px;border-left:2px solid #2A2A1A;">
+          ${esc(item.citation)}
+        </div>` : ''}
       </div>`;
   }).join('');
 

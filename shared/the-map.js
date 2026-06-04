@@ -2,17 +2,25 @@
    Depends on globals: intentions, esc, getPB, buildContext,
    callClaude, saveIntentions, selectedVaultIdx, logActivity,
    getDailyQuote (content-bank.js)
+
+   Todo format (v2): { text: string, citation: string }
+   Todo format (v1): string  ← handled everywhere for backward compat
 ───────────────────────────────────────────────────────── */
 
-const MAP_EMOJIS = { 1:'🎯', 2:'🔥', 3:'💎', 4:'🗺️', 5:'📊', 6:'🏗️', 7:'🤝', 8:'⚡', 9:'👑' };
+const MAP_EMOJIS  = { 1:'🎯', 2:'🔥', 3:'💎', 4:'🗺️', 5:'📊', 6:'🏗️', 7:'🤝', 8:'⚡', 9:'👑' };
 const MAP_JOURNAL = n => `CI JOURNAL ${String(n).padStart(3,'0')}`;
 if (!window._mapOpen) window._mapOpen = {};
 
+/* Normalise a todo item to { text, citation } regardless of format */
+function _mapTodoText(t)     { return typeof t === 'string' ? t : (t?.text || ''); }
+function _mapTodoCitation(t) { return typeof t === 'string' ? '' : (t?.citation || ''); }
+
+/* ── ACCORDION ───────────────────────────────────────── */
 function toggleMapAccordion(idx, compNum) {
   const key = `${idx}-${compNum}`;
   window._mapOpen[key] = !window._mapOpen[key];
-  const body  = document.getElementById(`mapBody-${idx}-${compNum}`);
-  const chev  = document.getElementById(`mapChev-${idx}-${compNum}`);
+  const body = document.getElementById(`mapBody-${idx}-${compNum}`);
+  const chev = document.getElementById(`mapChev-${idx}-${compNum}`);
   if (body) body.style.display = window._mapOpen[key] ? 'block' : 'none';
   if (chev) chev.style.transform = window._mapOpen[key] ? 'rotate(90deg)' : 'rotate(0deg)';
 }
@@ -23,47 +31,55 @@ async function toggleMapTodo(idx, compNum, todoIdx, checked) {
   intentions[idx].theMap.todos[`c${compNum}-${todoIdx}`] = checked;
   if (checked) {
     const comp = (intentions[idx].theMap.components || []).find(c => c.number === compNum);
-    const todo = comp?.todos?.[todoIdx] || '';
+    const todo = _mapTodoText(comp?.todos?.[todoIdx] || '');
     logActivity('map_todo', { intention: intentions[idx].title, component: compNum, todo }, 5);
   }
   await saveIntentions();
 }
 
+/* ── BUILD SHEET PANEL ───────────────────────────────── */
 function buildBSTheMapPanel(intent, idx) {
   if (!intent.theMap) {
     return `
       <div class="bs-section" style="border-bottom:none">
         <div class="bs-section-hd">◉ THE MAP</div>
         <p style="padding:8px 20px 4px;font-size:13px;color:#50505A;line-height:1.6">
-          Break down this goal through the 9 Components of Goal Success — then find the real person who proves it's possible.
+          Break down this goal through the 9 Components of Goal Success — anchored to a real person who proved it's possible.
         </p>
         <button class="bs-gen-btn" id="bsTheMapBtn-${idx}"
           onclick="bsGenerateTheMap(${idx})">◉ Generate The Map</button>
       </div>`;
   }
+
   const m        = intent.theMap;
-  const todos    = m.todos || {};
+  const todos    = m.todos    || {};
   const mistakes = m.mistakes || [];
+  const anchor   = m.celebrity_anchor;
 
   const accordions = (m.components || []).map(c => {
-    const key      = `${idx}-${c.number}`;
-    const isOpen   = !!window._mapOpen[key];
-    const emoji    = MAP_EMOJIS[c.number] || '◉';
-    const ref      = MAP_JOURNAL(c.number);
+    const key       = `${idx}-${c.number}`;
+    const isOpen    = !!window._mapOpen[key];
+    const emoji     = MAP_EMOJIS[c.number] || '◉';
+    const ref       = MAP_JOURNAL(c.number);
     const mistakeForComp = mistakes.find(mk => mk.component === c.number);
     const todoItems = Array.isArray(c.todos) ? c.todos : (c.action ? [c.action] : []);
 
     const todoHTML = todoItems.map((t, ti) => {
-      const checked = !!todos[`c${c.number}-${ti}`];
-      return `<label style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer;">
+      const checked  = !!todos[`c${c.number}-${ti}`];
+      const text     = _mapTodoText(t);
+      const citation = _mapTodoCitation(t);
+      return `<label style="display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer;border-bottom:1px solid #111;">
         <input type="checkbox" ${checked ? 'checked' : ''} style="margin-top:3px;flex-shrink:0;accent-color:#F5A623;"
           onchange="toggleMapTodo(${idx},${c.number},${ti},this.checked)">
-        <span style="font-size:13px;color:${checked?'#505058':'#C8C8D0'};line-height:1.5;${checked?'text-decoration:line-through;':''}">${esc(t)}</span>
+        <div style="flex:1;min-width:0;">
+          <span style="font-size:13px;color:${checked?'#505058':'#C8C8D0'};line-height:1.5;${checked?'text-decoration:line-through;':''}">${esc(text)}</span>
+          ${citation ? `<div style="font-size:11px;color:#505058;font-style:italic;line-height:1.5;margin-top:3px;padding-left:6px;border-left:2px solid #2A2A2A;">${esc(citation)}</div>` : ''}
+        </div>
       </label>`;
     }).join('');
 
     const mistakeHTML = mistakeForComp ? `
-      <div style="margin-top:12px;padding:10px 12px;background:#1E1010;border-radius:6px;border-left:3px solid #F87171;">
+      <div style="margin-top:10px;padding:10px 12px;background:#1E1010;border-radius:6px;border-left:3px solid #F87171;">
         <div style="font-family:var(--vault-mono);font-size:9px;color:#F87171;letter-spacing:1px;margin-bottom:4px;">⚠ FATAL MISTAKE</div>
         <div style="font-size:12px;color:#F87171;font-weight:600;margin-bottom:2px;">${esc(mistakeForComp.mistake)}</div>
         <div style="font-size:12px;color:#80808C;line-height:1.5;">${esc(mistakeForComp.why)}</div>
@@ -88,8 +104,8 @@ function buildBSTheMapPanel(intent, idx) {
     </div>`;
   }).join('');
 
-  const proof    = m.proof || {};
-  const proofKey = `${idx}-proof`;
+  const proof     = m.proof || {};
+  const proofKey  = `${idx}-proof`;
   const proofOpen = !!window._mapOpen[proofKey];
   const proofRows = (proof.components || []).map(c => {
     const win = c.verdict === 'WIN';
@@ -111,11 +127,22 @@ function buildBSTheMapPanel(intent, idx) {
       <div style="font-size:10px;color:#383840;margin-top:3px;letter-spacing:0.5px;">— ${_mapQ.author}</div>
     </div>` : '';
 
+  const anchorBanner = anchor ? `
+    <div style="padding:8px 16px;background:#1A1A10;border-bottom:1px solid #2A2A1A;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:14px;">⚡</span>
+      <div>
+        <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;letter-spacing:1px;">CELEBRITY ANCHOR</div>
+        <div style="font-size:12px;color:#C8C870;font-weight:600;">${esc(anchor.name)}</div>
+        ${anchor.tagline ? `<div style="font-size:11px;color:#606058;">${esc(anchor.tagline)}</div>` : ''}
+      </div>
+    </div>` : '';
+
   return `
     <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;">
       <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1px;">◉ THE MAP</span>
       <button class="bs-section-hd-action" onclick="bsGenerateTheMap(${idx})">↺ Regenerate</button>
     </div>
+    ${anchorBanner}
     ${_mapQuoteHTML}
     ${accordions}
     <div style="border-bottom:1px solid #222;">
@@ -136,6 +163,7 @@ function buildBSTheMapPanel(intent, idx) {
     </div>`;
 }
 
+/* ── GENERATE WRAPPERS ───────────────────────────────── */
 async function bsGenerateTheMap(idx) {
   const btn = document.getElementById(`bsTheMapBtn-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
@@ -146,29 +174,48 @@ async function bsGenerateTheMap(idx) {
   }
 }
 
+/* ── MULTI-PASS GENERATION ───────────────────────────── */
 async function generateTheMap(idx) {
+  const title   = intentions[idx]?.title || '';
+  const pb      = getPB();
+  const context = buildContext(pb);
+
   try {
-    const pb      = getPB();
-    const context = buildContext(pb);
-    const title   = intentions[idx]?.title || '';
+    toast('Pass 1 — Finding your celebrity anchor…', '');
 
-    const system = `You are a goal success strategist. User profile:\n${context}\n\nYou use the 9 Components of Goal Success framework:\n1. Clarity — vivid picture of the end state\n2. Compelling Why — emotional fuel that survives adversity\n3. Belief — subconscious conviction it's achievable\n4. Plan (with slack) — a map plus habit of navigating\n5. Feedback Loops — regular signal: am I on track?\n6. Environment Design — context shapes behavior more than willpower\n7. Accountability — external commitment mechanisms\n8. Resilience — treating failure as data, not verdict\n9. Identity Alignment — becoming the person who achieves this\n\nFor each component: write a diagnosis specific to this goal, then provide 3 concrete to-do items the user can check off in their journal.\n\nAlso identify the 5-7 most common fatal mistakes people make when pursuing this exact goal. Each mistake maps directly to one of the 9 components — it is the real-world expression of that component failing.\n\nAlso find the single most famous real person who achieved this exact goal (or the closest equivalent). Tell their story briefly, then map their actual journey against all 9 components — marking each as WIN or LOSS.\n\nRespond ONLY with valid JSON — no prose, no markdown:\n{\n  "components": [\n    { "number": 1, "name": "Clarity", "diagnosis": "specific to this goal", "todos": ["concrete action 1", "concrete action 2", "concrete action 3"] },\n    { "number": 2, "name": "Compelling Why", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 3, "name": "Belief", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 4, "name": "Plan", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 5, "name": "Feedback Loops", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 6, "name": "Environment Design", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 7, "name": "Accountability", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 8, "name": "Resilience", "diagnosis": "...", "todos": ["...", "...", "..."] },\n    { "number": 9, "name": "Identity Alignment", "diagnosis": "...", "todos": ["...", "...", "..."] }\n  ],\n  "mistakes": [\n    { "component": 1, "mistake": "brief name of the fatal mistake", "why": "why this kills the goal — specific to this goal" },\n    { "component": 3, "mistake": "...", "why": "..." },\n    { "component": 5, "mistake": "...", "why": "..." },\n    { "component": 7, "mistake": "...", "why": "..." },\n    { "component": 9, "mistake": "...", "why": "..." }\n  ],\n  "proof": {\n    "name": "Full Name",\n    "tagline": "One line: who they are and what they achieved",\n    "story": "2-3 sentence story of how they achieved this goal",\n    "components": [\n      { "number": 1, "name": "Clarity", "verdict": "WIN", "detail": "what they actually did", "quote": "a real verified quote from this person or null" },\n      { "number": 2, "name": "Compelling Why", "verdict": "WIN", "detail": "...", "quote": "..." },\n      { "number": 3, "name": "Belief", "verdict": "LOSS", "detail": "where they struggled", "quote": null },\n      { "number": 4, "name": "Plan", "verdict": "WIN", "detail": "...", "quote": null },\n      { "number": 5, "name": "Feedback Loops", "verdict": "WIN", "detail": "...", "quote": null },\n      { "number": 6, "name": "Environment Design", "verdict": "WIN", "detail": "...", "quote": null },\n      { "number": 7, "name": "Accountability", "verdict": "LOSS", "detail": "...", "quote": null },\n      { "number": 8, "name": "Resilience", "verdict": "WIN", "detail": "...", "quote": "..." },\n      { "number": 9, "name": "Identity Alignment", "verdict": "WIN", "detail": "...", "quote": "..." }\n    ]\n  }\n}\n\nRules: diagnosis max 140 chars; each todo max 100 chars; mistake and why max 120 chars each; detail max 120 chars; quote must be real verified or null — never fabricate; story max 280 chars; output valid JSON only.`;
-    const user = `Generate The Map for intention: "${title}".`;
+    /* ── PASS 1: Celebrity research ────────────────────── */
+    const p1System = `You are a goal success researcher. Identify the single most famous real person who achieved a goal matching the one given. Be specific — name the person, their exact mechanism, what most people copy wrong about them. Return valid JSON only.`;
+    const p1User   = `Goal: "${title}"\n\nRespond with valid JSON only:\n{\n  "name": "Full Name",\n  "tagline": "One line: who they are and what they achieved for this goal",\n  "key_mechanisms": [\n    { "component": 1, "behavior": "The exact specific behavior (not 'worked hard' — the precise action)", "citation": "One punchy sentence with their specific story or little-known quote. Max 120 chars." },\n    { "component": 2, "behavior": "...", "citation": "..." },\n    { "component": 3, "behavior": "...", "citation": "..." },\n    { "component": 4, "behavior": "...", "citation": "..." },\n    { "component": 5, "behavior": "...", "citation": "..." },\n    { "component": 6, "behavior": "...", "citation": "..." },\n    { "component": 7, "behavior": "...", "citation": "..." },\n    { "component": 8, "behavior": "...", "citation": "..." },\n    { "component": 9, "behavior": "...", "citation": "..." }\n  ]\n}\nRules: citations must be specific stories or real quotes — never generic. Max 120 chars each. Output valid JSON only.`;
 
-    const raw    = await callClaude(system, user, 2800);
-    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const p1Raw    = await callClaude(p1System, p1User, 800);
+    const celebrity = JSON.parse(p1Raw.replace(/```json|```/g,'').trim());
+
+    toast('Pass 2 — Building your Map with celebrity citations…', '');
+
+    /* ── PASS 2: Full Map with citations baked in ──────── */
+    const mechanismContext = celebrity.key_mechanisms
+      .map(m => `Component ${m.component}: ${m.behavior} — Citation: "${m.citation}"`)
+      .join('\n');
+
+    const p2System = `You are a goal success strategist. User profile:\n${context}\n\nCelebrity anchor for this goal: ${celebrity.name} — ${celebrity.tagline}\n\nTheir proven mechanisms mapped to the 9 Components:\n${mechanismContext}\n\nYou use the 9 Components of Goal Success:\n1. Clarity 2. Compelling Why 3. Belief 4. Plan 5. Feedback Loops 6. Environment Design 7. Accountability 8. Resilience 9. Identity Alignment\n\nFor each component: write a specific diagnosis for this goal, then 3 todos. Each todo MUST have:\n- text: a concrete action the user can take this week (not advice — an action)\n- citation: the celebrity's specific behavior that proves this works (from the mechanisms above — be direct, punchy, max 100 chars)\n\nAlso identify 5-7 fatal mistakes specific to this goal (mapped to components).\nAlso build the Human Proof section using the celebrity anchor.\n\nRespond ONLY with valid JSON:\n{\n  "celebrity_anchor": { "name": "...", "tagline": "..." },\n  "components": [\n    {\n      "number": 1, "name": "Clarity",\n      "diagnosis": "specific to this goal, max 140 chars",\n      "todos": [\n        { "text": "concrete action the user takes this week", "citation": "celebrity's specific behavior that proves this — punchy, max 100 chars" },\n        { "text": "...", "citation": "..." },\n        { "text": "...", "citation": "..." }\n      ]\n    }\n  ],\n  "mistakes": [\n    { "component": 1, "mistake": "name of fatal mistake", "why": "why it kills this goal" }\n  ],\n  "proof": {\n    "name": "...", "tagline": "...", "story": "...",\n    "components": [\n      { "number": 1, "name": "Clarity", "verdict": "WIN", "detail": "...", "quote": "real verified quote or null" }\n    ]\n  }\n}\nRules: todos.text must be an action (starts with a verb). todos.citation must name the celebrity and be specific. No generic advice. Output valid JSON only.`;
+
+    const p2User = `Generate The Map for: "${title}"`;
+    const p2Raw  = await callClaude(p2System, p2User, 3200);
+    const result = JSON.parse(p2Raw.replace(/```json|```/g,'').trim());
 
     intentions[idx].theMap = result;
     await saveIntentions();
     toast('The Map generated ✓', 'success');
+
   } catch(e) {
-    toast('Generation failed. Try again.', 'error');
+    toast('Generation failed — try again.', 'error');
     console.error(e);
     const btn = document.getElementById(`bsTheMapBtn-${idx}`);
     if (btn) { btn.disabled = false; btn.textContent = '◉ Generate The Map'; }
   }
 }
 
+/* ── BUILD SHEET PANEL WRAPPERS ──────────────────────── */
 async function bsGenerateRoadmap(idx) {
   const btn = document.getElementById(`bsRoadmapBtn-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
