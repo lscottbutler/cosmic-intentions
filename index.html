@@ -13,6 +13,7 @@
 <script src="shared/card-builder.js"></script>
 <script src="shared/mission-control.js"></script>
 <script src="shared/weekly-focus.js"></script>
+<script src="shared/today.js"></script>
 <script src="shared/player-launcher.js"></script>
 <script src="shared/the-map.js"></script>
 <style>
@@ -5479,17 +5480,16 @@ input, textarea, select {
         <!-- WELCOME STATE -->
         <div id="vaultWelcome" class="vault-welcome">
 
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="vault-welcome-title" id="vaultWelcomeName">Welcome back</div>
-            <button onclick="navTo('home')" style="background:#1a1a1a;border:1px solid #383838;color:#aaa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⌂ Home</button>
-          </div>
-          <p class="vault-welcome-sub">Your Knowledge Vault is ready. Select an intention from the Archive Index to open its Build Sheet — complete with your AI Roadmap and Library.</p>
-          <div id="dashDailyAffirmation"></div>
+          <!-- TODAY PANEL -->
+          <div id="todayPanel"></div>
+
+          <!-- DAILY AFFIRMATION -->
+          <div id="dashDailyAffirmation" style="margin-top:8px;"></div>
 
           <!-- WEEKLY FOCUS -->
           <div id="weeklyFocusPanel" style="margin-top:16px;"></div>
 
-          <div class="vault-stats-row">
+          <div class="vault-stats-row" style="margin-top:16px;">
             <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
             <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
             <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
@@ -7792,7 +7792,7 @@ function renderDashboard() {
 
   updateProgressStats();
   renderVaultSidebar();
-  if (typeof renderWeeklyFocus === 'function') renderWeeklyFocus();
+  if (typeof renderTodayView === 'function') renderTodayView();
 }
 
 function toggleTodayTask(key, el) {
@@ -8615,7 +8615,7 @@ function renderVaultSidebar() {
   const name = pb['pb-name'] || 'Friend';
 
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  setEl('vaultWelcomeName',      name);
+  // vaultWelcomeName replaced by todayPanel
   setEl('vaultIntentionCount',   intentions.length);
   const hnDot = document.getElementById('homeNavCount');
   if (hnDot) { hnDot.textContent = intentions.length; hnDot.style.display = intentions.length > 0 ? 'inline-block' : 'none'; }
@@ -9120,7 +9120,7 @@ async function init() {
         logDailyLogin();
         loadMyProgress();
         injectPersonalContent();
-        renderWeeklyFocus();
+        renderTodayView();
       });
     }
     if (event === 'SIGNED_OUT') {
