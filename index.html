@@ -12,6 +12,7 @@
 <script src="shared/activity.js"></script>
 <script src="shared/card-builder.js"></script>
 <script src="shared/mission-control.js"></script>
+<script src="shared/weekly-focus.js"></script>
 <script src="shared/player-launcher.js"></script>
 <script src="shared/the-map.js"></script>
 <style>
@@ -5512,6 +5513,9 @@ input, textarea, select {
             <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
           </div>
 
+          <!-- WEEKLY FOCUS -->
+          <div id="weeklyFocusPanel" style="margin-top:16px;"></div>
+
           <!-- MY PROGRESS -->
           <div id="myProgressPanel" style="margin-top:16px;border-top:1px solid #222;padding-top:14px;display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -7787,9 +7791,8 @@ function renderDashboard() {
 
   updateProgressStats();
   renderVaultSidebar();
+  if (typeof renderWeeklyFocus === 'function') renderWeeklyFocus();
 }
-
-
 
 function toggleTodayTask(key, el) {
   const done = LS.get('ci_today_done') || [];
@@ -9116,6 +9119,7 @@ async function init() {
         logDailyLogin();
         loadMyProgress();
         injectPersonalContent();
+        renderWeeklyFocus();
       });
     }
     if (event === 'SIGNED_OUT') {
