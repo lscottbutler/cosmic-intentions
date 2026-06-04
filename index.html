@@ -5489,27 +5489,6 @@ input, textarea, select {
           <!-- WEEKLY FOCUS -->
           <div id="weeklyFocusPanel" style="margin-top:16px;"></div>
 
-          <!-- DASHBOARD NAV GRID (build nav) -->
-          <div class="home-nav-grid" style="margin-bottom:16px;">
-            <div class="home-nav-section-label">Navigate</div>
-            <button class="hn-btn" onclick="navTo('home')"><span class="hn-icon">🏠</span><span class="hn-label">Home</span></button>
-            <button class="hn-btn" onclick="navTo('community')"><span class="hn-icon">🌌</span><span class="hn-label">Community</span></button>
-            <button class="hn-btn" onclick="navTo('setup')"><span class="hn-icon">📋</span><span class="hn-label">My Pegboard</span></button>
-            <button class="hn-btn" onclick="navTo('bts')"><span class="hn-icon">🎬</span><span class="hn-label">Behind the Scenes</span></button>
-            <button class="hn-btn" onclick="navTo('library')"><span class="hn-icon">📚</span><span class="hn-label">Cosmic Library</span></button>
-            <button class="hn-btn" onclick="navTo('bestpractices')"><span class="hn-icon">💡</span><span class="hn-label">Best Practices</span></button>
-            <button class="hn-btn" onclick="navTo('gettingstarted')"><span class="hn-icon">🚀</span><span class="hn-label">Getting Started</span></button>
-            <button class="hn-btn" id="dash-hn-admin" style="display:none" onclick="navTo('admin')"><span class="hn-icon">⚙</span><span class="hn-label">Admin</span></button>
-            <button class="hn-btn" id="dash-hn-notes" style="display:none" onclick="navTo('notes')"><span class="hn-icon">✏️</span><span class="hn-label">My Notes</span></button>
-            <div class="home-nav-section-label" style="margin-top:8px">Players</div>
-            <button class="hn-btn" onclick="launchPlayer('viz-quick')"><span class="hn-icon">⚡</span><span class="hn-label">Quick Viz<span class="hn-dur">15/30/60s</span></span></button>
-            <button class="hn-btn" onclick="openTimerPicker()"><span class="hn-icon">⏱️</span><span class="hn-label">Countdown<span class="hn-dur">1–60 min</span></span></button>
-            <button class="hn-btn" onclick="openMeditationModal()"><span class="hn-icon">🧘</span><span class="hn-label">Meditation<span class="hn-dur">5–60 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-3min')"><span class="hn-icon">✨</span><span class="hn-label">3-Min Viz<span class="hn-dur">3 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-10min')"><span class="hn-icon">🌟</span><span class="hn-label">10-Min Viz<span class="hn-dur">10 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('gratitude')"><span class="hn-icon">🙏</span><span class="hn-label">Gratitude<span class="hn-dur">5 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('pegboard-loop')"><span class="hn-icon">🔄</span><span class="hn-label">Pegboard Loop<span class="hn-dur">~8 min</span></span></button>
-          </div>
           <div class="vault-stats-row">
             <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
             <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
@@ -5711,6 +5690,28 @@ input, textarea, select {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- DASHBOARD NAV GRID (build nav) — bottom of column -->
+          <div class="home-nav-grid" style="margin-top:16px;margin-bottom:8px;">
+            <div class="home-nav-section-label">Navigate</div>
+            <button class="hn-btn" onclick="navTo('home')"><span class="hn-icon">🏠</span><span class="hn-label">Home</span></button>
+            <button class="hn-btn" onclick="navTo('community')"><span class="hn-icon">🌌</span><span class="hn-label">Community</span></button>
+            <button class="hn-btn" onclick="navTo('setup')"><span class="hn-icon">📋</span><span class="hn-label">My Pegboard</span></button>
+            <button class="hn-btn" onclick="navTo('bts')"><span class="hn-icon">🎬</span><span class="hn-label">Behind the Scenes</span></button>
+            <button class="hn-btn" onclick="navTo('library')"><span class="hn-icon">📚</span><span class="hn-label">Cosmic Library</span></button>
+            <button class="hn-btn" onclick="navTo('bestpractices')"><span class="hn-icon">💡</span><span class="hn-label">Best Practices</span></button>
+            <button class="hn-btn" onclick="navTo('gettingstarted')"><span class="hn-icon">🚀</span><span class="hn-label">Getting Started</span></button>
+            <button class="hn-btn" id="dash-hn-admin" style="display:none" onclick="navTo('admin')"><span class="hn-icon">⚙</span><span class="hn-label">Admin</span></button>
+            <button class="hn-btn" id="dash-hn-notes" style="display:none" onclick="navTo('notes')"><span class="hn-icon">✏️</span><span class="hn-label">My Notes</span></button>
+            <div class="home-nav-section-label" style="margin-top:8px">Players</div>
+            <button class="hn-btn" onclick="launchPlayer('viz-quick')"><span class="hn-icon">⚡</span><span class="hn-label">Quick Viz<span class="hn-dur">15/30/60s</span></span></button>
+            <button class="hn-btn" onclick="openTimerPicker()"><span class="hn-icon">⏱️</span><span class="hn-label">Countdown<span class="hn-dur">1–60 min</span></span></button>
+            <button class="hn-btn" onclick="openMeditationModal()"><span class="hn-icon">🧘</span><span class="hn-label">Meditation<span class="hn-dur">5–60 min</span></span></button>
+            <button class="hn-btn" onclick="launchPlayer('viz-3min')"><span class="hn-icon">✨</span><span class="hn-label">3-Min Viz<span class="hn-dur">3 min</span></span></button>
+            <button class="hn-btn" onclick="launchPlayer('viz-10min')"><span class="hn-icon">🌟</span><span class="hn-label">10-Min Viz<span class="hn-dur">10 min</span></span></button>
+            <button class="hn-btn" onclick="launchPlayer('gratitude')"><span class="hn-icon">🙏</span><span class="hn-label">Gratitude<span class="hn-dur">5 min</span></span></button>
+            <button class="hn-btn" onclick="launchPlayer('pegboard-loop')"><span class="hn-icon">🔄</span><span class="hn-label">Pegboard Loop<span class="hn-dur">~8 min</span></span></button>
           </div>
 
         </div>
