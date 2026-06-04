@@ -91,16 +91,44 @@ function renderActivityFeed(events) {
     feed.innerHTML = '<div style="padding:20px;color:#404048;font-size:13px;text-align:center;">No activity yet — complete your first session to start tracking.</div>';
     return;
   }
-  const rows = events.map(e => {
-    const def  = ACTIVITY_LABELS[e.event_type] || { icon: '◈', label: e.event_type };
-    const d    = new Date(e.created_at);
-    const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const meta = e.metadata?.intention ? `<span style="color:#505058"> · ${esc(e.metadata.intention.slice(0,40))}</span>` : '';
+
+  // Deduplicate: collapse same event_type within same minute into one entry (sum points)
+  const deduped = [];
+  const seen    = {};
+  events.forEach(e => {
+    const minKey = `${e.event_type}|${new Date(e.created_at).toISOString().slice(0,16)}`;
+    if (seen[minKey]) {
+      seen[minKey].points += e.points;
+      seen[minKey].count  = (seen[minKey].count || 1) + 1;
+    } else {
+      const copy     = { ...e, count: 1 };
+      seen[minKey]   = copy;
+      deduped.push(copy);
+    }
+  });
+
+  const rows = deduped.map(e => {
+    const def    = ACTIVITY_LABELS[e.event_type] || { icon: '◈', label: e.event_type };
+    const d      = new Date(e.created_at);
+    const date   = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const time   = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+    // For map_todo: show the actual todo text instead of generic label
+    let label = def.label;
+    if (e.event_type === 'map_todo' && e.metadata?.todo) {
+      label = esc(e.metadata.todo.slice(0, 55)) + (e.metadata.todo.length > 55 ? '…' : '');
+    } else if (e.metadata?.intention) {
+      label += `<span style="color:#505058"> · ${esc(e.metadata.intention.slice(0,40))}</span>`;
+    }
+
+    const countBadge = e.count > 1
+      ? `<span style="font-family:var(--vault-mono);font-size:9px;color:#505058;margin-left:4px;">×${e.count}</span>`
+      : '';
+
     return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1A1A1A;">
       <span style="font-size:16px;flex-shrink:0;">${def.icon}</span>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;color:#C0C0C8;">${def.label}${meta}</div>
+        <div style="font-size:12px;color:#C0C0C8;line-height:1.4;">${label}${countBadge}</div>
         <div style="font-size:10px;color:#404048;font-family:var(--vault-mono);margin-top:1px;">${date} · ${time}</div>
       </div>
       <span style="font-family:var(--vault-mono);font-size:11px;color:#F5A623;font-weight:800;flex-shrink:0;">+${e.points}</span>
