@@ -10362,11 +10362,19 @@ function buildBSTheMapPanel(intent, idx) {
       </div>`;
   }).join('');
 
+  const _mapQ = (typeof getDailyQuote === 'function') ? getDailyQuote() : null;
+  const _mapQuoteHTML = _mapQ ? `
+    <div style="padding:10px 16px 8px;border-bottom:1px solid #1A1A1A;">
+      <div style="font-size:11px;color:#505058;font-style:italic;line-height:1.6;">"${_mapQ.text}"</div>
+      <div style="font-size:10px;color:#383840;margin-top:3px;letter-spacing:0.5px;">— ${_mapQ.author}</div>
+    </div>` : '';
+
   return `
     <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;">
       <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1px;">◉ THE MAP</span>
       <button class="bs-section-hd-action" onclick="bsGenerateTheMap(${idx})">↺ Regenerate</button>
     </div>
+    ${_mapQuoteHTML}
     ${accordions}
     <div style="border-bottom:1px solid #222;">
       <div onclick="(() => { window._mapOpen['${proofKey}']=!window._mapOpen['${proofKey}']; const b=document.getElementById('mapBody-${idx}-proof'); const ch=document.getElementById('mapChev-${idx}-proof'); if(b) b.style.display=window._mapOpen['${proofKey}']?'block':'none'; if(ch) ch.style.transform=window._mapOpen['${proofKey}']?'rotate(90deg)':'rotate(0deg)'; })()"

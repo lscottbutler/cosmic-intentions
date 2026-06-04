@@ -233,6 +233,11 @@ body {
 <!-- IDLE SCREEN -->
 <div class="idle-screen" id="idleScreen">
   <div class="timer-title">Simple Countdown Timer</div>
+  <div id="countdownDailyStoic" style="
+    font-size:12px;color:rgba(255,255,255,0.3);font-style:italic;
+    text-align:center;max-width:280px;line-height:1.6;margin:4px auto 0;
+    padding:0 16px;
+  "></div>
   
   <div class="duration-buttons">
     <button class="duration-btn" data-duration="15">15 seconds</button>
@@ -263,11 +268,18 @@ body {
 <!-- CLOSE BUTTON -->
 <button class="close-btn" onclick="returnToApp()" title="Close">✕</button>
 
+<script src="../shared/content-bank.js"></script>
 <script src="../shared/player-core.js"></script>
 <script>
 let selectedDuration = 30;
 let countdown = null;
 let countdownInterval = null;
+
+/* ── DAILY STOIC ─────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('countdownDailyStoic');
+  if (el && typeof getDailyStoic === 'function') el.textContent = getDailyStoic();
+});
 
 /* ── DURATION SELECTION ─────────────────────────────────── */
 document.querySelectorAll('.duration-btn').forEach(btn => {
