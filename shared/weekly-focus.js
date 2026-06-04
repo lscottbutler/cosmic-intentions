@@ -193,29 +193,29 @@ function renderWeeklyFocus() {
     const checked = !!checks[item.key];
     const emoji   = (typeof MAP_EMOJIS !== 'undefined' ? MAP_EMOJIS[item.compNum] : '') || '◈';
     return `
-      <div style="padding:10px 0;border-bottom:1px solid #1A1A1A;cursor:pointer;"
+      <div style="background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;"
         onclick="wfToggle('${item.key}')">
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <div id="wf-check-${safeKey}"
-            style="width:16px;height:16px;border-radius:3px;border:2px solid ${checked?cycleInfo.color:'#383840'};
-            background:${checked?cycleInfo.color:'transparent'};flex-shrink:0;margin-top:2px;
-            display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;transition:all 0.15s;">
+            style="width:18px;height:18px;border-radius:4px;border:2px solid ${checked?cycleInfo.color:'#ccc'};
+            background:${checked?cycleInfo.color:'transparent'};flex-shrink:0;margin-top:1px;
+            display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:all 0.15s;">
             ${checked ? '✓' : ''}
           </div>
           <div style="flex:1;min-width:0;">
             <div id="wf-label-${safeKey}"
-              style="font-size:13px;color:${checked?'#404048':'#C0C0C8'};line-height:1.5;
+              style="font-size:13px;color:${checked?'#aaa':'#111'};line-height:1.5;font-weight:600;
               text-decoration:${checked?'line-through':''};transition:all 0.2s;">
               ${esc(item.text)}
             </div>
-            <div style="font-size:10px;color:#404048;margin-top:2px;font-family:var(--vault-mono);">
+            <div style="font-size:10px;color:#999;margin-top:2px;font-family:var(--vault-mono);">
               ${emoji} ${item.compName}${item.anchor ? ` · ⚡ ${esc(item.anchor)}` : ''}
             </div>
           </div>
         </div>
         ${item.citation ? `
-        <div style="margin-top:5px;margin-left:26px;font-size:11px;color:#505850;font-style:italic;
-          line-height:1.5;padding-left:8px;border-left:2px solid #2A2A1A;">
+        <div style="margin-top:6px;margin-left:28px;font-size:11px;color:#666;font-style:italic;
+          line-height:1.5;padding-left:8px;border-left:2px solid #e0e0e0;">
           ${esc(item.citation)}
         </div>` : ''}
       </div>`;
