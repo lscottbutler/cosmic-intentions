@@ -259,5 +259,13 @@ function renderWeeklyFocus() {
         ✓ WEEK COMPLETE — come back ${daysLeft === 7 ? 'next Monday' : `in ${daysLeft} days`} for your next 10
       </div>` : ''}
 
+      <!-- Pool size note -->
+      ${pool.length < 10 ? `
+      <div style="padding:8px 16px 10px;border-top:1px solid #1A1A1A;">
+        <div style="font-size:11px;color:#383840;font-style:italic;line-height:1.5;">
+          ${pool.length} Map todos available this cycle — generate The Map on more intentions to unlock a full 10.
+        </div>
+      </div>` : ''}
+
     </div>`;
 }
