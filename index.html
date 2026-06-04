@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Roboto+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared/content-bank.js"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -5282,6 +5283,9 @@ input, textarea, select {
         </div>
       </div>
 
+      <!-- DAILY QUOTE BANNER -->
+      <div id="homeQuoteBanner"></div>
+
       <!-- PRICING — shown to logged-out visitors -->
       <div class="home-pricing" id="homePricing">
         <h2>Simple pricing</h2>
@@ -5473,6 +5477,7 @@ input, textarea, select {
             <button onclick="navTo('home')" style="background:#1a1a1a;border:1px solid #383838;color:#aaa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⌂ Home</button>
           </div>
           <p class="vault-welcome-sub">Your Knowledge Vault is ready. Select an intention from the Archive Index to open its Build Sheet — complete with your AI Roadmap and Library.</p>
+          <div id="dashDailyAffirmation"></div>
 
           <!-- DASHBOARD NAV GRID (build nav) -->
           <div class="home-nav-grid" style="margin-bottom:16px;">
@@ -9808,6 +9813,8 @@ function renderVaultSidebar() {
   const _dayOfYear = Math.floor(_diff / 86400000);
   const _remaining = _daysInYear - _dayOfYear;
   setEl('vaultDateLine', `Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
+  const _dateLine = document.getElementById('vaultDateLine');
+  if (_dateLine) _dateLine.insertAdjacentHTML('afterend', getDailyLine('sidebar'));
 
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
@@ -10556,6 +10563,12 @@ async function init() {
   // Load local data first
   loadIntentionsFromLS();
 
+  // Inject daily rotating content
+  const _dashAff = document.getElementById('dashDailyAffirmation');
+  if (_dashAff) _dashAff.innerHTML = getDailyLine('dashboard-sub');
+  const _homeBanner = document.getElementById('homeQuoteBanner');
+  if (_homeBanner) _homeBanner.innerHTML = getDailyLine('home-banner');
+
   // Pre-select annual plan in upgrade modal
   selectPlan('annual');
 
@@ -10570,6 +10583,7 @@ async function init() {
         renderDashboard();
         logDailyLogin();
         loadMyProgress();
+        injectPersonalContent();
       });
     }
     if (event === 'SIGNED_OUT') {
