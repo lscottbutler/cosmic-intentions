@@ -8700,6 +8700,11 @@ function renderVaultSidebar() {
               <div class="acc-panel-inner" id="panel-roadmap-${idx}">${buildRoadmapPanel(intentions[idx], idx)}</div>
             </div>
           </div>
+          <button class="vin-row" onclick="window.location.href='players/roadmap.html?idx=${idx}'">
+            <span class="vin-icon"><img src="images/icons/roadmap.png" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" alt="" style="width:22px;height:22px;object-fit:contain;"><span style="display:none;font-size:18px;">🗺</span></span>
+            <span class="vin-label">MY ROADMAP</span>
+            <span class="vin-arrow">▶</span>
+          </button>
           <button class="vin-row" onclick="launchPlayer('countdown')">
             <span class="vin-icon"><img src="images/icons/viz-button.png" alt=""></span>
             <span class="vin-label">VISUALIZATION</span>
