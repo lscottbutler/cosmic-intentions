@@ -5720,10 +5720,29 @@ input, textarea, select {
         <div class="vault-add-form hidden" id="addIntentionForm">
           <div class="vault-add-form-inner">
             <div class="vaf-label">New I AM Statement</div>
-            <input type="text" id="newIntentionInput" class="vaf-input"
-              placeholder="I AM a financially free entrepreneur..."
-              maxlength="150"
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM the</span>
+              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
+                placeholder="proud owner of"
+                maxlength="60"
+                oninput="updateIamPreview()"
+                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
+            </div>
+
+            <input type="text" id="iam-field2" class="vaf-input"
+              placeholder="a Porsche 911"
+              maxlength="80"
+              oninput="updateIamPreview()"
               onkeydown="if(event.key==='Enter')confirmAddIntention()" />
+
+            <div id="iam-preview" style="
+              font-size:14px;font-weight:700;color:#fff;
+              background:#1a1a1a;border:1px solid #333;border-radius:8px;
+              padding:10px 14px;margin-bottom:12px;line-height:1.4;
+              min-height:42px;transition:opacity 0.2s;opacity:0.3;
+            ">I AM the …</div>
+
             <div class="vaf-btns">
               <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
               <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
@@ -8809,7 +8828,7 @@ function vaultShowAddForm() {
   document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.remove('hidden');
-  setTimeout(() => document.getElementById('newIntentionInput')?.focus(), 50);
+  setTimeout(() => document.getElementById('iam-field1')?.focus(), 50);
   renderVaultSidebar();
 }
 

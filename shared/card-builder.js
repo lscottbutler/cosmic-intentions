@@ -264,17 +264,33 @@ function showAddForm() {
   setTimeout(() => document.getElementById('newIntentionInput')?.focus(), 50);
 }
 
+function updateIamPreview() {
+  const f1 = (document.getElementById('iam-field1')?.value || '').trim();
+  const f2 = (document.getElementById('iam-field2')?.value || '').trim();
+  const preview = document.getElementById('iam-preview');
+  if (!preview) return;
+  const hasContent = f1 || f2;
+  preview.style.opacity = hasContent ? '1' : '0.3';
+  preview.textContent = hasContent
+    ? 'I AM the ' + [f1, f2].filter(Boolean).join(' ')
+    : 'I AM the …';
+}
+
 function hideAddForm() {
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   document.getElementById('btnAddIntention')?.classList.remove('hidden');
-  const inp = document.getElementById('newIntentionInput');
-  if (inp) inp.value = '';
+  const f1 = document.getElementById('iam-field1');
+  const f2 = document.getElementById('iam-field2');
+  if (f1) f1.value = '';
+  if (f2) f2.value = '';
+  updateIamPreview();
 }
 
 async function confirmAddIntention() {
-  let title = document.getElementById('newIntentionInput')?.value.trim().slice(0, 150);
-  if (!title) { toast('Enter your intention.', 'error'); return; }
-  if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
+  const f1 = (document.getElementById('iam-field1')?.value || '').trim();
+  const f2 = (document.getElementById('iam-field2')?.value || '').trim();
+  if (!f1 && !f2) { toast('Fill in your intention.', 'error'); return; }
+  let title = ('I AM the ' + [f1, f2].filter(Boolean).join(' ')).slice(0, 150);
   const intention = {
     id: crypto.randomUUID(), title,
     words: { mission:'', affirmations:'', beliefs:'', quotes:'', insights:'' },
