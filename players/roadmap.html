@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Roadmap | Cosmic Intentions</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* ── TOP BAR ─────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.back-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.back-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+.topbar-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── GOAL HEADER ─────────────────────────────────── */
+.goal-header {
+  margin-bottom: 32px;
+}
+.goal-statement {
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.goal-why {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* ── GENERATE BUTTON ─────────────────────────────── */
+.gen-wrap {
+  text-align: center;
+  padding: 48px 0;
+}
+.gen-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 40px;
+  padding: 16px 40px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.gen-btn:hover { opacity: 0.88; transform: scale(1.03); }
+.gen-btn:active { transform: scale(0.97); }
+.gen-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+.gen-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── LOADING ─────────────────────────────────────── */
+.loading {
+  text-align: center;
+  padding: 48px 0;
+  display: none;
+}
+.loading.show { display: block; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-top-color: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+
+/* ── STAGES ──────────────────────────────────────── */
+.stages { display: flex; flex-direction: column; gap: 12px; }
+
+.stage-card {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+  transition: border-color 0.2s;
+}
+.stage-card.open { border-color: rgba(255,255,255,0.22); }
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.stage-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+.stage-card.open .stage-num {
+  border-color: rgba(255,255,255,0.6);
+  color: #fff;
+}
+.stage-title-wrap { flex: 1; min-width: 0; }
+.stage-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.stage-card.open .stage-name { color: #fff; }
+.stage-summary {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stage-card.open .stage-summary { display: none; }
+.stage-chevron {
+  font-size: 12px;
+  color: rgba(255,255,255,0.25);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+.stage-card.open .stage-chevron { transform: rotate(180deg); color: rgba(255,255,255,0.5); }
+
+.stage-body {
+  display: none;
+  padding: 0 18px 20px;
+}
+.stage-card.open .stage-body { display: block; }
+
+/* proof figure */
+.proof-figure {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border-left: 3px solid rgba(255,255,255,0.15);
+}
+.proof-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.proof-mechanism {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.proof-fact {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.55;
+}
+
+/* milestones */
+.milestones { display: flex; flex-direction: column; gap: 12px; }
+
+.milestone {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.milestone-state {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.milestone-action {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.milestone-action::before {
+  content: "First step → ";
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+}
+.milestone-identity {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* ── ERROR ───────────────────────────────────────── */
+.error-msg {
+  text-align: center;
+  color: rgba(255,100,100,0.8);
+  font-size: 14px;
+  padding: 32px 0;
+  display: none;
+}
+.error-msg.show { display: block; }
+
+/* ── REGEN BUTTON ────────────────────────────────── */
+.regen-wrap {
+  margin-top: 28px;
+  text-align: center;
+}
+.regen-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.45);
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.regen-btn:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <button class="back-btn" onclick="exit()">←</button>
+    <div class="topbar-label">My Roadmap</div>
+  </div>
+
+  <!-- Goal header (populated after load) -->
+  <div class="goal-header" id="goalHeader" style="display:none;">
+    <div class="goal-statement" id="goalStatement"></div>
+    <div class="goal-why" id="goalWhy"></div>
+  </div>
+
+  <!-- Pre-generate state -->
+  <div class="gen-wrap" id="genWrap">
+    <button class="gen-btn" id="genBtn" onclick="generate()">Generate My Roadmap</button>
+    <div class="gen-hint">Powered by AI · Takes ~10 seconds</div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Building your 6-stage roadmap…</div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-msg" id="errorMsg">
+    Something went wrong. <a href="#" onclick="generate(); return false;" style="color:inherit;text-decoration:underline;">Try again</a>
+  </div>
+
+  <!-- Stages (rendered after generation) -->
+  <div class="stages" id="stages"></div>
+
+  <!-- Regenerate -->
+  <div class="regen-wrap" id="regenWrap" style="display:none;">
+    <button class="regen-btn" onclick="generate(true)">↺ Regenerate Roadmap</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
+
+const STAGE_NAMES = [
+  'Vivid Vision',
+  'Compelling Why',
+  'Credible Plan',
+  'Feedback Loops',
+  'Environment Design',
+  'Identity Alignment',
+];
+
+let goalIdx    = 0;
+let goalTitle  = '';
+let pegboard   = {};
+let cachedData = null;
+
+// ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are a goal-achievement architect. Generate a deeply personalized, evidence-based 6-stage roadmap. Output valid JSON only — no markdown, no prose outside the JSON.
+
+The 6 stages are fixed in this order:
+1. Vivid Vision — build a crystal-clear mental picture of the achieved state
+2. Compelling Why — excavate the emotional fuel that survives adversity
+3. Credible Plan — break the goal into 3 concrete, measurable milestones
+4. Feedback Loops — establish measurable signals that confirm progress
+5. Environment Design — reshape context to make success the path of least resistance
+6. Identity Alignment — become the person who already has this
+
+Rules:
+- Each stage has exactly 3 milestones
+- Each milestone.state is a STATE CHANGE ("You have X" / "You are X") — not a task
+- Each milestone.tiny_action is the smallest possible first step (completable in under 5 minutes)
+- The very first tiny_action of Stage 1 must be completable in under 60 seconds
+- Each milestone.identity is an identity reframe: "A person who [has this goal] ___"
+- Each stage has exactly one proof_figure: a real, documented person who used this exact stage mechanism. Use only verifiable, well-documented facts. No invented quotes. Match the figure to the MECHANISM of the stage, not just the goal category.
+- goal_statement must be a powerful "I AM" statement
+- why must be one sentence of emotional fuel
+
+Output this exact JSON structure (no extra fields):
+{
+  "goal_statement": "I AM ...",
+  "why": "one sentence",
+  "stages": [
+    {
+      "id": 1,
+      "name": "Vivid Vision",
+      "summary": "one sentence describing this stage for this goal",
+      "proof_figure": { "name": "", "mechanism": "", "fact": "" },
+      "milestones": [
+        { "id": "1-1", "state": "", "tiny_action": "", "identity": "" },
+        { "id": "1-2", "state": "", "tiny_action": "", "identity": "" },
+        { "id": "1-3", "state": "", "tiny_action": "", "identity": "" }
+      ]
+    }
+  ]
+}`;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const params = new URLSearchParams(location.search);
+  goalIdx = parseInt(params.get('idx'), 10) || 0;
+
+  // Get user + pegboard
+  try {
+    const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      const { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+      if (data) pegboard = data;
+    }
+  } catch(e) {}
+
+  // Fallback pegboard from localStorage
+  if (!pegboard.pb_name) {
+    const ls = JSON.parse(localStorage.getItem('ci_pegboard') || '{}');
+    if (ls['pb-name']) {
+      pegboard = {
+        pb_name:      ls['pb-name']      || '',
+        pb_mission:   ls['pb-mission']   || '',
+        pb_lifegol:   ls['pb-lifegol']   || '',
+        pb_values:    ls['pb-values']    || '',
+        pb_beliefs:   ls['pb-beliefs']   || '',
+      };
+    }
+  }
+
+  // Get goal title
+  try {
+    const uid = pegboard.id;
+    const raw = localStorage.getItem(uid ? `ci_intentions_${uid}` : 'ci_intentions') || '[]';
+    const intns = JSON.parse(raw);
+    goalTitle = intns[goalIdx]?.title || '';
+  } catch(e) {}
+
+  // Check cache
+  const cacheKey = `rm_roadmap_${goalTitle.slice(0,30)}`;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      cachedData = JSON.parse(cached);
+      renderRoadmap(cachedData);
+      return;
+    } catch(e) {}
+  }
+
+  // Show goal title in header even before generation
+  if (goalTitle) {
+    document.getElementById('goalStatement').textContent = goalTitle;
+    document.getElementById('goalHeader').style.display = '';
+  }
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────────────────
+async function generate(forceRegen = false) {
+  if (forceRegen) {
+    const cacheKey = `rm_roadmap_${goalTitle.slice(0,30)}`;
+    localStorage.removeItem(cacheKey);
+  }
+
+  document.getElementById('genWrap').style.display    = 'none';
+  document.getElementById('regenWrap').style.display  = 'none';
+  document.getElementById('stages').innerHTML         = '';
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+
+  const userPrompt = buildUserPrompt();
+
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: SYSTEM_PROMPT, user: userPrompt, maxTokens: 3200 }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+    const parsed = JSON.parse(data.text);
+    if (!parsed.stages?.length) throw new Error('Invalid roadmap structure');
+
+    // Cache it
+    const cacheKey = `rm_roadmap_${goalTitle.slice(0,30)}`;
+    localStorage.setItem(cacheKey, JSON.stringify(parsed));
+
+    renderRoadmap(parsed);
+  } catch(err) {
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('errorMsg').classList.add('show');
+    document.getElementById('genWrap').style.display = '';
+    console.error('Roadmap generation failed:', err);
+  }
+}
+
+function buildUserPrompt() {
+  let prompt = `Goal: ${goalTitle}\n`;
+
+  const hasPegboard = pegboard.pb_name || pegboard.pb_mission || pegboard.pb_values;
+  if (hasPegboard) {
+    prompt += `\nUser context (use this to personalize the roadmap):\n`;
+    if (pegboard.pb_name)     prompt += `- Name: ${pegboard.pb_name}\n`;
+    if (pegboard.pb_mission)  prompt += `- Personal mission: ${pegboard.pb_mission}\n`;
+    if (pegboard.pb_lifegol)  prompt += `- Life goal: ${pegboard.pb_lifegol}\n`;
+    if (pegboard.pb_values)   prompt += `- Core values: ${pegboard.pb_values}\n`;
+    if (pegboard.pb_beliefs)  prompt += `- Core beliefs: ${pegboard.pb_beliefs}\n`;
+  }
+
+  prompt += `\nGenerate the full 6-stage roadmap. Make every milestone specific to THIS goal — not generic.`;
+  return prompt;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderRoadmap(data) {
+  document.getElementById('loading').classList.remove('show');
+  document.getElementById('genWrap').style.display = 'none';
+
+  // Update goal header
+  document.getElementById('goalStatement').textContent = data.goal_statement || goalTitle;
+  document.getElementById('goalWhy').textContent = data.why || '';
+  document.getElementById('goalHeader').style.display = '';
+
+  const container = document.getElementById('stages');
+  container.innerHTML = '';
+
+  (data.stages || []).forEach((stage, i) => {
+    const card = document.createElement('div');
+    card.className = 'stage-card' + (i === 0 ? ' open' : '');
+    card.innerHTML = `
+      <div class="stage-header" onclick="toggleStage(this.parentElement)">
+        <div class="stage-num">${stage.id}</div>
+        <div class="stage-title-wrap">
+          <div class="stage-name">${stage.name}</div>
+          <div class="stage-summary">${stage.summary || ''}</div>
+        </div>
+        <div class="stage-chevron">▾</div>
+      </div>
+      <div class="stage-body">
+        ${stage.proof_figure ? `
+        <div class="proof-figure">
+          <div class="proof-name">${stage.proof_figure.name}</div>
+          <div class="proof-mechanism">${stage.proof_figure.mechanism}</div>
+          <div class="proof-fact">${stage.proof_figure.fact}</div>
+        </div>` : ''}
+        <div class="milestones">
+          ${(stage.milestones || []).map(m => `
+            <div class="milestone">
+              <div class="milestone-state">${m.state}</div>
+              <div class="milestone-action">${m.tiny_action}</div>
+              <div class="milestone-identity">${m.identity}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  document.getElementById('regenWrap').style.display = '';
+}
+
+function toggleStage(card) {
+  card.classList.toggle('open');
+}
+
+function exit() {
+  if (document.referrer) {
+    history.back();
+  } else {
+    window.location.href = '/';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
