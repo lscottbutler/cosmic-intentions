@@ -41,10 +41,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 48px;
+  gap: 32px;
   background: #000;
   z-index: 20;
   transition: opacity 0.5s;
+  padding: 24px 20px;
 }
 .select-screen.hidden { opacity: 0; pointer-events: none; }
 
@@ -57,20 +58,22 @@ body {
   text-align: center;
 }
 
-.dur-row {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+/* ── DURATION GRID ──────────────────────────────── */
+.dur-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 14px;
+  justify-content: center;
 }
 
 .dur-btn {
-  width: 92px;
-  height: 92px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.25);
   background: rgba(255,255,255,0.05);
   color: #FFF;
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 200;
   cursor: pointer;
   display: flex;
@@ -78,13 +81,53 @@ body {
   justify-content: center;
   transition: all 0.2s;
   letter-spacing: -1px;
+  position: relative;
 }
-.dur-btn:hover {
+.dur-btn:hover:not(.locked) {
   border-color: rgba(255,255,255,0.65);
   background: rgba(255,255,255,0.12);
   transform: scale(1.07);
 }
-.dur-btn:active { transform: scale(0.97); }
+.dur-btn:active:not(.locked) { transform: scale(0.97); }
+
+/* locked state */
+.dur-btn.locked {
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  color: rgba(255,255,255,0.2);
+  cursor: default;
+}
+.dur-btn.locked .lock-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 11px;
+  opacity: 0.4;
+  line-height: 1;
+}
+.dur-btn .unlock-hint {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+.dur-btn.locked:hover .unlock-hint { display: block; }
+
+/* tier separator hint */
+.tier-row {
+  display: contents;
+}
 
 /* ── IMAGE AREA ─────────────────────────────────── */
 .img-area {
@@ -207,19 +250,16 @@ body {
 
 <div class="frame">
 
-  <!-- PRE-START: DURATION SELECTOR -->
+  <!-- PRE-START: DURATION SELECTOR (populated by buildModal) -->
   <div class="select-screen" id="selectScreen">
     <div class="select-label">Quick Simple Visualizations</div>
     <div id="playerDailyBelief" style="
       font-size:12px;color:rgba(255,255,255,0.35);font-style:italic;
-      text-align:center;max-width:280px;line-height:1.6;margin:-24px 0 0;
+      text-align:center;max-width:280px;line-height:1.6;margin:-12px 0 0;
       padding:0 16px;
     "></div>
-    <div class="dur-row">
-      <button class="dur-btn" onclick="start(60)">60</button>
-      <button class="dur-btn" onclick="start(30)">30</button>
-      <button class="dur-btn" onclick="start(15)">15</button>
-    </div>
+    <div class="dur-grid" id="durGrid"></div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:2px;text-transform:uppercase;margin-top:-8px;" id="sessionHint"></div>
   </div>
 
   <!-- IMAGE / VIBE -->
@@ -246,6 +286,23 @@ body {
 const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
 
+// ── UNLOCK CONFIG ─────────────────────────────────────────────────────────────
+// Each tier: sessions needed to unlock those durations (in minutes).
+// Thresholds are tunable here — single source of truth.
+const UNLOCK_CONFIG = [
+  { threshold: 1,  durations: [1, 2, 3] },
+  { threshold: 5,  durations: [5, 8, 10] },
+  { threshold: 10, durations: [15, 20] },
+  { threshold: 20, durations: [30] },
+  { threshold: 35, durations: [45] },
+  { threshold: 50, durations: [60] },
+];
+
+// Full cleaned ladder (drop 12, 25, 35, 50)
+const ALL_DURATIONS = [1, 2, 3, 5, 8, 10, 15, 20, 30, 45, 60];
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const IMAGES = PLAYER_IMAGES;;
 
 let tick      = null;
@@ -254,6 +311,90 @@ let secs      = 60;
 let affs      = [];
 let affIdx    = 0;
 let goalTitle = '';
+let sb        = null;
+let currentUser = null;
+
+function getUnlockThreshold(minutes) {
+  for (const tier of UNLOCK_CONFIG) {
+    if (tier.durations.includes(minutes)) return tier.threshold;
+  }
+  return 999;
+}
+
+function isUnlocked(minutes, sessionCount) {
+  return sessionCount >= getUnlockThreshold(minutes);
+}
+
+// ── SESSION COUNT — Supabase authoritative, localStorage cache ────────────────
+
+async function getSessionCount() {
+  const lsKey = 'viz_quick_sessions';
+  if (currentUser && sb) {
+    try {
+      const { data } = await sb
+        .from('profiles')
+        .select('viz_quick_sessions')
+        .eq('id', currentUser.id)
+        .single();
+      const count = data?.viz_quick_sessions ?? 0;
+      localStorage.setItem(lsKey, String(count));
+      return count;
+    } catch(e) {}
+  }
+  return parseInt(localStorage.getItem(lsKey) || '0', 10);
+}
+
+async function incrementSessionCount() {
+  const lsKey = 'viz_quick_sessions';
+  const current = await getSessionCount();
+  const next = current + 1;
+  localStorage.setItem(lsKey, String(next));
+  if (currentUser && sb) {
+    try {
+      await sb.from('profiles').upsert({ id: currentUser.id, viz_quick_sessions: next });
+    } catch(e) {}
+  }
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+
+function buildModal(sessionCount) {
+  const grid = document.getElementById('durGrid');
+  grid.innerHTML = '';
+
+  const hint = document.getElementById('sessionHint');
+  hint.textContent = sessionCount === 1
+    ? `${sessionCount} session completed`
+    : `${sessionCount} sessions completed`;
+
+  ALL_DURATIONS.forEach(min => {
+    const unlocked = isUnlocked(min, sessionCount);
+    const threshold = getUnlockThreshold(min);
+    const label = min < 60 ? String(min) : '60';
+
+    const btn = document.createElement('button');
+    btn.className = 'dur-btn' + (unlocked ? '' : ' locked');
+    btn.innerHTML = label;
+
+    if (unlocked) {
+      btn.onclick = () => start(min * 60);
+    } else {
+      const lockEl = document.createElement('span');
+      lockEl.className = 'lock-icon';
+      lockEl.textContent = '🔒';
+      btn.appendChild(lockEl);
+
+      const hintEl = document.createElement('span');
+      hintEl.className = 'unlock-hint';
+      hintEl.textContent = `Unlocks at ${threshold} sessions`;
+      btn.appendChild(hintEl);
+    }
+
+    grid.appendChild(btn);
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
 
 async function init() {
   const _belief = document.getElementById('playerDailyBelief');
@@ -261,6 +402,13 @@ async function init() {
 
   const params = new URLSearchParams(location.search);
   const idx    = parseInt(params.get('idx'), 10) || 0;
+
+  // Init Supabase + get user
+  try {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    const { data: { user } } = await sb.auth.getUser();
+    currentUser = user || null;
+  } catch(e) {}
 
   // Grab goal title for voice intro
   try {
@@ -272,29 +420,38 @@ async function init() {
   affs = await loadAffirmations(idx);
   setImage(0);
 
+  // Check for URL/localStorage preset duration (from external launcher)
   const urlDur = parseInt(params.get('duration'), 10);
   const lsDur  = parseInt(localStorage.getItem('viz_quick_duration'), 10);
   const preset = [15, 30, 60].includes(urlDur) ? urlDur
                : [15, 30, 60].includes(lsDur)  ? lsDur
                : null;
   if (lsDur) localStorage.removeItem('viz_quick_duration');
-  if (preset) start(preset);
+  if (preset) { start(preset); return; }
+
+  // Tiered unlock flow
+  const sessionCount = await getSessionCount();
+
+  if (sessionCount === 0) {
+    // First-ever run: bypass modal, auto-start 60 seconds
+    start(60);
+  } else {
+    buildModal(sessionCount);
+  }
 }
 
 async function loadAffirmations(idx) {
   // Try Supabase (user_content.core_blueprint.affirmations — 13 items)
   try {
-    const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-    const { data: { user } } = await sb.auth.getUser();
-    if (user) {
-      const raw      = localStorage.getItem(`ci_intentions_${user.id}`) || localStorage.getItem('ci_intentions') || '[]';
+    if (currentUser && sb) {
+      const raw      = localStorage.getItem(`ci_intentions_${currentUser.id}`) || localStorage.getItem('ci_intentions') || '[]';
       const intns    = JSON.parse(raw);
       const goal     = intns[idx]?.title;
       if (goal) {
         const { data } = await sb
           .from('user_content')
           .select('core_blueprint')
-          .eq('user_id', user.id)
+          .eq('user_id', currentUser.id)
           .eq('goal', goal)
           .order('generated_at', { ascending: false })
           .limit(1)
@@ -365,13 +522,14 @@ function start(duration) {
   }, 1000);
 }
 
-function done() {
+async function done() {
   const ring  = document.getElementById('cdRing');
   const numEl = document.getElementById('cdNum');
   ring.classList.remove('ending');
   numEl.textContent = '✓';
   playBell();
   speakText('Open your eyes. Your vision is planted.');
+  await incrementSessionCount();
   setTimeout(exit, 4500);
 }
 
