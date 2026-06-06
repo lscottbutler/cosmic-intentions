@@ -8901,24 +8901,12 @@ function buildBuildSheet(intent, idx) {
     </div>
 
     <div class="bs-tabs">
-      <button class="bs-tab active" id="bsTab-roadmap-${idx}" onclick="switchBSTab(${idx},'roadmap')">◈ Roadmap</button>
-      <button class="bs-tab" id="bsTab-library-${idx}"  onclick="switchBSTab(${idx},'library')">✦ AI Library</button>
-      <button class="bs-tab" id="bsTab-pegboard-${idx}" onclick="switchBSTab(${idx},'pegboard')">📋 Pegboard</button>
-      <button class="bs-tab" id="bsTab-mission-${idx}"  onclick="switchBSTab(${idx},'mission')" style="color:#1E90FF;font-weight:800;">⚡ Mission</button>
-      <button class="bs-tab" id="bsTab-themap-${idx}"  onclick="switchBSTab(${idx},'themap')" style="color:#F5A623;font-weight:800;">◉ The Map</button>
+      <button class="bs-tab active" id="bsTab-bbfw-${idx}" onclick="switchBSTab(${idx},'bbfw')" style="color:#F5A623;font-weight:800;">◈ ROADMAP</button>
+      <button class="bs-tab" id="bsTab-themap-${idx}"  onclick="switchBSTab(${idx},'themap')">◉ The Map</button>
     </div>
 
-    <div class="bs-panel active" id="bsPanel-roadmap-${idx}">
-      ${buildBSRoadmapPanel(intent, idx)}
-    </div>
-    <div class="bs-panel" id="bsPanel-library-${idx}">
-      ${buildBSLibraryPanel(intent, idx)}
-    </div>
-    <div class="bs-panel" id="bsPanel-pegboard-${idx}">
-      ${buildBSPegboardPanel(intent)}
-    </div>
-    <div class="bs-panel" id="bsPanel-mission-${idx}">
-      ${buildMissionControlPanel(intent, idx)}
+    <div class="bs-panel active" id="bsPanel-bbfw-${idx}">
+      ${buildBBFWPanel(intent, idx)}
     </div>
     <div class="bs-panel" id="bsPanel-themap-${idx}">
       ${buildBSTheMapPanel(intent, idx)}
@@ -8935,11 +8923,115 @@ function buildBuildSheet(intent, idx) {
 }
 
 function switchBSTab(idx, tab) {
-  ['roadmap','library','pegboard','mission','themap'].forEach(t => {
+  ['bbfw','themap'].forEach(t => {
     document.getElementById(`bsTab-${t}-${idx}`)?.classList.toggle('active', t === tab);
     const panel = document.getElementById(`bsPanel-${t}-${idx}`);
     if (panel) panel.classList.toggle('active', t === tab);
   });
+}
+
+/* ── BBFW PANEL ─────────────────────────────────────────
+   Backbone Framework — 6 Eternal Problems + 9 Components
+───────────────────────────────────────────────────────── */
+function buildBBFWPanel(intent, idx) {
+  const bbfw = intent.bbfw;
+  if (!bbfw) {
+    return `
+      <div style="padding:24px 20px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">◈ BACKBONE FRAMEWORK</div>
+        <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:20px;">
+          Run your goal through the proven framework used by history's greatest achievers.<br>
+          The <strong style="color:#fff">6 Eternal Problems</strong> define what must be solved.
+          The <strong style="color:#fff">9 Components</strong> show exactly how to solve them.
+        </div>
+        <button onclick="generateBBFW(${idx})" id="bbfw-gen-btn-${idx}"
+          style="background:#F5A623;color:#000;border:none;border-radius:8px;padding:12px 24px;
+          font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;width:100%;">
+          ◈ GENERATE MY ROADMAP
+        </button>
+      </div>`;
+  }
+  return renderBBFW(bbfw, idx);
+}
+
+function renderBBFW(bbfw, idx) {
+  const EP_LABELS = ['Vivid Vision','Compelling Why','Credible Plan','Feedback Loops','Environment Design','Identity Alignment'];
+  const EP_COLORS = ['#F5A623','#60A0FF','#4ADE80','#BF5AF2','#FF6B6B','#FFD700'];
+  const COMP_NAMES = ['Clarity','Compelling Why','Belief','Plan','Feedback Loops','Environment Design','Accountability','Resilience','Identity Alignment'];
+  const COMP_COLORS = ['#F5A623','#60A0FF','#30D158','#BF5AF2','#FF9500','#FF6B6B','#32D74B','#FF375F','#FFD60A'];
+
+  const epCards = (bbfw.eternal_problems || []).map((ep, i) => `
+    <div style="background:#1A1A1A;border-left:3px solid ${EP_COLORS[i]};border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:8px;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:${EP_COLORS[i]};font-weight:800;letter-spacing:1px;margin-bottom:4px;">
+        ${i+1}. ${EP_LABELS[i].toUpperCase()}
+      </div>
+      <div style="font-size:12px;color:#ddd;line-height:1.6;">${esc(ep.insight || '')}</div>
+      ${ep.action ? `<div style="font-size:11px;color:#888;margin-top:6px;font-style:italic;">→ ${esc(ep.action)}</div>` : ''}
+    </div>`).join('');
+
+  const compCards = (bbfw.components || []).map((c, i) => `
+    <div style="background:#1A1A1A;border-radius:8px;padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:${COMP_COLORS[i]};display:flex;align-items:center;justify-content:center;
+          font-family:var(--vault-mono);font-size:9px;color:#000;font-weight:800;flex-shrink:0;">${i+1}</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:${COMP_COLORS[i]};font-weight:800;letter-spacing:0.5px;">${COMP_NAMES[i].toUpperCase()}</div>
+      </div>
+      <div style="font-size:12px;color:#ddd;line-height:1.6;padding-left:30px;">${esc(c.action || '')}</div>
+      ${c.quote ? `<div style="font-size:10px;color:#505058;margin-top:6px;padding-left:30px;font-style:italic;">"${esc(c.quote)}"</div>` : ''}
+    </div>`).join('');
+
+  return `
+    <div style="padding:16px 20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ BACKBONE FRAMEWORK</div>
+        <button onclick="generateBBFW(${idx})" id="bbfw-gen-btn-${idx}"
+          style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
+          font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
+          ↺ Regenerate
+        </button>
+      </div>
+
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:1px;margin-bottom:8px;">THE 6 ETERNAL PROBLEMS</div>
+      ${epCards}
+
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:1px;margin:16px 0 8px;">THE 9 COMPONENTS OF SUCCESS</div>
+      ${compCards}
+    </div>`;
+}
+
+async function generateBBFW(idx) {
+  const intent = intentions[idx];
+  if (!intent) return;
+  const btn = document.getElementById(`bbfw-gen-btn-${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
+
+  const panel = document.getElementById(`bsPanel-bbfw-${idx}`);
+  if (panel) panel.innerHTML = `
+    <div style="padding:40px 20px;text-align:center;">
+      <div style="font-family:var(--vault-mono);font-size:11px;color:#F5A623;letter-spacing:1px;margin-bottom:8px;">◈ BUILDING YOUR ROADMAP</div>
+      <div style="font-size:12px;color:#505058;">Analysing your goal through 3,000 years of achievement science…</div>
+    </div>`;
+
+  try {
+    const res = await fetch('/api/bbfw', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goal: intent.title })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    intent.bbfw = data;
+    syncIntentionsToSupabase();
+    if (panel) panel.innerHTML = renderBBFW(data, idx);
+  } catch (e) {
+    if (panel) panel.innerHTML = `
+      <div style="padding:24px 20px;">
+        <div style="color:#FF375F;font-family:var(--vault-mono);font-size:11px;margin-bottom:12px;">Generation failed</div>
+        <div style="font-size:12px;color:#888;">${esc(e.message)}</div>
+        <button onclick="generateBBFW(${idx})" style="margin-top:16px;background:#F5A623;color:#000;border:none;border-radius:8px;
+          padding:10px 20px;font-family:var(--vault-mono);font-size:11px;font-weight:800;cursor:pointer;">Try Again</button>
+      </div>`;
+  }
 }
 
 /* ── CONTENT BLOCKS ─────────────────────────────────────
