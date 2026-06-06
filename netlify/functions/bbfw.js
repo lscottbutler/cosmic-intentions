@@ -22,15 +22,20 @@ exports.handler = async (event) => {
 
 STRICT RULES — violations will be rejected:
 - NEVER suggest going outside, visiting physical locations, attending events, shows, or stores
+- NEVER suggest creating a vision board on Pinterest, Canva, or any external tool — the user already has a custom Digital Vision Board (DVB) built inside this app
 - ALWAYS recommend online research, digital tools, apps, and at-home actions
 - Be brutally specific to THIS exact goal — no generic self-help platitudes
 - Every action must be something the user can do right now from their desk
+
+VIVID VISION SPECIAL RULE (critical):
+The action for Vivid Vision must ALWAYS say: "Your custom Digital Vision Board (DVB) for this goal is live inside Cosmic Intentions — open it daily to prime your mind. Use your Task Organizer Section (TOS) to schedule your daily and weekly actions for this goal."
+The insight should be a powerful, specific statement about what owning/achieving this goal will look, feel, and mean for them personally.
 
 The framework has two parts:
 
 PART 1 — THE 6 ETERNAL PROBLEMS
 These are the six dimensions every human goal must solve. Write a specific insight about how THIS goal relates to each problem, plus one concrete online/at-home action to solve it.
-1. Vivid Vision — a defined, vivid picture of the end state
+1. Vivid Vision — a defined, vivid picture of the end state (follow the VIVID VISION SPECIAL RULE above)
 2. Compelling Why — emotional fuel that survives adversity
 3. Credible Plan — a map plus the habit of navigating
 4. Feedback Loops — regular signal: am I on track?
