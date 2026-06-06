@@ -272,6 +272,43 @@ function accMedType(type) {
   document.getElementById('accPanel-meditation').style.maxHeight = '500px';
 }
 
+/* ── VIZ INLINE IFRAME PLAYER ────────────────────────── */
+function launchVizInline(playerType) {
+  LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
+  closeAllAcc();
+
+  const slot = document.getElementById('vizInlineSlot');
+  if (!slot) { launchPlayer(playerType); return; }
+
+  // Close any open viz inline first
+  closeVizInline();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'viz-inline-wrap';
+  wrap.id = 'vizInlineWrap';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className  = 'viz-inline-close';
+  closeBtn.textContent = '✕ Close';
+  closeBtn.onclick = closeVizInline;
+
+  const frame = document.createElement('iframe');
+  frame.className = 'viz-inline-frame';
+  frame.id  = 'vizInlineFrame';
+  frame.src = `players/${playerType}.html`;
+  frame.allow = 'autoplay';
+
+  wrap.appendChild(closeBtn);
+  wrap.appendChild(frame);
+  slot.appendChild(wrap);
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeVizInline() {
+  const wrap = document.getElementById('vizInlineWrap');
+  if (wrap) wrap.remove();
+}
+
 /* ── GRATITUDE INLINE PLAYER ─────────────────────────── */
 const GRAT_SETS = [
   [
@@ -401,6 +438,11 @@ function closeGratitudeInline() {
     document.body.appendChild(player); // park back on body
   }
 }
+
+// Listen for inline player close signal from iframe
+window.addEventListener('message', e => {
+  if (e.data?.type === 'ci_close_inline') closeVizInline();
+});
 
 /* ── ROADMAP LAUNCHER ────────────────────────────────── */
 function openRoadmapForSelected() {

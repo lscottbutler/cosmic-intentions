@@ -9,6 +9,13 @@ const ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel — default baseli
 
 /* ── RETURN TO APP ───────────────────────────────────────── */
 function returnToApp() {
+  // If running inside an inline iframe in the main app, tell parent to close us
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'ci_close_inline' }, '*');
+      return;
+    }
+  } catch(e) {}
   try {
     if (window.opener && !window.opener.closed) {
       window.opener.focus();
