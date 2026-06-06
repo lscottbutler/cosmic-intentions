@@ -239,8 +239,16 @@ function renderTodayStrip() {
 
   const header = `
     <div class="ts-header" onclick="_tsToggle()">
-      <span class="ts-title">✦ TODAY</span>
-      <span class="ts-meta">${metaText} ${_tsOpen ? '▲' : '▼'}</span>
+      <span class="acc-svg-circle">
+        <svg viewBox="0 0 24 24" width="21" height="21" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3" fill="#FFFFFF"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"
+            stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="ts-title">Today</span>
+      <span class="ts-meta">${metaText}</span>
+      <span class="ts-arrow${_tsOpen ? ' open' : ''}">▶</span>
     </div>`;
 
   if (!_tsOpen) { el.innerHTML = header; return; }

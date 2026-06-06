@@ -5183,32 +5183,48 @@ input, textarea, select {
 /* ── PEGBOARD LOOP WIDGET ────────────────────────────── */
 /* ── TODAY STRIP ─────────────────────────────────────── */
 #todayStrip {
-  border-bottom: 1px solid #222;
-  padding-bottom: 2px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #383838;
 }
 .ts-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 16px 8px;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #2E2E2E;
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
+  transition: background 0.15s;
 }
-.ts-header:hover { background: #1A1A1A; }
+.ts-header:hover { background: #383838; }
 .ts-title {
-  font-family: var(--vault-mono);
-  font-size: 10px;
-  color: #F5A623;
-  font-weight: 800;
-  letter-spacing: 1px;
+  flex: 1;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #EFEFEF;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .ts-meta {
   font-family: var(--vault-mono);
-  font-size: 10px;
-  color: #505058;
+  font-size: 9px;
+  color: #888;
+  flex-shrink: 0;
 }
+.ts-arrow {
+  font-size: 9px;
+  color: #888;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.ts-arrow.open { transform: rotate(90deg); }
 .ts-body {
   padding: 0 12px 8px;
+  background: #1E1E1E;
 }
 .ts-section-label {
   font-family: var(--vault-mono);
