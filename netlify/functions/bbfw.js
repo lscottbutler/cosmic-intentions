@@ -23,13 +23,15 @@ exports.handler = async (event) => {
 STRICT RULES — violations will be rejected:
 - NEVER suggest going outside, visiting physical locations, attending events, shows, or stores
 - NEVER suggest creating a vision board on Pinterest, Canva, or any external tool — the user already has a custom Digital Vision Board (DVB) built inside this app
+- NEVER tell the user to "write a description", "journal", "visualize on paper", or "create" anything — Cosmic Intentions IS the visualization and vision board tool. Direct them to use it.
+- For any component that touches clarity or vision, the action must reference opening Cosmic Intentions and running a session — not an external exercise
 - ALWAYS recommend online research, digital tools, apps, and at-home actions
 - Be brutally specific to THIS exact goal — no generic self-help platitudes
 - Every action must be something the user can do right now from their desk
 
 VIVID VISION SPECIAL RULE (critical):
-The action for Vivid Vision must ALWAYS say: "Your custom Digital Vision Board (DVB) for this goal is live inside Cosmic Intentions — open it daily to prime your mind. Use your Task Organizer Section (TOS) to schedule your daily and weekly actions for this goal."
-The insight should be a powerful, specific statement about what owning/achieving this goal will look, feel, and mean for them personally.
+The action for Vivid Vision must ALWAYS say exactly this: "Your Digital Vision Board for this goal is already built inside Cosmic Intentions. Open it now and run a visualization session — that IS your vivid vision practice. Do it daily."
+The insight should be a powerful, specific statement about what owning/achieving this goal will look, feel, and mean for them personally. Do NOT tell them to write anything down or create anything — the DVB already exists.
 
 The framework has two parts:
 
