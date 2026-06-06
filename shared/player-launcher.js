@@ -8,6 +8,9 @@ function launchPlayer(playerType, config = {}) {
     LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
     setEl('vsVizPlays', LS.get('ci_viz_plays'));
   }
+  if (playerType === 'gratitude') {
+    LS.set('ci_gratitude_plays', (LS.get('ci_gratitude_plays') || 0) + 1);
+  }
   closeDrawer();
   const w    = 1024, h = 768;
   const left = (screen.width  - w) / 2;
@@ -267,6 +270,13 @@ function accMedType(type) {
     grid.appendChild(btn);
   });
   document.getElementById('accPanel-meditation').style.maxHeight = '500px';
+}
+
+/* ── ROADMAP LAUNCHER ────────────────────────────────── */
+function openRoadmapForSelected() {
+  const idx = (typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx !== null)
+    ? selectedVaultIdx : 0;
+  launchPlayer('roadmap', { idx });
 }
 
 /* ── CONVENIENCE LAUNCHERS ───────────────────────────── */
