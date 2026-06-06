@@ -49,6 +49,16 @@ async function renderProgressDashboard() {
   const goalsSet    = (intentions||[]).length;
   const roadmapsGen = (intentions||[]).filter(i => i.bbfw).length;
   const mapFilled   = (intentions||[]).filter(i => (i.theMap?.components||[]).length > 0).length;
+  const mapTodos    = activityRows.filter(r => r.event_type === 'map_todo').length;
+
+  // ── Per-goal Map progress ─────────────────────────────
+  const mapGoals = (intentions||[]).map(intent => {
+    const components = intent.theMap?.components || [];
+    const total   = components.reduce((n, comp) => n + (comp.todos?.length || 0), 0);
+    const checked = components.reduce((n, comp) =>
+      n + (comp.todos||[]).filter(t => t.done).length, 0);
+    return { title: intent.title, total, checked };
+  }).filter(g => g.total > 0);
 
   // ── CI Score ──────────────────────────────────────────
   const streakScore   = Math.min(streak / 30, 1) * 35;
@@ -159,6 +169,34 @@ async function renderProgressDashboard() {
             <span style="font-size:12px;color:#aaa;flex:1;">${s.label}</span>
             <span style="font-family:var(--vault-mono);font-size:14px;font-weight:800;color:#fff;">${s.count.toLocaleString()}</span>
           </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${mapGoals.length > 0 ? `
+    <!-- THE MAP — TROPHY CABINET -->
+    <div style="margin-bottom:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;">THE MAP</div>
+        ${mapTodos > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:#4ADE80;">${mapTodos} milestone${mapTodos===1?'':'s'} completed</div>` : ''}
+      </div>
+      <div style="background:#1A1A1A;border:1px solid #222;border-radius:12px;overflow:hidden;">
+        ${mapGoals.map((g,i) => {
+          const pct  = g.total > 0 ? Math.round((g.checked / g.total) * 100) : 0;
+          const done = g.checked === g.total && g.total > 0;
+          const barColor = done ? '#4ADE80' : pct >= 50 ? '#F5A623' : '#60A0FF';
+          const title = g.title.replace(/^i am\s+/i,'').replace(/\b\w/g, c => c.toUpperCase());
+          return `
+          <div style="padding:14px 16px;${i < mapGoals.length-1 ? 'border-bottom:1px solid #1f1f1f;' : ''}">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="font-size:12px;color:${done?'#4ADE80':'#ccc'};font-weight:${done?'700':'400'};
+                overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">${done?'✓ ':''} ${title}</div>
+              <div style="font-family:var(--vault-mono);font-size:10px;color:${barColor};font-weight:800;flex-shrink:0;">${g.checked}/${g.total}</div>
+            </div>
+            <div style="height:4px;background:#252525;border-radius:2px;">
+              <div style="height:4px;background:${barColor};border-radius:2px;width:${pct}%;"></div>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
     </div>` : ''}
 
