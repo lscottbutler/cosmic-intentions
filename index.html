@@ -5261,6 +5261,8 @@ input, textarea, select {
   <button class="tnav-btn" id="topnav-notes" style="display:none" onclick="navTo('notes')">My Notes</button>
   <span class="tnav-sep">·</span>
   <button class="tnav-btn" onclick="navTo('progress')">◈ Progress</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('journal')">📓 Journal</button>
 </nav>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
@@ -6621,6 +6623,9 @@ input, textarea, select {
   <!-- PROGRESS MEGA DASHBOARD -->
   <div class="page" id="page-progress"></div>
 
+  <!-- JOURNAL INDEX -->
+  <div class="page" id="page-journal"></div>
+
   <!-- ADMIN PAGE -->
   <div class="page" id="page-admin">
     <div class="admin-page">
@@ -7217,6 +7222,7 @@ function showPage(id) {
   if (id === 'setup')     renderPBIntentionList();
   if (id === 'community') loadCommunityFeed();
   if (id === 'progress')  renderProgressDashboard();
+  if (id === 'journal')   renderJournalIndex();
 
   closeDrawer();
   window.scrollTo(0, 0);
@@ -8902,15 +8908,15 @@ function buildBuildSheet(intent, idx) {
     </div>
 
     <div class="bs-tabs">
-      <button class="bs-tab active" id="bsTab-bbfw-${idx}" onclick="switchBSTab(${idx},'bbfw')" style="color:#F5A623;font-weight:800;">◈ ROADMAP</button>
-      <button class="bs-tab" id="bsTab-themap-${idx}"  onclick="switchBSTab(${idx},'themap')">◉ The Map</button>
+      <button class="bs-tab active" id="bsTab-themap-${idx}" onclick="switchBSTab(${idx},'themap')" style="color:#F5A623;font-weight:800;">◉ The Map</button>
+      <button class="bs-tab" id="bsTab-bbfw-${idx}" onclick="switchBSTab(${idx},'bbfw')">◈ Backbone</button>
     </div>
 
-    <div class="bs-panel active" id="bsPanel-bbfw-${idx}">
-      ${buildBBFWPanel(intent, idx)}
-    </div>
-    <div class="bs-panel" id="bsPanel-themap-${idx}">
+    <div class="bs-panel active" id="bsPanel-themap-${idx}">
       ${buildBSTheMapPanel(intent, idx)}
+    </div>
+    <div class="bs-panel" id="bsPanel-bbfw-${idx}">
+      ${buildBBFWPanel(intent, idx)}
     </div>
 
     <div class="bs-delete-row">
@@ -8924,7 +8930,7 @@ function buildBuildSheet(intent, idx) {
 }
 
 function switchBSTab(idx, tab) {
-  ['bbfw','themap'].forEach(t => {
+  ['themap','bbfw'].forEach(t => {
     document.getElementById(`bsTab-${t}-${idx}`)?.classList.toggle('active', t === tab);
     const panel = document.getElementById(`bsPanel-${t}-${idx}`);
     if (panel) panel.classList.toggle('active', t === tab);
