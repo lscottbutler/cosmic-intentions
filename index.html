@@ -59,6 +59,7 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
   --hdr:    56px;
+  --topnav: 38px;
   --subnav: 0px;
 
   --mb1:#E8524A; --mb2:#E8893A; --mb3:#88B83A; --mb4:#52B896; --mb5:#4A9EAD;
@@ -81,6 +82,43 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
   padding: 0 16px;
   z-index: 100;
 }
+/* ── TOP NAV BAR ─────────────────────────────────────── */
+#topNav {
+  position: fixed;
+  top: var(--hdr);
+  left: 0; right: 0;
+  height: var(--topnav);
+  background: #111;
+  border-bottom: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 4px;
+  z-index: 99;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+#topNav::-webkit-scrollbar { display: none; }
+.tnav-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-family: var(--vault-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+.tnav-btn:hover { color: #fff; background: #1e1e1e; }
+.tnav-btn.active { color: #F5A623; }
+.tnav-sep { color: #2a2a2a; font-size: 12px; padding: 0 2px; flex-shrink: 0; }
+
 .hdr-logo {
   font-size: 11px;
   font-weight: 700;
@@ -272,8 +310,8 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
 
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
-  margin-top: var(--hdr);
-  min-height: calc(100vh - var(--hdr));
+  margin-top: calc(var(--hdr) + var(--topnav));
+  min-height: calc(100vh - var(--hdr) - var(--topnav));
 }
 .page { display: none; }
 .page.active { display: block; }
@@ -5203,6 +5241,25 @@ input, textarea, select {
   </div>
 </header>
 
+<!-- TOP NAV BAR -->
+<nav id="topNav">
+  <button class="tnav-btn" onclick="navTo('dashboard')">Dashboard</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('community')">Community</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('library')">Cosmic Library</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('bestpractices')">Best Practices</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('gettingstarted')">Getting Started</button>
+  <span class="tnav-sep">·</span>
+  <button class="tnav-btn" onclick="navTo('bts')">Behind the Scenes</button>
+  <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
+  <button class="tnav-btn" id="topnav-notes" style="display:none" onclick="navTo('notes')">My Notes</button>
+</nav>
+
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
 <nav class="drawer" id="drawer" style="display:none">
   <div class="drawer-head">Menu</div>
@@ -5490,37 +5547,11 @@ input, textarea, select {
             <button class="btn-member-login" onclick="navTo('dashboard')">✦ Member Dashboard</button>
           </div>
 
-          <!-- ── HOME NAV GRID ─────────────────────────── -->
-          <div class="home-nav-grid">
-
-            <div class="home-nav-section-label">Navigate</div>
-            <button class="hn-btn" onclick="navTo('home')"><span class="hn-icon">🏠</span><span class="hn-label">Home</span></button>
-            <button class="hn-btn" onclick="navTo('dashboard')"><span class="hn-icon">✦</span><span class="hn-label">Dashboard</span></button>
-            <button class="hn-btn" onclick="navTo('community')"><span class="hn-icon">🌌</span><span class="hn-label">Community</span></button>
-            <button class="hn-btn" onclick="navTo('setup')"><span class="hn-icon">📋</span><span class="hn-label">My Pegboard <span class="hn-dot" id="homeNavCount" style="display:none"></span></span></button>
-            <button class="hn-btn" onclick="navTo('bts')"><span class="hn-icon">🎬</span><span class="hn-label">Behind the Scenes</span></button>
-            <button class="hn-btn" onclick="navTo('library')"><span class="hn-icon">📚</span><span class="hn-label">Cosmic Library</span></button>
-            <button class="hn-btn" onclick="navTo('bestpractices')"><span class="hn-icon">💡</span><span class="hn-label">Best Practices</span></button>
-            <button class="hn-btn" onclick="navTo('gettingstarted')"><span class="hn-icon">🚀</span><span class="hn-label">Getting Started</span></button>
-            <button class="hn-btn" id="hn-admin" style="display:none" onclick="navTo('admin')"><span class="hn-icon">⚙</span><span class="hn-label">Admin</span></button>
-            <button class="hn-btn" id="hn-notes" style="display:none" onclick="navTo('notes')"><span class="hn-icon">✏️</span><span class="hn-label">My Notes</span></button>
-
-            <div class="home-nav-section-label" style="margin-top:8px">Players</div>
-            <button class="hn-btn" onclick="launchPlayer('viz-quick')"><span class="hn-icon">⚡</span><span class="hn-label">Quick Viz<span class="hn-dur">15/30/60s</span></span></button>
-            <button class="hn-btn" onclick="openTimerPicker()"><span class="hn-icon">⏱️</span><span class="hn-label">Countdown<span class="hn-dur">1–60 min</span></span></button>
-            <button class="hn-btn" onclick="openMeditationModal()"><span class="hn-icon">🧘</span><span class="hn-label">Meditation<span class="hn-dur">5–60 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-3min')"><span class="hn-icon">✨</span><span class="hn-label">3-Min Viz<span class="hn-dur">3 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-10min')"><span class="hn-icon">🌟</span><span class="hn-label">10-Min Viz<span class="hn-dur">10 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('gratitude')"><span class="hn-icon">🙏</span><span class="hn-label">Gratitude<span class="hn-dur">5 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('pegboard-loop')"><span class="hn-icon">🔄</span><span class="hn-label">Pegboard Loop<span class="hn-dur">~8 min</span></span></button>
-
-            <div id="homeNavUpgrade" style="display:none; grid-column:1/-1; margin-top:4px;">
+          <div style="margin-top:16px;">
+            <div id="homeNavUpgrade" style="display:none;margin-bottom:8px;">
               <button class="hn-upgrade" onclick="openUpgrade()">✦ Upgrade to Member</button>
             </div>
-            <div style="grid-column:1/-1; margin-top:4px;">
-              <button class="hn-signout" onclick="signOut()">Sign Out</button>
-            </div>
-
+            <button class="hn-signout" onclick="signOut()">Sign Out</button>
           </div>
 
           <div class="ent-slideshow" id="entSlideshow"></div>
@@ -5736,26 +5767,6 @@ input, textarea, select {
           </div>
 
           <!-- DASHBOARD NAV GRID (build nav) — bottom of column -->
-          <div class="home-nav-grid" style="margin-top:16px;margin-bottom:8px;">
-            <div class="home-nav-section-label">Navigate</div>
-            <button class="hn-btn" onclick="navTo('home')"><span class="hn-icon">🏠</span><span class="hn-label">Home</span></button>
-            <button class="hn-btn" onclick="navTo('community')"><span class="hn-icon">🌌</span><span class="hn-label">Community</span></button>
-            <button class="hn-btn" onclick="navTo('setup')"><span class="hn-icon">📋</span><span class="hn-label">My Pegboard</span></button>
-            <button class="hn-btn" onclick="navTo('bts')"><span class="hn-icon">🎬</span><span class="hn-label">Behind the Scenes</span></button>
-            <button class="hn-btn" onclick="navTo('library')"><span class="hn-icon">📚</span><span class="hn-label">Cosmic Library</span></button>
-            <button class="hn-btn" onclick="navTo('bestpractices')"><span class="hn-icon">💡</span><span class="hn-label">Best Practices</span></button>
-            <button class="hn-btn" onclick="navTo('gettingstarted')"><span class="hn-icon">🚀</span><span class="hn-label">Getting Started</span></button>
-            <button class="hn-btn" id="dash-hn-admin" style="display:none" onclick="navTo('admin')"><span class="hn-icon">⚙</span><span class="hn-label">Admin</span></button>
-            <button class="hn-btn" id="dash-hn-notes" style="display:none" onclick="navTo('notes')"><span class="hn-icon">✏️</span><span class="hn-label">My Notes</span></button>
-            <div class="home-nav-section-label" style="margin-top:8px">Players</div>
-            <button class="hn-btn" onclick="launchPlayer('viz-quick')"><span class="hn-icon">⚡</span><span class="hn-label">Quick Viz<span class="hn-dur">15/30/60s</span></span></button>
-            <button class="hn-btn" onclick="openTimerPicker()"><span class="hn-icon">⏱️</span><span class="hn-label">Countdown<span class="hn-dur">1–60 min</span></span></button>
-            <button class="hn-btn" onclick="openMeditationModal()"><span class="hn-icon">🧘</span><span class="hn-label">Meditation<span class="hn-dur">5–60 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-3min')"><span class="hn-icon">✨</span><span class="hn-label">3-Min Viz<span class="hn-dur">3 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('viz-10min')"><span class="hn-icon">🌟</span><span class="hn-label">10-Min Viz<span class="hn-dur">10 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('gratitude')"><span class="hn-icon">🙏</span><span class="hn-label">Gratitude<span class="hn-dur">5 min</span></span></button>
-            <button class="hn-btn" onclick="launchPlayer('pegboard-loop')"><span class="hn-icon">🔄</span><span class="hn-label">Pegboard Loop<span class="hn-dur">~8 min</span></span></button>
-          </div>
 
         </div>
 
@@ -7507,6 +7518,10 @@ function updateUI(user) {
   const dashNotes = document.getElementById('dash-hn-notes');
   if (dashAdmin) dashAdmin.style.display = isOwner ? 'flex' : 'none';
   if (dashNotes) dashNotes.style.display = isOwner ? 'flex' : 'none';
+  const topAdmin = document.getElementById('topnav-admin');
+  const topNotes = document.getElementById('topnav-notes');
+  if (topAdmin) topAdmin.style.display = isOwner ? 'inline-block' : 'none';
+  if (topNotes) topNotes.style.display = isOwner ? 'inline-block' : 'none';
 }
 
 /* ─────────────────────────────────────────────────────────
