@@ -272,6 +272,136 @@ function accMedType(type) {
   document.getElementById('accPanel-meditation').style.maxHeight = '500px';
 }
 
+/* ── GRATITUDE INLINE PLAYER ─────────────────────────── */
+const GRAT_SETS = [
+  [
+    'images/GRATITUDE/GRATITUDE 1/A COMFY BED.jpg',
+    'images/GRATITUDE/GRATITUDE 1/A GOOD BOOK.jpg',
+    'images/GRATITUDE/GRATITUDE 1/A RELAXING BATH.jpg',
+    'images/GRATITUDE/GRATITUDE 1/CHOCOLATE.jpg',
+    'images/GRATITUDE/GRATITUDE 1/FRIENDS.jpg',
+  ],
+  [
+    'images/GRATITUDE/GRATITUDE 2/A COMFY CHAIR.jpg',
+    'images/GRATITUDE/GRATITUDE 2/A HOT BATH.jpg',
+    'images/GRATITUDE/GRATITUDE 2/COMFORT FOOD.jpg',
+    'images/GRATITUDE/GRATITUDE 2/FAMILY TIME.jpg',
+    'images/GRATITUDE/GRATITUDE 2/PIZZA.jpg',
+  ],
+  [
+    'images/GRATITUDE/GRATITUDE 3/FRESH PRODUCE.jpg',
+    'images/GRATITUDE/GRATITUDE 3/MY ABILITY TO EXERCISE.jpg',
+    'images/GRATITUDE/GRATITUDE 3/MY CARDIOVASCULAR HEALTH.jpg',
+    'images/GRATITUDE/GRATITUDE 3/MY GRANDCHILDREN.jpg',
+    'images/GRATITUDE/GRATITUDE 3/SCENIC TRAIN RIDES.jpg',
+  ],
+  [
+    'images/GRATITUDE/GRATITUDE 4/A GREAT ROADTRIP.jpg',
+    'images/GRATITUDE/GRATITUDE 4/A WALK IN NATURE.jpg',
+    'images/GRATITUDE/GRATITUDE 4/A YUMMY BURGER.jpg',
+    'images/GRATITUDE/GRATITUDE 4/EXOTIC TRAVEL.jpg',
+    'images/GRATITUDE/GRATITUDE 4/TIME WITH MY KIDS.jpg',
+  ],
+  [
+    'images/GRATITUDE/GRATITUDE 5/COZY SOCKS.jpg',
+  ],
+];
+
+const gratSt = { running: false };
+
+function gratLabelFromPath(src) {
+  let name = src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|gif)(\.\w+)*$/i,'').replace(/[-_]/g,' ').trim();
+  return name.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function launchGratitudeInline() {
+  LS.set('ci_gratitude_plays', (LS.get('ci_gratitude_plays') || 0) + 1);
+  closeAllAcc();
+  const slot   = document.getElementById('gratInlineSlot');
+  const player = document.getElementById('gratPlayer');
+  if (!slot || !player) { launchPlayer('gratitude'); return; }
+  slot.appendChild(player);
+  player.classList.add('open');
+  player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  const setIdx = Math.floor(Date.now() / 86400000) % GRAT_SETS.length;
+  const slides = GRAT_SETS[setIdx];
+
+  // Build dots
+  const dotsEl = document.getElementById('gratDots');
+  dotsEl.innerHTML = '';
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'grat-dot';
+    d.id = `gratDot-${i}`;
+    dotsEl.appendChild(d);
+  });
+
+  gratSt.running = true;
+  gratShowSlide(slides, 0);
+}
+
+const gratDelay = ms => new Promise(r => setTimeout(r, ms));
+
+async function gratShowSlide(slides, n) {
+  if (!gratSt.running) return;
+  if (n >= slides.length) { gratComplete(); return; }
+
+  const src   = slides[n];
+  const label = gratLabelFromPath(src);
+  const img   = document.getElementById('gratImage');
+  const lbl   = document.getElementById('gratLabel');
+
+  // Update dots
+  document.querySelectorAll('.grat-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+
+  // Fade in image
+  img.style.opacity = '0';
+  lbl.style.opacity = '0';
+  lbl.textContent   = ' ';
+  await gratDelay(50);
+  img.style.backgroundImage = `url("${src}")`;
+  img.style.opacity = '1';
+
+  await gratDelay(3000);
+  if (!gratSt.running) return;
+
+  lbl.textContent   = label || ' ';
+  lbl.style.opacity = '1';
+  if (label && typeof speakText === 'function') await speakText(`I am grateful for ${label.toLowerCase()}`);
+  if (!gratSt.running) return;
+
+  await gratDelay(3000);
+  if (!gratSt.running) return;
+
+  img.style.opacity = '0';
+  lbl.style.opacity = '0';
+  await gratDelay(2800);
+  if (!gratSt.running) return;
+
+  gratShowSlide(slides, n + 1);
+}
+
+async function gratComplete() {
+  const lbl = document.getElementById('gratLabel');
+  const img = document.getElementById('gratImage');
+  if (img) img.style.opacity = '1';
+  if (lbl) { lbl.textContent = 'Carry this gratitude with you.'; lbl.style.opacity = '1'; }
+  if (typeof speakText === 'function') await speakText('Carry this gratitude with you today.');
+  await gratDelay(3000);
+  closeGratitudeInline();
+}
+
+function closeGratitudeInline() {
+  gratSt.running = false;
+  if (typeof stopSpeech === 'function') stopSpeech();
+  const player = document.getElementById('gratPlayer');
+  if (player) {
+    player.classList.remove('open');
+    document.body.appendChild(player); // park back on body
+  }
+}
+
 /* ── ROADMAP LAUNCHER ────────────────────────────────── */
 function openRoadmapForSelected() {
   const idx = (typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx !== null)
