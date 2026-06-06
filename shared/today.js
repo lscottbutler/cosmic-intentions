@@ -208,3 +208,98 @@ function renderTodayView() {
   // Weekly Focus renders into its own slot below
   if (typeof renderWeeklyFocus === 'function') renderWeeklyFocus();
 }
+
+/* ── TODAY STRIP — compact sidebar widget ────────────────
+   Shows daily commitments + weekly focus checkboxes
+   always visible at top of right sidebar.
+───────────────────────────────────────────────────────── */
+let _tsOpen = true;
+
+function renderTodayStrip() {
+  const el = document.getElementById('todayStrip');
+  if (!el) return;
+
+  const commits   = _todayGetCommitments();
+  const doneDaily = commits.filter(c => c.done).length;
+
+  // Weekly focus items
+  let wfItems = [], wfChecks = {}, wfCycleColor = '#F5A623', wfDone = 0;
+  if (typeof _wfBuildPool === 'function') {
+    const cycle     = _wfCycleNum();
+    const comps     = WF_CYCLE_COMPS[cycle];
+    const pool      = _wfBuildPool(comps);
+    const weekKey   = _wfWeekKey();
+    const seed      = parseInt(weekKey.replace(/\D/g,''));
+    wfItems         = _wfPickTen(pool, seed);
+    wfChecks        = _wfLoadChecks();
+    wfCycleColor    = WF_CYCLE_LABELS[cycle].color;
+    wfDone          = wfItems.filter(i => wfChecks[i.key]).length;
+  }
+
+  const totalTasks = commits.length + wfItems.length;
+  const totalDone  = doneDaily + wfDone;
+  const metaText   = totalTasks > 0 ? `${totalDone}/${totalTasks} done` : 'no tasks yet';
+
+  const header = `
+    <div class="ts-header" onclick="_tsToggle()">
+      <span class="ts-title">✦ TODAY</span>
+      <span class="ts-meta">${metaText} ${_tsOpen ? '▲' : '▼'}</span>
+    </div>`;
+
+  if (!_tsOpen) { el.innerHTML = header; return; }
+
+  // Daily commitments rows
+  let dailyRows = '';
+  if (commits.length === 0) {
+    dailyRows = `<div class="ts-empty">Lock in Mission Control YES items to add commitments.</div>`;
+  } else {
+    dailyRows = commits.map(c => {
+      const streakTxt = c.streak >= 7 ? `🔥 ${c.streak}d` : c.streak > 0 ? `${c.streak}d` : '';
+      return `
+        <div class="ts-row" onclick="todayToggleCommit(${c.intentIdx},${c.commitIdx});renderTodayStrip()">
+          <div class="ts-check${c.done?' done':''}"> ${c.done?'✓':''} </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ts-text${c.done?' done':''}">${esc(c.text)}</div>
+            ${streakTxt ? `<div class="ts-streak">${streakTxt}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Weekly focus rows
+  let wfRows = '';
+  if (wfItems.length === 0) {
+    wfRows = `<div class="ts-empty">Generate The Map on an intention to unlock weekly focus.</div>`;
+  } else {
+    wfRows = wfItems.map(item => {
+      const checked  = !!wfChecks[item.key];
+      const safeKey  = item.key.replace(/[^a-z0-9]/gi,'-');
+      return `
+        <div class="ts-row" onclick="wfToggle('${item.key}');renderTodayStrip()">
+          <div class="ts-check${checked?' wf-done':''}" id="tsWf-${safeKey}">${checked?'✓':''}</div>
+          <div class="ts-text${checked?' done':''}">${esc(item.text)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  el.innerHTML = `
+    ${header}
+    <div class="ts-body">
+      <div class="ts-section-label">
+        <span>DAILY COMMITMENTS</span>
+        <span style="color:${doneDaily===commits.length&&commits.length>0?'#30D158':'#505058'}">${doneDaily}/${commits.length}</span>
+      </div>
+      ${dailyRows}
+      <hr class="ts-divider">
+      <div class="ts-section-label">
+        <span>WEEKLY FOCUS</span>
+        <span style="color:${wfDone===wfItems.length&&wfItems.length>0?wfCycleColor:'#505058'}">${wfDone}/${wfItems.length}</span>
+      </div>
+      ${wfRows}
+    </div>`;
+}
+
+function _tsToggle() {
+  _tsOpen = !_tsOpen;
+  renderTodayStrip();
+}

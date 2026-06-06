@@ -5038,6 +5038,94 @@ input, textarea, select {
 /* ── END TIMER PICKER ────────────────────────────────── */
 
 /* ── PEGBOARD LOOP WIDGET ────────────────────────────── */
+/* ── TODAY STRIP ─────────────────────────────────────── */
+#todayStrip {
+  border-bottom: 1px solid #222;
+  padding-bottom: 2px;
+}
+.ts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.ts-header:hover { background: #1A1A1A; }
+.ts-title {
+  font-family: var(--vault-mono);
+  font-size: 10px;
+  color: #F5A623;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.ts-meta {
+  font-family: var(--vault-mono);
+  font-size: 10px;
+  color: #505058;
+}
+.ts-body {
+  padding: 0 12px 8px;
+}
+.ts-section-label {
+  font-family: var(--vault-mono);
+  font-size: 9px;
+  color: #505058;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 4px 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.ts-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 4px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.ts-row:hover { background: #1A1A1A; }
+.ts-check {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border: 2px solid #333;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #fff;
+  transition: all 0.15s;
+}
+.ts-check.done { border-color: #30D158; background: #30D158; }
+.ts-check.wf-done { border-color: #F5A623; background: #F5A623; }
+.ts-text {
+  font-size: 11px;
+  color: #ccc;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+}
+.ts-text.done { color: #404048; text-decoration: line-through; }
+.ts-streak {
+  font-family: var(--vault-mono);
+  font-size: 9px;
+  color: #505058;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.ts-empty {
+  font-size: 11px;
+  color: #383840;
+  font-style: italic;
+  padding: 4px 4px 8px;
+  line-height: 1.5;
+}
+.ts-divider { border: none; border-top: 1px solid #1E1E1E; margin: 4px 0; }
+
 .pb-loop-card {
   position: relative;
   width: 100%;
@@ -5448,6 +5536,9 @@ input, textarea, select {
 
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
+
+        <!-- TODAY STRIP -->
+        <div id="todayStrip"></div>
 
         <div class="vault-date-line" id="vaultDateLine"></div>
 
@@ -7812,6 +7903,7 @@ function renderDashboard() {
   updateProgressStats();
   renderVaultSidebar();
   if (typeof renderTodayView === 'function') renderTodayView();
+  if (typeof renderTodayStrip === 'function') renderTodayStrip();
 }
 
 function toggleTodayTask(key, el) {
