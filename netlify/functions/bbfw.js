@@ -77,7 +77,7 @@ Return this exact JSON structure:
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         max_tokens: 1800,
         temperature: 0.7,
         response_format: { type: 'json_object' },
