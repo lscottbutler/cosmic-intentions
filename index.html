@@ -8787,9 +8787,11 @@ function renderVaultSidebar() {
           </button>
         </div>`;
 
-      // Rescue acc-list before innerHTML wipes it
+      // Rescue acc-list + today strip before innerHTML wipes it
       const accList = document.getElementById('vizAccList');
       if (accList) { accList.style.display = 'none'; document.body.appendChild(accList); }
+      const todayStrip = document.getElementById('todayStrip');
+      if (todayStrip) document.body.appendChild(todayStrip);
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
@@ -8812,9 +8814,13 @@ function renderVaultSidebar() {
         <div id="goalNavSlot"></div>` : ''}`;
       }).join('');
 
-      // Move the acc-list into column B under the selected goal
+      // Move TODAY strip + acc-list into slot under the selected goal
       const slot = document.getElementById('goalNavSlot');
-      if (slot && accList) { slot.appendChild(accList); accList.style.display = ''; }
+      const todayEl = document.getElementById('todayStrip');
+      if (slot) {
+        if (todayEl) slot.appendChild(todayEl);
+        if (accList) { slot.appendChild(accList); accList.style.display = ''; }
+      }
     }
   }
 
