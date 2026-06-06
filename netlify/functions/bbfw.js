@@ -18,38 +18,57 @@ exports.handler = async (event) => {
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
   if (!goal)   return { statusCode: 400, headers, body: JSON.stringify({ error: 'goal is required' }) };
 
-  const prompt = `You are an elite achievement coach. A user has set this goal: "${goal}"
+  const prompt = `You are an elite achievement coach building a personalised roadmap for this goal: "${goal}"
 
-Analyse this goal through the Backbone Framework — return ONLY valid JSON, no markdown, no commentary.
+STRICT RULES — violations will be rejected:
+- NEVER suggest going outside, visiting physical locations, attending events, shows, or stores
+- ALWAYS recommend online research, digital tools, apps, and at-home actions
+- Be brutally specific to THIS exact goal — no generic self-help platitudes
+- Every action must be something the user can do right now from their desk
 
 The framework has two parts:
 
 PART 1 — THE 6 ETERNAL PROBLEMS
-Each problem is a dimension the user must solve to achieve this goal. Be specific to their exact goal. No generic advice.
+These are the six dimensions every human goal must solve. Write a specific insight about how THIS goal relates to each problem, plus one concrete online/at-home action to solve it.
+1. Vivid Vision — a defined, vivid picture of the end state
+2. Compelling Why — emotional fuel that survives adversity
+3. Credible Plan — a map plus the habit of navigating
+4. Feedback Loops — regular signal: am I on track?
+5. Environment Design — context shapes behavior more than willpower
+6. Identity Alignment — becoming the person who achieves this
 
 PART 2 — THE 9 COMPONENTS OF GOAL SUCCESS
-Each component is a specific action the user must take. One powerful quote from a famous achiever that applies.
+Each component is a failure point. Write one specific action for THIS goal, plus a quote from a famous high-achiever (Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, Drucker — recognisable names only).
+1. Clarity — a defined vivid picture of the end state
+2. Compelling Why — emotional fuel that survives adversity
+3. Belief — subconscious conviction it is achievable
+4. Plan — a map plus the habit of navigating
+5. Feedback Loops — regular signal: am I on track?
+6. Environment Design — context shapes behavior more than willpower
+7. Accountability — external commitment mechanisms
+8. Resilience — treating failure as data, not verdict
+9. Identity Alignment — becoming the person who achieves this
 
-Return this exact JSON:
+Return this exact JSON structure:
 {
   "eternal_problems": [
-    { "insight": "specific insight about THIS goal for Vivid Vision", "action": "one concrete action to solve it" },
-    { "insight": "specific insight about THIS goal for Compelling Why", "action": "one concrete action to solve it" },
-    { "insight": "specific insight about THIS goal for Credible Plan", "action": "one concrete action to solve it" },
-    { "insight": "specific insight about THIS goal for Feedback Loops", "action": "one concrete action to solve it" },
-    { "insight": "specific insight about THIS goal for Environment Design", "action": "one concrete action to solve it" },
-    { "insight": "specific insight about THIS goal for Identity Alignment", "action": "one concrete action to solve it" }
+    { "insight": "...", "action": "..." },
+    { "insight": "...", "action": "..." },
+    { "insight": "...", "action": "..." },
+    { "insight": "...", "action": "..." },
+    { "insight": "...", "action": "..." },
+    { "insight": "...", "action": "..." }
   ],
   "components": [
-    { "action": "specific action for Clarity applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Compelling Why applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Belief applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Plan applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Feedback Loops applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Environment Design applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Accountability applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Resilience applied to this goal", "quote": "Famous person quote" },
-    { "action": "specific action for Identity Alignment applied to this goal", "quote": "Famous person quote" }
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." },
+    { "action": "...", "quote": "..." }
   ]
 }`;
 
