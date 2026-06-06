@@ -61,7 +61,11 @@ Return this exact JSON:
         model: 'gpt-4o',
         max_tokens: 1800,
         temperature: 0.7,
-        messages: [{ role: 'user', content: prompt }]
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: 'You are an elite achievement coach. Always respond with valid JSON only.' },
+          { role: 'user', content: prompt }
+        ]
       })
     });
 
