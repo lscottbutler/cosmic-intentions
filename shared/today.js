@@ -203,10 +203,7 @@ function renderTodayView() {
       </div>`;
   }
 
-  el.innerHTML = header + sessionsSection + commitsSection;
-
-  // Weekly Focus renders into its own slot below
-  if (typeof renderWeeklyFocus === 'function') renderWeeklyFocus();
+  el.innerHTML = header + sessionsSection;
 }
 
 /* ── TODAY STRIP — compact sidebar widget ────────────────
