@@ -228,7 +228,7 @@ function toggleAcc(key) {
       const btn = document.createElement('button');
       btn.className   = 'acc-dur-btn';
       btn.textContent = d.label;
-      btn.onclick     = () => { closeAllAcc(); launchPlayer('meditation-timer', { duration: d.s }); };
+      btn.onclick     = () => launchVizInline('meditation-timer', { duration: d.s });
       document.getElementById('accTimerGrid').appendChild(btn);
     });
   }
@@ -273,12 +273,12 @@ function accMedType(type) {
 }
 
 /* ── VIZ INLINE IFRAME PLAYER ────────────────────────── */
-function launchVizInline(playerType) {
+function launchVizInline(playerType, params = {}) {
   LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
   closeAllAcc();
 
   const slot = document.getElementById('vizInlineSlot');
-  if (!slot) { launchPlayer(playerType); return; }
+  if (!slot) { launchPlayer(playerType, params); return; }
 
   // Close any open viz inline first
   closeVizInline();
@@ -288,14 +288,15 @@ function launchVizInline(playerType) {
   wrap.id = 'vizInlineWrap';
 
   const closeBtn = document.createElement('button');
-  closeBtn.className  = 'viz-inline-close';
+  closeBtn.className   = 'viz-inline-close';
   closeBtn.textContent = '✕ Close';
   closeBtn.onclick = closeVizInline;
 
   const frame = document.createElement('iframe');
   frame.className = 'viz-inline-frame';
   frame.id  = 'vizInlineFrame';
-  frame.src = `players/${playerType}.html`;
+  const qs  = new URLSearchParams(params).toString();
+  frame.src = `players/${playerType}.html${qs ? '?' + qs : ''}`;
   frame.allow = 'autoplay';
 
   wrap.appendChild(closeBtn);
