@@ -217,6 +217,17 @@ function closeTimerPicker(e) {
 /* ── PLAYER ACCORDIONS ───────────────────────────────── */
 let _accMedGuided = false;
 
+/* ── ZONE COLLAPSE ───────────────────────────────────── */
+const _zoneOpen = { practice: true, tools: false };
+
+function toggleZone(zone) {
+  _zoneOpen[zone] = !_zoneOpen[zone];
+  const body  = document.getElementById(zone + 'ZoneBody');
+  const arrow = document.getElementById(zone + 'ZoneArrow');
+  if (body)  body.classList.toggle('collapsed', !_zoneOpen[zone]);
+  if (arrow) arrow.classList.toggle('open', _zoneOpen[zone]);
+}
+
 function toggleAcc(key) {
   const panel  = document.getElementById('accPanel-' + key);
   const trig   = document.getElementById('accTrig-'  + key);
