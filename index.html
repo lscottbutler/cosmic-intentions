@@ -9003,6 +9003,8 @@ function selectVaultIntention(idx) {
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
     showVaultBuildSheet(selectedVaultIdx);
+    // Seed goal-specific content into players
+    if (typeof seedGoalPractice === 'function') seedGoalPractice(selectedVaultIdx);
   } else {
     showVaultWelcome();
   }

@@ -441,7 +441,19 @@ async function init() {
 }
 
 async function loadAffirmations(idx) {
-  // Try Supabase (user_content.core_blueprint.affirmations — 13 items)
+  // 1. Goal-specific affirmations from The Map (highest priority)
+  try {
+    const storedIdx = parseInt(localStorage.getItem('ci_goal_affirmations_idx'), 10);
+    if (storedIdx === idx) {
+      const raw = localStorage.getItem('ci_goal_affirmations');
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (list?.length) return list;
+      }
+    }
+  } catch(e) {}
+
+  // 2. Try Supabase (user_content.core_blueprint.affirmations — 13 items)
   try {
     if (currentUser && sb) {
       const raw      = localStorage.getItem(`ci_intentions_${currentUser.id}`) || localStorage.getItem('ci_intentions') || '[]';
