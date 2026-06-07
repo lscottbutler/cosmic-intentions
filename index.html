@@ -6293,6 +6293,113 @@ input, textarea, select {
         </div>
       </div>
 
+      <!-- ══════════════════════════════════════════════════
+           BEHAVIORAL OPERATING SYSTEM
+      ══════════════════════════════════════════════════ -->
+
+      <!-- HOW I'M WIRED -->
+      <div class="setup-section" style="border:1px solid #2a1a3a;border-radius:12px;background:#0d0a14;">
+        <div class="setup-section-title" style="color:#B48FE8;">⚡ How I'm Wired</div>
+        <p style="font-size:11px;color:#505058;line-height:1.6;margin-bottom:16px;">Your behavioral OS. The Map reads this before generating anything. Set it once — it personalises everything.</p>
+
+        <div class="field-group">
+          <label class="field-label" for="pb-hotstate-start">🌙 Hot State Window</label>
+          <span class="field-hint">Hours when temptation / low willpower typically hits (24hr). Danger zones alert during this window.</span>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+            <input class="field-input" type="number" id="pb-hotstate-start" min="0" max="23" placeholder="Start (e.g. 20)" style="flex:1;" />
+            <span style="color:#505058;font-size:12px;">to</span>
+            <input class="field-input" type="number" id="pb-hotstate-end" min="0" max="23" placeholder="End (e.g. 23)" style="flex:1;" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">🎯 Dominant Motivation Type</label>
+          <span class="field-hint">The Map uses this to frame danger zones and mindset language specifically for your brain.</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+            <button class="spirit-btn" data-pb="pb-motiv" data-val="loss" onclick="pbSetChoice('pb-motiv','loss',this)">⚠️ Loss Aversion</button>
+            <button class="spirit-btn" data-pb="pb-motiv" data-val="progress" onclick="pbSetChoice('pb-motiv','progress',this)">📈 Progress</button>
+            <button class="spirit-btn" data-pb="pb-motiv" data-val="identity" onclick="pbSetChoice('pb-motiv','identity',this)">🪞 Identity</button>
+            <button class="spirit-btn" data-pb="pb-motiv" data-val="competition" onclick="pbSetChoice('pb-motiv','competition',this)">🏆 Competition</button>
+          </div>
+          <input type="hidden" id="pb-motiv" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">⚡ Minimum Viable Dose</label>
+          <span class="field-hint">On your worst days — this is what you commit to. One tap fires a compressed version of everything.</span>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="spirit-btn" data-pb="pb-mvd" data-val="60" onclick="pbSetChoice('pb-mvd','60',this)">60 sec</button>
+            <button class="spirit-btn" data-pb="pb-mvd" data-val="120" onclick="pbSetChoice('pb-mvd','120',this)">2 min</button>
+            <button class="spirit-btn" data-pb="pb-mvd" data-val="300" onclick="pbSetChoice('pb-mvd','300',this)">5 min</button>
+          </div>
+          <input type="hidden" id="pb-mvd" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="pb-patterns">🔄 My Failure Patterns</label>
+          <span class="field-hint">Honest. The specific behaviours that derail you. The Map sharpens your Danger Zones from this.</span>
+          <textarea class="field-input tall" id="pb-patterns" placeholder="e.g. I browse shopping sites when bored. I get motivated then disappear for weeks. I compare myself and give up."></textarea>
+        </div>
+      </div>
+
+      <!-- MY IDENTITY ANCHOR -->
+      <div class="setup-section" style="border:1px solid #1a2a1a;border-radius:12px;background:#0a140a;">
+        <div class="setup-section-title" style="color:#4ADE80;">🪞 My Identity Anchor</div>
+        <p style="font-size:11px;color:#505058;line-height:1.6;margin-bottom:16px;">The last thing your mind hears after every session before returning to the world. Recency effect — this is what sticks.</p>
+
+        <div class="field-group">
+          <label class="field-label" for="pb-identity-anchor">Closing Identity Statement</label>
+          <span class="field-hint">First person. Present tense. One sentence. The person you already are becoming.</span>
+          <textarea class="field-input" id="pb-identity-anchor" rows="2" placeholder="e.g. I AM disciplined, focused, and worthy of every dream I pursue — and I prove it daily."></textarea>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="pb-identity-word">Your One Word</label>
+          <span class="field-hint">The single word that captures who you're becoming. Shown throughout the app.</span>
+          <input class="field-input" type="text" id="pb-identity-word" placeholder="e.g. SOVEREIGN" style="text-transform:uppercase;font-weight:800;letter-spacing:0.15em;font-size:18px;" maxlength="20" />
+        </div>
+      </div>
+
+      <!-- MY ULYSSES CONTRACTS -->
+      <div class="setup-section" style="border:1px solid #2a1a1a;border-radius:12px;background:#140a0a;">
+        <div class="setup-section-title" style="color:#F87171;">⚓ My Ulysses Contracts</div>
+        <p style="font-size:11px;color:#505058;line-height:1.6;margin-bottom:16px;">Standing pre-commitments written before temptation arrives. Odysseus tied himself to the mast before he could hear the sirens. These are your mast.</p>
+
+        <div id="ulyssesContractList" style="margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <textarea class="field-input" id="ulyssesNewContract" rows="2" style="flex:1;margin-bottom:0;"
+            placeholder="IF I feel the urge to browse before hitting my savings milestone, THEN I close it, transfer £50, and open Cosmic Intentions."></textarea>
+          <button onclick="addUlyssesContract()"
+            style="background:#3a1a1a;border:1px solid #F87171;border-radius:8px;color:#F87171;
+            font-weight:800;font-size:12px;padding:10px 14px;cursor:pointer;white-space:nowrap;flex-shrink:0;">+ Add</button>
+        </div>
+        <input type="hidden" id="pb-ulysses" />
+      </div>
+
+      <!-- MY SUNK COST LEDGER -->
+      <div class="setup-section" style="border:1px solid #1a1a2a;border-radius:12px;background:#0a0a14;">
+        <div class="setup-section-title" style="color:#60A0FF;">📊 My Sunk Cost Ledger</div>
+        <p style="font-size:11px;color:#505058;line-height:1.6;margin-bottom:16px;">You don't abandon an identity you've invested in building. Every session is evidence. The Concorde fallacy — working for you.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+          <div style="background:#0d0d1a;border:1px solid #1a1a3a;border-radius:8px;padding:14px;text-align:center;">
+            <div id="scVizPlays" style="font-size:26px;font-weight:800;color:#8080FF;font-family:var(--vault-mono);">0</div>
+            <div style="font-size:9px;color:#404058;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Viz Sessions</div>
+          </div>
+          <div style="background:#0d0d1a;border:1px solid #1a1a3a;border-radius:8px;padding:14px;text-align:center;">
+            <div id="scMedPlays" style="font-size:26px;font-weight:800;color:#40C0C0;font-family:var(--vault-mono);">0</div>
+            <div style="font-size:9px;color:#404058;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Med Sessions</div>
+          </div>
+          <div style="background:#0d0d1a;border:1px solid #1a1a3a;border-radius:8px;padding:14px;text-align:center;">
+            <div id="scStreak" style="font-size:26px;font-weight:800;color:#F5A623;font-family:var(--vault-mono);">0</div>
+            <div style="font-size:9px;color:#404058;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Day Streak</div>
+          </div>
+        </div>
+        <div style="background:#0d0d1a;border:1px solid #1a1a3a;border-radius:8px;padding:12px 16px;text-align:center;">
+          <div id="scTotalMinutes" style="font-size:36px;font-weight:800;color:#4ADE80;font-family:var(--vault-mono);">0</div>
+          <div style="font-size:10px;color:#404058;text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Total Minutes Invested In Becoming This Person</div>
+        </div>
+      </div>
+
       <div style="height: 20px;"></div>
     </div>
 
@@ -7450,8 +7557,15 @@ function buildContext(pb) {
   if (pb['bts-authors'])   parts.push(`Mentors: ${pb['bts-authors']}`);
   if (pb['bts-obstacles']) parts.push(`Obstacles: ${pb['bts-obstacles']}`);
   if (pb['bts-why'])       parts.push(`Deeper Why: ${pb['bts-why']}`);
-  if (pb['bts-context'])   parts.push(`Context: ${pb['bts-context']}`);
-  if (pb['spirituality'])  parts.push(`Spirituality: ${pb['spirituality']}`);
+  if (pb['bts-context'])        parts.push(`Context: ${pb['bts-context']}`);
+  if (pb['spirituality'])       parts.push(`Spirituality: ${pb['spirituality']}`);
+  // Behavioral OS
+  if (pb['pb-motiv'])           parts.push(`Dominant Motivation Type: ${pb['pb-motiv']}`);
+  if (pb['pb-patterns'])        parts.push(`Known Failure Patterns: ${pb['pb-patterns']}`);
+  if (pb['pb-identity-anchor']) parts.push(`Identity Anchor: ${pb['pb-identity-anchor']}`);
+  if (pb['pb-hotstate-start'])  parts.push(`Hot State Hours: ${pb['pb-hotstate-start']}:00–${pb['pb-hotstate-end'] || '??'}:00`);
+  if (pb['pb-fear'])            parts.push(`Biggest Fear: ${pb['pb-fear']}`);
+  if (pb['pb-limiting'])        parts.push(`Limiting Beliefs: ${pb['pb-limiting']}`);
   return parts.join('\n');
 }
 
@@ -7792,7 +7906,10 @@ const PB_FIELDS = [
   'pb-area-personalgrowth-now','pb-area-personalgrowth-target',
   'pb-area-funadventure-now','pb-area-funadventure-target',
   'bts-tone','bts-authors','bts-obstacles','bts-why','bts-context',
-  'openai_voice'
+  'openai_voice',
+  // Behavioral OS
+  'pb-hotstate-start','pb-hotstate-end','pb-motiv','pb-mvd',
+  'pb-patterns','pb-identity-anchor','pb-identity-word','pb-ulysses'
 ];
 
 function readFormToPB() {
@@ -7813,6 +7930,82 @@ function populateForm(pb) {
   });
   if (pb['spirituality']) setSpirituality(pb['spirituality'], false);
   if (pb['openai_voice']) localStorage.setItem('openai_voice', pb['openai_voice']);
+  // Restore choice buttons
+  ['pb-motiv','pb-mvd'].forEach(fieldId => {
+    const val = pb[fieldId];
+    if (val) {
+      document.querySelectorAll(`[data-pb="${fieldId}"]`).forEach(b => {
+        b.classList.toggle('active', b.dataset.val === val);
+      });
+    }
+  });
+  // Restore Ulysses contracts
+  const contracts = JSON.parse(pb['pb-ulysses'] || '[]');
+  renderUlyssesContracts(contracts);
+  // Populate sunk cost ledger
+  renderSunkCostLedger();
+}
+
+/* ── BEHAVIORAL OS HELPERS ───────────────────────────── */
+function pbSetChoice(fieldId, val, btn) {
+  // Toggle spirit-btn active state within same data-pb group
+  document.querySelectorAll(`[data-pb="${fieldId}"]`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const input = document.getElementById(fieldId);
+  if (input) input.value = val;
+}
+
+function addUlyssesContract() {
+  const ta = document.getElementById('ulyssesNewContract');
+  const text = ta?.value.trim();
+  if (!text) return;
+  const pb = LS.get('ci_pegboard') || {};
+  const contracts = JSON.parse(pb['pb-ulysses'] || '[]');
+  contracts.push({ text, ts: Date.now() });
+  pb['pb-ulysses'] = JSON.stringify(contracts);
+  LS.set('ci_pegboard', pb);
+  ta.value = '';
+  renderUlyssesContracts(contracts);
+}
+
+function renderUlyssesContracts(contracts) {
+  const list = document.getElementById('ulyssesContractList');
+  if (!list) return;
+  if (!contracts || contracts.length === 0) {
+    list.innerHTML = `<div style="font-size:11px;color:#383840;padding:8px 0;">No contracts yet. Add your first pre-commitment above.</div>`;
+    return;
+  }
+  list.innerHTML = contracts.map((c, i) => `
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:#1a0808;border:1px solid #3a1a1a;border-radius:8px;margin-bottom:8px;">
+      <span style="font-family:var(--vault-mono);font-size:8px;color:#F87171;font-weight:800;white-space:nowrap;margin-top:3px;">⚓ ${i+1}</span>
+      <span style="flex:1;font-size:11px;color:#C8C8D0;line-height:1.6;">${esc(c.text)}</span>
+      <button onclick="removeUlyssesContract(${i})"
+        style="background:none;border:none;color:#F87171;cursor:pointer;font-size:14px;flex-shrink:0;opacity:0.5;"
+        title="Remove">✕</button>
+    </div>`).join('');
+}
+
+function removeUlyssesContract(i) {
+  const pb = LS.get('ci_pegboard') || {};
+  const contracts = JSON.parse(pb['pb-ulysses'] || '[]');
+  contracts.splice(i, 1);
+  pb['pb-ulysses'] = JSON.stringify(contracts);
+  LS.set('ci_pegboard', pb);
+  renderUlyssesContracts(contracts);
+  document.getElementById('pb-ulysses').value = JSON.stringify(contracts);
+}
+
+function renderSunkCostLedger() {
+  const vizPlays = LS.get('ci_viz_plays')  || 0;
+  const medPlays = LS.get('ci_med_plays')  || 0;
+  const streak   = LS.get('ci_streak')     || 0;
+  // Estimate: viz avg 5min, med avg 10min
+  const totalMin = (vizPlays * 5) + (medPlays * 10);
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('scVizPlays',     vizPlays);
+  setEl('scMedPlays',     medPlays);
+  setEl('scStreak',       streak);
+  setEl('scTotalMinutes', totalMin);
 }
 
 function setSpirituality(val, save = true) {
