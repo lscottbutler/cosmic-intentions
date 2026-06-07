@@ -3766,6 +3766,13 @@ input, textarea, select {
   padding: 48px 32px 40px;
   max-width: 580px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+}
+.vault-stats-bottom {
+  margin-top: auto;
+  padding-top: 32px;
 }
 .vault-welcome-icon {
   font-size: 32px;
@@ -5871,16 +5878,16 @@ input, textarea, select {
 
           <!-- WEEKLY FOCUS -->
 
-          <div class="vault-stats-row" style="margin-top:16px;">
-            <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
-            <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
-            <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
-          </div>
-
-
-          <div class="vault-date-line" id="vaultDateLine"></div>
-
           <!-- DASHBOARD NAV GRID (build nav) — bottom of column -->
+
+          <div class="vault-stats-bottom">
+            <div class="vault-stats-row">
+              <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
+              <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
+              <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
+            </div>
+            <div class="vault-date-line" id="vaultDateLine"></div>
+          </div>
 
         </div>
 
