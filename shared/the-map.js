@@ -90,6 +90,54 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
 }
 
 /* ── RENDER: DANGER ZONES ────────────────────────────── */
+/* ── HOT STATE DETECTION ─────────────────────────────────
+   Returns true if current hour falls in the user's configured
+   danger window (pb-hotstate-start → pb-hotstate-end).
+─────────────────────────────────────────────────────────── */
+function _isHotState() {
+  const pb    = (typeof LS !== 'undefined' ? LS.get('ci_pegboard') : null) || {};
+  const start = parseInt(pb['pb-hotstate-start']);
+  const end   = parseInt(pb['pb-hotstate-end']);
+  if (isNaN(start) || isNaN(end)) return false;
+  const hour = new Date().getHours();
+  // Handle wrap-around (e.g. 22:00–02:00)
+  return start <= end ? (hour >= start && hour <= end)
+                      : (hour >= start || hour <= end);
+}
+
+function _hotStateBanner() {
+  if (!_isHotState()) return '';
+  const pb   = (typeof LS !== 'undefined' ? LS.get('ci_pegboard') : null) || {};
+  const start = pb['pb-hotstate-start'];
+  const end   = pb['pb-hotstate-end'];
+  return `
+    <div style="background:#1a0505;border:1px solid #8B0000;border-radius:10px;
+      padding:14px 16px;margin:0 14px 10px;display:flex;gap:12px;align-items:flex-start;">
+      <span style="font-size:20px;flex-shrink:0;">🌙</span>
+      <div style="flex:1;">
+        <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;
+          color:#F87171;letter-spacing:1.5px;margin-bottom:4px;">HOT STATE WINDOW ACTIVE — ${start}:00–${end}:00</div>
+        <div style="font-size:11px;color:#C8C8D0;line-height:1.5;margin-bottom:10px;">
+          This is your highest-risk window. Willpower is depleted. Your danger zones are live. You pre-wired a plan for exactly this moment.
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="launchVizInline('viz-quick',{},'taInlineSlot')"
+            style="flex:1;background:#1a1a2e;border:1px solid #3030a0;border-radius:7px;
+            padding:8px 4px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#8080FF;letter-spacing:0.8px;">⚡ AFFIRMATIONS</button>
+          <button onclick="launchGratitudeInline()"
+            style="flex:1;background:#1a0f1a;border:1px solid #600060;border-radius:7px;
+            padding:8px 4px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#D080D0;letter-spacing:0.8px;">🙏 GRATITUDE</button>
+          <button onclick="launchVizInline('meditation-timer',{duration:300},'taInlineSlot')"
+            style="flex:1;background:#0a1a1a;border:1px solid #006060;border-radius:7px;
+            padding:8px 4px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#40C0C0;letter-spacing:0.8px;">🧘 MEDITATE</button>
+        </div>
+      </div>
+    </div>`;
+}
+
 function _toggleDangerZone(id) {
   const body  = document.getElementById('dz-body-' + id);
   const arrow = document.getElementById('dz-arrow-' + id);
@@ -172,6 +220,7 @@ function _renderDangerZones(zones, idx) {
         <span style="font-family:var(--vault-mono);font-size:10px;color:#F87171;font-weight:800;letter-spacing:1.5px;">DANGER ZONES</span>
         <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">IF/THEN TRIGGERS — KNOW THESE COLD</div>
       </div>
+      ${_hotStateBanner()}
       <div style="padding:10px 14px;">${rows}</div>
     </div>`;
 }

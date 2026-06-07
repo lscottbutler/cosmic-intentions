@@ -328,6 +328,7 @@ function launchVizInline(playerType, params = {}, slotId = 'vizInlineSlot') {
 function closeVizInline() {
   const wrap = document.getElementById('vizInlineWrap');
   if (wrap) wrap.remove();
+  showIdentityFlash();
 }
 
 /* ── GRATITUDE INLINE PLAYER ─────────────────────────── */
@@ -458,6 +459,45 @@ function closeGratitudeInline() {
     player.classList.remove('open');
     document.body.appendChild(player); // park back on body
   }
+  showIdentityFlash();
+}
+
+/* ── IDENTITY FLASH ──────────────────────────────────────
+   Fires after every session close. Full-screen black overlay
+   with the user's Identity Anchor from the Pegboard.
+   Recency effect — last thing the mind sees before the world.
+─────────────────────────────────────────────────────────── */
+function showIdentityFlash() {
+  const pb     = (typeof LS !== 'undefined' ? LS.get('ci_pegboard') : null) || {};
+  const anchor = (pb['pb-identity-anchor'] || '').trim();
+  const word   = (pb['pb-identity-word']   || '').trim().toUpperCase();
+  if (!anchor && !word) return; // nothing set — skip
+
+  const overlay = document.createElement('div');
+  overlay.id = 'identityFlashOverlay';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;background:#000;z-index:99999',
+    'display:flex;flex-direction:column;align-items:center;justify-content:center',
+    'padding:48px 32px;text-align:center',
+    'opacity:1;transition:opacity 1.2s ease',
+    'pointer-events:none'
+  ].join(';');
+
+  overlay.innerHTML = `
+    <div style="font-family:'Roboto Condensed',sans-serif;font-size:10px;color:#303038;
+      letter-spacing:4px;text-transform:uppercase;margin-bottom:28px;">YOU ARE</div>
+    ${anchor ? `<div style="font-size:clamp(16px,3.5vw,26px);font-weight:800;color:#fff;
+      line-height:1.5;max-width:640px;font-family:'Roboto Condensed',sans-serif;">${anchor}</div>` : ''}
+    ${word ? `<div style="font-family:'Roboto Condensed',sans-serif;font-size:11px;
+      color:#F5A623;letter-spacing:6px;text-transform:uppercase;margin-top:32px;
+      font-weight:800;">${word}</div>` : ''}
+    <div style="width:40px;height:1px;background:#F5A623;margin:24px auto 0;opacity:0.4;"></div>
+  `;
+
+  document.body.appendChild(overlay);
+  // Hold for 3.5s then fade out
+  setTimeout(() => { overlay.style.opacity = '0'; }, 3500);
+  setTimeout(() => { overlay.remove(); }, 4800);
 }
 
 // Listen for inline player close signal from iframe
