@@ -246,6 +246,15 @@ function toggleAcc(key) {
   if (!isOpen) { panel.classList.add('open'); trig.classList.add('open'); }
 }
 
+function toggleTaMedGrid() {
+  const grid  = document.getElementById('taMedGrid');
+  const arrow = document.getElementById('taMedArrow');
+  if (!grid) return;
+  const open = grid.style.display !== 'none';
+  grid.style.display = open ? 'none' : 'flex';
+  if (arrow) arrow.classList.toggle('open', !open);
+}
+
 function closeAllAcc() {
   document.querySelectorAll('.acc-panel').forEach(p  => { p.classList.remove('open'); p.style.maxHeight = ''; });
   document.querySelectorAll('.acc-trigger').forEach(t => t.classList.remove('open'));
@@ -284,11 +293,11 @@ function accMedType(type) {
 }
 
 /* ── VIZ INLINE IFRAME PLAYER ────────────────────────── */
-function launchVizInline(playerType, params = {}) {
+function launchVizInline(playerType, params = {}, slotId = 'vizInlineSlot') {
   LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
   closeAllAcc();
 
-  const slot = document.getElementById('vizInlineSlot');
+  const slot = document.getElementById(slotId) || document.getElementById('vizInlineSlot');
   if (!slot) { launchPlayer(playerType, params); return; }
 
   // Close any open viz inline first
