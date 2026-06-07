@@ -90,30 +90,54 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
 }
 
 /* ── RENDER: DANGER ZONES ────────────────────────────── */
+function _toggleDangerZone(id) {
+  const body  = document.getElementById('dz-body-' + id);
+  const arrow = document.getElementById('dz-arrow-' + id);
+  if (!body) return;
+  const open = body.style.display === 'none';
+  body.style.display  = open ? 'block' : 'none';
+  if (arrow) arrow.style.transform = open ? 'rotate(90deg)' : '';
+}
+
 function _renderDangerZones(zones, idx) {
   if (!zones || zones.length === 0) return '';
-  const rows = zones.map((z, i) => `
-    <div style="margin:0 0 12px;background:#1a0a0a;border:1px solid #3a1a1a;border-radius:10px;overflow:hidden;">
-      <div style="padding:10px 14px 8px;border-bottom:1px solid #2a1010;">
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#F87171;letter-spacing:1.5px;">⚠ DANGER ZONE ${i+1}</span>
-        <span style="font-size:12px;font-weight:700;color:#fff;margin-left:8px;">${esc(z.title)}</span>
+
+  const rows = zones.map((z, i) => {
+    const id = `dz-${idx}-${i}`;
+    return `
+    <div style="margin:0 0 6px;background:#1a0a0a;border:1px solid #3a1a1a;border-radius:10px;overflow:hidden;">
+
+      <!-- TRIGGER HEADER -->
+      <div onclick="_toggleDangerZone('${id}')"
+        style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;">
+        <span style="font-family:var(--vault-mono);font-size:8px;font-weight:800;color:#F87171;
+          letter-spacing:1px;white-space:nowrap;">⚠ ${i+1}</span>
+        <span style="flex:1;font-size:13px;font-weight:700;color:#fff;">${esc(z.title)}</span>
+        <span id="dz-arrow-${id}"
+          style="font-size:9px;color:#F87171;transition:transform 0.2s;flex-shrink:0;">▶</span>
       </div>
-      <div style="padding:10px 14px;">
-        <div style="font-size:11px;color:#C8C8D0;line-height:1.6;margin-bottom:8px;">${esc(z.pitfall)}</div>
+
+      <!-- COLLAPSIBLE BODY -->
+      <div id="dz-body-${id}" style="display:none;border-top:1px solid #2a1010;padding:12px 14px;">
+        <div style="font-size:11px;color:#C8C8D0;line-height:1.6;margin-bottom:10px;">${esc(z.pitfall)}</div>
+
         <div style="font-family:var(--vault-mono);font-size:8px;color:#F87171;letter-spacing:1px;margin-bottom:4px;">👁 WATCH FOR</div>
-        <div style="font-size:11px;color:#aaa;line-height:1.5;margin-bottom:10px;font-style:italic;">${esc(z.warning)}</div>
-        <div style="background:#0f1a0f;border:1px solid #1a3a1a;border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+        <div style="font-size:11px;color:#aaa;line-height:1.5;margin-bottom:12px;font-style:italic;">${esc(z.warning)}</div>
+
+        <div style="background:#0f1a0f;border:1px solid #1a3a1a;border-radius:8px;padding:10px 12px;margin-bottom:10px;">
           <div style="font-family:var(--vault-mono);font-size:8px;color:#F5A623;letter-spacing:1px;margin-bottom:6px;">⚡ IF / THEN PLAN</div>
-          <div style="font-size:11px;color:#F5A623;line-height:1.6;margin-bottom:4px;">${esc(z.ifTrigger)}</div>
+          <div style="font-size:11px;color:#F5A623;line-height:1.6;margin-bottom:6px;">${esc(z.ifTrigger)}</div>
           <div style="font-size:11px;color:#4ADE80;line-height:1.6;">${esc(z.thenAction)}</div>
         </div>
+
         ${z.journalText ? `
         <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#0a0a1a;border-radius:6px;">
           <span style="font-family:var(--vault-mono);font-size:8px;font-weight:800;color:#60A0FF;white-space:nowrap;margin-top:2px;">📓 J${z.j}</span>
           <span style="font-size:11px;color:#7090C0;line-height:1.5;">${esc(z.journalText)}</span>
         </div>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   return `
     <div style="margin-bottom:2px;">
@@ -122,7 +146,7 @@ function _renderDangerZones(zones, idx) {
         <span style="font-family:var(--vault-mono);font-size:10px;color:#F87171;font-weight:800;letter-spacing:1.5px;">DANGER ZONES</span>
         <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">IF/THEN TRIGGERS — KNOW THESE COLD</div>
       </div>
-      <div style="padding:12px 16px;">${rows}</div>
+      <div style="padding:10px 14px;">${rows}</div>
     </div>`;
 }
 
