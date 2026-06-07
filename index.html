@@ -8181,7 +8181,8 @@ async function syncIntentionsToSupabase() {
     achievers:   intention.achievers   || null,
     target_date: intention.targetDate  || null,
     start_date:  intention.startDate   || null,
-    the_map:     intention.theMap     || null,
+    the_map:     intention.theMap      || null,
+    bbfw:        intention.bbfw        || null,
     updated_at:  new Date().toISOString()
   }));
   const { error } = await sb.from('intentions').upsert(rows, { onConflict: 'id' });
@@ -8210,10 +8211,16 @@ async function syncIntentionsFromSupabase() {
           imageUrl:     prev.imageUrl     || null,
           imageOptions: prev.imageOptions || (prev.imageUrl ? [prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
-          theMap:       row.the_map       || prev.theMap || null,
+          theMap:       row.the_map        || prev.theMap  || null,
+          bbfw:         row.bbfw           || prev.bbfw   || null,
         };
       });
       LS.set(`ci_intentions_${currentUser.id}`, intentions);
+      // Re-render build sheet if a goal is open — Map/Backbone now loaded from Supabase
+      if (selectedVaultIdx !== null && intentions[selectedVaultIdx]) {
+        showVaultBuildSheet(selectedVaultIdx);
+      }
+      renderVaultSidebar();
     }
   } catch(e) {
     console.warn('syncIntentionsFromSupabase failed:', e);
