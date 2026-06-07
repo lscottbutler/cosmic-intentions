@@ -9430,12 +9430,13 @@ function buildBuildSheet(intent, idx) {
       ${buildBBFWPanel(intent, idx)}
     </div>
 
-    <div class="bs-delete-row">
-      <div class="bs-nav-row">
-        ${prevIdx !== null ? `<button class="bs-nav-btn" onclick="selectVaultIntention(${prevIdx})">← Prev</button>` : ''}
-        ${nextIdx !== null ? `<button class="bs-nav-btn" onclick="selectVaultIntention(${nextIdx})">Next →</button>` : ''}
-      </div>
-      <button class="bs-btn-delete" onclick="deleteIntention(${idx})">🗑 Remove</button>
+    <div style="text-align:right;padding:8px 0 4px;">
+      <button onclick="deleteIntention(${idx})"
+        style="background:none;border:none;color:#383838;font-size:11px;cursor:pointer;
+        letter-spacing:0.05em;padding:4px 8px;transition:color 0.15s;"
+        onmouseover="this.style.color='#F87171'" onmouseout="this.style.color='#383838'">
+        🗑 remove intention
+      </button>
     </div>
   `;
 }
