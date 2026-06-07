@@ -131,10 +131,36 @@ function _renderDangerZones(zones, idx) {
         </div>
 
         ${z.journalText ? `
-        <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#0a0a1a;border-radius:6px;">
+        <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#0a0a1a;border-radius:6px;margin-bottom:10px;">
           <span style="font-family:var(--vault-mono);font-size:8px;font-weight:800;color:#60A0FF;white-space:nowrap;margin-top:2px;">📓 J${z.j}</span>
           <span style="font-size:11px;color:#7090C0;line-height:1.5;">${esc(z.journalText)}</span>
         </div>` : ''}
+
+        <!-- REAFFIRM BAR -->
+        <div style="display:flex;gap:6px;border-top:1px solid #2a1010;padding-top:10px;margin-top:2px;">
+          <button onclick="launchVizInline('viz-quick',{},'taInlineSlot')"
+            style="flex:1;background:#1a1a2e;border:1px solid #3030a0;border-radius:8px;
+            padding:9px 6px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#8080FF;letter-spacing:0.8px;transition:background 0.15s;"
+            onmouseover="this.style.background='#252550'" onmouseout="this.style.background='#1a1a2e'">
+            ⚡ AFFIRMATIONS
+          </button>
+          <button onclick="launchGratitudeInline()"
+            style="flex:1;background:#1a0f1a;border:1px solid #600060;border-radius:8px;
+            padding:9px 6px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#D080D0;letter-spacing:0.8px;transition:background 0.15s;"
+            onmouseover="this.style.background='#2a1a2a'" onmouseout="this.style.background='#1a0f1a'">
+            🙏 GRATITUDE
+          </button>
+          <button onclick="launchVizInline('meditation-timer',{duration:300},'taInlineSlot')"
+            style="flex:1;background:#0a1a1a;border:1px solid #006060;border-radius:8px;
+            padding:9px 6px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;
+            font-weight:800;color:#40C0C0;letter-spacing:0.8px;transition:background 0.15s;"
+            onmouseover="this.style.background='#1a2a2a'" onmouseout="this.style.background='#0a1a1a'">
+            🧘 MEDITATE
+          </button>
+        </div>
+
       </div>
     </div>`;
   }).join('');
