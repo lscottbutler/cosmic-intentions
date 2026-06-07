@@ -5805,6 +5805,16 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- STATS + DATE — top of column A -->
+        <div style="margin-bottom:8px;">
+          <div class="vault-stats-row">
+            <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
+            <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
+            <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
+          </div>
+          <div class="vault-date-line" id="vaultDateLine"></div>
+        </div>
+
         <!-- Intention List -->
         <div class="vault-list" id="vaultList"></div>
 
@@ -5832,22 +5842,7 @@ input, textarea, select {
 
 
         <!-- WELCOME STATE -->
-        <div id="vaultWelcome" class="vault-welcome">
-
-          <!-- WEEKLY FOCUS -->
-
-          <!-- DASHBOARD NAV GRID (build nav) — bottom of column -->
-
-          <div class="vault-stats-bottom">
-            <div class="vault-stats-row">
-              <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
-              <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
-              <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
-            </div>
-            <div class="vault-date-line" id="vaultDateLine"></div>
-          </div>
-
-        </div>
+        <div id="vaultWelcome" class="vault-welcome"></div>
 
         <!-- ADD INTENTION FORM -->
         <div class="vault-add-form hidden" id="addIntentionForm">
