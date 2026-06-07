@@ -8985,7 +8985,9 @@ function renderVaultSidebar() {
   const _remaining = _daysInYear - _dayOfYear;
   setEl('vaultDateLine', `Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
   const _dateLine = document.getElementById('vaultDateLine');
-  if (_dateLine) _dateLine.insertAdjacentHTML('afterend', getDailyLine('sidebar'));
+  if (_dateLine && !document.getElementById('dailySidebarQuote')) {
+    _dateLine.insertAdjacentHTML('afterend', getDailyLine('sidebar'));
+  }
 
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
@@ -9076,14 +9078,19 @@ function renderVaultSidebar() {
         </div>`;
 
       // Rescue acc-list + today strip + practice zone before innerHTML wipes it
+      // Only rescue if a goal is selected — otherwise leave them in place (they're hidden anyway)
+      const _goalSelected = selectedVaultIdx !== null && filtered.some(i => i._idx === selectedVaultIdx);
       const accList = document.getElementById('vizAccList');
-      if (accList) { accList.style.display = 'none'; document.body.appendChild(accList); }
-      const todayStrip = document.getElementById('todayStrip');
-      if (todayStrip) document.body.appendChild(todayStrip);
-      const practiceHd   = document.getElementById('practiceZoneHd');
-      const practiceBody = document.getElementById('practiceZoneBody');
-      if (practiceHd)   document.body.appendChild(practiceHd);
-      if (practiceBody) document.body.appendChild(practiceBody);
+      if (_goalSelected && accList) {
+        accList.style.display = 'none';
+        document.body.appendChild(accList);
+        const _ts = document.getElementById('todayStrip');
+        const _ph = document.getElementById('practiceZoneHd');
+        const _pb = document.getElementById('practiceZoneBody');
+        if (_ts) document.body.appendChild(_ts);
+        if (_ph) document.body.appendChild(_ph);
+        if (_pb) document.body.appendChild(_pb);
+      }
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
