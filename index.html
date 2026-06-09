@@ -3758,7 +3758,13 @@ input, textarea, select {
   min-width: 0;
   background: #252525;
   overflow-y: auto;
-  padding: 16px 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+#actionPanel {
+  order: -1;
+  flex-shrink: 0;
 }
 
 /* Welcome state */
@@ -5880,8 +5886,8 @@ input, textarea, select {
         <!-- BUILD SHEET -->
         <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
 
-        <!-- ACTION PANEL — top of column B, shown when intention selected -->
-        <div id="actionPanel" class="hidden" style="padding:16px 20px;">
+        <!-- ACTION PANEL — sticky top of column B, shown when intention selected -->
+        <div id="actionPanel" class="hidden" style="padding:12px 16px 8px;position:sticky;top:var(--hdr);z-index:10;background:#252525;border-bottom:1px solid #333;">
 
           <!-- TODAY STRIP -->
           <div id="todayStrip"></div>
@@ -10243,12 +10249,6 @@ function startEntSlideshow() {
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
 
-// Move actionPanel to top of Column B (vault-main)
-document.addEventListener('DOMContentLoaded', () => {
-  const ap   = document.getElementById('actionPanel');
-  const main = document.getElementById('vaultMain');
-  if (ap && main) main.prepend(ap);
-});
 </script>
 
 </body>
