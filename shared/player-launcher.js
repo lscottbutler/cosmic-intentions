@@ -246,6 +246,16 @@ function toggleAcc(key) {
   if (!isOpen) { panel.classList.add('open'); trig.classList.add('open'); }
 }
 
+// Collapsible Column B section (Cosmic Library / My Roadmap triangle dropdowns)
+function toggleColBSection(key) {
+  const body = document.getElementById(key + '-body');
+  const arr  = document.getElementById(key + '-arr');
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  if (arr) arr.classList.toggle('open', !isOpen);
+}
+
 function toggleTaMedGrid() {
   const grid  = document.getElementById('taMedGrid');
   const arrow = document.getElementById('taMedArrow');

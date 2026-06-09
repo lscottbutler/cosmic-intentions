@@ -5834,6 +5834,9 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- TODAY — top of column A -->
+        <div id="todayStrip" style="margin-bottom:8px;border-radius:8px;overflow:hidden;"></div>
+
         <!-- STATS + DATE — top of column A -->
         <div style="margin-bottom:8px;">
           <div class="vault-stats-row">
@@ -5912,18 +5915,19 @@ input, textarea, select {
         <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
 
         <!-- ACTION PANEL — sticky top of column B, shown when intention selected -->
-        <div id="actionPanel" class="hidden" style="padding:12px 16px 8px;position:sticky;top:var(--hdr);z-index:10;background:#252525;border-bottom:1px solid #333;">
+        <div id="actionPanel" class="hidden" style="padding:0;background:#252525;">
 
-          <!-- TODAY STRIP -->
-          <div id="todayStrip"></div>
-
-          <!-- BANNER A -->
-          <div class="col-b-banner col-b-banner-a">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#4ADE80" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            COSMIC LIBRARY
+          <!-- BANNER A — COSMIC LIBRARY triangle dropdown -->
+          <div class="ts-header" onclick="toggleColBSection('cosmicLibrary')" style="border-left:3px solid #4ADE80;">
+            <span class="acc-svg-circle" style="background:#0d1a0d;width:28px;height:28px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#4ADE80" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <span class="ts-title" style="color:#4ADE80;">Cosmic Library</span>
+            <span class="ts-arrow open" id="cosmicLibrary-arr">▶</span>
           </div>
 
           <!-- ALL PLAYER ACCORDIONS -->
+          <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
           <div class="acc-list" id="vizAccList">
 
             <!-- ⚡ TAKE ACTION -->
@@ -6074,6 +6078,7 @@ input, textarea, select {
             </div>
 
           </div><!-- end acc-list -->
+          </div><!-- end cosmicLibrary-body -->
         </div><!-- end actionPanel -->
 
         <!-- Alchemy Modal -->
@@ -9449,11 +9454,16 @@ function buildBuildSheet(intent, idx) {
   const nextIdx    = idx < intentions.length - 1 ? idx + 1 : null;
 
   return `
-    <div class="col-b-banner col-b-banner-b">
-      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#818CF8" stroke-width="2.5"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
-      MY ROADMAP
+    <!-- MY ROADMAP triangle dropdown -->
+    <div class="ts-header" onclick="toggleColBSection('myRoadmap')" style="border-left:3px solid #818CF8;">
+      <span class="acc-svg-circle" style="background:#0d0d1a;width:28px;height:28px;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#818CF8" stroke-width="2.2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+      </span>
+      <span class="ts-title" style="color:#818CF8;">My Roadmap</span>
+      <span class="ts-arrow open" id="myRoadmap-arr">▶</span>
     </div>
 
+    <div id="myRoadmap-body" style="padding:12px 16px;">
     <div class="bs-header" style="background: #252525; border: 4px solid ${color}; border-radius: 10px; position: relative;">
       <div class="bs-title-col">
         <div class="bs-intention-title">${esc(intent.title)}</div>
@@ -9482,6 +9492,7 @@ function buildBuildSheet(intent, idx) {
         🗑 remove intention
       </button>
     </div>
+    </div><!-- end myRoadmap-body -->
   `;
 }
 
@@ -10288,7 +10299,12 @@ document.addEventListener('DOMContentLoaded', startEntSlideshow);
 document.addEventListener('DOMContentLoaded', () => {
   const ap   = document.getElementById('actionPanel');
   const main = document.getElementById('vaultMain');
-  if (ap && main) main.insertBefore(ap, main.firstElementChild);
+  const date = document.getElementById('vaultDateLine');
+  // Cosmic Library (actionPanel) sits right under the date bar
+  if (ap && main) {
+    if (date && date.parentElement === main) date.insertAdjacentElement('afterend', ap);
+    else main.insertBefore(ap, main.firstElementChild);
+  }
 });
 
 </script>
