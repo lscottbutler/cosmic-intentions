@@ -42,7 +42,7 @@ async function toggleMapItem(idx, section, itemIdx, checked) {
 }
 
 /* ── RENDER: STANDARD CHECKLIST SECTION ─────────────── */
-function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx) {
+function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx, collapsed) {
   if (!items || items.length === 0) return '';
   const checks = (intentions[idx]?.theMap?.checks) || {};
   const done  = items.filter((_, i) => checks[`${sectionKey}-${i}`]).length;
@@ -76,7 +76,7 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
       <div onclick="toggleColBSection('${secKey}')"
         style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
         <div style="display:flex;align-items:flex-start;gap:8px;min-width:0;">
-          <span class="ts-arrow open" id="${secKey}-arr" style="color:${color};font-size:9px;margin-top:4px;flex-shrink:0;">▶</span>
+          <span class="ts-arrow${collapsed?'':' open'}" id="${secKey}-arr" style="color:${color};font-size:9px;margin-top:4px;flex-shrink:0;">▶</span>
           <div>
             <span style="font-size:15px;margin-right:8px;">${icon}</span>
             <span style="font-family:var(--vault-mono);font-size:10px;color:${color};font-weight:800;letter-spacing:1.5px;">${title}</span>
@@ -90,7 +90,7 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
           </div>
         </div>
       </div>
-      <div id="${secKey}-body" style="padding:0 16px;">${rows}</div>
+      <div id="${secKey}-body" style="padding:0 16px;${collapsed?'display:none;':''}">${rows}</div>
     </div>`;
 }
 
@@ -231,9 +231,9 @@ function _renderDangerZones(zones, idx) {
         </span>
         <span class="ts-title" style="color:#F87171;font-size:13px;">Danger Zones</span>
         <span class="ts-meta">${zones.length} trigger${zones.length !== 1 ? 's' : ''}</span>
-        <span class="ts-arrow open" id="${dzId}-arr">▶</span>
+        <span class="ts-arrow" id="${dzId}-arr">▶</span>
       </div>
-      <div id="${dzId}">
+      <div id="${dzId}" style="display:none;">
         ${_hotStateBanner()}
         <div style="padding:10px 14px;">${rows}</div>
       </div>
@@ -262,12 +262,15 @@ function _renderMindset(mindset, idx) {
 
   return `
     <div style="margin-bottom:2px;">
-      <div style="padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;">
-        <span style="font-size:15px;margin-right:8px;">🧠</span>
-        <span style="font-family:var(--vault-mono);font-size:10px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;">MINDSET AUDIT</span>
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">ATTITUDES · BELIEFS · RECITATIONS · PRAYER</div>
+      <div onclick="toggleColBSection('mindset-${idx}')" style="display:flex;align-items:flex-start;gap:8px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
+        <span class="ts-arrow" id="mindset-${idx}-arr" style="color:#8B5CF6;font-size:9px;margin-top:4px;flex-shrink:0;">▶</span>
+        <div>
+          <span style="font-size:15px;margin-right:8px;">🧠</span>
+          <span style="font-family:var(--vault-mono);font-size:10px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;">MINDSET AUDIT</span>
+          <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">ATTITUDES · BELIEFS · RECITATIONS · PRAYER</div>
+        </div>
       </div>
-      <div style="padding:12px 16px;">
+      <div id="mindset-${idx}-body" style="padding:12px 16px;display:none;">
 
         <div style="font-family:var(--vault-mono);font-size:8px;color:#F87171;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">WHERE YOU ARE NOW</div>
         <div style="margin-bottom:14px;">${attitudes}</div>
@@ -275,8 +278,11 @@ function _renderMindset(mindset, idx) {
         <div style="font-family:var(--vault-mono);font-size:8px;color:#4ADE80;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">INSTALL THESE INSTEAD</div>
         <div style="margin-bottom:14px;">${installs}</div>
 
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">📿 DAILY RECITATIONS</div>
-        <div style="margin-bottom:14px;">
+        <div onclick="toggleColBSection('recsec-${idx}')" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;margin-bottom:8px;">
+          <span class="ts-arrow" id="recsec-${idx}-arr" style="color:#8B5CF6;font-size:9px;flex-shrink:0;">▶</span>
+          <span style="font-family:var(--vault-mono);font-size:8px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;">📿 DAILY RECITATIONS</span>
+        </div>
+        <div id="recsec-${idx}-body" style="margin-bottom:14px;display:none;">
           <div id="${rid}-wrap" data-recitations="${recitationsAttr}"
             style="background:#0a0a14;border:1px solid #2a1a4a;border-radius:12px;padding:28px 20px;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;">
             <div id="${rid}-text" style="font-size:15px;color:#C4B5FD;line-height:1.7;font-style:italic;transition:opacity 1s ease;opacity:1;">&ldquo;<span id="${rid}-inner"></span>&rdquo;</div>
@@ -359,8 +365,8 @@ function buildBSTheMapPanel(intent, idx) {
       ${_renderCheckSection('THIS WEEK', '#F5A623', '⚡', map.thisWeek, 'thisWeek', 'WEEKLY COMMITMENTS — YES OR NO BY FRIDAY', idx)}
       ${_renderDangerZones(map.dangerZones, idx)}
       ${_renderMindset(map.mindset, idx)}
-      ${_renderCheckSection('THIS MONTH', '#60A0FF', '📅', map.thisMonth, 'thisMonth', 'MILESTONES — RESETS MONTHLY', idx)}
-      ${_renderCheckSection('THE TERRAIN', '#4ADE80', '🗺', map.terrain, 'terrain', 'MASTER THESE FOREVER', idx)}
+      ${_renderCheckSection('THIS MONTH', '#60A0FF', '📅', map.thisMonth, 'thisMonth', 'MILESTONES — RESETS MONTHLY', idx, true)}
+      ${_renderCheckSection('THE TERRAIN', '#4ADE80', '🗺', map.terrain, 'terrain', 'MASTER THESE FOREVER', idx, true)}
       ${_renderPracticeFeed(map.practice, idx)}
 
       <div style="padding:12px 16px;border-top:1px solid #1a1a1a;">
