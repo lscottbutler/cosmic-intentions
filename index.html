@@ -3309,9 +3309,13 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  overflow-y: auto;
   flex-shrink: 0;
   padding: 8px;
-  align-self: flex-start;
+  align-self: stretch;
+  position: sticky;
+  top: var(--hdr);
+  max-height: calc(100vh - var(--hdr));
 }
 .vault-sidebar::-webkit-scrollbar { width: 3px; }
 .vault-sidebar::-webkit-scrollbar-track { background: transparent; }
@@ -5881,8 +5885,8 @@ input, textarea, select {
         <!-- BUILD SHEET -->
         <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
 
-        <!-- ACTION PANEL — shown in column B when a goal is selected -->
-        <div id="actionPanel" class="hidden" style="padding:16px 20px;">
+        <!-- ACTION PANEL — lives in column A sidebar, moved there on init -->
+        <div id="actionPanel" class="hidden" style="padding:8px 4px 0;">
 
           <!-- TODAY STRIP -->
           <div id="todayStrip"></div>
@@ -10243,6 +10247,13 @@ function startEntSlideshow() {
 }
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
+
+// Move actionPanel into Column A sidebar, below the identity flash card
+document.addEventListener('DOMContentLoaded', () => {
+  const ap      = document.getElementById('actionPanel');
+  const pbCard  = document.querySelector('#vaultSidebar .pb-loop-card');
+  if (ap && pbCard) pbCard.insertAdjacentElement('afterend', ap);
+});
 </script>
 
 </body>
