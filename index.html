@@ -5363,6 +5363,25 @@ input, textarea, select {
   transition: transform 0.2s;
 }
 .ts-arrow.open { transform: rotate(90deg); }
+.ts-move { display: flex; gap: 3px; flex-shrink: 0; margin-right: 6px; }
+.ts-move-btn {
+  background: #1f1f1f;
+  border: 1px solid #444;
+  color: #aaa;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 9px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.ts-move-btn:hover { background: #3a3a3a; color: #fff; }
+.ts-move-btn:disabled { opacity: 0.3; cursor: default; }
 .ts-body {
   padding: 0 12px 8px;
   background: #1E1E1E;
@@ -5927,6 +5946,10 @@ input, textarea, select {
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#4ADE80" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </span>
             <span class="ts-title" style="color:#4ADE80;">Cosmic Library</span>
+            <span class="ts-move" onclick="event.stopPropagation()">
+              <button class="ts-move-btn" id="cosmicLibrary-up" onclick="moveColBSection('cosmicLibrary',-1);event.stopPropagation()" title="Move section up">▲</button>
+              <button class="ts-move-btn" id="cosmicLibrary-down" onclick="moveColBSection('cosmicLibrary',1);event.stopPropagation()" title="Move section down">▼</button>
+            </span>
             <span class="ts-arrow open" id="cosmicLibrary-arr">▶</span>
           </div>
 
@@ -9423,6 +9446,51 @@ function closeVaultBuildSheet() {
   showVaultWelcome();
 }
 
+/* ── COLUMN B — movable triangle sections ──────────────────
+   Each section key maps to its top-level block in #vaultMain.
+   Order is persisted so ▲▼ reordering survives reloads.
+─────────────────────────────────────────────────────────── */
+const COLB_SECTIONS = { cosmicLibrary: 'actionPanel', myRoadmap: 'vaultBuildSheet' };
+const COLB_DEFAULT_ORDER = ['cosmicLibrary', 'myRoadmap'];
+
+function getColBOrder() {
+  let o = LS.get('ci_colb_order');
+  if (!Array.isArray(o)) o = [];
+  o = o.filter(k => COLB_DEFAULT_ORDER.includes(k));
+  COLB_DEFAULT_ORDER.forEach(k => { if (!o.includes(k)) o.push(k); });
+  return o;
+}
+
+function applyColBOrder() {
+  const main = document.getElementById('vaultMain');
+  if (!main) return;
+  // Keep persistent header lines (date + quote) on top; stack sections below them.
+  let anchor = document.getElementById('dailySidebarQuote') || document.getElementById('vaultDateLine');
+  if (!anchor || anchor.parentElement !== main) return;
+  const order = getColBOrder();
+  order.forEach(key => {
+    const block = document.getElementById(COLB_SECTIONS[key]);
+    if (block) { anchor.insertAdjacentElement('afterend', block); anchor = block; }
+  });
+  // Disable the up arrow on the first section and the down arrow on the last.
+  order.forEach((key, i) => {
+    const up = document.getElementById(key + '-up');
+    const dn = document.getElementById(key + '-down');
+    if (up) up.disabled = (i === 0);
+    if (dn) dn.disabled = (i === order.length - 1);
+  });
+}
+
+function moveColBSection(key, dir) {
+  const order = getColBOrder();
+  const i = order.indexOf(key);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= order.length) return;
+  [order[i], order[j]] = [order[j], order[i]];
+  LS.set('ci_colb_order', order);
+  applyColBOrder();
+}
+
 function showVaultBuildSheet(idx) {
   const intent = intentions[idx];
   if (!intent) { showVaultWelcome(); return; }
@@ -9432,6 +9500,7 @@ function showVaultBuildSheet(idx) {
   if (sheet) {
     sheet.classList.remove('hidden');
     sheet.innerHTML = buildBuildSheet(intent, idx);
+    applyColBOrder();
     _initMapRecitations(idx);
     const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
     window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
@@ -9464,6 +9533,10 @@ function buildBuildSheet(intent, idx) {
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#818CF8" stroke-width="2.2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
       </span>
       <span class="ts-title" style="color:#818CF8;">My Roadmap</span>
+      <span class="ts-move" onclick="event.stopPropagation()">
+        <button class="ts-move-btn" id="myRoadmap-up" onclick="moveColBSection('myRoadmap',-1);event.stopPropagation()" title="Move section up">▲</button>
+        <button class="ts-move-btn" id="myRoadmap-down" onclick="moveColBSection('myRoadmap',1);event.stopPropagation()" title="Move section down">▼</button>
+      </span>
       <span class="ts-arrow open" id="myRoadmap-arr">▶</span>
     </div>
 
@@ -10300,16 +10373,7 @@ function startEntSlideshow() {
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
 
-document.addEventListener('DOMContentLoaded', () => {
-  const ap   = document.getElementById('actionPanel');
-  const main = document.getElementById('vaultMain');
-  const date = document.getElementById('vaultDateLine');
-  // Cosmic Library (actionPanel) sits right under the date bar
-  if (ap && main) {
-    if (date && date.parentElement === main) date.insertAdjacentElement('afterend', ap);
-    else main.insertBefore(ap, main.firstElementChild);
-  }
-});
+document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); });
 
 </script>
 
