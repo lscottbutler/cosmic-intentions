@@ -70,22 +70,27 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
       </div>`;
   }).join('');
 
+  const secKey = `mapsec-${idx}-${sectionKey}`;
   return `
     <div style="margin-bottom:2px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;">
-        <div>
-          <span style="font-size:15px;margin-right:8px;">${icon}</span>
-          <span style="font-family:var(--vault-mono);font-size:10px;color:${color};font-weight:800;letter-spacing:1.5px;">${title}</span>
-          <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">${cadence}</div>
+      <div onclick="toggleColBSection('${secKey}')"
+        style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
+        <div style="display:flex;align-items:flex-start;gap:8px;min-width:0;">
+          <span class="ts-arrow open" id="${secKey}-arr" style="color:${color};font-size:9px;margin-top:4px;flex-shrink:0;">▶</span>
+          <div>
+            <span style="font-size:15px;margin-right:8px;">${icon}</span>
+            <span style="font-family:var(--vault-mono);font-size:10px;color:${color};font-weight:800;letter-spacing:1.5px;">${title}</span>
+            <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">${cadence}</div>
+          </div>
         </div>
-        <div style="text-align:right;">
+        <div style="text-align:right;flex-shrink:0;">
           <div style="font-family:var(--vault-mono);font-size:11px;color:${done===total&&total>0?color:'#505058'};font-weight:800;">${done}/${total}</div>
           <div style="width:60px;height:3px;background:#252525;border-radius:2px;margin-top:4px;">
             <div style="height:3px;background:${color};border-radius:2px;width:${pct}%;transition:width 0.3s;"></div>
           </div>
         </div>
       </div>
-      <div style="padding:0 16px;">${rows}</div>
+      <div id="${secKey}-body" style="padding:0 16px;">${rows}</div>
     </div>`;
 }
 
