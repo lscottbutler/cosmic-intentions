@@ -142,13 +142,17 @@ RETURN THIS EXACT JSON STRUCTURE — no markdown, no code blocks:
   }
 }`;
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 22000);
+
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: controller.signal,
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        max_tokens: 4000,
+        max_tokens: 3500,
         temperature: 0.75,
         response_format: { type: 'json_object' },
         messages: [
@@ -157,6 +161,8 @@ RETURN THIS EXACT JSON STRUCTURE — no markdown, no code blocks:
         ]
       })
     });
+
+    clearTimeout(timeout);
 
     if (!res.ok) {
       const err = await res.text();
@@ -169,6 +175,8 @@ RETURN THIS EXACT JSON STRUCTURE — no markdown, no code blocks:
     const parsed = JSON.parse(clean);
     return { statusCode: 200, headers, body: JSON.stringify(parsed) };
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+    clearTimeout(timeout);
+    const msg = e.name === 'AbortError' ? 'OpenAI request timed out — try again' : e.message;
+    return { statusCode: 500, headers, body: JSON.stringify({ error: msg }) };
   }
 };
