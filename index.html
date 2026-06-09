@@ -3763,7 +3763,6 @@ input, textarea, select {
   flex-direction: column;
 }
 #actionPanel {
-  order: -1;
   flex-shrink: 0;
 }
 
@@ -5869,8 +5868,8 @@ input, textarea, select {
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
 
-        <!-- DATE BAR — always top of column B -->
-        <div class="vault-date-line" id="vaultDateLine" style="order:-2;flex-shrink:0;"></div>
+        <!-- DATE BAR — top of column B -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;"></div>
 
         <!-- WELCOME STATE -->
         <div id="vaultWelcome" class="vault-welcome"></div>
@@ -10285,6 +10284,12 @@ function startEntSlideshow() {
 }
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ap   = document.getElementById('actionPanel');
+  const main = document.getElementById('vaultMain');
+  if (ap && main) main.insertBefore(ap, main.firstElementChild);
+});
 
 </script>
 
