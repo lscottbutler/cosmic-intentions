@@ -213,15 +213,25 @@ function _renderDangerZones(zones, idx) {
     </div>`;
   }).join('');
 
+  const dzId = `dz-section-${idx}`;
   return `
     <div style="margin-bottom:2px;">
-      <div style="padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;">
-        <span style="font-size:15px;margin-right:8px;">⚠️</span>
-        <span style="font-family:var(--vault-mono);font-size:10px;color:#F87171;font-weight:800;letter-spacing:1.5px;">DANGER ZONES</span>
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">IF/THEN TRIGGERS — KNOW THESE COLD</div>
+      <div class="ts-header" onclick="(function(){var b=document.getElementById('${dzId}');if(!b)return;var open=b.style.display!=='none';b.style.display=open?'none':'block';var arr=document.getElementById('${dzId}-arr');if(arr)arr.className='ts-arrow'+(open?'':' open');})()" style="background:#1a0a0a;border-bottom:1px solid #3a1010;">
+        <span class="acc-svg-circle" style="background:#3a0a0a;width:30px;height:30px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#F87171" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <line x1="12" y1="9" x2="12" y2="13" stroke="#F87171" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke="#F87171" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="ts-title" style="color:#F87171;font-size:13px;">Danger Zones</span>
+        <span class="ts-meta">${zones.length} trigger${zones.length !== 1 ? 's' : ''}</span>
+        <span class="ts-arrow open" id="${dzId}-arr">▶</span>
       </div>
-      ${_hotStateBanner()}
-      <div style="padding:10px 14px;">${rows}</div>
+      <div id="${dzId}">
+        ${_hotStateBanner()}
+        <div style="padding:10px 14px;">${rows}</div>
+      </div>
     </div>`;
 }
 
