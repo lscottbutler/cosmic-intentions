@@ -1,3 +1,5 @@
+const https = require('https');
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -13,9 +15,9 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
   const { goal } = body;
-  const apiKey = process.env.OPEN_AI_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
 
-  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
+  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }) };
   if (!goal)   return { statusCode: 400, headers, body: JSON.stringify({ error: 'goal is required' }) };
 
   const prompt = `You are a world-class personal development architect, behavioral psychologist, and spiritual coach. A user has set this goal: "${goal}"
@@ -142,41 +144,54 @@ RETURN THIS EXACT JSON STRUCTURE — no markdown, no code blocks:
   }
 }`;
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 22000);
-
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        max_tokens: 3500,
-        temperature: 0.75,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: 'You are a world-class personal development architect and behavioral psychologist. Always respond with valid JSON only. Be brutally honest and goal-specific — never generic.' },
-          { role: 'user', content: prompt }
-        ]
-      })
-    });
-
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      const err = await res.text();
-      return { statusCode: 502, headers, body: JSON.stringify({ error: err }) };
-    }
-
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content?.trim() || '';
+    const text = await callClaude(apiKey, prompt);
     const clean = text.replace(/^```json\s*/,'').replace(/```$/,'').trim();
     const parsed = JSON.parse(clean);
+    if (!parsed.thisWeek && !parsed.dangerZones) throw new Error('Bad response format');
     return { statusCode: 200, headers, body: JSON.stringify(parsed) };
   } catch (e) {
-    clearTimeout(timeout);
-    const msg = e.name === 'AbortError' ? 'OpenAI request timed out — try again' : e.message;
-    return { statusCode: 500, headers, body: JSON.stringify({ error: msg }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+function callClaude(apiKey, userPrompt) {
+  const requestBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4000,
+    system: 'You are a world-class personal development architect and behavioral psychologist. Always respond with valid JSON only. Be brutally honest and goal-specific — never generic.',
+    messages: [{ role: 'user', content: userPrompt }]
+  });
+
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.anthropic.com',
+      path: '/v1/messages',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'Content-Length': Buffer.byteLength(requestBody)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.error) return reject(new Error(parsed.error.message || 'Claude API error'));
+          resolve(parsed.content?.[0]?.text || '');
+        } catch (e) {
+          reject(new Error('Failed to parse response: ' + data.substring(0, 200)));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(requestBody);
+    req.end();
+  });
+}
