@@ -9387,6 +9387,7 @@ function showVaultBuildSheet(idx) {
   if (sheet) {
     sheet.classList.remove('hidden');
     sheet.innerHTML = buildBuildSheet(intent, idx);
+    _initMapRecitations(idx);
     const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
     window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
   }

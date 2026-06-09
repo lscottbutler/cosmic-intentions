@@ -241,10 +241,9 @@ function _renderMindset(mindset, idx) {
       <span style="font-size:11px;color:#C8C8D0;line-height:1.5;">${esc(b)}</span>
     </div>`).join('');
 
-  const recitations = (mindset.recitations || []).map(r => `
-    <div style="padding:8px 12px;background:#0d0d1a;border-left:2px solid #8B5CF6;border-radius:0 6px 6px 0;margin-bottom:6px;">
-      <span style="font-size:12px;color:#C4B5FD;line-height:1.6;font-style:italic;">"${esc(r)}"</span>
-    </div>`).join('');
+  const recitationList = (mindset.recitations || []);
+  const recitationsAttr = recitationList.map(r => esc(r)).join('||');
+  const rid = `rec-${idx}`;
 
   return `
     <div style="margin-bottom:2px;">
@@ -262,7 +261,13 @@ function _renderMindset(mindset, idx) {
         <div style="margin-bottom:14px;">${installs}</div>
 
         <div style="font-family:var(--vault-mono);font-size:8px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">📿 DAILY RECITATIONS</div>
-        <div style="margin-bottom:14px;">${recitations}</div>
+        <div style="margin-bottom:14px;">
+          <div id="${rid}-wrap" data-recitations="${recitationsAttr}"
+            style="background:#0a0a14;border:1px solid #2a1a4a;border-radius:12px;padding:28px 20px;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;">
+            <div id="${rid}-text" style="font-size:15px;color:#C4B5FD;line-height:1.7;font-style:italic;transition:opacity 1s ease;opacity:1;">&ldquo;<span id="${rid}-inner"></span>&rdquo;</div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;" id="${rid}-dots"></div>
+        </div>
 
         ${mindset.prayer ? `
         <div style="font-family:var(--vault-mono);font-size:8px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">🙏 YOUR PRAYER / INTENTION</div>
@@ -391,6 +396,7 @@ async function bsGenerateTheMap(idx) {
 
     if (selectedVaultIdx === idx && panel) {
       panel.innerHTML = buildBSTheMapPanel(intent, idx);
+      _initMapRecitations(idx);
     }
     if (typeof renderProgressDashboard === 'function' &&
         document.getElementById('page-progress')?.classList.contains('active')) {
@@ -479,6 +485,55 @@ function renderJournalIndex() {
             </div>`).join('')}
         </div>`}
     </div>`;
+}
+
+/* ── RECITATION CAROUSEL INIT ────────────────────────── */
+function _initMapRecitations(idx) {
+  var rid   = 'rec-' + idx;
+  var wrap  = document.getElementById(rid + '-wrap');
+  var inner = document.getElementById(rid + '-inner');
+  var textEl= document.getElementById(rid + '-text');
+  var dots  = document.getElementById(rid + '-dots');
+  if (!wrap || !inner || !textEl || !dots) return;
+
+  var raw   = wrap.getAttribute('data-recitations') || '';
+  var items = raw ? raw.split('||').filter(Boolean) : [];
+  if (!items.length) return;
+
+  var cur = 0;
+  inner.textContent = items[0];
+
+  // Build dots
+  items.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.id = rid + '-dot-' + i;
+    d.style.cssText = 'width:5px;height:5px;border-radius:50%;background:' +
+      (i === 0 ? '#8B5CF6' : '#2a1a4a') + ';transition:background 0.4s;cursor:pointer;';
+    d.onclick = function() { show(i); cur = i; };
+    dots.appendChild(d);
+  });
+
+  function show(i) {
+    textEl.style.opacity = '0';
+    setTimeout(function() {
+      inner.textContent = items[i];
+      textEl.style.opacity = '1';
+      items.forEach(function(_, j) {
+        var dot = document.getElementById(rid + '-dot-' + j);
+        if (dot) dot.style.background = j === i ? '#8B5CF6' : '#2a1a4a';
+      });
+    }, 800);
+  }
+
+  // Clear any previous interval on this idx
+  if (window._recIntervals && window._recIntervals[idx]) {
+    clearInterval(window._recIntervals[idx]);
+  }
+  if (!window._recIntervals) window._recIntervals = {};
+  window._recIntervals[idx] = setInterval(function() {
+    cur = (cur + 1) % items.length;
+    show(cur);
+  }, 30000);
 }
 
 /* ── LEGACY STUBS ─────────────────────────────────────── */
