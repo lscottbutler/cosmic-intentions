@@ -3787,6 +3787,30 @@ input, textarea, select {
   opacity: 0.6;
   line-height: 1;
 }
+/* ── COLUMN B BANNERS ──────────────────────────────── */
+.col-b-banner {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #2a2a2a;
+}
+.col-b-banner-a {
+  background: #0d1a0d;
+  color: #4ADE80;
+  border-left: 3px solid #4ADE80;
+}
+.col-b-banner-b {
+  background: #0d0d1a;
+  color: #818CF8;
+  border-left: 3px solid #818CF8;
+}
+
 .vault-date-line {
   font-family: 'Roboto Condensed', sans-serif;
   font-size: 13px;
@@ -5893,6 +5917,12 @@ input, textarea, select {
 
           <!-- TODAY STRIP -->
           <div id="todayStrip"></div>
+
+          <!-- BANNER A -->
+          <div class="col-b-banner col-b-banner-a">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#4ADE80" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            COSMIC LIBRARY
+          </div>
 
           <!-- ALL PLAYER ACCORDIONS -->
           <div class="acc-list" id="vizAccList">
@@ -9420,6 +9450,11 @@ function buildBuildSheet(intent, idx) {
   const nextIdx    = idx < intentions.length - 1 ? idx + 1 : null;
 
   return `
+    <div class="col-b-banner col-b-banner-b">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#818CF8" stroke-width="2.5"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+      MY ROADMAP
+    </div>
+
     <div class="bs-header" style="background: #252525; border: 4px solid ${color}; border-radius: 10px; position: relative;">
       <div class="bs-title-col">
         <div class="bs-intention-title">${esc(intent.title)}</div>
