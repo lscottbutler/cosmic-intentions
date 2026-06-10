@@ -320,7 +320,16 @@ function buildBSTheMapPanel(intent, idx) {
   if (!map || (!map.thisWeek && !map.dangerZones && !map.mindset)) {
     return `
       <div style="padding:32px 20px;text-align:center;">
-        <div style="font-size:28px;margin-bottom:12px;">🗺</div>
+        <div style="margin-bottom:12px;">
+          <svg viewBox="0 0 64 64" width="52" height="52" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;" aria-hidden="true">
+            <circle cx="32" cy="32" r="30" fill="#3c3c3c"/>
+            <circle cx="32" cy="32" r="24" fill="#ffffff"/>
+            <circle cx="32" cy="32" r="21" fill="#c4c4c4"/>
+            <path d="M47 17 L36 36 L28 28 Z" fill="#454545"/>
+            <path d="M17 47 L36 36 L28 28 Z" fill="#f2f2f2"/>
+            <circle cx="32" cy="32" r="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.2"/>
+          </svg>
+        </div>
         <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:2px;margin-bottom:8px;">MY ROADMAP</div>
         <div style="font-size:12px;color:#505058;line-height:1.7;max-width:280px;margin:0 auto 20px;">
           Your complete personalized framework — weekly commitments, danger zones, mindset audit, beliefs, and your daily practice tuned to this specific goal.
