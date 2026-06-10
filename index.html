@@ -9524,15 +9524,11 @@ function buildBuildSheet(intent, idx) {
       <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
     </div>
 
-    <div class="bs-tabs">
-      <button class="bs-tab active" id="bsTab-themap-${idx}" onclick="switchBSTab(${idx},'themap')" style="color:#F5A623;font-weight:800;">◉ The Map</button>
-      <button class="bs-tab" id="bsTab-bbfw-${idx}" onclick="switchBSTab(${idx},'bbfw')">◈ Backbone</button>
-    </div>
-
+    <!-- The Map / Backbone tabs removed — both render flat as their own pieces -->
     <div class="bs-panel active" id="bsPanel-themap-${idx}">
       ${buildBSTheMapPanel(intent, idx)}
     </div>
-    <div class="bs-panel" id="bsPanel-bbfw-${idx}">
+    <div class="bs-panel active" id="bsPanel-bbfw-${idx}">
       ${buildBBFWPanel(intent, idx)}
     </div>
 

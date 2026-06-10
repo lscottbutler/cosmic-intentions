@@ -260,41 +260,34 @@ function _renderMindset(mindset, idx) {
   const recitationsAttr = recitationList.map(r => esc(r)).join('||');
   const rid = `rec-${idx}`;
 
-  return `
+  // Each Mindset sub-section is now its own standalone collapsible piece (no parent wrapper).
+  const piece = (key, color, icon, title, bodyHtml) => `
     <div style="margin-bottom:2px;">
-      <div onclick="toggleColBSection('mindset-${idx}')" style="display:flex;align-items:flex-start;gap:8px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
-        <span class="ts-arrow" id="mindset-${idx}-arr" style="color:#8B5CF6;font-size:9px;margin-top:4px;flex-shrink:0;">▶</span>
-        <div>
-          <span style="font-size:15px;margin-right:8px;">🧠</span>
-          <span style="font-family:var(--vault-mono);font-size:10px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;">MINDSET AUDIT</span>
-          <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">ATTITUDES · BELIEFS · RECITATIONS · PRAYER</div>
-        </div>
+      <div onclick="toggleColBSection('${key}')" style="display:flex;align-items:center;gap:8px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
+        <span class="ts-arrow" id="${key}-arr" style="color:${color};font-size:9px;flex-shrink:0;">▶</span>
+        <span style="font-size:15px;">${icon}</span>
+        <span style="font-family:var(--vault-mono);font-size:10px;color:${color};font-weight:800;letter-spacing:1.5px;">${title}</span>
       </div>
-      <div id="mindset-${idx}-body" style="padding:12px 16px;display:none;">
-
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#F87171;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">WHERE YOU ARE NOW</div>
-        <div style="margin-bottom:14px;">${attitudes}</div>
-
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#4ADE80;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">INSTALL THESE INSTEAD</div>
-        <div style="margin-bottom:14px;">${installs}</div>
-
-        <div onclick="toggleColBSection('recsec-${idx}')" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;margin-bottom:8px;">
-          <span class="ts-arrow" id="recsec-${idx}-arr" style="color:#8B5CF6;font-size:9px;flex-shrink:0;">▶</span>
-          <span style="font-family:var(--vault-mono);font-size:8px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;">📿 DAILY RECITATIONS</span>
-        </div>
-        <div id="recsec-${idx}-body" style="margin-bottom:14px;display:none;">
-          <div id="${rid}-wrap" data-recitations="${recitationsAttr}"
-            style="background:#0a0a14;border:1px solid #2a1a4a;border-radius:12px;padding:28px 20px;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;">
-            <div id="${rid}-text" style="font-size:15px;color:#C4B5FD;line-height:1.7;font-style:italic;transition:opacity 1s ease;opacity:1;">&ldquo;<span id="${rid}-inner"></span>&rdquo;</div>
-          </div>
-          <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;" id="${rid}-dots"></div>
-        </div>
-
-        ${mindset.prayer ? `
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">🙏 YOUR PRAYER / INTENTION</div>
-        <div style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:8px;padding:14px;font-size:12px;color:#C9A96E;line-height:1.8;font-style:italic;">"${esc(mindset.prayer)}"</div>` : ''}
-      </div>
+      <div id="${key}-body" style="padding:12px 16px;display:none;">${bodyHtml}</div>
     </div>`;
+
+  const recBody = `
+    <div id="${rid}-wrap" data-recitations="${recitationsAttr}"
+      style="background:#0a0a14;border:1px solid #2a1a4a;border-radius:12px;padding:28px 20px;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;">
+      <div id="${rid}-text" style="font-size:15px;color:#C4B5FD;line-height:1.7;font-style:italic;transition:opacity 1s ease;opacity:1;">&ldquo;<span id="${rid}-inner"></span>&rdquo;</div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;" id="${rid}-dots"></div>`;
+
+  const prayerBody = mindset.prayer
+    ? `<div style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:8px;padding:14px;font-size:12px;color:#C9A96E;line-height:1.8;font-style:italic;">"${esc(mindset.prayer)}"</div>`
+    : '';
+
+  let out = '';
+  if (attitudes)             out += piece(`mindNow-${idx}`,     '#F87171', '🧠', 'WHERE YOU ARE NOW',       attitudes);
+  if (installs)              out += piece(`mindInstall-${idx}`, '#4ADE80', '✅', 'INSTALL THESE INSTEAD',   installs);
+  if (recitationList.length) out += piece(`recsec-${idx}`,      '#8B5CF6', '📿', 'DAILY RECITATIONS',       recBody);
+  if (mindset.prayer)        out += piece(`mindPrayer-${idx}`,  '#F5A623', '🙏', 'YOUR PRAYER / INTENTION', prayerBody);
+  return out;
 }
 
 /* ── RENDER: PRACTICE FEED ───────────────────────────── */
