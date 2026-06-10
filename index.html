@@ -7705,7 +7705,11 @@ function showPage(id) {
   if (id === 'journal')   renderJournalIndex();
 
   closeDrawer();
+  // Force top now, and again after layout settles, so async re-renders
+  // (images, deferred sidebar/build-sheet render) can't leave the page
+  // scrolled down when a page first loads.
   window.scrollTo(0, 0);
+  requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, 0)));
 }
 
 /* ── PAGE HISTORY (back / forward) ─────────────────────── */
