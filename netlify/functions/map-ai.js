@@ -1,5 +1,3 @@
-const https = require('https');
-
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -15,19 +13,19 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
   const { goal } = body;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPEN_AI_KEY;
 
-  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }) };
+  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
   if (!goal)   return { statusCode: 400, headers, body: JSON.stringify({ error: 'goal is required' }) };
 
-  // Split into two parallel calls so each finishes in ~4-5s
+  // Split into two parallel calls so each finishes fast and stays well under token limits
   const prompt1 = buildPrompt1(goal);
   const prompt2 = buildPrompt2(goal);
 
   try {
     const [part1, part2] = await Promise.all([
-      callClaude(apiKey, prompt1, 2000),
-      callClaude(apiKey, prompt2, 2000)
+      callOpenAI(apiKey, prompt1),
+      callOpenAI(apiKey, prompt2)
     ]);
 
     const p1 = JSON.parse(part1.replace(/^```json\s*/,'').replace(/```$/,'').trim());
@@ -107,43 +105,24 @@ Return ONLY this JSON, no markdown:
 }`;
 }
 
-function callClaude(apiKey, userPrompt, maxTokens) {
-  const requestBody = JSON.stringify({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: maxTokens,
-    system: 'You are a world-class personal development architect. Respond with valid JSON only — no markdown, no commentary.',
-    messages: [{ role: 'user', content: userPrompt }]
+/* ── OpenAI call (gpt-4o-mini, JSON mode) — matches bbfw.js ── */
+async function callOpenAI(apiKey, userPrompt) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      max_tokens: 3000,
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: 'You are a world-class personal development architect. Respond with valid JSON only — no markdown, no commentary.' },
+        { role: 'user', content: userPrompt }
+      ]
+    })
   });
 
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'Content-Length': Buffer.byteLength(requestBody)
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (parsed.error) return reject(new Error(parsed.error.message || 'Claude API error'));
-          resolve(parsed.content?.[0]?.text || '');
-        } catch (e) {
-          reject(new Error('Failed to parse response: ' + data.substring(0, 200)));
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.write(requestBody);
-    req.end();
-  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content?.trim() || '';
 }
