@@ -5386,6 +5386,42 @@ input, textarea, select {
   padding: 0 12px 8px;
   background: #1E1E1E;
 }
+/* ── COLUMN B SECTION BANNERS (bold colored bars that group pieces) ── */
+.colb-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 18px;
+  margin: 16px 0 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transition: filter 0.15s;
+}
+.colb-banner:hover { filter: brightness(1.08); }
+.colb-banner-title {
+  flex: 1;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.1;
+}
+.colb-banner-arrow {
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.colb-banner-arrow.open { transform: rotate(90deg); }
+.colb-banner-body {
+  padding: 2px 0 6px;
+}
 .ts-section-label {
   font-family: var(--vault-mono);
   font-size: 9px;
@@ -9478,6 +9514,23 @@ function moveColBSection(key, dir) {
   applyColBOrder();
 }
 
+/* ── COLUMN B SECTION BANNER (bold colored bar; collapsible group container) ──
+   Reuses toggleColBSection: toggles `${key}-body` + rotates `${key}-arr`.
+   Drop pieces into bodyHtml to group them under the banner.
+─────────────────────────────────────────────────────────────────────────── */
+function colBBanner(key, title, color, bodyHtml) {
+  return `
+    <div class="colb-banner" onclick="toggleColBSection('${key}')"
+      style="background:linear-gradient(90deg, ${color}, ${color}bb);">
+      <span class="colb-banner-title">${title}</span>
+      <span class="colb-banner-arrow open" id="${key}-arr">▶</span>
+    </div>
+    <div class="colb-banner-body" id="${key}-body">${bodyHtml || `
+      <div style="padding:12px 16px;font-family:var(--vault-mono);font-size:9px;letter-spacing:1px;color:#54545c;text-align:center;border:1px dashed #2a2a2a;border-radius:8px;">
+        EMPTY — PIECES GO HERE
+      </div>`}</div>`;
+}
+
 function showVaultBuildSheet(idx) {
   const intent = intentions[idx];
   if (!intent) { showVaultWelcome(); return; }
@@ -9523,6 +9576,10 @@ function buildBuildSheet(intent, idx) {
       <div class="bs-num-circle">${idx + 1}</div>
       <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
     </div>
+
+    <!-- SECTION BANNERS — bold colored bars that will group pieces throughout Column B -->
+    ${colBBanner('bannerWeeklyPitfalls', 'Weekly Pitfalls', '#C41E3A')}
+    ${colBBanner('bannerDailyAffirmations', 'Daily Affirmations', '#6366F1')}
 
     <!-- The Map / Backbone tabs removed — both render flat as their own pieces -->
     <div class="bs-panel active" id="bsPanel-themap-${idx}">
