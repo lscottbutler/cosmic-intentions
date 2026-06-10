@@ -274,7 +274,7 @@ function renderTodayStrip() {
   // Weekly focus rows
   let wfRows = '';
   if (wfItems.length === 0) {
-    wfRows = `<div class="ts-empty">Generate The Map on an intention to unlock weekly focus.</div>`;
+    wfRows = `<div class="ts-empty">Generate My Roadmap on an intention to unlock weekly focus.</div>`;
   } else {
     wfRows = wfItems.map(item => {
       const checked  = !!wfChecks[item.key];

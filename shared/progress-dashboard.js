@@ -97,7 +97,7 @@ async function renderProgressDashboard() {
     { test: gratSessions === 0, cta: 'Try your first Gratitude session', action: `launchPlayer('gratitude')`,  icon: '🙏'  },
     { test: goalsSet === 0,     cta: 'Set your first Intention',         action: `navTo('setup')`,             icon: '🎯'  },
     { test: roadmapsGen === 0,  cta: 'Generate your first Roadmap',      action: `navTo('dashboard')`,         icon: '◈'  },
-    { test: mapFilled === 0,    cta: 'Build out The Map on a goal',      action: `navTo('dashboard')`,         icon: '🗺'  },
+    { test: mapFilled === 0,    cta: 'Build out My Roadmap on a goal',    action: `navTo('dashboard')`,         icon: '🗺'  },
     { test: streak === 0,       cta: 'Start a daily streak today',       action: `navTo('dashboard')`,         icon: '🔥'  },
   ];
   const nextUnlock = unlockQueue.find(u => u.test);
@@ -176,7 +176,7 @@ async function renderProgressDashboard() {
     <!-- THE MAP — TROPHY CABINET -->
     <div style="margin-bottom:28px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;">THE MAP</div>
+        <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;">MY ROADMAP</div>
         ${mapTodos > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:#4ADE80;">${mapTodos} milestone${mapTodos===1?'':'s'} completed</div>` : ''}
       </div>
       <div style="background:#1A1A1A;border:1px solid #222;border-radius:12px;overflow:hidden;">

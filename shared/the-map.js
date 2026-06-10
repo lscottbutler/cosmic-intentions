@@ -321,14 +321,14 @@ function buildBSTheMapPanel(intent, idx) {
     return `
       <div style="padding:32px 20px;text-align:center;">
         <div style="font-size:28px;margin-bottom:12px;">🗺</div>
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:2px;margin-bottom:8px;">THE MAP</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:2px;margin-bottom:8px;">MY ROADMAP</div>
         <div style="font-size:12px;color:#505058;line-height:1.7;max-width:280px;margin:0 auto 20px;">
           Your complete personalized framework — weekly commitments, danger zones, mindset audit, beliefs, and your daily practice tuned to this specific goal.
         </div>
         <button id="bsTheMapBtn-${idx}" onclick="bsGenerateTheMap(${idx})"
           style="background:#F5A623;border:none;border-radius:8px;padding:10px 20px;
           font-family:var(--vault-mono);font-size:10px;font-weight:800;color:#000;cursor:pointer;letter-spacing:1px;">
-          ◉ BUILD THE MAP →
+          ◉ BUILD MY ROADMAP →
         </button>
       </div>`;
   }
@@ -336,7 +336,7 @@ function buildBSTheMapPanel(intent, idx) {
   return `
     <div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #222;">
-        <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1px;">◉ THE MAP</span>
+        <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1px;">◉ MY ROADMAP</span>
         <button onclick="bsGenerateTheMap(${idx})"
           style="background:none;border:1px solid #383838;border-radius:6px;padding:4px 10px;
           font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;">↺ Regenerate</button>
@@ -465,7 +465,7 @@ function renderJournalIndex() {
       ${entries.length === 0 ? `
         <div style="background:#1A1A1A;border:1px solid #222;border-radius:12px;padding:32px;text-align:center;">
           <div style="font-size:28px;margin-bottom:12px;">📓</div>
-          <div style="font-size:13px;color:#505058;">No journal entries yet.<br>Generate The Map on a goal to get your J# prompts.</div>
+          <div style="font-size:13px;color:#505058;">No journal entries yet.<br>Generate My Roadmap on a goal to get your J# prompts.</div>
         </div>` : `
         <div style="background:#1A1A1A;border:1px solid #222;border-radius:12px;overflow:hidden;">
           ${entries.map((e, i) => `

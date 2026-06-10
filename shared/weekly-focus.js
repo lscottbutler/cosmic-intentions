@@ -178,7 +178,7 @@ function renderWeeklyFocus() {
           ◈ WEEKLY FOCUS — ${weekKey}
         </div>
         <div style="font-size:13px;color:#505058;line-height:1.6;">
-          Generate <strong style="color:#fff">The Map</strong> for at least one intention to unlock your weekly focus list.
+          Generate <strong style="color:#fff">My Roadmap</strong> for at least one intention to unlock your weekly focus list.
         </div>
       </div>`;
     return;
@@ -275,7 +275,7 @@ function renderWeeklyFocus() {
       ${pool.length < 10 ? `
       <div style="padding:8px 16px 10px;border-top:1px solid #1A1A1A;">
         <div style="font-size:11px;color:#383840;font-style:italic;line-height:1.5;">
-          ${pool.length} Map todos available this cycle — generate The Map on more intentions to unlock a full 10.
+          ${pool.length} roadmap todos available this cycle — generate My Roadmap on more intentions to unlock a full 10.
         </div>
       </div>` : ''}
 
