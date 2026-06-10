@@ -5929,7 +5929,7 @@ input, textarea, select {
         <!-- GOAL BOXES — moved from Column A; shown at top of Column B from the start -->
         <div class="vault-cats" id="vaultCats"></div>
         <div class="vault-list" id="vaultList"></div>
-        <div class="vault-add-wrap" style="margin-bottom:12px;">
+        <div class="vault-add-wrap" id="colbAnchor" style="margin-bottom:12px;">
           <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
         </div>
 
@@ -9485,11 +9485,14 @@ function closeVaultBuildSheet() {
    Order is persisted so ▲▼ reordering survives reloads.
 ─────────────────────────────────────────────────────────── */
 const COLB_SECTIONS = { cosmicLibrary: 'actionPanel', myRoadmap: 'vaultBuildSheet' };
-const COLB_DEFAULT_ORDER = ['cosmicLibrary', 'myRoadmap'];
+const COLB_DEFAULT_ORDER = ['myRoadmap', 'cosmicLibrary'];
 
 function getColBOrder() {
   let o = LS.get('ci_colb_order');
   if (!Array.isArray(o)) o = [];
+  // Migrate the legacy saved order (Cosmic Library first) to the new default now
+  // that My Roadmap leads — the reorder arrows that wrote this were removed.
+  if (o.length === 2 && o[0] === 'cosmicLibrary' && o[1] === 'myRoadmap') o = [];
   o = o.filter(k => COLB_DEFAULT_ORDER.includes(k));
   COLB_DEFAULT_ORDER.forEach(k => { if (!o.includes(k)) o.push(k); });
   return o;
@@ -9498,8 +9501,11 @@ function getColBOrder() {
 function applyColBOrder() {
   const main = document.getElementById('vaultMain');
   if (!main) return;
-  // Keep persistent header lines (date + quote) on top; stack sections below them.
-  let anchor = document.getElementById('dailySidebarQuote') || document.getElementById('vaultDateLine');
+  // Stack the goal sections directly under the goal-box picker (top of Column B),
+  // above the date bar/quote. Fall back to the old anchor if the picker isn't present.
+  let anchor = document.getElementById('colbAnchor')
+    || document.getElementById('dailySidebarQuote')
+    || document.getElementById('vaultDateLine');
   if (!anchor || anchor.parentElement !== main) return;
   const order = getColBOrder();
   order.forEach(key => {
