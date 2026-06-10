@@ -1,2 +1,5 @@
 .claude/settings.local.json
 images/VIDEOS/
+
+# session-log hook state
+.claude/hooks/.session-base-sha
