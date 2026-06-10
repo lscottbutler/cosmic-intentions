@@ -5910,16 +5910,7 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- Category Filters — control sits above the list it filters -->
-        <div class="vault-cats" id="vaultCats"></div>
-
-        <!-- Intention List -->
-        <div class="vault-list" id="vaultList"></div>
-
-        <!-- Add Button -->
-        <div class="vault-add-wrap">
-          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
-        </div>
+        <!-- Goal boxes (category filters + intention list + add button) moved to top of Column B -->
 
         <!-- PEGBOARD LOOP WIDGET -->
         <div class="pb-loop-card">
@@ -5934,6 +5925,13 @@ input, textarea, select {
 
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
+
+        <!-- GOAL BOXES — moved from Column A; shown at top of Column B from the start -->
+        <div class="vault-cats" id="vaultCats"></div>
+        <div class="vault-list" id="vaultList"></div>
+        <div class="vault-add-wrap" style="margin-bottom:12px;">
+          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
+        </div>
 
         <!-- DATE BAR — top of column B -->
         <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;"></div>
