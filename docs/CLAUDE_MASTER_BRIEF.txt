@@ -1,0 +1,232 @@
+COSMIC INTENTIONS — Claude CoWork Master Brief
+Paste this at the top of every new Claude CoWork / Claude Code session.
+Last updated: 2026-06-10
+
+================================================================================
+WHAT THIS APP IS
+================================================================================
+
+Cosmic Intentions — a personal goals and visualization web app.
+- Users set intentions/goals, then engage with them through timed players
+  (meditation, countdown, visualization, gratitude, video)
+- Pure client-side. No build step. No bundler. Vanilla HTML/CSS/JS on Netlify.
+
+================================================================================
+STACK
+================================================================================
+
+Hosting:            Netlify (static)
+Auth + DB:          Supabase (postgres)
+Data source:        Google Sheets (via API / Apps Script)
+Serverless:         Netlify Functions (/api/* → /.netlify/functions/*)
+AI / TTS:           OpenAI (OPEN_AI_KEY) — NOT Anthropic
+Images:             Pexels API (PEXELS_API_KEY)
+Code:               Vanilla HTML/CSS/JS — no React, no bundler
+
+Production URL: https://gilded-profiterole-47a2eb.netlify.app
+
+Env vars in Netlify (Builds/Functions/Runtime scope):
+  OPEN_AI_KEY      — OpenAI TTS + keyword extraction + Mission Control content
+  PEXELS_API_KEY   — vision board image search
+  NOTE: there is NO ANTHROPIC_API_KEY on this project
+
+================================================================================
+REPO
+================================================================================
+
+Root:         C:\WORK\ROOT
+Main branch:  main
+Git user:     UpperShadow
+Rule:         Always commit + push together — never leave committed but unpushed
+Chain:        git commit -m "..." && git push origin main
+
+================================================================================
+KEY FILES
+================================================================================
+
+index.html                          Main dashboard — 277KB, LARGE. Use offset/limit when reading.
+arsenal.html                        Alternate dashboard (gallery-white aesthetic)
+players/countdown.html              Countdown timer player
+players/visual-countdown.html       Visual countdown with eye open/close VO timing
+players/meditation.html             Meditation player
+players/meditation-timer.html       Meditation timer variant
+players/meditation-select.html      Meditation selection screen
+players/gratitude.html              Gratitude player
+players/viz-quick.html              Quick visualization player
+players/viz-10min.html              10-min visualization player
+players/video.html                  Video player
+shared/player-core.js               Shared utils: getDailyImage, speakText, playBell, returnToApp
+images/icons/                       All UI icons (PNG)
+netlify/functions/tts.js            OpenAI TTS
+netlify/functions/generate-content.js   Mission Control + general content generation
+netlify/functions/image-search.js   Vision board — OpenAI keyword extraction + Pexels search
+netlify/functions/image-generate.js AI image generation
+netlify/functions/claude.js         Claude API function (no Anthropic key in env currently)
+CLAUDE_MASTER_BRIEF.txt             This file — paste at top of every session
+
+================================================================================
+ARCHITECTURE NOTES
+================================================================================
+
+- No server-side code. Netlify is static hosting only. All logic is client-side JS.
+- Supabase handles auth and postgres. Check existing schema before suggesting new tables.
+- Google Sheets is a data source — accessed via API or Apps Script, not a DB replacement.
+- Daily rotating images per player use PLAYER_OFFSETS — already solved, do not re-implement.
+- launchVisualCountdown() passes goal text + duration via localStorage to visual-countdown player.
+- Env var changes in Netlify require a redeploy (push to main) to take effect.
+- Netlify function timeout is a real constraint — Mission Control generates 50 items per call
+  and appends on next generation to avoid timeout.
+
+================================================================================
+UI / LAYOUT DECISIONS (LOCKED — DO NOT REVERT)
+================================================================================
+
+- Home nav: 2-column grid (replaced hamburger drawer)
+- Subnav bar: eliminated — back/home/forward buttons live inside the header center
+- Goal cards: ALL CAPS title, goal number top-right, close button bottom-right
+- Best Practices page: white bg, 680px centered content, 100px padding
+- Dashboard columns: unified scroll, no sticky/fixed height on vault sidebar
+- Home layout: outer 32/40px padding, 32px gap, inner 24px gap, max-width 1400px centered
+
+================================================================================
+MISSION CONTROL (FEATURE — FULLY BUILT)
+================================================================================
+
+- Generates a 100-item AI roadmap via generate-content.js (50 items/call, appends on next call)
+- Each card: action (white text), category (blue), why field (famous quote + story behind it)
+  Famous people used: Ali, Jim Carrey, Kobe, Robbins, Naval, Hormozi, etc. — recognizable only
+- Cards have YES / DEEPER flags for user sorting
+- YES items lock into the Daily Commitments checklist with streak tracking
+- Deep-dive generation available per card
+- Permanent "F*ck Up Framework" card (Dalio + Mandela + James Clear, 5 questions, pre-expanded)
+- Prompt rules: execution-only, no goal-setting advice, no generic tips,
+  NO vision board / meditation / journaling suggestions (app already does these),
+  15 items/batch in prompt format
+- /mission-review skill exists in Claude Code for quality-filtering Mission Control content
+
+================================================================================
+WHAT'S ALREADY SOLVED — DO NOT RE-SUGGEST
+================================================================================
+
+- Player images compressed (181MB → 14MB)
+- Daily rotating images per player using PLAYER_OFFSETS
+- Eye open/closed icon fade on visual-countdown VO timing
+- Countdown timer buttons (60/30/15) use circular PNG icons
+- launchVisualCountdown() passes goal text + duration via localStorage
+- Hamburger drawer replaced with 2-column home nav grid
+- Subnav bar eliminated — nav buttons live in header center
+- Goal cards: ALL CAPS title, number top-right, close button bottom-right
+- Vault sidebar scroll — deferred scrollTop=0 until after render
+- Goal click scroll — window.scrollTo(0,0) with onmousedown preventDefault
+- Mission Control full pipeline (see section above)
+- Arsenal: uses intention goal images (not missing vision_stills folder)
+- Dashboard: selecting an intention auto-opens build sheet + auto-scrolls on mobile
+- Build sheet: 4-column tab grid so Mission tab is visible
+- How It Works ebook page (Goal Success Playbook)
+- Daily Commitments in sidebar accordion with live checkboxes + streak display
+
+================================================================================
+BEHAVIOR RULES FOR CLAUDE (NON-NEGOTIABLE)
+================================================================================
+
+VERIFY BEFORE RELEASING
+Never say something works until ALL confirmed:
+  1. Start preview server and load page via preview_eval
+  2. Render the changed component with test data via preview_eval
+  3. Take preview_screenshot and visually confirm
+  4. If screenshot fails, use preview_eval to check computed styles + DOM
+  5. Only THEN commit, push, report
+Do NOT push broken code. Do NOT tell user it works without visual/eval proof.
+
+OUTPUT FORMAT
+- Step-by-step, exact names (app, menu, button, field)
+- No filler. No "Great question!" Just the answer.
+- Code: full block — never partial snippets unless explicitly asked
+- File references: path:line_number
+- End of response: one sentence — what changed + what's next
+
+KARPATHY RULES
+- Think first: State assumptions before writing code. If ambiguous, present two
+  interpretations and ask which one.
+- Simplicity: Write minimum code that solves the problem. No speculative features.
+- Surgical: Touch only what the task requires. No reformatting bystanders.
+- Goal-driven: State plan in one line, then execute. No step-by-step permission-asking.
+
+GIT / PUSH
+- After every git commit, immediately push to origin main — no asking, no confirming.
+- Chain: git commit -m "..." && git push origin main
+
+================================================================================
+VERIFY A DEPLOYED FUNCTION
+================================================================================
+
+curl https://gilded-profiterole-47a2eb.netlify.app/api/<function-name>
+
+Env var changes require a redeploy (push to main) to take effect.
+
+================================================================================
+RECENT COMMITS (as of 2026-06-03)
+================================================================================
+
+842c6fe Goal card: ALL CAPS title, number top-right, close button bottom-right
+ee00c11 Move nav buttons into header center — eliminate subnav bar
+b7e6edd Fix subnav overlap — hardcode page-wrap margin-top 160px
+4ebc74e Best Practices: constrain content to 680px centered
+d35e83f Add fixed back/home/forward sub-nav bar to every page
+dc7a01c Replace hamburger drawer with 2-column home nav grid
+16f5a99 Add How It Works ebook page — Goal Success Playbook
+3008249 Daily Commitments — live checkboxes and streak display in sidebar
+05da982 Add /mission-review skill
+a024849 Mission Control — YES items lock into daily commitments checklist
+6808a3f Mission Control — ban vision board/meditation/journaling suggestions
+92be5c5 Mission Control — add permanent F*ck Up Framework card
+b4263d4 Mission Control — 100-item AI roadmap with YES/DEEPER flagging + deep-dive
+a0ed855 Home — professional padding around columns
+
+================================================================================
+This file is the single source of truth for onboarding Claude to this project.
+================================================================================
+
+================================================================================
+AUTO SESSION LOG (appended automatically by SessionEnd hook)
+================================================================================
+Commits made each session are appended below. For richer hand-written
+summaries, run /wrap before ending a session.
+
+
+--------------------------------------------------------------------------------
+[2026-06-10] /wrap summary — Dashboard Column A/B reorg + session auto-logging
+- Column A: category filters moved above the intention list (index.html ~5852).
+- Column B no longer goes blank when the goal-box X is clicked — #vaultWelcome
+  now has standalone content (index.html ~5897); showVaultWelcome() reveals it.
+- Column B triangle sections (Cosmic Library, My Roadmap) are independently
+  reorderable via up/down arrows; order persists in localStorage key
+  ci_colb_order. Logic: COLB_SECTIONS / applyColBOrder / moveColBSection
+  (index.html ~9453). Replaced the old one-off actionPanel positioning handler.
+- The Map sub-sections are collapsible triangle banners (shared/the-map.js):
+  THIS WEEK stays open; Danger Zones, Mindset Audit, Daily Recitations, This
+  Month, The Terrain default-collapsed. _renderCheckSection got a `collapsed`
+  flag; Mindset + Recitations made collapsible via toggleColBSection.
+- Added docs/HANDOFF_split-column-b.md — CoWork brief for the next, larger task:
+  splitting Column B into individually-movable parts (asks the user to pick
+  scope depth first).
+- Set up session auto-logging: SessionStart/SessionEnd hooks (.claude/settings.json
+  + .claude/hooks/*.ps1) append each session's commits to this brief; /wrap
+  command (.claude/commands/wrap.md) writes richer summaries like this one.
+  NOTE: hooks activate next session (settings.json didn't exist at this one's start).
+- Next: tackle the Column B split per the handoff; decide Option 1/2/3 scope.
+
+[2026-06-10] auto-logged commits:
+  ac833aa Column B: add collapsible section banners (bold colored bars) + first two
+  febb6d3 The Map: flatten practice feed into individual triangle dropdown pieces
+  0c6eb34 Column B: flatten the last 2 wrappers out of their parents
+  d39c5c8 Column B: flatten — remove Cosmic Library + My Roadmap parent dropdowns
+  ca362f9 Auto-log session commits to master brief via SessionEnd hook + add /wrap command
+
+[2026-06-10] auto-logged commits:
+  dcc020b Dashboard: move goal boxes from Column A sidebar to top of Column B
+  2d1a0c2 Notes: move home-video-1 box from home (below Video A) to top of Column A
+  d280957 Dashboard: harden scroll-to-top on page nav with double-rAF
+  f7e96e0 Fix invalid netlify.toml that was failing every deploy
+  1f9017c Cache-bust all shared/*.js script tags (?v=20260610b)
+  e15e1c6 Column B: finish banner rollout — all 7 Map sections as bold colored bars

@@ -11,7 +11,7 @@ Repo root: `C:\WORK\ROOT` | Main branch: `main`
 - `players/` — all player pages (countdown, visual-countdown, meditation, gratitude, viz-quick, viz-10min, video)
 - `shared/player-core.js` — shared utilities: getDailyImage, speakText, playBell, returnToApp
 - `images/icons/` — all UI icons (PNG)
-- `GEMINI_STARTER.md` — paste this at top of every new Gemini chat
+- `CLAUDE_MASTER_BRIEF.md` — paste this at top of every new Claude CoWork session
 
 ## VERIFY BEFORE RELEASING — NON-NEGOTIABLE
 NEVER tell the user something works until ALL of these are confirmed:

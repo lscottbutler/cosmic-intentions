@@ -3,3 +3,13 @@ images/VIDEOS/
 
 # session-log hook state
 .claude/hooks/.session-base-sha
+
+# dependencies (regenerable — never commit)
+node_modules/
+
+# temp / scratch
+_tmp_docx_unpack/
+
+# oversized image folders — back these up outside git (too large for the repo)
+images/xxx image sort/
+images/troughs/
