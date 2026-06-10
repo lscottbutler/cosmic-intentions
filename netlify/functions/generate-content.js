@@ -1,5 +1,3 @@
-const https = require('https');
-
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -22,10 +20,10 @@ exports.handler = async (event) => {
   }
 
   const { goal, pegboard } = body;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPEN_AI_KEY;
 
   if (!apiKey) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
   }
   if (!goal) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'goal is required' }) };
@@ -39,7 +37,7 @@ exports.handler = async (event) => {
 
   try {
     // ── PASS 1: Achiever Wisdom ──────────────────────────────
-    const pass1Result = await callClaude(apiKey, {
+    const pass1Result = await callOpenAI(apiKey, {
       system: 'You are a world-class research analyst specializing in high-achievement psychology. Return only valid JSON — no markdown, no commentary.',
       user: `Goal: "${goal}"
 
@@ -63,7 +61,7 @@ Return this exact JSON structure:
     try { achievers = JSON.parse(pass1Result).achievers || []; } catch {}
 
     // ── PASS 2: Sequential Roadmap ───────────────────────────
-    const pass2Result = await callClaude(apiKey, {
+    const pass2Result = await callOpenAI(apiKey, {
       system: 'You are a precision performance coach who builds measurable, sequential action systems. Return only valid JSON — no markdown, no commentary.',
       user: `Goal: "${goal}"
 Name: ${name}
@@ -94,7 +92,7 @@ Return this exact JSON structure:
     try { roadmap = JSON.parse(pass2Result).roadmap || {}; } catch {}
 
     // ── PASS 3: Belief Rewrite → 13 Affirmations + Script ───
-    const pass3Result = await callClaude(apiKey, {
+    const pass3Result = await callOpenAI(apiKey, {
       system: `You are a master manifestation architect who speaks directly to the subconscious mind. You write in ${beliefSystem.voice}. Return only valid JSON — no markdown, no commentary.`,
       user: `Goal: "${goal}"
 Name: ${name}
@@ -247,44 +245,24 @@ function detectBeliefSystem(beliefsText) {
   };
 }
 
-/* ── Claude API caller ────────────────────────────────────── */
-function callClaude(apiKey, { system, user }, maxTokens = 2048) {
-  const requestBody = JSON.stringify({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: maxTokens,
-    system,
-    messages: [{ role: 'user', content: user }]
+/* ── OpenAI API caller (gpt-4o-mini, JSON mode) — matches map-ai.js / bbfw.js ── */
+async function callOpenAI(apiKey, { system, user }, maxTokens = 2048) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      max_tokens: maxTokens,
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user }
+      ]
+    })
   });
 
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'Content-Length': Buffer.byteLength(requestBody)
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (parsed.error) return reject(new Error(parsed.error.message || 'Claude API error'));
-          resolve(parsed.content?.[0]?.text || '');
-        } catch (e) {
-          reject(new Error('Failed to parse Claude response: ' + data.substring(0, 200)));
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.write(requestBody);
-    req.end();
-  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content?.trim() || '';
 }
