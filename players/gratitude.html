@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Gratitude | Cosmic Intentions</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -10,17 +10,19 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   background: #000;
   color: #FFF;
-  min-height: 100vh;
+  min-height: 100vh;   /* fallback */
+  min-height: 100dvh;  /* fills the phone, adapts to the address bar */
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
 
 /* ── CARD — identical to visual-countdown ────────────────── */
 .player-container {
   width: 92%;
-  max-width: 520px;
+  max-width: 480px;
   background: #000;
   border: 14px solid #333;
   border-radius: 0;

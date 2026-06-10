@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>10-Min Viz | Cosmic Intentions</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,7 +11,8 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   background: #111;
   color: #FFF;
-  height: 100vh;
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* fills the phone, adapts to the address bar */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,7 +23,8 @@ body {
 .frame {
   width: 100%;
   max-width: 480px;
-  height: 100vh;
+  height: 100vh;   /* fallback */
+  height: 100dvh;
   max-height: 900px;
   display: flex;
   flex-direction: column;

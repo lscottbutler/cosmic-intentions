@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>My Roadmap | Cosmic Intentions</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,7 +11,8 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   background: #0a0a0a;
   color: #fff;
-  min-height: 100vh;
+  min-height: 100vh;   /* fallback */
+  min-height: 100dvh;  /* fills the phone, adapts to the address bar */
 }
 
 .page {
