@@ -9501,16 +9501,16 @@ function getColBOrder() {
 function applyColBOrder() {
   const main = document.getElementById('vaultMain');
   if (!main) return;
-  // Stack the goal sections directly under the goal-box picker (top of Column B),
-  // above the date bar/quote. Fall back to the old anchor if the picker isn't present.
-  let anchor = document.getElementById('colbAnchor')
-    || document.getElementById('dailySidebarQuote')
-    || document.getElementById('vaultDateLine');
-  if (!anchor || anchor.parentElement !== main) return;
+  // Stack the goal sections at the VERY top of Column B — above the goal-box
+  // picker, date bar, and quote — so a selected goal's card leads everything.
   const order = getColBOrder();
+  let anchor = null; // null => insert as the first child of #vaultMain
   order.forEach(key => {
     const block = document.getElementById(COLB_SECTIONS[key]);
-    if (block) { anchor.insertAdjacentElement('afterend', block); anchor = block; }
+    if (!block) return;
+    if (anchor) anchor.insertAdjacentElement('afterend', block);
+    else        main.insertBefore(block, main.firstElementChild);
+    anchor = block;
   });
   // Disable the up arrow on the first section and the down arrow on the last.
   order.forEach((key, i) => {
