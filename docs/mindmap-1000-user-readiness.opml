@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Cosmic Intentions - 1000-User Readiness</title>
+  </head>
+  <body>
+    <outline text="Cosmic Intentions - 1000-User Readiness">
+      <outline text="Capacity Verdict">
+        <outline text="1000 users is comfortable"/>
+        <outline text="Stack scales to tens of thousands"/>
+        <outline text="Static (Netlify CDN) + Supabase + serverless"/>
+        <outline text="Capacity is NOT the risk"/>
+      </outline>
+      <outline text="Top Risks - fix before scaling (RED)">
+        <outline text="Open AI endpoints = uncapped cost/abuse">
+          <outline text="CORS * , no auth, no rate limit"/>
+          <outline text="Endpoint is a free proxy to your OpenAI account"/>
+          <outline text="Scraper or buggy loop = runaway bill"/>
+          <outline text="Can trip OpenAI rate limits = outage for all"/>
+          <outline text="No per-user throttle"/>
+          <outline text="FIX: require Supabase auth token on functions"/>
+          <outline text="FIX: per-user / per-day generation cap"/>
+          <outline text="FIX: OpenAI hard spend limit + alert"/>
+        </outline>
+        <outline text="Failures are invisible to a solo operator">
+          <outline text="This week: deploys frozen for days"/>
+          <outline text="This week: Map silently returned errors"/>
+          <outline text="FIX: Netlify deploy-failure notifications"/>
+          <outline text="FIX: Uptime monitor (UptimeRobot) - site + /api"/>
+          <outline text="FIX: OpenAI billing alert"/>
+        </outline>
+      </outline>
+      <outline text="Confirm for 1000 (YELLOW)">
+        <outline text="Supabase security + tier">
+          <outline text="Verify RLS enabled on every table">
+            <outline text="intentions"/>
+            <outline text="profiles"/>
+            <outline text="user_scores"/>
+            <outline text="activity_log"/>
+          </outline>
+          <outline text="No RLS = users can read each others data"/>
+          <outline text="Consider Pro ($25/mo) - connections + backups"/>
+          <outline text="activity_log grows forever - prune periodically"/>
+        </outline>
+        <outline text="Data sync = last-write-wins">
+          <outline text="Multi-device / cleared storage can clobber data"/>
+          <outline text="OK at current size - just know it is there"/>
+        </outline>
+      </outline>
+      <outline text="Maintainability - not capacity (GREEN)">
+        <outline text="401 KB index.html monolith">
+          <outline text="Will not fail at 1000 (static, CDN-cached)"/>
+          <outline text="Slows YOU down, error-prone edits"/>
+          <outline text="Split eventually, carefully - not urgent"/>
+        </outline>
+      </outline>
+      <outline text="Bottom Line">
+        <outline text="Stable for 1000? YES - after two things">
+          <outline text="Lock down the AI endpoints"/>
+          <outline text="Add failure alerts"/>
+        </outline>
+        <outline text="Everything else is comfortable at this scale"/>
+      </outline>
+      <outline text="Recommended Next Step">
+        <outline text="Add Supabase-auth + daily cap to AI functions (code)"/>
+        <outline text="5-min checklist for dashboard alerts (you click)">
+          <outline text="Netlify deploy alerts"/>
+          <outline text="OpenAI spend cap"/>
+          <outline text="UptimeRobot monitor"/>
+        </outline>
+      </outline>
+    </outline>
+  </body>
+</opml>
