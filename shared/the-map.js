@@ -290,40 +290,49 @@ function _renderMindset(mindset, idx) {
   return out;
 }
 
-/* ── RENDER: PRACTICE FEED ───────────────────────────── */
+/* ── RENDER: PRACTICE FEED ───────────────────────────────
+   Flattened: each item is its own standalone collapsible triangle piece.
+───────────────────────────────────────────────────────── */
 function _renderPracticeFeed(practice, idx) {
   if (!practice) return '';
 
-  return `
+  const piece = (key, color, icon, title, bodyHtml) => `
     <div style="margin-bottom:2px;">
-      <div style="padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;">
-        <span style="font-size:15px;margin-right:8px;">🎯</span>
-        <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">YOUR CI IS TUNED TO THIS GOAL</span>
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;padding-left:24px;">PLAYERS · GRATITUDE · MEDITATION · WEEKLY REVIEW</div>
+      <div onclick="toggleColBSection('${key}')" style="display:flex;align-items:center;gap:8px;padding:12px 16px 8px;background:#111;border-bottom:1px solid #222;cursor:pointer;user-select:none;">
+        <span class="ts-arrow" id="${key}-arr" style="color:${color};font-size:9px;flex-shrink:0;">▶</span>
+        <span style="font-size:15px;">${icon}</span>
+        <span style="font-family:var(--vault-mono);font-size:10px;color:${color};font-weight:800;letter-spacing:1.5px;">${title}</span>
       </div>
-      <div style="padding:12px 16px;">
-
-        ${practice.vizAffirmations?.length ? `
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#60A0FF;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">⚡ VISUALIZATION AFFIRMATIONS</div>
-        <div style="margin-bottom:14px;font-size:11px;color:#888;line-height:1.7;">
-          ${practice.vizAffirmations.map(a => `<div style="padding:3px 0;border-bottom:1px solid #1a1a1a;">"${esc(a)}"</div>`).join('')}
-        </div>` : ''}
-
-        ${practice.gratitudeItems?.length ? `
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#4ADE80;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">🙏 GRATITUDE ITEMS</div>
-        <div style="margin-bottom:14px;font-size:11px;color:#888;line-height:1.7;">
-          ${practice.gratitudeItems.map(g => `<div style="padding:3px 0;border-bottom:1px solid #1a1a1a;">I am grateful for ${esc(g)}</div>`).join('')}
-        </div>` : ''}
-
-        ${practice.meditationFocus ? `
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#8B5CF6;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">🧘 MEDITATION FOCUS</div>
-        <div style="background:#0d0a1a;border:1px solid #2a1a3a;border-radius:8px;padding:12px;font-size:11px;color:#C4B5FD;line-height:1.7;margin-bottom:14px;font-style:italic;">"${esc(practice.meditationFocus)}"</div>` : ''}
-
-        ${practice.weeklyQuestion ? `
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">📅 FRIDAY REVIEW QUESTION</div>
-        <div style="background:#0a0f00;border:1px solid #2a3a00;border-radius:8px;padding:12px;font-size:12px;color:#D4E650;line-height:1.6;font-style:italic;">"${esc(practice.weeklyQuestion)}"</div>` : ''}
-      </div>
+      <div id="${key}-body" style="padding:12px 16px;display:none;">${bodyHtml}</div>
     </div>`;
+
+  let out = '';
+
+  if (practice.vizAffirmations?.length) {
+    out += piece(`vizAff-${idx}`, '#60A0FF', '⚡', 'VISUALIZATION AFFIRMATIONS',
+      `<div style="font-size:11px;color:#888;line-height:1.7;">${
+        practice.vizAffirmations.map(a => `<div style="padding:3px 0;border-bottom:1px solid #1a1a1a;">"${esc(a)}"</div>`).join('')
+      }</div>`);
+  }
+
+  if (practice.gratitudeItems?.length) {
+    out += piece(`gratItems-${idx}`, '#4ADE80', '🙏', 'GRATITUDE ITEMS',
+      `<div style="font-size:11px;color:#888;line-height:1.7;">${
+        practice.gratitudeItems.map(g => `<div style="padding:3px 0;border-bottom:1px solid #1a1a1a;">I am grateful for ${esc(g)}</div>`).join('')
+      }</div>`);
+  }
+
+  if (practice.meditationFocus) {
+    out += piece(`medFocus-${idx}`, '#8B5CF6', '🧘', 'MEDITATION FOCUS',
+      `<div style="background:#0d0a1a;border:1px solid #2a1a3a;border-radius:8px;padding:12px;font-size:11px;color:#C4B5FD;line-height:1.7;font-style:italic;">"${esc(practice.meditationFocus)}"</div>`);
+  }
+
+  if (practice.weeklyQuestion) {
+    out += piece(`fridayReview-${idx}`, '#F5A623', '📅', 'FRIDAY REVIEW QUESTION',
+      `<div style="background:#0a0f00;border:1px solid #2a3a00;border-radius:8px;padding:12px;font-size:12px;color:#D4E650;line-height:1.6;font-style:italic;">"${esc(practice.weeklyQuestion)}"</div>`);
+  }
+
+  return out;
 }
 
 /* ── BUILD SHEET PANEL ───────────────────────────────── */
