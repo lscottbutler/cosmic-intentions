@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "lint": "eslint shared netlify scripts",
+    "health": "node scripts/healthcheck.mjs"
+  },
   "dependencies": {
     "docx": "^9.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
   }
 }
