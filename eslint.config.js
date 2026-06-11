@@ -20,7 +20,10 @@ const sharedRules = {
   'no-self-assign': 'error',
   'no-unsafe-negation': 'error',
   'valid-typeof': 'error',
-  'no-unused-vars': ['warn', { args: 'none', varsIgnorePattern: '^_' }],
+  // vars:'local' so top-level functions called from HTML onclick (globals) aren't
+  // false-flagged; caughtErrors:'none' so empty catch(e) blocks are fine. Still
+  // catches genuinely-dead LOCAL variables.
+  'no-unused-vars': ['warn', { args: 'none', vars: 'local', caughtErrors: 'none', varsIgnorePattern: '^_' }],
   'eqeqeq': ['warn', 'smart'],
 };
 

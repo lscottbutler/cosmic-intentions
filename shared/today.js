@@ -203,7 +203,7 @@ function renderTodayView() {
       </div>`;
   }
 
-  el.innerHTML = header + sessionsSection;
+  el.innerHTML = header + sessionsSection + commitsSection;
 }
 
 /* ── TODAY STRIP — compact sidebar widget ────────────────
