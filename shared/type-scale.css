@@ -1,0 +1,13 @@
+/* ── READABILITY SCALE (single source — linked by the players) ──────────────
+   Bumps inline body/reading text (12–16px) ~+40% for legibility, leaving the
+   8–11px labels/mono-caps and 17px+ headers/timer digits untouched so the
+   immersive player layouts don't blow up. Tune here once; applies everywhere
+   this file is linked. Reversible: remove the <link>.
+   (index.html carries an inline copy of these rules; this file is the canonical
+   one for the player pages.)
+─────────────────────────────────────────────────────────────────────────── */
+[style*="font-size:12px"], [style*="font-size: 12px"] { font-size: 17px !important; }
+[style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 18px !important; }
+[style*="font-size:14px"], [style*="font-size: 14px"] { font-size: 20px !important; }
+[style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 21px !important; }
+[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
