@@ -3840,6 +3840,21 @@ input, textarea, select {
   line-height: 1.7;
   margin-bottom: 28px;
 }
+/* ── BRAND BANNER ───────────────────────────────────── */
+#brand-banner {
+  background: #111;
+  border-bottom: 2px solid #2a2a2a;
+  padding: 10px 16px;
+  border-radius: 6px 6px 0 0;
+}
+#brand-banner-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #666;
+  text-transform: uppercase;
+}
+
 /* ── AFFIRMATION TICKER ──────────────────────────────── */
 #dashboard-affirmation-ticker {
   background: #1a1a2e;
@@ -6190,6 +6205,11 @@ input, textarea, select {
 
         <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
         <div id="colb-active-state" style="display:none;">
+
+        <!-- BRAND BANNER — personalised workspace header -->
+        <div id="brand-banner" style="margin-bottom:8px;">
+          <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
+        </div>
 
         <!-- BUILD SHEET -->
         <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
@@ -9616,6 +9636,46 @@ function colBBanner(key, title, color, bodyHtml, opts) {
     <div class="colb-banner-body" id="${key}-body"${collapsed ? ' style="display:none;"' : ''}>${bodyHtml || ''}</div>`;
 }
 
+/* ── BRAND BANNER RESOLVER ───────────────────────────────────────────
+   Priority: pb['pb-name'] (in-memory pegboard) → Supabase profiles cache
+   → currentUser metadata → email prefix → fallback "MY"
+──────────────────────────────────────────────────────────────────── */
+async function populateWorkspaceBrandBanner() {
+  let firstName = 'MY';
+  try {
+    // 1. Pegboard localStorage — primary source, always populated when user has a profile
+    const pb = getPB();
+    if (pb['pb-name']) {
+      firstName = pb['pb-name'].split(' ')[0];
+    } else {
+      // 2. Supabase profiles cache (written on loadPegboard)
+      const cached = localStorage.getItem('ci_user_profile');
+      if (cached) {
+        const profileData = JSON.parse(cached);
+        if (profileData?.first_name)     firstName = profileData.first_name;
+        else if (profileData?.pb_name)   firstName = profileData.pb_name.split(' ')[0];
+        else if (profileData?.email)     firstName = profileData.email.split('@')[0];
+      } else if (typeof sb !== 'undefined' && currentUser) {
+        // 3. Supabase profiles table (single fetch, then cache for next time)
+        const { data: profile, error } = await sb.from('profiles').select('*')
+          .eq('id', currentUser.id).single();
+        if (!error && profile) {
+          localStorage.setItem('ci_user_profile', JSON.stringify(profile));
+          firstName = profile.pb_name?.split(' ')[0] || profile.first_name
+                   || currentUser.email?.split('@')[0] || 'MY';
+        }
+      } else if (currentUser?.email) {
+        // 4. Email prefix last resort
+        firstName = currentUser.email.split('@')[0];
+      }
+    }
+  } catch (e) {
+    console.error('Brand banner profile error:', e);
+  }
+  const el = document.getElementById('brand-banner-text');
+  if (el) el.innerText = `${firstName.toUpperCase()}'S PERSONAL ROADMAP`;
+}
+
 function showVaultBuildSheet(idx) {
   const intent = intentions[idx];
   if (!intent) { showVaultWelcome(); return; }
@@ -9624,6 +9684,7 @@ function showVaultBuildSheet(idx) {
   const act = document.getElementById('colb-active-state');
   if (sel) sel.style.display = 'none';
   if (act) act.style.display = '';
+  populateWorkspaceBrandBanner();
   document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   const sheet = document.getElementById('vaultBuildSheet');
