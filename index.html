@@ -6131,15 +6131,17 @@ input, textarea, select {
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
 
-        <!-- GOAL BOXES -->
-        <div class="vault-cats" id="vaultCats"></div>
-        <div class="vault-list" id="vaultList"></div>
+        <!-- ADD INTENTION + DATE BAR -->
         <div class="vault-add-wrap" id="colbAnchor" style="margin-bottom:12px;">
           <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
         </div>
 
-        <!-- DATE BAR — top of column B -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;"></div>
+        <!-- DATE BAR — sits directly below + Add Intention -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
+
+        <!-- CATEGORY FILTER TABS + INTENTION LIST — beneath the tracker bar -->
+        <div class="vault-cats" id="vaultCats"></div>
+        <div class="vault-list" id="vaultList"></div>
 
         <!-- WELCOME STATE — standalone baseline content for Column B -->
         <div id="vaultWelcome" class="vault-welcome">
