@@ -5973,10 +5973,42 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- ACTION PANEL — Inner Game tools, always visible in Column A -->
-        <div id="actionPanel" style="padding:0;background:#252525;margin-bottom:8px;border-radius:8px;overflow:hidden;">
+        <!-- PEGBOARD LOOP WIDGET -->
+        <div class="pb-loop-card">
+          <div class="pb-loop-bg" id="pbLoopBg"></div>
+          <div class="pb-loop-content" id="pbLoopContent">
+            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
+            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
+          </div>
+        </div>
 
-          <!-- Cosmic Library parent removed — each player below is its own standalone piece -->
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="vault-main" id="vaultMain">
+
+        <!-- SELECTION STATE — visible until an intention is selected -->
+        <div id="colb-selection-state">
+
+        <!-- MILESTONE BAR — absolute top of Column B selection view -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
+
+        <!-- INTENTION LIST — goal cards beneath the tracker -->
+        <div class="vault-list" id="vaultList"></div>
+
+        <!-- + ADD INTENTION — directly below last card -->
+        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:4px;margin-bottom:4px;">
+          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
+        </div>
+
+        <!-- CATEGORY FILTER TABS — beneath the add button -->
+        <div class="vault-cats" id="vaultCats"></div>
+
+        <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
+        <div id="embedded-progress-workspace" style="margin-top:16px;"></div>
+
+        <!-- ACTION PANEL — Inner Game tools, below progress section in Column B -->
+        <div id="actionPanel" style="padding:0;background:#252525;margin-top:8px;margin-bottom:8px;border-radius:8px;overflow:hidden;">
           <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
           <div class="acc-list" id="vizAccList">
 
@@ -6078,92 +6110,9 @@ input, textarea, select {
             </div>
             <div id="gratInlineSlot"></div>
 
-            <!-- Tools & Community -->
-            <div class="zone-hd" onclick="toggleZone('tools')" style="margin-top:12px;">
-              <span class="zone-icon">🔧</span>
-              <span class="zone-title">Tools &amp; Community</span>
-              <span class="zone-arrow" id="toolsZoneArrow">▶</span>
-            </div>
-            <div class="zone-body collapsed" id="toolsZoneBody">
-              <div class="acc-list">
-                <div class="acc-item">
-                  <button class="acc-trigger" id="accTrig-pegboard" onclick="navTo('setup')">
-                    <span class="acc-svg-circle"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h512v512H0z" fill="none"/><path d="M320 80c0-35.328-28.672-64-64-64s-64 28.672-64 64h-32v64c0 8.844 7.156 16 16 16h160c8.844 0 16-7.156 16-16V80h-32zm48 0v32c17.641 0 32 14.359 32 32v288c0 17.641-14.359 32-32 32H144c-17.641 0-32-14.359-32-32V144c0-17.641 14.359-32 32-32V80c-35.297 0-64 28.703-64 64v288c0 35.297 28.703 64 64 64h224c35.297 0 64-28.703 64-64V144c0-35.297-28.703-64-64-64zM248.047 216h112.766c9.594 0 9.594 24 0 24H248.047c-10.734 0-10.734-24 0-24zm-29.188-21a13.078 13.078 0 0 0-18.828 2.234l-27.047 35.656-9.719-14.719c-3.234-4.938-10.109-5.984-14.641-2.047-5.797 5.063-6.078 13.781-1.156 19.188l14.609 16.281c4.984 5.531 13.422 5.922 18.828.766l38.922-36.969c5.844-5.578 5.484-15.063-.688-20.156l-.28-.234zm0 80.016a13.078 13.078 0 0 0-18.828 2.234l-27.047 35.656-9.719-14.719c-3.234-4.938-10.109-5.984-14.641-2.047-5.797 5.063-6.078 13.781-1.156 19.188l14.609 16.281c4.984 5.531 13.422 5.922 18.828.766l38.922-36.969c5.844-5.578 5.484-15.063-.688-20.156l-.28-.234zm0 79.984a13.078 13.078 0 0 0-18.828 2.234l-27.047 35.656-9.719-14.719c-3.234-4.938-10.109-5.984-14.641-2.047-5.797 5.063-6.078 13.781-1.156 19.188l14.609 16.281c4.984 5.531 13.422 5.922 18.828.766l38.922-36.969c5.844-5.578 5.484-15.063-.688-20.156l-.28-.234zm29.188-59h112.766c9.594 0 9.594 24 0 24H248.047c-10.734 0-10.734-24 0-24zm0 80h112.766c9.594 0 9.594 24 0 24H248.047c-10.734 0-10.734-24 0-24zM224 80c0-17.688 14.313-32 32-32s32 14.313 32 32h-64z" fill="#FFFFFF"/></svg></span>
-                    <span class="acc-label">My Pegboard</span><span class="acc-arrow">▶</span>
-                  </button>
-                  <div class="acc-panel" id="accPanel-pegboard">
-                    <div class="acc-panel-inner">
-                      <div class="acc-desc">Your pegboard — mission, values, and core beliefs.</div>
-                      <button class="acc-launch-btn" onclick="navTo('setup')">Launch →</button>
-                    </div>
-                  </div>
-                </div>
-                <div style="background:#FFD700;color:#1a1a1a;text-align:center;font-weight:800;font-size:12px;letter-spacing:0.15em;padding:10px 0;border-radius:6px;margin:4px 0;">COSMIC LIBRARY</div>
-                <div class="acc-item">
-                  <button class="acc-trigger" id="accTrig-library" onclick="toggleAcc('library')">
-                    <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
-                    <span class="acc-label">Entrepreneur Library</span><span class="acc-arrow">▶</span>
-                  </button>
-                  <div class="acc-panel" id="accPanel-library">
-                    <div class="acc-panel-inner">
-                      <div class="acc-desc">Curated resources for entrepreneurs.</div>
-                      <button class="acc-launch-btn" onclick="navTo('library')">Launch →</button>
-                    </div>
-                  </div>
-                </div>
-                <div style="background:#C41E3A;color:#fff;text-align:center;font-weight:800;font-size:12px;letter-spacing:0.15em;padding:10px 0;border-radius:6px;margin:4px 0;">COSMIC COMMUNITY</div>
-                <div class="acc-item">
-                  <button class="acc-trigger" id="accTrig-community" onclick="toggleAcc('community')">
-                    <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#fff" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
-                    <span class="acc-label">Community Feed</span><span class="acc-arrow">▶</span>
-                  </button>
-                  <div class="acc-panel" id="accPanel-community">
-                    <div class="acc-panel-inner">
-                      <div class="acc-desc">Connect with the community.</div>
-                      <button class="acc-launch-btn" onclick="navTo('community')">Launch →</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
         </div><!-- end actionPanel -->
-
-        <!-- PEGBOARD LOOP WIDGET -->
-        <div class="pb-loop-card">
-          <div class="pb-loop-bg" id="pbLoopBg"></div>
-          <div class="pb-loop-content" id="pbLoopContent">
-            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
-            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
-          </div>
-        </div>
-
-      </aside>
-
-      <!-- MAIN CONTENT -->
-      <div class="vault-main" id="vaultMain">
-
-        <!-- SELECTION STATE — visible until an intention is selected -->
-        <div id="colb-selection-state">
-
-        <!-- MILESTONE BAR — absolute top of Column B selection view -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
-        <!-- INTENTION LIST — goal cards beneath the tracker -->
-        <div class="vault-list" id="vaultList"></div>
-
-        <!-- + ADD INTENTION — directly below last card -->
-        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:4px;margin-bottom:4px;">
-          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
-        </div>
-
-        <!-- CATEGORY FILTER TABS — beneath the add button -->
-        <div class="vault-cats" id="vaultCats"></div>
-
-        <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
-        <div id="embedded-progress-workspace" style="margin-top:16px;"></div>
 
         <!-- WELCOME STATE — standalone baseline content for Column B -->
         <div id="vaultWelcome" class="vault-welcome">
@@ -9692,12 +9641,6 @@ async function renderEmbeddedProgress() {
         }).join('')}
       </div>
     </div>` : ''}
-
-    <button class="vin-row" onclick="openMeditationModal()" style="margin-bottom:8px;">
-      <span class="vin-icon"><img src="images/icons/meditations.png" alt="" style="width:24px;height:24px;object-fit:contain;"></span>
-      <span class="vin-label">MEDITATION</span>
-      <span class="vin-arrow">▶</span>
-    </button>
 
   </div>`;
 }
