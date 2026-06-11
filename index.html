@@ -17,7 +17,7 @@
 <script src="shared/today.js?v=20260611a"></script>
 <script src="shared/player-launcher.js?v=20260611a"></script>
 <script src="shared/progress-dashboard.js?v=20260611a"></script>
-<script src="shared/the-map.js?v=20260611a"></script>
+<script src="shared/the-map.js?v=20260612a"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3840,6 +3840,29 @@ input, textarea, select {
   line-height: 1.7;
   margin-bottom: 28px;
 }
+/* ── AFFIRMATION TICKER ──────────────────────────────── */
+#dashboard-affirmation-ticker {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#affirmation-ticker-text {
+  color: #90b8ff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.5;
+  font-style: italic;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
 .vault-stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -5915,6 +5938,11 @@ input, textarea, select {
 
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
+
+        <!-- AFFIRMATION TICKER — cycling 30s loop, goal-specific or default -->
+        <div id="dashboard-affirmation-ticker">
+          <span id="affirmation-ticker-text">Loading your affirmations…</span>
+        </div>
 
         <!-- TODAY — top of column A -->
         <div id="todayStrip" style="margin-bottom:8px;border-radius:8px;overflow:hidden;"></div>
@@ -9481,6 +9509,39 @@ function selectVaultIntention(idx) {
   }
 }
 
+/* ── AFFIRMATION TICKER ──────────────────────────────────
+   startAffirmationLoop(affirmations)
+     affirmations = string[] from goal data, or null/[] for defaults.
+   Runs a 30-second cycle with 0.5s CSS fade between items.
+───────────────────────────────────────────────────────── */
+const AFFIRMATION_DEFAULTS = [
+  "I am becoming the best version of myself.",
+  "Every day I move closer to my vision.",
+  "I am worthy of everything I desire.",
+  "My goals are inevitable — the path is already set.",
+  "I attract success with every thought and action.",
+  "I am the architect of my destiny.",
+  "Growth and abundance flow naturally to me."
+];
+let _affLoop = null;
+let _affList = AFFIRMATION_DEFAULTS;
+let _affIdx  = 0;
+
+function startAffirmationLoop(affirmations) {
+  if (_affLoop) { clearInterval(_affLoop); _affLoop = null; }
+  _affList = (affirmations && affirmations.length) ? affirmations : AFFIRMATION_DEFAULTS;
+  _affIdx  = 0;
+  const el = document.getElementById('affirmation-ticker-text');
+  if (el) { el.style.opacity = '1'; el.textContent = _affList[0]; }
+  _affLoop = setInterval(() => {
+    const t = document.getElementById('affirmation-ticker-text');
+    if (!t) return;
+    _affIdx = (_affIdx + 1) % _affList.length;
+    t.style.opacity = '0';
+    setTimeout(() => { t.textContent = _affList[_affIdx]; t.style.opacity = '1'; }, 500);
+  }, 30000);
+}
+
 function showVaultWelcome() {
   document.getElementById('vaultWelcome')?.classList.remove('hidden');
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
@@ -9489,6 +9550,7 @@ function showVaultWelcome() {
   const act = document.getElementById('colb-active-state');
   if (sel) sel.style.display = '';
   if (act) act.style.display = 'none';
+  startAffirmationLoop(null); // revert to default affirmations
 }
 
 function closeVaultBuildSheet() {
@@ -10427,7 +10489,7 @@ function startEntSlideshow() {
 
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
 
-document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); });
+document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); startAffirmationLoop(null); });
 
 </script>
 

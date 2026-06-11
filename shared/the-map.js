@@ -14,6 +14,7 @@ function seedGoalPractice(idx) {
   if (p.vizAffirmations?.length) {
     localStorage.setItem('ci_goal_affirmations', JSON.stringify(p.vizAffirmations));
     localStorage.setItem('ci_goal_affirmations_idx', String(idx));
+    if (typeof startAffirmationLoop === 'function') startAffirmationLoop(p.vizAffirmations);
   }
   if (p.gratitudeItems?.length) {
     localStorage.setItem('ci_goal_gratitude', JSON.stringify(p.gratitudeItems));
@@ -285,12 +286,8 @@ function _renderPracticeFeed(practice, idx) {
 
   let out = '';
 
-  if (practice.vizAffirmations?.length) {
-    out += piece(`vizAff-${idx}`, '#60A0FF', '⚡', 'VISUALIZATION AFFIRMATIONS',
-      `<div style="font-size:11px;color:#888;line-height:1.7;">${
-        practice.vizAffirmations.map(a => `<div style="padding:3px 0;border-bottom:1px solid #1a1a1a;">"${esc(a)}"</div>`).join('')
-      }</div>`);
-  }
+  // Visualization Affirmations removed from Daily Practice banner —
+  // they now live in the Column A affirmation ticker (#dashboard-affirmation-ticker).
 
   if (practice.gratitudeItems?.length) {
     out += piece(`gratItems-${idx}`, '#4ADE80', '🙏', 'GRATITUDE ITEMS',
