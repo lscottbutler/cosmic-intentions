@@ -5538,6 +5538,19 @@ input, textarea, select {
   line-height: 1.5;
 }
 
+/* ── READABILITY SCALE ──────────────────────────────────────────────────────
+   Bumps the BODY/READING text (inline 12–16px) ~+20% for legibility, while the
+   8–11px structural labels, badges, mono-caps, and 17px+ headers are left alone
+   so the dense layout doesn't blow up. Targets inline sizes by value, so it
+   overrides only what's intended. Fully reversible: delete this block.
+   (Players are separate files and are unaffected by this.)
+─────────────────────────────────────────────────────────────────────────── */
+[style*="font-size:12px"], [style*="font-size: 12px"] { font-size: 14px !important; }
+[style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 15px !important; }
+[style*="font-size:14px"], [style*="font-size: 14px"] { font-size: 17px !important; }
+[style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 18px !important; }
+[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 19px !important; }
+
 </style>
 </head>
 <body>
