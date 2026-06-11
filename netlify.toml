@@ -2,6 +2,10 @@
   functions = "netlify/functions"
   publish = "."
 
+# Local `netlify dev` only — never auto-open a browser (no Edge popping up)
+[dev]
+  autoLaunch = false
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
