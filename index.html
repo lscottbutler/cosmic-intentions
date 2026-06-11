@@ -6211,12 +6211,7 @@ input, textarea, select {
         <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
         <div id="colb-active-state" style="display:none;">
 
-        <!-- BRAND BANNER — personalised workspace header -->
-        <div id="brand-banner" style="margin-bottom:8px;">
-          <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
-        </div>
-
-        <!-- BUILD SHEET -->
+        <!-- BUILD SHEET — brand banner injected inside by buildBuildSheet() -->
         <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
 
         </div><!-- end colb-active-state -->
@@ -9937,6 +9932,11 @@ function buildBuildSheet(intent, idx) {
       </div>
       <div class="bs-num-circle">${idx + 1}</div>
       <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
+    </div>
+
+    <!-- BRAND BANNER — personalised workspace sub-header, sits below goal card -->
+    <div id="brand-banner" style="margin:8px 0;">
+      <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
     </div>
 
     <!-- The Map / Backbone tabs removed — each Map section is its own bold banner -->
