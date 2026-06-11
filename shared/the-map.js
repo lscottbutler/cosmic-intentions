@@ -42,10 +42,27 @@ async function toggleMapItem(idx, section, itemIdx, checked) {
   }
 }
 
+/* ── TOGGLE LOCK ─────────────────────────────────────── */
+function toggleTaskLock(idx, sectionKey, itemIdx) {
+  const map = intentions[idx]?.theMap;
+  if (!map) return;
+  if (!map.locks) map.locks = {};
+  const key = `${sectionKey}-${itemIdx}`;
+  map.locks[key] = !map.locks[key];
+  const locked = !!map.locks[key];
+  const btn = document.getElementById(`mapLock-${idx}-${key}`);
+  if (btn) {
+    btn.textContent = locked ? '🔒 LOCKED' : '🔓 KEEP';
+    btn.style.color = locked ? '#F5A623' : '#505058';
+  }
+  if (typeof syncIntentionsToSupabase === 'function') syncIntentionsToSupabase();
+}
+
 /* ── RENDER: STANDARD CHECKLIST SECTION ─────────────── */
 function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx, collapsed) {
   if (!items || items.length === 0) return '';
   const checks = (intentions[idx]?.theMap?.checks) || {};
+  const locks  = (intentions[idx]?.theMap?.locks)  || {};
   const done  = items.filter((_, i) => checks[`${sectionKey}-${i}`]).length;
   const total = items.length;
   const pct   = Math.round((done / total) * 100);
@@ -53,6 +70,7 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
   const rows = items.map((item, i) => {
     const key     = `${sectionKey}-${i}`;
     const checked = !!checks[key];
+    const locked  = !!locks[key];
     const isJ     = !!item.isJournal;
     return `
       <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;
@@ -68,6 +86,13 @@ function _renderCheckSection(title, color, icon, items, sectionKey, cadence, idx
             style="font-size:12px;line-height:1.6;color:${checked ? '#505058' : '#C8C8D0'};
             ${checked ? 'text-decoration:line-through;' : ''}">${esc(item.text)}</span>
         </div>
+        <button id="mapLock-${idx}-${key}"
+          onclick="toggleTaskLock(${idx},'${sectionKey}',${i});event.stopPropagation();"
+          style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:2px 0;
+            font-family:var(--vault-mono);font-size:8px;letter-spacing:0.5px;
+            color:${locked ? '#F5A623' : '#505058'};"
+          title="${locked ? 'Unlock — will be replaced on regenerate' : 'Lock — survives regenerate'}"
+        >${locked ? '🔒 LOCKED' : '🔓 KEEP'}</button>
       </div>`;
   }).join('');
 
@@ -386,12 +411,35 @@ async function bsGenerateTheMap(idx) {
     </div>`;
 
   try {
+    const prevMap   = intent.theMap;
+    const prevLocks = prevMap?.locks || {};
+
     const res = await ciApi('map-ai', { goal: intent.title });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     if (!data.thisWeek && !data.dangerZones) throw new Error('Bad response format');
 
-    intent.theMap = { ...data, checks: intent.theMap?.checks || {} };
+    // Preserve locked tasks across regenerate
+    const mergedLocks = {};
+    ['thisWeek', 'thisMonth', 'terrain'].forEach(sec => {
+      const prev    = prevMap?.[sec] || [];
+      const fresh   = data[sec]  || [];
+      const merged  = [];
+      const freshQ  = [...fresh];
+      // Place locked items at their original positions; fill gaps with new AI items
+      for (let i = 0; i < Math.max(prev.length, fresh.length); i++) {
+        if (prevLocks[`${sec}-${i}`] && prev[i]) {
+          merged.push(prev[i]);
+          mergedLocks[`${sec}-${merged.length - 1}`] = true;
+        } else if (freshQ.length > 0) {
+          merged.push(freshQ.shift());
+        }
+      }
+      while (freshQ.length) merged.push(freshQ.shift());
+      if (merged.length) data[sec] = merged;
+    });
+
+    intent.theMap = { ...data, checks: prevMap?.checks || {}, locks: mergedLocks };
     if (typeof syncIntentionsToSupabase === 'function') syncIntentionsToSupabase();
 
     // Seed players with goal-specific content
