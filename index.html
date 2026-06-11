@@ -6131,7 +6131,10 @@ input, textarea, select {
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
 
-        <!-- INTENTION LIST — goal cards first -->
+        <!-- MILESTONE BAR — absolute top of Column B selection view -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
+
+        <!-- INTENTION LIST — goal cards beneath the tracker -->
         <div class="vault-list" id="vaultList"></div>
 
         <!-- + ADD INTENTION — directly below last card -->
@@ -6141,9 +6144,6 @@ input, textarea, select {
 
         <!-- CATEGORY FILTER TABS — beneath the add button -->
         <div class="vault-cats" id="vaultCats"></div>
-
-        <!-- MILESTONE BAR — anchored at the bottom of this block -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-top:8px;"></div>
 
         <!-- WELCOME STATE — standalone baseline content for Column B -->
         <div id="vaultWelcome" class="vault-welcome">
