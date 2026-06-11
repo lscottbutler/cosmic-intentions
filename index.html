@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -5928,78 +5928,8 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- Goal boxes (category filters + intention list + add button) moved to top of Column B -->
-
-        <!-- PEGBOARD LOOP WIDGET -->
-        <div class="pb-loop-card">
-          <div class="pb-loop-bg" id="pbLoopBg"></div>
-          <div class="pb-loop-content" id="pbLoopContent">
-            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
-            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
-          </div>
-        </div>
-
-      </aside>
-
-      <!-- MAIN CONTENT -->
-      <div class="vault-main" id="vaultMain">
-
-        <!-- GOAL BOXES — moved from Column A; shown at top of Column B from the start -->
-        <div class="vault-cats" id="vaultCats"></div>
-        <div class="vault-list" id="vaultList"></div>
-        <div class="vault-add-wrap" id="colbAnchor" style="margin-bottom:12px;">
-          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
-        </div>
-
-        <!-- DATE BAR — top of column B -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;"></div>
-
-        <!-- WELCOME STATE — standalone baseline content for Column B -->
-        <div id="vaultWelcome" class="vault-welcome">
-          <div class="vault-welcome-icon">✦</div>
-          <div class="vault-welcome-title">Your Roadmap Awaits</div>
-          <div class="vault-welcome-sub">Select an intention from the list to open its Map, Backbone, and daily practice — or tap <strong style="color:#cfcabf;">+ Add Intention</strong> to begin a new one.</div>
-        </div>
-
-        <!-- ADD INTENTION FORM -->
-        <div class="vault-add-form hidden" id="addIntentionForm">
-          <div class="vault-add-form-inner">
-            <div class="vaf-label">New I AM Statement</div>
-
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM the</span>
-              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
-                placeholder="proud owner of"
-                maxlength="60"
-                oninput="updateIamPreview()"
-                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
-            </div>
-
-            <input type="text" id="iam-field2" class="vaf-input"
-              placeholder="a Porsche 911"
-              maxlength="80"
-              oninput="updateIamPreview()"
-              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
-
-            <div id="iam-preview" style="
-              font-size:14px;font-weight:700;color:#fff;
-              background:#1a1a1a;border:1px solid #333;border-radius:8px;
-              padding:10px 14px;margin-bottom:12px;line-height:1.4;
-              min-height:42px;transition:opacity 0.2s;opacity:0.3;
-            ">I AM the …</div>
-
-            <div class="vaf-btns">
-              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
-              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUILD SHEET -->
-        <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
-
-        <!-- ACTION PANEL — sticky top of column B, shown when intention selected -->
-        <div id="actionPanel" class="hidden" style="padding:0;background:#252525;">
+        <!-- ACTION PANEL — Inner Game tools, always visible in Column A -->
+        <div id="actionPanel" style="padding:0;background:#252525;margin-bottom:8px;border-radius:8px;overflow:hidden;">
 
           <!-- Cosmic Library parent removed — each player below is its own standalone piece -->
           <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
@@ -6155,6 +6085,85 @@ input, textarea, select {
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
         </div><!-- end actionPanel -->
+
+        <!-- PEGBOARD LOOP WIDGET -->
+        <div class="pb-loop-card">
+          <div class="pb-loop-bg" id="pbLoopBg"></div>
+          <div class="pb-loop-content" id="pbLoopContent">
+            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
+            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="vault-main" id="vaultMain">
+
+        <!-- SELECTION STATE — visible until an intention is selected -->
+        <div id="colb-selection-state">
+
+        <!-- GOAL BOXES -->
+        <div class="vault-cats" id="vaultCats"></div>
+        <div class="vault-list" id="vaultList"></div>
+        <div class="vault-add-wrap" id="colbAnchor" style="margin-bottom:12px;">
+          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
+        </div>
+
+        <!-- DATE BAR — top of column B -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;"></div>
+
+        <!-- WELCOME STATE — standalone baseline content for Column B -->
+        <div id="vaultWelcome" class="vault-welcome">
+          <div class="vault-welcome-icon">✦</div>
+          <div class="vault-welcome-title">Your Roadmap Awaits</div>
+          <div class="vault-welcome-sub">Select an intention from the list to open its Map, Backbone, and daily practice — or tap <strong style="color:#cfcabf;">+ Add Intention</strong> to begin a new one.</div>
+        </div>
+
+        <!-- ADD INTENTION FORM -->
+        <div class="vault-add-form hidden" id="addIntentionForm">
+          <div class="vault-add-form-inner">
+            <div class="vaf-label">New I AM Statement</div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM the</span>
+              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
+                placeholder="proud owner of"
+                maxlength="60"
+                oninput="updateIamPreview()"
+                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
+            </div>
+
+            <input type="text" id="iam-field2" class="vaf-input"
+              placeholder="a Porsche 911"
+              maxlength="80"
+              oninput="updateIamPreview()"
+              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
+
+            <div id="iam-preview" style="
+              font-size:14px;font-weight:700;color:#fff;
+              background:#1a1a1a;border:1px solid #333;border-radius:8px;
+              padding:10px 14px;margin-bottom:12px;line-height:1.4;
+              min-height:42px;transition:opacity 0.2s;opacity:0.3;
+            ">I AM the …</div>
+
+            <div class="vaf-btns">
+              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
+              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- end colb-selection-state -->
+
+        <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
+        <div id="colb-active-state" style="display:none;">
+
+        <!-- BUILD SHEET -->
+        <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
+
+        </div><!-- end colb-active-state -->
+
 
         <!-- Alchemy Modal -->
         <div id="alchemyModal" class="ai-output-modal" style="display:none;opacity:0;pointer-events:none;">
@@ -9425,11 +9434,6 @@ function renderVaultSidebar() {
           </button>
         </div>`;
 
-      // Show/hide actionPanel in column B based on goal selection
-      const _goalSelected = selectedVaultIdx !== null && filtered.some(i => i._idx === selectedVaultIdx);
-      const actionPanel = document.getElementById('actionPanel');
-      if (actionPanel) actionPanel.classList.toggle('hidden', !_goalSelected);
-
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
@@ -9481,7 +9485,10 @@ function showVaultWelcome() {
   document.getElementById('vaultWelcome')?.classList.remove('hidden');
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
-  document.getElementById('actionPanel')?.classList.add('hidden');
+  const sel = document.getElementById('colb-selection-state');
+  const act = document.getElementById('colb-active-state');
+  if (sel) sel.style.display = '';
+  if (act) act.style.display = 'none';
 }
 
 function closeVaultBuildSheet() {
@@ -9494,8 +9501,8 @@ function closeVaultBuildSheet() {
    Each section key maps to its top-level block in #vaultMain.
    Order is persisted so ▲▼ reordering survives reloads.
 ─────────────────────────────────────────────────────────── */
-const COLB_SECTIONS = { cosmicLibrary: 'actionPanel', myRoadmap: 'vaultBuildSheet' };
-const COLB_DEFAULT_ORDER = ['myRoadmap', 'cosmicLibrary'];
+const COLB_SECTIONS = { myRoadmap: 'vaultBuildSheet' };
+const COLB_DEFAULT_ORDER = ['myRoadmap'];
 
 function getColBOrder() {
   let o = LS.get('ci_colb_order');
@@ -9509,26 +9516,8 @@ function getColBOrder() {
 }
 
 function applyColBOrder() {
-  const main = document.getElementById('vaultMain');
-  if (!main) return;
-  // Stack the goal sections at the VERY top of Column B — above the goal-box
-  // picker, date bar, and quote — so a selected goal's card leads everything.
-  const order = getColBOrder();
-  let anchor = null; // null => insert as the first child of #vaultMain
-  order.forEach(key => {
-    const block = document.getElementById(COLB_SECTIONS[key]);
-    if (!block) return;
-    if (anchor) anchor.insertAdjacentElement('afterend', block);
-    else        main.insertBefore(block, main.firstElementChild);
-    anchor = block;
-  });
-  // Disable the up arrow on the first section and the down arrow on the last.
-  order.forEach((key, i) => {
-    const up = document.getElementById(key + '-up');
-    const dn = document.getElementById(key + '-down');
-    if (up) up.disabled = (i === 0);
-    if (dn) dn.disabled = (i === order.length - 1);
-  });
+  // DOM reordering removed — vaultBuildSheet now lives inside #colb-active-state
+  // and visibility is managed by showVaultBuildSheet / showVaultWelcome.
 }
 
 function moveColBSection(key, dir) {
@@ -9564,6 +9553,11 @@ function colBBanner(key, title, color, bodyHtml, opts) {
 function showVaultBuildSheet(idx) {
   const intent = intentions[idx];
   if (!intent) { showVaultWelcome(); return; }
+  // Switch Column B state: hide selection list, show active workspace
+  const sel = document.getElementById('colb-selection-state');
+  const act = document.getElementById('colb-active-state');
+  if (sel) sel.style.display = 'none';
+  if (act) act.style.display = '';
   document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   const sheet = document.getElementById('vaultBuildSheet');
