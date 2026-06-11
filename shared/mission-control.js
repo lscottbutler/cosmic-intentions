@@ -146,11 +146,7 @@ Return JSON: { "items": [ { "action": "...", "why": "...", "category": "..." } ]
 Exactly 15 items. No filler. No repeated ideas. No goal-setting advice.`;
 
   try {
-    const res = await fetch('/.netlify/functions/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 1800 })
-    });
+    const res = await ciApi('claude', { system: systemPrompt, user: userPrompt, maxTokens: 1800 });
     const data   = await res.json();
     const parsed = JSON.parse(data.text);
     const items  = (parsed.items || []).slice(0, 15).map(item => ({
@@ -210,10 +206,7 @@ async function mcDeepDive(idx, itemIdx) {
   const systemPrompt = `You are a world-class success coach and researcher. Provide a detailed, practical, research-backed deep dive on a specific success strategy.`;
   const userPrompt   = `Goal: "${intent.title}"\nStrategy to deep-dive: "${item.action}"\n\nProvide a comprehensive deep dive covering:\n1. The full research and science behind why this works\n2. Real examples of people who used this exact approach (name them, be specific)\n3. The exact step-by-step process to implement this (numbered, actionable)\n4. Common mistakes people make with this strategy\n5. A 30-day micro-plan to put this into action immediately\n6. One counterintuitive insight most people miss about this\n\nBe specific, direct, and research-backed. No fluff.`;
   try {
-    const res  = await fetch('/.netlify/functions/claude', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemPrompt, user: userPrompt, maxTokens: 1200 })
-    });
+    const res  = await ciApi('claude', { system: systemPrompt, user: userPrompt, maxTokens: 1200 });
     const data = await res.json();
     let text   = data.text || '';
     try { const p = JSON.parse(text); text = p.content || p.text || text; } catch {}

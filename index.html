@@ -7,16 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Roboto+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="shared/content-bank.js?v=20260610d"></script>
-<script src="shared/community.js?v=20260610d"></script>
-<script src="shared/activity.js?v=20260610d"></script>
-<script src="shared/card-builder.js?v=20260610d"></script>
-<script src="shared/mission-control.js?v=20260610d"></script>
-<script src="shared/weekly-focus.js?v=20260610d"></script>
-<script src="shared/today.js?v=20260610d"></script>
-<script src="shared/player-launcher.js?v=20260610d"></script>
-<script src="shared/progress-dashboard.js?v=20260610d"></script>
-<script src="shared/the-map.js?v=20260610d"></script>
+<script src="shared/api.js?v=20260611a"></script>
+<script src="shared/content-bank.js?v=20260611a"></script>
+<script src="shared/community.js?v=20260611a"></script>
+<script src="shared/activity.js?v=20260611a"></script>
+<script src="shared/card-builder.js?v=20260611a"></script>
+<script src="shared/mission-control.js?v=20260611a"></script>
+<script src="shared/weekly-focus.js?v=20260611a"></script>
+<script src="shared/today.js?v=20260611a"></script>
+<script src="shared/player-launcher.js?v=20260611a"></script>
+<script src="shared/progress-dashboard.js?v=20260611a"></script>
+<script src="shared/the-map.js?v=20260611a"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -7625,11 +7626,7 @@ async function callClaude(system, user, maxTokens = 800) {
                 "Celebrate every milestone, no matter how small"]
     });
   }
-  const res = await fetch('/.netlify/functions/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system, user, maxTokens }),
-  });
+  const res = await ciApi('claude', { system, user, maxTokens });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Generation failed');
   return data.text;
@@ -8722,11 +8719,7 @@ async function speakText(text) {
   const safeText = text.trim().substring(0, 150);
   const voice    = localStorage.getItem('openai_voice') || 'alloy';
   try {
-    const res = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: safeText, voice })
-    });
+    const res = await ciApi('tts', { text: safeText, voice });
     if (!res.ok) throw new Error(`TTS ${res.status}`);
     const { audio: b64 } = await res.json();
     playBase64Audio(b64);
@@ -9720,11 +9713,7 @@ async function generateBBFW(idx) {
     </div>`;
 
   try {
-    const res = await fetch('/api/bbfw', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal: intent.title })
-    });
+    const res = await ciApi('bbfw', { goal: intent.title });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     intent.bbfw = data;

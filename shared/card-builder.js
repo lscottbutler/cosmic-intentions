@@ -310,11 +310,7 @@ async function fetchGoalImage(idx, title) {
   if (intn) intn._imgLoading = true;
   renderVaultSidebar();
   try {
-    const res = await fetch('/api/image-generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ intention: title })
-    });
+    const res = await ciApi('image-generate', { intention: title });
     if (!res.ok) throw new Error(`generate ${res.status}`);
     const { b64 } = await res.json();
     if (!b64 || !intentions[idx]) return;
@@ -583,10 +579,7 @@ async function generateFullPlan(idx) {
     const pb   = getPB();
     const goal = intentions[idx]?.title || '';
     if (!goal) { toast('No goal set for this intention.', 'error'); return; }
-    const res    = await fetch('/.netlify/functions/generate-content', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, pegboard: pb })
-    });
+    const res    = await ciApi('generate-content', { goal, pegboard: pb });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || 'Generation failed');
     await saveContentToSupabase(result, goal);

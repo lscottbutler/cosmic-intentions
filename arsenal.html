@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared/api.js?v=20260611a"></script>
 <style>
 /* ============================================================
    COSMIC INTENTIONS — ARSENAL.HTML
@@ -5649,11 +5650,7 @@ async function callClaude(system, user, maxTokens = 800) {
                 "Celebrate every milestone, no matter how small"]
     });
   }
-  const res = await fetch('/.netlify/functions/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system, user, maxTokens }),
-  });
+  const res = await ciApi('claude', { system, user, maxTokens });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Generation failed');
   return data.text;

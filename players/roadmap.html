@@ -321,6 +321,7 @@ body {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../shared/api.js?v=20260611a"></script>
 <script>
 const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
@@ -450,11 +451,7 @@ async function generate(forceRegen = false) {
   const userPrompt = buildUserPrompt();
 
   try {
-    const res = await fetch('/.netlify/functions/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: SYSTEM_PROMPT, user: userPrompt, maxTokens: 3200 }),
-    });
+    const res = await ciApi('claude', { system: SYSTEM_PROMPT, user: userPrompt, maxTokens: 3200 });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Generation failed');
 

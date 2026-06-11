@@ -389,11 +389,7 @@ async function bsGenerateTheMap(idx) {
     </div>`;
 
   try {
-    const res = await fetch('/api/map-ai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal: intent.title })
-    });
+    const res = await ciApi('map-ai', { goal: intent.title });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     if (!data.thisWeek && !data.dangerZones) throw new Error('Bad response format');
