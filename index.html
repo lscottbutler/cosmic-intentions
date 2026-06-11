@@ -9393,11 +9393,6 @@ function renderVaultSidebar() {
   const _dayOfYear = Math.floor(_diff / 86400000);
   const _remaining = _daysInYear - _dayOfYear;
   setEl('vaultDateLine', `Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
-  const _dateLine = document.getElementById('vaultDateLine');
-  if (_dateLine && !document.getElementById('dailySidebarQuote')) {
-    _dateLine.insertAdjacentHTML('afterend', getDailyLine('sidebar'));
-  }
-
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
   if (catsEl) {
