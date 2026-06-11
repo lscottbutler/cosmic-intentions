@@ -9693,18 +9693,11 @@ async function renderEmbeddedProgress() {
       </div>
     </div>` : ''}
 
-    ${nextUnlock ? `
-    <div style="border:1px solid #2a2a2a;border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-      <span style="font-size:20px;">${nextUnlock.icon}</span>
-      <div style="flex:1;">
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#505058;letter-spacing:1px;margin-bottom:3px;">UNLOCK NEXT</div>
-        <div style="font-size:12px;font-weight:700;color:#fff;">${nextUnlock.cta}</div>
-      </div>
-      <button onclick="${nextUnlock.action}" style="background:none;border:1px solid #383838;border-radius:6px;
-        padding:6px 10px;font-family:var(--vault-mono);font-size:8px;color:#888;cursor:pointer;letter-spacing:1px;white-space:nowrap;">
-        GO →
-      </button>
-    </div>` : ''}
+    <button class="vin-row" onclick="window.location.href='players/meditation-select.html'" style="margin-bottom:8px;">
+      <span class="vin-icon"><img src="images/icons/meditations.png" alt="" style="width:24px;height:24px;object-fit:contain;"></span>
+      <span class="vin-label">MEDITATION</span>
+      <span class="vin-arrow">▶</span>
+    </button>
 
   </div>`;
 }
