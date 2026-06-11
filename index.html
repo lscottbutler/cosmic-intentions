@@ -6131,17 +6131,19 @@ input, textarea, select {
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
 
-        <!-- ADD INTENTION + DATE BAR -->
-        <div class="vault-add-wrap" id="colbAnchor" style="margin-bottom:12px;">
+        <!-- INTENTION LIST — goal cards first -->
+        <div class="vault-list" id="vaultList"></div>
+
+        <!-- + ADD INTENTION — directly below last card -->
+        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:4px;margin-bottom:4px;">
           <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
         </div>
 
-        <!-- DATE BAR — sits directly below + Add Intention -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
-        <!-- CATEGORY FILTER TABS + INTENTION LIST — beneath the tracker bar -->
+        <!-- CATEGORY FILTER TABS — beneath the add button -->
         <div class="vault-cats" id="vaultCats"></div>
-        <div class="vault-list" id="vaultList"></div>
+
+        <!-- MILESTONE BAR — anchored at the bottom of this block -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-top:8px;"></div>
 
         <!-- WELCOME STATE — standalone baseline content for Column B -->
         <div id="vaultWelcome" class="vault-welcome">
