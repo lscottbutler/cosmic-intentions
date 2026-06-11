@@ -2746,6 +2746,10 @@ input, textarea, select {
   width: 100% !important;
   box-sizing: border-box;
 }
+/* Blob variants cycled across notes (applyNoteBlobs) — override the default green */
+.cb-display.cb-blob-1 { background-image: url('images/svg-library/notes-blob.svg') !important; }
+.cb-display.cb-blob-2 { background-image: url('images/svg-library/notes-blob-red.svg') !important; }
+.cb-display.cb-blob-3 { background-image: url('images/svg-library/notes-blob-orange.svg') !important; }
 .cb-display:empty { display: none; }
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
@@ -9762,6 +9766,16 @@ async function loadContentBlocks() {
         bodyEl.value = body.replace(/<[^>]+>/g, '').trim();
       }
     }
+  });
+  applyNoteBlobs();
+}
+
+/* Cycle the 3 blob backgrounds (green / red / orange) across all note boxes
+   in document order so the My Notes postings vary instead of all-green. */
+function applyNoteBlobs() {
+  document.querySelectorAll('.cb-display').forEach((el, i) => {
+    el.classList.remove('cb-blob-1', 'cb-blob-2', 'cb-blob-3');
+    el.classList.add('cb-blob-' + ((i % 3) + 1));
   });
 }
 
