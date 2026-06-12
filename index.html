@@ -6053,7 +6053,10 @@ input, textarea, select {
         <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
         <div id="colb-active-state" style="display:none;">
 
-        <!-- WORKSPACE SWITCHBOARD TABS -->
+        <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
+        <div id="vaultWorkspaceHeader"></div>
+
+        <!-- WORKSPACE SWITCHBOARD TABS — directly below brand banner -->
         <div id="workspaceTabs" style="display:flex;background:#1a1a1a;border-bottom:1px solid #222;">
           <button id="wsTab-strategy" onclick="switchWorkspaceLayer('strategy')"
             style="flex:1;background:#1a1a1a;border:none;border-bottom:2px solid #F5A623;padding:10px 4px;
@@ -6069,10 +6072,14 @@ input, textarea, select {
             color:#888;cursor:pointer;">3. ACTION</button>
         </div>
 
-        <!-- BUILD SHEET — brand banner injected inside by buildBuildSheet() -->
-        <div class="vault-build-sheet hidden" id="vaultBuildSheet"></div>
+        <!-- LAYER 1: STRATEGY — Backbone Framework -->
+        <div id="layer-content-strategy"></div>
 
-        <!-- ACTION PANEL — player stack directly below backbone framework -->
+        <!-- LAYER 2: TACTICS — My Roadmap + task banners -->
+        <div id="layer-content-tactics" style="display:none;"></div>
+
+        <!-- LAYER 3: ACTION — Full player stack -->
+        <div id="layer-content-action" style="display:none;">
         <div id="actionPanel" style="padding:0;background:#252525;margin-top:8px;margin-bottom:8px;border-radius:8px;overflow:hidden;">
           <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
           <div class="acc-list" id="vizAccList">
@@ -6178,6 +6185,7 @@ input, textarea, select {
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
         </div><!-- end actionPanel -->
+        </div><!-- end layer-content-action -->
 
         </div><!-- end colb-active-state -->
 
@@ -9726,7 +9734,6 @@ function startAffirmationLoop(affirmations) {
 
 function showVaultWelcome() {
   document.getElementById('vaultWelcome')?.classList.remove('hidden');
-  document.getElementById('vaultBuildSheet')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   const sel = document.getElementById('colb-selection-state');
   const act = document.getElementById('colb-active-state');
@@ -9835,34 +9842,17 @@ async function populateWorkspaceBrandBanner() {
 }
 
 function switchWorkspaceLayer(name) {
-  const idx   = selectedVaultIdx;
-  const sheet = document.getElementById('vaultBuildSheet');
-  const panel = document.getElementById('actionPanel');
-
-  // Update tab button styles
   ['strategy','tactics','action'].forEach(n => {
-    const btn = document.getElementById(`wsTab-${n}`);
-    if (!btn) return;
-    const on = n === name;
-    btn.style.color        = on ? '#F5A623' : '#888';
-    btn.style.borderBottom = on ? '2px solid #F5A623' : '2px solid transparent';
-    btn.style.background   = on ? '#1A1A1A' : 'transparent';
-  });
-
-  if (name === 'action') {
-    if (sheet) sheet.style.display = 'none';
-    if (panel) panel.style.display = '';
-  } else {
-    if (sheet) sheet.style.display = '';
-    if (panel) panel.style.display = 'none';
-    // Toggle the correct sub-panel inside vaultBuildSheet
-    if (idx !== null && idx !== undefined) {
-      const themap = document.getElementById(`bsPanel-themap-${idx}`);
-      const bbfw   = document.getElementById(`bsPanel-bbfw-${idx}`);
-      if (themap) themap.style.display = name === 'tactics'  ? '' : 'none';
-      if (bbfw)   bbfw.style.display   = name === 'strategy' ? '' : 'none';
+    const btn   = document.getElementById(`wsTab-${n}`);
+    const layer = document.getElementById(`layer-content-${n}`);
+    if (btn) {
+      const on = n === name;
+      btn.style.color        = on ? '#F5A623' : '#888';
+      btn.style.borderBottom = on ? '2px solid #F5A623' : '2px solid transparent';
+      btn.style.background   = on ? '#1A1A1A' : 'transparent';
     }
-  }
+    if (layer) layer.style.display = n === name ? '' : 'none';
+  });
 }
 
 function showVaultBuildSheet(idx) {
@@ -9873,19 +9863,25 @@ function showVaultBuildSheet(idx) {
   const act = document.getElementById('colb-active-state');
   if (sel) sel.style.display = 'none';
   if (act) act.style.display = '';
-  populateWorkspaceBrandBanner();
   document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
-  const sheet = document.getElementById('vaultBuildSheet');
-  if (sheet) {
-    sheet.classList.remove('hidden');
-    sheet.innerHTML = buildBuildSheet(intent, idx);
-    applyColBOrder();
-    _initMapRecitations(idx);
-    switchWorkspaceLayer('strategy');
-    const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
-  }
+
+  // Populate each workspace layer
+  const hdr = document.getElementById('vaultWorkspaceHeader');
+  if (hdr) hdr.innerHTML = buildWorkspaceHeader(intent, idx);
+
+  const strategyEl = document.getElementById('layer-content-strategy');
+  if (strategyEl) strategyEl.innerHTML = buildStrategyContent(intent, idx);
+
+  const tacticsEl = document.getElementById('layer-content-tactics');
+  if (tacticsEl) tacticsEl.innerHTML = buildTacticsContent(intent, idx);
+
+  populateWorkspaceBrandBanner();
+  _initMapRecitations(idx);
+  switchWorkspaceLayer('strategy');
+
+  const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
+  window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
 }
 
 function vaultShowAddForm() {
@@ -9897,58 +9893,46 @@ function vaultShowAddForm() {
   renderVaultSidebar();
 }
 
-/* ── BUILD SHEET ─────────────────────────────────────── */
-function buildBuildSheet(intent, idx) {
-  const color      = CARD_COLORS[idx % CARD_COLORS.length];
-  const cat        = detectCategory(intent.title);
-  const catLabel   = (VAULT_CATEGORIES.find(c => c.key === cat) || VAULT_CATEGORIES[VAULT_CATEGORIES.length-1]).label;
-  const startDate  = intent.startDate  || '';
-  const targetDate = intent.targetDate || '';
-  const prevIdx    = idx > 0 ? idx - 1 : null;
-  const nextIdx    = idx < intentions.length - 1 ? idx + 1 : null;
-
+/* ── WORKSPACE HEADER — goal card + brand banner ──────── */
+function buildWorkspaceHeader(intent, idx) {
+  const color = CARD_COLORS[idx % CARD_COLORS.length];
   return `
-    <!-- My Roadmap parent removed — goal card + Map sections below are each their own piece -->
-    <div id="myRoadmap-body" style="padding:12px 16px;">
-    <div class="bs-header" style="background: #252525; border: 4px solid ${color}; border-radius: 10px; position: relative;">
-      <div class="bs-title-col">
-        <div class="bs-intention-title">${esc(intent.title)}</div>
+    <div style="padding:12px 16px 0;">
+      <div class="bs-header" style="background:#252525;border:4px solid ${color};border-radius:10px;position:relative;">
+        <div class="bs-title-col">
+          <div class="bs-intention-title">${esc(intent.title)}</div>
+        </div>
+        <div class="bs-num-circle">${idx + 1}</div>
+        <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
-      <div class="bs-num-circle">${idx + 1}</div>
-      <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
-    </div>
+      <div id="brand-banner" style="margin:8px 0;">
+        <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
+      </div>
+    </div>`;
+}
 
-    <!-- BRAND BANNER — personalised workspace sub-header, sits below goal card -->
-    <div id="brand-banner" style="margin:8px 0;">
-      <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
+/* ── STRATEGY LAYER — Backbone Framework ─────────────── */
+function buildStrategyContent(intent, idx) {
+  return `
+    <div id="bsPanel-bbfw-${idx}" style="padding:0 0 8px;">
+      ${colBBanner('bannerBackbone-' + idx, 'Backbone Framework', '#F5A623', buildBBFWPanel(intent, idx), { collapsed: false, icon: '◈' })}
     </div>
-
-    <!-- The Map / Backbone tabs removed — each Map section is its own bold banner -->
-    <div class="bs-panel active" id="bsPanel-themap-${idx}">
-      ${buildBSTheMapPanel(intent, idx)}
-    </div>
-    <div class="bs-panel active" id="bsPanel-bbfw-${idx}">
-      ${colBBanner('bannerBackbone-' + idx, 'Backbone Framework', '#F5A623', buildBBFWPanel(intent, idx), { collapsed: true, icon: '◈' })}
-    </div>
-
-    <div style="text-align:right;padding:8px 0 4px;">
+    <div style="text-align:right;padding:4px 16px 8px;">
       <button onclick="deleteIntention(${idx})"
         style="background:none;border:none;color:#383838;font-size:11px;cursor:pointer;
         letter-spacing:0.05em;padding:4px 8px;transition:color 0.15s;"
         onmouseover="this.style.color='#F87171'" onmouseout="this.style.color='#383838'">
         🗑 remove intention
       </button>
-    </div>
-    </div><!-- end myRoadmap-body -->
-  `;
+    </div>`;
 }
 
-function switchBSTab(idx, tab) {
-  ['themap','bbfw'].forEach(t => {
-    document.getElementById(`bsTab-${t}-${idx}`)?.classList.toggle('active', t === tab);
-    const panel = document.getElementById(`bsPanel-${t}-${idx}`);
-    if (panel) panel.classList.toggle('active', t === tab);
-  });
+/* ── TACTICS LAYER — My Roadmap ───────────────────────── */
+function buildTacticsContent(intent, idx) {
+  return `
+    <div id="bsPanel-themap-${idx}">
+      ${buildBSTheMapPanel(intent, idx)}
+    </div>`;
 }
 
 /* ── BBFW PANEL ─────────────────────────────────────────
