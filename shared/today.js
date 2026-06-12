@@ -251,57 +251,7 @@ function renderTodayStrip() {
       <span class="ts-arrow${_tsOpen ? ' open' : ''}">▶</span>
     </div>`;
 
-  if (!_tsOpen) { el.innerHTML = header; return; }
-
-  // Daily commitments rows
-  let dailyRows = '';
-  if (commits.length === 0) {
-    dailyRows = `<div class="ts-empty">Lock in Mission Control YES items to add commitments.</div>`;
-  } else {
-    dailyRows = commits.map(c => {
-      const streakTxt = c.streak >= 7 ? `🔥 ${c.streak}d` : c.streak > 0 ? `${c.streak}d` : '';
-      return `
-        <div class="ts-row" onclick="todayToggleCommit(${c.intentIdx},${c.commitIdx});renderTodayStrip()">
-          <div class="ts-check${c.done?' done':''}"> ${c.done?'✓':''} </div>
-          <div style="flex:1;min-width:0;">
-            <div class="ts-text${c.done?' done':''}">${esc(c.text)}</div>
-            ${streakTxt ? `<div class="ts-streak">${streakTxt}</div>` : ''}
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  // Weekly focus rows
-  let wfRows = '';
-  if (wfItems.length === 0) {
-    wfRows = `<div class="ts-empty">Generate My Roadmap on an intention to unlock weekly focus.</div>`;
-  } else {
-    wfRows = wfItems.map(item => {
-      const checked  = !!wfChecks[item.key];
-      const safeKey  = item.key.replace(/[^a-z0-9]/gi,'-');
-      return `
-        <div class="ts-row" onclick="wfToggle('${item.key}');renderTodayStrip()">
-          <div class="ts-check${checked?' wf-done':''}" id="tsWf-${safeKey}">${checked?'✓':''}</div>
-          <div class="ts-text${checked?' done':''}">${esc(item.text)}</div>
-        </div>`;
-    }).join('');
-  }
-
-  el.innerHTML = `
-    ${header}
-    <div class="ts-body">
-      <div class="ts-section-label">
-        <span>DAILY COMMITMENTS</span>
-        <span style="color:${doneDaily===commits.length&&commits.length>0?'#4ADE80':'#CCCCCC'}">${doneDaily}/${commits.length}</span>
-      </div>
-      ${dailyRows}
-      <hr class="ts-divider">
-      <div class="ts-section-label">
-        <span>WEEKLY FOCUS</span>
-        <span style="color:${wfDone===wfItems.length&&wfItems.length>0?wfCycleColor:'#CCCCCC'}">${wfDone}/${wfItems.length}</span>
-      </div>
-      ${wfRows}
-    </div>`;
+  el.innerHTML = header;
 }
 
 function _tsToggle() {
