@@ -6,6 +6,59 @@
    selectedVaultIdx, logActivity, toast
 ───────────────────────────────────────────────────────── */
 
+function _parseJsonField(val) {
+  if (val == null) return null;
+  if (typeof val === 'string') {
+    try { return JSON.parse(val); } catch { return null; }
+  }
+  return val;
+}
+
+function _hasBbfw(bbfw) {
+  const data = _parseJsonField(bbfw);
+  if (!data || typeof data !== 'object') return false;
+  return (data.eternal_problems?.length > 0) || (data.components?.length > 0);
+}
+
+function _hasTheMap(map) {
+  const data = _parseJsonField(map);
+  if (!data || typeof data !== 'object') return false;
+  return !!(
+    data.thisWeek?.length ||
+    data.dangerZones?.length ||
+    data.mindset ||
+    data.thisMonth?.length ||
+    data.terrain?.length ||
+    data.practice
+  );
+}
+
+function hydrateIntent(intent) {
+  if (!intent) return intent;
+  const rowBbfw = _parseJsonField(intent.bbfw);
+  const rowMap  = _parseJsonField(intent.theMap ?? intent.the_map);
+  if (_hasBbfw(rowBbfw)) intent.bbfw = rowBbfw;
+  if (_hasTheMap(rowMap)) intent.theMap = rowMap;
+  return intent;
+}
+
+function _paintStrategyPanel(idx, intent) {
+  const panel = document.getElementById(`bsPanel-bbfw-${idx}`);
+  if (!panel || !intent) return;
+  if (typeof buildBBFWPanel === 'function') {
+    panel.innerHTML = buildBBFWPanel(intent, idx);
+  } else if (_hasBbfw(intent.bbfw) && typeof renderBBFW === 'function') {
+    panel.innerHTML = renderBBFW(intent.bbfw, idx);
+  }
+}
+
+function _paintTacticsPanel(idx, intent) {
+  const panel = document.getElementById(`bsPanel-themap-${idx}`);
+  if (!panel || !intent) return;
+  panel.innerHTML = buildBSTheMapPanel(intent, idx);
+  _initMapRecitations(idx);
+}
+
 /* ── SEED PLAYERS WITH GOAL AFFIRMATIONS ─────────────── */
 function seedGoalPractice(idx) {
   const map = intentions[idx]?.theMap;
@@ -337,9 +390,10 @@ function _renderPracticeFeed(practice, idx) {
 
 /* ── BUILD SHEET PANEL ───────────────────────────────── */
 function buildBSTheMapPanel(intent, idx) {
+  hydrateIntent(intent);
   const map = intent.theMap;
 
-  if (!map || (!map.thisWeek && !map.dangerZones && !map.mindset)) {
+  if (!_hasTheMap(map)) {
     return `
       <div id="bsTheMapBtn-${idx}" style="padding:40px 20px;text-align:center;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:10px;">◉ BUILDING YOUR ROADMAP</div>
@@ -356,7 +410,7 @@ function buildBSTheMapPanel(intent, idx) {
     <div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #222;">
         <span style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1px;">◉ MY ROADMAP</span>
-        <button onclick="bsGenerateTheMap(${idx})"
+        <button onclick="bsGenerateTheMap(${idx}, true)"
           style="background:none;border:1px solid #383838;border-radius:6px;padding:4px 10px;
           font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;">↺ Regenerate</button>
       </div>
@@ -379,9 +433,13 @@ function buildBSTheMapPanel(intent, idx) {
 }
 
 /* ── GENERATE ────────────────────────────────────────── */
-async function bsGenerateTheMap(idx) {
-  const intent = intentions[idx];
+async function bsGenerateTheMap(idx, force) {
+  const intent = hydrateIntent(intentions[idx]);
   if (!intent) return;
+  if (!force && _hasTheMap(intent.theMap)) {
+    if (selectedVaultIdx === idx) _paintTacticsPanel(idx, intent);
+    return;
+  }
   const btn = document.getElementById(`bsTheMapBtn-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Building your map…'; }
 
@@ -443,7 +501,7 @@ async function bsGenerateTheMap(idx) {
     if (panel) panel.innerHTML = `
       <div style="padding:32px 20px;text-align:center;">
         <div style="font-size:12px;color:#F87171;margin-bottom:16px;">Generation failed — ${esc(e.message)}</div>
-        <button onclick="bsGenerateTheMap(${idx})"
+        <button onclick="bsGenerateTheMap(${idx}, true)"
           style="background:none;border:1px solid #383838;border-radius:6px;padding:8px 16px;
           font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;">Try Again</button>
       </div>`;

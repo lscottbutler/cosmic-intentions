@@ -17,7 +17,7 @@
 <script src="shared/today.js?v=20260612c"></script>
 <script src="shared/player-launcher.js?v=20260611a"></script>
 <script src="shared/progress-dashboard.js?v=20260611a"></script>
-<script src="shared/the-map.js?v=20260612b"></script>
+<script src="shared/the-map.js?v=20260612d"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -8417,14 +8417,18 @@ async function syncIntentionsFromSupabase() {
       });
       intentions = data.map(row => {
         const prev = prevById[row.id] || {};
-        return {
+        const rowMap  = _parseJsonField(row.the_map);
+        const rowBbfw = _parseJsonField(row.bbfw);
+        const prevMap  = prev.theMap ?? prev.the_map;
+        const prevBbfw = prev.bbfw;
+        return hydrateIntent({
           ...row,
           imageUrl:     prev.imageUrl     || null,
           imageOptions: prev.imageOptions || (prev.imageUrl ? [prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
-          theMap:       row.the_map        || prev.theMap  || null,
-          bbfw:         row.bbfw           || prev.bbfw   || null,
-        };
+          theMap:       _hasTheMap(rowMap) ? rowMap : (_hasTheMap(prevMap) ? _parseJsonField(prevMap) : null),
+          bbfw:         _hasBbfw(rowBbfw) ? rowBbfw : (_hasBbfw(prevBbfw) ? _parseJsonField(prevBbfw) : null),
+        });
       });
       LS.set(`ci_intentions_${currentUser.id}`, intentions);
       // Re-render build sheet if a goal is open — Map/Backbone now loaded from Supabase
@@ -9752,6 +9756,7 @@ function selectVaultIntention(idx) {
   selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
+    if (intentions[selectedVaultIdx]) intentions[selectedVaultIdx] = hydrateIntent(intentions[selectedVaultIdx]);
     showVaultBuildSheet(selectedVaultIdx);
     // Seed goal-specific content into players
     if (typeof seedGoalPractice === 'function') seedGoalPractice(selectedVaultIdx);
@@ -9941,8 +9946,9 @@ function switchWorkspaceLayer(name) {
 }
 
 function showVaultBuildSheet(idx) {
-  const intent = intentions[idx];
+  const intent = hydrateIntent(intentions[idx]);
   if (!intent) { showVaultWelcome(); return; }
+  intentions[idx] = intent;
   // Switch Column B state: hide selection list, show active workspace
   const sel = document.getElementById('colb-selection-state');
   const act = document.getElementById('colb-active-state');
@@ -9962,12 +9968,18 @@ function showVaultBuildSheet(idx) {
   if (tacticsEl) tacticsEl.innerHTML = buildTacticsContent(intent, idx);
 
   populateWorkspaceBrandBanner();
-  _initMapRecitations(idx);
   switchWorkspaceLayer('strategy');
 
-  // Auto-generate both layers silently on mount — no click required
-  if (!intent.bbfw) generateBBFW(idx);
-  if (!intent.theMap?.thisWeek && !intent.theMap?.dangerZones) bsGenerateTheMap(idx);
+  if (_hasBbfw(intent.bbfw)) {
+    _paintStrategyPanel(idx, intent);
+  } else {
+    generateBBFW(idx);
+  }
+  if (_hasTheMap(intent.theMap)) {
+    _paintTacticsPanel(idx, intent);
+  } else {
+    bsGenerateTheMap(idx);
+  }
 
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
@@ -10028,8 +10040,9 @@ function buildTacticsContent(intent, idx) {
    Backbone Framework — 6 Eternal Problems + 9 Components
 ───────────────────────────────────────────────────────── */
 function buildBBFWPanel(intent, idx) {
+  hydrateIntent(intent);
   const bbfw = intent.bbfw;
-  if (!bbfw) {
+  if (!_hasBbfw(bbfw)) {
     return `
       <div id="bbfw-loading-${idx}" style="padding:40px 20px;text-align:center;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:10px;">◈ BUILDING YOUR FRAMEWORK</div>
@@ -10085,7 +10098,7 @@ function renderBBFW(bbfw, idx) {
     <div style="padding:16px 20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ BACKBONE FRAMEWORK</div>
-        <button onclick="generateBBFW(${idx})" id="bbfw-gen-btn-${idx}"
+        <button onclick="generateBBFW(${idx}, true)" id="bbfw-gen-btn-${idx}"
           style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
           font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
           ↺ Regenerate
@@ -10100,9 +10113,13 @@ function renderBBFW(bbfw, idx) {
     </div>`;
 }
 
-async function generateBBFW(idx) {
-  const intent = intentions[idx];
+async function generateBBFW(idx, force) {
+  const intent = hydrateIntent(intentions[idx]);
   if (!intent) return;
+  if (!force && _hasBbfw(intent.bbfw)) {
+    if (selectedVaultIdx === idx) _paintStrategyPanel(idx, intent);
+    return;
+  }
   const btn = document.getElementById(`bbfw-gen-btn-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
 
@@ -10123,7 +10140,7 @@ async function generateBBFW(idx) {
       <div style="padding:24px 20px;">
         <div style="color:#FF375F;font-family:var(--vault-mono);font-size:11px;margin-bottom:12px;">Generation failed</div>
         <div style="font-size:12px;color:#888;">${esc(e.message)}</div>
-        <button onclick="generateBBFW(${idx})" style="margin-top:16px;background:#F5A623;color:#000;border:none;border-radius:8px;
+        <button onclick="generateBBFW(${idx}, true)" style="margin-top:16px;background:#F5A623;color:#000;border:none;border-radius:8px;
           padding:10px 20px;font-family:var(--vault-mono);font-size:11px;font-weight:800;cursor:pointer;">Try Again</button>
       </div>`;
   }
