@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Intentions — Streaks Style Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'SF Pro Display', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 56px 24px 16px;
+  }
+  .header-title {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header-date {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  /* ── STREAK BADGE ── */
+  .streak-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 8px 16px;
+    margin: 0 24px 28px;
+  }
+  .streak-flame { font-size: 22px; }
+  .streak-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FF9F0A;
+  }
+  .streak-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+  }
+  .streak-right {
+    margin-left: auto;
+    display: flex;
+    gap: 20px;
+  }
+  .streak-stat { text-align: center; }
+  .streak-stat-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .streak-stat-lbl {
+    font-size: 10px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── CIRCLE GRID ── */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0 24px;
+    margin-bottom: 14px;
+  }
+
+  .circle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 0 24px;
+    margin-bottom: 32px;
+  }
+
+  .circle-card {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 18px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    position: relative;
+  }
+  .circle-card:hover { background: #2c2c2e; transform: scale(1.03); }
+  .circle-card.done { opacity: 0.55; }
+  .circle-card.done .ring-progress { stroke-dashoffset: 0; }
+
+  .ring-wrap { position: relative; width: 64px; height: 64px; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: #2c2c2e; stroke-width: 5; }
+  .ring-progress {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 163;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+  .ring-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .circle-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .circle-sub {
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+  }
+  .checkmark {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+
+  /* ── INTENTIONS LIST ── */
+  .intention-list {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .intention-row {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .intention-row:hover { background: #2c2c2e; }
+  .int-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .int-text { flex: 1; }
+  .int-title { font-size: 15px; font-weight: 600; color: #fff; }
+  .int-sub { font-size: 12px; color: #666; margin-top: 2px; }
+  .int-progress-wrap {
+    width: 36px; height: 36px;
+    flex-shrink: 0;
+  }
+  .int-progress-wrap svg { transform: rotate(-90deg); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid #1c1c1e;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 24px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.15s;
+  }
+  .nav-item.active { opacity: 1; }
+  .nav-item:hover { opacity: 0.8; }
+  .nav-icon-lg { font-size: 22px; }
+  .nav-lbl { font-size: 10px; color: #fff; font-weight: 500; }
+  .nav-item.active .nav-lbl { color: #FF9F0A; }
+
+  /* ── SCORE CARD ── */
+  .score-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 28px;
+  }
+  .score-card {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 18px 16px;
+  }
+  .score-card-num {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .score-card-lbl {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  /* ── NOTE ── */
+  .mockup-note {
+    text-align: center;
+    font-size: 11px;
+    color: #333;
+    padding: 0 24px;
+    margin-top: 16px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">Today</div>
+  <div class="header-date">
+    Wednesday<br>
+    <span style="color:#fff;font-weight:700">June 4</span>
+  </div>
+</div>
+
+<!-- STREAK BADGE -->
+<div class="streak-badge">
+  <span class="streak-flame">🔥</span>
+  <span class="streak-num">14</span>
+  <span class="streak-label">day streak</span>
+  <div class="streak-right">
+    <div class="streak-stat">
+      <div class="streak-stat-num" style="color:#30D158">847</div>
+      <div class="streak-stat-lbl">Score</div>
+    </div>
+    <div class="streak-stat">
+      <div class="streak-stat-num" style="color:#0A84FF">#3</div>
+      <div class="streak-stat-lbl">Rank</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCORE CARDS -->
+<div class="score-row">
+  <div class="score-card">
+    <div class="score-card-num" style="color:#FF9F0A">847</div>
+    <div class="score-card-lbl">My Score</div>
+  </div>
+  <div class="score-card">
+    <div class="score-card-num" style="color:#0A84FF">#3 / 41</div>
+    <div class="score-card-lbl">Community Rank</div>
+  </div>
+</div>
+
+<!-- SESSIONS GRID -->
+<div class="section-label">Sessions</div>
+<div class="circle-grid">
+
+  <!-- Quick Viz — 80% done -->
+  <div class="circle-card">
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#FF9F0A" stroke-dashoffset="33"/>
+      </svg>
+      <div class="ring-icon">⚡</div>
+    </div>
+    <div class="circle-name">Quick Viz</div>
+    <div class="circle-sub">15 / 30 / 60s</div>
+  </div>
+
+  <!-- Countdown — complete -->
+  <div class="circle-card done">
+    <div class="checkmark" style="background:#30D158">✓</div>
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#30D158" stroke-dashoffset="0"/>
+      </svg>
+      <div class="ring-icon">⏱️</div>
+    </div>
+    <div class="circle-name">Countdown</div>
+    <div class="circle-sub">1–60 min</div>
+  </div>
+
+  <!-- Meditation — 40% -->
+  <div class="circle-card">
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#BF5AF2" stroke-dashoffset="98"/>
+      </svg>
+      <div class="ring-icon">🧘</div>
+    </div>
+    <div class="circle-name">Meditation</div>
+    <div class="circle-sub">5–60 min</div>
+  </div>
+
+  <!-- 3-Min Viz — untouched -->
+  <div class="circle-card">
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#5E5CE6" stroke-dashoffset="163"/>
+      </svg>
+      <div class="ring-icon">✨</div>
+    </div>
+    <div class="circle-name">3-Min Viz</div>
+    <div class="circle-sub">3 min</div>
+  </div>
+
+  <!-- 10-Min Viz — complete -->
+  <div class="circle-card done">
+    <div class="checkmark" style="background:#30D158">✓</div>
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#30D158" stroke-dashoffset="0"/>
+      </svg>
+      <div class="ring-icon">🌟</div>
+    </div>
+    <div class="circle-name">10-Min Viz</div>
+    <div class="circle-sub">10 min</div>
+  </div>
+
+  <!-- Gratitude — untouched -->
+  <div class="circle-card">
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="ring-progress" cx="32" cy="32" r="26"
+          stroke="#FF375F" stroke-dashoffset="163"/>
+      </svg>
+      <div class="ring-icon">🙏</div>
+    </div>
+    <div class="circle-name">Gratitude</div>
+    <div class="circle-sub">5 min</div>
+  </div>
+
+</div>
+
+<!-- INTENTIONS LIST -->
+<div class="section-label">My Intentions</div>
+<div class="intention-list">
+
+  <div class="intention-row">
+    <div class="int-dot" style="background:#FF9F0A"></div>
+    <div class="int-text">
+      <div class="int-title">Build a $10M business</div>
+      <div class="int-sub">Career · 3 sessions this week</div>
+    </div>
+    <div class="int-progress-wrap">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle fill="none" stroke="#2c2c2e" stroke-width="4" cx="18" cy="18" r="14"/>
+        <circle fill="none" stroke="#FF9F0A" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="88" stroke-dashoffset="22" cx="18" cy="18" r="14"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="intention-row">
+    <div class="int-dot" style="background:#30D158"></div>
+    <div class="int-text">
+      <div class="int-title">Peak physical health</div>
+      <div class="int-sub">Health · 5 sessions this week</div>
+    </div>
+    <div class="int-progress-wrap">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle fill="none" stroke="#2c2c2e" stroke-width="4" cx="18" cy="18" r="14"/>
+        <circle fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="88" stroke-dashoffset="0" cx="18" cy="18" r="14"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="intention-row">
+    <div class="int-dot" style="background:#0A84FF"></div>
+    <div class="int-text">
+      <div class="int-title">Deep creative mastery</div>
+      <div class="int-sub">Skills · 1 session this week</div>
+    </div>
+    <div class="int-progress-wrap">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle fill="none" stroke="#2c2c2e" stroke-width="4" cx="18" cy="18" r="14"/>
+        <circle fill="none" stroke="#0A84FF" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="88" stroke-dashoffset="66" cx="18" cy="18" r="14"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="intention-row">
+    <div class="int-dot" style="background:#BF5AF2"></div>
+    <div class="int-text">
+      <div class="int-title">Unshakeable mindset</div>
+      <div class="int-sub">Mindset · 2 sessions this week</div>
+    </div>
+    <div class="int-progress-wrap">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle fill="none" stroke="#2c2c2e" stroke-width="4" cx="18" cy="18" r="14"/>
+        <circle fill="none" stroke="#BF5AF2" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="88" stroke-dashoffset="44" cx="18" cy="18" r="14"/>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<div class="mockup-note">
+  ✦ Style mockup only — not connected to your data. Cosmic Intentions content, Streaks-inspired UI.
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <span class="nav-icon-lg">◉</span>
+    <span class="nav-lbl">Today</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon-lg">📊</span>
+    <span class="nav-lbl">Progress</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon-lg">🗺</span>
+    <span class="nav-lbl">The Map</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon-lg">🌌</span>
+    <span class="nav-lbl">Community</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon-lg">⚙️</span>
+    <span class="nav-lbl">Settings</span>
+  </div>
+</div>
+
+</body>
+</html>
