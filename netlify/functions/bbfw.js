@@ -85,7 +85,7 @@ Return this exact JSON structure:
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        max_tokens: 1800,
+        max_tokens: 4096,
         temperature: 0.7,
         response_format: { type: 'json_object' },
         messages: [
@@ -95,15 +95,34 @@ Return this exact JSON structure:
       })
     });
 
+    const rawBody = await res.text();
     if (!res.ok) {
-      const err = await res.text();
-      return { statusCode: 502, headers, body: JSON.stringify({ error: err }) };
+      return { statusCode: 502, headers, body: JSON.stringify({ error: rawBody }) };
     }
 
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content?.trim() || '';
+    let data;
+    try {
+      data = JSON.parse(rawBody);
+    } catch (e) {
+      return { statusCode: 502, headers, body: JSON.stringify({ error: 'OpenAI envelope parse failed: ' + e.message }) };
+    }
+
+    const choice = data.choices?.[0];
+    const text = choice?.message?.content?.trim() || '';
+    if (choice?.finish_reason === 'length') {
+      return { statusCode: 502, headers, body: JSON.stringify({ error: 'AI response truncated before completion — please retry' }) };
+    }
+    if (!text) {
+      return { statusCode: 502, headers, body: JSON.stringify({ error: 'Empty AI content' }) };
+    }
+
     const clean = text.replace(/^```json\s*/,'').replace(/```$/,'').trim();
-    const parsed = JSON.parse(clean);
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (e) {
+      return { statusCode: 502, headers, body: JSON.stringify({ error: 'Malformed AI JSON: ' + e.message }) };
+    }
     return { statusCode: 200, headers, body: JSON.stringify(parsed) };
   } catch (e) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };

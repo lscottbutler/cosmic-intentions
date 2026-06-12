@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Roboto+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="shared/api.js?v=20260611a"></script>
+<script src="shared/api.js?v=20260612b"></script>
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
@@ -17,7 +17,7 @@
 <script src="shared/today.js?v=20260611a"></script>
 <script src="shared/player-launcher.js?v=20260611a"></script>
 <script src="shared/progress-dashboard.js?v=20260611a"></script>
-<script src="shared/the-map.js?v=20260612a"></script>
+<script src="shared/the-map.js?v=20260612b"></script>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3858,7 +3858,7 @@ input, textarea, select {
   box-sizing: border-box !important;
   overflow: hidden !important;
   text-align: center !important;
-  font-size: 4.5vw !important;
+  font-size: clamp(10px, 4.5vw, 22px);
   font-weight: 800;
   letter-spacing: 1px !important;
   color: #ffffff !important;
@@ -9829,6 +9829,27 @@ function colBBanner(key, title, color, bodyHtml, opts) {
    Priority: pb['pb-name'] (in-memory pegboard) → Supabase profiles cache
    → currentUser metadata → email prefix → fallback "MY"
 ──────────────────────────────────────────────────────────────────── */
+function fitBrandBannerText() {
+  const el = document.getElementById('brand-banner-text');
+  if (!el || el.clientWidth <= 0) return;
+  const maxPx = 22;
+  const minPx = 10;
+  el.style.letterSpacing = '1px';
+  let size = maxPx;
+  el.style.fontSize = size + 'px';
+  while (size > minPx && el.scrollWidth > el.clientWidth) {
+    size -= 0.5;
+    el.style.fontSize = size + 'px';
+  }
+}
+
+if (!window._brandBannerResizeBound) {
+  window._brandBannerResizeBound = true;
+  window.addEventListener('resize', () => {
+    if (document.getElementById('brand-banner-text')) fitBrandBannerText();
+  });
+}
+
 async function populateWorkspaceBrandBanner() {
   let firstName = 'MY';
   try {
@@ -9862,7 +9883,10 @@ async function populateWorkspaceBrandBanner() {
     console.error('Brand banner profile error:', e);
   }
   const el = document.getElementById('brand-banner-text');
-  if (el) el.innerText = `${firstName.toUpperCase()}'S PERSONAL ROADMAP`;
+  if (el) {
+    el.innerText = `${firstName.toUpperCase()}'S PERSONAL ROADMAP`;
+    requestAnimationFrame(() => fitBrandBannerText());
+  }
 }
 
 function switchWorkspaceLayer(name) {
@@ -10053,9 +10077,7 @@ async function generateBBFW(idx) {
     </div>`;
 
   try {
-    const res = await ciApi('bbfw', { goal: intent.title });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
+    const data = await ciApiJson('bbfw', { goal: intent.title });
     intent.bbfw = data;
     syncIntentionsToSupabase();
     if (panel) panel.innerHTML = renderBBFW(data, idx);

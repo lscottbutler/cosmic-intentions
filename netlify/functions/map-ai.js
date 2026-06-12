@@ -122,7 +122,17 @@ async function callOpenAI(apiKey, userPrompt) {
     })
   });
 
-  if (!res.ok) throw new Error(await res.text());
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() || '';
+  const rawBody = await res.text();
+  if (!res.ok) throw new Error(rawBody);
+  let data;
+  try {
+    data = JSON.parse(rawBody);
+  } catch (e) {
+    throw new Error('OpenAI envelope parse failed: ' + e.message);
+  }
+  const choice = data.choices?.[0];
+  if (choice?.finish_reason === 'length') {
+    throw new Error('AI response truncated before completion');
+  }
+  return choice?.message?.content?.trim() || '';
 }

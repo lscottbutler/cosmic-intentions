@@ -402,9 +402,7 @@ async function bsGenerateTheMap(idx) {
     const prevMap   = intent.theMap;
     const prevLocks = prevMap?.locks || {};
 
-    const res = await ciApi('map-ai', { goal: intent.title });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
+    const data = await ciApiJson('map-ai', { goal: intent.title });
     if (!data.thisWeek && !data.dangerZones) throw new Error('Bad response format');
 
     // Preserve locked tasks across regenerate

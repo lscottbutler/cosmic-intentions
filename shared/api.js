@@ -8,7 +8,7 @@
 
    Usage:
      const res  = await ciApi('map-ai', { goal });
-     const data = await res.json();
+     const data = await ciApiJson('map-ai', { goal }); // preferred — full body first
 
    Endpoint name maps to /api/<name>, which netlify.toml redirects to
    /.netlify/functions/<name>.
@@ -32,5 +32,27 @@
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   }
+
+  /** Await the complete response body as text, then JSON.parse once. */
+  async function ciApiJson(name, body, opts) {
+    const res = await ciApi(name, body, opts);
+    const raw = await res.text();
+    if (!res.ok) {
+      let errMsg = raw;
+      try {
+        const errObj = JSON.parse(raw);
+        errMsg = errObj.error || errObj.message || raw;
+      } catch (_) {}
+      throw new Error(errMsg || ('HTTP ' + res.status));
+    }
+    if (!raw || !raw.trim()) throw new Error('Empty response body');
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      throw new Error('Invalid JSON response: ' + e.message);
+    }
+  }
+
   global.ciApi = ciApi;
+  global.ciApiJson = ciApiJson;
 })(typeof window !== 'undefined' ? window : this);
