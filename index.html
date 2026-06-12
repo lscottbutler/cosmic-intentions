@@ -9880,6 +9880,9 @@ function showVaultBuildSheet(idx) {
   _initMapRecitations(idx);
   switchWorkspaceLayer('strategy');
 
+  // Auto-generate backbone framework silently if no data yet — no click required
+  if (!intent.bbfw) generateBBFW(idx);
+
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
 }
@@ -9942,19 +9945,13 @@ function buildBBFWPanel(intent, idx) {
   const bbfw = intent.bbfw;
   if (!bbfw) {
     return `
-      <div style="padding:32px 20px;text-align:center;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:2px;margin-bottom:10px;">◈ BACKBONE FRAMEWORK</div>
-        <div style="font-size:12px;color:#505058;line-height:1.7;max-width:280px;margin:0 auto 20px;">
-          Run your goal through the proven framework used by history's greatest achievers —
-          the <strong style="color:#888">6 Eternal Problems</strong> and
-          <strong style="color:#888">9 Components</strong> of success.
+      <div id="bbfw-loading-${idx}" style="padding:40px 20px;text-align:center;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:10px;">◈ BUILDING YOUR FRAMEWORK</div>
+        <div style="font-size:12px;color:#505058;line-height:2;">
+          Mapping the 6 Eternal Problems…<br>
+          Analysing 9 Components of success…<br>
+          Connecting to history's greatest achievers…
         </div>
-        <button onclick="generateBBFW(${idx})" id="bbfw-gen-btn-${idx}"
-          style="background:none;border:1px solid #383838;border-radius:6px;padding:8px 18px;
-          font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-          color:#F5A623;cursor:pointer;">
-          ◈ Build Backbone Framework
-        </button>
       </div>`;
   }
   return renderBBFW(bbfw, idx);
