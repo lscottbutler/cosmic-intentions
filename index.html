@@ -9914,8 +9914,8 @@ function buildWorkspaceHeader(intent, idx) {
 /* ── STRATEGY LAYER — Backbone Framework ─────────────── */
 function buildStrategyContent(intent, idx) {
   return `
-    <div id="bsPanel-bbfw-${idx}" style="padding:0 0 8px;">
-      ${colBBanner('bannerBackbone-' + idx, 'Backbone Framework', '#F5A623', buildBBFWPanel(intent, idx), { collapsed: false, icon: '◈' })}
+    <div id="bsPanel-bbfw-${idx}">
+      ${buildBBFWPanel(intent, idx)}
     </div>
     <div style="text-align:right;padding:4px 16px 8px;">
       <button onclick="deleteIntention(${idx})"
@@ -9942,17 +9942,18 @@ function buildBBFWPanel(intent, idx) {
   const bbfw = intent.bbfw;
   if (!bbfw) {
     return `
-      <div style="padding:24px 20px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">◈ BACKBONE FRAMEWORK</div>
-        <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:20px;">
-          Run your goal through the proven framework used by history's greatest achievers.<br>
-          The <strong style="color:#fff">6 Eternal Problems</strong> define what must be solved.
-          The <strong style="color:#fff">9 Components</strong> show exactly how to solve them.
+      <div style="padding:32px 20px;text-align:center;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:2px;margin-bottom:10px;">◈ BACKBONE FRAMEWORK</div>
+        <div style="font-size:12px;color:#505058;line-height:1.7;max-width:280px;margin:0 auto 20px;">
+          Run your goal through the proven framework used by history's greatest achievers —
+          the <strong style="color:#888">6 Eternal Problems</strong> and
+          <strong style="color:#888">9 Components</strong> of success.
         </div>
         <button onclick="generateBBFW(${idx})" id="bbfw-gen-btn-${idx}"
-          style="background:#F5A623;color:#000;border:none;border-radius:8px;padding:12px 24px;
-          font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;width:100%;">
-          ◈ GENERATE MY ROADMAP
+          style="background:none;border:1px solid #383838;border-radius:6px;padding:8px 18px;
+          font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
+          color:#F5A623;cursor:pointer;">
+          ◈ Build Backbone Framework
         </button>
       </div>`;
   }
