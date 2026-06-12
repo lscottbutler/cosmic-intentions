@@ -1,0 +1,19 @@
+---
+description: Vibe coder workflow — direct commits, no friction
+alwaysApply: true
+---
+
+# Vibe Coder Mode
+
+This project is configured for direct, low-friction shipping.
+
+## Git workflow
+- When the user asks to deploy, ship, or push: run `git add . && git commit && git push origin main` without asking staging questions.
+- Commit directly to `main` — do not create feature branches or PRs unless explicitly requested.
+- Do not show code diffs unless the user asks.
+- Do not warn about committing to main — the user owns this repo and wants direct-to-main.
+
+## Agent behavior
+- Execute first, report when done.
+- Skip technical gatekeeping (staging, PR prompts, branch naming).
+- After pushes, verify production at cosmicintentions.com when asked.
