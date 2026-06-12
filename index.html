@@ -119,6 +119,12 @@ code, pre, .mono, [class*="-mono"], .vault-item-num, .vault-item-meta {
 }
 .tnav-btn:hover { color: #fff; background: #1e1e1e; }
 .tnav-btn.active { color: #F5A623; }
+.tnav-signout {
+  margin-left: auto;
+  background: transparent !important;
+  color: #888888;
+}
+.tnav-signout:hover { color: #ffffff !important; background: transparent !important; }
 .tnav-sep { color: #2a2a2a; font-size: 12px; padding: 0 2px; flex-shrink: 0; }
 
 .hdr-logo {
@@ -5651,7 +5657,7 @@ input, textarea, select {
 
 <!-- TOP NAV BAR -->
 <nav id="topNav">
-  <button class="tnav-btn" onclick="navTo('dashboard')">Dashboard</button>
+  <button class="tnav-btn" onclick="goMemberDashboard()">Dashboard</button>
   <span class="tnav-sep">·</span>
   <button class="tnav-btn" onclick="navTo('community')">Community</button>
   <span class="tnav-sep">·</span>
@@ -5670,6 +5676,7 @@ input, textarea, select {
   <button class="tnav-btn" onclick="navTo('progress')">◈ Progress</button>
   <span class="tnav-sep">·</span>
   <button class="tnav-btn" onclick="navTo('journal')">📓 Journal</button>
+  <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Sign Out</button>
 </nav>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
@@ -5953,7 +5960,7 @@ input, textarea, select {
           <div class="home-member-hero">
             <h2>Welcome back ✦</h2>
             <p>Your Personal Development Arsenal is ready.</p>
-            <button class="btn-member-login" onclick="navTo('dashboard')">✦ Member Dashboard</button>
+            <button class="btn-member-login" onclick="goMemberDashboard()">✦ Member Dashboard</button>
           </div>
 
           <div style="margin-top:16px;">
@@ -7999,12 +8006,37 @@ async function doResetPassword() {
   }
 }
 
+async function goMemberDashboard() {
+  const { data: { session }, error: sessErr } = await sb.auth.getSession();
+  if (sessErr || !session?.user) {
+    openAuth('signin');
+    return;
+  }
+  const { data: { user }, error: userErr } = await sb.auth.getUser();
+  if (userErr || !user) {
+    await sb.auth.signOut();
+    currentUser = null;
+    updateUI(null);
+    openAuth('signin');
+    return;
+  }
+  currentUser = user;
+  updateUI(user);
+  await syncFromSupabase();
+  await syncIntentionsFromSupabase();
+  renderDashboard();
+  injectPersonalContent();
+  renderTodayView();
+  navTo('dashboard');
+}
+
 async function signOut() {
   closeDrawer();
   await sb.auth.signOut();
   currentUser = null;
   updateUI(null);
   showPage('home');
+  openAuth('signin');
   toast('Signed out.', '');
 }
 
@@ -8024,9 +8056,11 @@ function updateUI(user) {
   // Home page: show logged-in or logged-out section
   const homeLoggedIn  = document.getElementById('homeLoggedIn');
   const homeLoggedOut = document.getElementById('homeLoggedOut');
-  // DEV: force logged-in view visible even when no user (so member home is reachable in dev)
-  if (homeLoggedIn)  homeLoggedIn.style.display  = 'block';
-  if (homeLoggedOut) homeLoggedOut.style.display = loggedIn ? 'none' : 'block';
+  if (homeLoggedIn)  homeLoggedIn.style.display  = loggedIn ? 'block' : 'none';
+  if (homeLoggedOut) homeLoggedOut.style.display = loggedIn ? 'none'  : 'block';
+
+  const topnavSignOut = document.getElementById('topnav-signout');
+  if (topnavSignOut) topnavSignOut.style.display = loggedIn ? 'inline-block' : 'none';
 
   // Pricing section — only for logged-out visitors
   const hp = document.getElementById('homePricing');
@@ -10360,14 +10394,16 @@ async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
     updateUI(session.user);
-    await syncFromSupabase(); // pull is_member on boot
+    await syncFromSupabase();
+    await syncIntentionsFromSupabase();
     logDailyLogin();
     loadMyProgress();
+    injectPersonalContent();
+    renderTodayView();
   } else {
     updateUI(null);
   }
 
-  // Render dashboard with local data
   renderDashboard();
 
   // Hide loading
