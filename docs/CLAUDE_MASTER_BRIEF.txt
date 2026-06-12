@@ -230,3 +230,45 @@ summaries, run /wrap before ending a session.
   f7e96e0 Fix invalid netlify.toml that was failing every deploy
   1f9017c Cache-bust all shared/*.js script tags (?v=20260610b)
   e15e1c6 Column B: finish banner rollout — all 7 Map sections as bold colored bars
+
+[2026-06-10] auto-logged commits:
+  3430532 Players: standardize mobile sizing across all 11 players
+  051eedf Mission Control: switch generate-content from Anthropic to OpenAI
+  6a993ef Housekeeping: back up project files + ignore oversized/regenerable dirs
+  94fdd85 My Roadmap: replace map emoji with grayscale compass SVG
+  4cc6a3d Rename user-facing 'The Map' label to 'My Roadmap' across the app
+  458de1c Map: switch generation from Anthropic to OpenAI (OPEN_AI_KEY)
+  d259517 Dashboard: stack goal sections at the VERY top of Column B
+  9e4f3fc Dashboard: move selected goal's My Roadmap card to top of Column B
+
+[2026-06-11] auto-logged commits:
+  5e51ae1 Hardening: add data-model doc, health-check script, ESLint config
+  3a6f5ff Refactor: centralize all serverless calls through shared/api.js (ciApi)
+  1c0902e docs: add 1000-user readiness mind map (txt/opml/md for MindManager)
+  7b4fd15 Players: add theme-color meta to all 11 (match dark UI on mobile)
+
+[2026-06-11] auto-logged commits:
+  b412df8 Readability: raise reading-text scale to ~+40%, apply to players too
+  8cb7a11 Readability: scale body/reading text (inline 12-16px) ~+20%
+  61bde64 Local dev: stop auto-opening a browser (no Edge popups)
+  8b08b60 docs: add Gemini design brief for the design->build handoff
+  e5892a2 My Notes: cycle 3 blob backgrounds (green/red/orange) across note boxes
+  2158036 My Notes: green organic blob background on all .cb-display boxes
+  25c6c07 Fix: render Daily Commitments in renderTodayView (ESLint caught it)
+
+[2026-06-11] auto-logged commits:
+  3d807a2 Roadmap: add Keep/Lock retention layer to task rows
+  dabc865 Layout: Nestle complete player action stack below backbone framework in Column B
+  d3741ec Layout: Shift tools menu from Column A to B and purge duplicate meditation box
+  822fadf Layout: Align Column B meditation button to load the player inline matching Column A
+  5393707 Layout: Replace unlock next prompt card with explicit MEDITATION launcher row in Column B
+  d441c99 Layout: Shift profile brand banner directly beneath the active goal card
+  2cd757b UI: Add symmetric 24px padding to the top and sides of Columns A and B
+  182ea27 Layout: Integrate progress page metrics directly below category filters in Column B selection state
+  2ade826 Layout: Delete placeholder quote text below day tracker banner
+  a53f492 UI: Add personalised brand banner to Column B active workspace
+  e575e61 Layout: Move day tracker bar to the absolute top of Column B selection view
+  8caf7e9 Layout: Group Add button and category filters directly below goal cards above milestone bar
+  c73ee79 Layout: Swap positions of day tracker bar and category filter row in Column B
+  11a9c3d UI: Bring visualization affirmations into the light with a dedicated 30s loop in Column A
+  c8c5412 Layout: Restructure dual-camp separation isolating Column A Inner Game and Column B Workspace
