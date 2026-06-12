@@ -9899,8 +9899,9 @@ function showVaultBuildSheet(idx) {
   _initMapRecitations(idx);
   switchWorkspaceLayer('strategy');
 
-  // Auto-generate backbone framework silently if no data yet — no click required
+  // Auto-generate both layers silently on mount — no click required
   if (!intent.bbfw) generateBBFW(idx);
+  if (!intent.theMap?.thisWeek && !intent.theMap?.dangerZones) bsGenerateTheMap(idx);
 
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
