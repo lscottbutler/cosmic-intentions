@@ -292,13 +292,13 @@ function renderTodayStrip() {
     <div class="ts-body">
       <div class="ts-section-label">
         <span>DAILY COMMITMENTS</span>
-        <span style="color:${doneDaily===commits.length&&commits.length>0?'#30D158':'#505058'}">${doneDaily}/${commits.length}</span>
+        <span style="color:${doneDaily===commits.length&&commits.length>0?'#4ADE80':'#CCCCCC'}">${doneDaily}/${commits.length}</span>
       </div>
       ${dailyRows}
       <hr class="ts-divider">
       <div class="ts-section-label">
         <span>WEEKLY FOCUS</span>
-        <span style="color:${wfDone===wfItems.length&&wfItems.length>0?wfCycleColor:'#505058'}">${wfDone}/${wfItems.length}</span>
+        <span style="color:${wfDone===wfItems.length&&wfItems.length>0?wfCycleColor:'#CCCCCC'}">${wfDone}/${wfItems.length}</span>
       </div>
       ${wfRows}
     </div>`;

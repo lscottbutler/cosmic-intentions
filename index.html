@@ -14,7 +14,7 @@
 <script src="shared/card-builder.js?v=20260611a"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
-<script src="shared/today.js?v=20260611a"></script>
+<script src="shared/today.js?v=20260612c"></script>
 <script src="shared/player-launcher.js?v=20260611a"></script>
 <script src="shared/progress-dashboard.js?v=20260611a"></script>
 <script src="shared/the-map.js?v=20260612b"></script>
@@ -5419,25 +5419,28 @@ input, textarea, select {
 .ts-title {
   flex: 1;
   font-family: 'Roboto Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  color: #EFEFEF;
+  font-size: 1.8rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 .ts-meta {
   font-family: var(--vault-mono);
-  font-size: 9px;
-  color: #888;
+  font-size: 1.3rem;
+  color: #E8E8E8;
   flex-shrink: 0;
 }
 .ts-arrow {
   font-size: 9px;
-  color: #888;
+  color: #ffffff !important;
   flex-shrink: 0;
+  display: inline-block;
   transition: transform 0.2s;
+  transform: scale(1.5);
+  transform-origin: center;
 }
-.ts-arrow.open { transform: rotate(90deg); }
+.ts-arrow.open { transform: rotate(90deg) scale(1.5); }
 .ts-move { display: flex; gap: 3px; flex-shrink: 0; margin-right: 6px; }
 .ts-move-btn {
   background: #1f1f1f;
@@ -5508,19 +5511,19 @@ input, textarea, select {
 }
 .ts-section-label {
   font-family: var(--vault-mono);
-  font-size: 9px;
-  color: #505058;
+  font-size: 1.3rem;
+  color: #F0F0F0;
   font-weight: 700;
   letter-spacing: 1px;
-  padding: 6px 4px 4px;
+  padding: 8px 4px 6px;
   display: flex;
   justify-content: space-between;
 }
 .ts-row {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 6px 4px;
+  gap: 10px;
+  padding: 8px 4px;
   cursor: pointer;
   border-radius: 6px;
 }
@@ -5542,25 +5545,25 @@ input, textarea, select {
 .ts-check.done { border-color: #30D158; background: #30D158; }
 .ts-check.wf-done { border-color: #F5A623; background: #F5A623; }
 .ts-text {
-  font-size: 11px;
-  color: #ccc;
-  line-height: 1.4;
+  font-size: 1.3rem;
+  color: #EFEFEF;
+  line-height: 1.45;
   flex: 1;
   min-width: 0;
 }
-.ts-text.done { color: #404048; text-decoration: line-through; }
+.ts-text.done { color: #888888; text-decoration: line-through; }
 .ts-streak {
   font-family: var(--vault-mono);
-  font-size: 9px;
-  color: #505058;
+  font-size: 1.1rem;
+  color: #CCCCCC;
   white-space: nowrap;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 .ts-empty {
-  font-size: 11px;
-  color: #383840;
+  font-size: 1.3rem;
+  color: #D0D0D0;
   font-style: italic;
-  padding: 4px 4px 8px;
+  padding: 6px 4px 10px;
   line-height: 1.5;
 }
 .ts-divider { border: none; border-top: 1px solid #1E1E1E; margin: 4px 0; }
