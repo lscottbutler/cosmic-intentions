@@ -5624,12 +5624,12 @@ input, textarea, select {
 [style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 21px !important; }
 [style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
 
-.card-asset-container{margin-top:1.5rem;margin-bottom:1.5rem;width:100%;display:flex;justify-content:center;}
-.collectible-card{width:100%;max-width:380px;background:#ffffff;border:4px solid #000000;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;}
+.card-asset-container{margin-top:2rem;margin-bottom:2rem;width:100%;display:flex;justify-content:center;}
+.collectible-card{width:100%;max-width:420px;background:#ffffff;border:4px solid #000000;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;border-radius:4px;}
 .card-art-frame{width:100%;border-bottom:4px solid #000000;line-height:0;}
 .card-art-image{width:100%;height:auto;display:block;}
-.card-content-area{padding:1.5rem;background:#ffffff;min-height:120px;display:flex;align-items:center;justify-content:center;}
-.card-dynamic-text{font-family:inherit;font-size:0.9rem;line-height:1.4;color:#000000;text-align:center;text-transform:uppercase;letter-spacing:0.05em;}
+.card-content-area{padding:1.5rem;background:#ffffff;min-height:140px;display:flex;align-items:center;justify-content:center;}
+.card-dynamic-text{font-family:inherit;font-size:1.15rem;font-weight:600;line-height:1.4;color:#000000;text-align:center;text-transform:uppercase;letter-spacing:0.03em;transition:opacity 0.5s ease;}
 </style>
 </head>
 <body>
@@ -5996,21 +5996,19 @@ input, textarea, select {
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
-        <div class="card-asset-container">
+        <!-- AFFIRMATION CARD ENGINE — wrestling card wired to affirmation loop -->
+        <div id="affirmation-card-container" class="card-asset-container">
           <div class="collectible-card">
             <div class="card-art-frame">
               <img src="assets/images/visualization/TROUGH_TEST.png" alt="Wrestling Figures Mural" class="card-art-image" />
             </div>
             <div class="card-content-area">
-              <p class="card-dynamic-text">Your manifestation roadmap updates live below your active intentions.</p>
+              <p id="dashboard-affirmation-target" class="card-dynamic-text">I attract success with every thought and action.</p>
             </div>
           </div>
         </div>
-
-        <!-- AFFIRMATION TICKER — cycling 30s loop, goal-specific or default -->
-        <div id="dashboard-affirmation-ticker">
-          <span id="affirmation-ticker-text">Loading your affirmations…</span>
-        </div>
+        <!-- hidden ticker keeps JS targeting safe -->
+        <span id="affirmation-ticker-text" style="display:none;"></span>
 
         <!-- PEGBOARD LOOP WIDGET -->
         <div class="pb-loop-card">
@@ -9788,18 +9786,25 @@ let _affLoop = null;
 let _affList = AFFIRMATION_DEFAULTS;
 let _affIdx  = 0;
 
+function _affUpdate(text) {
+  const ticker = document.getElementById('affirmation-ticker-text');
+  const card   = document.getElementById('dashboard-affirmation-target');
+  if (ticker) ticker.textContent = text;
+  if (card)   card.textContent   = text;
+}
+
 function startAffirmationLoop(affirmations) {
   if (_affLoop) { clearInterval(_affLoop); _affLoop = null; }
   _affList = (affirmations && affirmations.length) ? affirmations : AFFIRMATION_DEFAULTS;
   _affIdx  = 0;
-  const el = document.getElementById('affirmation-ticker-text');
-  if (el) { el.style.opacity = '1'; el.textContent = _affList[0]; }
+  const card = document.getElementById('dashboard-affirmation-target');
+  if (card) { card.style.opacity = '1'; }
+  _affUpdate(_affList[0]);
   _affLoop = setInterval(() => {
-    const t = document.getElementById('affirmation-ticker-text');
-    if (!t) return;
     _affIdx = (_affIdx + 1) % _affList.length;
-    t.style.opacity = '0';
-    setTimeout(() => { t.textContent = _affList[_affIdx]; t.style.opacity = '1'; }, 500);
+    const card2 = document.getElementById('dashboard-affirmation-target');
+    if (card2) { card2.style.opacity = '0'; }
+    setTimeout(() => { _affUpdate(_affList[_affIdx]); if (card2) card2.style.opacity = '1'; }, 500);
   }, 30000);
 }
 
