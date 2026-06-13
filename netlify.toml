@@ -2,6 +2,9 @@
   functions = "netlify/functions"
   publish = "."
 
+[functions]
+  timeout = 60
+
 # Local `netlify dev` only — never auto-open a browser (no Edge popping up)
 [dev]
   autoLaunch = false
