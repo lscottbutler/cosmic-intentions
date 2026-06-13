@@ -5624,6 +5624,10 @@ input, textarea, select {
 [style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 21px !important; }
 [style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
 
+.dashboard-note-container{width:100%;margin-bottom:1rem;display:flex;justify-content:center;}
+.dashboard-note-box{width:100%;background:#1A1A1A;border-left:4px solid #FFCC00;border-top:1px solid #2A2A2A;border-right:1px solid #2A2A2A;border-bottom:1px solid #2A2A2A;padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;border-radius:0 4px 4px 0;}
+.note-pin-icon{font-size:1.1rem;line-height:1.4;}
+.dashboard-note-text{font-family:inherit;font-size:1rem;font-weight:500;line-height:1.5;color:#E0E0E0;margin:0;}
 .card-asset-container{margin-top:2rem;margin-bottom:2rem;width:100%;display:flex;justify-content:center;}
 .collectible-card{width:100%;max-width:420px;background:#ffffff;border:4px solid #000000;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;border-radius:4px;}
 .card-art-frame{width:100%;border-bottom:4px solid #000000;line-height:0;}
@@ -10033,6 +10037,12 @@ function buildWorkspaceHeader(intent, idx) {
         </div>
         <div class="bs-num-circle">${idx + 1}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
+      </div>
+      <div class="dashboard-note-container">
+        <div class="dashboard-note-box">
+          <span class="note-pin-icon">📍</span>
+          <p class="dashboard-note-text">Focus on high-protein fueling today and visualize the energy shift post-workout.</p>
+        </div>
       </div>
       <div id="brand-banner" style="margin:8px 0;">
         <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
