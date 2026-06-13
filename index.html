@@ -6044,13 +6044,6 @@ input, textarea, select {
         <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
         <div id="embedded-progress-workspace" style="margin-top:16px;"></div>
 
-        <!-- WELCOME STATE — standalone baseline content for Column B -->
-        <div id="vaultWelcome" class="vault-welcome">
-          <div class="vault-welcome-icon">✦</div>
-          <div class="vault-welcome-title">Your Roadmap Awaits</div>
-          <div class="vault-welcome-sub">Select an intention from the list to open its Map, Backbone, and daily practice — or tap <strong style="color:#cfcabf;">+ Add Intention</strong> to begin a new one.</div>
-        </div>
-
         <!-- ADD INTENTION FORM -->
         <div class="vault-add-form hidden" id="addIntentionForm">
           <div class="vault-add-form-inner">
@@ -9837,13 +9830,12 @@ function startAffirmationLoop(affirmations) {
 }
 
 function showVaultWelcome() {
-  document.getElementById('vaultWelcome')?.classList.remove('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   const sel = document.getElementById('colb-selection-state');
   const act = document.getElementById('colb-active-state');
   if (sel) sel.style.display = '';
   if (act) act.style.display = 'none';
-  startAffirmationLoop(null); // revert to default affirmations
+  startAffirmationLoop(null);
 }
 
 function closeVaultBuildSheet() {
@@ -9992,7 +9984,6 @@ function showVaultBuildSheet(idx) {
   const act = document.getElementById('colb-active-state');
   if (sel) sel.style.display = 'none';
   if (act) act.style.display = '';
-  document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.add('hidden');
 
   // Populate each workspace layer
@@ -10025,7 +10016,6 @@ function showVaultBuildSheet(idx) {
 
 function vaultShowAddForm() {
   selectedVaultIdx = null;
-  document.getElementById('vaultWelcome')?.classList.add('hidden');
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.remove('hidden');
   setTimeout(() => document.getElementById('iam-field1')?.focus(), 50);
