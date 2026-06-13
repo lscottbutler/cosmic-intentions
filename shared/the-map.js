@@ -227,20 +227,20 @@ function _renderDangerZones(zones, idx) {
   const rows = zones.map((z, i) => {
     const id = `dz-${idx}-${i}`;
     return `
-    <div style="margin:0 0 6px;background:#1a0a0a;border:1px solid #3a1a1a;border-radius:10px;overflow:hidden;">
+    <div style="margin:0 0 8px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden;">
 
       <!-- TRIGGER HEADER -->
       <div onclick="_toggleDangerZone('${id}')"
-        style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;">
-        <span style="font-family:var(--vault-mono);font-size:8px;font-weight:800;color:#F87171;
+        style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none;">
+        <span style="font-family:var(--vault-mono);font-size:8px;font-weight:800;color:#F5A623;
           letter-spacing:1px;white-space:nowrap;">⚠ ${i+1}</span>
         <span style="flex:1;font-size:13px;font-weight:700;color:#fff;">${esc(z.title)}</span>
         <span id="dz-arrow-${id}"
-          style="font-size:9px;color:#F87171;transition:transform 0.2s;flex-shrink:0;">▶</span>
+          style="font-size:9px;color:#888;transition:transform 0.2s;flex-shrink:0;">▶</span>
       </div>
 
       <!-- COLLAPSIBLE BODY -->
-      <div id="dz-body-${id}" style="display:none;border-top:1px solid #2a1010;padding:12px 14px;">
+      <div id="dz-body-${id}" style="display:none;border-top:1px solid #2a2a2a;padding:14px 16px;">
         <div style="font-size:11px;color:#C8C8D0;line-height:1.6;margin-bottom:10px;">${esc(z.pitfall)}</div>
 
         <div style="font-family:var(--vault-mono);font-size:8px;color:#F87171;letter-spacing:1px;margin-bottom:4px;">👁 WATCH FOR</div>
