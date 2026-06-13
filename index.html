@@ -10096,7 +10096,7 @@ function renderBBFW(bbfw, idx) {
         ${i+1}. ${EP_LABELS[i].toUpperCase()}
       </div>
       <div style="font-size:12px;color:#ddd;line-height:1.6;">${esc(ep.insight || '')}</div>
-      ${ep.action ? `<div style="font-size:11px;color:#888;margin-top:6px;font-style:italic;">→ ${esc(ep.action)}</div>` : ''}
+      ${ep.action ? `<div style="font-size:12px;color:#FFCC00;margin-top:6px;font-style:normal;line-height:1.5;">→ ${esc(ep.action)}</div>` : ''}
     </div>`).join('');
 
   const compCards = (bbfw.components || []).map((c, i) => {
@@ -10118,7 +10118,7 @@ function renderBBFW(bbfw, idx) {
         <div style="font-family:var(--vault-mono);font-size:10px;color:${COMP_COLORS[i]};font-weight:800;letter-spacing:0.5px;">${COMP_NAMES[i].toUpperCase()}</div>
       </div>
       ${actionHtml}
-      ${c.quote ? `<div style="font-size:10px;color:#505058;margin-top:6px;padding-left:30px;font-style:italic;">"${esc(c.quote)}"</div>` : ''}
+      ${c.quote ? `<div style="font-size:10px;color:#505058;margin-top:6px;padding-left:30px;font-style:normal;">"${esc(c.quote)}"</div>` : ''}
     </div>`;
   }).join('');
 
