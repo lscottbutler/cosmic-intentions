@@ -6015,107 +6015,9 @@ input, textarea, select {
         <!-- hidden ticker keeps JS targeting safe -->
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
-        <!-- PEGBOARD LOOP WIDGET -->
-        <div class="pb-loop-card">
-          <div class="pb-loop-bg" id="pbLoopBg"></div>
-          <div class="pb-loop-content" id="pbLoopContent">
-            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
-            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
-          </div>
-        </div>
-
-      </aside>
-
-      <!-- MAIN CONTENT -->
-      <div class="vault-main" id="vaultMain">
-
-        <!-- SELECTION STATE — visible until an intention is selected -->
-        <div id="colb-selection-state">
-
-        <!-- MILESTONE BAR — absolute top of Column B selection view -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
-        <!-- INTENTION LIST — goal cards beneath the tracker -->
-        <div class="vault-list" id="vaultList"></div>
-
-        <!-- + ADD INTENTION — directly below last card -->
-        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:4px;margin-bottom:4px;">
-          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
-        </div>
-
-        <!-- CATEGORY FILTER TABS — beneath the add button -->
-        <div class="vault-cats" id="vaultCats"></div>
-
-        <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
-        <div id="embedded-progress-workspace" style="margin-top:16px;"></div>
-
-        <!-- ADD INTENTION FORM -->
-        <div class="vault-add-form hidden" id="addIntentionForm">
-          <div class="vault-add-form-inner">
-            <div class="vaf-label">New I AM Statement</div>
-
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM the</span>
-              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
-                placeholder="proud owner of"
-                maxlength="60"
-                oninput="updateIamPreview()"
-                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
-            </div>
-
-            <input type="text" id="iam-field2" class="vaf-input"
-              placeholder="a Porsche 911"
-              maxlength="80"
-              oninput="updateIamPreview()"
-              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
-
-            <div id="iam-preview" style="
-              font-size:14px;font-weight:700;color:#fff;
-              background:#1a1a1a;border:1px solid #333;border-radius:8px;
-              padding:10px 14px;margin-bottom:12px;line-height:1.4;
-              min-height:42px;transition:opacity 0.2s;opacity:0.3;
-            ">I AM the …</div>
-
-            <div class="vaf-btns">
-              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
-              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
-            </div>
-          </div>
-        </div>
-
-        </div><!-- end colb-selection-state -->
-
-        <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
-        <div id="colb-active-state" style="display:none;">
-
-        <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
-        <div id="vaultWorkspaceHeader"></div>
-
-        <!-- WORKSPACE SWITCHBOARD TABS — directly below brand banner -->
-        <div id="workspaceTabs" style="display:flex;background:#1a1a1a;border-bottom:1px solid #222;">
-          <button id="wsTab-strategy" onclick="switchWorkspaceLayer('strategy')"
-            style="flex:1;background:#1a1a1a;border:none;border-bottom:2px solid #F5A623;padding:10px 4px;
-            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-            color:#F5A623;cursor:pointer;">1. STRATEGY</button>
-          <button id="wsTab-tactics" onclick="switchWorkspaceLayer('tactics')"
-            style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 4px;
-            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-            color:#888;cursor:pointer;">2. TACTICS</button>
-          <button id="wsTab-action" onclick="switchWorkspaceLayer('action')"
-            style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 4px;
-            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-            color:#888;cursor:pointer;">3. ACTION</button>
-        </div>
-
-        <!-- LAYER 1: STRATEGY — Backbone Framework -->
-        <div id="layer-content-strategy"></div>
-
-        <!-- LAYER 2: TACTICS — My Roadmap + task banners -->
-        <div id="layer-content-tactics" style="display:none;"></div>
-
-        <!-- LAYER 3: ACTION — Full player stack -->
-        <div id="layer-content-action" style="display:none;">
-        <div id="actionPanel" style="padding:0;background:#252525;margin-top:8px;margin-bottom:8px;border-radius:8px;overflow:hidden;">
+        <!-- ACTION PANEL — Cosmic Library: mindset, viz, meditation, gratitude -->
+        <div id="actionPanel" style="margin-top:16px;">
+        <div style="padding:0;background:#252525;border-radius:8px;overflow:hidden;">
           <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
           <div class="acc-list" id="vizAccList">
 
@@ -6219,8 +6121,102 @@ input, textarea, select {
 
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
+        </div>
         </div><!-- end actionPanel -->
-        </div><!-- end layer-content-action -->
+
+        <!-- PEGBOARD LOOP WIDGET -->
+        <div class="pb-loop-card">
+          <div class="pb-loop-bg" id="pbLoopBg"></div>
+          <div class="pb-loop-content" id="pbLoopContent">
+            <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
+            <div class="pb-loop-body" id="pbLoopBody">Loading your foundation…</div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="vault-main" id="vaultMain">
+
+        <!-- SELECTION STATE — visible until an intention is selected -->
+        <div id="colb-selection-state">
+
+        <!-- MILESTONE BAR — absolute top of Column B selection view -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
+
+        <!-- INTENTION LIST — goal cards beneath the tracker -->
+        <div class="vault-list" id="vaultList"></div>
+
+        <!-- + ADD INTENTION — directly below last card -->
+        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:4px;margin-bottom:4px;">
+          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
+        </div>
+
+        <!-- CATEGORY FILTER TABS — beneath the add button -->
+        <div class="vault-cats" id="vaultCats"></div>
+
+        <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
+        <div id="embedded-progress-workspace" style="margin-top:16px;"></div>
+
+        <!-- ADD INTENTION FORM -->
+        <div class="vault-add-form hidden" id="addIntentionForm">
+          <div class="vault-add-form-inner">
+            <div class="vaf-label">New I AM Statement</div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM the</span>
+              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
+                placeholder="proud owner of"
+                maxlength="60"
+                oninput="updateIamPreview()"
+                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
+            </div>
+
+            <input type="text" id="iam-field2" class="vaf-input"
+              placeholder="a Porsche 911"
+              maxlength="80"
+              oninput="updateIamPreview()"
+              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
+
+            <div id="iam-preview" style="
+              font-size:14px;font-weight:700;color:#fff;
+              background:#1a1a1a;border:1px solid #333;border-radius:8px;
+              padding:10px 14px;margin-bottom:12px;line-height:1.4;
+              min-height:42px;transition:opacity 0.2s;opacity:0.3;
+            ">I AM the …</div>
+
+            <div class="vaf-btns">
+              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
+              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- end colb-selection-state -->
+
+        <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
+        <div id="colb-active-state" style="display:none;">
+
+        <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
+        <div id="vaultWorkspaceHeader"></div>
+
+        <!-- WORKSPACE SWITCHBOARD TABS — directly below brand banner -->
+        <div id="workspaceTabs" style="display:flex;background:#1a1a1a;border-bottom:1px solid #222;">
+          <button id="wsTab-strategy" onclick="switchWorkspaceLayer('strategy')"
+            style="flex:1;background:#1a1a1a;border:none;border-bottom:2px solid #F5A623;padding:10px 4px;
+            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
+            color:#F5A623;cursor:pointer;">STRATEGY</button>
+          <button id="wsTab-tactics" onclick="switchWorkspaceLayer('tactics')"
+            style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 4px;
+            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
+            color:#888;cursor:pointer;">TACTICS</button>
+        </div>
+
+        <!-- LAYER 1: STRATEGY — Backbone Framework -->
+        <div id="layer-content-strategy"></div>
+
+        <!-- LAYER 2: TACTICS — My Roadmap + task banners -->
+        <div id="layer-content-tactics" style="display:none;"></div>
 
         </div><!-- end colb-active-state -->
 
@@ -9967,7 +9963,7 @@ async function populateWorkspaceBrandBanner() {
 }
 
 function switchWorkspaceLayer(name) {
-  ['strategy','tactics','action'].forEach(n => {
+  ['strategy','tactics'].forEach(n => {
     const btn   = document.getElementById(`wsTab-${n}`);
     const layer = document.getElementById(`layer-content-${n}`);
     if (btn) {
