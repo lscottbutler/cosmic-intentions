@@ -2742,20 +2742,20 @@ input, textarea, select {
 
 /* ── CONTENT BLOCKS (display) ─────────────────────────── */
 .cb-display {
-  background: url('images/svg-library/notes-blob.svg') center center / 100% 100% no-repeat !important;
-  border-radius: 0;
-  padding: 32px 40px;
+  background: transparent !important;
+  border: 2px solid #ffffff;
+  border-radius: 4px !important;
+  padding: 1.5rem !important;
   font-size: 14px;
-  color: #fff !important;
+  color: #FFCC00 !important;
   line-height: 1.7;
   margin: 14px 0;
   width: 100% !important;
   box-sizing: border-box;
 }
-/* Blob variants cycled across notes (applyNoteBlobs) — override the default green */
-.cb-display.cb-blob-1 { background-image: url('images/svg-library/notes-blob.svg') !important; }
-.cb-display.cb-blob-2 { background-image: url('images/svg-library/notes-blob-red.svg') !important; }
-.cb-display.cb-blob-3 { background-image: url('images/svg-library/notes-blob-orange.svg') !important; }
+.cb-display.cb-blob-1,
+.cb-display.cb-blob-2,
+.cb-display.cb-blob-3 { background-image: none !important; }
 .cb-display:empty { display: none; }
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
@@ -2784,7 +2784,8 @@ input, textarea, select {
   padding: 0 !important;
 }
 .cb-display br + br { display: none; }
-.cb-display strong { color: #fff !important; font-weight: 700; }
+.cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: #FFCC00 !important; text-transform: uppercase; letter-spacing: 0.03em; }
+.cb-display strong { font-weight: 700; }
 .cb-display em { font-style: italic; }
 .cb-display a { color: var(--accent) !important; text-decoration: underline; }
 
