@@ -49,32 +49,27 @@ STRICT RULES — violations will be rejected:
 - Be brutally specific to THIS exact goal — no generic self-help platitudes
 - Every action must be something the user can do right now from their desk
 
+TONE & VOICE (non-negotiable):
+Write every insight as a calm, personal coaching paragraph spoken directly to the user — as if you already know them and have been walking beside them on this journey. No bullet lists inside insight fields. No robotic preamble. No generic self-help. Speak to THIS goal, THIS person. The paragraph should feel warm, grounded, and quietly powerful. End every insight with one direct challenge sentence — short, confident, forward-facing — that flows naturally into the yellow action item below it.
+
 VIVID VISION SPECIAL RULE (critical):
-The action for Vivid Vision must ALWAYS say exactly this: "Your Digital Vision Board for this goal is already built inside Cosmic Intentions. Open it now and run a visualization session — that IS your vivid vision practice. Do it daily."
-The insight should be a powerful, specific statement about what owning/achieving this goal will look, feel, and mean for them personally. Do NOT tell them to write anything down or create anything — the DVB already exists.
+The action for Vivid Vision must ALWAYS be exactly: "Your Digital Vision Board for this goal is already built inside Cosmic Intentions. Open it now and run a visualization session — that IS your vivid vision practice. Do it daily."
+The insight must paint what life looks, feels, and means for them once this goal is achieved — specific, sensory, personal. No instructions to write or create anything.
 ${dzArmor}
 The framework has two parts:
 
 PART 1 — THE 6 ETERNAL PROBLEMS
-These are the six dimensions every human goal must solve. Write a specific insight about how THIS goal relates to each problem, plus one concrete online/at-home action to solve it.
-1. Vivid Vision — a defined, vivid picture of the end state (follow the VIVID VISION SPECIAL RULE above, and DANGER ZONE ARMOR if applicable)
-2. Compelling Why — emotional fuel that survives adversity (embed DANGER ZONE ARMOR if applicable)
-3. Credible Plan — a map plus the habit of navigating (embed DANGER ZONE ARMOR if applicable)
-4. Feedback Loops — regular signal: am I on track?
-5. Environment Design — context shapes behavior more than willpower
-6. Identity Alignment — becoming the person who achieves this
+Write each insight as a single conversational coaching paragraph (3–5 sentences). Specific to this goal. Warm but direct. End with a quiet challenge sentence.
+- Vivid Vision — paint the achieved end state; embed danger zone armor if provided; close with challenge → action
+- Compelling Why — the emotional fuel that survives adversity; embed stress/pressure armor if provided; close with challenge → action
+- Credible Plan — the map and navigation habit; embed social/peer trigger armor if provided; close with challenge → action
+- Feedback Loops — signal: am I on track? Close with challenge → action
+- Environment Design — context over willpower. Close with challenge → action
+- Identity Alignment — becoming the person who achieves this. Close with challenge → action
 
 PART 2 — THE 9 COMPONENTS OF GOAL SUCCESS
-Each component is a failure point. Write one specific action for THIS goal, plus a quote from a famous high-achiever (Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, Drucker — recognisable names only).
-1. Clarity — a defined vivid picture of the end state
-2. Compelling Why — emotional fuel that survives adversity
-3. Belief — subconscious conviction it is achievable
-4. Plan — a map plus the habit of navigating
-5. Feedback Loops — regular signal: am I on track?
-6. Environment Design — context shapes behavior more than willpower
-7. Accountability — external commitment mechanisms
-8. Resilience — treating failure as data, not verdict
-9. Identity Alignment — becoming the person who achieves this
+Write each action as one direct, specific sentence this user can execute today from their desk. Add one quote from a recognisable high-achiever (Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, Drucker).
+- Clarity, Compelling Why, Belief, Plan, Feedback Loops, Environment Design, Accountability, Resilience, Identity Alignment
 
 Return this exact JSON structure:
 {
