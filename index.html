@@ -5627,7 +5627,7 @@ input, textarea, select {
 .card-asset-container{margin-top:2rem;margin-bottom:2rem;width:100%;display:flex;justify-content:center;}
 .collectible-card{width:100%;max-width:420px;background:#ffffff;border:4px solid #000000;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;border-radius:4px;}
 .card-art-frame{width:100%;border-bottom:4px solid #000000;line-height:0;}
-.card-art-image{width:100%;height:auto;display:block;}
+.card-art-image{width:100%;height:auto;display:block;transition:opacity 0.5s ease;}
 .card-content-area{padding:1.5rem;background:#ffffff;min-height:140px;display:flex;align-items:center;justify-content:center;}
 .card-dynamic-text{font-family:inherit;font-size:1.15rem;font-weight:600;line-height:1.4;color:#000000;text-align:center;text-transform:uppercase;letter-spacing:0.03em;transition:opacity 0.5s ease;}
 </style>
@@ -6000,7 +6000,7 @@ input, textarea, select {
         <div id="affirmation-card-container" class="card-asset-container">
           <div class="collectible-card">
             <div class="card-art-frame">
-              <img src="assets/images/visualization/TROUGH_TEST.png" alt="Wrestling Figures Mural" class="card-art-image" />
+              <img id="dashboard-card-image" src="images/trough/trough001.jpg" alt="Wrestling Figures Mural" class="card-art-image" onerror="this.style.display='none'" />
             </div>
             <div class="card-content-area">
               <p id="dashboard-affirmation-target" class="card-dynamic-text">I attract success with every thought and action.</p>
@@ -9786,25 +9786,53 @@ let _affLoop = null;
 let _affList = AFFIRMATION_DEFAULTS;
 let _affIdx  = 0;
 
+const TROUGH_IMAGES = [
+  'trough001.jpg','trough002.jpg','trough003.jpg','trough004.jpg','trough005.jpg',
+  'trough006.jpg','trough007.jpg','trough008.jpg','trough009.jpg','trough010.jpg',
+  'trough011.jpg','trough012.jpg','trough013.jpg','trough014.jpg','trough015.jpg',
+  'trough016.jpg','trough017.jpg','trough018.JPG','trough019.jpg','trough020.jpg',
+  'trough021.jpg','trough022.jpg','trough023.jpg','trough024.jpg','trough025.jpg',
+  'trough026.jpg','trough027.jpg','trough028.jpg','trough029.jpg','trough030.jpg',
+  'trough031 (1).jpg','trough032.jpg','trough033.jpg','trough034.jpg'
+];
+let _troughIdx = 0;
+
 function _affUpdate(text) {
   const ticker = document.getElementById('affirmation-ticker-text');
   const card   = document.getElementById('dashboard-affirmation-target');
+  const img    = document.getElementById('dashboard-card-image');
   if (ticker) ticker.textContent = text;
   if (card)   card.textContent   = text;
+  if (img) {
+    _troughIdx = (_troughIdx + 1) % TROUGH_IMAGES.length;
+    img.src = 'images/trough/' + TROUGH_IMAGES[_troughIdx];
+    img.style.display = '';
+  }
 }
 
 function startAffirmationLoop(affirmations) {
   if (_affLoop) { clearInterval(_affLoop); _affLoop = null; }
-  _affList = (affirmations && affirmations.length) ? affirmations : AFFIRMATION_DEFAULTS;
-  _affIdx  = 0;
-  const card = document.getElementById('dashboard-affirmation-target');
-  if (card) { card.style.opacity = '1'; }
-  _affUpdate(_affList[0]);
+  _affList    = (affirmations && affirmations.length) ? affirmations : AFFIRMATION_DEFAULTS;
+  _affIdx     = 0;
+  _troughIdx  = 0;
+  const card  = document.getElementById('dashboard-affirmation-target');
+  const img   = document.getElementById('dashboard-card-image');
+  if (card) card.style.opacity = '1';
+  if (img)  { img.src = 'images/trough/' + TROUGH_IMAGES[0]; img.style.display = ''; }
+  const ticker = document.getElementById('affirmation-ticker-text');
+  if (ticker) ticker.textContent = _affList[0];
+  if (card)   card.textContent   = _affList[0];
   _affLoop = setInterval(() => {
     _affIdx = (_affIdx + 1) % _affList.length;
     const card2 = document.getElementById('dashboard-affirmation-target');
-    if (card2) { card2.style.opacity = '0'; }
-    setTimeout(() => { _affUpdate(_affList[_affIdx]); if (card2) card2.style.opacity = '1'; }, 500);
+    const img2  = document.getElementById('dashboard-card-image');
+    if (card2) card2.style.opacity = '0';
+    if (img2)  img2.style.opacity  = '0';
+    setTimeout(() => {
+      _affUpdate(_affList[_affIdx]);
+      if (card2) card2.style.opacity = '1';
+      if (img2)  img2.style.opacity  = '1';
+    }, 500);
   }, 30000);
 }
 
