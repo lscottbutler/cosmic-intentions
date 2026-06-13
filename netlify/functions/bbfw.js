@@ -12,11 +12,31 @@ exports.handler = async (event) => {
   try { body = JSON.parse(event.body || '{}'); }
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
-  const { goal } = body;
+  const { goal, dangerZones } = body;
   const apiKey = process.env.OPEN_AI_KEY;
 
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
   if (!goal)   return { statusCode: 400, headers, body: JSON.stringify({ error: 'goal is required' }) };
+
+  // Build danger zone armor sections if provided
+  const dzList = Array.isArray(dangerZones) && dangerZones.length > 0 ? dangerZones : [];
+
+  // Map zones to their armor blocks by index pattern: 0=evening/late, 1=stress, 2=social/peer, rest distributed
+  const vividDz      = dzList.filter((_, i) => i % 3 === 0).map(z => z.title).filter(Boolean);
+  const compellingDz = dzList.filter((_, i) => i % 3 === 1).map(z => z.title).filter(Boolean);
+  const planDz       = dzList.filter((_, i) => i % 3 === 2).map(z => z.title).filter(Boolean);
+
+  const dzArmor = dzList.length > 0 ? `
+DANGER ZONE ARMOR SYSTEM (Pass 2 & Pass 3 — critical):
+The user has logged these personal friction triggers: ${dzList.map(z => z.title).join(', ')}.
+You must embed armor against these specific triggers into the strategy blocks as follows:
+
+- VIVID VISION insight: If any of these triggers apply (${vividDz.length ? vividDz.join(', ') : 'any late-night or habitual triggers'}), weave a single calm, reassuring coaching paragraph into the insight that prepares the user for this specific friction point. Name the trigger by name. End with a direct challenge that leads into the action item.
+- COMPELLING WHY insight: If any of these triggers apply (${compellingDz.length ? compellingDz.join(', ') : 'any stress or pressure triggers'}), embed armor into the insight — acknowledge the trigger by name, give the user a reframe, and close with a challenge sentence.
+- CREDIBLE PLAN insight: If any of these triggers apply (${planDz.length ? planDz.join(', ') : 'any social or peer triggers'}), embed a pre-commitment strategy into the insight that names the trigger and closes with a direct if/then protocol sentence.
+
+The armor must flow naturally as part of the insight paragraph — not as a bolted-on section. It should feel like the coach already knows them.
+` : '';
 
   const prompt = `You are an elite achievement coach building a personalised roadmap for this goal: "${goal}"
 
@@ -32,14 +52,14 @@ STRICT RULES — violations will be rejected:
 VIVID VISION SPECIAL RULE (critical):
 The action for Vivid Vision must ALWAYS say exactly this: "Your Digital Vision Board for this goal is already built inside Cosmic Intentions. Open it now and run a visualization session — that IS your vivid vision practice. Do it daily."
 The insight should be a powerful, specific statement about what owning/achieving this goal will look, feel, and mean for them personally. Do NOT tell them to write anything down or create anything — the DVB already exists.
-
+${dzArmor}
 The framework has two parts:
 
 PART 1 — THE 6 ETERNAL PROBLEMS
 These are the six dimensions every human goal must solve. Write a specific insight about how THIS goal relates to each problem, plus one concrete online/at-home action to solve it.
-1. Vivid Vision — a defined, vivid picture of the end state (follow the VIVID VISION SPECIAL RULE above)
-2. Compelling Why — emotional fuel that survives adversity
-3. Credible Plan — a map plus the habit of navigating
+1. Vivid Vision — a defined, vivid picture of the end state (follow the VIVID VISION SPECIAL RULE above, and DANGER ZONE ARMOR if applicable)
+2. Compelling Why — emotional fuel that survives adversity (embed DANGER ZONE ARMOR if applicable)
+3. Credible Plan — a map plus the habit of navigating (embed DANGER ZONE ARMOR if applicable)
 4. Feedback Loops — regular signal: am I on track?
 5. Environment Design — context shapes behavior more than willpower
 6. Identity Alignment — becoming the person who achieves this

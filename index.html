@@ -10184,7 +10184,7 @@ async function generateBBFW(idx, force) {
 
   try {
     const [data] = await Promise.all([
-      ciApiJson('bbfw', { goal: intent.title }),
+      ciApiJson('bbfw', { goal: intent.title, dangerZones: intent.theMap?.dangerZones || [] }),
       new Promise(r => setTimeout(r, 13000))
     ]);
     _apexTimers.forEach(clearTimeout);
