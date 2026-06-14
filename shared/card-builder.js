@@ -554,7 +554,22 @@ function renderFullPlanResult(plan, idx) {
     `<div class="belief-item"><span class="belief-arrow">→</span>${esc(b)}</div>`).join('');
   const affirmations = (plan.affirmations || []).map(a =>
     `<span class="affirmation-pill">${esc(a)}</span>`).join('');
+
+  const EP_COLORS = ['#F5A623','#60A0FF','#4ADE80','#BF5AF2','#FF6B6B','#FFD700'];
+  const strategyBlocks = (plan.strategy_blocks || []).map((sb, i) => `
+    <div style="background:#1A1A1A;border-left:3px solid ${EP_COLORS[i] || '#888'};border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:8px;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:${EP_COLORS[i] || '#888'};font-weight:800;letter-spacing:1px;margin-bottom:6px;">${esc(sb.block || '')}</div>
+      <div style="font-size:12px;color:#ddd;line-height:1.6;">${esc(sb.coaching || '')}</div>
+    </div>`).join('');
+
+  const strategySection = strategyBlocks ? `
+    <div class="mindset-section">
+      <div class="mindset-section-title" style="color:#F5A623;">◈ ${esc(plan.entrepreneur_card || 'IDENTITY')} — STRATEGY BLOCKS</div>
+      ${strategyBlocks}
+    </div>` : '';
+
   return `
+    ${strategySection}
     <div class="mindset-section">
       <div class="mindset-section-title">Achiever Wisdom</div>${achievers}
     </div>
@@ -579,7 +594,9 @@ async function generateFullPlan(idx) {
     const pb   = getPB();
     const goal = intentions[idx]?.title || '';
     if (!goal) { toast('No goal set for this intention.', 'error'); return; }
-    const res    = await ciApi('generate-content', { goal, pegboard: pb });
+    const entrepreneurCard = (typeof window !== 'undefined' && window.activeEntCard) || null;
+    const dangerZones = intentions[idx]?.theMap?.dangerZones || [];
+    const res    = await ciApi('generate-content', { goal, pegboard: pb, entrepreneurCard, dangerZones });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || 'Generation failed');
     await saveContentToSupabase(result, goal);
