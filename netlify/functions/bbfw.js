@@ -46,6 +46,12 @@ Apply these per-block strategic frames through the "${card.label}" lens:
 - IDENTITY ALIGNMENT: ${card.strategy_rules.identity_alignment}`
     : '';
 
+  // Identity anchor — the bold, second-person identity declaration that opens the strategy.
+  const identityPhrase = card ? `YOU ARE ${String(card.label).toUpperCase()}` : '';
+  const identityBlock = identityPhrase
+    ? `IDENTITY ANCHOR — The active entrepreneur identity card is "${card.label}". Open the conversation by speaking this identity directly to them and weave the phrase "${identityPhrase}" in naturally. Return it verbatim in the "identity_phrase" field.`
+    : `No identity card is active — choose a fitting 2–3 word founder identity (e.g. "YOU ARE RELENTLESS") and return it in the "identity_phrase" field.`;
+
   // Shared voice + hard constraints injected into both passes so tone and rules stay identical.
   const persona = `You are sitting across a table from a person whose goal is: "${goal}". You know them deeply. You are not a corporate coach — you are a direct, warm, honest mentor who tells the truth and believes in them completely.`;
 
@@ -61,9 +67,13 @@ Apply these per-block strategic frames through the "${card.label}" lens:
 
 ${cardBlock}
 
+${identityBlock}
+
 ${dzBlock}
 
 ${absoluteRules}
+
+CONTINUITY — Write all 6 strategy beats as ONE seamless coaching conversation that flows from one into the next. No numbers, no headers, no block titles, no labels in the prose. The reader should feel one continuous talk, not six sections.
 
 NARRATIVE ARCHITECTURE FOR EVERY INSIGHT BLOCK:
 Each insight must follow this exact 3-part fused structure — all in one unbroken paragraph:
@@ -91,6 +101,7 @@ THE 6 BLOCKS — write each insight using the 3-part fused architecture above:
 
 Return this exact JSON structure and nothing else:
 {
+  "identity_phrase": "${identityPhrase || 'YOU ARE ...'}",
   "eternal_problems": [
     { "insight": "...", "action": "..." },
     { "insight": "...", "action": "..." },
@@ -108,8 +119,8 @@ ${cardBlock}
 
 ${absoluteRules}
 
-THE 9 COMPONENTS — one direct executable action sentence per component, plus one quote from: Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, or Drucker.
-Each action must obey the ABSOLUTE RULES above and stay anchored to the goal "${goal}". Keep the same warm, direct mentor voice.
+THE 9 EXECUTIVE MILESTONES — for each component below, write one direct, executive-grade milestone or asset-runway checkpoint the founder can mark complete: a concrete proof-of-momentum toward "${goal}", not a generic tip. Add one quote from: Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, or Drucker.
+Each milestone must obey the ABSOLUTE RULES above, keep the same warm, direct mentor voice, and read like an executive checkpoint. No numbering, no list markers — just the milestone sentence.
 Components (in this exact order): Clarity, Compelling Why, Belief, Plan, Feedback Loops, Environment Design, Accountability, Resilience, Identity Alignment
 
 Return this exact JSON structure and nothing else:
@@ -138,6 +149,7 @@ Return this exact JSON structure and nothing else:
     if (!b.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Components pass failed: ${b.error}` }) };
 
     const merged = {
+      identity_phrase:  typeof a.parsed.identity_phrase === 'string' && a.parsed.identity_phrase.trim() ? a.parsed.identity_phrase.trim() : identityPhrase,
       eternal_problems: Array.isArray(a.parsed.eternal_problems) ? a.parsed.eternal_problems : [],
       components:       Array.isArray(b.parsed.components)       ? b.parsed.components       : [],
     };
