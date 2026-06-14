@@ -2,8 +2,9 @@
   functions = "netlify/functions"
   publish = "."
 
-[functions]
-  timeout = 60
+# NOTE: a bare `[functions] timeout = 60` is INVALID Netlify config — it makes
+# config resolution fail and blocks every deploy. Function timeout is not set
+# via netlify.toml here; the bbfw two-pass split keeps calls under the limit.
 
 # Local `netlify dev` only — never auto-open a browser (no Edge popping up)
 [dev]
