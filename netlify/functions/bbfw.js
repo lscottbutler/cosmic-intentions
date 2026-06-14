@@ -115,7 +115,7 @@ Return this exact JSON structure:
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        max_tokens: 4096,
+        max_tokens: 8192,
         temperature: 0.7,
         response_format: { type: 'json_object' },
         messages: [
