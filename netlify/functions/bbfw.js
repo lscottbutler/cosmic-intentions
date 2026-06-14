@@ -149,6 +149,7 @@ Return this exact JSON structure and nothing else:
     if (!b.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Components pass failed: ${b.error}` }) };
 
     const merged = {
+      _format:          2, // continuous-narrative engine marker — used to flag legacy cached data for refresh
       identity_phrase:  typeof a.parsed.identity_phrase === 'string' && a.parsed.identity_phrase.trim() ? a.parsed.identity_phrase.trim() : identityPhrase,
       eternal_problems: Array.isArray(a.parsed.eternal_problems) ? a.parsed.eternal_problems : [],
       components:       Array.isArray(b.parsed.components)       ? b.parsed.components       : [],

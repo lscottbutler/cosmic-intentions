@@ -10096,6 +10096,16 @@ function renderBBFW(bbfw, idx) {
   const COMP_NAMES = ['Clarity','Compelling Why','Belief','Plan','Feedback Loops','Environment Design','Accountability','Resilience','Identity Alignment'];
   const COMP_COLORS = ['#F5A623','#60A0FF','#30D158','#BF5AF2','#FF9500','#FF6B6B','#32D74B','#FF375F','#FFD60A'];
 
+  // Legacy data (built before the continuous-narrative engine) lacks the v2 format marker — nudge a one-click refresh.
+  const isLegacy = bbfw._format !== 2;
+  const legacyHtml = isLegacy
+    ? `<div style="background:#2A2410;border:1px solid #5C4A12;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+         <span style="font-size:14px;flex-shrink:0;">↺</span>
+         <div style="flex:1;font-size:11px;color:#E8C76A;line-height:1.5;">This framework was built by an older engine. Refresh to the new continuous format.</div>
+         <button onclick="generateBBFW(${idx}, true)" style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#000;cursor:pointer;letter-spacing:0.5px;">REFRESH</button>
+       </div>`
+    : '';
+
   // Identity phrase — from this generation, else derived from the active entrepreneur card.
   const rawIdentity = (bbfw.identity_phrase || (window.activeEntCard ? `YOU ARE ${String(window.activeEntCard).toUpperCase()}` : '')).trim();
   const identityHtml = rawIdentity
@@ -10143,6 +10153,7 @@ function renderBBFW(bbfw, idx) {
         </button>
       </div>
 
+      ${legacyHtml}
       ${identityHtml}
       ${strategyHtml}
 
