@@ -3850,7 +3850,7 @@ input, textarea, select {
   margin-bottom: 28px;
 }
 /* ── BRAND BANNER ───────────────────────────────────── */
-#brand-banner {
+#brand-banner, .brand-banner {
   background: #111;
   border-bottom: 2px solid #2a2a2a;
   padding: 10px 16px;
@@ -3858,7 +3858,7 @@ input, textarea, select {
   box-sizing: border-box;
   overflow: hidden;
 }
-#brand-banner-text {
+#brand-banner-text, .brand-banner-text {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -6016,8 +6016,13 @@ input, textarea, select {
         <!-- hidden ticker keeps JS targeting safe -->
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
+        <!-- COSMIC LIBRARY banner — cloned styling from Column B #brand-banner -->
+        <div class="brand-banner" style="margin-top:16px;">
+          <span class="brand-banner-text">COSMIC LIBRARY</span>
+        </div>
+
         <!-- ACTION PANEL — Cosmic Library: mindset, viz, meditation, gratitude -->
-        <div id="actionPanel" style="margin-top:16px;">
+        <div id="actionPanel" style="margin-top:0;">
         <div style="padding:0;background:#252525;border-radius:8px;overflow:hidden;">
           <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
           <div class="acc-list" id="vizAccList">
