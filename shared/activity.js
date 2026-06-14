@@ -74,12 +74,15 @@ async function loadMyProgress() {
       .select('user_id', { count: 'exact', head: true });
 
     const rank = (above || 0) + 1;
-    document.getElementById('myScoreNum').textContent      = score.toLocaleString();
-    document.getElementById('myCommunityRank').textContent = `#${rank} / ${total || 1}`;
+    const scoreEl = document.getElementById('myScoreNum');
+    const rankEl  = document.getElementById('myCommunityRank');
+    if (scoreEl) scoreEl.textContent = score.toLocaleString();
+    if (rankEl)  rankEl.textContent  = `#${rank} / ${total || 1}`;
     renderActivityFeed(events || []);
   } catch(e) {
     console.warn('loadMyProgress failed:', e);
-    document.getElementById('myActivityFeed').innerHTML =
+    const feedEl = document.getElementById('myActivityFeed');
+    if (feedEl) feedEl.innerHTML =
       '<div style="padding:16px;color:#505058;font-size:12px;text-align:center;">Could not load activity.</div>';
   }
 }
