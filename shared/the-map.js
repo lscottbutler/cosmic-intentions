@@ -17,7 +17,9 @@ function _parseJsonField(val) {
 function _hasBbfw(bbfw) {
   const data = _parseJsonField(bbfw);
   if (!data || typeof data !== 'object') return false;
-  return (data.eternal_problems?.length > 0) || (data.components?.length > 0);
+  return (data.eternal_problems?.length > 0)
+    || (data.components?.length > 0)
+    || (typeof data.strategy_narrative === 'string' && data.strategy_narrative.trim().length > 0);
 }
 
 function _hasTheMap(map) {

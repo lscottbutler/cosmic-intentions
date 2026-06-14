@@ -62,7 +62,7 @@ Apply these per-block strategic frames through the "${card.label}" lens:
 - Never open with the block name or a generic preamble like "This block is about..."
 - Every insight is one continuous, fused paragraph — no sub-sections, no splits`;
 
-  // ── PASS A — the 6 founder-focused identity strategy paragraphs ──────────
+  // ── PASS A — one continuous founder-focused identity strategy paragraph ──
   const promptA = `${persona}
 
 ${cardBlock}
@@ -73,43 +73,22 @@ ${dzBlock}
 
 ${absoluteRules}
 
-CONTINUITY — Write all 6 strategy beats as ONE seamless coaching conversation that flows from one into the next. No numbers, no headers, no block titles, no labels in the prose. The reader should feel one continuous talk, not six sections.
+SINGLE CONTINUOUS PARAGRAPH — Write the entire strategy as ONE flowing, highly encouraging and supportive coaching paragraph spoken directly to the founder. One unbroken paragraph — no numbers, no headers, no block titles, no labels, no bullet points, no line breaks. The reader must experience a single heartfelt talk, not stitched-together sections.
 
-NARRATIVE ARCHITECTURE FOR EVERY INSIGHT BLOCK:
-Each insight must follow this exact 3-part fused structure — all in one unbroken paragraph:
+OPEN by speaking their identity in the second person, working the phrase "${identityPhrase || 'YOU ARE ...'}" in naturally near the start.
 
-  PART 1 — THE GROUNDING: Open by painting what life genuinely feels like living this goal as reality. Sensory, specific, personal to THIS goal. 2–3 sentences.
+Move through this arc seamlessly, WITHOUT ever announcing the transitions or naming these themes:
+- Paint what life genuinely feels like once this goal is reality — sensory, specific, personal to "${goal}".
+- Let the prose naturally carry a vivid vision, a compelling why, a credible plan, honest feedback, a supportive environment, and identity alignment — woven in, never listed.
+- Make an honest pivot ("But let's be honest with each other:") and name their logged danger zones${dzNames.length ? ` (${dzNames.join(', ')})` : ''} directly, framing each as live-fire resistance training — the exact moments this identity becomes their shield as they scale. Seen and understood, never judged.
+- Close with a direct, confident challenge that sends them to open THE INNER CITADEL and run a visualization session right now.
 
-  PART 2 — THE HONEST PIVOT (DANGER ZONE ARMOR): Immediately pivot — no new paragraph — with language like "But let's be honest with each other:" or "Here is where we need to have a real conversation:" then call out their specific logged danger zones by name as the exact moments this vision acts as a shield. Make the user feel seen and understood, not judged. This must be raw and real.
-
-  PART 3 — THE UNIFIED CHALLENGE: In the same breath, close with a direct, confident challenge sentence that leads straight into the action item below. No softness. Short. Forward.
-
-EXAMPLE of the target output for VIVID VISION (replicate this structure and emotional register for all 6 blocks):
-"Waking up every day knowing you are deeply abundant, surrounded by freedom, isn't just a fantasy — it is your native state. The weight of old worries is gone, replaced by pure empowerment. But let's have an honest conversation: this mindset isn't built for the easy hours when everything is going perfectly. It is a shield forged specifically for when your guard drops — like during those quiet evenings on the couch when the temptation for mindless Evening Snacking creeps in, or when an open, unstructured weekend threatens to become a Weekend Binge that pulls you completely off course. You must sit with this vision so deeply that it overpowers those temporary traps. I challenge you to step into this power right now."
-
-VIVID VISION ACTION (use this exact text, no variation):
-"Your Digital Vision Board for this goal is already built inside THE INNER CITADEL. Open it now and run a visualization session — that IS your vivid vision practice. Do it daily."
-
-THE 6 BLOCKS — write each insight using the 3-part fused architecture above:
-
-1. VIVID VISION — paint the achieved end state; armor against: ${vividDz.length ? vividDz.join(' and ') : 'habitual/evening triggers'}; close with challenge
-2. COMPELLING WHY — emotional fuel that survives adversity; armor against: ${compellingDz.length ? compellingDz.join(' and ') : 'stress and pressure triggers'}; close with challenge
-3. CREDIBLE PLAN — map and navigation habit; armor against: ${planDz.length ? planDz.join(' and ') : 'social and peer triggers'}; close with challenge
-4. FEEDBACK LOOPS — signal: am I on track? Armor against drift and complacency. Close with challenge.
-5. ENVIRONMENT DESIGN — context shapes behavior more than willpower. Armor against environmental triggers. Close with challenge.
-6. IDENTITY ALIGNMENT — becoming the person who achieves this. Armor against identity drift. Close with challenge.
+Keep it warm, founder-to-founder, and genuinely supportive throughout.
 
 Return this exact JSON structure and nothing else:
 {
   "identity_phrase": "${identityPhrase || 'YOU ARE ...'}",
-  "eternal_problems": [
-    { "insight": "...", "action": "..." },
-    { "insight": "...", "action": "..." },
-    { "insight": "...", "action": "..." },
-    { "insight": "...", "action": "..." },
-    { "insight": "...", "action": "..." },
-    { "insight": "...", "action": "..." }
-  ]
+  "strategy_narrative": "...one continuous coaching paragraph, several sentences, no line breaks..."
 }`;
 
   // ── PASS B — the 9 roadmap components ────────────────────────────────────
@@ -149,10 +128,10 @@ Return this exact JSON structure and nothing else:
     if (!b.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Components pass failed: ${b.error}` }) };
 
     const merged = {
-      _format:          2, // continuous-narrative engine marker — used to flag legacy cached data for refresh
-      identity_phrase:  typeof a.parsed.identity_phrase === 'string' && a.parsed.identity_phrase.trim() ? a.parsed.identity_phrase.trim() : identityPhrase,
-      eternal_problems: Array.isArray(a.parsed.eternal_problems) ? a.parsed.eternal_problems : [],
-      components:       Array.isArray(b.parsed.components)       ? b.parsed.components       : [],
+      _format:            3, // single-paragraph engine marker — used to flag legacy cached data for refresh
+      identity_phrase:    typeof a.parsed.identity_phrase === 'string' && a.parsed.identity_phrase.trim() ? a.parsed.identity_phrase.trim() : identityPhrase,
+      strategy_narrative: typeof a.parsed.strategy_narrative === 'string' ? a.parsed.strategy_narrative.trim() : '',
+      components:         Array.isArray(b.parsed.components) ? b.parsed.components : [],
     };
     return { statusCode: 200, headers, body: JSON.stringify(merged) };
   } catch (e) {
