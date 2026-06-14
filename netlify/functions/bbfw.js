@@ -46,18 +46,24 @@ Apply these per-block strategic frames through the "${card.label}" lens:
 - IDENTITY ALIGNMENT: ${card.strategy_rules.identity_alignment}`
     : '';
 
-  const prompt = `You are sitting across a table from a person whose goal is: "${goal}". You know them deeply. You are not a corporate coach — you are a direct, warm, honest mentor who tells the truth and believes in them completely.
+  // Shared voice + hard constraints injected into both passes so tone and rules stay identical.
+  const persona = `You are sitting across a table from a person whose goal is: "${goal}". You know them deeply. You are not a corporate coach — you are a direct, warm, honest mentor who tells the truth and believes in them completely.`;
+
+  const absoluteRules = `ABSOLUTE RULES — never break these:
+- Never reference external tools, apps, vision boards outside this app, going to places, or physical activities
+- Never say "write it down", "journal", "create a vision board" — Cosmic Intentions IS their vision board; direct them to open and run a session inside it
+- Never use bullet points or numbered lists inside any insight field
+- Never open with the block name or a generic preamble like "This block is about..."
+- Every insight is one continuous, fused paragraph — no sub-sections, no splits`;
+
+  // ── PASS A — the 6 founder-focused identity strategy paragraphs ──────────
+  const promptA = `${persona}
 
 ${cardBlock}
 
 ${dzBlock}
 
-ABSOLUTE RULES — never break these:
-- Never reference external tools, apps, vision boards outside this app, going to places, or physical activities
-- Never say "write it down", "journal", "create a vision board" — Cosmic Intentions IS their vision board; direct them to open and run a session inside it
-- Never use bullet points or numbered lists inside any insight field
-- Never open with the block name or a generic preamble like "This block is about..."
-- Every insight is one continuous, fused paragraph — no sub-sections, no splits
+${absoluteRules}
 
 NARRATIVE ARCHITECTURE FOR EVERY INSIGHT BLOCK:
 Each insight must follow this exact 3-part fused structure — all in one unbroken paragraph:
@@ -83,10 +89,7 @@ THE 6 BLOCKS — write each insight using the 3-part fused architecture above:
 5. ENVIRONMENT DESIGN — context shapes behavior more than willpower. Armor against environmental triggers. Close with challenge.
 6. IDENTITY ALIGNMENT — becoming the person who achieves this. Armor against identity drift. Close with challenge.
 
-THE 9 COMPONENTS — one direct executable action sentence per component, plus one quote from: Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, or Drucker.
-Components: Clarity, Compelling Why, Belief, Plan, Feedback Loops, Environment Design, Accountability, Resilience, Identity Alignment
-
-Return this exact JSON structure:
+Return this exact JSON structure and nothing else:
 {
   "eternal_problems": [
     { "insight": "...", "action": "..." },
@@ -95,7 +98,22 @@ Return this exact JSON structure:
     { "insight": "...", "action": "..." },
     { "insight": "...", "action": "..." },
     { "insight": "...", "action": "..." }
-  ],
+  ]
+}`;
+
+  // ── PASS B — the 9 roadmap components ────────────────────────────────────
+  const promptB = `${persona}
+
+${cardBlock}
+
+${absoluteRules}
+
+THE 9 COMPONENTS — one direct executable action sentence per component, plus one quote from: Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, or Drucker.
+Each action must obey the ABSOLUTE RULES above and stay anchored to the goal "${goal}". Keep the same warm, direct mentor voice.
+Components (in this exact order): Clarity, Compelling Why, Belief, Plan, Feedback Loops, Environment Design, Accountability, Resilience, Identity Alignment
+
+Return this exact JSON structure and nothing else:
+{
   "components": [
     { "action": "...", "quote": "..." },
     { "action": "...", "quote": "..." },
@@ -110,51 +128,62 @@ Return this exact JSON structure:
 }`;
 
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        max_tokens: 8192,
-        temperature: 0.7,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: 'You are an elite achievement coach. Always respond with valid JSON only.' },
-          { role: 'user', content: prompt }
-        ]
-      })
-    });
+    // Two concurrent gpt-4o-mini hits — each well under the 60s serverless ceiling.
+    const [a, b] = await Promise.all([
+      callOpenAI(apiKey, promptA, 4096),
+      callOpenAI(apiKey, promptB, 2048),
+    ]);
 
-    const rawBody = await res.text();
-    if (!res.ok) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: rawBody }) };
-    }
+    if (!a.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Strategy pass failed: ${a.error}` }) };
+    if (!b.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Components pass failed: ${b.error}` }) };
 
-    let data;
-    try {
-      data = JSON.parse(rawBody);
-    } catch (e) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'OpenAI envelope parse failed: ' + e.message }) };
-    }
-
-    const choice = data.choices?.[0];
-    const text = choice?.message?.content?.trim() || '';
-    if (choice?.finish_reason === 'length') {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'AI response truncated before completion — please retry' }) };
-    }
-    if (!text) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'Empty AI content' }) };
-    }
-
-    const clean = text.replace(/^```json\s*/,'').replace(/```$/,'').trim();
-    let parsed;
-    try {
-      parsed = JSON.parse(clean);
-    } catch (e) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'Malformed AI JSON: ' + e.message }) };
-    }
-    return { statusCode: 200, headers, body: JSON.stringify(parsed) };
+    const merged = {
+      eternal_problems: Array.isArray(a.parsed.eternal_problems) ? a.parsed.eternal_problems : [],
+      components:       Array.isArray(b.parsed.components)       ? b.parsed.components       : [],
+    };
+    return { statusCode: 200, headers, body: JSON.stringify(merged) };
   } catch (e) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+/* ── OpenAI call (gpt-4o-mini, JSON mode) ────────────────────────────────
+   Returns { ok:true, parsed } on success, or { ok:false, error } so the
+   handler can report exactly which pass failed without throwing. ────────── */
+async function callOpenAI(apiKey, userPrompt, maxTokens) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      max_tokens: maxTokens,
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: 'You are an elite achievement coach. Always respond with valid JSON only.' },
+        { role: 'user', content: userPrompt }
+      ]
+    })
+  });
+
+  const rawBody = await res.text();
+  if (!res.ok) return { ok: false, error: rawBody };
+
+  let data;
+  try { data = JSON.parse(rawBody); }
+  catch (e) { return { ok: false, error: 'OpenAI envelope parse failed: ' + e.message }; }
+
+  const choice = data.choices?.[0];
+  if (choice?.finish_reason === 'length') {
+    return { ok: false, error: 'AI response truncated before completion — please retry' };
+  }
+  const text = choice?.message?.content?.trim() || '';
+  if (!text) return { ok: false, error: 'Empty AI content' };
+
+  const clean = text.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+  let parsed;
+  try { parsed = JSON.parse(clean); }
+  catch (e) { return { ok: false, error: 'Malformed AI JSON: ' + e.message }; }
+
+  return { ok: true, parsed };
+}
