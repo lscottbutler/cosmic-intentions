@@ -10183,7 +10183,7 @@ async function generateBBFW(idx, force) {
   }
 
   try {
-    const data = await ciApiJson('bbfw', { goal: intent.title, dangerZones: intent.theMap?.dangerZones || [] });
+    const data = await ciApiJson('bbfw', { goal: intent.title, dangerZones: intent.theMap?.dangerZones || [], entrepreneurCard: window.activeEntCard || null });
     _apexTimers.forEach(clearTimeout);
     intent.bbfw = data;
     syncIntentionsToSupabase();

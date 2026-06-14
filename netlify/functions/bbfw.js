@@ -1,3 +1,5 @@
+const { getEntCard } = require('./_entrepreneur-library');
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -12,7 +14,7 @@ exports.handler = async (event) => {
   try { body = JSON.parse(event.body || '{}'); }
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
-  const { goal, dangerZones } = body;
+  const { goal, dangerZones, entrepreneurCard } = body;
   const apiKey = process.env.OPEN_AI_KEY;
 
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPEN_AI_KEY not configured' }) };
@@ -26,11 +28,27 @@ exports.handler = async (event) => {
   const compellingDz = dzList.filter((_, i) => i % 3 === 1).map(z => z.title).filter(Boolean);
   const planDz       = dzList.filter((_, i) => i % 3 === 2).map(z => z.title).filter(Boolean);
 
+  const card = getEntCard(entrepreneurCard);
+
   const dzBlock = dzNames.length > 0
     ? `The user has logged these personal danger zones: ${dzNames.join(', ')}. These are real, documented self-sabotage patterns — not hypothetical risks. You must call them out by name inside the relevant blocks below.`
     : `No specific danger zones logged. Write general friction armor.`;
 
+  const cardBlock = card
+    ? `ENTREPRENEUR IDENTITY CARD ACTIVE: ${card.label}
+Embed this card's vocabulary naturally throughout every block: ${card.lexicon.join(', ')}.
+Apply these per-block strategic frames through the "${card.label}" lens:
+- VIVID VISION: ${card.strategy_rules.vivid_vision}
+- COMPELLING WHY: ${card.strategy_rules.compelling_why}
+- CREDIBLE PLAN: ${card.strategy_rules.credible_plan}
+- FEEDBACK LOOPS: ${card.strategy_rules.feedback_loops}
+- ENVIRONMENT DESIGN: ${card.strategy_rules.environment_design}
+- IDENTITY ALIGNMENT: ${card.strategy_rules.identity_alignment}`
+    : '';
+
   const prompt = `You are sitting across a table from a person whose goal is: "${goal}". You know them deeply. You are not a corporate coach — you are a direct, warm, honest mentor who tells the truth and believes in them completely.
+
+${cardBlock}
 
 ${dzBlock}
 
