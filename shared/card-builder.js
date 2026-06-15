@@ -122,7 +122,8 @@ function saveCardDate(idx, field, val) {
 
 /* ── PANEL BUILDERS ──────────────────────────────────── */
 function buildWordsPanel(intention, idx) {
-  const pb = getPB();
+  const pb     = getPB();
+  const psych  = intention.psychReframe || {};
   const fields = [
     { label: 'Name',               value: pb['pb-name']      },
     { label: 'Life Mission',       value: pb['pb-mission']   },
@@ -139,12 +140,61 @@ function buildWordsPanel(intention, idx) {
       <div class="pb-view-value">${esc(f.value)}</div>
     </div>` : '').join('');
   const empty = fields.every(f => !f.value);
+
   return `
+    <div class="intention-psych-reframe" style="background-color:#161616;border:2px solid #555555;padding:20px;margin-bottom:16px;display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333333;padding-bottom:10px;">
+        <span style="font-weight:700;color:#F8F7F5;font-size:1rem;letter-spacing:0.03em;text-transform:uppercase;">Subconscious Friction Audit</span>
+        <span style="color:#FFFFFF;background-color:#A32A2A;font-size:0.75rem;font-weight:700;padding:4px 8px;letter-spacing:0.05em;text-transform:uppercase;">Psychological Reframing</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">1. What is the actual, irrational friction or fear holding me back?</label>
+        <textarea class="pb-alignment-input" data-param="blockers_and_fears" data-idx="${idx}" rows="3"
+          placeholder="Be brutally honest. What is the emotional or social friction keeping you from executing? (e.g., Fear of looking foolish, avoiding cold rejection, comfort zone attachment, toxic hidden habits)..."
+          style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.blockers_and_fears || '')}</textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">2. Does this target genuinely jive with my real core values?</label>
+        <textarea class="pb-alignment-input" data-param="values_jive_check" data-idx="${idx}" rows="2"
+          placeholder="Does achieving this target map natively to your desire for autonomy and truth, or is it a vanity metric driven by external expectations?..."
+          style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.values_jive_check || '')}</textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">3. The Alchemy Reframe (How to view this constraint as an edge)</label>
+        <textarea class="pb-alignment-input" data-param="alchemy_reframe" data-idx="${idx}" rows="2"
+          placeholder="How can we flip this weakness or obstacle into your unique unfair advantage? (e.g., 'Being small means I am agile; having zero budget forces creative storytelling')..."
+          style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.alchemy_reframe || '')}</textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:5px;">
+        <button id="lockPsychBtn-${idx}" onclick="lockPsychReframe(${idx})"
+          style="background-color:#A32A2A;color:#FFFFFF;border:none;padding:10px 24px;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;transition:background-color 0.2s;">
+          Lock Subconscious Parameters
+        </button>
+      </div>
+    </div>
     <div class="pb-view-wrap">
       ${empty
         ? `<div class="pb-view-empty">Your Pegboard is empty. <button class="pb-view-link" onclick="navTo('setup')">Fill in My Pegboard →</button></div>`
         : rows}
     </div>`;
+}
+
+async function lockPsychReframe(idx) {
+  const btn = document.getElementById(`lockPsychBtn-${idx}`);
+  const inputs = document.querySelectorAll(`.pb-alignment-input[data-idx="${idx}"]`);
+  const reframe = {};
+  inputs.forEach(el => { reframe[el.dataset.param] = el.value.trim(); });
+  if (!intentions[idx]) return;
+  intentions[idx].psychReframe = reframe;
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+  try {
+    await saveIntentions();
+    if (btn) { btn.textContent = 'Parameters Locked ✓'; }
+    setTimeout(() => { if (btn) { btn.textContent = 'Lock Subconscious Parameters'; btn.disabled = false; } }, 2000);
+  } catch(e) {
+    if (btn) { btn.textContent = 'Save Failed'; btn.disabled = false; }
+    console.error(e);
+  }
 }
 
 function buildMindsetPanel(intention, idx) {
