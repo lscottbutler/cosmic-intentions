@@ -5999,6 +5999,23 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- AMBIENT VIZ CARD — vertical looping video, absolute top of Column A -->
+        <div class="card ambient-viz-card" style="background-color: #121212; border: 14px solid #333333; padding: 0; overflow: hidden; display: flex; flex-direction: column; width: 100%; max-width: 520px; margin-bottom: 24px;">
+          <div class="vertical-video-frame" style="width: 100%; position: relative; background-color: #000000; overflow: hidden; aspect-ratio: 9 / 16;">
+            <video
+              id="ambientLocalLoop"
+              style="width: 100%; height: 100%; object-fit: cover; display: block;"
+              autoplay
+              loop
+              muted
+              playsinline>
+              <source src="/mp4/c%20i%20verticle%20viz%20player%201%20minute-.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div style="width: 100%; height: 14px; background-color: #333333;"></div>
+        </div>
+
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
