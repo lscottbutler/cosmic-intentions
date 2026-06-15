@@ -148,26 +148,26 @@ function buildWordsPanel(intention, idx) {
         <span style="color:#FFFFFF;background-color:#A32A2A;font-size:0.75rem;font-weight:700;padding:4px 8px;letter-spacing:0.05em;text-transform:uppercase;">Psychological Reframing</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">Target Giant Achiever</label>
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">Who is your North Star for this? (The Giant Achiever)</label>
         <input type="text" class="pb-alignment-input" data-param="giant_achiever" data-idx="${idx}"
           placeholder="e.g. Alex Hormozi, Kobe Bryant, Sara Blakely..."
           value="${esc(psych.giant_achiever || '')}"
           style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;line-height:1.5;" />
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">1. What is the actual, irrational friction or fear holding me back?</label>
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">Your Self-Sabotage Blueprint (Fears, limiting beliefs, habits that broke past attempts)</label>
         <textarea class="pb-alignment-input" data-param="blockers_and_fears" data-idx="${idx}" rows="3"
           placeholder="Be brutally honest. What is the emotional or social friction keeping you from executing? (e.g., Fear of looking foolish, avoiding cold rejection, comfort zone attachment, toxic hidden habits)..."
           style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.blockers_and_fears || '')}</textarea>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">2. Does this target genuinely jive with my real core values?</label>
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">Identity Alignment (How does this goal protect or conflict with your core values?)</label>
         <textarea class="pb-alignment-input" data-param="values_jive_check" data-idx="${idx}" rows="2"
           placeholder="Does achieving this target map natively to your desire for autonomy and truth, or is it a vanity metric driven by external expectations?..."
           style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.values_jive_check || '')}</textarea>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">3. The Alchemy Reframe (How to view this constraint as an edge)</label>
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">The Rory Sutherland Reframe (What counter-intuitive mental hack lowers the stakes?)</label>
         <textarea class="pb-alignment-input" data-param="alchemy_reframe" data-idx="${idx}" rows="2"
           placeholder="How can we flip this weakness or obstacle into your unique unfair advantage? (e.g., 'Being small means I am agile; having zero budget forces creative storytelling')..."
           style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;resize:vertical;line-height:1.5;">${esc(psych.alchemy_reframe || '')}</textarea>
