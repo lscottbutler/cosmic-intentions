@@ -148,6 +148,13 @@ function buildWordsPanel(intention, idx) {
         <span style="color:#FFFFFF;background-color:#A32A2A;font-size:0.75rem;font-weight:700;padding:4px 8px;letter-spacing:0.05em;text-transform:uppercase;">Psychological Reframing</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">Target Giant Achiever</label>
+        <input type="text" class="pb-alignment-input" data-param="giant_achiever" data-idx="${idx}"
+          placeholder="e.g. Alex Hormozi, Kobe Bryant, Sara Blakely..."
+          value="${esc(psych.giant_achiever || '')}"
+          style="width:100%;padding:12px;background-color:#0A0A0A;border:1px solid #333333;color:#FFFFFF;font-size:0.95rem;border-radius:0;line-height:1.5;" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
         <label style="font-size:0.85rem;font-weight:600;color:#9A948F;text-transform:uppercase;letter-spacing:0.02em;">1. What is the actual, irrational friction or fear holding me back?</label>
         <textarea class="pb-alignment-input" data-param="blockers_and_fears" data-idx="${idx}" rows="3"
           placeholder="Be brutally honest. What is the emotional or social friction keeping you from executing? (e.g., Fear of looking foolish, avoiding cold rejection, comfort zone attachment, toxic hidden habits)..."
@@ -180,7 +187,7 @@ function buildWordsPanel(intention, idx) {
 }
 
 async function lockPsychReframe(idx) {
-  const btn = document.getElementById(`lockPsychBtn-${idx}`);
+  const btn    = document.getElementById(`lockPsychBtn-${idx}`);
   const inputs = document.querySelectorAll(`.pb-alignment-input[data-idx="${idx}"]`);
   const reframe = {};
   inputs.forEach(el => { reframe[el.dataset.param] = el.value.trim(); });
@@ -195,6 +202,62 @@ async function lockPsychReframe(idx) {
     if (btn) { btn.textContent = 'Save Failed'; btn.disabled = false; }
     console.error(e);
   }
+}
+
+async function generateRoadmapAI(idx) {
+  const btn    = document.getElementById(`btn-roadmap-ai-${idx}`);
+  const panel  = document.getElementById(`panel-roadmap-ai-${idx}`);
+  const intent = intentions[idx];
+  if (!intent) return;
+
+  const intentionData = {
+    title:              intent.title || '',
+    giant_achiever:     intent.psychReframe?.giant_achiever     || '',
+    blockers_and_fears: intent.psychReframe?.blockers_and_fears || '',
+    values_jive_check:  intent.psychReframe?.values_jive_check  || '',
+  };
+
+  if (btn)   { btn.disabled = true; btn.textContent = 'Generating…'; }
+  if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING ROADMAP…</div>'; }
+
+  try {
+    const res    = await ciApi('roadmap-ai', { intentionData });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Generation failed');
+
+    intent.roadmapAI = result;
+    await saveIntentions();
+    if (panel) panel.innerHTML = renderRoadmapAI(result, idx);
+    toast('Roadmap generated ✓', 'success');
+  } catch(e) {
+    if (panel) panel.innerHTML = `<div style="padding:16px;color:#FF375F;font-size:12px;">${esc(e.message)}</div>`;
+    toast('Roadmap generation failed.', 'error');
+    console.error(e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✦ Generate AI Roadmap'; }
+  }
+}
+
+function renderRoadmapAI(r, idx) {
+  const daily  = (r.daily_practice  || []).map(a => `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1A1A1A;font-size:12px;color:#C0C0C8;line-height:1.5;"><span style="color:#F5A623;flex-shrink:0;">→</span>${esc(a)}</div>`).join('');
+  const weekly = (r.weekly_roadmap   || []).map((g, i) => `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1A1A1A;"><span style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;flex-shrink:0;padding-top:2px;">WK ${i+1}</span><span style="font-size:12px;color:#C0C0C8;line-height:1.5;">${esc(g)}</span></div>`).join('');
+
+  return `
+    <div style="padding:4px 0 16px;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ CREDIBLE PLAN</div>
+      <div style="font-size:12px;color:#ddd;line-height:1.65;margin-bottom:20px;">${esc(r.credible_plan || '')}</div>
+
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#FF375F;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">⚠ DANGER ZONES</div>
+      <div style="font-size:12px;color:#ddd;line-height:1.65;margin-bottom:20px;padding:12px;background:#1A0505;border-left:3px solid #FF375F;">${esc(r.danger_zones || '')}</div>
+
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#4ADE80;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">DAILY PRACTICE</div>
+      <div style="margin-bottom:20px;">${daily}</div>
+
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#60A0FF;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">6-WEEK ROADMAP</div>
+      <div style="margin-bottom:16px;">${weekly}</div>
+
+      <button onclick="generateRoadmapAI(${idx})" style="background:none;border:1px solid #383838;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">↺ Regenerate</button>
+    </div>`;
 }
 
 function buildMindsetPanel(intention, idx) {
@@ -241,14 +304,27 @@ function renderMindsetResult(m, idx) {
 }
 
 function buildRoadmapPanel(intention, idx) {
+  const psychLocked = !!(intention.psychReframe?.giant_achiever || intention.psychReframe?.blockers_and_fears);
+
+  const roadmapAISection = `
+    <div style="margin-bottom:20px;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ CORE AI ROADMAP ENGINE</div>
+      ${!psychLocked ? `<div style="font-size:11px;color:#505058;margin-bottom:10px;">Fill in the <strong style="color:#9A948F;">Subconscious Friction Audit</strong> fields on the My Pegboard tab first for a precision-targeted roadmap.</div>` : ''}
+      <div id="panel-roadmap-ai-${idx}">
+        ${intention.roadmapAI ? renderRoadmapAI(intention.roadmapAI, idx) : ''}
+      </div>
+      ${!intention.roadmapAI ? `<button class="ai-gen-btn" id="btn-roadmap-ai-${idx}" onclick="generateRoadmapAI(${idx})">✦ Generate AI Roadmap</button>` : ''}
+    </div>
+    <hr style="border:none;border-top:1px solid #222;margin:0 0 20px;">`;
+
   if (!intention.achievers) {
-    return `
+    return `${roadmapAISection}
       <div class="ai-panel-intro">
-        <p>Generate a personalized strategy and action roadmap for this intention.</p>
-        <button class="ai-gen-btn" id="btn-roadmap-${idx}" onclick="generateAchievers(${idx})">✦ Generate AI Roadmap</button>
+        <p>Generate a Famous Achiever Blueprint for this intention.</p>
+        <button class="ai-gen-btn" id="btn-roadmap-${idx}" onclick="generateAchievers(${idx})">✦ Generate Achiever Blueprint</button>
       </div>`;
   }
-  return renderRoadmapResult(intention.achievers, idx);
+  return `${roadmapAISection}${renderRoadmapResult(intention.achievers, idx)}`;
 }
 
 function renderRoadmapResult(a, idx) {
