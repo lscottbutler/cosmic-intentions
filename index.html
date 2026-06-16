@@ -10086,11 +10086,54 @@ function buildStrategyContent(intent, idx) {
     </div>`;
 }
 
-/* ── TACTICS LAYER — My Roadmap ───────────────────────── */
+/* ── TACTICS LAYER — Executive Brief ──────────────────── */
 function buildTacticsContent(intent, idx) {
+  return `<div id="bsPanel-tactics-${idx}">${_renderTactics(intent, idx)}</div>`;
+}
+
+function _renderTactics(intent, idx) {
+  const bbfw = intent.bbfw;
+  const ops  = Array.isArray(bbfw?.daily_ops) ? bbfw.daily_ops : [];
+  const mile = typeof bbfw?.weekly_milestone === 'string' ? bbfw.weekly_milestone.trim() : '';
+
+  if (!ops.length && !mile) {
+    return `
+      <div style="padding:48px 24px;text-align:center;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#505058;letter-spacing:2px;margin-bottom:16px;">NO BRIEF YET</div>
+        <div style="font-size:12px;color:#505058;line-height:1.8;margin-bottom:24px;">Generate your Strategy first — the Tactics brief is built in the same pass.</div>
+        <button onclick="generateBBFW(${idx}, true)"
+          style="background:#F5A623;border:none;border-radius:6px;padding:10px 20px;
+          font-family:var(--vault-mono);font-size:10px;font-weight:800;color:#000;cursor:pointer;letter-spacing:1px;">
+          ◈ BUILD BRIEF
+        </button>
+      </div>`;
+  }
+
+  const opsHtml = ops.map((op, i) => `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #1E1E1E;">
+      <div style="width:20px;height:20px;flex-shrink:0;margin-top:1px;border:1.5px solid #F5A623;border-radius:4px;"></div>
+      <div style="font-size:13px;color:#D0D0D0;line-height:1.5;">${esc(op)}</div>
+    </div>`).join('');
+
+  const mileHtml = mile ? `
+    <div style="margin-top:24px;border:1px solid #2A2A2A;border-radius:8px;padding:16px 18px;background:#111;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#60A0FF;letter-spacing:1.5px;margin-bottom:10px;">⚡ WEEKLY MILESTONE</div>
+      <div style="font-size:14px;font-weight:600;color:#E0E0E0;line-height:1.5;">${esc(mile)}</div>
+    </div>` : '';
+
   return `
-    <div id="bsPanel-themap-${idx}">
-      ${buildBSTheMapPanel(intent, idx)}
+    <div style="padding:20px 24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ EXECUTION BRIEF</div>
+        <button onclick="generateBBFW(${idx}, true)"
+          style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
+          font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
+          ↺ Regenerate
+        </button>
+      </div>
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:1px;margin-bottom:4px;">DAILY OPERATIONS</div>
+      ${opsHtml}
+      ${mileHtml}
     </div>`;
 }
 
@@ -10105,9 +10148,9 @@ function buildBBFWPanel(intent, idx) {
       <div id="bbfw-loading-${idx}" style="padding:40px 20px;text-align:center;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:10px;">◈ BUILDING YOUR FRAMEWORK</div>
         <div style="font-size:12px;color:#505058;line-height:2;">
-          Mapping the 6 Eternal Problems…<br>
-          Analysing 9 Components of success…<br>
-          Connecting to history's greatest achievers…
+          Connecting to your entrepreneur identity…<br>
+          Mapping your friction points…<br>
+          Building your executive brief…
         </div>
       </div>`;
   }
@@ -10115,62 +10158,43 @@ function buildBBFWPanel(intent, idx) {
 }
 
 function renderBBFW(bbfw, idx) {
-  const COMP_NAMES = ['Clarity','Compelling Why','Belief','Plan','Feedback Loops','Environment Design','Accountability','Resilience','Identity Alignment'];
-  const COMP_COLORS = ['#F5A623','#60A0FF','#30D158','#BF5AF2','#FF9500','#FF6B6B','#32D74B','#FF375F','#FFD60A'];
-
-  // Legacy data (built before the marked engine) carries no _format stamp — nudge a one-click refresh.
-  const isLegacy = !bbfw._format;
+  // Legacy data (v3 or older) — nudge a one-click refresh.
+  const isLegacy = !bbfw._format || bbfw._format < 4;
   const legacyHtml = isLegacy
     ? `<div style="background:#2A2410;border:1px solid #5C4A12;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
          <span style="font-size:14px;flex-shrink:0;">↺</span>
-         <div style="flex:1;font-size:11px;color:#E8C76A;line-height:1.5;">This framework was built by an older engine. Refresh to the new continuous format.</div>
+         <div style="flex:1;font-size:11px;color:#E8C76A;line-height:1.5;">Built with an older engine — refresh for the streamlined format.</div>
          <button onclick="generateBBFW(${idx}, true)" style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#000;cursor:pointer;letter-spacing:0.5px;">REFRESH</button>
        </div>`
     : '';
 
-  // Identity phrase — from this generation, else derived from the active entrepreneur card.
+  // Identity phrase
   const rawIdentity = (bbfw.identity_phrase || (window.activeEntCard ? `YOU ARE ${String(window.activeEntCard).toUpperCase()}` : '')).trim();
   const identityHtml = rawIdentity
-    ? `<div style="font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#F5A623;margin-bottom:14px;">${esc(rawIdentity)}</div>`
+    ? `<div style="font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#F5A623;margin-bottom:16px;">${esc(rawIdentity)}</div>`
     : '';
 
-  // Strategy as ONE continuous coaching paragraph (new engine). Legacy data falls back to its
-  // per-beat insights rendered as flowing paragraphs.
+  // Coaching paragraph
   const strategyHtml = (typeof bbfw.strategy_narrative === 'string' && bbfw.strategy_narrative.trim())
-    ? `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.55;letter-spacing:-0.01em;margin:0 0 4px;white-space:pre-wrap;">${esc(bbfw.strategy_narrative)}</p>`
+    ? `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.6;letter-spacing:-0.01em;margin:0 0 20px;white-space:pre-wrap;">${esc(bbfw.strategy_narrative)}</p>`
     : (bbfw.eternal_problems || []).map(ep => {
         const insight = esc(ep.insight || '');
         const action  = ep.action ? `<div style="font-size:12px;color:#FFCC00;margin:2px 0 14px;line-height:1.5;">→ ${esc(ep.action)}</div>` : '';
-        return `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.55;letter-spacing:-0.01em;margin:0 0 10px;">${insight}</p>${action}`;
+        return `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.6;letter-spacing:-0.01em;margin:0 0 10px;">${insight}</p>${action}`;
       }).join('');
 
-  // 9 executive-milestone / asset-runway checks — checkbox rows, no numeric headers.
-  const compCards = (bbfw.components || []).map((c, i) => {
-    const isFeedback = (COMP_NAMES[i] === 'Feedback Loops');
-    const body = isFeedback
-      ? `<div style="font-size:12px;color:#ddd;line-height:1.6;padding-left:26px;">
-           Your 20-metric Progress Dashboard tracks every signal: streak, sessions, goals, roadmaps, and your CI Score.
-           <button onclick="navTo('progress')" style="display:block;margin-top:8px;background:#FF9500;border:none;border-radius:6px;
-             padding:7px 14px;font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#000;cursor:pointer;letter-spacing:1px;">
-             ◈ OPEN PROGRESS DASHBOARD →
-           </button>
-         </div>`
-      : `<div style="font-size:12px;color:#ddd;line-height:1.6;padding-left:26px;">${esc(c.action || '')}</div>`;
-    return `
-    <div style="background:#1A1A1A;border-radius:8px;padding:12px 14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="width:18px;height:18px;flex-shrink:0;border:1.5px solid ${COMP_COLORS[i]};border-radius:4px;display:flex;align-items:center;justify-content:center;color:${COMP_COLORS[i]};font-size:12px;line-height:1;">☐</span>
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${COMP_COLORS[i]};font-weight:800;letter-spacing:0.5px;">${COMP_NAMES[i].toUpperCase()}</div>
-      </div>
-      ${body}
-      ${c.quote ? `<div style="font-size:10px;color:#505058;margin-top:6px;padding-left:26px;">"${esc(c.quote)}"</div>` : ''}
-    </div>`;
-  }).join('');
+  // Single friction warning
+  const frictionHtml = bbfw.friction_warning
+    ? `<div style="border-left:3px solid #FF375F;padding:10px 14px;background:#1A0A0A;margin-bottom:4px;">
+         <div style="font-family:var(--vault-mono);font-size:9px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ FRICTION POINT</div>
+         <div style="font-size:12px;color:#E0A0A0;line-height:1.55;">${esc(bbfw.friction_warning)}</div>
+       </div>`
+    : '';
 
   return `
-    <div style="padding:16px 20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ BACKBONE FRAMEWORK</div>
+    <div style="padding:20px 24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ STRATEGY</div>
         <button onclick="generateBBFW(${idx}, true)" id="bbfw-gen-btn-${idx}"
           style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
           font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
@@ -10181,9 +10205,7 @@ function renderBBFW(bbfw, idx) {
       ${legacyHtml}
       ${identityHtml}
       ${strategyHtml}
-
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:1px;margin:18px 0 8px;">EXECUTIVE MILESTONES · ASSET RUNWAY CHECKS</div>
-      ${compCards}
+      ${frictionHtml}
     </div>`;
 }
 

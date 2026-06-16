@@ -88,33 +88,33 @@ Keep it warm, founder-to-founder, and genuinely supportive throughout.
 Return this exact JSON structure and nothing else:
 {
   "identity_phrase": "${identityPhrase || 'YOU ARE ...'}",
-  "strategy_narrative": "...one continuous coaching paragraph, several sentences, no line breaks..."
+  "strategy_narrative": "...one continuous coaching paragraph, several sentences, no line breaks...",
+  "friction_warning": "...one razor-sharp sentence naming the single most predictable failure point for THIS founder pursuing THIS goal — specific, not generic. No softening."
 }`;
 
-  // ── PASS B — the 9 roadmap components ────────────────────────────────────
+  // ── PASS B — 3 daily ops + 1 weekly milestone ────────────────────────────
   const promptB = `${persona}
 
 ${cardBlock}
 
 ${absoluteRules}
 
-THE 9 EXECUTIVE MILESTONES — for each component below, write one direct, executive-grade milestone or asset-runway checkpoint the founder can mark complete: a concrete proof-of-momentum toward "${goal}", not a generic tip. Add one quote from: Ali, Kobe, Napoleon Hill, Jocko, Hormozi, Naval, Edison, Churchill, Clear, Frankl, Eisenhower, or Drucker.
-Each milestone must obey the ABSOLUTE RULES above, keep the same warm, direct mentor voice, and read like an executive checkpoint. No numbering, no list markers — just the milestone sentence.
-Components (in this exact order): Clarity, Compelling Why, Belief, Plan, Feedback Loops, Environment Design, Accountability, Resilience, Identity Alignment
+EXECUTIVE BRIEF — Write 3 Daily Executive Operations and 1 Major Weekly Milestone for a founder working toward "${goal}".
+
+Each Daily Op is a high-level business action — not a chore, not a generic tip. It reads like a checkpoint a serious operator would mark complete at end of day. One sentence, direct, specific to the goal.
+
+The Weekly Milestone is the single most important proof-of-momentum this founder can achieve by end of week. One sentence. No hedging.
+
+Obey the ABSOLUTE RULES above throughout.
 
 Return this exact JSON structure and nothing else:
 {
-  "components": [
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." },
-    { "action": "...", "quote": "..." }
-  ]
+  "daily_ops": [
+    "...",
+    "...",
+    "..."
+  ],
+  "weekly_milestone": "..."
 }`;
 
   try {
@@ -128,10 +128,12 @@ Return this exact JSON structure and nothing else:
     if (!b.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: `Components pass failed: ${b.error}` }) };
 
     const merged = {
-      _format:            3, // single-paragraph engine marker — used to flag legacy cached data for refresh
+      _format:            4, // v4: friction_warning + daily_ops + weekly_milestone
       identity_phrase:    typeof a.parsed.identity_phrase === 'string' && a.parsed.identity_phrase.trim() ? a.parsed.identity_phrase.trim() : identityPhrase,
       strategy_narrative: typeof a.parsed.strategy_narrative === 'string' ? a.parsed.strategy_narrative.trim() : '',
-      components:         Array.isArray(b.parsed.components) ? b.parsed.components : [],
+      friction_warning:   typeof a.parsed.friction_warning === 'string' ? a.parsed.friction_warning.trim() : '',
+      daily_ops:          Array.isArray(b.parsed.daily_ops) ? b.parsed.daily_ops : [],
+      weekly_milestone:   typeof b.parsed.weekly_milestone === 'string' ? b.parsed.weekly_milestone.trim() : '',
     };
     return { statusCode: 200, headers, body: JSON.stringify(merged) };
   } catch (e) {
