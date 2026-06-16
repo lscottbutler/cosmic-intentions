@@ -7,21 +7,6 @@
    showAddForm, switchPDTab, openVaultBuildSheet, selectedVaultIdx
 ───────────────────────────────────────────────────────── */
 
-/* ── THE ENTREPRENEURIAL 30 (registry) ──────────────────
-   Hard-coded anchor for the surgical AI Roadmap Engine. The label the user
-   assigns here is sent verbatim to roadmap-ai.js, which resolves it against
-   the matching server-side card in _entrepreneur-library.js. */
-const ENT_TRAITS = [
-  'OUTSIDE BOX', 'EXECUTING STRATEGY', 'STRONG WORK ETHIC', 'STRATEGIC THINKER',
-  'FAIRNESS', 'SELF STARTER', 'SELF PROMOTER', 'SELF CONFIDENT', 'RISK TAKER',
-  'RESPECTED MANAGER', 'PROFITABLE', 'METICULOUS PLANNER', 'FACILITATOR',
-  'PASSIONATE', 'GOOD LISTENER', 'SUCCESSFUL NEGOTIATOR', 'MANAGING TIME WISELY',
-  'LIVING THE BRAND', 'GREAT SALES PERSON', 'SKILLFUL COMMUNICATOR',
-  'EXECUTING CONCEPT', 'EMPATHETIC', 'DISCIPLINED', 'DETERMINED TO SUCCEED',
-  'COMFORTABLE DELEGATING', 'COMPETITIVE', 'CHARMING', 'BALANCE IN LIFE',
-  'AWARE OF LIMITATIONS', 'QUALITY PEOPLE'
-];
-
 /* ── CARD HTML ───────────────────────────────────────── */
 function buildCardHTML(intention, idx, color) {
   const startDate  = intention.startDate  || '';
@@ -219,12 +204,7 @@ async function lockPsychReframe(idx) {
   }
 }
 
-/* Persist the user's selections from the surgical intake controls. */
-function setEntTrait(idx, value) {
-  if (!intentions[idx]) return;
-  intentions[idx].entTrait = value || '';
-  saveIntentions();
-}
+/* Persist the user's active-danger-zone selection from the intake control. */
 function setActiveDangerZone(idx, value) {
   if (!intentions[idx]) return;
   intentions[idx].activeDangerZone = value || '';
@@ -249,19 +229,17 @@ async function generateRoadmapAI(idx) {
   const intent = intentions[idx];
   if (!intent) return;
 
-  // ── Surgical intake: Intention + Danger Zone + assigned Trait ──────────
+  // ── Surgical intake: Intention + Danger Zone (two inputs only) ─────────
   const intention = intent.title || '';
   const dz        = getActiveDangerZone(intent);
-  const trait     = intent.entTrait || '';
 
-  if (!trait)  { toast('Assign an Entrepreneurial Trait first.', 'error'); return; }
-  if (!dz)     { toast('Log a Danger Zone on The Map first.', 'error');    return; }
+  if (!dz) { toast('Log a Danger Zone on The Map first.', 'error'); return; }
 
   if (btn)   { btn.disabled = true; btn.textContent = 'Generating…'; }
   if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING ROADMAP…</div>'; }
 
   try {
-    const result = await ciApiJson('roadmap-ai', { intention, dangerZone: dz, trait });
+    const result = await ciApiJson('roadmap-ai', { intention, dangerZone: dz });
 
     intent.roadmapAI = result;
     await saveIntentions();
@@ -277,18 +255,23 @@ async function generateRoadmapAI(idx) {
 }
 
 function renderRoadmapAI(r, idx) {
-  // Surgical, consolidated view: active Intention, Danger Zone, assigned Trait,
-  // and the single high-impact tactical directive.
+  // Surgical view: active Intention + Danger Zone chips, then the flat top-10
+  // tactical task list. No paragraphs, no fluff.
+  const tasks = (r.tasks || []).map((t, i) =>
+    `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+      <span style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;flex-shrink:0;padding-top:2px;min-width:22px;">${String(i + 1).padStart(2, '0')}</span>
+      <span style="font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
+    </div>`).join('');
+
   return `
     <div style="padding:4px 0 16px;">
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#9A948F;background:#1A1A1A;border:1px solid #2a2a2a;border-radius:6px;padding:5px 9px;">◎ ${esc(r.intention || '')}</span>
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone || '')}</span>
-        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#F5A623;background:#1A1405;border:1px solid #3a2e10;border-radius:6px;padding:5px 9px;">✦ ${esc(r.trait || '')}</span>
       </div>
 
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ TACTICAL DIRECTIVE</div>
-      <div style="font-size:13px;color:#ddd;line-height:1.7;margin-bottom:20px;padding:14px;background:#141414;border-left:3px solid #F5A623;border-radius:0 8px 8px 0;">${esc(r.tactical_paragraph || '')}</div>
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">◈ TOP 10 TACTICAL TASKS</div>
+      <div style="margin-bottom:18px;">${tasks}</div>
 
       <button onclick="generateRoadmapAI(${idx})" style="background:none;border:1px solid #383838;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">↺ Regenerate</button>
     </div>`;
@@ -340,24 +323,17 @@ function renderMindsetResult(m, idx) {
 function buildRoadmapPanel(intention, idx) {
   const zones = intention.theMap?.dangerZones || [];
 
-  // Surgical intake controls — assign one Trait, pick the active Danger Zone.
-  const traitOpts = ENT_TRAITS.map(t =>
-    `<option value="${esc(t)}"${intention.entTrait === t ? ' selected' : ''}>${esc(t)}</option>`).join('');
+  // Surgical intake control — pick the active Danger Zone (the only input the
+  // user selects; the intention text is the goal itself).
   const dzOpts = zones.map(z =>
     `<option value="${esc(z.title || '')}"${intention.activeDangerZone === (z.title || '') ? ' selected' : ''}>${esc(z.title || '')}</option>`).join('');
 
   const selStyle = 'width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:6px;padding:8px 10px;font-size:12px;color:#ddd;font-family:inherit;margin-bottom:12px;';
 
-  const intakeControls = `
-    <div style="font-family:var(--vault-mono);font-size:8px;color:#9A948F;letter-spacing:1px;margin-bottom:4px;">✦ ENTREPRENEURIAL TRAIT (ANTIDOTE)</div>
-    <select style="${selStyle}" onchange="setEntTrait(${idx}, this.value)">
-      <option value=""${!intention.entTrait ? ' selected' : ''}>— assign a trait —</option>
-      ${traitOpts}
-    </select>
-    ${zones.length ? `
-    <div style="font-family:var(--vault-mono);font-size:8px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ ACTIVE DANGER ZONE</div>
+  const intakeControls = zones.length
+    ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ ACTIVE DANGER ZONE</div>
     <select style="${selStyle}" onchange="setActiveDangerZone(${idx}, this.value)">${dzOpts}</select>`
-    : `<div style="font-size:11px;color:#505058;margin-bottom:12px;">Log a <strong style="color:#9A948F;">Danger Zone</strong> on The Map to target this roadmap.</div>`}`;
+    : `<div style="font-size:11px;color:#505058;margin-bottom:12px;">Log a <strong style="color:#9A948F;">Danger Zone</strong> on The Map to target this roadmap.</div>`;
 
   const roadmapAISection = `
     <div style="margin-bottom:20px;">
