@@ -229,17 +229,17 @@ async function generateRoadmapAI(idx) {
   const intent = intentions[idx];
   if (!intent) return;
 
-  // ── Surgical intake: Intention + Danger Zone (two inputs only) ─────────
+  // ── Intake: the goal (+ optional danger zone for targeting) ────────────
   const intention = intent.title || '';
   const dz        = getActiveDangerZone(intent);
 
-  if (!dz) { toast('Log a Danger Zone on The Map first.', 'error'); return; }
+  if (!intention) { toast('This intention has no title.', 'error'); return; }
 
   if (btn)   { btn.disabled = true; btn.textContent = 'Generating…'; }
-  if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING ROADMAP…</div>'; }
+  if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING YOUR 10 STEPS…</div>'; }
 
   try {
-    const result = await ciApiJson('roadmap-ai', { intention, dangerZone: dz });
+    const result = await ciApiJson('roadmap-ai', dz ? { intention, dangerZone: dz } : { intention });
 
     intent.roadmapAI = result;
     await saveIntentions();
@@ -323,37 +323,27 @@ function renderMindsetResult(m, idx) {
 function buildRoadmapPanel(intention, idx) {
   const zones = intention.theMap?.dangerZones || [];
 
-  // Surgical intake control — pick the active Danger Zone (the only input the
-  // user selects; the intention text is the goal itself).
+  // Optional targeting: if danger zones exist, let the user aim the 10 steps at
+  // one. Not required — the steps generate from the goal itself.
   const dzOpts = zones.map(z =>
     `<option value="${esc(z.title || '')}"${intention.activeDangerZone === (z.title || '') ? ' selected' : ''}>${esc(z.title || '')}</option>`).join('');
 
   const selStyle = 'width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:6px;padding:8px 10px;font-size:12px;color:#ddd;font-family:inherit;margin-bottom:12px;';
 
   const intakeControls = zones.length
-    ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ ACTIVE DANGER ZONE</div>
+    ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ FOCUS ON DANGER ZONE (optional)</div>
     <select style="${selStyle}" onchange="setActiveDangerZone(${idx}, this.value)">${dzOpts}</select>`
-    : `<div style="font-size:11px;color:#505058;margin-bottom:12px;">Log a <strong style="color:#9A948F;">Danger Zone</strong> on The Map to target this roadmap.</div>`;
+    : '';
 
-  const roadmapAISection = `
-    <div style="margin-bottom:20px;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ CORE AI ROADMAP ENGINE</div>
+  return `
+    <div style="padding:16px;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ 10 THINGS TO DO RIGHT NOW</div>
       ${intakeControls}
       <div id="panel-roadmap-ai-${idx}">
         ${intention.roadmapAI ? renderRoadmapAI(intention.roadmapAI, idx) : ''}
       </div>
-      ${!intention.roadmapAI ? `<button class="ai-gen-btn" id="btn-roadmap-ai-${idx}" onclick="generateRoadmapAI(${idx})">✦ Generate AI Roadmap</button>` : ''}
-    </div>
-    <hr style="border:none;border-top:1px solid #222;margin:0 0 20px;">`;
-
-  if (!intention.achievers) {
-    return `${roadmapAISection}
-      <div class="ai-panel-intro">
-        <p>Generate a Famous Achiever Blueprint for this intention.</p>
-        <button class="ai-gen-btn" id="btn-roadmap-${idx}" onclick="generateAchievers(${idx})">✦ Generate Achiever Blueprint</button>
-      </div>`;
-  }
-  return `${roadmapAISection}${renderRoadmapResult(intention.achievers, idx)}`;
+      ${!intention.roadmapAI ? `<button class="ai-gen-btn" id="btn-roadmap-ai-${idx}" onclick="generateRoadmapAI(${idx})">✦ Generate My 10 Steps</button>` : ''}
+    </div>`;
 }
 
 function renderRoadmapResult(a, idx) {

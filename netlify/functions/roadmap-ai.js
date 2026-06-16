@@ -33,16 +33,19 @@ exports.handler = async (event) => {
     (dz && typeof dz === 'object') ? (dz.pitfall ? `${dz.title || ''} — ${dz.pitfall}` : dz.title || '') : (dz || '')
   ).trim();
 
-  if (!intention)  return { statusCode: 400, headers, body: JSON.stringify({ error: 'intention is required' }) };
-  if (!dangerZone) return { statusCode: 400, headers, body: JSON.stringify({ error: 'dangerZone is required' }) };
+  if (!intention) return { statusCode: 400, headers, body: JSON.stringify({ error: 'intention is required' }) };
 
-  const systemPrompt = `You are a behavioral execution architect. You convert a goal and its single biggest friction point into a flat, ruthless task list. You output tasks only — no motivation, no preamble, no commentary, no conversational filler.`;
+  const systemPrompt = `You are a behavioral execution architect. You convert a goal into a flat, ruthless list of the 10 things the user can do right now to move closer to it. You output tasks only — no motivation, no preamble, no commentary, no conversational filler.`;
+
+  // Danger zone is optional — when present, the tasks are engineered to neutralize it.
+  const dzLine = dangerZone
+    ? `\nDANGER ZONE (the localized obstacle / execution pitfall to engineer around): "${dangerZone}"\n`
+    : '';
+  const dzClause = dangerZone ? ' while specifically neutralizing the danger zone above' : '';
 
   const userPrompt = `INTENTION (active goal): "${intention}"
-
-DANGER ZONE (the localized obstacle / execution pitfall to engineer around): "${dangerZone}"
-
-TASK: Return the TOP 10 actionable tactical tasks required to accomplish the intention while specifically neutralizing the danger zone above. Each task must be:
+${dzLine}
+TASK: Return the TOP 10 actionable things the user can do right now to move closer to accomplishing the intention${dzClause}. Each task must be:
 - A direct, concrete action the user can actually execute (start with a verb).
 - Sequenced roughly in the order they should be tackled.
 - Self-contained — no sub-bullets, no preamble, no motivational text, no fluff.

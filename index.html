@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260616c"></script>
+<script src="shared/card-builder.js?v=20260616d"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -6223,23 +6223,8 @@ input, textarea, select {
         <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
         <div id="vaultWorkspaceHeader"></div>
 
-        <!-- WORKSPACE SWITCHBOARD TABS — directly below brand banner -->
-        <div id="workspaceTabs" style="display:flex;background:#1a1a1a;border-bottom:1px solid #222;">
-          <button id="wsTab-strategy" onclick="switchWorkspaceLayer('strategy')"
-            style="flex:1;background:#1a1a1a;border:none;border-bottom:2px solid #F5A623;padding:10px 4px;
-            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-            color:#F5A623;cursor:pointer;">STRATEGY</button>
-          <button id="wsTab-tactics" onclick="switchWorkspaceLayer('tactics')"
-            style="flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 4px;
-            font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;
-            color:#888;cursor:pointer;">TACTICS</button>
-        </div>
-
-        <!-- LAYER 1: STRATEGY — Backbone Framework -->
-        <div id="layer-content-strategy"></div>
-
-        <!-- LAYER 2: TACTICS — My Roadmap + task banners -->
-        <div id="layer-content-tactics" style="display:none;"></div>
+        <!-- WORKSPACE CONTENT — the single 10-step AI roadmap (start simple) -->
+        <div id="layer-content-roadmap"></div>
 
         </div><!-- end colb-active-state -->
 
@@ -10010,29 +9995,14 @@ function showVaultBuildSheet(idx) {
   if (act) act.style.display = '';
   document.getElementById('addIntentionForm')?.classList.add('hidden');
 
-  // Populate each workspace layer
+  // Populate workspace: header + the single 10-step AI roadmap view
   const hdr = document.getElementById('vaultWorkspaceHeader');
   if (hdr) hdr.innerHTML = buildWorkspaceHeader(intent, idx);
 
-  const strategyEl = document.getElementById('layer-content-strategy');
-  if (strategyEl) strategyEl.innerHTML = buildStrategyContent(intent, idx);
-
-  const tacticsEl = document.getElementById('layer-content-tactics');
-  if (tacticsEl) tacticsEl.innerHTML = buildTacticsContent(intent, idx);
+  const roadmapEl = document.getElementById('layer-content-roadmap');
+  if (roadmapEl) roadmapEl.innerHTML = buildRoadmapPanel(intent, idx);
 
   populateWorkspaceBrandBanner();
-  switchWorkspaceLayer('strategy');
-
-  if (_hasBbfw(intent.bbfw)) {
-    _paintStrategyPanel(idx, intent);
-  } else {
-    generateBBFW(idx);
-  }
-  if (_hasTheMap(intent.theMap)) {
-    _paintTacticsPanel(idx, intent);
-  } else {
-    bsGenerateTheMap(idx);
-  }
 
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
