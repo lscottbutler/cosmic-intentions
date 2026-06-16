@@ -3,9 +3,7 @@
    Shared functions for all player types
    ══════════════════════════════════════════════════════════ */
 
-const DEV_MODE = false; // true = mock ElevenLabs | false = live API calls
-
-const ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel — default baseline
+const DEV_MODE = false; // true = browser TTS fallback | false = live OpenAI /api/tts
 
 /* ── RETURN TO APP ───────────────────────────────────────── */
 function returnToApp() {
