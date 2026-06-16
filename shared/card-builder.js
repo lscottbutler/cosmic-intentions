@@ -7,6 +7,21 @@
    showAddForm, switchPDTab, openVaultBuildSheet, selectedVaultIdx
 ───────────────────────────────────────────────────────── */
 
+/* ── THE ENTREPRENEURIAL 30 (registry) ──────────────────
+   Hard-coded anchor for the surgical AI Roadmap Engine. The label the user
+   assigns here is sent verbatim to roadmap-ai.js, which resolves it against
+   the matching server-side card in _entrepreneur-library.js. */
+const ENT_TRAITS = [
+  'OUTSIDE BOX', 'EXECUTING STRATEGY', 'STRONG WORK ETHIC', 'STRATEGIC THINKER',
+  'FAIRNESS', 'SELF STARTER', 'SELF PROMOTER', 'SELF CONFIDENT', 'RISK TAKER',
+  'RESPECTED MANAGER', 'PROFITABLE', 'METICULOUS PLANNER', 'FACILITATOR',
+  'PASSIONATE', 'GOOD LISTENER', 'SUCCESSFUL NEGOTIATOR', 'MANAGING TIME WISELY',
+  'LIVING THE BRAND', 'GREAT SALES PERSON', 'SKILLFUL COMMUNICATOR',
+  'EXECUTING CONCEPT', 'EMPATHETIC', 'DISCIPLINED', 'DETERMINED TO SUCCEED',
+  'COMFORTABLE DELEGATING', 'COMPETITIVE', 'CHARMING', 'BALANCE IN LIFE',
+  'AWARE OF LIMITATIONS', 'QUALITY PEOPLE'
+];
+
 /* ── CARD HTML ───────────────────────────────────────── */
 function buildCardHTML(intention, idx, color) {
   const startDate  = intention.startDate  || '';
@@ -204,26 +219,49 @@ async function lockPsychReframe(idx) {
   }
 }
 
+/* Persist the user's selections from the surgical intake controls. */
+function setEntTrait(idx, value) {
+  if (!intentions[idx]) return;
+  intentions[idx].entTrait = value || '';
+  saveIntentions();
+}
+function setActiveDangerZone(idx, value) {
+  if (!intentions[idx]) return;
+  intentions[idx].activeDangerZone = value || '';
+  saveIntentions();
+}
+
+/* Resolve the single active danger zone for an intention. Uses the explicit
+   user selection if set, else falls back to the first logged danger zone. */
+function getActiveDangerZone(intent) {
+  const zones = intent.theMap?.dangerZones || [];
+  if (!zones.length) return null;
+  if (intent.activeDangerZone) {
+    const match = zones.find(z => (z.title || '') === intent.activeDangerZone);
+    if (match) return match;
+  }
+  return zones[0];
+}
+
 async function generateRoadmapAI(idx) {
   const btn    = document.getElementById(`btn-roadmap-ai-${idx}`);
   const panel  = document.getElementById(`panel-roadmap-ai-${idx}`);
   const intent = intentions[idx];
   if (!intent) return;
 
-  const intentionData = {
-    title:              intent.title || '',
-    giant_achiever:     intent.psychReframe?.giant_achiever     || '',
-    blockers_and_fears: intent.psychReframe?.blockers_and_fears || '',
-    values_jive_check:  intent.psychReframe?.values_jive_check  || '',
-  };
+  // ── Surgical intake: Intention + Danger Zone + assigned Trait ──────────
+  const intention = intent.title || '';
+  const dz        = getActiveDangerZone(intent);
+  const trait     = intent.entTrait || '';
+
+  if (!trait)  { toast('Assign an Entrepreneurial Trait first.', 'error'); return; }
+  if (!dz)     { toast('Log a Danger Zone on The Map first.', 'error');    return; }
 
   if (btn)   { btn.disabled = true; btn.textContent = 'Generating…'; }
   if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING ROADMAP…</div>'; }
 
   try {
-    const res    = await ciApi('roadmap-ai', { intentionData });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || 'Generation failed');
+    const result = await ciApiJson('roadmap-ai', { intention, dangerZone: dz, trait });
 
     intent.roadmapAI = result;
     await saveIntentions();
@@ -239,22 +277,18 @@ async function generateRoadmapAI(idx) {
 }
 
 function renderRoadmapAI(r, idx) {
-  const daily  = (r.daily_practice  || []).map(a => `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1A1A1A;font-size:12px;color:#C0C0C8;line-height:1.5;"><span style="color:#F5A623;flex-shrink:0;">→</span>${esc(a)}</div>`).join('');
-  const weekly = (r.weekly_roadmap   || []).map((g, i) => `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1A1A1A;"><span style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;flex-shrink:0;padding-top:2px;">WK ${i+1}</span><span style="font-size:12px;color:#C0C0C8;line-height:1.5;">${esc(g)}</span></div>`).join('');
-
+  // Surgical, consolidated view: active Intention, Danger Zone, assigned Trait,
+  // and the single high-impact tactical directive.
   return `
     <div style="padding:4px 0 16px;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ CREDIBLE PLAN</div>
-      <div style="font-size:12px;color:#ddd;line-height:1.65;margin-bottom:20px;">${esc(r.credible_plan || '')}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#9A948F;background:#1A1A1A;border:1px solid #2a2a2a;border-radius:6px;padding:5px 9px;">◎ ${esc(r.intention || '')}</span>
+        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone || '')}</span>
+        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#F5A623;background:#1A1405;border:1px solid #3a2e10;border-radius:6px;padding:5px 9px;">✦ ${esc(r.trait || '')}</span>
+      </div>
 
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#FF375F;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">⚠ DANGER ZONES</div>
-      <div style="font-size:12px;color:#ddd;line-height:1.65;margin-bottom:20px;padding:12px;background:#1A0505;border-left:3px solid #FF375F;">${esc(r.danger_zones || '')}</div>
-
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#4ADE80;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">DAILY PRACTICE</div>
-      <div style="margin-bottom:20px;">${daily}</div>
-
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#60A0FF;font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">6-WEEK ROADMAP</div>
-      <div style="margin-bottom:16px;">${weekly}</div>
+      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ TACTICAL DIRECTIVE</div>
+      <div style="font-size:13px;color:#ddd;line-height:1.7;margin-bottom:20px;padding:14px;background:#141414;border-left:3px solid #F5A623;border-radius:0 8px 8px 0;">${esc(r.tactical_paragraph || '')}</div>
 
       <button onclick="generateRoadmapAI(${idx})" style="background:none;border:1px solid #383838;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">↺ Regenerate</button>
     </div>`;
@@ -304,12 +338,31 @@ function renderMindsetResult(m, idx) {
 }
 
 function buildRoadmapPanel(intention, idx) {
-  const psychLocked = !!(intention.psychReframe?.giant_achiever || intention.psychReframe?.blockers_and_fears);
+  const zones = intention.theMap?.dangerZones || [];
+
+  // Surgical intake controls — assign one Trait, pick the active Danger Zone.
+  const traitOpts = ENT_TRAITS.map(t =>
+    `<option value="${esc(t)}"${intention.entTrait === t ? ' selected' : ''}>${esc(t)}</option>`).join('');
+  const dzOpts = zones.map(z =>
+    `<option value="${esc(z.title || '')}"${intention.activeDangerZone === (z.title || '') ? ' selected' : ''}>${esc(z.title || '')}</option>`).join('');
+
+  const selStyle = 'width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:6px;padding:8px 10px;font-size:12px;color:#ddd;font-family:inherit;margin-bottom:12px;';
+
+  const intakeControls = `
+    <div style="font-family:var(--vault-mono);font-size:8px;color:#9A948F;letter-spacing:1px;margin-bottom:4px;">✦ ENTREPRENEURIAL TRAIT (ANTIDOTE)</div>
+    <select style="${selStyle}" onchange="setEntTrait(${idx}, this.value)">
+      <option value=""${!intention.entTrait ? ' selected' : ''}>— assign a trait —</option>
+      ${traitOpts}
+    </select>
+    ${zones.length ? `
+    <div style="font-family:var(--vault-mono);font-size:8px;color:#FF375F;letter-spacing:1px;margin-bottom:4px;">⚠ ACTIVE DANGER ZONE</div>
+    <select style="${selStyle}" onchange="setActiveDangerZone(${idx}, this.value)">${dzOpts}</select>`
+    : `<div style="font-size:11px;color:#505058;margin-bottom:12px;">Log a <strong style="color:#9A948F;">Danger Zone</strong> on The Map to target this roadmap.</div>`}`;
 
   const roadmapAISection = `
     <div style="margin-bottom:20px;">
       <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ CORE AI ROADMAP ENGINE</div>
-      ${!psychLocked ? `<div style="font-size:11px;color:#505058;margin-bottom:10px;">Fill in the <strong style="color:#9A948F;">Subconscious Friction Audit</strong> fields on the My Pegboard tab first for a precision-targeted roadmap.</div>` : ''}
+      ${intakeControls}
       <div id="panel-roadmap-ai-${idx}">
         ${intention.roadmapAI ? renderRoadmapAI(intention.roadmapAI, idx) : ''}
       </div>
