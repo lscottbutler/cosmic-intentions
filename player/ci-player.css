@@ -1,0 +1,112 @@
+/* ============================================================
+   CIPlayer — one engine, three players (visualization /
+   meditation / gratitude). Full-bleed session stage, scoped
+   under .cip so many can live on one page.
+   ============================================================ */
+
+.cip {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;            /* portrait session screen */
+  max-height: 80vh;
+  overflow: hidden;
+  background: #0a0a0f;
+  border-radius: 14px;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  isolation: isolate;
+}
+
+/* --- Background layer (image for viz, gradient for the rest) --- */
+.cip__bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: opacity 0.8s ease;
+  z-index: 0;
+}
+.cip[data-mode="meditation"] .cip__bg {
+  background: radial-gradient(120% 90% at 50% 20%, #16324a 0%, #0a1622 60%, #060b12 100%);
+}
+.cip[data-mode="gratitude"] .cip__bg {
+  background: radial-gradient(120% 90% at 50% 25%, #3a2342 0%, #241531 60%, #140b1c 100%);
+}
+.cip__scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.05) 30%, rgba(0,0,0,.45) 100%);
+}
+
+/* --- Top bar: mode label + remaining time --- */
+.cip__top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px;
+  font-family: "Courier New", monospace;
+  font-size: 11px; letter-spacing: 2px; font-weight: 700;
+}
+.cip__mode  { opacity: .85; }
+.cip__time  { opacity: .85; font-variant-numeric: tabular-nums; }
+
+/* --- Center content --- */
+.cip__center {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 10% 9%;
+  gap: 18px;
+}
+.cip__text {
+  font-weight: 800; line-height: 1.18; letter-spacing: .01em;
+  text-shadow: 0 2px 18px rgba(0,0,0,.55);
+  transition: opacity .5s ease;
+  font-size: clamp(20px, 5.2vw, 40px);
+}
+.cip[data-mode="gratitude"] .cip__text { text-transform: none; font-weight: 700; }
+.cip[data-mode="visualization"] .cip__text { text-transform: uppercase; }
+
+/* Meditation: big breathing countdown */
+.cip__timer {
+  display: none;
+  font-family: "Courier New", monospace;
+  font-size: clamp(48px, 16vw, 96px);
+  font-weight: 800; letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 24px rgba(0,0,0,.5);
+}
+.cip[data-mode="meditation"] .cip__timer { display: block; }
+.cip__breath {
+  display: none;
+  font-size: clamp(14px, 3.6vw, 22px);
+  font-weight: 600; opacity: .85; letter-spacing: .04em;
+  transition: opacity 1.6s ease;
+}
+.cip[data-mode="meditation"] .cip__breath { display: block; }
+
+/* --- Bottom: progress + controls --- */
+.cip__bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; }
+.cip__bar { height: 3px; width: 100%; background: rgba(255,255,255,.18); }
+.cip__bar > span { display: block; height: 100%; width: 0%; background: #fff; transition: width .3s linear; }
+.cip__controls {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 14px;
+}
+.cip__controls button {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.3); background: rgba(0,0,0,.35);
+  color: #fff; font-size: 15px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s;
+}
+.cip__controls button:hover  { background: rgba(255,255,255,.18); }
+.cip__controls button:active { transform: scale(.94); }
+
+/* --- Completion overlay --- */
+.cip__done {
+  position: absolute; inset: 0; z-index: 4;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; background: rgba(6,8,14,.8); backdrop-filter: blur(3px);
+  font-family: "Courier New", monospace; letter-spacing: 2px;
+}
+.cip.is-done .cip__done { display: flex; }
+.cip__done-check { font-size: 40px; }
+.cip__done-label { font-size: 12px; opacity: .85; }
