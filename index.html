@@ -1831,6 +1831,9 @@ textarea.field-input.tall { min-height: 110px; }
   .auth-sheet { border-radius: 16px; margin: 32px; }
   .modal-bg { align-items: center; }
   .page-wrap { max-width: 640px; margin-left: auto; margin-right: auto; }
+  /* Two-column pages must NOT be crushed to the 640px reading width */
+  .page-wrap:has(#page-home.active),
+  .page-wrap:has(#page-dashboard.active) { max-width: 1280px; }
 }
 
 /* ── COSMIC LIBRARY PAGE ──────────────────────────────────── */
@@ -2686,15 +2689,15 @@ input, textarea, select {
   object-fit: contain;
 }
 .home-member-cols {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* Hard 50% / 50% symmetric split */
   gap: 32px;
   padding: 32px 40px 48px;
-  align-items: flex-start;
-  max-width: 1400px;
+  align-items: start;
+  max-width: 1200px;
   margin: 0 auto;
 }
 .home-col-left {
-  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -2702,8 +2705,7 @@ input, textarea, select {
   padding: 8px;
 }
 .home-col-right {
-  width: 320px;
-  flex-shrink: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -2877,7 +2879,7 @@ input, textarea, select {
 /* ── HOME PAGE — MOBILE ─────────────────────────────────── */
 @media (max-width: 760px) {
   .home-member-cols {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     padding: 16px 14px 32px;
     gap: 20px;
   }
