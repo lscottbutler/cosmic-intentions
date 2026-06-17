@@ -42,6 +42,7 @@ class CIPlayer {
       bell: false,
       autoplay: true,
       onEnd: null,
+      onSlide: null,        // (line, index) — host hook, e.g. drive app voiceover
     }, options);
 
     this.items   = this._items();          // the text lines for this mode
@@ -127,6 +128,7 @@ class CIPlayer {
     const total = this.items.length;
     this.idx = ((i % total) + total) % total;
     const line = this.items[this.idx];
+    if (typeof this.opts.onSlide === "function") this.opts.onSlide(line, this.idx);
 
     if (this.opts.mode === "meditation") {
       this.breathEl.style.opacity = "0";

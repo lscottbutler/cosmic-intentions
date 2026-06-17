@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Session | Cosmic Intentions</title>
+<link rel="stylesheet" href="../player/ci-player.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; height: 100vh; height: 100dvh; display: flex;
+    align-items: center; justify-content: center; overflow: hidden; }
+  #stage { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 900px;
+    border-radius: 0; }
+  .cip { aspect-ratio: auto; height: 100%; max-height: none; border-radius: 0; }
+</style>
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- Shared app helpers (real voice, bell, return-to-app, image bank) -->
+  <script src="../shared/content-bank.js"></script>
+  <script src="../shared/player-core.js"></script>
+  <script src="../player/ci-player.js"></script>
+  <script>
+  /* Unified session launcher — replaces viz-quick / viz-10min / visual-countdown /
+     countdown / meditation* / gratitude. All driven by URL params:
+       ?mode=visualization|meditation|gratitude  &duration=<seconds>  &idx=<goal index>  */
+
+  const params   = new URLSearchParams(location.search);
+  const mode     = ['visualization','meditation','gratitude'].includes(params.get('mode'))
+                   ? params.get('mode') : 'visualization';
+  const duration = parseInt(params.get('duration'), 10) || 180;
+  const idx      = parseInt(params.get('idx'), 10) || 0;
+
+  /* ---- pull this goal's content from the same sources the old players used ---- */
+  function intentions() {
+    try { return JSON.parse(localStorage.getItem('ci_intentions') || '[]'); } catch (e) { return []; }
+  }
+  function goalTitle() {
+    const t = intentions()[idx]?.title || '';
+    return t.replace(/^(i am)\s+/i, 'I AM ');
+  }
+  function idxMatched(listKey, idxKey) {
+    try {
+      if (parseInt(localStorage.getItem(idxKey), 10) === idx) {
+        const list = JSON.parse(localStorage.getItem(listKey) || 'null');
+        if (Array.isArray(list) && list.length) return list;
+      }
+    } catch (e) {}
+    return null;
+  }
+  function affirmations() {
+    return idxMatched('ci_player_slides', 'ci_player_slides_idx')
+        || idxMatched('ci_goal_affirmations', 'ci_goal_affirmations_idx')
+        || (intentions()[idx]?.mindset?.affirmations || null)
+        || [
+             'I AM exactly who I was born to become.',
+             'I attract success, abundance, and deep purpose.',
+             'Every action I take moves me closer to my vision.',
+             'I am unstoppable. I am disciplined. I am free.',
+           ];
+  }
+  function gratitudeItems() {
+    try {
+      const raw = localStorage.getItem('ci_goal_gratitude');
+      const list = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(list) && list.length) return list;
+    } catch (e) {}
+    return ['this moment', 'the journey', 'my own effort', 'the people in my corner'];
+  }
+  function images() {
+    // rotate the shared player image bank by a per-mode offset
+    const off = (typeof PLAYER_OFFSETS !== 'undefined' && PLAYER_OFFSETS[mode]) || 0;
+    if (typeof PLAYER_IMAGES === 'undefined') return [];
+    return PLAYER_IMAGES.map((_, i) => PLAYER_IMAGES[(i + off) % PLAYER_IMAGES.length]);
+  }
+
+  /* ---- voice: use the app's real TTS (ElevenLabs/OpenAI) via the onSlide hook ---- */
+  const speak = (t) => { try { if (typeof speakText === 'function') speakText(t); } catch (e) {} };
+  const useVoice = (mode === 'visualization' || mode === 'gratitude');
+
+  if (useVoice) speak((goalTitle() ? goalTitle() + '. ' : '') + 'Close your eyes. Settle in.');
+
+  new CIPlayer('#stage', {
+    mode,
+    durationSec: duration,
+    images: images(),
+    affirmations: affirmations(),
+    gratitude: gratitudeItems(),
+    meditationFocus: goalTitle() || 'your breath',
+    slideMs: 5000,
+    fadeMs: 800,
+    onSlide: useVoice ? (line) => speak(line) : null,
+    onEnd: (userInitiated) => {
+      try { if (typeof stopSpeech === 'function') stopSpeech(); } catch (e) {}
+      if (!userInitiated) {
+        try { if (typeof playBell === 'function') playBell(); } catch (e) {}
+        speak('Open your eyes. Your vision is planted.');
+        setTimeout(() => { try { returnToApp(); } catch (e) {} }, 4000);
+      } else {
+        try { returnToApp(); } catch (e) {}
+      }
+    },
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { try { stopSpeech(); returnToApp(); } catch (e2) {} }
+  });
+  </script>
+</body>
+</html>
