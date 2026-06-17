@@ -347,6 +347,24 @@ function updateDot(i) {
 
 /* ── LOAD AFFIRMATIONS ─────────────────────────── */
 async function loadAffirmations(idx) {
+  // 0. Fresh slides seeded by the launcher (user's current selection:
+  //    mindset.affirmations or .beliefs). idx-matched, consumed once.
+  try {
+    const slideIdx = parseInt(localStorage.getItem('ci_player_slides_idx'), 10);
+    if (slideIdx === idx) {
+      const raw = localStorage.getItem('ci_player_slides');
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (list?.length) {
+          localStorage.removeItem('ci_player_slides');
+          localStorage.removeItem('ci_player_slides_idx');
+          localStorage.removeItem('ci_player_slides_source');
+          return list;
+        }
+      }
+    }
+  } catch(e) {}
+
   try {
     const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
     const { data: { user } } = await sb.auth.getUser();

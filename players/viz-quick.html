@@ -445,6 +445,24 @@ async function init() {
 }
 
 async function loadAffirmations(idx) {
+  // 0. Fresh slides seeded by the launcher (user's current selection:
+  //    mindset.affirmations or .beliefs). idx-matched, consumed once.
+  try {
+    const slideIdx = parseInt(localStorage.getItem('ci_player_slides_idx'), 10);
+    if (slideIdx === idx) {
+      const raw = localStorage.getItem('ci_player_slides');
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (list?.length) {
+          localStorage.removeItem('ci_player_slides');
+          localStorage.removeItem('ci_player_slides_idx');
+          localStorage.removeItem('ci_player_slides_source');
+          return list;
+        }
+      }
+    }
+  } catch(e) {}
+
   // 1. Goal-specific affirmations from The Map (highest priority)
   try {
     const storedIdx = parseInt(localStorage.getItem('ci_goal_affirmations_idx'), 10);

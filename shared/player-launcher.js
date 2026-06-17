@@ -30,13 +30,20 @@ function getMindsetSlides(idx, source = 'affirmations') {
 }
 
 /* Make the slides available to every loop controller:
-   - popout players read localStorage 'ci_player_slides'
-   - the inline Column A card is driven immediately */
+   - popout players read 'ci_player_slides' (idx-matched, consumed once)
+   - the inline Column A card is driven immediately
+   Returns the resolved intention index so callers can pass it in the URL. */
 function seedMindsetSlides(idx, source = 'affirmations') {
-  const slides = getMindsetSlides(idx, source);
-  try { localStorage.setItem('ci_player_slides', JSON.stringify(slides)); } catch (e) {}
+  const resolvedIdx = (idx == null && typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx != null)
+    ? selectedVaultIdx : (idx || 0);
+  const slides = getMindsetSlides(resolvedIdx, source);
+  try {
+    localStorage.setItem('ci_player_slides', JSON.stringify(slides));
+    localStorage.setItem('ci_player_slides_idx', String(resolvedIdx));
+    localStorage.setItem('ci_player_slides_source', source);
+  } catch (e) {}
   if (typeof startAffirmationLoop === 'function') startAffirmationLoop(slides);
-  return slides;
+  return resolvedIdx;
 }
 
 function launchPlayer(playerType, config = {}) {
@@ -559,14 +566,13 @@ function openRoadmapForSelected() {
 }
 
 /* ── CONVENIENCE LAUNCHERS ───────────────────────────── */
-function launch3MinViz(idx, source)  { seedMindsetSlides(idx, source); launchPlayer('viz-3min');  }
-function launch10MinViz(idx, source) { seedMindsetSlides(idx, source); launchPlayer('viz-10min'); }
+function launch3MinViz(idx, source)  { launchPlayer('viz-3min',  { idx: seedMindsetSlides(idx, source) }); }
+function launch10MinViz(idx, source) { launchPlayer('viz-10min', { idx: seedMindsetSlides(idx, source) }); }
 function launchPegboardLoop()        { launchPlayer('pegboard-loop'); }
 
 function launchQuickViz(duration, idx, source) {
   if (duration) localStorage.setItem('viz_quick_duration', duration);
-  seedMindsetSlides(idx, source);
-  launchPlayer('viz-quick');
+  launchPlayer('viz-quick', { idx: seedMindsetSlides(idx, source) });
 }
 
 function launchSlideshow(slidesConfig) {
@@ -583,7 +589,7 @@ function launchVisualCountdown(duration, idx = 0, source) {
   const title = (intentions[idx]?.title || '').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('visual_countdown_duration', duration);
   localStorage.setItem('visual_countdown_goal', title);
-  seedMindsetSlides(idx, source);
+  const i = seedMindsetSlides(idx, source);
   logActivity('viz', { duration_s: duration, intention: title }, 10);
-  launchPlayer('visual-countdown');
+  launchPlayer('visual-countdown', { idx: i });
 }
