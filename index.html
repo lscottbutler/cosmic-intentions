@@ -6095,6 +6095,18 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- MILESTONE BAR — top of Column B (this column renders on the right after the A/B swap) -->
+        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
+
+        <!-- PHONE PLAYER — vision image on screen, cycling affirmation, home button launches the viz -->
+        <div class="phone-player">
+          <div class="phone-screen">
+            <div class="phone-screen-img" id="ppScreenImg"></div>
+            <div class="phone-caption"><span id="ppSlideText">I AM exactly who I was born to become.</span></div>
+          </div>
+          <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
+        </div>
+
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
@@ -6239,18 +6251,6 @@ input, textarea, select {
 
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
-
-        <!-- MILESTONE BAR — absolute top of Column B -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
-        <!-- PHONE PLAYER — vision image on screen, cycling affirmation, home button launches the viz -->
-        <div class="phone-player">
-          <div class="phone-screen">
-            <div class="phone-screen-img" id="ppScreenImg"></div>
-            <div class="phone-caption"><span id="ppSlideText">I AM exactly who I was born to become.</span></div>
-          </div>
-          <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
-        </div>
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
