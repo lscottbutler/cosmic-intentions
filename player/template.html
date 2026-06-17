@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Affirmation Template</title>
+<link rel="stylesheet" href="slideshow-player.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #0d0d12; }
+  /* Square stage, centered, capped so it fits any screen. */
+  .stage-wrap {
+    min-height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; box-sizing: border-box;
+  }
+  #stage {
+    width: min(90vw, 90vh, 1080px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    border-radius: 10px; overflow: hidden;
+  }
+</style>
+</head>
+<body>
+  <div class="stage-wrap"><div id="stage"></div></div>
+
+<script src="slideshow-player.js"></script>
+<script>
+/* =====================================================================
+   AFFIRMATION TEMPLATE  —  fill in the two blocks below, save, open.
+   To make a new one: copy this file (e.g. credit-score.html),
+   drop your square image in art/, and edit CONFIG.
+   ===================================================================== */
+
+const CONFIG = {
+  // 1) Your SQUARE artwork (any size, 1:1 looks best). Put it in art/.
+  artwork: "art/artwork.svg",
+
+  // 2) The goals / affirmations to lay over the artwork, in order.
+  affirmations: [
+    "I AM INCREASING MY CREDIT SCORE TO 800+",
+    "I PAY EVERY BILL ON TIME",
+    "MY CREDIT SCORE RISES EVERY MONTH",
+    "I AM TRUSTED WITH CREDIT",
+    "I AM DEBT-FREE AND FINANCIALLY FREE",
+    "MONEY FLOWS TO ME EASILY",
+    "MY 800+ SCORE IS DONE",
+  ],
+
+  // ---- Optional tuning (sensible defaults; change if you want) --------
+  slideMs: 3500,        // time each affirmation shows (ms) — matches the source
+  fadeMs: 600,          // crossfade between affirmations (0 = hard cut)
+  fit: "cover",         // "cover" = fill the square; "contain" = letterbox
+  pos: "center",        // text position: "top" | "center" | "bottom"
+  textColor: "#ffffff", // affirmation text color
+};
+
+/* ---- Build the slideshow from CONFIG (no need to edit below) -------- */
+const slides = CONFIG.affirmations.map(line => ({
+  type: "image",
+  src: CONFIG.artwork,
+  fit: CONFIG.fit,
+  text: line,
+  pos: CONFIG.pos,
+  color: CONFIG.textColor,
+}));
+
+new SlideshowPlayer("#stage", {
+  aspect: "1 / 1",
+  slideMs: CONFIG.slideMs,
+  fadeMs: CONFIG.fadeMs,
+  slides,
+});
+</script>
+</body>
+</html>

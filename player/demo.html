@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slideshow Player — framework demo</title>
+<link rel="stylesheet" href="slideshow-player.css">
+<style>
+  body { margin: 0; background: #15151a; color: #ddd; font-family: system-ui, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.note { color: #888; margin: 0 0 20px; font-size: 14px; }
+  h2 { font-size: 15px; color: #9aa; margin: 28px 0 8px; }
+  .stage { box-shadow: 0 10px 30px rgba(0,0,0,.5); border-radius: 8px; overflow: hidden; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SlideshowPlayer — same look as “92 SLIDES”, now a reusable framework</h1>
+  <p class="note">Two independent players on one page. Hover a player for controls · ← → to step · space to pause.</p>
+
+  <h2>Player A — reproduces the original deck (image frames + live text cards)</h2>
+  <div id="playerA" class="stage"></div>
+
+  <h2>Player B — a second, totally separate player with its own content</h2>
+  <div id="playerB" class="stage"></div>
+</div>
+
+<script src="slideshow-player.js"></script>
+<script>
+  // Path to the frames extracted from the original video
+  const F = "../images/videos/_dissect/frames/";
+  const pad = n => String(n).padStart(2, "0");
+  const img = n => ({ type: "image", src: F + "slide_" + pad(n) + ".png", fit: "contain" });
+
+  /* Player A: mixes real extracted frames with a few rebuilt LIVE text cards
+     so you can see image slides and text cards side by side in the framework.
+     Swap these out for your own content. */
+  new SlideshowPlayer("#playerA", {
+    slideMs: 3500,            // original cadence
+    fadeMs: 0,               // hard cut, like the source
+    slides: [
+      img(1), img(2),
+      { type: "affirmation", text: "I AM FEARLESS", bg: "#ffffff", color: "#111" },
+      img(7),
+      { type: "affirmation", text: "I AM 76 KILOS", bg: "#17667E", color: "#fff" },
+      img(10),
+      { type: "quote",
+        text: "Waste no more time arguing what a good man should be. Be one.",
+        attribution: "Marcus Aurelius", bg: "#253D75", color: "#fff" },
+      img(23),
+      { type: "affirmation", text: "I AM MEDITATING DAILY", bg: "#ffffff", color: "#111" },
+      img(38),
+      { type: "affirmation", text: "I LOVE & RESPECT MYSELF", bg: "#D26C94", color: "#fff" },
+      img(50),
+    ],
+  });
+
+  /* Player B: your own deck — proves the framework is data-driven and reusable. */
+  new SlideshowPlayer("#playerB", {
+    slideMs: 2500,
+    fadeMs: 400,             // this one crossfades instead of hard-cutting
+    slides: [
+      { type: "affirmation", text: "YOUR PLAYER HERE", bg: "#101418", color: "#7CE0C8" },
+      { type: "affirmation", text: "ANY TEXT", bg: "#7CE0C8", color: "#101418" },
+      { type: "quote", text: "Drop in your own images and copy — same engine.",
+        attribution: "The framework", bg: "#222", color: "#eee" },
+      img(91),
+    ],
+  });
+</script>
+</body>
+</html>

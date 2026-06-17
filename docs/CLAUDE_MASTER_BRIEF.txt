@@ -272,3 +272,124 @@ summaries, run /wrap before ending a session.
   c73ee79 Layout: Swap positions of day tracker bar and category filter row in Column B
   11a9c3d UI: Bring visualization affirmations into the light with a dedicated 30s loop in Column A
   c8c5412 Layout: Restructure dual-camp separation isolating Column A Inner Game and Column B Workspace
+
+[2026-06-13] auto-logged commits:
+  453d913 Layout: Remove TODAY strip card from top of Column A
+  2851b90 Layout: Remove Day Streak, Viz Plays, Med Plays stat boxes from Column A
+  109f40b Layout: Remove DAILY COMMITMENTS and WEEKLY FOCUS sections from TODAY strip
+  6af1f9b Fix blank re-open state by hydrating cached strategy and roadmap data
+  3fef452 Boost TODAY dropdown readability with larger high-contrast typography
+  d8dc4a9 Fix Member Dashboard session refresh and add top-nav Sign Out
+  142b9b1 forced vibe coder hotfix
+  f6afe66 Enhance brand banner responsiveness and improve API error handling
+  d8068e6 Refactor: Enhance API response handling and improve brand banner text fitting
+  b0e8f47 Design: Clamp brand banner font size to fix container text spillover
+  57b21b4 Logic: Chain Tactics background generation directly to Strategy initialization loop
+  f8f09a5 Design: Maximize brand banner text scale, center layout, and invert color to bright white
+  7beb569 Design: Apply goal card contrast frame CSS — white bg, #F05252 border, 24px padding, square corners
+  e2ff17a Design: Overhaul active goal card to double-thick square frame with white background
+  fd66131 UX: Smash click-gate and force strategy framework content to render immediately
+  460b01d UX: Auto-load Strategy content and shift roadmap generation button to Tactics tab
+  22a511c Feature: Combine Backbone and Roadmap into unified 3-Layer Switchboard workspace
+  51c8f5c Workspace: add 3-layer switchboard tabs to Column B active state
+  e257d0c Checkpoint: Column alignment, 24px padding unified, Keep/Lock retention complete
+
+[2026-06-13] auto-logged commits:
+  60aafab Prompt: Fused 3-part danger zone armor narrative for all 6 strategy blocks
+  1dd289a Fix: Remove 13s artificial delay causing bbfw timeout; set functions timeout=60
+  c3ea648 Design: Remove numbers from EP block titles; rewrite prompt to conversational coaching tone
+  9d2e96a Feature: Embed logged danger zones as armor into Vivid Vision, Compelling Why, Credible Plan
+  f65010b UX: Inner Citadel rename, Step Away sign-out, Apex Protocol loading sequence
+  2e78c5f Design: Replace text logo with blue-hair mascot image in header
+  143e043 Design: Card text 50% smaller, white text box height halved
+  e1d49b4 Design: Danger zone rows dark gray #1e1e1e, remove red tint, rounded 12px, amber warning icon
+  ca59d25 Layout: Move Action panel to Column A, reduce tabs to STRATEGY/TACTICS only
+  a9fa73f Design: Replace green blob header with dark/white-border/yellow-text block
+  2eac66b Design: Add 30px top margin to note box below goal card
+  727455b Feature: Add yellow-accent note box between goal card and roadmap banner
+  419022e Design: Backbone card arrow hints yellow #FFCC00, no italic, 12px to match body
+  0159a8c Cleanup: Remove 'Your Roadmap Awaits' placeholder and all vaultWelcome JS references
+  fce1b89 Feature: Cycle 34 trough images with affirmation loop on 30s interval
+  00a1f8d Feature: Wire affirmation loop to TROUGH_TEST collectible card in Column A
+  8194a57 Layout: Move TROUGH_TEST card to top of Column A below My Notes header
+  a41923b Layout: Add TROUGH_TEST collectible card to bottom of Column A
+
+[2026-06-14] auto-logged commits:
+  617d816 @ Add entrepreneur-library card art and repository welcome asset
+  cad546c Fix: Bump bbfw max_tokens 4096→8192 to prevent JSON truncation with entrepreneur card context injected
+  96feb41 Feature: Wire entrepreneur card into STRATEGY tab — bbfw.js now ingests active card lexicon and per-block strategy rules; shared library extracted to _entrepreneur-library.js
+  1977d5d Fix: Null-guard activity.js DOM selectors — prevent TypeError crash when myScoreNum, myCommunityRank, or myActivityFeed are absent from current DOM
+  ba53b49 Feature: OO Entrepreneur Library in generate-content.js — 31-card matrix with per-card lexicons and 6 strategy block rules, blended with live danger zones into coaching paragraphs
+
+[2026-06-15] auto-logged commits:
+  40b45bc fix: Correct MP4 src path casing to match repo filename (case-sensitive on Netlify Linux)
+  12089ba feat: Add ambient viz MP4 asset to repo for Column A video player
+  cf6ea0f feat: Add ambient viz card to absolute top of Column A — vertical looping video player with 14px dark border frame
+  719d8d5 feat: duplicate personal roadmap banner to create COSMIC LIBRARY header in Column A
+  0fa0a43 style: apply unified Strategy prose metrics to legacy fallback render too
+  464bd53 style: unify Strategy prose font metrics with Dashboard Welcome text
+  e6e821c fix(netlify): remove invalid [functions] timeout that broke config resolution and blocked all deploys
+  ba19dc7 chore: trigger Netlify production rebuild (code already at dd4d597)
+  dd4d597 feat(bbfw): generate strategy as one continuous coaching paragraph
+  233b13b bbfw: flag legacy cached frameworks with one-click REFRESH nudge
+  e1b7462 bbfw: continuous number-free strategy + de-numbered milestone components
+  cdd2b47 Refactor bbfw.js into two concurrent gpt-4o-mini passes to cut latency
+  bf129f3 Add entrepreneur-library card art and repository welcome asset
+
+[2026-06-15] auto-logged commits:
+  6954425 feat: overhaul roadmap-ai system prompt, update friction audit labels, enable DEV_MODE
+  1474e54 feat: Core AI Roadmap Engine — roadmap-ai.js Netlify function + giant_achiever field + generateRoadmapAI() wired into AI Roadmap tab
+  d60da91 feat: Add Subconscious Friction Audit panel to My Pegboard tab — 3 psych reframe fields per intention with lock/save via lockPsychReframe()
+
+[2026-06-16] auto-logged commits:
+  28f89c1 refactor: simplify Roadmap UI and remove component bloat
+
+[2026-06-16] auto-logged commits:
+  9e2a1ed revert: restore My Pegboard + Behind the Scenes page to pre-fold state
+  c778d9b feat: roadmap engine -> 2-input/10-task + purge BTS page into Pegboard
+  8967f4a chore: remove dead ElevenLabs leftovers from player-core
+  74bc146 chore: cache-bust card-builder.js to v=20260616a so surgical roadmap UI ships
+  8a18018 feat(roadmap-ai): surgical strip-to-bone refactor of AI Roadmap Engine
+
+[2026-06-16] auto-logged commits:
+  e2543b9 docs: add Gemini catch-up brief for 2026-06-16 session
+  d59b89b feat: simplify workspace to a single 10-step AI roadmap
+
+[2026-06-17] auto-logged commits:
+  1e01e83 Persist danger-zone selection to Supabase (cross-device)
+  a91fb33 Persist AI Roadmap (10 steps/tasks) so it survives goal switches
+  bb80602 Strip unused DVB list-image CSS
+  8558897 Move goal DVB image from list to Column B on select
+  32f2695 Strip dead trading-card code
+  8fb57b9 Make phone-skeleton player functional
+  cab2f52 Vision player to gallery-white/black-text; swap card for new skeleton
+  63ab556 Swap Inner Citadel columns A <-> B
+  3262685 Make yellow/blue goal trading card functional
+  1f80bf6 Add yellow/blue trading-card player skeleton below grey player (test)
+  d3c2cbc Store vision images in Supabase Storage (cross-device)
+  159a730 Auto-generate vision images for all goals
+  2001f73 Match Column A matte to saved skeleton exactly
+  becd725 Grey matte frame on Column A player
+  e621026 Reshape Column A player to skeleton frame
+  161f6b6 Green matte frame on Column A vision player
+  53c8702 Hint instead of defaulting when no intention selected
+  0b7d36e Make Column A vision player tappable
+  9993690 Professional two-zone vision player for Column A
+  6f34eb5 Column A PNG-skinned player with looping affirmation caption
+  719866a Remove "the" from Add Intention modal — clean "I AM" hook
+  ebb0d1d Populate viz players from launcher-seeded mindset slides
+  2f48231 Wire players to mindset slides + reconcile Column A player CSS
+  0e12e26 True 50/50 columns on home + dashboard
+  90fbdfb Fix vault grid to true 50/50 with minmax(0,1fr) tracks
+  bb87458 Refactor vault dashboard to symmetric 50/50 desktop grid
+
+[2026-06-17] auto-logged commits:
+  65e7499 style: frame the Entrepreneur Library player as a black card with footer label
+  ddd64c1 feat: add Entrepreneur Library image-loop player below Gratitude dropdown (Column B)
+  5554e4d refactor: move MY DASHBOARD welcome box to top of Column A
+  d2c734d feat: move goal number badge and close button onto the phone-player skeleton
+  5dbf6dd refactor: move phone-player skeleton to top of Column A
+  e22a6f5 Put day bar + phone player at top of the actual Column B (right column)
+  90ce04d Move milestone day bar to absolute top of Column B
+  37a32af Move phone player to top of Column B
+  d387ca7 Remove grey vision player from Column A; keep phone player
