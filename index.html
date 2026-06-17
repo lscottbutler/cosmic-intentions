@@ -6095,20 +6095,11 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of column -->
+        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
+
         <!-- MILESTONE BAR — top of Column B (this column renders on the right after the A/B swap) -->
         <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
-        <!-- PHONE PLAYER — vision image on screen, cycling affirmation, home button launches the viz -->
-        <div class="phone-player">
-          <div class="phone-screen">
-            <div class="phone-screen-img" id="ppScreenImg"></div>
-            <div class="phone-caption"><span id="ppSlideText">I AM exactly who I was born to become.</span></div>
-          </div>
-          <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
-        </div>
-
-        <!-- Block: home-video-1 — My Notes box, top of Column A -->
-        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
         <!-- AFFIRMATION CARD ENGINE — wrestling card wired to affirmation loop -->
         <div id="affirmation-card-container" class="card-asset-container">
@@ -10142,9 +10133,13 @@ function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
   return `
     <div style="padding:12px 16px 0;">
-      <div class="bs-dvb">
-        <div class="bs-dvb-img" id="bsDvbImg" style="background-image:${intent.imageUrl ? `url('${intent.imageUrl}')` : 'none'}"></div>
-        <button class="dvb-regen-btn" title="New image" onclick="regenerateGoalImage(${idx}, event)">↻</button>
+      <!-- PHONE PLAYER skeleton — moved to top of Column A; shows this goal's vision image -->
+      <div class="phone-player">
+        <div class="phone-screen">
+          <div class="phone-screen-img" id="ppScreenImg" style="background-image:${intent.imageUrl ? `url('${intent.imageUrl}')` : 'none'}"></div>
+          <div class="phone-caption"><span id="ppSlideText">${esc(intent.title)}</span></div>
+        </div>
+        <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
       </div>
       <div class="bs-header" style="position:relative;">
         <div class="bs-title-col">
