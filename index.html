@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617_gold9"></script>
+<script src="shared/card-builder.js?v=20260617_gold10"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -4079,6 +4079,19 @@ input, textarea, select {
   border-radius: 0px !important;
   padding: 24px !important;
   box-sizing: border-box !important;
+}
+.bs-dvb {
+  position: relative;
+  margin-bottom: 12px;
+}
+.bs-dvb-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: #16213a;       /* fallback until the vision image loads */
+  background-size: cover;
+  background-position: center;
+  border: 4px solid #F05252;
+  box-sizing: border-box;
 }
 .bs-header {
   padding: 24px !important;
@@ -9802,12 +9815,8 @@ function renderVaultSidebar() {
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
         const isSelected = selectedVaultIdx === i._idx;
-        const dvb = i._imgLoading
-          ? `<div class="dvb-image-wrap dvb-loading"><span class="dvb-spinner"></span><span class="dvb-loading-txt">Generating your vision…</span></div>`
-          : (i.imageUrl
-            ? `<div class="dvb-image-wrap"><img class="dvb-image" src="${i.imageUrl}" alt="${esc(i.title)}"><button class="dvb-regen-btn" title="New image" onclick="regenerateGoalImage(${i._idx}, event)">↻</button></div>`
-            : '');
-        return `${dvb}
+        // DVB image is no longer shown inline in the list — it opens in Column B on select.
+        return `
         <button class="vault-item${isSelected ? ' selected' : ''}"
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
@@ -10299,6 +10308,10 @@ function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
   return `
     <div style="padding:12px 16px 0;">
+      <div class="bs-dvb">
+        <div class="bs-dvb-img" id="bsDvbImg" style="background-image:${intent.imageUrl ? `url('${intent.imageUrl}')` : 'none'}"></div>
+        <button class="dvb-regen-btn" title="New image" onclick="regenerateGoalImage(${idx}, event)">↻</button>
+      </div>
       <div class="bs-header" style="position:relative;">
         <div class="bs-title-col">
           <div class="bs-intention-title">${esc(intent.title)}</div>

@@ -534,7 +534,7 @@ async function fetchGoalImage(idx, title, opts = {}) {
     const onScreen = typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx;
     if (onScreen) {
       const u = `url("${intentions[idx].imageUrl}")`;
-      ['pbStageImg', 'ppScreenImg'].forEach(id => {
+      ['pbStageImg', 'ppScreenImg', 'bsDvbImg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.backgroundImage = u;
       });
