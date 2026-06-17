@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617a"></script>
+<script src="shared/card-builder.js?v=20260617_gold"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -4515,6 +4515,60 @@ input, textarea, select {
 }
 .bs-nav-btn:hover { border-color: #888888; color: #EFEFEF; }
 
+/* ── AMBIENT PNG-SKINNED PLAYER (Column A) ──────────────
+   9:16 matte-framed box using the player mockup as its
+   background, with a centered black caption card that loops
+   the active goal's affirmations (silent text cycle). */
+.ambient-video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background-image: url('images/player-psd-mockups/green-black-vert-player.png');
+  background-size: cover;
+  background-position: center;
+  border: 14px solid #333333; /* Bold uniform framing matte */
+  border-radius: 12px;
+  margin: 0 auto 24px auto;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-black-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 82%;
+  min-height: 140px;
+  max-height: 240px;
+  background: #000000;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.player-white-text {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  word-wrap: break-word;
+  transition: opacity 0.4s ease;
+}
+
 /* ── SYMMETRIC 50/50 DESKTOP GRID ───────────────────── */
 @media (min-width: 768px) {
   .vault-layout {
@@ -4548,12 +4602,8 @@ input, textarea, select {
     padding: 0 !important;
   }
 
-  /* Vertical 9:16 player at the top of Column A. The element in the DOM is
-     .ambient-viz-card (9:16 + 14px #333 matte handled inline); we only
-     govern its responsive footprint here. .ambient-video-wrapper kept as
-     an alias per the handover brief's class contract. */
-  .ambient-video-wrapper,
-  .ambient-viz-card {
+  /* Vertical 9:16 PNG-skinned player at the top of Column A — responsive footprint. */
+  .ambient-video-wrapper {
     width: 100% !important;
     max-width: 480px !important;
     margin: 0 auto 24px auto !important;
@@ -4570,10 +4620,10 @@ input, textarea, select {
     padding: 0 16px !important;
   }
 
-  .ambient-video-wrapper,
-  .ambient-viz-card {
+  .ambient-video-wrapper {
     width: 100% !important;
     max-width: 320px !important; /* Scale down smoothly while maintaining 9:16 bounds */
+    border-width: 10px !important;
     margin: 0 auto !important;
   }
 }
@@ -6064,21 +6114,11 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
-        <!-- AMBIENT VIZ CARD — vertical looping video, absolute top of Column A -->
-        <div class="card ambient-viz-card" style="background-color: #121212; border: 14px solid #333333; padding: 0; overflow: hidden; display: flex; flex-direction: column; width: 100%; max-width: 520px; margin-bottom: 24px;">
-          <div class="vertical-video-frame" style="width: 100%; position: relative; background-color: #000000; overflow: hidden; aspect-ratio: 9 / 16;">
-            <video
-              id="ambientLocalLoop"
-              style="width: 100%; height: 100%; object-fit: cover; display: block;"
-              autoplay
-              loop
-              muted
-              playsinline>
-              <source src="/MP4/C%20I%20VERTICLE%20VIZ%20PLAYER%201%20MINUTE-.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+        <!-- AMBIENT VIZ PLAYER — PNG skin + centered black caption box, top of Column A -->
+        <div class="ambient-video-wrapper">
+          <div class="player-black-box">
+            <div class="player-white-text" id="pbSlideText">I AM exactly who I was born to become.</div>
           </div>
-          <div style="width: 100%; height: 14px; background-color: #333333;"></div>
         </div>
 
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
@@ -9830,7 +9870,10 @@ function selectVaultIntention(idx) {
     showVaultBuildSheet(selectedVaultIdx);
     // Seed goal-specific content into players
     if (typeof seedGoalPractice === 'function') seedGoalPractice(selectedVaultIdx);
+    // Loop this goal's affirmations through the Column A PNG player caption box
+    if (typeof runSurgicalVisualLoop === 'function') runSurgicalVisualLoop(selectedVaultIdx);
   } else {
+    if (typeof stopSurgicalVisualLoop === 'function') stopSurgicalVisualLoop();
     showVaultWelcome();
   }
 }

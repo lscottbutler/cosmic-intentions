@@ -409,6 +409,42 @@ function showAddForm() {
   setTimeout(() => document.getElementById('newIntentionInput')?.focus(), 50);
 }
 
+/* ── COLUMN A AMBIENT AFFIRMATION LOOP ───────────────────
+   Cycles the selected goal's affirmations through the PNG
+   player's centered black caption box (#pbSlideText).
+   Silent — text only, no TTS. */
+const ActiveVisualPlayer = { currentIdx: 0, timer: null };
+
+function stopSurgicalVisualLoop() {
+  clearTimeout(ActiveVisualPlayer.timer);
+  ActiveVisualPlayer.timer = null;
+}
+
+function runSurgicalVisualLoop(idx) {
+  stopSurgicalVisualLoop();
+  const txtEl = document.getElementById('pbSlideText');
+  if (!txtEl) return;
+  const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
+  if (!intention) return;
+
+  // Ingest affirmations from the current goal; fall back to the intention title.
+  const statements = (intention.mindset && intention.mindset.affirmations && intention.mindset.affirmations.length)
+    ? intention.mindset.affirmations
+    : [intention.title];
+
+  ActiveVisualPlayer.currentIdx = 0;
+
+  function cycle() {
+    if (ActiveVisualPlayer.currentIdx >= statements.length) ActiveVisualPlayer.currentIdx = 0;
+    const statement = statements[ActiveVisualPlayer.currentIdx];
+    txtEl.style.opacity = '0';
+    setTimeout(() => { txtEl.textContent = statement || ''; txtEl.style.opacity = '1'; }, 300);
+    ActiveVisualPlayer.currentIdx++;
+    ActiveVisualPlayer.timer = setTimeout(cycle, 6000); // silent 6s hold per slide
+  }
+  cycle();
+}
+
 function updateIamPreview() {
   const f1 = (document.getElementById('iam-field1')?.value || '').trim();
   const f2 = (document.getElementById('iam-field2')?.value || '').trim();
