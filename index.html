@@ -15,7 +15,7 @@
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
-<script src="shared/player-launcher.js?v=20260611a"></script>
+<script src="shared/player-launcher.js?v=20260617a"></script>
 <script src="shared/progress-dashboard.js?v=20260611a"></script>
 <script src="shared/the-map.js?v=20260612d"></script>
 <style>
@@ -4548,16 +4548,15 @@ input, textarea, select {
     padding: 0 !important;
   }
 
-  /* Force the Vertical 9:16 Visual Video Player to stand elegantly inside Column A */
-  .ambient-video-wrapper {
+  /* Vertical 9:16 player at the top of Column A. The element in the DOM is
+     .ambient-viz-card (9:16 + 14px #333 matte handled inline); we only
+     govern its responsive footprint here. .ambient-video-wrapper kept as
+     an alias per the handover brief's class contract. */
+  .ambient-video-wrapper,
+  .ambient-viz-card {
     width: 100% !important;
     max-width: 480px !important;
-    aspect-ratio: 9 / 16 !important;
     margin: 0 auto 24px auto !important;
-    border: 14px solid #333333 !important; /* Bold uniform framing matte border */
-    border-radius: 8px !important;
-    background: #000000 !important;
-    overflow: hidden !important;
   }
 }
 
@@ -4571,10 +4570,10 @@ input, textarea, select {
     padding: 0 16px !important;
   }
 
-  .ambient-video-wrapper {
+  .ambient-video-wrapper,
+  .ambient-viz-card {
     width: 100% !important;
     max-width: 320px !important; /* Scale down smoothly while maintaining 9:16 bounds */
-    aspect-ratio: 9 / 16 !important;
     margin: 0 auto !important;
   }
 }

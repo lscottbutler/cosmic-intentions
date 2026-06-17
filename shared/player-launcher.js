@@ -3,6 +3,42 @@
    logActivity, playBell, speakText, toast
 ───────────────────────────────────────────────────────── */
 
+/* ── MINDSET SLIDE CONTEXT ──────────────────────────────
+   Resolves the target intention's mindset arrays so the
+   player loop controllers cycle real affirmations/beliefs
+   instead of generic defaults.
+     idx    — intention index (defaults to selectedVaultIdx)
+     source — 'affirmations' (default) | 'beliefs'
+   Falls back primary → other array → built-in defaults.
+──────────────────────────────────────────────────────── */
+const MINDSET_SLIDE_DEFAULTS = [
+  'I am becoming the best version of myself.',
+  'Every day I move closer to my vision.',
+  'I am worthy of everything I desire.',
+];
+
+function getMindsetSlides(idx, source = 'affirmations') {
+  const list = (typeof intentions !== 'undefined' && intentions) ? intentions : [];
+  const i = (idx == null && typeof selectedVaultIdx !== 'undefined') ? selectedVaultIdx : idx;
+  const m = (list[i] && list[i].mindset) ? list[i].mindset : {};
+  const primary  = source === 'beliefs' ? m.beliefs       : m.affirmations;
+  const fallback = source === 'beliefs' ? m.affirmations   : m.beliefs;
+  const slides = (primary && primary.length)   ? primary
+               : (fallback && fallback.length) ? fallback
+               : MINDSET_SLIDE_DEFAULTS;
+  return slides.slice();
+}
+
+/* Make the slides available to every loop controller:
+   - popout players read localStorage 'ci_player_slides'
+   - the inline Column A card is driven immediately */
+function seedMindsetSlides(idx, source = 'affirmations') {
+  const slides = getMindsetSlides(idx, source);
+  try { localStorage.setItem('ci_player_slides', JSON.stringify(slides)); } catch (e) {}
+  if (typeof startAffirmationLoop === 'function') startAffirmationLoop(slides);
+  return slides;
+}
+
 function launchPlayer(playerType, config = {}) {
   if (['viz-quick','viz-10min','viz-3min','visual-countdown'].includes(playerType)) {
     LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
@@ -523,12 +559,13 @@ function openRoadmapForSelected() {
 }
 
 /* ── CONVENIENCE LAUNCHERS ───────────────────────────── */
-function launch3MinViz()         { launchPlayer('viz-3min');      }
-function launch10MinViz()        { launchPlayer('viz-10min');     }
-function launchPegboardLoop()    { launchPlayer('pegboard-loop'); }
+function launch3MinViz(idx, source)  { seedMindsetSlides(idx, source); launchPlayer('viz-3min');  }
+function launch10MinViz(idx, source) { seedMindsetSlides(idx, source); launchPlayer('viz-10min'); }
+function launchPegboardLoop()        { launchPlayer('pegboard-loop'); }
 
-function launchQuickViz(duration) {
+function launchQuickViz(duration, idx, source) {
   if (duration) localStorage.setItem('viz_quick_duration', duration);
+  seedMindsetSlides(idx, source);
   launchPlayer('viz-quick');
 }
 
@@ -542,10 +579,11 @@ function launchVideo(videoUrl) {
   launchPlayer('video');
 }
 
-function launchVisualCountdown(duration, idx = 0) {
+function launchVisualCountdown(duration, idx = 0, source) {
   const title = (intentions[idx]?.title || '').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('visual_countdown_duration', duration);
   localStorage.setItem('visual_countdown_goal', title);
+  seedMindsetSlides(idx, source);
   logActivity('viz', { duration_s: duration, intention: title }, 10);
   launchPlayer('visual-countdown');
 }
