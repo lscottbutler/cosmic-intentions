@@ -417,8 +417,8 @@ function updateIamPreview() {
   const hasContent = f1 || f2;
   preview.style.opacity = hasContent ? '1' : '0.3';
   preview.textContent = hasContent
-    ? 'I AM the ' + [f1, f2].filter(Boolean).join(' ')
-    : 'I AM the …';
+    ? 'I AM ' + [f1, f2].filter(Boolean).join(' ')
+    : 'I AM …';
 }
 
 function hideAddForm() {
@@ -435,7 +435,7 @@ async function confirmAddIntention() {
   const f1 = (document.getElementById('iam-field1')?.value || '').trim();
   const f2 = (document.getElementById('iam-field2')?.value || '').trim();
   if (!f1 && !f2) { toast('Fill in your intention.', 'error'); return; }
-  let title = ('I AM the ' + [f1, f2].filter(Boolean).join(' ')).slice(0, 150);
+  let title = ('I AM ' + [f1, f2].filter(Boolean).join(' ')).slice(0, 150);
   const intention = {
     id: crypto.randomUUID(), title,
     words: { mission:'', affirmations:'', beliefs:'', quotes:'', insights:'' },
