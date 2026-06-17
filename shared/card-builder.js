@@ -443,6 +443,11 @@ function runSurgicalVisualLoop(idx) {
   const imgEl = document.getElementById('pbStageImg');
   if (imgEl) imgEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
 
+  // Backfill a vision image for this goal on the spot if it has none yet.
+  if (!intention.imageUrl && !intention._imgLoading && typeof fetchGoalImage === 'function') {
+    fetchGoalImage(idx, intention.title);
+  }
+
   // Ingest affirmations from the current goal; fall back to the intention title.
   const statements = (intention.mindset && intention.mindset.affirmations && intention.mindset.affirmations.length)
     ? intention.mindset.affirmations
@@ -502,7 +507,8 @@ async function confirmAddIntention() {
   fetchGoalImage(intentions.length - 1, title);
 }
 
-async function fetchGoalImage(idx, title) {
+async function fetchGoalImage(idx, title, opts = {}) {
+  const silent = !!opts.silent;
   const intn = intentions[idx];
   if (intn) intn._imgLoading = true;
   renderVaultSidebar();
@@ -513,13 +519,38 @@ async function fetchGoalImage(idx, title) {
     if (!b64 || !intentions[idx]) return;
     intentions[idx].imageUrl = `data:image/png;base64,${b64}`;
     await saveIntentions();
-    toast('Vision image ready ✓', 'success');
+    // If this goal's player is on screen, paint the new image in immediately.
+    const stageImg = document.getElementById('pbStageImg');
+    if (stageImg && typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx) {
+      stageImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
+    }
+    if (!silent) toast('Vision image ready ✓', 'success');
   } catch(e) {
     console.error('Image generation failed:', e);
-    toast('Image generation failed — try regenerate.', 'error');
+    if (!silent) toast('Image generation failed — try regenerate.', 'error');
   } finally {
     if (intentions[idx]) intentions[idx]._imgLoading = false;
     renderVaultSidebar();
+  }
+}
+
+/* Ensure every goal has a vision image — generate sequentially for any
+   that are missing one. Safe to call repeatedly: skips goals that already
+   have an image or are mid-generation, and only one pass runs at a time. */
+let _imgBackfillRunning = false;
+async function backfillGoalImages() {
+  if (_imgBackfillRunning) return;
+  if (typeof intentions === 'undefined' || !intentions || !intentions.length) return;
+  _imgBackfillRunning = true;
+  try {
+    for (let i = 0; i < intentions.length; i++) {
+      const intn = intentions[i];
+      if (!intn || intn.imageUrl || intn._imgLoading || !intn.title) continue;
+      await fetchGoalImage(i, intn.title, { silent: true });
+      await new Promise(r => setTimeout(r, 500)); // gentle throttle between generations
+    }
+  } finally {
+    _imgBackfillRunning = false;
   }
 }
 
