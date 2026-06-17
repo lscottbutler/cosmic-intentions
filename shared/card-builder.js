@@ -427,6 +427,10 @@ function runSurgicalVisualLoop(idx) {
   const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
   if (!intention) return;
 
+  // Top zone = this goal's vision image (CSS gradient shows if none yet).
+  const imgEl = document.getElementById('pbStageImg');
+  if (imgEl) imgEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
+
   // Ingest affirmations from the current goal; fall back to the intention title.
   const statements = (intention.mindset && intention.mindset.affirmations && intention.mindset.affirmations.length)
     ? intention.mindset.affirmations

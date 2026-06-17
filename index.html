@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617_gold"></script>
+<script src="shared/card-builder.js?v=20260617_gold2"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -4515,57 +4515,87 @@ input, textarea, select {
 }
 .bs-nav-btn:hover { border-color: #888888; color: #EFEFEF; }
 
-/* ── AMBIENT PNG-SKINNED PLAYER (Column A) ──────────────
-   9:16 matte-framed box using the player mockup as its
-   background, with a centered black caption card that loops
-   the active goal's affirmations (silent text cycle). */
+/* ── AMBIENT VISION PLAYER (Column A) ───────────────────
+   9:16 matte-framed two-zone player: the selected goal's
+   vision image up top, a black caption panel below that
+   loops the goal's affirmations (silent text cycle).
+   Gold hairline divider ties it to the brand palette. */
 .ambient-video-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 9 / 16;
-  background-image: url('images/player-psd-mockups/green-black-vert-player.png');
-  background-size: cover;
-  background-position: center;
-  border: 14px solid #333333; /* Bold uniform framing matte */
+  border: 14px solid #333333;          /* uniform matte frame */
   border-radius: 12px;
   margin: 0 auto 24px auto;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #000;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
 }
 
-.player-black-box {
+/* TOP — vision image zone (gradient base shows if no goal image) */
+.player-stage {
+  position: relative;
+  flex: 1 1 58%;
+  min-height: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 32%, #2a3d57 0%, #16213a 65%, #0a0e1a 100%);
+}
+.player-stage-img {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 82%;
-  min-height: 140px;
-  max-height: 240px;
-  background: #000000;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
-  box-sizing: border-box;
-  z-index: 10;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.6s ease;
+}
+.player-stage::after {                  /* fade image into the caption */
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
+  pointer-events: none;
 }
 
+/* gold hairline divider */
+.player-divider {
+  flex-shrink: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C9A96E 22%, #F5A623 50%, #C9A96E 78%, transparent);
+  opacity: 0.85;
+}
+
+/* BOTTOM — black caption panel */
+.player-caption {
+  flex: 0 0 42%;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 22px;
+  box-sizing: border-box;
+}
+.player-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #C9A96E;
+}
 .player-white-text {
   color: #FFFFFF;
-  font-size: 16px;
+  font-size: clamp(14px, 4.2vw, 18px);
   font-weight: 700;
   line-height: 1.5;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   word-wrap: break-word;
+  max-width: 320px;
   transition: opacity 0.4s ease;
 }
 
@@ -6114,9 +6144,14 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
-        <!-- AMBIENT VIZ PLAYER — PNG skin + centered black caption box, top of Column A -->
+        <!-- AMBIENT VISION PLAYER — goal image + looping affirmation caption, top of Column A -->
         <div class="ambient-video-wrapper">
-          <div class="player-black-box">
+          <div class="player-stage">
+            <div class="player-stage-img" id="pbStageImg"></div>
+          </div>
+          <div class="player-divider"></div>
+          <div class="player-caption">
+            <div class="player-eyebrow">✦ Affirmation</div>
             <div class="player-white-text" id="pbSlideText">I AM exactly who I was born to become.</div>
           </div>
         </div>
