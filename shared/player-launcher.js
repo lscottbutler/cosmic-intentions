@@ -46,6 +46,27 @@ function seedMindsetSlides(idx, source = 'affirmations') {
   return resolvedIdx;
 }
 
+/* PILOT — route these keys through the unified players/session.html (CIPlayer).
+   Fully reversible: remove a key (or the whole map) to fall back to the old file.
+   viz-quick keeps its session/unlock modal and is intentionally NOT piloted yet. */
+const SESSION_PILOT = {
+  'gratitude':        'gratitude',
+  'meditation-timer': 'meditation',
+};
+function _resolvePlayerUrl(playerType, config = {}) {
+  const mode = SESSION_PILOT[playerType];
+  if (mode) {
+    const sp  = new URLSearchParams();
+    const dur = parseInt(config.duration, 10);
+    sp.set('mode', mode);
+    sp.set('duration', String(dur > 0 ? dur : (mode === 'gratitude' ? 120 : 300)));
+    if (config.idx != null) sp.set('idx', String(config.idx));
+    return `players/session.html?${sp}`;
+  }
+  const params = new URLSearchParams(config);
+  return `players/${playerType}.html${params.toString() ? '?' + params : ''}`;
+}
+
 function launchPlayer(playerType, config = {}) {
   if (['viz-quick','viz-10min','viz-3min','visual-countdown'].includes(playerType)) {
     LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
@@ -58,8 +79,7 @@ function launchPlayer(playerType, config = {}) {
   const w    = 1024, h = 768;
   const left = (screen.width  - w) / 2;
   const top  = (screen.height - h) / 2;
-  const params = new URLSearchParams(config);
-  const url    = `players/${playerType}.html${params.toString() ? '?' + params : ''}`;
+  const url = _resolvePlayerUrl(playerType, config);
   window.open(url, `ci_player_${playerType}`,
     `width=${w},height=${h},left=${left},top=${top},resizable=yes,menubar=no,toolbar=no,location=no,status=no`);
 }
@@ -368,8 +388,7 @@ function launchVizInline(playerType, params = {}, slotId = 'vizInlineSlot') {
   const frame = document.createElement('iframe');
   frame.className = 'viz-inline-frame';
   frame.id  = 'vizInlineFrame';
-  const qs  = new URLSearchParams(params).toString();
-  frame.src = `players/${playerType}.html${qs ? '?' + qs : ''}`;
+  frame.src = _resolvePlayerUrl(playerType, params);
   frame.allow = 'autoplay';
 
   wrap.appendChild(closeBtn);
