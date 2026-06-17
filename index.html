@@ -4517,7 +4517,7 @@ input, textarea, select {
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Perfect 50% / 50% symmetric split */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; /* Hard 50% / 50% — minmax(0,..) stops wide content blowing out a track */
     gap: 32px !important;
     max-width: 1200px !important;
     width: 100% !important;
