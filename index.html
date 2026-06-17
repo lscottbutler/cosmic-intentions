@@ -4524,8 +4524,10 @@ input, textarea, select {
   position: relative;
   width: 100%;
   aspect-ratio: 9 / 16;
-  border: 22px solid #7C7C7C;          /* thick grey matte frame — from mockup */
-  border-radius: 6px;
+  border-style: solid;
+  border-color: #6A6A6A;               /* grey matte — sampled from skeleton PNG */
+  border-width: 50px 46px 138px 46px;  /* weighted-bottom gallery mat (top/sides/bottom) */
+  border-radius: 4px;
   margin: 0 auto 24px auto;
   box-sizing: border-box;
   overflow: hidden;
@@ -4682,7 +4684,7 @@ input, textarea, select {
   .ambient-video-wrapper {
     width: 100% !important;
     max-width: 320px !important; /* Scale down smoothly while maintaining 9:16 bounds */
-    border-width: 14px !important;  /* lighter matte on small screens */
+    border-width: 34px 30px 92px 30px !important;  /* scaled weighted mat on small screens */
     margin: 0 auto !important;
   }
 }
