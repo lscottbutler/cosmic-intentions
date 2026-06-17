@@ -432,6 +432,28 @@ function openVisionPlayer() {
   else if (typeof launchPlayer === 'function')   launchPlayer('viz-quick', { idx });
 }
 
+/* Populate the yellow/blue goal trading card for the selected goal:
+   vision image, up to 5 affirmation bars, and the goal number. */
+function renderGoalCard(idx) {
+  const card = document.getElementById('goalCard');
+  if (!card) return;
+  const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
+  if (!intention) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  const imgEl = document.getElementById('gcImage');
+  if (imgEl) imgEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
+
+  const affs = ((intention.mindset && intention.mindset.affirmations && intention.mindset.affirmations.length)
+    ? intention.mindset.affirmations
+    : [intention.title]).slice(0, 5);
+  const wrap = document.getElementById('gcAffirmations');
+  if (wrap) wrap.innerHTML = affs.map(a => `<div class="goal-card-aff">${esc(a)}</div>`).join('');
+
+  const badge = document.getElementById('gcBadge');
+  if (badge) badge.textContent = String(idx + 1);
+}
+
 function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
   const txtEl = document.getElementById('pbSlideText');
@@ -525,10 +547,11 @@ async function fetchGoalImage(idx, title, opts = {}) {
     intentions[idx].imageUrl = url || `data:image/png;base64,${b64}`;
     await saveIntentions();
     // If this goal's player is on screen, paint the new image in immediately.
+    const onScreen = typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx;
     const stageImg = document.getElementById('pbStageImg');
-    if (stageImg && typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx) {
-      stageImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
-    }
+    if (stageImg && onScreen) stageImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
+    const cardImg = document.getElementById('gcImage');
+    if (cardImg && onScreen) cardImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
     if (!silent) toast('Vision image ready ✓', 'success');
   } catch(e) {
     console.error('Image generation failed:', e);
