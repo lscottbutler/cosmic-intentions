@@ -50,16 +50,18 @@ function seedMindsetSlides(idx, source = 'affirmations') {
    Fully reversible: remove a key (or the whole map) to fall back to the old file.
    viz-quick keeps its session/unlock modal and is intentionally NOT piloted yet. */
 const SESSION_PILOT = {
-  'gratitude':        'gratitude',
-  'meditation-timer': 'meditation',
+  'gratitude':        { mode: 'gratitude',     duration: 120 },
+  'meditation-timer': { mode: 'meditation' },                  // duration comes from config
+  'viz-3min':         { mode: 'visualization', duration: 180 }, // was a dangling key (no file) — now fixed
+  'viz-10min':        { mode: 'visualization', duration: 600 },
 };
 function _resolvePlayerUrl(playerType, config = {}) {
-  const mode = SESSION_PILOT[playerType];
-  if (mode) {
+  const p = SESSION_PILOT[playerType];
+  if (p) {
     const sp  = new URLSearchParams();
-    const dur = parseInt(config.duration, 10);
-    sp.set('mode', mode);
-    sp.set('duration', String(dur > 0 ? dur : (mode === 'gratitude' ? 120 : 300)));
+    const dur = parseInt(config.duration, 10) || p.duration || 300;
+    sp.set('mode', p.mode);
+    sp.set('duration', String(dur));
     if (config.idx != null) sp.set('idx', String(config.idx));
     return `players/session.html?${sp}`;
   }
