@@ -2875,9 +2875,12 @@ input, textarea, select {
   max-width: 720px;
   margin: 32px auto 0;
 }
-/* Entrepreneur Library loop player (Column B) — show the whole card, not a crop */
-.ent-slideshow.ent-lib-player { aspect-ratio: 7 / 5; }
-.ent-slideshow.ent-lib-player .ent-slide { background-size: contain; background-color: #000; }
+/* Entrepreneur Library loop player (Column B) — 16:9 card in a black frame with footer label */
+.ent-lib-card { background:#0a0a0a; border-radius:20px; padding:14px 14px 0; margin-top:16px; }
+.ent-slideshow.ent-lib-player { aspect-ratio:16/9; margin-top:0; border-radius:10px; }
+.ent-slideshow.ent-lib-player .ent-slide { background-size:contain; background-color:#000; }
+.ent-lib-footer { color:#fff; text-align:center; font-family:var(--vault-mono);
+  font-weight:700; letter-spacing:3px; font-size:11px; padding:14px 6px; white-space:nowrap; }
 
 /* ── HOME PAGE — MOBILE ─────────────────────────────────── */
 @media (max-width: 760px) {
@@ -6224,8 +6227,11 @@ input, textarea, select {
             </div>
             <div id="gratInlineSlot"></div>
 
-            <!-- ENTREPRENEUR LIBRARY — simple image-loop player, directly below the Gratitude dropdown -->
-            <div class="ent-slideshow ent-lib-player"></div>
+            <!-- ENTREPRENEUR LIBRARY — image-loop player in a black framed card, below the Gratitude dropdown -->
+            <div class="ent-lib-card">
+              <div class="ent-slideshow ent-lib-player"></div>
+              <div class="ent-lib-footer">ENTREPRENEUR LIBRARY</div>
+            </div>
 
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
