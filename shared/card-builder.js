@@ -517,7 +517,12 @@ async function fetchGoalImage(idx, title, opts = {}) {
     if (!res.ok) throw new Error(`generate ${res.status}`);
     const { b64 } = await res.json();
     if (!b64 || !intentions[idx]) return;
-    intentions[idx].imageUrl = `data:image/png;base64,${b64}`;
+    // Store in Supabase Storage (cross-device); fall back to inline data URL.
+    let url = null;
+    if (typeof uploadVisionImage === 'function') {
+      url = await uploadVisionImage(intentions[idx].id, b64);
+    }
+    intentions[idx].imageUrl = url || `data:image/png;base64,${b64}`;
     await saveIntentions();
     // If this goal's player is on screen, paint the new image in immediately.
     const stageImg = document.getElementById('pbStageImg');
@@ -545,9 +550,17 @@ async function backfillGoalImages() {
   try {
     for (let i = 0; i < intentions.length; i++) {
       const intn = intentions[i];
-      if (!intn || intn.imageUrl || intn._imgLoading || !intn.title) continue;
-      await fetchGoalImage(i, intn.title, { silent: true });
-      await new Promise(r => setTimeout(r, 500)); // gentle throttle between generations
+      if (!intn || intn._imgLoading || !intn.title) continue;
+      if (!intn.imageUrl) {
+        // No image yet — generate one (uploads to Storage inside fetchGoalImage).
+        await fetchGoalImage(i, intn.title, { silent: true });
+        await new Promise(r => setTimeout(r, 500)); // gentle throttle between generations
+      } else if (intn.imageUrl.startsWith('data:') && typeof uploadVisionImage === 'function') {
+        // Existing local-only image — migrate it to Storage for cross-device.
+        const url = await uploadVisionImage(intn.id, intn.imageUrl.split(',')[1]);
+        if (url) { intn.imageUrl = url; await saveIntentions(); }
+        await new Promise(r => setTimeout(r, 150));
+      }
     }
   } finally {
     _imgBackfillRunning = false;

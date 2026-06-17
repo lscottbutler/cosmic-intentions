@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617_gold5"></script>
+<script src="shared/card-builder.js?v=20260617_gold6"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -8574,10 +8574,35 @@ async function syncIntentionsToSupabase() {
     start_date:  intention.startDate   || null,
     the_map:     intention.theMap      || null,
     bbfw:        intention.bbfw        || null,
+    // Only persist a lightweight Storage URL — never a base64 data: URL.
+    image_url:   (intention.imageUrl && !intention.imageUrl.startsWith('data:')) ? intention.imageUrl : null,
     updated_at:  new Date().toISOString()
   }));
-  const { error } = await sb.from('intentions').upsert(rows, { onConflict: 'id' });
+  let { error } = await sb.from('intentions').upsert(rows, { onConflict: 'id' });
+  if (error && /image_url/i.test(error.message)) {
+    // image_url column not added yet — retry without it so other fields still save.
+    const stripped = rows.map(({ image_url, ...r }) => r);
+    ({ error } = await sb.from('intentions').upsert(stripped, { onConflict: 'id' }));
+  }
   if (error) throw new Error(error.message);
+}
+
+/* Upload a generated vision image to Supabase Storage; returns the public
+   URL (small, cross-device) or null if Storage isn't set up yet. */
+async function uploadVisionImage(intentionId, b64) {
+  if (!currentUser || !sb || !b64 || !intentionId) return null;
+  try {
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const path  = `${currentUser.id}/${intentionId}.png`;
+    const { error } = await sb.storage.from('vision-images')
+      .upload(path, bytes, { contentType: 'image/png', upsert: true });
+    if (error) throw error;
+    const { data } = sb.storage.from('vision-images').getPublicUrl(path);
+    return data?.publicUrl || null;
+  } catch(e) {
+    console.warn('Vision image upload failed:', e.message);
+    return null;
+  }
 }
 
 async function syncIntentionsFromSupabase() {
@@ -8603,8 +8628,8 @@ async function syncIntentionsFromSupabase() {
         const prevBbfw = prev.bbfw;
         return hydrateIntent({
           ...row,
-          imageUrl:     prev.imageUrl     || null,
-          imageOptions: prev.imageOptions || (prev.imageUrl ? [prev.imageUrl] : null),
+          imageUrl:     row.image_url     || prev.imageUrl || null,
+          imageOptions: prev.imageOptions || ((row.image_url || prev.imageUrl) ? [row.image_url || prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
           theMap:       _hasTheMap(rowMap) ? rowMap : (_hasTheMap(prevMap) ? _parseJsonField(prevMap) : null),
           bbfw:         _hasBbfw(rowBbfw) ? rowBbfw : (_hasBbfw(prevBbfw) ? _parseJsonField(prevBbfw) : null),
