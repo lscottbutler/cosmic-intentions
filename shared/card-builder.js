@@ -420,6 +420,14 @@ function stopSurgicalVisualLoop() {
   ActiveVisualPlayer.timer = null;
 }
 
+/* Tap the Column A player → launch full-screen viz for the selected goal,
+   seeding its affirmations as the slide context. */
+function openVisionPlayer() {
+  const idx = (typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx != null) ? selectedVaultIdx : 0;
+  if (typeof launchQuickViz === 'function')      launchQuickViz(null, idx);
+  else if (typeof launchPlayer === 'function')   launchPlayer('viz-quick', { idx });
+}
+
 function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
   const txtEl = document.getElementById('pbSlideText');

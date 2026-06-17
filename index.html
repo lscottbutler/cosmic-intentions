@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617_gold2"></script>
+<script src="shared/card-builder.js?v=20260617_gold3"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -4533,6 +4533,50 @@ input, textarea, select {
   flex-direction: column;
   background: #000;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ambient-video-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+}
+.ambient-video-wrapper:focus-visible {
+  outline: 2px solid #F5A623;
+  outline-offset: 3px;
+}
+
+/* tap-to-play affordance over the vision image */
+.player-tap-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.25s ease;
+  pointer-events: none; /* clicks fall through to the wrapper */
+}
+.ambient-video-wrapper:hover .player-tap-overlay,
+.ambient-video-wrapper:focus-visible .player-tap-overlay {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.3);
+}
+.player-play-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px; /* optically center the triangle */
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
 /* TOP — vision image zone (gradient base shows if no goal image) */
@@ -6145,9 +6189,15 @@ input, textarea, select {
       <aside class="vault-sidebar" id="vaultSidebar">
 
         <!-- AMBIENT VISION PLAYER — goal image + looping affirmation caption, top of Column A -->
-        <div class="ambient-video-wrapper">
+        <div class="ambient-video-wrapper" role="button" tabindex="0"
+          aria-label="Open full-screen visualization for this intention"
+          onclick="openVisionPlayer()"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openVisionPlayer();}">
           <div class="player-stage">
             <div class="player-stage-img" id="pbStageImg"></div>
+            <div class="player-tap-overlay" aria-hidden="true">
+              <div class="player-play-btn">▶</div>
+            </div>
           </div>
           <div class="player-divider"></div>
           <div class="player-caption">
