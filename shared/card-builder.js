@@ -410,9 +410,8 @@ function showAddForm() {
 }
 
 /* ── COLUMN A AMBIENT AFFIRMATION LOOP ───────────────────
-   Cycles the selected goal's affirmations through the PNG
-   player's centered black caption box (#pbSlideText).
-   Silent — text only, no TTS. */
+   Cycles the selected goal's affirmations through the phone
+   player's caption (#ppSlideText). Silent — text only, no TTS. */
 const ActiveVisualPlayer = { currentIdx: 0, timer: null };
 
 function stopSurgicalVisualLoop() {
@@ -434,18 +433,15 @@ function openVisionPlayer() {
 
 function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
-  // Drives both the vision player (#pbSlideText) and the phone player (#ppSlideText).
-  const txtEls = ['pbSlideText', 'ppSlideText'].map(id => document.getElementById(id)).filter(Boolean);
+  // Drives the phone player (#ppSlideText / #ppScreenImg).
+  const txtEls = [document.getElementById('ppSlideText')].filter(Boolean);
   if (!txtEls.length) return;
   const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
   if (!intention) return;
 
-  // Paint this goal's vision image into both players (CSS fallback shows if none yet).
-  const url = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
-  ['pbStageImg', 'ppScreenImg'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.backgroundImage = url;
-  });
+  // Paint this goal's vision image into the phone screen (CSS fallback shows if none yet).
+  const screenEl = document.getElementById('ppScreenImg');
+  if (screenEl) screenEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
 
   // Backfill a vision image for this goal on the spot if it has none yet.
   if (!intention.imageUrl && !intention._imgLoading && typeof fetchGoalImage === 'function') {
@@ -534,7 +530,7 @@ async function fetchGoalImage(idx, title, opts = {}) {
     const onScreen = typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx;
     if (onScreen) {
       const u = `url("${intentions[idx].imageUrl}")`;
-      ['pbStageImg', 'ppScreenImg', 'bsDvbImg'].forEach(id => {
+      ['ppScreenImg', 'bsDvbImg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.backgroundImage = u;
       });
