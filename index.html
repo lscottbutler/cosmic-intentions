@@ -4513,6 +4513,70 @@ input, textarea, select {
 }
 .bs-nav-btn:hover { border-color: #888888; color: #EFEFEF; }
 
+/* ── SYMMETRIC 50/50 DESKTOP GRID ───────────────────── */
+@media (min-width: 768px) {
+  .vault-layout {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Perfect 50% / 50% symmetric split */
+    gap: 32px !important;
+    max-width: 1200px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 24px !important;
+    align-items: start !important;
+  }
+
+  /* Reset column containers to fill their respective 50% slot bounds dynamically */
+  .vault-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
+    max-height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
+    position: sticky !important;
+    top: var(--hdr) !important;
+    overflow-y: auto !important;
+    border-right: 1px solid var(--border) !important;
+  }
+
+  .vault-main {
+    width: 100% !important;
+    height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
+    max-height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
+    overflow-y: auto !important;
+    padding: 0 !important;
+  }
+
+  /* Force the Vertical 9:16 Visual Video Player to stand elegantly inside Column A */
+  .ambient-video-wrapper {
+    width: 100% !important;
+    max-width: 480px !important;
+    aspect-ratio: 9 / 16 !important;
+    margin: 0 auto 24px auto !important;
+    border: 14px solid #333333 !important; /* Bold uniform framing matte border */
+    border-radius: 8px !important;
+    background: #000000 !important;
+    overflow: hidden !important;
+  }
+}
+
+/* ── MOBILE COLLAPSE FALLBACK (< 768px) ─────────────── */
+@media (max-width: 767px) {
+  .vault-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    padding: 0 16px !important;
+  }
+
+  .ambient-video-wrapper {
+    width: 100% !important;
+    max-width: 320px !important; /* Scale down smoothly while maintaining 9:16 bounds */
+    aspect-ratio: 9 / 16 !important;
+    margin: 0 auto !important;
+  }
+}
+
 /* ── MOBILE ─────────────────────────────────────────── */
 @media (max-width: 760px) {
   .vault-layout { flex-direction: column; }
