@@ -11,7 +11,7 @@
 <script src="shared/content-bank.js?v=20260611a"></script>
 <script src="shared/community.js?v=20260611a"></script>
 <script src="shared/activity.js?v=20260611a"></script>
-<script src="shared/card-builder.js?v=20260617_gold7"></script>
+<script src="shared/card-builder.js?v=20260617_gold8"></script>
 <script src="shared/mission-control.js?v=20260611a"></script>
 <script src="shared/weekly-focus.js?v=20260611a"></script>
 <script src="shared/today.js?v=20260612c"></script>
@@ -4694,6 +4694,71 @@ input, textarea, select {
   justify-content: center;
 }
 
+/* ── PHONE PLAYER (Column A) ─────────────────────────────
+   Blue body, yellow screen showing the goal's vision image +
+   cycling affirmation, black home button launches the viz. */
+.phone-player {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 24px auto;
+  aspect-ratio: 2160 / 3840;           /* matches the skeleton */
+  background: #1B6FCD;                  /* blue body */
+  border-radius: 36px;
+  padding: 3.2% 4.5% 0;
+  box-sizing: border-box;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+}
+.phone-screen {
+  position: relative;
+  width: 100%;
+  height: 77%;
+  background: #CDC71B;                  /* yellow screen (shows until an image loads) */
+  border-radius: 16px;
+  overflow: hidden;
+}
+.phone-screen-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.6s ease;
+}
+.phone-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 44px 16px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+  color: #FFFFFF;
+  font-size: clamp(12px, 3.3vw, 16px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.4;
+  text-align: center;
+}
+.phone-caption span { display: inline-block; transition: opacity 0.4s ease; }
+.phone-home {
+  position: absolute;
+  left: 50%; bottom: 3.5%;
+  transform: translateX(-50%);
+  width: 23%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000000;
+  border: 5px solid #6A6A6A;
+  color: #FFFFFF;
+  font-size: clamp(16px, 5vw, 26px);
+  padding-left: 3px;                    /* optically center the triangle */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.phone-home:hover  { transform: translateX(-50%) scale(1.06); box-shadow: 0 0 0 4px rgba(0,0,0,0.15); }
+.phone-home:active { transform: translateX(-50%) scale(0.96); }
+
 /* ── SYMMETRIC 50/50 DESKTOP GRID ───────────────────── */
 @media (min-width: 768px) {
   .vault-layout {
@@ -6256,10 +6321,14 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- PLAYER SKELETON (TEST) — yellow/blue vertical phone skeleton, below the vision player -->
-        <img src="images/player-psd-mockups/yellow-blue-vertical-skeleton.png?v=20260617"
-          alt="Yellow/blue vertical player skeleton (test)"
-          style="display:block;width:100%;max-width:480px;margin:0 auto 24px auto;border-radius:6px;" />
+        <!-- PHONE PLAYER — vision image on screen, cycling affirmation, home button launches the viz -->
+        <div class="phone-player">
+          <div class="phone-screen">
+            <div class="phone-screen-img" id="ppScreenImg"></div>
+            <div class="phone-caption"><span id="ppSlideText">I AM exactly who I was born to become.</span></div>
+          </div>
+          <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
+        </div>
 
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>

@@ -456,14 +456,18 @@ function renderGoalCard(idx) {
 
 function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
-  const txtEl = document.getElementById('pbSlideText');
-  if (!txtEl) return;
+  // Drives both the vision player (#pbSlideText) and the phone player (#ppSlideText).
+  const txtEls = ['pbSlideText', 'ppSlideText'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!txtEls.length) return;
   const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
   if (!intention) return;
 
-  // Top zone = this goal's vision image (CSS gradient shows if none yet).
-  const imgEl = document.getElementById('pbStageImg');
-  if (imgEl) imgEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
+  // Paint this goal's vision image into both players (CSS fallback shows if none yet).
+  const url = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
+  ['pbStageImg', 'ppScreenImg'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.backgroundImage = url;
+  });
 
   // Backfill a vision image for this goal on the spot if it has none yet.
   if (!intention.imageUrl && !intention._imgLoading && typeof fetchGoalImage === 'function') {
@@ -480,8 +484,10 @@ function runSurgicalVisualLoop(idx) {
   function cycle() {
     if (ActiveVisualPlayer.currentIdx >= statements.length) ActiveVisualPlayer.currentIdx = 0;
     const statement = statements[ActiveVisualPlayer.currentIdx];
-    txtEl.style.opacity = '0';
-    setTimeout(() => { txtEl.textContent = statement || ''; txtEl.style.opacity = '1'; }, 300);
+    txtEls.forEach(el => {
+      el.style.opacity = '0';
+      setTimeout(() => { el.textContent = statement || ''; el.style.opacity = '1'; }, 300);
+    });
     ActiveVisualPlayer.currentIdx++;
     ActiveVisualPlayer.timer = setTimeout(cycle, 6000); // silent 6s hold per slide
   }
@@ -548,10 +554,13 @@ async function fetchGoalImage(idx, title, opts = {}) {
     await saveIntentions();
     // If this goal's player is on screen, paint the new image in immediately.
     const onScreen = typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx === idx;
-    const stageImg = document.getElementById('pbStageImg');
-    if (stageImg && onScreen) stageImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
-    const cardImg = document.getElementById('gcImage');
-    if (cardImg && onScreen) cardImg.style.backgroundImage = `url("${intentions[idx].imageUrl}")`;
+    if (onScreen) {
+      const u = `url("${intentions[idx].imageUrl}")`;
+      ['pbStageImg', 'ppScreenImg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.backgroundImage = u;
+      });
+    }
     if (!silent) toast('Vision image ready ✓', 'success');
   } catch(e) {
     console.error('Image generation failed:', e);
