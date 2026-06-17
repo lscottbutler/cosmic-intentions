@@ -432,28 +432,6 @@ function openVisionPlayer() {
   else if (typeof launchPlayer === 'function')   launchPlayer('viz-quick', { idx });
 }
 
-/* Populate the yellow/blue goal trading card for the selected goal:
-   vision image, up to 5 affirmation bars, and the goal number. */
-function renderGoalCard(idx) {
-  const card = document.getElementById('goalCard');
-  if (!card) return;
-  const intention = (typeof intentions !== 'undefined' && intentions) ? intentions[idx] : null;
-  if (!intention) { card.style.display = 'none'; return; }
-  card.style.display = '';
-
-  const imgEl = document.getElementById('gcImage');
-  if (imgEl) imgEl.style.backgroundImage = intention.imageUrl ? `url("${intention.imageUrl}")` : '';
-
-  const affs = ((intention.mindset && intention.mindset.affirmations && intention.mindset.affirmations.length)
-    ? intention.mindset.affirmations
-    : [intention.title]).slice(0, 5);
-  const wrap = document.getElementById('gcAffirmations');
-  if (wrap) wrap.innerHTML = affs.map(a => `<div class="goal-card-aff">${esc(a)}</div>`).join('');
-
-  const badge = document.getElementById('gcBadge');
-  if (badge) badge.textContent = String(idx + 1);
-}
-
 function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
   // Drives both the vision player (#pbSlideText) and the phone player (#ppSlideText).
