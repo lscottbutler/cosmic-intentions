@@ -6095,9 +6095,6 @@ input, textarea, select {
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
-        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of column -->
-        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
-
         <!-- MILESTONE BAR — top of Column B (this column renders on the right after the A/B swap) -->
         <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
 
@@ -6242,6 +6239,9 @@ input, textarea, select {
 
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
+
+        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of Column A -->
+        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
@@ -10142,11 +10142,6 @@ function buildWorkspaceHeader(intent, idx) {
         <div class="bs-num-circle" style="top:auto;bottom:8%;left:24%;right:auto;">${idx + 1}</div>
         <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
         <button class="bs-close-btn" style="bottom:8%;right:24%;" onclick="closeVaultBuildSheet()" title="Close">✕</button>
-      </div>
-      <div class="bs-header" style="position:relative;">
-        <div class="bs-title-col">
-          <div class="bs-intention-title">${esc(intent.title)}</div>
-        </div>
       </div>
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
