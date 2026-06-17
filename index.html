@@ -2875,6 +2875,9 @@ input, textarea, select {
   max-width: 720px;
   margin: 32px auto 0;
 }
+/* Entrepreneur Library loop player (Column B) — show the whole card, not a crop */
+.ent-slideshow.ent-lib-player { aspect-ratio: 7 / 5; }
+.ent-slideshow.ent-lib-player .ent-slide { background-size: contain; background-color: #000; }
 
 /* ── HOME PAGE — MOBILE ─────────────────────────────────── */
 @media (max-width: 760px) {
@@ -6220,6 +6223,9 @@ input, textarea, select {
               </div>
             </div>
             <div id="gratInlineSlot"></div>
+
+            <!-- ENTREPRENEUR LIBRARY — simple image-loop player, directly below the Gratitude dropdown -->
+            <div class="ent-slideshow ent-lib-player"></div>
 
           </div><!-- end acc-list -->
           </div><!-- end cosmicLibrary-body -->
