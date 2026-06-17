@@ -8634,10 +8634,11 @@ async function syncIntentionsToSupabase() {
     // Only persist a lightweight Storage URL — never a base64 data: URL.
     image_url:   (intention.imageUrl && !intention.imageUrl.startsWith('data:')) ? intention.imageUrl : null,
     roadmap_ai:  intention.roadmapAI   || null,
+    active_danger_zone: intention.activeDangerZone || null,
     updated_at:  new Date().toISOString()
   }));
   // Resilient upsert: if an optional column doesn't exist yet, drop it and retry.
-  const OPTIONAL_COLS = ['image_url', 'roadmap_ai'];
+  const OPTIONAL_COLS = ['image_url', 'roadmap_ai', 'active_danger_zone'];
   let payload = rows;
   let { error } = await sb.from('intentions').upsert(payload, { onConflict: 'id' });
   let guard = 0;
@@ -8695,7 +8696,7 @@ async function syncIntentionsFromSupabase() {
           imageOptions: prev.imageOptions || ((row.image_url || prev.imageUrl) ? [row.image_url || prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
           roadmapAI:        _parseJsonField(row.roadmap_ai) || prev.roadmapAI || null,
-          activeDangerZone: prev.activeDangerZone || row.active_danger_zone || '',
+          activeDangerZone: row.active_danger_zone || prev.activeDangerZone || '',
           theMap:       _hasTheMap(rowMap) ? rowMap : (_hasTheMap(prevMap) ? _parseJsonField(prevMap) : null),
           bbfw:         _hasBbfw(rowBbfw) ? rowBbfw : (_hasBbfw(prevBbfw) ? _parseJsonField(prevBbfw) : null),
         });
