@@ -4534,7 +4534,7 @@ input, textarea, select {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #0C0C0C;
+  background: #FFFFFF;
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.8), 0 18px 50px rgba(0, 0, 0, 0.55);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -4588,7 +4588,7 @@ input, textarea, select {
   flex: 0 0 55%;
   min-height: 0;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 32%, #2a3d57 0%, #16213a 65%, #0a0e1a 100%);
+  background: #FFFFFF;  /* gallery white — image sits on white */
 }
 .player-stage-img {
   position: absolute;
@@ -4597,19 +4597,19 @@ input, textarea, select {
   background-position: center;
   transition: opacity 0.6s ease;
 }
-.player-stage::after {                  /* fade image into the caption */
+.player-stage::after {                  /* fade image into the white caption */
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 40%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
   pointer-events: none;
 }
 
-/* BOTTOM — affirmation text on the same black surface (continuous, no divider) */
+/* BOTTOM — affirmation text on white (gallery look, black text) */
 .player-caption {
   flex: 1 1 45%;
-  background: #0C0C0C;
+  background: #FFFFFF;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4619,7 +4619,7 @@ input, textarea, select {
   box-sizing: border-box;
 }
 .player-white-text {
-  color: #FFFFFF;
+  color: #111111;  /* black text on gallery-white card */
   font-size: clamp(14px, 4.2vw, 18px);
   font-weight: 700;
   line-height: 1.5;
@@ -6256,14 +6256,10 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- GOAL TRADING CARD — vision image + affirmation bars + number, below the grey player -->
-        <div class="goal-card" id="goalCard" style="display:none;">
-          <div class="goal-card-inner">
-            <div class="goal-card-img" id="gcImage"></div>
-            <div id="gcAffirmations" class="goal-card-affs"></div>
-            <div class="goal-card-badge" id="gcBadge">1</div>
-          </div>
-        </div>
+        <!-- PLAYER SKELETON (TEST) — yellow/blue vertical phone skeleton, below the vision player -->
+        <img src="images/player-psd-mockups/yellow-blue-vertical-skeleton.png?v=20260617"
+          alt="Yellow/blue vertical player skeleton (test)"
+          style="display:block;width:100%;max-width:480px;margin:0 auto 24px auto;border-radius:6px;" />
 
         <!-- Block: home-video-1 — My Notes box, top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
