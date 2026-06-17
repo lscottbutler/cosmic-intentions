@@ -10139,14 +10139,14 @@ function buildWorkspaceHeader(intent, idx) {
           <div class="phone-screen-img" id="ppScreenImg" style="background-image:${intent.imageUrl ? `url('${intent.imageUrl}')` : 'none'}"></div>
           <div class="phone-caption"><span id="ppSlideText">${esc(intent.title)}</span></div>
         </div>
+        <div class="bs-num-circle" style="top:auto;bottom:8%;left:24%;right:auto;">${idx + 1}</div>
         <button class="phone-home" aria-label="Play full-screen visualization" onclick="openVisionPlayer()">▶</button>
+        <button class="bs-close-btn" style="bottom:8%;right:24%;" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div class="bs-header" style="position:relative;">
         <div class="bs-title-col">
           <div class="bs-intention-title">${esc(intent.title)}</div>
         </div>
-        <div class="bs-num-circle">${idx + 1}</div>
-        <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
