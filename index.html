@@ -5920,153 +5920,9 @@ input, textarea, select {
         <!-- MILESTONE BAR — top of Column B (this column renders on the right after the A/B swap) -->
         <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
 
-        <!-- AFFIRMATION CARD ENGINE — wrestling card wired to affirmation loop -->
-        <div id="affirmation-card-container" class="card-asset-container">
-          <div class="collectible-card">
-            <div class="card-art-frame">
-              <img id="dashboard-card-image" src="images/trough/trough001.jpg" alt="Wrestling Figures Mural" class="card-art-image" onerror="this.style.display='none'" />
-            </div>
-            <div class="card-content-area">
-              <p id="dashboard-affirmation-target" class="card-dynamic-text">I attract success with every thought and action.</p>
-            </div>
-          </div>
-        </div>
         <!-- hidden ticker keeps JS targeting safe -->
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
-        <!-- COSMIC LIBRARY banner — HIDDEN: all players removed, rebuilding from scratch -->
-        <div class="brand-banner" style="margin-top:16px;display:none;">
-          <span class="brand-banner-text">COSMIC LIBRARY</span>
-        </div>
-
-        <!-- ACTION PANEL — Cosmic Library: HIDDEN, all players removed -->
-        <div id="actionPanel" style="margin-top:0;display:none;">
-        <div style="padding:0;background:#252525;border-radius:8px;overflow:hidden;">
-          <div id="cosmicLibrary-body" style="padding:8px 12px 4px;">
-          <div class="acc-list" id="vizAccList">
-
-            <!-- ⚡ TAKE ACTION -->
-            <div class="acc-item take-action-acc">
-              <button class="acc-trigger take-action-trigger" id="accTrig-takeaction" onclick="toggleAcc('takeaction')">
-                <span class="acc-svg-circle" style="background:#C41E3A;">
-                  <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#FFFFFF"/>
-                  </svg>
-                </span>
-                <span class="acc-label take-action-label">Take Action</span>
-                <span class="acc-arrow" id="accArrow-takeaction">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-takeaction">
-                <div class="acc-panel-inner take-action-panel">
-                  <div class="ta-row" onclick="launchVizInline('viz-quick',{},'taInlineSlot')">
-                    <div class="ta-row-icon"><svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#FFD700" stroke-width="2" fill="none"/><path d="M12 6v6l4 2" stroke="#FFD700" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
-                    <div class="ta-row-text"><div class="ta-row-title">Affirmations</div><div class="ta-row-sub">Your goal-specific vision board session</div></div>
-                    <div class="ta-row-arrow">→</div>
-                  </div>
-                  <div class="ta-row" onclick="launchGratitudeInline()">
-                    <div class="ta-row-icon"><svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#E87070" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
-                    <div class="ta-row-text"><div class="ta-row-title">Gratitude</div><div class="ta-row-sub">Goal-specific gratitude practice</div></div>
-                    <div class="ta-row-arrow">→</div>
-                  </div>
-                  <div class="ta-row ta-row-med-toggle" onclick="toggleTaMedGrid()">
-                    <div class="ta-row-icon"><svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M12,6A3,3,0,1,0,9,3,3,3,0,0,0,12,6Zm11.893,7.943a1.5,1.5,0,0,0-1.95-.836l-1.37.548-2.137-3.206A5.49,5.49,0,0,0,13.859,8H10.141a5.49,5.49,0,0,0-4.577,2.449L3.427,13.655l-1.37-.548A1.5,1.5,0,1,0,.943,15.893l3.63,1.452L8,12.205V18h8V12.2l3.427,5.141,3.63-1.452A1.5,1.5,0,0,0,23.893,13.943ZM19,20H5a2,2,0,0,0,0,4H19a2,2,0,0,0,0-4Z" fill="#7EC8E3"/></svg></div>
-                    <div class="ta-row-text"><div class="ta-row-title">Meditation</div><div class="ta-row-sub">Goal-anchored meditation session</div></div>
-                    <div class="ta-row-arrow" id="taMedArrow">▶</div>
-                  </div>
-                  <div class="ta-med-grid" id="taMedGrid" style="display:none;">
-                    <button class="ta-med-btn" onclick="launchVizInline('meditation-timer',{duration:300},'taInlineSlot')">5 min</button>
-                    <button class="ta-med-btn" onclick="launchVizInline('meditation-timer',{duration:600},'taInlineSlot')">10 min</button>
-                    <button class="ta-med-btn" onclick="launchVizInline('meditation-timer',{duration:900},'taInlineSlot')">15 min</button>
-                    <button class="ta-med-btn" onclick="launchVizInline('meditation-timer',{duration:1200},'taInlineSlot')">20 min</button>
-                  </div>
-                  <div id="taInlineSlot"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Visualization Timers -->
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-timer" onclick="toggleAcc('timer')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 64 64" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M25.334,7.9532C21.141,2.1286,16.2854-0.75,8.1055,5.1562c-7.9529,5.7356-7.1381,11.192-2.8047,17.1934C9.5,14.996,16.748,9.6172,25.334,7.9532z M33.4883,27c-0.1553-3.1524-4.8339-3.1436-4.9766,0l-0.4746,10.2968l-4.0039,7.4336c-1.4668,2.7542,2.4673,5.1706,4.246,2.5978l5.2794-7.6504c0.3027-0.4356,0.4688-0.9708,0.4434-1.543L34,38.1132L33.4883,27z M31.0059,12H31h-0.0078C17.1836,12,6.0176,23.1992,6.0195,37c-0.002,13.8086,11.1641,25,24.9727,25h0.0059h0.0078c13.8068,0,24.9766-11.1914,24.9746-24.9922C55.9824,23.1954,44.8145,12,31.0059,12z M30.9922,54.332c-9.564,0-17.3242-7.7294-17.3242-17.332c0-9.6078,7.7742-17.332,17.3301-17.332h0.0078c9.5718,0,17.3262,7.7486,17.3262,17.3398C48.332,46.5756,40.5994,54.332,30.9922,54.332z M53.8945,5.1562c-8.0764-5.8294-12.9519-3.138-17.2305,2.797c8.5879,1.666,15.834,7.0428,20.0352,14.3944C60.885,16.548,62.0427,11.0284,53.8945,5.1562z" fill="#FFFFFF"/></svg></span>
-                <span class="acc-label">Visualization Timers</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-timer">
-                <div class="acc-panel-inner"><div class="acc-dur-grid" id="accTimerGrid"></div></div>
-              </div>
-            </div>
-
-            <!-- 3-Min Manifest -->
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-viz3" onclick="toggleAcc('viz3')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8z" fill="#FFFFFF"/></svg></span>
-                <span class="acc-label">3-Min Manifest</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-viz3">
-                <div class="acc-panel-inner">
-                  <div class="acc-desc">A focused 3-minute manifestation session with your goals.</div>
-                  <button class="acc-launch-btn" onclick="launchVizInline('viz-3min')">Launch →</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 10-Min Viz -->
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-viz10" onclick="toggleAcc('viz10')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 66 66" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><g fill="#FFFFFF"><path d="M57.8,31.8c-1.6-2-2.9-3.9-3.9-5.6c-0.9-1.6-0.9-3.1-0.9-4c0.2-7-6.5-12.3-13.1-14.2c1.9,2.9,2.9,6.4,2.9,10.1c0,10.5-8.6,19.1-19.1,19.1c-3.9,0-7.5-1.1-10.5-3.1c0.7,5.6,3.4,10.3,7.9,13.9c3.4,2.6,1.9,12.3,2.5,13.5C23.9,62,25.8,65,34.9,65c2.5,0,5.5-0.2,9.1-0.8c0.5-0.1,0.8-0.5,0.8-1v-9c0.5-0.3,2.1-1.1,7.7-1.9c1.3-0.2,2.3-0.7,2.9-1.6c1-1.3,0.7-3.1,0.5-4.3c-0.2-0.9-0.2-0.7,0.3-1.8c0.5-1,1.1-2.2,0.8-3.9c-0.1-0.4-0.2-0.9-0.4-1.4C59.6,38.1,60.6,35.3,57.8,31.8z"/><path d="M29.5,18.1c-1.6-2.3-3.4-4.1-5.8-5.8c-2.4,1.7-4.2,3.4-5.8,5.8c1.7,2.4,3.4,4.1,5.8,5.8C26.1,22.2,27.8,20.5,29.5,18.1z M23.7,21.1c-1.6,0-3-1.3-3-3s1.3-3,3-3c1.6,0,3,1.3,3,3S25.3,21.1,23.7,21.1z"/><path d="M16.7,19.9c-1.4,2.4-2,4.8-0.9,6c1.4,1.4,4.3,0.1,6-0.9C19.8,23.5,18.2,22,16.7,19.9z"/><circle cx="23.7" cy="18.1" r="1"/><path d="M21.9,11.2c-1.7-1-4.6-2.2-6-0.8c-1.2,1.2-0.5,3.6,0.8,6C18.2,14.3,19.8,12.7,21.9,11.2z"/><path d="M31.5,25.9c1.2-1.2,0.5-3.6-0.8-6c-1.5,2.1-3.1,3.6-5.1,5.1C27.9,26.4,30.3,27.1,31.5,25.9z"/><path d="M40.8,18.1C40.8,8.7,33.1,1,23.7,1C14.2,1,6.6,8.7,6.6,18.1c0,9.4,7.7,17.1,17.1,17.1C33.1,35.2,40.8,27.6,40.8,18.1z M14.5,27.3c-2.2-2-1-5.9,1-9.2c-1.8-2.8-3.4-6.8-1-9.2c1.1-1.1,3.2-2,7.2-0.1c0.7,0.3,1.4,0.7,2,1.1c3.3-2.1,7-3.2,9.2-1c2.2,2.2,1,5.9-1,9.2c2.1,3.3,3.2,7,1,9.2c-2.4,2.4-6.4,0.7-9.2-1C20.8,28.1,16.8,29.7,14.5,27.3z"/><path d="M30.6,16.3c1.4-2.4,2-4.8,0.8-6c-1.4-1.4-4.3-0.1-6,0.9C27.5,12.7,29.1,14.2,30.6,16.3z"/></g></svg></span>
-                <span class="acc-label">10-Min Visualization</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-viz10">
-                <div class="acc-panel-inner">
-                  <div class="acc-desc">Deep 10-minute visualization immersion with your goals.</div>
-                  <button class="acc-launch-btn" onclick="launchVizInline('viz-10min')">Launch →</button>
-                </div>
-              </div>
-            </div>
-            <div id="vizInlineSlot"></div>
-
-            <!-- Meditation -->
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-meditation" onclick="toggleAcc('meditation')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M12,6A3,3,0,1,0,9,3,3,3,0,0,0,12,6Zm11.893,7.943a1.5,1.5,0,0,0-1.95-.836l-1.37.548-2.137-3.206A5.49,5.49,0,0,0,13.859,8H10.141a5.49,5.49,0,0,0-4.577,2.449L3.427,13.655l-1.37-.548A1.5,1.5,0,1,0,.943,15.893l3.63,1.452L8,12.205V18h8V12.2l3.427,5.141,3.63-1.452A1.5,1.5,0,0,0,23.893,13.943ZM19,20H5a2,2,0,0,0,0,4H19a2,2,0,0,0,0-4Z" fill="#FFFFFF"/></svg></span>
-                <span class="acc-label">Meditation</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-meditation">
-                <div class="acc-panel-inner">
-                  <div class="acc-med-choice">
-                    <button class="acc-med-type-btn" id="accMedGuided" onclick="accMedType('guided')">🎧 Guided</button>
-                    <button class="acc-med-type-btn" id="accMedUnguided" onclick="accMedType('unguided')">🤫 Unguided</button>
-                  </div>
-                  <div class="acc-dur-grid" id="accMedGrid" style="display:none;flex-wrap:wrap;gap:6px;"></div>
-                </div>
-              </div>
-            </div>
-            <div id="medInlineSlot"></div>
-
-            <!-- Gratitude -->
-            <div class="acc-item">
-              <button class="acc-trigger" id="accTrig-gratitude" onclick="toggleAcc('gratitude')">
-                <span class="acc-svg-circle"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><g transform="matrix(1.0420042,0,0,1.0420042,10616.476,-38730.867)"><path d="m -9947,37737.344 c -21.3424,0.31 -41.9913,11.452 -53.625,31.281 l -70.563,120.344 c -31.874,54.348 10.544,81.727 53.5,110.625 l -28.812,0 c -26.038,0 -47,20.962 -47,47 0,26.038 20.962,47 47,47 l 188.8438,0 c 26.038,0 47,-20.962 47,-47 0,-17.876 -10.6511,-32.085 -24.5,-41.313 -37.851,-25.222 -74.0035,-52.935 -111,-79.406 l 34.625,-59.156 9.9687,13.125 c 9.9837,13.152 26.7379,18.144 41.5937,13.5 7.3696,-2.305 14.2573,-6.289 18.1876,-11.25 l 42.8124,-54.032 c 10.7593,-13.572 8.5091,-33.147 -5.0624,-43.906 -13.5718,-10.76 -33.1781,-8.51 -43.9376,5.063 l -13.5312,17.125 -30.0625,-39.625 c -6.2031,-8.185 -14.6554,-15.99 -22.5,-20.625 c -10.3678,-6.127 -21.7585,-8.914 -32.9375,-8.75 z" transform="translate(0,-448)" fill="#FFFFFF"/><path d="m -8540.1348,38141.648 c 0,18.698 -15.1576,33.856 -33.8554,33.856 -18.6979,0 -33.8554,-15.158 -33.8554,-33.856 0,-18.697 15.1575,-33.855 33.8554,-33.855 18.6978,0 33.8554,15.158 33.8554,33.855 z" transform="matrix(1.6868682,0,0,1.6868682,4591.9528,-27097.881)" fill="#FFFFFF"/></g></svg></span>
-                <span class="acc-label">Gratitude</span><span class="acc-arrow">▶</span>
-              </button>
-              <div class="acc-panel" id="accPanel-gratitude">
-                <div class="acc-panel-inner">
-                  <div class="acc-desc">5-minute gratitude practice to anchor positive energy.</div>
-                  <button class="acc-launch-btn" onclick="launchGratitudeInline()">Launch →</button>
-                </div>
-              </div>
-            </div>
-            <div id="gratInlineSlot"></div>
-
-            <!-- ENTREPRENEUR LIBRARY — image-loop player in a black framed card, below the Gratitude dropdown -->
-            <div class="ent-lib-card">
-              <div class="ent-slideshow ent-lib-player"></div>
-              <div class="ent-lib-footer">ENTREPRENEUR LIBRARY</div>
-            </div>
-
-          </div><!-- end acc-list -->
-          </div><!-- end cosmicLibrary-body -->
-        </div>
-        </div><!-- end actionPanel -->
 
         <!-- PEGBOARD LOOP WIDGET -->
         <div class="pb-loop-card">
@@ -7330,177 +7186,6 @@ input, textarea, select {
   </div>
 </div>
 
-<!-- ── 3-MIN MANIFEST PLAYER ───────────────────────── -->
-<div class="player-modal" id="manifestModal">
-  <div class="manifest-player">
-    <!-- Left: dark -->
-    <div class="manifest-left">
-      <div class="manifest-left-star">✦</div>
-      <div class="manifest-left-title" id="manifestTitle">I AM</div>
-      <div class="manifest-left-counter"><span id="manifestSlideNum">1</span>/15</div>
-    </div>
-    <!-- Right: light blue -->
-    <div class="manifest-right">
-      <div class="manifest-slide-wrap">
-        <div class="manifest-slide" id="manifestSlide">
-          <div class="manifest-heading" id="manifestHeading">Preparing…</div>
-          <div class="manifest-body"   id="manifestBody"></div>
-        </div>
-      </div>
-      <div class="manifest-progress-track">
-        <div class="manifest-progress-fill" id="manifestProgress"></div>
-      </div>
-    </div>
-  </div>
-  <!-- Controls -->
-  <div class="player-controls">
-    <button class="player-ctrl-btn" onclick="manifestPrev()">‹ Back</button>
-    <button class="player-ctrl-btn player-ctrl-close" onclick="closeManifest()">✕ End Session</button>
-    <button class="player-ctrl-btn" onclick="manifestNext()">Next ›</button>
-  </div>
-</div>
-
-<!-- ── ARSENAL PLAYER ────────────────────────────────── -->
-<div id="arsenalOverlay" class="arsenal-overlay">
-  <!-- Blurred ambient background layers -->
-  <img id="arsenalImg0" class="arsenal-img-layer" alt="" style="opacity:0" />
-  <img id="arsenalImg1" class="arsenal-img-layer" alt="" style="opacity:0" />
-
-  <!-- Top bar -->
-  <div class="arsenal-top-bar">
-    <button class="arsenal-top-btn" onclick="arsenalExit()" title="Close">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <button class="arsenal-top-btn" onclick="arsenalExit()" title="Dismiss">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-  </div>
-
-  <!-- Hero vision-still frame (portrait center-stage) -->
-  <div class="arsenal-hero-frame">
-    <img id="arsenalHeroImg0" class="arsenal-hero-img" alt="" src="" style="opacity:0" />
-    <img id="arsenalHeroImg1" class="arsenal-hero-img" alt="" style="opacity:0" />
-  </div>
-
-  <!-- Intention title + cycling affirmation text directly below image -->
-  <div class="arsenal-identity">
-    <div id="arsenalIntentionTitle" class="arsenal-intention-title">Cosmic Intentions</div>
-    <div id="arsenalTextOverlay" class="arsenal-text-overlay"></div>
-  </div>
-
-  <div class="arsenal-spacer"></div>
-
-  <!-- Progress bar -->
-  <div class="arsenal-bottom-section">
-    <div class="arsenal-progress-track">
-      <div id="arsenalProgressFill" class="arsenal-progress-fill"></div>
-    </div>
-  </div>
-
-  <!-- Mode tabs + play controls together at bottom -->
-  <div class="arsenal-mode-bar">
-    <button class="arsenal-mode-btn active" id="arsenalModeVisualization" onclick="arsenalSetMode('visualization')">V</button>
-    <button class="arsenal-mode-btn" id="arsenalModeGratitude"    onclick="arsenalSetMode('gratitude')">G</button>
-    <button class="arsenal-mode-btn" id="arsenalModeAffirmation"  onclick="arsenalSetMode('affirmation')">A</button>
-    <button class="arsenal-mode-btn" id="arsenalModeMeditation"   onclick="arsenalSetMode('meditation')">M</button>
-  </div>
-
-  <!-- Play/pause + flanking controls -->
-  <div class="arsenal-controls">
-    <button class="arsenal-ctrl-secondary" onclick="arsenalExit()" title="Exit">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    </button>
-    <button class="arsenal-play-btn" id="arsenalPauseBtn" onclick="arsenalPause()">
-      <svg id="arsenalPlayIcon" viewBox="0 0 24 24" width="26" height="26" fill="#1A1A1A">
-        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-      </svg>
-    </button>
-    <button class="arsenal-ctrl-secondary" onclick="arsenalExit()" title="Close">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-</div>
-
-<!-- ── COUNTDOWN TIMER OVERLAY ───────────────────────── -->
-<div class="countdown-overlay" id="countdownOverlay">
-  <button class="countdown-close" onclick="closeCountdown()">✕</button>
-  <div class="countdown-intention" id="countdownIntention"></div>
-  <div class="countdown-number" id="countdownNumber">60</div>
-  <div class="countdown-label">seconds</div>
-  <button class="countdown-pause-btn" id="countdownPauseBtn" onclick="toggleCountdownPause()">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="#000"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-  </button>
-</div>
-
-<!-- ── MEDITATION MODAL (inline player) ─────────────── -->
-<div class="med-modal" id="medModal">
-  <button class="med-close-fixed" onclick="closeMeditationModal()">✕</button>
-
-  <!-- SELECT VIEW -->
-  <div class="med-select-view" id="medSelectView">
-    <div class="med-hero" id="medHeroBg"></div>
-    <img class="med-icon-img" src="images/icons/meditations.png" alt="">
-
-    <!-- CHOICE SCREEN: Guided / Unguided -->
-    <div class="med-choice-screen" id="medChoiceScreen">
-      <button class="med-choice-btn" onclick="showMedSubview('guided')">GUIDED</button>
-      <button class="med-choice-btn" onclick="showMedSubview('unguided')">UNGUIDED</button>
-    </div>
-
-    <!-- GUIDED SUBVIEW -->
-    <div class="med-subview" id="medSubGuided">
-      <button class="med-back-btn" onclick="medBackToChoice()">← Back</button>
-      <div class="med-banner">GUIDED MEDITATIONS</div>
-      <div class="med-grid" id="medGridGuided"></div>
-    </div>
-
-    <!-- UNGUIDED SUBVIEW -->
-    <div class="med-subview" id="medSubUnguided">
-      <button class="med-back-btn" onclick="medBackToChoice()">← Back</button>
-      <div class="med-banner">UNGUIDED MEDITATIONS</div>
-      <div class="med-grid" id="medGridUnguided"></div>
-    </div>
-  </div>
-
-  <!-- TIMER VIEW -->
-  <div class="med-timer-view" id="medTimerView">
-    <div class="med-timer-card">
-      <div class="med-timer-image" id="medTimerBg">
-        <div class="med-countdown-circle" id="medCountdownCircle">
-          <div class="med-countdown-num" id="medCountdownNum">—</div>
-        </div>
-      </div>
-      <div class="med-session-label" id="medSessionLabel">Meditation</div>
-      <div class="med-btn-row">
-        <button class="med-ctrl-btn" id="medPauseBtn" onclick="toggleMedPause()">⏸</button>
-        <button class="med-home-btn" onclick="closeMeditationModal()">
-          <svg class="med-home-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        </button>
-        <button class="med-ctrl-btn" onclick="restartMeditation()">↺</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── GRATITUDE INLINE PLAYER ────────────────────────── -->
-<div class="grat-player" id="gratPlayer">
-  <div class="grat-image" id="gratImage"></div>
-  <div class="grat-eyebrow">I am grateful for</div>
-  <div class="grat-label" id="gratLabel">&nbsp;</div>
-  <div class="grat-dots" id="gratDots"></div>
-  <div class="grat-btn-row">
-    <button class="grat-close-btn" onclick="closeGratitudeInline()">✕ Close</button>
-  </div>
-</div>
-
-<!-- ── TIMER PICKER MODAL ─────────────────────────────── -->
-<div class="timer-picker-bg" id="timerPickerBg" onclick="closeTimerPicker(event)">
-  <div class="timer-picker-card">
-    <button class="timer-picker-close" onclick="closeTimerPicker()">✕</button>
-    <div class="timer-picker-title">Choose Duration</div>
-    <div class="timer-picker-grid" id="timerPickerGrid"></div>
-  </div>
-</div>
 
 <!-- ── AUTH MODAL ─────────────────────────────────────── -->
 <div class="modal-bg" id="authModal">
@@ -8528,20 +8213,6 @@ function checkHotStateAlert() {
         Hot State — ${start}:00–${end}:00</div>
       <div style="font-size:11px;color:#C8C8D0;line-height:1.5;margin-bottom:8px;">
         Your high-risk window is active. You pre-wired the plan. Execute it.</div>
-      <div style="display:flex;gap:6px;">
-        <button onclick="launchVizInline('viz-quick',{},'taInlineSlot');document.getElementById('hotStateToast').remove()"
-          style="flex:1;background:#1a1a2e;border:1px solid #3030a0;border-radius:7px;
-          padding:7px 4px;cursor:pointer;font-family:'Roboto Condensed',sans-serif;
-          font-size:9px;font-weight:800;color:#8080FF;letter-spacing:0.8px;">⚡ AFFIRM</button>
-        <button onclick="launchGratitudeInline();document.getElementById('hotStateToast').remove()"
-          style="flex:1;background:#1a0f1a;border:1px solid #600060;border-radius:7px;
-          padding:7px 4px;cursor:pointer;font-family:'Roboto Condensed',sans-serif;
-          font-size:9px;font-weight:800;color:#D080D0;letter-spacing:0.8px;">🙏 GRATITUDE</button>
-        <button onclick="launchVizInline('meditation-timer',{duration:300},'taInlineSlot');document.getElementById('hotStateToast').remove()"
-          style="flex:1;background:#0a1a1a;border:1px solid #006060;border-radius:7px;
-          padding:7px 4px;cursor:pointer;font-family:'Roboto Condensed',sans-serif;
-          font-size:9px;font-weight:800;color:#40C0C0;letter-spacing:0.8px;">🧘 MEDITATE</button>
-      </div>
     </div>
     <button onclick="this.closest('#hotStateToast').remove()"
       style="background:none;border:none;color:#505058;cursor:pointer;font-size:16px;
@@ -9436,47 +9107,6 @@ function renderVaultSidebar() {
             <span class="vin-label">MY ROADMAP</span>
             <span class="vin-arrow">▶</span>
           </button>
-          <button class="vin-row" onclick="launchPlayer('countdown')">
-            <span class="vin-icon"><img src="images/icons/viz-button.png" alt=""></span>
-            <span class="vin-label">VISUALIZATION</span>
-            <span class="vin-arrow">▶</span>
-          </button>
-          <div>
-            <button class="vin-row" onclick="toggleVinMed(${idx})">
-              <span class="vin-icon"><img src="images/icons/meditations.png" alt=""></span>
-              <span class="vin-label">MEDITATION</span>
-              <span class="vin-arrow" id="vinMedArrow-${idx}">▶</span>
-            </button>
-            <div class="vin-sub" id="vinMedSub-${idx}" style="display:none">
-              <button class="vin-sub-btn" onclick="openMeditationModal('guided')">🎧 Guided</button>
-              <button class="vin-sub-btn" onclick="openMeditationModal('unguided')">🤫 Unguided</button>
-            </div>
-          </div>
-          <button class="vin-row" onclick="launchVisualCountdown(180,${idx})">
-            <span class="vin-icon"><img src="images/icons/head-brain.png" alt="" class="vin-invert"></span>
-            <span class="vin-label">3-MIN VISUALIZATION</span>
-            <span class="vin-arrow">▶</span>
-          </button>
-          <button class="vin-row" onclick="launchPlayer('viz-10min')">
-            <span class="vin-icon"><img src="images/icons/head-brain.png" alt="" class="vin-invert"></span>
-            <span class="vin-label">10-MIN VISUALIZATION</span>
-            <span class="vin-arrow">▶</span>
-          </button>
-          <button class="vin-row" onclick="launchPlayer('gratitude')">
-            <span class="vin-icon"><img src="images/icons/praying-hands.png" alt="" class="vin-invert"></span>
-            <span class="vin-label">GRATITUDE</span>
-            <span class="vin-arrow">▶</span>
-          </button>
-          <button class="vin-row" onclick="closeVaultBuildSheet();navTo('setup')">
-            <span class="vin-icon"><img src="images/icons/bullseye.png" alt="" class="vin-invert"></span>
-            <span class="vin-label">PEGBOARD LOOP</span>
-            <span class="vin-arrow">▶</span>
-          </button>
-          <button class="vin-row" onclick="launchPlayer('night-protocol')">
-            <span class="vin-icon"><img src="images/icons/bell.png" alt="" class="vin-invert"></span>
-            <span class="vin-label">NIGHT PROTOCOL</span>
-            <span class="vin-arrow">▶</span>
-          </button>
         </div>`;
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
@@ -9574,10 +9204,6 @@ async function renderEmbeddedProgress() {
   const scoreLabel    = ciScore >= 75 ? 'ELITE' : ciScore >= 40 ? 'BUILDING' : 'STARTING';
 
   const practices = [
-    { label: 'Visualizations',    count: vizPlays,      icon: '👁',  nav: `launchPlayer('viz-quick')` },
-    { label: 'Meditations',       count: medSessions,   icon: '🧘',  nav: `openMeditationModal()` },
-    { label: 'Gratitude',         count: gratSessions,  icon: '🙏',  nav: `launchPlayer('gratitude')` },
-    { label: 'Countdowns',        count: cdownSessions, icon: '⏱',   nav: `openTimerPicker()` },
     { label: 'Sessions this week',count: sessionsWeek,  icon: '⚡',  nav: null },
     { label: 'Commitments today', count: commitsToday,  icon: '✅',  nav: null },
     { label: 'Weekly focus done', count: wfDone,        icon: '🎯',  nav: null },
@@ -9592,9 +9218,6 @@ async function renderEmbeddedProgress() {
   ].filter(s => s.count > 0);
 
   const unlockQueue = [
-    { test: vizPlays === 0,     cta: 'Try your first Visualization',    action: `launchPlayer('viz-quick')`,  icon: '👁'  },
-    { test: medSessions === 0,  cta: 'Try your first Meditation',        action: `openMeditationModal()`,      icon: '🧘'  },
-    { test: gratSessions === 0, cta: 'Try your first Gratitude session', action: `launchPlayer('gratitude')`,  icon: '🙏'  },
     { test: goalsSet === 0,     cta: 'Set your first Intention',         action: `navTo('setup')`,             icon: '🎯'  },
     { test: roadmapsGen === 0,  cta: 'Generate your first Roadmap',      action: `navTo('dashboard')`,         icon: '◈'  },
     { test: mapFilled === 0,    cta: 'Build out My Roadmap on a goal',    action: `navTo('dashboard')`,         icon: '🗺'  },
@@ -10390,9 +10013,7 @@ function buildBSPegboardPanel(intent) {
          <div class="bs-pb-value">${esc(f.value)}</div>
        </div>` : '').join('');
   const empty = fields.every(f => !f.value);
-  const launchBtn = `<div style="padding:14px 16px;">
-    <button class="btn-launch-arsenal" onclick="launchArsenal('visualization')">✦ LAUNCH ARSENAL</button>
-  </div>`;
+  const launchBtn = '';
   return (empty
     ? `<div style="padding:20px;font-size:13px;color:#40404A;line-height:1.6">
          Your Pegboard is empty.
@@ -10503,10 +10124,6 @@ document.getElementById('authModal').addEventListener('click', function(e) {
   if (e.target === this) closeAuth();
 });
 
-// Close players on background tap
-document.getElementById('manifestModal').addEventListener('click', function(e) {
-  if (e.target === this) closeManifest();
-});
 /* ─────────────────────────────────────────────────────────
    COSMIC LIBRARY
 ───────────────────────────────────────────────────────── */
