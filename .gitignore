@@ -16,6 +16,15 @@ images/troughs/
 images/column-spacers/
 images/player-psd-mockups/
 
+# unused image/asset folders — kept on disk, removed from git to cut repo bloat (2026-06-18)
+images/encouragements/
+images/voice-overs/
+images/repository/
+images/svg-library/
+
 # source media + scratch — keep local, never commit (avoid repo bloat)
 MP4/
 *.mp4
+
+# Local Netlify folder
+.netlify
