@@ -429,3 +429,10 @@ summaries, run /wrap before ending a session.
   dd32fab feat: add unified players/session.html on CIPlayer (additive, not yet wired)
   2cc381c feat: add unified CIPlayer engine (visualization/meditation/gratitude) + demo
   61b3266 chore: back up player template + vibe tooling; gitignore large local media
+
+[2026-06-18] auto-logged commits:
+  b932b8d Strip My Pegboard: remove Character→Sunk Cost Ledger sections (266 lines)
+  3a1b1b1 ES-module rebuild + Back-to-Goals button + ResizeObserver filter
+  d2fcf62 WIP: convert app.js + shared/*.js to ES modules (boot verified)
+  cd8c1be Harden Netlify build for Vite: pin Node 22, drop sharp devDep
+  7e36f27 Extract inline app script: index.html 6544 -> 1020 lines

@@ -1,0 +1,174 @@
+COSMIC INTENTIONS — Gemini Master Brief
+Paste this at the top of every new Google Gemini session for this project.
+Last updated: 2026-06-19
+
+This is the Gemini-facing twin of CLAUDE_MASTER_BRIEF.txt. Same facts, written for
+a fresh Gemini session that has NO memory of this codebase. If the two briefs ever
+disagree, trust whichever was updated most recently (check the date line).
+
+================================================================================
+WHAT THIS APP IS
+================================================================================
+
+Cosmic Intentions — a personal goals and visualization web app.
+- Users set intentions/goals, then engage with them through timed players
+  and an AI-generated execution roadmap (Mission Control).
+- Front end is vanilla HTML/CSS/JS — no React, no framework.
+- IMPORTANT: there IS now a build step (Vite). The old "no build step" note is dead.
+
+================================================================================
+STACK
+================================================================================
+
+Hosting:        Netlify (static, serves the Vite `dist/` output)
+Build:          Vite 8 — `npm run build` → `dist/` (hashed bundle in /assets/)
+Auth + DB:      Supabase (postgres)
+Data source:    Google Sheets (via API / Apps Script)
+Serverless:     Netlify Functions  (/api/* → /.netlify/functions/*)
+AI / TTS:       OpenAI (OPEN_AI_KEY) — NOT Anthropic, NOT Gemini.
+                There is NO ANTHROPIC_API_KEY and NO GEMINI/GOOGLE AI key on this
+                project. All in-app AI (TTS, keyword extraction, Mission Control
+                content) runs through OpenAI. Do not "switch it to Gemini" unless
+                explicitly asked.
+Images:         Pexels API (PEXELS_API_KEY)
+Error monitor:  Sentry (@sentry/browser) — errors-only, live in production
+Tests:          Playwright smoke tests — `npm test`
+
+Production URL: https://gilded-profiterole-47a2eb.netlify.app
+
+Env vars in Netlify (Builds/Functions/Runtime scope):
+  OPEN_AI_KEY      — OpenAI TTS + keyword extraction + Mission Control content
+  PEXELS_API_KEY   — vision board image search
+  NOTE: env var changes require a redeploy (push to main) to take effect.
+
+================================================================================
+REPO
+================================================================================
+
+Root:         C:\WORK\ROOT
+Main branch:  main
+Git user:     UpperShadow
+Rule:         Always commit + push together — never leave committed but unpushed.
+Chain:        git commit -m "..." && git push origin main
+No PRs, no feature branches — commit straight to main.
+
+================================================================================
+BUILD / DEV
+================================================================================
+
+npm run dev      Vite dev server (local)
+npm run build    Production build → dist/  (this is what Netlify runs)
+npm run preview  Preview the built output on port 8090
+npm test         Playwright smoke tests
+npm run lint     eslint over shared/ netlify/ scripts/
+npm run health   node scripts/healthcheck.mjs
+
+Netlify build (netlify.toml):
+  command   = "npm run build"
+  publish   = "dist"
+  functions = "netlify/functions"
+  NODE_VERSION = 22   (Vite 8 needs Node >= 22.12 — pinned so prod matches local)
+  WARNING: a bare `[functions] timeout = 60` is INVALID Netlify config — it makes
+  config resolution fail and silently blocks EVERY deploy. Do not add it.
+
+================================================================================
+ARCHITECTURE (CURRENT — post ES-module rebuild)
+================================================================================
+
+Entry:        index.html (now ~750 lines) loads ES module /src/main.js
+Boot order:   src/main.js imports sentry.js FIRST, then styles, then every
+              shared/*.js module, then app.js, THEN calls _app_js.init().
+              The init() call is deliberately LAST — fixes a circular-import bug
+              where init fired before sibling module data existed. Don't reorder.
+App logic:    app.js (root, ~3150 lines) — main dashboard behavior
+Shared modules (shared/*.js, all ES modules):
+  api.js, content-bank.js, activity.js, card-builder.js, mission-control.js,
+  weekly-focus.js, today.js, player-launcher.js, the-map.js
+Inline onclick= handlers are still used this phase: main.js copies named handler
+  functions from the modules onto window[...], and a "handler-tripwire" loudly
+  logs (and shows a red bar on localhost) if any handler failed to wire. If you
+  add a new inline onclick, add its name to the HANDLERS list in src/main.js.
+
+Other notes:
+- No server-side app code. Netlify Functions are the only server code.
+- Supabase handles auth + postgres. Check existing schema before adding tables.
+- Google Sheets is a data source, not a DB replacement.
+- Netlify function timeout is a real constraint — Mission Control generates 50
+  items per call and appends on the next call to stay under the limit.
+
+================================================================================
+PLAYERS (CURRENT — most were stripped, do not assume the old roster)
+================================================================================
+
+Only these remain:
+  player/affirmation.html
+  players/roadmap.html
+The old meditation / countdown / visual-countdown / gratitude / viz-* / video
+players have been REMOVED. Do not reference or "restore" them unless asked.
+
+================================================================================
+SENTRY (error monitoring — LIVE)
+================================================================================
+
+- src/sentry.js — initialized first in main.js.
+- Errors only: tracesSampleRate 0, replays 0, ignoreErrors [/ResizeObserver/i].
+- Prod-gated: inert on localhost / 127.0.0.1, active on the live domain.
+- DSN is a PUBLIC client key, safe to commit; it lives in src/sentry.js.
+- Verified 2026-06-19: DSN + init config present in the live built bundle
+  (/assets/index-*.js) on a `ready` Netlify deploy. End-to-end "event actually
+  lands in the Sentry dashboard" was NOT yet confirmed — needs a real thrown
+  error in a logged-in browser, then a look at the Sentry Issues feed.
+
+================================================================================
+MISSION CONTROL (feature — fully built)
+================================================================================
+
+- Generates a ~100-item AI execution roadmap via Netlify generate-content.js
+  (50 items/call, appends on the next call to dodge the function timeout).
+- Each card: action (white), category (blue), "why" (a famous quote + the story
+  behind it — recognizable names only: Ali, Carrey, Kobe, Robbins, Naval, Hormozi…).
+- Cards have YES / DEEPER flags. YES items lock into Daily Commitments with streaks.
+- Per-card deep-dive generation; permanent "F*ck Up Framework" card.
+- Prompt rules: execution-only. No goal-setting advice, no generic tips, and NO
+  vision-board / meditation / journaling suggestions (the app already does those).
+
+================================================================================
+DEFINITION OF DONE — VERIFY, DON'T CLAIM (NON-NEGOTIABLE)
+================================================================================
+
+The live site caches and deploys can silently fail. NEVER judge a change by the
+live site, and never say something "works" or "is live" without proof.
+1. LOCAL = SOURCE OF TRUTH. Run the change locally (npm run dev / preview) and
+   load the affected page there.
+2. PROVE IT RENDERS. Standalone page → headless screenshot and actually look.
+   Auth-gated page (index.html) → say plainly "could not verify — needs login".
+3. AFTER PUSHING, CONFIRM THE DEPLOY. `bash scripts/deploy-status.sh` — newest
+   Netlify deploy state MUST be `ready`. If error/skipped, it is NOT live — STOP,
+   don't keep pushing into a failing pipeline.
+4. One change → verify → report. No batches of hopeful commits.
+5. State the evidence ("verified on localhost", "deploy <hash>: ready"). If you
+   couldn't verify something, say exactly what you couldn't verify.
+If you can't prove it, the honest answer is "not verified yet" — never "done".
+
+================================================================================
+OUTPUT STYLE
+================================================================================
+
+- Step-by-step with exact app name / menu / button / field names.
+- No filler. No "Great question!" Just the answer.
+- Show full code blocks, not partial snippets, unless asked otherwise.
+- Reference files as path:line_number.
+- End with a one-sentence summary: what changed, what's next.
+
+================================================================================
+ALREADY SOLVED — DO NOT RE-SUGGEST
+================================================================================
+
+- Vite build pipeline + ES-module rebuild (app.js + shared/*.js are ES modules).
+- Sentry error monitoring wired and activated (see above).
+- Playwright smoke tests + `npm test`.
+- Player images compressed (181MB → 14MB); repo de-bloated.
+- Daily rotating player images via PLAYER_OFFSETS.
+- Hamburger drawer replaced with 2-column home nav; subnav merged into header.
+- Goal cards: ALL CAPS title, number top-right, close button bottom-right.
+- Most legacy players removed (only affirmation + roadmap remain).
