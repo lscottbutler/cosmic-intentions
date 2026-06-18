@@ -278,7 +278,7 @@ function startTick() {
       pendingTimers.push(id);
     }
 
-    if (countdown <= 60 && countdown > 0) circle.classList.add('ending');
+    if (countdown <= 3 && countdown > 0) circle.classList.add('ending');
 
     if (countdown <= 0) {
       clearInterval(countdownInterval);
