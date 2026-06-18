@@ -88,8 +88,18 @@ class CIPlayer {
         <button data-act="toggle" title="Play/Pause">⏸</button>
         <button data-act="close" title="End session">✕</button>
       </div>
+      <div class="cip__intro">
+        <div class="cip__intro-banner">
+          <svg class="cip__intro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="14" r="8"/><path d="M12 14V9"/><path d="M9 2h6"/><path d="M18.5 6.5L20 5"/>
+          </svg>
+          <span class="cip__intro-title"></span>
+        </div>
+      </div>
       <div class="cip__done">
-        <div class="cip__done-check">✓</div>
+        <svg class="cip__done-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2c3 2 5 5.5 5 10 0 1.7-.4 3.3-1 4.7l-1.6-1A6 6 0 0012 6a6 6 0 00-2.4 9.7l-1.6 1A11 11 0 017 12C7 7.5 9 4 12 2zm0 9a2 2 0 110 4 2 2 0 010-4zm-3.2 8.2l1.7-1c.5.2 1 .3 1.5.3s1-.1 1.5-.3l1.7 1c-.9.6-2 1-3.2 1.5-1.2-.5-2.3-.9-3.2-1.5z"/>
+        </svg>
         <div class="cip__done-label">Session Complete</div>
       </div>`;
 
@@ -104,8 +114,23 @@ class CIPlayer {
     this.root.querySelector('[data-act="close"]').addEventListener("click", () => this.end(true));
     this.toggleBtn.addEventListener("click", () => this.toggle());
 
+    // branded intro card — "{N} MINUTE MANIFEST/MEDITATION/GRATITUDE"
+    this.introEl = this.root.querySelector(".cip__intro");
+    this.root.querySelector(".cip__intro-title").textContent = this._introTitle();
+    setTimeout(() => {
+      if (this.introEl) { this.introEl.style.opacity = "0"; this.introEl.style.pointerEvents = "none"; }
+    }, 3500);
+    setTimeout(() => { if (this.introEl) this.introEl.style.display = "none"; }, 4200);
+
     this._renderTime();
     this._renderSlide(0);
+  }
+
+  _introTitle() {
+    const secs = this.opts.durationSec;
+    const unit = secs >= 60 ? `${Math.round(secs / 60)} MINUTE` : `${secs} SECOND`;
+    const noun = { visualization: "MANIFEST", meditation: "MEDITATION", gratitude: "GRATITUDE" }[this.opts.mode] || "SESSION";
+    return `${unit} ${noun}`;
   }
 
   /* ---- rendering ---- */
@@ -121,6 +146,9 @@ class CIPlayer {
     this.idx = ((i % total) + total) % total;
     const line = this.items[this.idx];
     if (typeof this.opts.onSlide === "function") this.opts.onSlide(line, this.idx);
+
+    // alternate the text panel white <-> charcoal, like the source video
+    this.panelEl.classList.toggle("char", this.idx % 2 === 1);
 
     // "I AM" affirmations split into a teal eyebrow + the rest
     let eyebrow = "", text = line;
