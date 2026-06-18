@@ -315,6 +315,7 @@ let secs      = 60;
 let affs      = [];
 let affIdx    = 0;
 let goalTitle = '';
+let goalIdx   = 0;
 let sb        = null;
 let currentUser = null;
 
@@ -406,6 +407,7 @@ async function init() {
 
   const params = new URLSearchParams(location.search);
   const idx    = parseInt(params.get('idx'), 10) || 0;
+  goalIdx      = idx;
 
   // Init Supabase + get user
   try {
@@ -528,32 +530,17 @@ function showAffirmation(i) {
   setImage(i % IMAGES.length);
 }
 
-function start(duration) {
-  secs = duration;
+async function start(duration) {
+  // viz-quick keeps the tiered unlock modal + session counting (its gamification);
+  // the unified CIPlayer (players/session.html) now handles the actual playback.
   document.getElementById('selectScreen').classList.add('hidden');
-
-  const ring  = document.getElementById('cdRing');
-  const numEl = document.getElementById('cdNum');
-  ring.classList.add('show');
-  numEl.textContent = secs;
-
-  setTimeout(() => showAffirmation(0), 500);
-  speakText((goalTitle ? goalTitle + '. ' : '') + 'Close your eyes. Visualize your intention becoming real.');
-
-  // Spread affirmations evenly across the session (min 3s each)
-  const interval = Math.max(3000, Math.floor((duration * 1000) / Math.max(affs.length, 1)));
-  affIdx  = 0;
-  affTick = setInterval(() => {
-    affIdx++;
-    if (affIdx < affs.length) showAffirmation(affIdx);
-  }, interval);
-
-  tick = setInterval(() => {
-    secs--;
-    numEl.textContent = secs;
-    if (secs <= 5 && secs > 0) ring.classList.add('ending');
-    if (secs <= 0) { clearInterval(tick); clearInterval(affTick); done(); }
-  }, 1000);
+  try { await incrementSessionCount(); } catch (e) {}
+  const sp = new URLSearchParams({
+    mode: 'visualization',
+    duration: String(duration),
+    idx: String(goalIdx),
+  });
+  location.href = 'session.html?' + sp.toString();
 }
 
 async function done() {
