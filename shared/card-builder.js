@@ -419,16 +419,9 @@ function stopSurgicalVisualLoop() {
   ActiveVisualPlayer.timer = null;
 }
 
-/* Tap the Column A player → launch full-screen viz for the selected goal,
-   seeding its affirmations as the slide context. */
+/* Tap the Column A player → open the Affirmation player. */
 function openVisionPlayer() {
-  const idx = (typeof selectedVaultIdx !== 'undefined' && selectedVaultIdx != null) ? selectedVaultIdx : null;
-  if (idx == null) {
-    if (typeof toast === 'function') toast('Select an intention first ✦');
-    return;
-  }
-  if (typeof launchQuickViz === 'function')      launchQuickViz(null, idx);
-  else if (typeof launchPlayer === 'function')   launchPlayer('viz-quick', { idx });
+  if (typeof launchAffirmationPlayer === 'function') launchAffirmationPlayer();
 }
 
 function runSurgicalVisualLoop(idx) {

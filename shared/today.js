@@ -1,17 +1,11 @@
 /* ── TODAY MODULE ────────────────────────────────────────
    The daily dashboard — sessions, commitments, weekly focus.
    Depends on globals: intentions, esc, LS, logActivity,
-   launchPlayer, openMeditationModal, openTimerPicker,
-   MAP_EMOJIS (the-map.js), renderWeeklyFocus
+   launchAffirmationPlayer, MAP_EMOJIS (the-map.js), renderWeeklyFocus
 ───────────────────────────────────────────────────────── */
 
 const TODAY_SESSIONS = [
-  { icon: '⚡', label: 'Quick Viz',     sub: '15 / 30 / 60s', action: `launchPlayer('viz-quick')`,   color: '#F5A623' },
-  { icon: '🧘', label: 'Meditation',    sub: '5 – 60 min',    action: `openMeditationModal()`,        color: '#BF5AF2' },
-  { icon: '🙏', label: 'Gratitude',     sub: '5 min',         action: `launchPlayer('gratitude')`,    color: '#30D158' },
-  { icon: '✨', label: '3-Min Viz',     sub: '3 min',         action: `launchPlayer('viz-3min')`,     color: '#0A84FF' },
-  { icon: '🌟', label: '10-Min Viz',    sub: '10 min',        action: `launchPlayer('viz-10min')`,    color: '#FF375F' },
-  { icon: '⏱️', label: 'Countdown',     sub: '1 – 60 min',    action: `openTimerPicker()`,            color: '#FF9F0A' },
+  { icon: '⚡', label: 'Affirmations', sub: 'Daily player', action: `launchAffirmationPlayer()`, color: '#F5A623' },
 ];
 
 /* ── Helpers ─────────────────────────────────────────── */
