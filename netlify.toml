@@ -3,6 +3,10 @@
   functions = "netlify/functions"
   publish = "dist"
 
+# Vite 8 needs Node >= 20.19 / 22.12 — pin it so the production build matches local.
+[build.environment]
+  NODE_VERSION = "22"
+
 # NOTE: a bare `[functions] timeout = 60` is INVALID Netlify config — it makes
 # config resolution fail and blocks every deploy. Function timeout is not set
 # via netlify.toml here; the bbfw two-pass split keeps calls under the limit.
