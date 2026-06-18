@@ -2371,7 +2371,11 @@ function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
   return `
     <div style="padding:12px 16px 0;">
-      <!-- players removed — simple goal title + close -->
+      <!-- clear way back to the goal list -->
+      <button onclick="closeVaultBuildSheet()"
+        style="display:inline-flex;align-items:center;gap:7px;background:#1A1A1A;border:1px solid #383838;
+        border-radius:8px;color:#F5A623;font-family:var(--vault-mono);font-size:11px;font-weight:800;
+        letter-spacing:0.8px;padding:9px 15px;cursor:pointer;margin-bottom:10px;">← BACK TO MY GOALS</button>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
         <div style="flex:1;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>

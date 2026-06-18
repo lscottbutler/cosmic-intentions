@@ -11,7 +11,7 @@
    runtime error as a visible red overlay so nothing fails silently while testing. */
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
   var __showErr=function(msg){var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999999;background:#300;color:#fff;font:12px/1.5 monospace;padding:14px;white-space:pre-wrap;max-height:50vh;overflow:auto';(document.body||document.documentElement).appendChild(d);}d.textContent+=msg+'\n';};
-  window.addEventListener('error',function(e){__showErr('ERROR: '+(e.message||'')+'  @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||''));});
+  window.addEventListener('error',function(e){var m=e.message||'';if(m.indexOf('ResizeObserver')>-1)return;/* benign, universally ignored */__showErr('ERROR: '+m+'  @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||''));});
   window.addEventListener('unhandledrejection',function(e){__showErr('PROMISE: '+((e.reason&&e.reason.message)||e.reason||''));});
 }</script>
 <script type="module" src="/src/main.js"></script>
