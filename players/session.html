@@ -10,9 +10,8 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #000; height: 100vh; height: 100dvh; display: flex;
     align-items: center; justify-content: center; overflow: hidden; }
-  #stage { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 900px;
-    border-radius: 0; }
-  .cip { aspect-ratio: auto; height: 100%; max-height: none; border-radius: 0; }
+  /* center the 16:9 player so it always fits the screen */
+  #stage { width: min(100vw, 177.7vh); }
 </style>
 </head>
 <body>

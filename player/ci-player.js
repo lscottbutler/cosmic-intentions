@@ -1,24 +1,25 @@
 /* ============================================================
    CIPlayer — ONE engine for all Cosmic Intentions session
-   players. Mode + duration are parameters, not separate files.
+   players, in the "Manifest" split-frame style.
 
+   Mode + duration are parameters, not separate files.
    Replaces: viz-quick / viz-3min / viz-10min / visual-countdown /
-   countdown / meditation / meditation-select / meditation-timer /
-   gratitude  →  a single data-driven player.
+   countdown / meditation* / gratitude.
 
    USAGE
    -----
    new CIPlayer("#stage", {
      mode: "visualization",        // "visualization" | "meditation" | "gratitude"
-     durationSec: 180,             // total session length
-     images: ["a.jpg", "b.jpg"],   // visualization backgrounds (cycled)
-     affirmations: ["I AM ...."],  // visualization / shown text
-     gratitude: ["my health"],     // gratitude items → "I am grateful for ..."
-     meditationFocus: "the breath",// meditation centering line
+     durationSec: 180,
+     images: ["a.jpg", "b.jpg"],   // right-panel vision images (cycled)
+     affirmations: ["I AM ...."],
+     gratitude: ["my health"],     // → "I am grateful for ..."
+     meditationFocus: "the breath",
      slideMs: 5000, fadeMs: 800,
-     voice: false,                 // speak each line (browser TTS)
-     bell: false,                  // start/end chime (meditation)
-     onEnd: null,                  // callback when the session completes
+     voice: false,                 // built-in browser TTS
+     bell: false,                  // start/end chime
+     onSlide: (line, i) => {},     // host hook (e.g. real app voiceover)
+     onEnd: (userInitiated) => {},
    });
 
    API: play() / pause() / toggle() / end() / destroy()
@@ -42,13 +43,13 @@ class CIPlayer {
       bell: false,
       autoplay: true,
       onEnd: null,
-      onSlide: null,        // (line, index) — host hook, e.g. drive app voiceover
+      onSlide: null,
     }, options);
 
-    this.items   = this._items();          // the text lines for this mode
+    this.items   = this._items();
     this.idx     = 0;
-    this.imgIdx  = 0;
-    this.remain  = this.opts.durationSec;   // seconds left
+    this.imgIdx  = -1;
+    this.remain  = this.opts.durationSec;
     this.playing = false;
     this._slideTimer = null;
     this._tick = null;
@@ -65,7 +66,6 @@ class CIPlayer {
         .map(g => `I am grateful for ${g}.`);
     }
     if (o.mode === "meditation") {
-      // breathing cadence cues, looped under the countdown
       return ["Breathe in…", "Hold…", "Breathe out…", "Settle into " + (o.meditationFocus || "the breath")];
     }
     return o.affirmations.length ? o.affirmations : ["I AM BECOMING WHO I WAS BORN TO BE"];
@@ -76,37 +76,30 @@ class CIPlayer {
     this.root.classList.add("cip");
     this.root.dataset.mode = this.opts.mode;
     this.root.innerHTML = `
-      <div class="cip__bg"></div>
-      <div class="cip__scrim"></div>
-      <div class="cip__top">
-        <span class="cip__mode">${this.opts.mode.toUpperCase()}</span>
-        <span class="cip__time"></span>
-      </div>
-      <div class="cip__center">
-        <div class="cip__ring"><span class="cip__ring-time"></span></div>
-        <div class="cip__text"></div>
-        <div class="cip__breath"></div>
-      </div>
-      <div class="cip__bottom">
-        <div class="cip__bar"><span></span></div>
-        <div class="cip__controls">
-          <button data-act="toggle" title="Play/Pause">⏸</button>
-          <button data-act="close" title="End session">✕</button>
+      <div class="cip__frame">
+        <div class="cip__panel">
+          <div class="cip__eyebrow"></div>
+          <div class="cip__text"></div>
         </div>
+        <div class="cip__img"></div>
+        <div class="cip__badge"><span class="cip__badge-num"></span></div>
+      </div>
+      <div class="cip__controls">
+        <button data-act="toggle" title="Play/Pause">⏸</button>
+        <button data-act="close" title="End session">✕</button>
       </div>
       <div class="cip__done">
         <div class="cip__done-check">✓</div>
-        <div class="cip__done-label">SESSION COMPLETE</div>
+        <div class="cip__done-label">Session Complete</div>
       </div>`;
 
-    this.bgEl       = this.root.querySelector(".cip__bg");
-    this.timeEl     = this.root.querySelector(".cip__time");
-    this.ringEl     = this.root.querySelector(".cip__ring");
-    this.ringTimeEl = this.root.querySelector(".cip__ring-time");
+    this.panelEl    = this.root.querySelector(".cip__panel");
+    this.eyebrowEl  = this.root.querySelector(".cip__eyebrow");
     this.textEl     = this.root.querySelector(".cip__text");
-    this.breathEl = this.root.querySelector(".cip__breath");
-    this.barEl    = this.root.querySelector(".cip__bar > span");
-    this.toggleBtn= this.root.querySelector('[data-act="toggle"]');
+    this.imgEl      = this.root.querySelector(".cip__img");
+    this.badgeEl    = this.root.querySelector(".cip__badge");
+    this.badgeNumEl = this.root.querySelector(".cip__badge-num");
+    this.toggleBtn  = this.root.querySelector('[data-act="toggle"]');
 
     this.root.querySelector('[data-act="close"]').addEventListener("click", () => this.end(true));
     this.toggleBtn.addEventListener("click", () => this.toggle());
@@ -118,13 +111,9 @@ class CIPlayer {
   /* ---- rendering ---- */
   _renderTime() {
     const m = Math.floor(this.remain / 60), s = this.remain % 60;
-    const str = `${m}:${String(s).padStart(2, "0")}`;
-    if (this.timeEl)     this.timeEl.textContent     = str;
-    if (this.ringTimeEl) this.ringTimeEl.textContent = str;
-    // beige pulse only in the final 3 seconds
-    if (this.ringEl) this.ringEl.classList.toggle("ending", this.remain <= 3 && this.remain > 0);
-    const pct = 100 * (1 - this.remain / this.opts.durationSec);
-    if (this.barEl) this.barEl.style.width = pct + "%";
+    if (this.badgeNumEl) this.badgeNumEl.textContent = `${m}:${String(s).padStart(2, "0")}`;
+    // beige/accent pulse only in the final 3 seconds before the bell
+    if (this.badgeEl) this.badgeEl.classList.toggle("ending", this.remain <= 3 && this.remain > 0);
   }
 
   _renderSlide(i) {
@@ -133,21 +122,25 @@ class CIPlayer {
     const line = this.items[this.idx];
     if (typeof this.opts.onSlide === "function") this.opts.onSlide(line, this.idx);
 
-    if (this.opts.mode === "meditation") {
-      this.breathEl.style.opacity = "0";
-      setTimeout(() => { this.breathEl.textContent = line; this.breathEl.style.opacity = ".85"; }, 200);
-    } else {
-      this.textEl.style.opacity = "0";
-      setTimeout(() => { this.textEl.textContent = line; this.textEl.style.opacity = "1"; }, this.opts.fadeMs / 2);
+    // "I AM" affirmations split into a teal eyebrow + the rest
+    let eyebrow = "", text = line;
+    if (this.opts.mode === "visualization") {
+      const m = line.match(/^(I\s*AM)\b[\s,]*(.*)$/i);
+      if (m && m[2]) { eyebrow = "I AM"; text = m[2]; }
     }
+    this.eyebrowEl.style.display = eyebrow ? "" : "none";
+    this.eyebrowEl.textContent = eyebrow;
 
-    // visualization cycles its background images
-    if (this.opts.mode === "visualization" && this.opts.images.length) {
+    this.textEl.style.opacity = "0";
+    setTimeout(() => { this.textEl.textContent = text; this.textEl.style.opacity = "1"; }, this.opts.fadeMs / 2);
+
+    // cycle the vision image on the right panel
+    if (this.opts.images.length) {
       this.imgIdx = (this.imgIdx + 1) % this.opts.images.length;
-      this.bgEl.style.opacity = "0";
+      this.imgEl.style.opacity = "0";
       setTimeout(() => {
-        this.bgEl.style.backgroundImage = `url("${this.opts.images[this.imgIdx]}")`;
-        this.bgEl.style.opacity = "1";
+        this.imgEl.style.backgroundImage = `url("${this.opts.images[this.imgIdx]}")`;
+        this.imgEl.style.opacity = "1";
       }, this.opts.fadeMs / 2);
     }
 
@@ -213,7 +206,7 @@ class CIPlayer {
       if (!Ctx) return;
       const ctx = new Ctx();
       const o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = "sine"; o.frequency.value = 528;          // soft "bell"
+      o.type = "sine"; o.frequency.value = 528;
       o.connect(g); g.connect(ctx.destination);
       g.gain.setValueAtTime(0.0001, ctx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05);
