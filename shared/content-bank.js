@@ -1,3 +1,4 @@
+import { getPB } from '../app.js';
 /* ─────────────────────────────────────────────────────────
    CONTENT BANK — Rotating affirmations, beliefs, quotes, stoic
    Daily seed: same content all day, rotates at midnight.
@@ -104,7 +105,7 @@ function getDailyQuote()        { return _pick(CONTENT_BANK.quotes, 3); }
 function getDailyStoic()        { return _pick(CONTENT_BANK.stoic, 11); }
 
 /* Slot-specific formatted HTML */
-function getDailyLine(slot) {
+export function getDailyLine(slot) {
   switch (slot) {
 
     case 'sidebar': {
@@ -149,7 +150,7 @@ function getDailyLine(slot) {
    Mixes user's own Pegboard beliefs/quotes into rotation.
    Call after getPB() is available.
 ───────────────────────────────────────────────────────── */
-function injectPersonalContent() {
+export function injectPersonalContent() {
   try {
     const pb = typeof getPB === 'function' ? getPB() : {};
     if (pb['pb-beliefs']) {

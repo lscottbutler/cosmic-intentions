@@ -1,3 +1,4 @@
+import { esc, intentions, selectedVaultIdx, syncIntentionsToSupabase, toast } from '../app.js';
 /* ── MISSION CONTROL MODULE ─────────────────────────────
    Depends on globals: intentions, esc, syncIntentionsToSupabase,
    selectedVaultIdx, toast
@@ -89,7 +90,7 @@ function renderMissionControlItems(items, idx) {
     </div>`;
 }
 
-async function generateMissionControl(idx) {
+export async function generateMissionControl(idx) {
   const intent = intentions[idx];
   if (!intent) return;
   const btn = document.getElementById(`mcGenBtn-${idx}`);
@@ -166,7 +167,7 @@ Exactly 15 items. No filler. No repeated ideas. No goal-setting advice.`;
   }
 }
 
-function flagMCItem(idx, itemIdx, flag) {
+export function flagMCItem(idx, itemIdx, flag) {
   const intent = intentions[idx];
   const mc     = intent?.achievers?.missionControl;
   if (!mc || !mc.items[itemIdx]) return;
@@ -220,7 +221,7 @@ async function mcDeepDive(idx, itemIdx) {
   }
 }
 
-function buildMCPlan(idx) {
+export function buildMCPlan(idx) {
   const intent = intentions[idx];
   const mc     = intent?.achievers?.missionControl;
   if (!mc || !mc.items) return;
@@ -238,7 +239,7 @@ function buildMCPlan(idx) {
   toast(`${toAdd.length} commitment${toAdd.length !== 1 ? 's' : ''} added ✓`, 'success');
 }
 
-function loadDailyCommitsPanel() {
+export function loadDailyCommitsPanel() {
   const inner = document.getElementById('dailyCommitsInner');
   if (!inner) return;
   const idx = selectedVaultIdx;
@@ -296,7 +297,7 @@ function renderCommitmentsPanel(idx) {
     </div>`;
 }
 
-function toggleCommitmentCheck(idx, commitIdx) {
+export function toggleCommitmentCheck(idx, commitIdx) {
   const intent = intentions[idx];
   const commit = intent?.achievers?.commitments?.[commitIdx];
   if (!commit) return;

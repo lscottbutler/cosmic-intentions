@@ -1,3 +1,9 @@
+import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
+import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
+import { renderTodayStrip, renderTodayView } from './shared/today.js';
+import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
+import { _wfLoadChecks } from './shared/weekly-focus.js';
+import { logActivity, logDailyLogin } from './shared/activity.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
@@ -14,7 +20,7 @@ const STRIPE_ANNUAL_URL  = 'https://buy.stripe.com/bJe14hfi80PBa5w5nG7kc03';
 /* ─────────────────────────────────────────────────────────
    LOCALSTORAGE WRAPPER
 ───────────────────────────────────────────────────────── */
-const LS = {
+export const LS = {
   get(key) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
     catch { return null; }
@@ -35,14 +41,14 @@ const LS = {
 const SUPA_URL  = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-let   currentUser   = null;
+export let   currentUser   = null;
 let   currentMember = false; // true = active paying member
 let   syncPending   = false; // true while syncFromSupabase is in flight
 
 /* ─────────────────────────────────────────────────────────
    CLAUDE API (DEV_MODE stub + real fetch)
 ───────────────────────────────────────────────────────── */
-async function callClaude(system, user, maxTokens = 800) {
+export async function callClaude(system, user, maxTokens = 800) {
   if (DEV_MODE) {
     await new Promise(r => setTimeout(r, 700));
     return JSON.stringify({
@@ -101,11 +107,11 @@ async function callClaude(system, user, maxTokens = 800) {
 /* ─────────────────────────────────────────────────────────
    PEGBOARD
 ───────────────────────────────────────────────────────── */
-function getPB() {
+export function getPB() {
   return LS.get('ci_pegboard') || {};
 }
 
-function buildContext(pb) {
+export function buildContext(pb) {
   const parts = [];
   if (pb['pb-name'])       parts.push(`Name: ${pb['pb-name']}`);
   if (pb['pb-mission'])    parts.push(`Life Mission: ${pb['pb-mission']}`);
@@ -134,7 +140,7 @@ function buildContext(pb) {
 /* ─────────────────────────────────────────────────────────
    TOAST
 ───────────────────────────────────────────────────────── */
-function toast(msg, type = '', duration = 3000) {
+export function toast(msg, type = '', duration = 3000) {
   const wrap = document.getElementById('toastWrap');
   const el   = document.createElement('div');
   el.className = `toast ${type}`;
@@ -152,7 +158,7 @@ function toast(msg, type = '', duration = 3000) {
 /* ─────────────────────────────────────────────────────────
    PAGE NAVIGATION
 ───────────────────────────────────────────────────────── */
-function showPage(id) {
+export function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById('page-' + id);
   if (target) target.classList.add('active');
@@ -181,21 +187,21 @@ function _updateSubnav() {
   if (forward) forward.disabled = _navIndex >= _navHistory.length - 1;
 }
 
-function subnavBack() {
+export function subnavBack() {
   if (_navIndex <= 0) return;
   _navIndex--;
   showPage(_navHistory[_navIndex]);
   _updateSubnav();
 }
 
-function subnavForward() {
+export function subnavForward() {
   if (_navIndex >= _navHistory.length - 1) return;
   _navIndex++;
   showPage(_navHistory[_navIndex]);
   _updateSubnav();
 }
 
-function navTo(id) {
+export function navTo(id) {
   // Must be logged in for any non-home page
   const auth_required = ['dashboard','setup'];
   if (auth_required.includes(id) && !currentUser) {
@@ -238,7 +244,7 @@ function toggleDrawer() {
   }
 }
 
-function closeDrawer() {
+export function closeDrawer() {
   document.getElementById('drawer')?.classList.remove('open');
   document.getElementById('drawerOverlay')?.classList.remove('open');
   document.getElementById('hamburger')?.classList.remove('open');
@@ -247,7 +253,7 @@ function closeDrawer() {
 /* ─────────────────────────────────────────────────────────
    AUTH MODAL
 ───────────────────────────────────────────────────────── */
-function openAuth(tab = 'signin') {
+export function openAuth(tab = 'signin') {
   switchTab(tab);
   document.getElementById('authModal').classList.add('open');
   clearAuthError();
@@ -261,15 +267,15 @@ function closeAuth() {
 /* ─────────────────────────────────────────────────────────
    UPGRADE MODAL
 ───────────────────────────────────────────────────────── */
-function openUpgrade() {
+export function openUpgrade() {
   document.getElementById('upgradeModal').classList.add('open');
 }
 
-function closeUpgrade() {
+export function closeUpgrade() {
   document.getElementById('upgradeModal').classList.remove('open');
 }
 
-function goToStripe(plan) {
+export function goToStripe(plan) {
   const base = plan === 'annual' ? STRIPE_ANNUAL_URL : STRIPE_MONTHLY_URL;
   const url  = currentUser ? `${base}?client_reference_id=${currentUser.id}&prefilled_email=${encodeURIComponent(currentUser.email)}` : base;
   window.open(url, '_blank');
@@ -277,7 +283,7 @@ function goToStripe(plan) {
 
 let selectedPlan = 'annual';
 
-function selectPlan(plan) {
+export function selectPlan(plan) {
   selectedPlan = plan;
   document.getElementById('planAnnual').classList.toggle('selected', plan === 'annual');
   document.getElementById('planMonthly').classList.toggle('selected', plan === 'monthly');
@@ -295,7 +301,7 @@ async function devSetMember(val = true) {
   toast(val ? 'Member access ON ✓' : 'Member access OFF', val ? 'success' : '');
 }
 
-function switchTab(tab) {
+export function switchTab(tab) {
   const signin = tab === 'signin';
   document.getElementById('tab-signin').classList.toggle('active', signin);
   document.getElementById('tab-signup').classList.toggle('active', !signin);
@@ -322,7 +328,7 @@ function setAuthLoading(btnId, loading) {
   btn.textContent = loading ? 'Please wait…' : (btnId === 'btn-signin' ? 'Sign In' : 'Create Account');
 }
 
-async function doSignIn() {
+export async function doSignIn() {
   const email = document.getElementById('si-email').value.trim();
   const pass  = document.getElementById('si-pass').value;
   if (!email || !pass) { showAuthError('Enter your email and password.'); return; }
@@ -340,7 +346,7 @@ async function doSignIn() {
   }
 }
 
-async function doSignUp() {
+export async function doSignUp() {
   const name  = document.getElementById('su-name').value.trim();
   const email = document.getElementById('su-email').value.trim();
   const pass  = document.getElementById('su-pass').value;
@@ -372,7 +378,7 @@ async function doSignUp() {
   }
 }
 
-async function doResetPassword() {
+export async function doResetPassword() {
   const email = document.getElementById('si-email').value.trim();
   if (!email) { showAuthError('Enter your email address first.'); return; }
   try {
@@ -387,7 +393,7 @@ async function doResetPassword() {
   }
 }
 
-async function goMemberDashboard() {
+export async function goMemberDashboard() {
   const { data: { session }, error: sessErr } = await sb.auth.getSession();
   if (sessErr || !session?.user) {
     openAuth('signin');
@@ -411,7 +417,7 @@ async function goMemberDashboard() {
   navTo('dashboard');
 }
 
-async function signOut() {
+export async function signOut() {
   closeDrawer();
   await sb.auth.signOut();
   currentUser = null;
@@ -537,7 +543,7 @@ function populateForm(pb) {
 }
 
 /* ── BEHAVIORAL OS HELPERS ───────────────────────────── */
-function pbSetChoice(fieldId, val, btn) {
+export function pbSetChoice(fieldId, val, btn) {
   // Toggle spirit-btn active state within same data-pb group
   document.querySelectorAll(`[data-pb="${fieldId}"]`).forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -545,7 +551,7 @@ function pbSetChoice(fieldId, val, btn) {
   if (input) input.value = val;
 }
 
-function addUlyssesContract() {
+export function addUlyssesContract() {
   const ta = document.getElementById('ulyssesNewContract');
   const text = ta?.value.trim();
   if (!text) return;
@@ -575,7 +581,7 @@ function renderUlyssesContracts(contracts) {
     </div>`).join('');
 }
 
-function removeUlyssesContract(i) {
+export function removeUlyssesContract(i) {
   const pb = LS.get('ci_pegboard') || {};
   const contracts = JSON.parse(pb['pb-ulysses'] || '[]');
   contracts.splice(i, 1);
@@ -598,7 +604,7 @@ function renderSunkCostLedger() {
   setEl('scTotalMinutes', totalMin);
 }
 
-function setSpirituality(val, save = true) {
+export function setSpirituality(val, save = true) {
   document.querySelectorAll('.spirit-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.val === val);
   });
@@ -610,12 +616,12 @@ function setSpirituality(val, save = true) {
   }
 }
 
-function loadPegboard() {
+export function loadPegboard() {
   const pb = LS.get('ci_pegboard') || {};
   populateForm(pb);
 }
 
-async function saveSetup() {
+export async function saveSetup() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
   LS.set('ci_spirituality', pb['spirituality'] || '');
@@ -759,7 +765,7 @@ async function syncFromSupabase() {
 /* ─────────────────────────────────────────────────────────
    SUPABASE — INTENTIONS SYNC
 ───────────────────────────────────────────────────────── */
-async function syncIntentionsToSupabase() {
+export async function syncIntentionsToSupabase() {
   if (!currentUser || !intentions.length) return;
   const rows = intentions.map(intention => ({
     id:          intention.id,
@@ -794,7 +800,7 @@ async function syncIntentionsToSupabase() {
 
 /* Upload a generated vision image to Supabase Storage; returns the public
    URL (small, cross-device) or null if Storage isn't set up yet. */
-async function uploadVisionImage(intentionId, b64) {
+export async function uploadVisionImage(intentionId, b64) {
   if (!currentUser || !sb || !b64 || !intentionId) return null;
   try {
     const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
@@ -857,7 +863,7 @@ async function syncIntentionsFromSupabase() {
 /* ─────────────────────────────────────────────────────────
    INTENTIONS — DATA
 ───────────────────────────────────────────────────────── */
-let intentions = [];
+export let intentions = [];
 
 function loadIntentionsFromLS() {
   const key = currentUser ? `ci_intentions_${currentUser.id}` : 'ci_intentions';
@@ -887,7 +893,7 @@ async function saveTargetDate(idx, val) {
   }
 }
 
-async function saveIntentions() {
+export async function saveIntentions() {
   if (currentUser) LS.set(`ci_intentions_${currentUser.id}`, intentions);
   try {
     await syncIntentionsToSupabase();
@@ -917,7 +923,7 @@ const GREY_SHADES = [
   { bg: '#3878A8', text: '#FFFFFF' },
 ];
 
-function renderDashboard() {
+export function renderDashboard() {
   const pb   = getPB();
   const name = pb['pb-name'] || 'Friend';
   const helloEl = document.getElementById('dashHello');
@@ -1053,7 +1059,7 @@ function switchDLTab(n) {
 
 /* mission-control.js */
 
-async function generateBlueprint() {
+export async function generateBlueprint() {
   if (intentions.length === 0) {
     toast('Add at least one intention first.', 'error'); return;
   }
@@ -1131,7 +1137,7 @@ function renderBlueprintResult(r) {
     </div>`;
 }
 
-async function generateDaylife() {
+export async function generateDaylife() {
   if (intentions.length === 0) {
     toast('Add at least one intention first.', 'error'); return;
   }
@@ -1207,7 +1213,7 @@ function openModal(id) {
   document.getElementById(id)?.classList.add('open');
 }
 
-function closeModal(id) {
+export function closeModal(id) {
   document.getElementById(id)?.classList.remove('open');
 }
 
@@ -1620,7 +1626,7 @@ function arsenalStopProgress() {
 }
 /* ── END ARSENAL ─────────────────────────────────────── */
 
-async function launch3Min(idx) {
+export async function launch3Min(idx) {
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
   
   mSt.idx     = idx;
@@ -1735,7 +1741,7 @@ function manifestPrev() {
   clearTimeout(mSt.timer); stopSpeech();
   showManifestSlide(Math.max(mSt.slide - 1, 0));
 }
-function closeManifest() {
+export function closeManifest() {
   mSt.running = false;
   clearTimeout(mSt.timer);
   stopSpeech();
@@ -1746,7 +1752,7 @@ function closeManifest() {
 /* ─────────────────────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────────────────────── */
-function esc(str) {
+export function esc(str) {
   return String(str||'')
     .replace(/&/g,'&amp;')
     .replace(/</g,'&lt;')
@@ -1767,7 +1773,7 @@ const PB_FIELDS_DEF = [
 /* ─────────────────────────────────────────────────────────
    VAULT DASHBOARD 3 — THE CROWN JEWEL
 ───────────────────────────────────────────────────────── */
-let selectedVaultIdx    = null;
+export let selectedVaultIdx    = null;
 let vaultActiveCategory = 'all';
 
 const VAULT_CATEGORIES = [
@@ -1801,7 +1807,7 @@ function detectCategory(title) {
 function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
-function renderVaultSidebar() {
+export function renderVaultSidebar() {
   const pb   = getPB();
   const name = pb['pb-name'] || 'Friend';
 
@@ -2093,12 +2099,12 @@ function _epScoreBar(label, score, max, color) {
   </div>`;
 }
 
-function filterVaultCategory(cat) {
+export function filterVaultCategory(cat) {
   vaultActiveCategory = cat;
   renderVaultSidebar();
 }
 
-function selectVaultIntention(idx) {
+export function selectVaultIntention(idx) {
   selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
@@ -2156,7 +2162,7 @@ function _affUpdate(text) {
   }
 }
 
-function startAffirmationLoop(affirmations) {
+export function startAffirmationLoop(affirmations) {
   if (_affLoop) { clearInterval(_affLoop); _affLoop = null; }
   _affList    = (affirmations && affirmations.length) ? affirmations : AFFIRMATION_DEFAULTS;
   _affIdx     = 0;
@@ -2191,7 +2197,7 @@ function showVaultWelcome() {
   startAffirmationLoop(null);
 }
 
-function closeVaultBuildSheet() {
+export function closeVaultBuildSheet() {
   selectedVaultIdx = null;
   renderVaultSidebar();
   showVaultWelcome();
@@ -2234,7 +2240,7 @@ function moveColBSection(key, dir) {
    Reuses toggleColBSection: toggles `${key}-body` + rotates `${key}-arr`.
    Drop pieces into bodyHtml to group them under the banner.
 ─────────────────────────────────────────────────────────────────────────── */
-function colBBanner(key, title, color, bodyHtml, opts) {
+export function colBBanner(key, title, color, bodyHtml, opts) {
   opts = opts || {};
   const collapsed = !!opts.collapsed;
   const icon = opts.icon ? `<span class="colb-banner-icon">${opts.icon}</span>` : '';
@@ -2352,7 +2358,7 @@ function showVaultBuildSheet(idx) {
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
 }
 
-function vaultShowAddForm() {
+export function vaultShowAddForm() {
   selectedVaultIdx = null;
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
   document.getElementById('addIntentionForm')?.classList.remove('hidden');
@@ -2452,7 +2458,7 @@ function _renderTactics(intent, idx) {
 /* ── BBFW PANEL ─────────────────────────────────────────
    Backbone Framework — 6 Eternal Problems + 9 Components
 ───────────────────────────────────────────────────────── */
-function buildBBFWPanel(intent, idx) {
+export function buildBBFWPanel(intent, idx) {
   hydrateIntent(intent);
   const bbfw = intent.bbfw;
   if (!_hasBbfw(bbfw)) {
@@ -2469,7 +2475,7 @@ function buildBBFWPanel(intent, idx) {
   return renderBBFW(bbfw, idx);
 }
 
-function renderBBFW(bbfw, idx) {
+export function renderBBFW(bbfw, idx) {
   // Legacy data (v3 or older) — nudge a one-click refresh.
   const isLegacy = !bbfw._format || bbfw._format < 4;
   const legacyHtml = isLegacy
@@ -2521,7 +2527,7 @@ function renderBBFW(bbfw, idx) {
     </div>`;
 }
 
-async function generateBBFW(idx, force) {
+export async function generateBBFW(idx, force) {
   const intent = hydrateIntent(intentions[idx]);
   if (!intent) return;
   if (!force && _hasBbfw(intent.bbfw)) {
@@ -2617,7 +2623,7 @@ function applyNoteBlobs() {
 }
 
 
-async function saveContentBlock(slug) {
+export async function saveContentBlock(slug) {
   const ed  = document.getElementById(`admin-editor-${slug}`);
   const btn = document.getElementById(`admin-save-${slug}`);
   const st  = document.getElementById(`admin-status-${slug}`);
@@ -2642,7 +2648,7 @@ async function saveContentBlock(slug) {
   });
 }
 
-function adminFmt(slug, cmd) {
+export function adminFmt(slug, cmd) {
   const ed = document.getElementById(`admin-editor-${slug}`);
   if (!ed) return;
   ed.focus();
@@ -2650,7 +2656,7 @@ function adminFmt(slug, cmd) {
   ed.dataset.dirty = '1';
 }
 
-function adminLink(slug) {
+export function adminLink(slug) {
   const ed = document.getElementById(`admin-editor-${slug}`);
   if (!ed) return;
   const url = prompt('Enter URL:');
@@ -2776,7 +2782,7 @@ function buildBSPegboardPanel(intent) {
 /* ─────────────────────────────────────────────────────────
    INIT
 ───────────────────────────────────────────────────────── */
-async function init() {
+export async function init() {
   // Load local data first
   loadIntentionsFromLS();
 
@@ -2867,8 +2873,7 @@ document.getElementById('authModal').addEventListener('click', function(e) {
 
 
 
-// Boot
-init();
+// Boot is orchestrated by src/main.js (after all modules load) — see init() export.
 
 // ── SUTHERLAND ALCHEMY ────────────────────────────────────────
 let _alchemyIntention = '';
@@ -2928,7 +2933,7 @@ const ALCHEMY_STUBS = [
   }
 ];
 
-function runAlchemy() {
+export function runAlchemy() {
   const btn = document.getElementById('alchemyRegenBtn');
   if (btn) btn.disabled = true;
   document.getElementById('alchemyBody').innerHTML = `
@@ -2968,7 +2973,7 @@ function renderAlchemy(raw) {
     </div>`;
 }
 
-function closeAlchemyModal() {
+export function closeAlchemyModal() {
   const modal = document.getElementById('alchemyModal');
   modal.style.opacity = '0';
   modal.style.pointerEvents = 'none';
@@ -2979,7 +2984,7 @@ function closeAlchemyModal() {
 /* ── COUNTDOWN TIMER ─────────────────────────────────── */
 const cdState = { timer: null, remaining: 0, total: 0, paused: false, title: '', repeatEvery: 15 };
 
-function launchCountdown(idx, seconds) {
+export function launchCountdown(idx, seconds) {
   if (!intentions.length) return;
   const intn = intentions[idx] || intentions[0];
   const text = (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');

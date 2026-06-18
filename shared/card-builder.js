@@ -1,3 +1,5 @@
+import { buildContext, callClaude, currentUser, esc, getPB, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
+import { launchAffirmationPlayer } from './player-launcher.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
    Depends on globals: intentions, esc, getPB, buildContext,
    callClaude, saveIntentions, syncIntentionsToSupabase,
@@ -8,7 +10,7 @@
 ───────────────────────────────────────────────────────── */
 
 /* ── CARD HTML ───────────────────────────────────────── */
-function buildCardHTML(intention, idx, color) {
+export function buildCardHTML(intention, idx, color) {
   const startDate  = intention.startDate  || '';
   const targetDate = intention.targetDate || '';
   const views      = intention.views      || Math.floor(Math.random()*120)+10;
@@ -108,7 +110,7 @@ function buildActionBtnBorder(idx, num, line1, line2, action) {
   </button>`;
 }
 
-function toggleCardV2(idx) {
+export function toggleCardV2(idx) {
   const body = document.getElementById(`card-body-${idx}`);
   const chev = document.getElementById(`chev-${idx}`);
   if (!body) return;
@@ -116,7 +118,7 @@ function toggleCardV2(idx) {
   if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : '';
 }
 
-function saveCardDate(idx, field, val) {
+export function saveCardDate(idx, field, val) {
   if (intentions[idx]) { intentions[idx][field] = val; saveIntentions(); }
 }
 
@@ -186,7 +188,7 @@ function buildWordsPanel(intention, idx) {
     </div>`;
 }
 
-async function lockPsychReframe(idx) {
+export async function lockPsychReframe(idx) {
   const btn    = document.getElementById(`lockPsychBtn-${idx}`);
   const inputs = document.querySelectorAll(`.pb-alignment-input[data-idx="${idx}"]`);
   const reframe = {};
@@ -205,7 +207,7 @@ async function lockPsychReframe(idx) {
 }
 
 /* Persist the user's active-danger-zone selection from the intake control. */
-function setActiveDangerZone(idx, value) {
+export function setActiveDangerZone(idx, value) {
   if (!intentions[idx]) return;
   intentions[idx].activeDangerZone = value || '';
   saveIntentions();
@@ -223,7 +225,7 @@ function getActiveDangerZone(intent) {
   return zones[0];
 }
 
-async function generateRoadmapAI(idx) {
+export async function generateRoadmapAI(idx) {
   const btn    = document.getElementById(`btn-roadmap-ai-${idx}`);
   const panel  = document.getElementById(`panel-roadmap-ai-${idx}`);
   const intent = intentions[idx];
@@ -320,7 +322,7 @@ function renderMindsetResult(m, idx) {
       onclick="generateMindset(${idx})">↺ Regenerate</button>`;
 }
 
-function buildRoadmapPanel(intention, idx) {
+export function buildRoadmapPanel(intention, idx) {
   const zones = intention.theMap?.dangerZones || [];
 
   // Optional targeting: if danger zones exist, let the user aim the 10 steps at
@@ -403,7 +405,7 @@ function renderRoadmapResult(a, idx) {
 }
 
 /* ── ADD / DELETE INTENTIONS ─────────────────────────── */
-function showAddForm() {
+export function showAddForm() {
   document.getElementById('addIntentionForm')?.classList.remove('hidden');
   document.getElementById('btnAddIntention')?.classList.add('hidden');
   setTimeout(() => document.getElementById('newIntentionInput')?.focus(), 50);
@@ -414,7 +416,7 @@ function showAddForm() {
    player's caption (#ppSlideText). Silent — text only, no TTS. */
 const ActiveVisualPlayer = { currentIdx: 0, timer: null };
 
-function stopSurgicalVisualLoop() {
+export function stopSurgicalVisualLoop() {
   clearTimeout(ActiveVisualPlayer.timer);
   ActiveVisualPlayer.timer = null;
 }
@@ -424,7 +426,7 @@ function openVisionPlayer() {
   if (typeof launchAffirmationPlayer === 'function') launchAffirmationPlayer();
 }
 
-function runSurgicalVisualLoop(idx) {
+export function runSurgicalVisualLoop(idx) {
   stopSurgicalVisualLoop();
   // Drives the phone player (#ppSlideText / #ppScreenImg).
   const txtEls = [document.getElementById('ppSlideText')].filter(Boolean);
@@ -461,7 +463,7 @@ function runSurgicalVisualLoop(idx) {
   cycle();
 }
 
-function updateIamPreview() {
+export function updateIamPreview() {
   const f1 = (document.getElementById('iam-field1')?.value || '').trim();
   const f2 = (document.getElementById('iam-field2')?.value || '').trim();
   const preview = document.getElementById('iam-preview');
@@ -473,7 +475,7 @@ function updateIamPreview() {
     : 'I AM …';
 }
 
-function hideAddForm() {
+export function hideAddForm() {
   document.getElementById('addIntentionForm')?.classList.add('hidden');
   document.getElementById('btnAddIntention')?.classList.remove('hidden');
   const f1 = document.getElementById('iam-field1');
@@ -483,7 +485,7 @@ function hideAddForm() {
   updateIamPreview();
 }
 
-async function confirmAddIntention() {
+export async function confirmAddIntention() {
   const f1 = (document.getElementById('iam-field1')?.value || '').trim();
   const f2 = (document.getElementById('iam-field2')?.value || '').trim();
   if (!f1 && !f2) { toast('Fill in your intention.', 'error'); return; }
@@ -542,7 +544,7 @@ async function fetchGoalImage(idx, title, opts = {}) {
    that are missing one. Safe to call repeatedly: skips goals that already
    have an image or are mid-generation, and only one pass runs at a time. */
 let _imgBackfillRunning = false;
-async function backfillGoalImages() {
+export async function backfillGoalImages() {
   if (_imgBackfillRunning) return;
   if (typeof intentions === 'undefined' || !intentions || !intentions.length) return;
   _imgBackfillRunning = true;
@@ -574,7 +576,7 @@ async function regenerateGoalImage(idx, ev) {
   await fetchGoalImage(idx, intn.title);
 }
 
-function renderPBIntentionList() {
+export function renderPBIntentionList() {
   const el = document.getElementById('pbIntentionList');
   if (!el) return;
   if (intentions.length === 0) {
@@ -613,14 +615,14 @@ function renderPBIntentionList() {
   }).join('');
 }
 
-async function pbSaveCategory(idx, val) {
+export async function pbSaveCategory(idx, val) {
   if (!intentions[idx]) return;
   intentions[idx].category = val;
   await saveIntentions();
   renderVaultSidebar();
 }
 
-async function pbConfirmAddIntention() {
+export async function pbConfirmAddIntention() {
   const inp      = document.getElementById('pbNewIntentionInput');
   const startEl  = document.getElementById('pbNewStartDate');
   const targetEl = document.getElementById('pbNewTargetDate');
@@ -647,7 +649,7 @@ async function pbConfirmAddIntention() {
   toast('Intention added ✓', 'success');
 }
 
-async function pbSaveIntentionTitle(idx, newTitle) {
+export async function pbSaveIntentionTitle(idx, newTitle) {
   const t = newTitle.trim().slice(0, 150);
   if (!t || !intentions[idx] || intentions[idx].title === t) return;
   intentions[idx].title = t;
@@ -655,7 +657,7 @@ async function pbSaveIntentionTitle(idx, newTitle) {
   renderVaultSidebar();
 }
 
-async function pbDeleteIntention(idx) {
+export async function pbDeleteIntention(idx) {
   if (!confirm(`Remove "${intentions[idx]?.title}"?`)) { renderPBIntentionList(); return; }
   const deletedId = intentions[idx]?.id;
   intentions.splice(idx, 1);
@@ -668,7 +670,7 @@ async function pbDeleteIntention(idx) {
   toast('Intention removed.', '');
 }
 
-async function deleteIntention(idx) {
+export async function deleteIntention(idx) {
   if (!confirm(`Remove "${intentions[idx]?.title}"?`)) return;
   const deletedId = intentions[idx]?.id;
   intentions.splice(idx, 1);
@@ -690,7 +692,7 @@ function toggleCard(idx) {
   else         { body.classList.remove('open'); hdr?.classList.remove('open'); }
 }
 
-function switchPDTab(idx, tab) {
+export function switchPDTab(idx, tab) {
   const activeTab    = document.getElementById(`tab-${tab}-${idx}`);
   const isAlreadyActive = activeTab?.classList.contains('active');
   ['words','mindset','roadmap','fullplan'].forEach(t => {
@@ -718,7 +720,7 @@ async function saveWordFields(idx) {
 }
 
 /* ── AI GENERATION ───────────────────────────────────── */
-async function generateMindset(idx) {
+export async function generateMindset(idx) {
   const btn = document.getElementById(`btn-mindset-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
   try {
@@ -742,7 +744,7 @@ async function generateMindset(idx) {
   }
 }
 
-async function generateAchievers(idx) {
+export async function generateAchievers(idx) {
   const btn = document.getElementById(`btn-roadmap-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
   try {
@@ -827,7 +829,7 @@ function renderFullPlanResult(plan, idx) {
       onclick="generateFullPlan(${idx})">↺ Regenerate Full Plan</button>`;
 }
 
-async function generateFullPlan(idx) {
+export async function generateFullPlan(idx) {
   const btn = document.getElementById(`btn-fullplan-${idx}`);
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
   try {

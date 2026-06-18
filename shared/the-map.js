@@ -1,3 +1,5 @@
+import { LS, buildBBFWPanel, colBBanner, esc, intentions, renderBBFW, selectedVaultIdx, startAffirmationLoop, syncIntentionsToSupabase } from '../app.js';
+import { logActivity } from './activity.js';
 /* ── THE MAP MODULE (v4) ─────────────────────────────────
    5-section personalized goal framework:
    THIS WEEK / DANGER ZONES / MINDSET AUDIT / THIS MONTH / THE TERRAIN
@@ -6,7 +8,7 @@
    selectedVaultIdx, logActivity, toast
 ───────────────────────────────────────────────────────── */
 
-function _parseJsonField(val) {
+export function _parseJsonField(val) {
   if (val == null) return null;
   if (typeof val === 'string') {
     try { return JSON.parse(val); } catch { return null; }
@@ -14,7 +16,7 @@ function _parseJsonField(val) {
   return val;
 }
 
-function _hasBbfw(bbfw) {
+export function _hasBbfw(bbfw) {
   const data = _parseJsonField(bbfw);
   if (!data || typeof data !== 'object') return false;
   return (data.eternal_problems?.length > 0)
@@ -22,7 +24,7 @@ function _hasBbfw(bbfw) {
     || (typeof data.strategy_narrative === 'string' && data.strategy_narrative.trim().length > 0);
 }
 
-function _hasTheMap(map) {
+export function _hasTheMap(map) {
   const data = _parseJsonField(map);
   if (!data || typeof data !== 'object') return false;
   return !!(
@@ -35,7 +37,7 @@ function _hasTheMap(map) {
   );
 }
 
-function hydrateIntent(intent) {
+export function hydrateIntent(intent) {
   if (!intent) return intent;
   const rowBbfw = _parseJsonField(intent.bbfw);
   const rowMap  = _parseJsonField(intent.theMap ?? intent.the_map);
@@ -44,7 +46,7 @@ function hydrateIntent(intent) {
   return intent;
 }
 
-function _paintStrategyPanel(idx, intent) {
+export function _paintStrategyPanel(idx, intent) {
   const panel = document.getElementById(`bsPanel-bbfw-${idx}`);
   if (!panel || !intent) return;
   if (typeof buildBBFWPanel === 'function') {
@@ -62,7 +64,7 @@ function _paintTacticsPanel(idx, intent) {
 }
 
 /* ── SEED PLAYERS WITH GOAL AFFIRMATIONS ─────────────── */
-function seedGoalPractice(idx) {
+export function seedGoalPractice(idx) {
   const map = intentions[idx]?.theMap;
   if (!map?.practice) return;
   const p = map.practice;
@@ -80,7 +82,7 @@ function seedGoalPractice(idx) {
 }
 
 /* ── TOGGLE CHECKBOX ─────────────────────────────────── */
-async function toggleMapItem(idx, section, itemIdx, checked) {
+export async function toggleMapItem(idx, section, itemIdx, checked) {
   const map = intentions[idx]?.theMap;
   if (!map) return;
   if (!map.checks) map.checks = {};
@@ -98,7 +100,7 @@ async function toggleMapItem(idx, section, itemIdx, checked) {
 }
 
 /* ── TOGGLE LOCK ─────────────────────────────────────── */
-function toggleTaskLock(idx, sectionKey, itemIdx) {
+export function toggleTaskLock(idx, sectionKey, itemIdx) {
   const map = intentions[idx]?.theMap;
   if (!map) return;
   if (!map.locks) map.locks = {};
@@ -206,7 +208,7 @@ function _hotStateBanner() {
     </div>`;
 }
 
-function _toggleDangerZone(id) {
+export function _toggleDangerZone(id) {
   const body  = document.getElementById('dz-body-' + id);
   const arrow = document.getElementById('dz-arrow-' + id);
   if (!body) return;
@@ -413,7 +415,7 @@ function buildBSTheMapPanel(intent, idx) {
 }
 
 /* ── GENERATE ────────────────────────────────────────── */
-async function bsGenerateTheMap(idx, force) {
+export async function bsGenerateTheMap(idx, force) {
   const intent = hydrateIntent(intentions[idx]);
   if (!intent) return;
   if (!force && _hasTheMap(intent.theMap)) {
@@ -615,6 +617,6 @@ function _initMapRecitations(idx) {
 function toggleMapAccordion() {}
 async function toggleMapTodo() {}
 async function generateTheMap() {}
-async function bsGenerateRoadmap() {}
-async function bsGenerateLibrary() {}
-function closeViz() {}
+export async function bsGenerateRoadmap() {}
+export async function bsGenerateLibrary() {}
+export function closeViz() {}

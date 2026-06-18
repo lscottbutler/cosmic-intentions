@@ -1,3 +1,4 @@
+import { closeDrawer } from '../app.js';
 /* ── PLAYER LAUNCHER — Affirmation only ───────────────────
    Cosmic Intentions ships ONE player: the Affirmation player.
      • Inline:     the .ent-slideshow loop driven by
@@ -13,7 +14,7 @@
 ──────────────────────────────────────────────────────────── */
 
 /* Open the standalone Affirmation player in a focused popout window. */
-function launchAffirmationPlayer() {
+export function launchAffirmationPlayer() {
   if (typeof closeDrawer === 'function') closeDrawer();
   const w = 540, h = 920;
   const left = Math.max(0, (screen.width  - w) / 2);
@@ -24,7 +25,7 @@ function launchAffirmationPlayer() {
 
 /* ── GENERIC ACCORDIONS (used by index.html + the-map.js) ──
    Not players — collapsible panels for roadmap / Column-B sections. */
-function toggleAcc(key) {
+export function toggleAcc(key) {
   const panel = document.getElementById('accPanel-' + key);
   const trig  = document.getElementById('accTrig-'  + key);
   if (!panel || !trig) return;
@@ -35,7 +36,7 @@ function toggleAcc(key) {
 }
 
 /* Collapsible Column B section (e.g. My Roadmap triangle dropdown). */
-function toggleColBSection(key) {
+export function toggleColBSection(key) {
   const body = document.getElementById(key + '-body');
   const arr  = document.getElementById(key + '-arr');
   if (!body) return;

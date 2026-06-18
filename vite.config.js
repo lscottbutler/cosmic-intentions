@@ -23,8 +23,7 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: 'app.js', dest: '.' },
-        { src: 'shared', dest: '.' },
+        // app.js + shared/*.js are now ES modules bundled via src/main.js — not copied.
         { src: 'player', dest: '.' },
         { src: 'players', dest: '.' },
         { src: 'images', dest: '.' },

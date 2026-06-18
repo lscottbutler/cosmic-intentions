@@ -1,3 +1,4 @@
+import { LS, currentUser, esc, getPB } from '../app.js';
 /* ── ACTIVITY & PROGRESS MODULE ─────────────────────────
    Depends on globals: currentUser, sb, getPB, LS, esc,
    setEl (defined in index.html)
@@ -11,7 +12,7 @@ const ACTIVITY_LABELS = {
   login:      { icon: '⚡', label: 'Daily check-in'        },
 };
 
-async function logActivity(type, metadata, points) {
+export async function logActivity(type, metadata, points) {
   if (!currentUser) return;
   try {
     await sb.from('activity_log').insert({
@@ -35,7 +36,7 @@ async function logActivity(type, metadata, points) {
   }
 }
 
-async function logDailyLogin() {
+export async function logDailyLogin() {
   if (!currentUser) return;
   const key   = `ci_last_login_${currentUser.id}`;
   const last  = LS.get(key);

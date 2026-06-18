@@ -1,3 +1,5 @@
+import { esc, intentions } from '../app.js';
+import { logActivity } from './activity.js';
 /* ── WEEKLY FOCUS MODULE ─────────────────────────────────
    10 rotating checkboxes per week pulled from The Map todos.
    Rotates every Monday. 4-week cycle, then repeats with variation.
@@ -13,12 +15,12 @@ function _wfGetISOWeek(d) {
   return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
 
-function _wfWeekKey() {
+export function _wfWeekKey() {
   const d = new Date();
   return `${d.getFullYear()}-W${String(_wfGetISOWeek(d)).padStart(2,'0')}`;
 }
 
-function _wfCycleNum() {
+export function _wfCycleNum() {
   return ((_wfGetISOWeek(new Date()) - 1) % 4) + 1; // 1–4
 }
 
@@ -28,14 +30,14 @@ function _wfDaysUntilMonday() {
 }
 
 /* Component focus per cycle week */
-const WF_CYCLE_COMPS = {
+export const WF_CYCLE_COMPS = {
   1: [1, 2, 3],                  // Foundation: Clarity · Why · Belief
   2: [4, 5, 6],                  // Execution: Plan · Feedback · Environment
   3: [7, 8, 9],                  // Sustaining: Accountability · Resilience · Identity
   4: [1, 2, 3, 4, 5, 6, 7, 8, 9], // Integration: all
 };
 
-const WF_CYCLE_LABELS = {
+export const WF_CYCLE_LABELS = {
   1: { label: 'Foundation',    color: '#F5A623' },
   2: { label: 'Execution',     color: '#60A0FF' },
   3: { label: 'Sustaining',    color: '#4ADE80' },
@@ -49,7 +51,7 @@ const WF_COMP_NAMES = {
 };
 
 /* ── Build the pool of todos ─────────────────────────── */
-function _wfBuildPool(cycleComps) {
+export function _wfBuildPool(cycleComps) {
   const pool = [];
   (intentions || []).forEach((intent, intentIdx) => {
     const comps = intent?.theMap?.components || [];
@@ -89,7 +91,7 @@ function _wfSeededShuffle(arr, seed) {
 }
 
 /* Pick 10 items with component variety (max 2 from any one component) */
-function _wfPickTen(pool, seed) {
+export function _wfPickTen(pool, seed) {
   const shuffled  = _wfSeededShuffle(pool, seed);
   const picked    = [];
   const compCount = {};
@@ -113,7 +115,7 @@ function _wfPickTen(pool, seed) {
 }
 
 /* ── Completion storage ──────────────────────────────── */
-function _wfLoadChecks() {
+export function _wfLoadChecks() {
   try { return JSON.parse(localStorage.getItem(`ci_wf_${_wfWeekKey()}`) || '{}'); }
   catch { return {}; }
 }
@@ -131,7 +133,7 @@ function _wfSaveChecks(checks) {
 }
 
 /* ── Toggle a checkbox ───────────────────────────────── */
-function wfToggle(key) {
+export function wfToggle(key) {
   const checks   = _wfLoadChecks();
   checks[key]    = !checks[key];
   _wfSaveChecks(checks);

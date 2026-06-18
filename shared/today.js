@@ -1,3 +1,6 @@
+import { LS, esc, intentions, syncIntentionsToSupabase } from '../app.js';
+import { logActivity } from './activity.js';
+import { WF_CYCLE_COMPS, WF_CYCLE_LABELS, _wfBuildPool, _wfCycleNum, _wfLoadChecks, _wfPickTen, _wfWeekKey } from './weekly-focus.js';
 /* ── TODAY MODULE ────────────────────────────────────────
    The daily dashboard — sessions, commitments, weekly focus.
    Depends on globals: intentions, esc, LS, logActivity,
@@ -50,7 +53,7 @@ function _todayGetCommitments() {
 }
 
 /* ── Toggle a daily commitment ───────────────────────── */
-function todayToggleCommit(intentIdx, commitIdx) {
+export function todayToggleCommit(intentIdx, commitIdx) {
   const intent = intentions[intentIdx];
   const commit = intent?.achievers?.commitments?.[commitIdx];
   if (!commit) return;
@@ -81,7 +84,7 @@ function _todayGetSessionsDone() {
   return LS.get(`ci_today_sessions_${_todayKey()}`) || [];
 }
 
-function todayMarkSession(sessionLabel) {
+export function todayMarkSession(sessionLabel) {
   const key  = `ci_today_sessions_${_todayKey()}`;
   const done = LS.get(key) || [];
   if (!done.includes(sessionLabel)) {
@@ -92,7 +95,7 @@ function todayMarkSession(sessionLabel) {
 }
 
 /* ── Main render ─────────────────────────────────────── */
-function renderTodayView() {
+export function renderTodayView() {
   const el = document.getElementById('todayPanel');
   if (!el) return;
 
@@ -206,7 +209,7 @@ function renderTodayView() {
 ───────────────────────────────────────────────────────── */
 let _tsOpen = true;
 
-function renderTodayStrip() {
+export function renderTodayStrip() {
   const el = document.getElementById('todayStrip');
   if (!el) return;
 
@@ -248,7 +251,7 @@ function renderTodayStrip() {
   el.innerHTML = header;
 }
 
-function _tsToggle() {
+export function _tsToggle() {
   _tsOpen = !_tsOpen;
   renderTodayStrip();
 }
