@@ -5643,7 +5643,6 @@ input, textarea, select {
   <span class="tnav-sep">·</span>
   <button class="tnav-btn" onclick="navTo('gettingstarted')">Getting Started</button>
   <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('bts')">Behind the Scenes</button>
   <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
   <button class="tnav-btn" id="topnav-notes" style="display:none" onclick="navTo('notes')">My Notes</button>
   <span class="tnav-sep">·</span>
@@ -5669,9 +5668,6 @@ input, textarea, select {
     <button class="drawer-nav-item" onclick="navTo('setup')">
       <span class="nav-icon">📋</span> My Pegboard
       <span class="nav-count-dot" id="vaultIntentionCount">0</span>
-    </button>
-    <button class="drawer-nav-item" onclick="navTo('bts')">
-      <span class="nav-icon">🎬</span> Behind the Scenes
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('library')">
@@ -6375,81 +6371,6 @@ input, textarea, select {
   </div>
 
   <!-- BTS -->
-  <div class="page" id="page-bts">
-    <div class="setup-page">
-      <div class="setup-page-header">
-        <h1>Behind the Scenes</h1>
-        <p>Private AI context. This shapes the tone, depth, and direction of everything Claude generates for you.</p>
-      </div>
-
-      <!-- AI STYLE -->
-      <div class="setup-section">
-        <div class="setup-section-title">AI Style</div>
-
-        <div class="field-group">
-          <label class="field-label" for="bts-tone">Preferred Tone</label>
-          <span class="field-hint">How should Claude speak to you? Be specific.</span>
-          <textarea class="field-input" id="bts-tone" placeholder="e.g. Direct, energetic, no fluff. Like a high-performance coach who also meditates."></textarea>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="bts-authors">Mentors &amp; Influences</label>
-          <span class="field-hint">Authors, thinkers, leaders who shape your worldview. Claude will draw from their style.</span>
-          <textarea class="field-input" id="bts-authors" placeholder="e.g. Marcus Aurelius, Tony Robbins, Naval Ravikant, David Goggins, Tim Ferriss"></textarea>
-        </div>
-      </div>
-
-      <!-- YOUR REALITY -->
-      <div class="setup-section">
-        <div class="setup-section-title">Your Reality</div>
-
-        <div class="field-group">
-          <label class="field-label" for="bts-obstacles">Biggest Obstacles</label>
-          <span class="field-hint">What stands between you and where you want to be? Be honest.</span>
-          <textarea class="field-input tall" id="bts-obstacles" placeholder="e.g. Self-doubt, inconsistency, fear of failure, distraction, lack of clear direction."></textarea>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="bts-why">Your Deeper Why</label>
-          <span class="field-hint">Beyond the goals — what's the real reason you're doing this?</span>
-          <textarea class="field-input tall" id="bts-why" placeholder="e.g. I want my kids to see what's possible. I don't want to reach 70 with regrets."></textarea>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="bts-context">Additional Context</label>
-          <span class="field-hint">Anything else Claude should know about your life, situation, or goals.</span>
-          <textarea class="field-input tall" id="bts-context" placeholder="e.g. 43 years old, based in Bangkok, building a SaaS business, pilot in training, father of two."></textarea>
-        </div>
-      </div>
-
-      <!-- VOICE -->
-      <div class="setup-section">
-        <div class="setup-section-title">Voice Settings (Optional)</div>
-
-        <div class="field-group">
-          <label class="field-label" for="openai_voice">Voice</label>
-          <span class="field-hint">Choose your AI voice.</span>
-          <select class="field-input" id="openai_voice"
-            onchange="localStorage.setItem('openai_voice',this.value);">
-            <option value="alloy">Alloy — Neutral</option>
-            <option value="echo">Echo — Male, deeper</option>
-            <option value="fable">Fable — British, expressive</option>
-            <option value="onyx">Onyx — Male, authoritative</option>
-            <option value="nova">Nova — Female, warm</option>
-            <option value="shimmer">Shimmer — Female, soft</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="height: 20px;"></div>
-    </div>
-
-    <!-- SAVE BAR -->
-    <div class="save-bar">
-      <button class="btn-save-secondary" onclick="loadPegboard()">↺ Reload</button>
-      <button class="btn-save" id="btn-save-bts" onclick="saveBTS()">Save BTS</button>
-    </div>
-  </div>
 
   <!-- LIBRARY -->
   <div class="page" id="page-library">
@@ -6805,9 +6726,9 @@ input, textarea, select {
       <div class="gs-step" id="gs-step-2" onclick="toggleGsStep(2)">
         <div class="gs-step-num" id="gs-num-2">2</div>
         <div class="gs-step-content">
-          <div class="gs-step-title">Fill in Behind the Scenes</div>
-          <div class="gs-step-desc">Add your tone preference, mentors, biggest obstacles, and deeper why. The more honest you are here, the more powerful your AI sessions become.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('bts')">Go to BTS →</button>
+          <div class="gs-step-title">Fill in your Pegboard</div>
+          <div class="gs-step-desc">Add your tone preference, mentors, biggest obstacles, and deeper why. The more honest you are, the more powerful your AI sessions become.</div>
+          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('setup')">Go to Pegboard →</button>
         </div>
         <div class="gs-check" id="gs-check-2">○</div>
       </div>
@@ -7425,7 +7346,7 @@ function subnavForward() {
 
 function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','bts','library','bestpractices','gettingstarted','community'];
+  const auth_required = ['dashboard','setup','library','bestpractices','gettingstarted','community'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
