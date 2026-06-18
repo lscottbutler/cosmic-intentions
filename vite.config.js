@@ -23,6 +23,7 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
+        { src: 'app.js', dest: '.' },
         { src: 'shared', dest: '.' },
         { src: 'player', dest: '.' },
         { src: 'players', dest: '.' },

@@ -393,3 +393,39 @@ summaries, run /wrap before ending a session.
   90ce04d Move milestone day bar to absolute top of Column B
   37a32af Move phone player to top of Column B
   d387ca7 Remove grey vision player from Column A; keep phone player
+
+[2026-06-18] auto-logged commits:
+  601f015 Compress in-use images: tracked images 79MB -> 14MB
+  394bc2a Image cleanup: remove orphaned icons + scratch (-15MB tracked)
+  34e706a Vite build pipeline (Phase 0) — extract CSS, real build/dev tooling
+  7b7b94b Players: keep only Affirmation, remove meditation/gratitude/viz/timer
+  8b81664 Clean foundation: remove orphaned files, dead modules, scratch dirs
+  abab2f3 Purge orphaned CSS + dead page JS (-3200 CSS lines, -131 JS lines)
+  ab98cc1 Strip site to lean core: remove 6 pages (library, bestpractices, gettingstarted, journal, community, notes)
+  69c04b1 feat: remove Behind the Scenes (page, nav, route)
+  48fd9a6 feat: remove progress tracking (page, dashboard widget, nav, script)
+  055523f refactor: remove all players (boot-safe redo)
+  5b59e1d rollback: restore site to dc12a20
+  2f00c5f ops: solo-operator foundation — health check, safe rollback, runbook
+  dcf4315 refactor: remove ALL remaining players (keep only affirmation)
+  dc12a20 perf: compress trough + GRATITUDE images (418M -> 34M)
+  1911505 chore: untrack ~26M of unused image/asset folders (de-bloat)
+  852de0c chore: re-trigger Netlify deploy after credits added
+  a405526 system: verification protocol + deploy-status guardrail; untrack 23M MP4
+  0dd7277 fix: commit the affirmation player (was untracked)
+  e326db3 chore: deep clean — remove dead player CSS + orphaned launch wrappers
+  804319b chore: remove ALL players, start fresh — keep only player/affirmation.html
+  73b31e9 fix: bump cache-buster on player-launcher.js + ci-player so browsers fetch fresh
+  abcc3c2 fix: retire old player files -> redirect to unified session.html (Manifest)
+  cf45995 chore: add Player Lab for instant local player testing
+  58bbc82 feat: restore 3-Min Manifest in Cosmic Library (now that viz-3min works)
+  d39b054 feat: add intro title card, alternating panels, rocket end overlay to CIPlayer
+  5e908c9 feat: restyle CIPlayer to the Manifest split-frame design
+  20a2724 fix: restore countdown circle in CIPlayer (all players), pulse only last 3s
+  d2c8b40 fix: meditation timer ring pulses only the last 3s (was 60s)
+  3cd725a feat: viz-quick delegates playback to unified session.html (keeps unlock modal)
+  26c599b feat: pilot viz-10min + viz-3min through unified session.html (visualization mode)
+  1233130 feat: pilot — route gratitude + meditation-timer through unified session.html
+  dd32fab feat: add unified players/session.html on CIPlayer (additive, not yet wired)
+  2cc381c feat: add unified CIPlayer engine (visualization/meditation/gratitude) + demo
+  61b3266 chore: back up player template + vibe tooling; gitignore large local media
