@@ -13,15 +13,37 @@ Repo root: `C:\WORK\ROOT` | Main branch: `main`
 - `images/icons/` — all UI icons (PNG)
 - `CLAUDE_MASTER_BRIEF.md` — paste this at top of every new Claude CoWork session
 
-## VERIFY BEFORE RELEASING — NON-NEGOTIABLE
-NEVER tell the user something works until ALL of these are confirmed:
-1. Start the preview server (`CI Local`) and load the page via `preview_eval`
-2. Render the actual component being changed with test data via `preview_eval`
-3. Take a `preview_screenshot` and visually confirm it looks correct
-4. If screenshot fails, use `preview_eval` to check computed styles and DOM state
-5. Only THEN commit, push, and report to the user
+## DEFINITION OF DONE — VERIFY OR DON'T CLAIM IT (NON-NEGOTIABLE)
+The live site (cosmicintentions.com) does NOT reliably reflect changes — it caches,
+and deploys can silently fail (see "Deploy reality"). NEVER judge a change by the
+live site. NEVER tell Scott something "works", "is live", or "is done" without proof.
 
-If any step fails — fix it first. Do NOT push broken code. Do NOT tell the user it works until you have visual or eval proof.
+For ANY change to the app, before reporting:
+1. **LOCAL = SOURCE OF TRUTH.** Make sure the local server is up
+   (double-click `vibe-preview.bat` → http://127.0.0.1:8080) and load the affected
+   page THERE. It runs the actual current code; the live site does not.
+2. **PROVE IT RENDERS.** Standalone page (e.g. player/*.html) → headless screenshot
+   with msedge `--headless --screenshot` and actually look at it. Auth-gated page
+   (index.html) → can't screenshot without login; say plainly "could not visually
+   verify — needs login" instead of implying it works.
+3. **AFTER PUSHING, CONFIRM IT DEPLOYED.** Run `bash scripts/deploy-status.sh`.
+   The newest Netlify deploy state MUST be `ready`. If it's `error`/`skipped`
+   (e.g. "credit usage exceeded"), the change is NOT live — say so and STOP.
+   Do NOT keep pushing into a failing pipeline.
+4. **One change → verify → report.** No batches of hopeful commits.
+5. **State the evidence** in the report ("verified on localhost", "deploy <hash>: ready").
+   If you couldn't verify something, say exactly what you couldn't verify.
+
+If you can't prove it, the honest answer is "not verified yet" — never "done".
+
+## Deploy reality (learned the hard way 2026-06-18)
+- Netlify auto-deploys `main`, BUT the team (CI26) hit its usage cap and EVERY deploy
+  silently errored "Skipped due to account credit usage exceeded". Pushing did nothing
+  visible for hours. ALWAYS check deploy state (step 3) — never assume a push went live.
+- Repo is bloated (~528M: ~504M tracked images + a 23M MP4) which burns Netlify quota.
+  Keep deploys lean; never commit MP4s/large media (they're gitignored — keep it that way).
+- Netlify CLI is linked to site `bf7cacf8-3b22-42be-b187-baf4ab0ebe9c`. Direct CLI deploys
+  are also blocked while the account cap is active (returns `Forbidden`).
 
 ## Output Format (ALWAYS follow this)
 - Step-by-step with exact app name, menu, button, or field name
