@@ -64,16 +64,36 @@
 .cip[data-mode="gratitude"] .cip__text { text-transform: none; font-weight: 700; }
 .cip[data-mode="visualization"] .cip__text { text-transform: uppercase; }
 
-/* Meditation: big breathing countdown */
-.cip__timer {
-  display: none;
-  font-family: "Courier New", monospace;
-  font-size: clamp(48px, 16vw, 96px);
-  font-weight: 800; letter-spacing: 2px;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 24px rgba(0,0,0,.5);
+/* Countdown ring — the circle the timer counts down inside (all modes) */
+.cip__ring {
+  width: clamp(116px, 34vw, 172px);
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.4s, transform 0.3s;
 }
-.cip[data-mode="meditation"] .cip__timer { display: block; }
+.cip__ring-time {
+  font-family: "Courier New", monospace;
+  font-weight: 300;
+  font-size: clamp(30px, 9vw, 52px);
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  transition: color 0.4s;
+  text-shadow: 0 2px 18px rgba(0,0,0,.5);
+}
+/* beige pulse only in the final 3 seconds */
+.cip__ring.ending { border-color: #C9A96E; animation: cip-ring-pulse 1s ease-in-out infinite; }
+.cip__ring.ending .cip__ring-time { color: #C9A96E; }
+@keyframes cip-ring-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
 .cip__breath {
   display: none;
   font-size: clamp(14px, 3.6vw, 22px);

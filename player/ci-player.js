@@ -83,7 +83,7 @@ class CIPlayer {
         <span class="cip__time"></span>
       </div>
       <div class="cip__center">
-        <div class="cip__timer"></div>
+        <div class="cip__ring"><span class="cip__ring-time"></span></div>
         <div class="cip__text"></div>
         <div class="cip__breath"></div>
       </div>
@@ -99,10 +99,11 @@ class CIPlayer {
         <div class="cip__done-label">SESSION COMPLETE</div>
       </div>`;
 
-    this.bgEl     = this.root.querySelector(".cip__bg");
-    this.timeEl   = this.root.querySelector(".cip__time");
-    this.timerEl  = this.root.querySelector(".cip__timer");
-    this.textEl   = this.root.querySelector(".cip__text");
+    this.bgEl       = this.root.querySelector(".cip__bg");
+    this.timeEl     = this.root.querySelector(".cip__time");
+    this.ringEl     = this.root.querySelector(".cip__ring");
+    this.ringTimeEl = this.root.querySelector(".cip__ring-time");
+    this.textEl     = this.root.querySelector(".cip__text");
     this.breathEl = this.root.querySelector(".cip__breath");
     this.barEl    = this.root.querySelector(".cip__bar > span");
     this.toggleBtn= this.root.querySelector('[data-act="toggle"]');
@@ -118,8 +119,10 @@ class CIPlayer {
   _renderTime() {
     const m = Math.floor(this.remain / 60), s = this.remain % 60;
     const str = `${m}:${String(s).padStart(2, "0")}`;
-    if (this.timeEl)  this.timeEl.textContent  = str;
-    if (this.opts.mode === "meditation") this.timerEl.textContent = str;
+    if (this.timeEl)     this.timeEl.textContent     = str;
+    if (this.ringTimeEl) this.ringTimeEl.textContent = str;
+    // beige pulse only in the final 3 seconds
+    if (this.ringEl) this.ringEl.classList.toggle("ending", this.remain <= 3 && this.remain > 0);
     const pct = 100 * (1 - this.remain / this.opts.durationSec);
     if (this.barEl) this.barEl.style.width = pct + "%";
   }
