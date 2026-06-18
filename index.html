@@ -1604,51 +1604,6 @@ textarea.field-input.tall { min-height: 110px; }
 
 
 /* ── PLAYER LAUNCHERS ─────────────────────────────────── */
-.players-section {
-  padding: 12px 20px;
-  background: var(--off);
-  border-radius: 8px;
-  margin: 8px 12px;
-}
-.players-section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.player-launcher {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--black);
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-  transition: all 0.15s;
-  border-radius: 6px;
-  margin-bottom: 4px;
-}
-.player-launcher:hover {
-  background: rgba(61, 127, 212, 0.08);
-}
-.player-launcher .player-icon {
-  width: 18px;
-  text-align: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-.player-duration {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 600;
-}
 
 /* ── PLAYER MODAL (shared base) ──────────────────────── */
 .player-modal {
@@ -3644,25 +3599,6 @@ input, textarea, select {
   flex-shrink: 0;
 }
 .vault-item-body { flex: 1; min-width: 0; }
-/* ── DIGITAL VISION BOARD — regenerate button (used in Column B build sheet) ── */
-.dvb-regen-btn {
-  position: absolute;
-  bottom: 8px; right: 8px;
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 17px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, transform 0.15s;
-}
-.dvb-regen-btn:hover { background: rgba(0,0,0,0.8); transform: rotate(90deg); }
-
 .vault-item-title {
   font-size: 14px;
   font-weight: 600;
@@ -4054,19 +3990,6 @@ input, textarea, select {
   border-radius: 0px !important;
   padding: 24px !important;
   box-sizing: border-box !important;
-}
-.bs-dvb {
-  position: relative;
-  margin-bottom: 12px;
-}
-.bs-dvb-img {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  background-color: #16213a;       /* fallback until the vision image loads */
-  background-size: cover;
-  background-position: center;
-  border: 4px solid #F05252;
-  box-sizing: border-box;
 }
 .bs-header {
   padding: 24px !important;
@@ -4503,71 +4426,6 @@ input, textarea, select {
   transition: all 0.15s;
 }
 .bs-nav-btn:hover { border-color: #888888; color: #EFEFEF; }
-
-/* ── PHONE PLAYER (Column B) ─────────────────────────────
-   Blue body, yellow screen showing the goal's vision image +
-   cycling affirmation, black home button launches the viz. */
-.phone-player {
-  position: relative;
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto 24px auto;
-  aspect-ratio: 2160 / 3840;           /* matches the skeleton */
-  background: #1B6FCD;                  /* blue body */
-  border-radius: 36px;
-  padding: 3.2% 4.5% 0;
-  box-sizing: border-box;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
-}
-.phone-screen {
-  position: relative;
-  width: 100%;
-  height: 77%;
-  background: #CDC71B;                  /* yellow screen (shows until an image loads) */
-  border-radius: 16px;
-  overflow: hidden;
-}
-.phone-screen-img {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transition: opacity 0.6s ease;
-}
-.phone-caption {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 44px 16px 16px;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-  color: #FFFFFF;
-  font-size: clamp(12px, 3.3vw, 16px);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  line-height: 1.4;
-  text-align: center;
-}
-.phone-caption span { display: inline-block; transition: opacity 0.4s ease; }
-.phone-home {
-  position: absolute;
-  left: 50%; bottom: 3.5%;
-  transform: translateX(-50%);
-  width: 23%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #000000;
-  border: 5px solid #6A6A6A;
-  color: #FFFFFF;
-  font-size: clamp(16px, 5vw, 26px);
-  padding-left: 3px;                    /* optically center the triangle */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.phone-home:hover  { transform: translateX(-50%) scale(1.06); box-shadow: 0 0 0 4px rgba(0,0,0,0.15); }
-.phone-home:active { transform: translateX(-50%) scale(0.96); }
 
 /* ── SYMMETRIC 50/50 DESKTOP GRID ───────────────────── */
 @media (min-width: 768px) {

@@ -587,23 +587,9 @@ function openRoadmapForSelected() {
 }
 
 /* ── CONVENIENCE LAUNCHERS ───────────────────────────── */
-function launch3MinViz(idx, source)  { launchPlayer('viz-3min',  { idx: seedMindsetSlides(idx, source) }); }
-function launch10MinViz(idx, source) { launchPlayer('viz-10min', { idx: seedMindsetSlides(idx, source) }); }
-function launchPegboardLoop()        { launchPlayer('pegboard-loop'); }
-
 function launchQuickViz(duration, idx, source) {
   if (duration) localStorage.setItem('viz_quick_duration', duration);
   launchPlayer('viz-quick', { idx: seedMindsetSlides(idx, source) });
-}
-
-function launchSlideshow(slidesConfig) {
-  LS.set('slideshow_config', JSON.stringify(slidesConfig));
-  launchPlayer('slideshow');
-}
-
-function launchVideo(videoUrl) {
-  LS.set('video_url', videoUrl);
-  launchPlayer('video');
 }
 
 function launchVisualCountdown(duration, idx = 0, source) {
