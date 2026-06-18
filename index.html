@@ -5633,21 +5633,9 @@ input, textarea, select {
 <nav id="topNav">
   <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
   <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('community')">Community</button>
-  <span class="tnav-sep">·</span>
   <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
   <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('library')">Cosmic Library</button>
-  <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('bestpractices')">Best Practices</button>
-  <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('gettingstarted')">Getting Started</button>
-  <span class="tnav-sep">·</span>
   <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
-  <button class="tnav-btn" id="topnav-notes" style="display:none" onclick="navTo('notes')">My Notes</button>
-  <span class="tnav-sep">·</span>
-  <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('journal')">📓 Journal</button>
   <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
 </nav>
 
@@ -5661,29 +5649,14 @@ input, textarea, select {
     <button class="drawer-nav-item" id="nav-dashboard" onclick="navTo('dashboard')">
       <span class="nav-icon">✦</span> Dashboard
     </button>
-    <button class="drawer-nav-item" id="nav-community" onclick="navTo('community')">
-      <span class="nav-icon">🌌</span> Community
-    </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('setup')">
       <span class="nav-icon">📋</span> My Pegboard
       <span class="nav-count-dot" id="vaultIntentionCount">0</span>
     </button>
     <div class="drawer-divider"></div>
-    <button class="drawer-nav-item" onclick="navTo('library')">
-      <span class="nav-icon">📚</span> Cosmic Library
-    </button>
-    <button class="drawer-nav-item" onclick="navTo('bestpractices')">
-      <span class="nav-icon">💡</span> Best Practices
-    </button>
-    <button class="drawer-nav-item" onclick="navTo('gettingstarted')">
-      <span class="nav-icon">🚀</span> Getting Started
-    </button>
     <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
       <span class="nav-icon">⚙</span> Admin
-    </button>
-    <button class="drawer-nav-item" id="nav-notes" style="display:none" onclick="navTo('notes')">
-      <span class="nav-icon">✏️</span> My Notes
     </button>
   </div>
   <div class="drawer-foot">
@@ -5774,11 +5747,6 @@ input, textarea, select {
           <div class="feature-icon">🎯</div>
           <h3>Action System</h3>
           <p>"Today I Will" daily micro-actions, "Having…Gives Me" emotional rewards, and an Effort Score to track your momentum.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🌌</div>
-          <h3>Cosmic Ecosystem</h3>
-          <p>Affirmations Library, Meditations, and the Cosmic Community feed.</p>
         </div>
       </div>
 
@@ -6373,503 +6341,6 @@ input, textarea, select {
   <!-- BTS -->
 
   <!-- LIBRARY -->
-  <div class="page" id="page-library">
-    <div class="lib-page">
-      <div class="lib-header">
-        <h1>Cosmic Library</h1>
-        <p>Curated quotes to fuel your mindset. Tap a category to expand.</p>
-      </div>
-
-      <div class="lib-search-wrap">
-        <span class="lib-search-icon">🔍</span>
-        <input class="lib-search" type="text" id="libSearch" placeholder="Search quotes..." oninput="filterLibrary(this.value)" />
-      </div>
-
-      <div id="libCategories">
-
-        <!-- IDENTITY -->
-        <div class="lib-category" data-cat="identity">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🪞</span>
-              <div>
-                <div class="lib-cat-name">Identity</div>
-                <div class="lib-cat-count">8 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"You are not your thoughts. You are the awareness behind them."</div><div class="lib-quote-author">— Eckhart Tolle</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment."</div><div class="lib-quote-author">— Ralph Waldo Emerson</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"Know thyself."</div><div class="lib-quote-author">— Socrates</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"Your identity shapes your behavior. Behave like the person you want to become."</div><div class="lib-quote-author">— James Clear</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"It's not what you do. It's who you are being while you do it."</div><div class="lib-quote-author">— Tony Robbins</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"The most powerful force in the human psyche is people's need for their words and actions to stay consistent with their self-identity."</div><div class="lib-quote-author">— Tony Robbins</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"What you call yourself is who you become."</div><div class="lib-quote-author">— Unknown</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb1)"></div><div class="lib-quote-text">"You are the author of your own story. Write one worth telling."</div><div class="lib-quote-author">— Unknown</div></div>
-          </div>
-        </div>
-
-        <!-- DISCIPLINE -->
-        <div class="lib-category" data-cat="discipline">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🔥</span>
-              <div>
-                <div class="lib-cat-name">Discipline</div>
-                <div class="lib-cat-count">8 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"Discipline equals freedom."</div><div class="lib-quote-author">— Jocko Willink</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"We are what we repeatedly do. Excellence, then, is not an act, but a habit."</div><div class="lib-quote-author">— Aristotle</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"The secret of your future is hidden in your daily routine."</div><div class="lib-quote-author">— Mike Murdock</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"Don't count the days. Make the days count."</div><div class="lib-quote-author">— Muhammad Ali</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"Hard choices, easy life. Easy choices, hard life."</div><div class="lib-quote-author">— Jerzy Gregorek</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"Stay hard."</div><div class="lib-quote-author">— David Goggins</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"One day or day one. You decide."</div><div class="lib-quote-author">— Unknown</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb2)"></div><div class="lib-quote-text">"Motivation gets you started. Discipline keeps you going."</div><div class="lib-quote-author">— Jim Ryun</div></div>
-          </div>
-        </div>
-
-        <!-- MINDSET -->
-        <div class="lib-category" data-cat="mindset">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🧠</span>
-              <div>
-                <div class="lib-cat-name">Mindset</div>
-                <div class="lib-cat-count">8 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"Whether you think you can or you think you can't — you're right."</div><div class="lib-quote-author">— Henry Ford</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"The mind is everything. What you think, you become."</div><div class="lib-quote-author">— Buddha</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"A man is but the product of his thoughts. What he thinks, he becomes."</div><div class="lib-quote-author">— Mahatma Gandhi</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"Change your thoughts and you change your world."</div><div class="lib-quote-author">— Norman Vincent Peale</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"You don't rise to the level of your goals, you fall to the level of your systems."</div><div class="lib-quote-author">— James Clear</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"What we fear doing most is usually what we most need to do."</div><div class="lib-quote-author">— Tim Ferriss</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"The obstacle is the way."</div><div class="lib-quote-author">— Marcus Aurelius</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb3)"></div><div class="lib-quote-text">"In the middle of every difficulty lies opportunity."</div><div class="lib-quote-author">— Albert Einstein</div></div>
-          </div>
-        </div>
-
-        <!-- GRATITUDE -->
-        <div class="lib-category" data-cat="gratitude">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🙏</span>
-              <div>
-                <div class="lib-cat-name">Gratitude</div>
-                <div class="lib-cat-count">7 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"Gratitude turns what we have into enough."</div><div class="lib-quote-author">— Melody Beattie</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"The more grateful I am, the more beauty I see."</div><div class="lib-quote-author">— Mary Davis</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"Wear gratitude like a cloak and it will feed every corner of your life."</div><div class="lib-quote-author">— Rumi</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"It is not joy that makes us grateful. It is gratitude that makes us joyful."</div><div class="lib-quote-author">— David Steindl-Rast</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"Acknowledging the good you already have in your life is the foundation for all abundance."</div><div class="lib-quote-author">— Eckhart Tolle</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"Begin each day with a grateful heart."</div><div class="lib-quote-author">— Unknown</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb4)"></div><div class="lib-quote-text">"Trade your expectation for appreciation and your whole world changes in an instant."</div><div class="lib-quote-author">— Tony Robbins</div></div>
-          </div>
-        </div>
-
-        <!-- COURAGE -->
-        <div class="lib-category" data-cat="courage">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">⚡</span>
-              <div>
-                <div class="lib-cat-name">Courage</div>
-                <div class="lib-cat-count">7 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"Do one thing every day that scares you."</div><div class="lib-quote-author">— Eleanor Roosevelt</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"Courage is not the absence of fear. It is taking action in spite of it."</div><div class="lib-quote-author">— Mark Twain</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"The cave you fear to enter holds the treasure you seek."</div><div class="lib-quote-author">— Joseph Campbell</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"Feel the fear and do it anyway."</div><div class="lib-quote-author">— Susan Jeffers</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"You gain strength, courage, and confidence by every experience in which you really stop to look fear in the face."</div><div class="lib-quote-author">— Eleanor Roosevelt</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"Fortune favours the bold."</div><div class="lib-quote-author">— Latin Proverb</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--mb5)"></div><div class="lib-quote-text">"Take the first step. You don't have to see the whole staircase."</div><div class="lib-quote-author">— Martin Luther King Jr.</div></div>
-          </div>
-        </div>
-
-        <!-- SUCCESS -->
-        <div class="lib-category" data-cat="success">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🏆</span>
-              <div>
-                <div class="lib-cat-name">Success</div>
-                <div class="lib-cat-count">7 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"Success is not final. Failure is not fatal. It is the courage to continue that counts."</div><div class="lib-quote-author">— Winston Churchill</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"The only place where success comes before work is in the dictionary."</div><div class="lib-quote-author">— Vidal Sassoon</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"Your network is your net worth."</div><div class="lib-quote-author">— Porter Gale</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"Ships don't sink because of water around them. They sink because of water that gets in them. Don't let what's happening around you get inside and weigh you down."</div><div class="lib-quote-author">— Unknown</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"The harder I work, the luckier I get."</div><div class="lib-quote-author">— Samuel Goldwyn</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"Build something 100 people love, not something 1 million people kind of like."</div><div class="lib-quote-author">— Paul Graham</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--accent)"></div><div class="lib-quote-text">"Don't wish it were easier. Wish you were better."</div><div class="lib-quote-author">— Jim Rohn</div></div>
-          </div>
-        </div>
-
-        <!-- STOICISM -->
-        <div class="lib-category" data-cat="stoicism">
-          <div class="lib-cat-header" onclick="toggleLibCat(this)">
-            <div class="lib-cat-left">
-              <span class="lib-cat-icon">🏛️</span>
-              <div>
-                <div class="lib-cat-name">Stoicism</div>
-                <div class="lib-cat-count">7 quotes</div>
-              </div>
-            </div>
-            <span class="lib-cat-chevron">▼</span>
-          </div>
-          <div class="lib-cat-body">
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"You have power over your mind, not outside events. Realize this, and you will find strength."</div><div class="lib-quote-author">— Marcus Aurelius</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"He who fears death will never do anything worthy of a living man."</div><div class="lib-quote-author">— Seneca</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"Waste no more time arguing what a good man should be. Be one."</div><div class="lib-quote-author">— Marcus Aurelius</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"It is not things that disturb us, but our interpretation of their significance."</div><div class="lib-quote-author">— Epictetus</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"Amor fati — love your fate."</div><div class="lib-quote-author">— Friedrich Nietzsche</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"Make the best use of what is in your power, and take the rest as it happens."</div><div class="lib-quote-author">— Epictetus</div></div>
-            <div class="lib-quote"><div class="lib-quote-bar" style="background:var(--teal)"></div><div class="lib-quote-text">"Very little is needed to make a happy life; it is all within yourself, in your way of thinking."</div><div class="lib-quote-author">— Marcus Aurelius</div></div>
-          </div>
-        </div>
-
-      </div>
-      <div class="lib-no-results hidden" id="libNoResults">No quotes match your search.</div>
-    </div>
-  </div>
-
-  <!-- BEST PRACTICES -->
-  <div class="page" id="page-bestpractices">
-    <div class="bp-page">
-      <div class="bp-inner">
-      <div class="bp-header">
-        <h1>Best Practices</h1>
-        <p>How to get the most out of Cosmic Intentions.</p>
-      </div>
-
-      <!-- WRITING INTENTIONS -->
-      <div class="bp-section">
-        <div class="bp-section-title">Writing Powerful Intentions</div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">✦</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Always start with "I AM"</div>
-            <div class="bp-tip-body">Not "I want to be" or "I will be." I AM is present tense. It tells your subconscious mind this is already true — and your behavior follows.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">🎯</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Be specific, not vague</div>
-            <div class="bp-tip-body">Weak: "I AM successful." Strong: "I AM a financially free entrepreneur earning $20k/month doing work I love." The brain needs a target to aim at.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">💡</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">3–5 intentions is the sweet spot</div>
-            <div class="bp-tip-body">Too many dilutes your focus. Too few limits your vision. Pick the areas of life that matter most right now: health, wealth, relationships, purpose.</div>
-          </div>
-        </div>
-
-        <div class="bp-callout">
-          <p><strong>The identity shift principle:</strong> Your results are always a reflection of who you believe you are. When you repeatedly state "I AM," you are programming a new identity — and identity drives behaviour automatically.</p>
-        </div>
-      </div>
-
-      <!-- USING AI TOOLS -->
-      <div class="bp-section">
-        <div class="bp-section-title">Using the AI Tools</div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">📋</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Fill your Pegboard first</div>
-            <div class="bp-tip-body">The Setup page is the engine. The more detail you put in — your mission, values, obstacles, why — the more personalised and powerful every AI output will be.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">🔄</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Regenerate until it resonates</div>
-            <div class="bp-tip-body">Not every AI output will hit perfectly. Use the regenerate button. Tweak your BTS context. Your best affirmations are the ones that give you a physical reaction.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">✍️</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Add your own words too</div>
-            <div class="bp-tip-body">Use "Your Words" fields in each intention card. Your own language — the phrases you use naturally — often lands deeper than AI-generated text. Mix both.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VISUALIZATION PRACTICE -->
-      <div class="bp-section">
-        <div class="bp-section-title">Visualization Practice</div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">🌅</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Morning is the golden window</div>
-            <div class="bp-tip-body">The first 20 minutes after waking, your brain is in a theta state — highly receptive to suggestion. Run your 3-Min Manifest before checking your phone.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">🌌</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Use the 10-Min Viz for deep sessions</div>
-            <div class="bp-tip-body">Use headphones. Find a quiet space. Close your eyes during the countdown. Let the scenes wash over you. The 10-minute session is designed for full immersion — not multitasking.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">📅</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Consistency beats intensity</div>
-            <div class="bp-tip-body">3 minutes every morning beats 30 minutes once a week. Your subconscious is reprogrammed through repetition. Show up daily — even when you don't feel like it.</div>
-          </div>
-        </div>
-
-        <div class="bp-callout">
-          <p><strong>The science:</strong> Visualization activates the same neural pathways as actually doing the thing. Elite athletes have used this for decades. You are training your brain to expect success — and to recognise it when it arrives.</p>
-        </div>
-      </div>
-
-      <!-- DAILY ROUTINE -->
-      <div class="bp-section">
-        <div class="bp-section-title">Suggested Daily Routine</div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">☀️</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Morning (5–10 min)</div>
-            <div class="bp-tip-body">Run the 3-Min Manifest. Read your I AM statements aloud. Review your #1 priority for the day.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">🌙</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Evening (5 min)</div>
-            <div class="bp-tip-body">Write one win from the day. Read your intentions. Ask: "Did I act like this person today?" — then sleep on it.</div>
-          </div>
-        </div>
-
-        <div class="bp-tip">
-          <div class="bp-tip-icon">📆</div>
-          <div class="bp-tip-content">
-            <div class="bp-tip-title">Weekly (15 min)</div>
-            <div class="bp-tip-body">Run a 10-Min Viz. Update your Pegboard if anything has shifted. Regenerate your AI Library if your intentions have evolved.</div>
-          </div>
-        </div>
-      </div>
-      </div><!-- /bp-inner -->
-
-    </div>
-  </div>
-
-  <!-- GETTING STARTED -->
-  <div class="page" id="page-gettingstarted">
-    <div class="gs-page">
-      <div class="gs-header">
-        <h1>Getting Started</h1>
-        <p>Five steps to get the full power of Cosmic Intentions working for you.</p>
-      </div>
-
-      <div class="gs-progress-wrap">
-        <div class="gs-progress-label">
-          <span id="gsProgressText">0 of 5 complete</span>
-          <span id="gsProgressPct">0%</span>
-        </div>
-        <div class="gs-progress-bar">
-          <div class="gs-progress-fill" id="gsProgressFill" style="width:0%"></div>
-        </div>
-      </div>
-
-      <!-- STEP 1 -->
-      <div class="gs-step" id="gs-step-1" onclick="toggleGsStep(1)">
-        <div class="gs-step-num" id="gs-num-1">1</div>
-        <div class="gs-step-content">
-          <div class="gs-step-title">Complete your My Pegboard</div>
-          <div class="gs-step-desc">Fill in your name, life mission, core values, and beliefs in My Pegboard. This is the engine that powers every AI output in the app.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('setup')">Go to My Pegboard →</button>
-        </div>
-        <div class="gs-check" id="gs-check-1">○</div>
-      </div>
-
-      <!-- STEP 2 -->
-      <div class="gs-step" id="gs-step-2" onclick="toggleGsStep(2)">
-        <div class="gs-step-num" id="gs-num-2">2</div>
-        <div class="gs-step-content">
-          <div class="gs-step-title">Fill in your Pegboard</div>
-          <div class="gs-step-desc">Add your tone preference, mentors, biggest obstacles, and deeper why. The more honest you are, the more powerful your AI sessions become.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('setup')">Go to Pegboard →</button>
-        </div>
-        <div class="gs-check" id="gs-check-2">○</div>
-      </div>
-
-      <!-- STEP 3 -->
-      <div class="gs-step" id="gs-step-3" onclick="toggleGsStep(3)">
-        <div class="gs-step-num" id="gs-num-3">3</div>
-        <div class="gs-step-content">
-          <div class="gs-step-title">Add your first intention</div>
-          <div class="gs-step-desc">Go to your Dashboard and tap "+ Add Intention." Write it as an I AM statement. Be specific. Start with the area of life that matters most to you right now.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('dashboard')">Go to Dashboard →</button>
-        </div>
-        <div class="gs-check" id="gs-check-3">○</div>
-      </div>
-
-      <!-- STEP 4 -->
-      <div class="gs-step" id="gs-step-4" onclick="toggleGsStep(4)">
-        <div class="gs-step-num" id="gs-num-4">4</div>
-        <div class="gs-step-content">
-          <div class="gs-step-title">Generate your AI Library</div>
-          <div class="gs-step-desc">Open your intention card and tap "Generate AI Library." This creates personalised affirmations, beliefs, attitudes, and a meditation anchored to your goal and your profile.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('dashboard')">Go to Dashboard →</button>
-        </div>
-        <div class="gs-check" id="gs-check-4">○</div>
-      </div>
-
-      <!-- STEP 5 -->
-      <div class="gs-step" id="gs-step-5" onclick="toggleGsStep(5)">
-        <div class="gs-step-num" id="gs-num-5">5</div>
-        <div class="gs-step-content">
-          <div class="gs-step-title">Run your first visualization</div>
-          <div class="gs-step-desc">Tap the circular "3" button on your intention card to launch the 3-Min Manifest. Find a quiet spot, use headphones if you can, and let it run. Do this every morning for 7 days.</div>
-          <button class="gs-step-action" onclick="event.stopPropagation(); navTo('dashboard')">Go to Dashboard →</button>
-        </div>
-        <div class="gs-check" id="gs-check-5">○</div>
-      </div>
-
-      <!-- COMPLETION -->
-      <div class="gs-complete" id="gsComplete">
-        <div class="gs-complete-icon">🌌</div>
-        <h3>You're set up for success.</h3>
-        <p>All five steps complete. Your system is running. Now the most important thing is consistency — show up every day.</p>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- COMMUNITY -->
-  <!-- NOTES PAGE -->
-  <div class="page" id="page-notes">
-    <div class="notes-page">
-      <div class="notes-page-title">✏️ My Notes</div>
-      <p class="notes-page-sub">First line displays bold. Second field is the paragraph. Save pushes live instantly.</p>
-
-      <!-- 1 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">1</span><span class="notes-block-loc">Home — Welcome Note</span><span class="notes-block-slug">home-welcome</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-home-welcome" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-home-welcome" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-welcome')">Save</button><span class="notes-save-status" id="nb-status-home-welcome"></span></div>
-      </div>
-
-      <!-- 2 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">2</span><span class="notes-block-loc">Dashboard — Top of Column A</span><span class="notes-block-slug">home-video-1</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-home-video-1" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-home-video-1" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-video-1')">Save</button><span class="notes-save-status" id="nb-status-home-video-1"></span></div>
-      </div>
-
-      <!-- 3 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">3</span><span class="notes-block-loc">Home — Between Videos B+C</span><span class="notes-block-slug">home-section-1</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-home-section-1" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-home-section-1" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-1')">Save</button><span class="notes-save-status" id="nb-status-home-section-1"></span></div>
-      </div>
-
-      <!-- 4 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">4</span><span class="notes-block-loc">Home — Between Videos D+E</span><span class="notes-block-slug">home-section-2</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-home-section-2" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-home-section-2" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-2')">Save</button><span class="notes-save-status" id="nb-status-home-section-2"></span></div>
-      </div>
-
-      <!-- 5 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">5</span><span class="notes-block-loc">Home — Bottom</span><span class="notes-block-slug">home-section-3</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-home-section-3" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-home-section-3" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('home-section-3')">Save</button><span class="notes-save-status" id="nb-status-home-section-3"></span></div>
-      </div>
-
-      <!-- 6 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">6</span><span class="notes-block-loc">Dashboard — Welcome Note</span><span class="notes-block-slug">dashboard-welcome</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-dashboard-welcome" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-dashboard-welcome" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-welcome')">Save</button><span class="notes-save-status" id="nb-status-dashboard-welcome"></span></div>
-      </div>
-
-      <!-- 7 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">7</span><span class="notes-block-loc">Dashboard — Note 1</span><span class="notes-block-slug">dashboard-note-1</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-dashboard-note-1" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-dashboard-note-1" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-note-1')">Save</button><span class="notes-save-status" id="nb-status-dashboard-note-1"></span></div>
-      </div>
-
-      <!-- 8 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">8</span><span class="notes-block-loc">Dashboard — Note 2</span><span class="notes-block-slug">dashboard-note-2</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-dashboard-note-2" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-dashboard-note-2" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('dashboard-note-2')">Save</button><span class="notes-save-status" id="nb-status-dashboard-note-2"></span></div>
-      </div>
-
-      <!-- 9 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">9</span><span class="notes-block-loc">Site-Wide — Block 1</span><span class="notes-block-slug">site-wide-1</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-site-wide-1" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-site-wide-1" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('site-wide-1')">Save</button><span class="notes-save-status" id="nb-status-site-wide-1"></span></div>
-      </div>
-
-      <!-- 10 -->
-      <div class="notes-block">
-        <div class="notes-block-hd"><span class="notes-block-num">10</span><span class="notes-block-loc">Site-Wide — Block 2</span><span class="notes-block-slug">site-wide-2</span></div>
-        <div class="notes-field-wrap"><div class="notes-field-label">Bold Line</div><div class="notes-bold-box"><input class="notes-bold-input" id="nb-bold-site-wide-2" type="text" placeholder="Opening bold line…"></div></div>
-        <div class="notes-field-wrap" style="border-bottom:none"><div class="notes-field-label">Paragraph</div><div class="notes-body-box"><textarea class="notes-body-input" id="nb-body-site-wide-2" placeholder="Plain text paragraph…"></textarea></div></div>
-        <div class="notes-block-foot"><button class="notes-save-btn" onclick="saveNoteBlock('site-wide-2')">Save</button><span class="notes-save-status" id="nb-status-site-wide-2"></span></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PROGRESS MEGA DASHBOARD -->
-
-  <!-- JOURNAL INDEX -->
-  <div class="page" id="page-journal"></div>
 
   <!-- ADMIN PAGE -->
   <div class="page" id="page-admin">
@@ -7040,30 +6511,6 @@ input, textarea, select {
     </div>
   </div>
 
-  <div class="page" id="page-community">
-    <div class="community-page">
-      <div class="community-header">
-        <h1>🌌 Cosmic Community</h1>
-        <p>Member-only space. Share wins, breakthroughs, and risks with the community.</p>
-      </div>
-
-      <!-- Post Form -->
-      <div class="community-post-form" id="communityPostForm">
-        <textarea id="communityPostText" placeholder="Share a win, breakthrough, or risk you took today..." maxlength="500"></textarea>
-        <div class="community-post-btns">
-          <select class="community-post-type" id="communityPostType">
-            <option value="win">🏆 Win</option>
-            <option value="breakthrough">💡 Breakthrough</option>
-            <option value="risk">🎯 Risk I Took</option>
-          </select>
-          <button class="btn-post" onclick="submitCommunityPost()">Share</button>
-        </div>
-      </div>
-
-      <!-- Feed -->
-      <div id="communityFeed"></div>
-    </div>
-  </div>
 
 </main>
 
@@ -7308,8 +6755,6 @@ function showPage(id) {
 
   if (id === 'dashboard') renderDashboard();
   if (id === 'setup')     renderPBIntentionList();
-  if (id === 'community') loadCommunityFeed();
-  if (id === 'journal')   renderJournalIndex();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
@@ -7346,7 +6791,7 @@ function subnavForward() {
 
 function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','library','bestpractices','gettingstarted','community'];
+  const auth_required = ['dashboard','setup'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -10146,8 +9591,6 @@ function updateGsProgress() {
   if (comp)  comp.classList.toggle('show', count === total);
 }
 
-// Load GS state after init
-document.addEventListener('DOMContentLoaded', () => loadGsSteps());
 
 // Boot
 init();
