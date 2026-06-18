@@ -15,7 +15,6 @@ _tmp_docx_unpack/
 
 # oversized image folders — back these up outside git (too large for the repo)
 images/xxx image sort/
-images/troughs/
 images/column-spacers/
 images/player-psd-mockups/
 
