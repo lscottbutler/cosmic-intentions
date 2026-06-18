@@ -1,6 +1,7 @@
 [build]
+  command = "npm run build"
   functions = "netlify/functions"
-  publish = "."
+  publish = "dist"
 
 # NOTE: a bare `[functions] timeout = 60` is INVALID Netlify config — it makes
 # config resolution fail and blocks every deploy. Function timeout is not set

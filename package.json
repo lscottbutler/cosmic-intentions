@@ -1,5 +1,8 @@
 {
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 8090",
     "lint": "eslint shared netlify scripts",
     "health": "node scripts/healthcheck.mjs"
   },
@@ -7,6 +10,8 @@
     "docx": "^9.7.1"
   },
   "devDependencies": {
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "vite": "^8.0.16",
+    "vite-plugin-static-copy": "^4.1.1"
   }
 }
