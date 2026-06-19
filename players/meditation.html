@@ -5,63 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meditation | Cosmic Intentions</title>
   <style>
-    body {
-      background-color: #1A1A1A;
+    :root {
+      --frame-green:  #5f9e3e;             /* green border + badge ring      */
+      --frame-width:  16px;
+      --frame-ratio:  16 / 9;
+      --badge-fill:   rgba(26,44,30,0.62); /* dark translucent badge centre  */
+      --badge-text:   #ffffff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #1a1a1a;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
       overflow: hidden;
-      font-family: 'Roboto Condensed', sans-serif;
+      font-family: 'Roboto Condensed', system-ui, sans-serif;
     }
-    .mpt-frame {
+    /* Letterbox frame — green border, daily image behind it (cover) */
+    .lb-frame {
       position: relative;
-      width: 520px;
-      height: 700px;
-      border: 14px solid #333;
-      background-color: #000;
+      width: min(95vw, 1100px);
+      aspect-ratio: var(--frame-ratio);
+      border: var(--frame-width) solid var(--frame-green);
+      box-sizing: border-box;
       background-size: cover;
       background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      box-sizing: border-box;
+      background-color: #000;
+      outline: 2px solid #2c3b1c;
     }
-    .cc-circle {
+    /* Countdown badge — green ring, dark translucent centre, near the bottom */
+    .lb-badge {
       position: absolute;
-      bottom: -45px;
-      width: 90px;
-      height: 90px;
-      background-color: #FFFFFF;
-      border: 8px solid #EFEFEF;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 88px;
       border-radius: 50%;
+      background: var(--badge-fill);
+      border: 6px solid var(--frame-green);
+      color: var(--badge-text);
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #000000;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
       box-sizing: border-box;
-      z-index: 10;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
-  <div class="mpt-frame" id="mpt-frame">
-    <div class="cc-circle" id="cc-text">-- MIN</div>
+  <div class="lb-frame" id="lb-frame">
+    <div class="lb-badge" id="cc-text">-- MIN</div>
   </div>
 
   <script type="module">
-    // Daily-rotating background — uses the real 25-image player set
-    // (images/players/player-01.jpg .. player-25.jpg). The original brief
-    // referenced images/meditation/bg*.jpg, which does not exist in this repo.
-    const TOTAL_BG = 25;
-    const todayIndex = (new Date().getDate() % TOTAL_BG) + 1;        // 1..25
-    const bg = `../images/players/player-${String(todayIndex).padStart(2, '0')}.jpg`;
-    document.getElementById('mpt-frame').style.backgroundImage = `url('${bg}')`;
+    // Daily-rotating background — landscape "trough" images, cropped to fill.
+    // trough018.JPG (uppercase) and "trough031 (1).jpg" (space) are skipped so
+    // the paths stay valid on case-sensitive hosting.
+    const nums = [];
+    for (let n = 1; n <= 34; n++) { if (n === 18 || n === 31) continue; nums.push(String(n).padStart(3, '0')); }
+    const bgImages = nums.map(n => `../images/trough/trough${n}.jpg`);
+    const todayIndex = new Date().getDate() % bgImages.length;
+    document.getElementById('lb-frame').style.backgroundImage = `url('${bgImages[todayIndex]}')`;
 
     const urlParams = new URLSearchParams(window.location.search);
     const selectedMinutes = parseInt(urlParams.get('t')) || 5;

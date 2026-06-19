@@ -6,55 +6,62 @@
 <title>Affirmation</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #111; }
+  :root {
+    --frame-green: #5f9e3e;   /* green letterbox border */
+    --frame-width: 16px;
+    --frame-ratio: 16 / 9;
+  }
+  html, body { height: 100%; background: #1a1a1a; }
   body {
     display: flex; align-items: center; justify-content: center;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* PLAYER ONE — AFFIRMATION
-     Dead simple: an image on top, a header with one sentence underneath. */
-  .aff {
-    width: 100%;
-    max-width: 520px;
-    height: 100%;
-    max-height: 920px;
-    display: flex;
-    flex-direction: column;
+  /* PLAYER ONE — AFFIRMATION, letterbox frame.
+     Image fills behind the green border; the sentence overlays the bottom. */
+  .lb-frame {
+    position: relative;
+    width: min(95vw, 1100px);
+    aspect-ratio: var(--frame-ratio);
+    border: var(--frame-width) solid var(--frame-green);
+    box-sizing: border-box;
     background: #000;
     overflow: hidden;
+    outline: 2px solid #2c3b1c;
   }
 
-  /* the image */
+  /* the cycling image */
   .aff__image {
-    flex: 1 1 auto;
-    min-height: 0;
+    position: absolute;
+    inset: 0;
     background-size: cover;
     background-position: center;
     transition: opacity 0.6s ease;
   }
 
-  /* the header underneath, with the sentence on it */
-  .aff__header {
-    flex: 0 0 auto;
-    background: #1A1A1A;
-    color: #fff;
+  /* the sentence, on a gradient bar across the bottom */
+  .aff__caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 60px 32px 26px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
     text-align: center;
-    padding: 30px 26px;
   }
   .aff__text {
-    font-size: clamp(20px, 5.4vw, 30px);
+    color: #fff;
+    font-size: clamp(20px, 3.4vw, 34px);
     font-weight: 700;
-    line-height: 1.4;
+    line-height: 1.35;
     letter-spacing: 0.2px;
     transition: opacity 0.5s ease;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   }
 </style>
 </head>
 <body>
-  <div class="aff">
+  <div class="lb-frame">
     <div class="aff__image" id="affImage"></div>
-    <div class="aff__header"><p class="aff__text" id="affText"></p></div>
+    <div class="aff__caption"><p class="aff__text" id="affText"></p></div>
   </div>
 
 <script>
