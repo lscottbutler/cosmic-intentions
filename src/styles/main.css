@@ -2376,4 +2376,9 @@ input, textarea, select {
 [style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 18px !important; }
 [style*="font-size:14px"], [style*="font-size: 14px"] { font-size: 20px !important; }
 [style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 21px !important; }
-[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
+[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
+
+/* ── Column Takeover — when a player launches inline, every sibling in the
+   column gets this class so only the player + Back button remain visible. */
+.hide-for-player { display: none !important; }
+#playerColumn { min-height: 100dvh; }
