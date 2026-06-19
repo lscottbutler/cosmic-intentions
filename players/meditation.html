@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meditation | Cosmic Intentions</title>
+  <style>
+    body {
+      background-color: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Roboto Condensed', sans-serif;
+    }
+    .mpt-frame {
+      position: relative;
+      width: 520px;
+      height: 700px;
+      border: 14px solid #333;
+      background-color: #000;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    .cc-circle {
+      position: absolute;
+      bottom: -45px;
+      width: 90px;
+      height: 90px;
+      background-color: #FFFFFF;
+      border: 8px solid #EFEFEF;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #000000;
+      font-size: 1.4rem;
+      font-weight: 700;
+      box-sizing: border-box;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="mpt-frame" id="mpt-frame">
+    <div class="cc-circle" id="cc-text">-- MIN</div>
+  </div>
+
+  <script type="module">
+    // Daily-rotating background — uses the real 25-image player set
+    // (images/players/player-01.jpg .. player-25.jpg). The original brief
+    // referenced images/meditation/bg*.jpg, which does not exist in this repo.
+    const TOTAL_BG = 25;
+    const todayIndex = (new Date().getDate() % TOTAL_BG) + 1;        // 1..25
+    const bg = `../images/players/player-${String(todayIndex).padStart(2, '0')}.jpg`;
+    document.getElementById('mpt-frame').style.backgroundImage = `url('${bg}')`;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedMinutes = parseInt(urlParams.get('t')) || 5;
+    let timeRemaining = selectedMinutes * 60;
+
+    const ccText = document.getElementById('cc-text');
+    ccText.innerText = `${selectedMinutes} MIN`;
+
+    // Bell synthesized with the Web Audio API — no bell.mp3 exists in the repo,
+    // so this guarantees an audible ding at 0:00 with zero asset dependency.
+    function playBell() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        [660, 990].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = now + i * 0.18;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 2.3);
+        });
+      } catch (e) {
+        console.log('Audio blocked:', e);
+      }
+    }
+
+    setTimeout(() => {
+      const timer = setInterval(() => {
+        timeRemaining--;
+        if (timeRemaining <= 0) {
+          clearInterval(timer);
+          ccText.innerText = "0:00";
+          playBell();
+        } else {
+          const m = Math.floor(timeRemaining / 60);
+          const s = timeRemaining % 60;
+          ccText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+      }, 1000);
+    }, 2000);
+  </script>
+</body>
+</html>
