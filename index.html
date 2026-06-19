@@ -315,7 +315,15 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
           </div>
         </div>
 
-        <!-- MEDITATION TIMERS — dropdown banner + 9-button matrix (opens player popup) -->
+        <!-- MED PLAYER — opens here in Column B, directly above the timers dropdown -->
+        <div id="playerColumn" style="display:none;margin-bottom:10px;">
+          <button class="player-col-back" onclick="closePlayerColumn()"
+            style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-bottom:8px;">← Back</button>
+          <iframe id="playerColumnFrame" title="Player" allow="autoplay"
+            style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:8px;background:#1a1a1a;"></iframe>
+        </div>
+
+        <!-- MEDITATION TIMERS — dropdown banner + 9-button matrix -->
         <div class="player-banner" onclick="document.getElementById('meditation-times-grid').classList.toggle('hidden')" style="background: var(--off); padding: 16px; border: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; margin-bottom: 10px;">
           <span style="font-weight: 700; letter-spacing: 1px;">MEDITATION TIMERS</span>
           <span style="font-size: 0.8rem;">▼</span>
@@ -403,14 +411,6 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
         <div id="layer-content-roadmap"></div>
 
         </div><!-- end colb-active-state -->
-
-        <!-- PLAYER COLUMN PANEL — players open inline in this column (not a popup) -->
-        <div id="playerColumn" style="display:none;margin-top:8px;">
-          <button class="player-col-back" onclick="closePlayerColumn()"
-            style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-bottom:8px;">← Back</button>
-          <iframe id="playerColumnFrame" title="Player" allow="autoplay"
-            style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:8px;background:#1a1a1a;"></iframe>
-        </div>
 
 
         <!-- Alchemy Modal -->

@@ -26,28 +26,19 @@ export function openPlayerInColumn(src) {
     window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes,menubar=no,toolbar=no');
     return;
   }
-  // COLUMN TAKEOVER: walk from the player wrapper up to the dashboard page,
-  // hiding every sibling at each level. Only the player + Back button remain.
-  // Generic — works no matter which column (A or B) the wrapper lives in.
-  let node = panel;
-  while (node && node.parentElement && node.id !== 'page-dashboard' && node !== document.body) {
-    for (const sib of node.parentElement.children) {
-      if (sib !== node) sib.classList.add('hide-for-player');
-    }
-    node = node.parentElement;
-  }
+  // Show the player inline in Column B, directly above the timers dropdown.
+  // Nothing else is hidden — it simply appears in place and scrolls into view.
   frame.src = src;
   panel.style.display = '';
-  window.scrollTo(0, 0);
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-/* Close the inline player and restore every sibling the takeover hid. */
+/* Close the inline player (unload the iframe to stop its audio/timer). */
 export function closePlayerColumn() {
   const panel = document.getElementById('playerColumn');
   const frame = document.getElementById('playerColumnFrame');
-  if (frame) frame.src = 'about:blank';   // unload the player → stops audio/timers
+  if (frame) frame.src = 'about:blank';
   if (panel) panel.style.display = 'none';
-  document.querySelectorAll('.hide-for-player').forEach(el => el.classList.remove('hide-for-player'));
 }
 
 /* Open the Affirmation player inline in the column (was a popout window). */
