@@ -38,7 +38,8 @@
     /* Sharp rotating image, top portion */
     .photo {
       flex: 0 0 56%;
-      background-size: cover;
+      background-size: contain;      /* whole image fits — never cropped */
+      background-repeat: no-repeat;
       background-position: center;
       background-color: #15121d;
     }
