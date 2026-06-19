@@ -6,12 +6,13 @@
   <title>Meditation | Cosmic Intentions</title>
   <style>
     :root {
-      --frame-gray:   #8b8b8b;   /* the letterbox border */
-      --frame-width:  14px;
-      --frame-ratio:  16 / 9;
-      --badge-ring:   #a0a0a0;
-      --badge-fill:   #262626;
-      --badge-text:   #ffffff;
+      --frame-gray:  #8b8b8b;
+      --frame-width: 12px;
+      --frame-ratio: 5 / 6;      /* taller than the old 16:9 letterbox */
+      --panel:       #2c2640;     /* dark indigo control panel          */
+      --badge-ring:  #a0a0a0;
+      --badge-fill:  #1c1830;
+      --btn:         #111111;
     }
     html, body {
       height: 100%;
@@ -23,92 +24,99 @@
       overflow: hidden;
       font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
     }
-    .lb-frame {
+    .frame {
       position: relative;
-      width: min(95vw, 1100px);
+      width: min(95vw, 560px);
       aspect-ratio: var(--frame-ratio);
       border: var(--frame-width) solid var(--frame-gray);
       box-sizing: border-box;
-      background: #1f1b26;            /* dark fallback until an image loads */
+      background: #1f1b26;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
-    /* Rotating image — heavily blurred. Scaled up so the blur has no clear edge. */
-    .bg {
-      position: absolute;
-      inset: 0;
+    /* Sharp rotating image, top portion */
+    .photo {
+      flex: 0 0 56%;
       background-size: cover;
       background-position: center;
-      filter: blur(18px);
-      transform: scale(1.12);
-      z-index: 0;
+      background-color: #15121d;
     }
-    /* Dark scrim so the white text stays readable on any photo. */
-    .scrim {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.38);
-      z-index: 1;
-    }
-    /* WELCOME TEXT — sharp white, fades out when the countdown starts. */
-    .welcome {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 24px 28px 12%;
-      box-sizing: border-box;
-      transition: opacity 1s ease;
-      z-index: 2;
-    }
-    .welcome__text {
-      margin: 0;
+    /* Dark control panel */
+    .panel {
+      flex: 1 1 auto;
+      background: var(--panel);
       color: #fff;
-      text-align: center;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      line-height: 1.55;
-      font-size: clamp(18px, 4vw, 42px);
-      text-shadow: 0 2px 10px rgba(0,0,0,0.55);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px 16px 18px;
+      box-sizing: border-box;
     }
-    /* COUNTDOWN BADGE — gray ring, dark centre. */
+    .label {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(16px, 4.4vw, 24px);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+    }
     .badge {
-      position: absolute;
-      left: 50%;
-      bottom: 12%;
-      transform: translateX(-50%);
-      width: 78px;
-      height: 78px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       background: var(--badge-fill);
-      border: 5px solid var(--badge-ring);
-      color: var(--badge-text);
+      border: 4px solid var(--badge-ring);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+    }
+    .badge .big { font-size: 1.9rem; font-weight: 700; }
+    .badge .sm  { font-size: 0.8rem; letter-spacing: 2px; opacity: 0.85; margin-top: 3px; }
+    .nav, .home {
+      background: var(--btn);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-      box-sizing: border-box;
-      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.45);
     }
+    .nav  { width: 54px; height: 54px; font-size: 1.2rem; }
+    .home { width: 40px; height: 40px; font-size: 0.95rem; font-weight: 700; }
+    .nav:active, .home:active { transform: scale(0.94); }
   </style>
 </head>
 <body>
-  <div class="lb-frame" id="frame">
-    <div class="bg" id="bg"></div>
-    <div class="scrim"></div>
-    <div class="welcome" id="welcome"><p class="welcome__text" id="welcomeText"></p></div>
-    <div class="badge" id="badge">--</div>
+  <div class="frame">
+    <div class="photo" id="photo"></div>
+    <div class="panel">
+      <p class="label" id="label">meditation</p>
+      <div class="controls">
+        <button class="nav" id="prev" aria-label="Previous image">&#9664;</button>
+        <div class="badge" id="badge"><span class="big" id="badgeBig">--</span><span class="sm" id="badgeSm">MIN</span></div>
+        <button class="nav" id="next" aria-label="Next image">&#9654;</button>
+      </div>
+      <button class="home" id="home" title="Home" aria-label="Home">H</button>
+    </div>
   </div>
 
   <script type="module">
     /* ───────────────────────────────────────────────────────────────
-       BACKGROUND IMAGES — live in images/meditation/. One per day, rotating.
-       Add a filename to this list whenever you drop a new image in.
-       Missing file → dark fallback (never looks broken).
+       BACKGROUND IMAGES — live in images/meditation/. One per day, and the
+       ◀ ▶ arrows step through them manually. Add filenames as you add files.
        ─────────────────────────────────────────────────────────────── */
     const IMAGES = [
       'meditation.jpg',
@@ -117,20 +125,34 @@
       'meditation-3.jpg',
     ];
 
-    const bgUrl = `../images/meditation/${IMAGES[new Date().getDate() % IMAGES.length]}`;
-    const probe = new Image();
-    probe.onload = () => { document.getElementById('bg').style.backgroundImage = `url('${bgUrl}')`; };
-    probe.src = bgUrl;   // onerror → leave the dark fallback in place
+    const photo = document.getElementById('photo');
+    let imgIdx = new Date().getDate() % IMAGES.length;   // daily starting image
+    function showImage(i) {
+      const url = `../images/meditation/${IMAGES[(i + IMAGES.length) % IMAGES.length]}`;
+      const probe = new Image();
+      probe.onload = () => { photo.style.backgroundImage = `url('${url}')`; };
+      probe.src = url;
+    }
+    showImage(imgIdx);
+    document.getElementById('prev').onclick = () => { imgIdx = (imgIdx - 1 + IMAGES.length) % IMAGES.length; showImage(imgIdx); };
+    document.getElementById('next').onclick = () => { imgIdx = (imgIdx + 1) % IMAGES.length; showImage(imgIdx); };
 
+    /* HOME — close the player. Inside the dashboard column it calls the parent's
+       closePlayerColumn(); standalone it goes back / closes the window. */
+    document.getElementById('home').onclick = () => {
+      try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
+      if (history.length > 1) history.back(); else window.close();
+    };
+
+    /* TIMER */
     const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
     let timeRemaining = minutes * 60;
+    document.getElementById('label').textContent = `${minutes} minute unguided meditation`;
 
-    document.getElementById('welcomeText').innerHTML =
-      `Welcome back to another<br>${minutes} minute unguided<br>meditation session`;
-
-    const badge = document.getElementById('badge');
-    const welcome = document.getElementById('welcome');
-    badge.innerText = String(minutes);
+    const big = document.getElementById('badgeBig');
+    const sm  = document.getElementById('badgeSm');
+    big.textContent = String(minutes);
+    sm.textContent = 'MIN';
 
     function playBell() {
       try {
@@ -156,22 +178,20 @@
       timeRemaining--;
       if (timeRemaining <= 0) {
         clearInterval(timer);
-        badge.innerText = '0:00';
+        big.textContent = '0:00';
+        sm.textContent = 'DONE';
         playBell();
         return;
       }
       const m = Math.floor(timeRemaining / 60);
       const s = timeRemaining % 60;
-      badge.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+      sm.textContent = 'LEFT';
     }
 
+    // Hold "15 MIN" for 2s, then run the countdown.
     let timer;
-    // Show the welcome text for 5s, fade it out, then run the countdown.
-    setTimeout(() => {
-      welcome.style.opacity = '0';
-      setTimeout(() => { welcome.style.display = 'none'; }, 1000);
-      timer = setInterval(tick, 1000);
-    }, 5000);
+    setTimeout(() => { timer = setInterval(tick, 1000); }, 2000);
   </script>
 </body>
 </html>
