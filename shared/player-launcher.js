@@ -13,14 +13,46 @@ import { closeDrawer } from '../app.js';
    Depends on globals (all optional): closeDrawer, selectedVaultIdx
 ──────────────────────────────────────────────────────────── */
 
-/* Open the standalone Affirmation player in a focused popout window. */
-export function launchAffirmationPlayer() {
+/* ── OPEN IN COLUMN — the shared pattern for ALL players ──────
+   Embeds a player page in an <iframe> inside the dashboard's main
+   column (#playerColumn / #playerColumnFrame in index.html) instead
+   of spawning a popup window. Falls back to a popup if the panel
+   isn't on the page (e.g. launched from the logged-out home). */
+export function openPlayerInColumn(src) {
   if (typeof closeDrawer === 'function') closeDrawer();
-  const w = 540, h = 920;
-  const left = Math.max(0, (screen.width  - w) / 2);
-  const top  = Math.max(0, (screen.height - h) / 2);
-  window.open('player/affirmation.html', 'ci_affirmation',
-    `width=${w},height=${h},left=${left},top=${top},resizable=yes,menubar=no,toolbar=no,location=no,status=no`);
+  const panel = document.getElementById('playerColumn');
+  const frame = document.getElementById('playerColumnFrame');
+  if (!panel || !frame) {                 // no column panel here → popup fallback
+    window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes,menubar=no,toolbar=no');
+    return;
+  }
+  // Remember which column state was showing, then hide both and show the player.
+  const sel = document.getElementById('colb-selection-state');
+  const act = document.getElementById('colb-active-state');
+  panel.dataset.prev = (act && act.style.display !== 'none') ? 'active' : 'selection';
+  if (sel) sel.style.display = 'none';
+  if (act) act.style.display = 'none';
+  frame.src = src;
+  panel.style.display = '';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* Close the inline player and restore the column to what it was showing. */
+export function closePlayerColumn() {
+  const panel = document.getElementById('playerColumn');
+  const frame = document.getElementById('playerColumnFrame');
+  if (frame) frame.src = 'about:blank';   // unload the player → stops audio/timers
+  if (panel) panel.style.display = 'none';
+  const prev = panel ? panel.dataset.prev : 'selection';
+  const sel = document.getElementById('colb-selection-state');
+  const act = document.getElementById('colb-active-state');
+  if (prev === 'active') { if (act) act.style.display = ''; }
+  else                   { if (sel) sel.style.display = ''; }
+}
+
+/* Open the Affirmation player inline in the column (was a popout window). */
+export function launchAffirmationPlayer() {
+  openPlayerInColumn('player/affirmation.html');
 }
 
 /* ── GENERIC ACCORDIONS (used by index.html + the-map.js) ──
