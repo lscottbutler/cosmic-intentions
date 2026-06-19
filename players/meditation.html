@@ -6,10 +6,13 @@
   <title>Meditation | Cosmic Intentions</title>
   <style>
     :root {
-      --frame-green:  #5f9e3e;             /* green border + badge ring      */
-      --frame-width:  16px;
+      --frame-gray:   #8b8b8b;   /* the letterbox border          */
+      --frame-width:  14px;
       --frame-ratio:  16 / 9;
-      --badge-fill:   rgba(26,44,30,0.62); /* dark translucent badge centre  */
+      --intro-purple: #3a2a63;   /* welcome card                  */
+      --intro-gray:   #6e6e6e;   /* bottom bar                    */
+      --badge-ring:   #a0a0a0;
+      --badge-fill:   #262626;
       --badge-text:   #ffffff;
     }
     html, body {
@@ -20,67 +23,110 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      font-family: 'Roboto Condensed', system-ui, sans-serif;
+      font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
     }
-    /* Letterbox frame — green border, daily image behind it (cover) */
     .lb-frame {
       position: relative;
       width: min(95vw, 1100px);
       aspect-ratio: var(--frame-ratio);
-      border: var(--frame-width) solid var(--frame-green);
+      border: var(--frame-width) solid var(--frame-gray);
       box-sizing: border-box;
+      background: #2a2233;            /* fallback until an image loads */
       background-size: cover;
       background-position: center;
-      background-color: #000;
-      outline: 2px solid #2c3b1c;
+      overflow: hidden;
     }
-    /* Countdown badge — green ring, dark translucent centre, near the bottom */
-    .lb-badge {
+    /* INTRO CARD — purple welcome panel + gray bottom bar. Fades out on start. */
+    .intro {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 1s ease;
+      z-index: 2;
+    }
+    .intro__purple {
+      flex: 1 1 auto;
+      background: var(--intro-purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .intro__gray {
+      flex: 0 0 24%;
+      background: var(--intro-gray);
+    }
+    .intro__text {
+      margin: 0;
+      color: #fff;
+      text-align: center;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      line-height: 1.55;
+      font-size: clamp(18px, 4vw, 42px);
+    }
+    /* COUNTDOWN BADGE — gray ring, dark centre, straddles the seam. */
+    .badge {
       position: absolute;
       left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%);
-      width: 88px;
-      height: 88px;
+      bottom: 18%;
+      transform: translate(-50%, 50%);
+      width: 78px;
+      height: 78px;
       border-radius: 50%;
       background: var(--badge-fill);
-      border: 6px solid var(--frame-green);
+      border: 5px solid var(--badge-ring);
       color: var(--badge-text);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 700;
       letter-spacing: 0.5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
       box-sizing: border-box;
+      z-index: 3;
     }
   </style>
 </head>
 <body>
-  <div class="lb-frame" id="lb-frame">
-    <div class="lb-badge" id="cc-text">-- MIN</div>
+  <div class="lb-frame" id="frame">
+    <div class="intro" id="intro">
+      <div class="intro__purple">
+        <p class="intro__text" id="introText"></p>
+      </div>
+      <div class="intro__gray"></div>
+    </div>
+    <div class="badge" id="badge">--</div>
   </div>
 
   <script type="module">
-    // Daily-rotating background — landscape "trough" images, cropped to fill.
-    // trough018.JPG (uppercase) and "trough031 (1).jpg" (space) are skipped so
-    // the paths stay valid on case-sensitive hosting.
-    const nums = [];
-    for (let n = 1; n <= 34; n++) { if (n === 18 || n === 31) continue; nums.push(String(n).padStart(3, '0')); }
-    const bgImages = nums.map(n => `../images/trough/trough${n}.jpg`);
-    const todayIndex = new Date().getDate() % bgImages.length;
-    document.getElementById('lb-frame').style.backgroundImage = `url('${bgImages[todayIndex]}')`;
+    /* ───────────────────────────────────────────────────────────────
+       BACKGROUND IMAGES — drop your files in  images/meditation/  named
+       01.jpg, 02.jpg, 03.jpg …  then set IMAGE_COUNT to how many there are.
+       One is shown per day, rotating. Missing file → purple fallback.
+       ─────────────────────────────────────────────────────────────── */
+    const IMAGE_COUNT = 10;
+    const EXT = 'jpg';
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedMinutes = parseInt(urlParams.get('t')) || 5;
-    let timeRemaining = selectedMinutes * 60;
+    const n = (new Date().getDate() % IMAGE_COUNT) + 1;          // 1..IMAGE_COUNT
+    const bgUrl = `../images/meditation/${String(n).padStart(2, '0')}.${EXT}`;
+    const probe = new Image();
+    probe.onload = () => { document.getElementById('frame').style.backgroundImage = `url('${bgUrl}')`; };
+    probe.src = bgUrl;   // onerror → leave the purple fallback in place
 
-    const ccText = document.getElementById('cc-text');
-    ccText.innerText = `${selectedMinutes} MIN`;
+    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
+    let timeRemaining = minutes * 60;
 
-    // Bell synthesized with the Web Audio API — no bell.mp3 exists in the repo,
-    // so this guarantees an audible ding at 0:00 with zero asset dependency.
+    document.getElementById('introText').innerHTML =
+      `Welcome back to another<br>${minutes} minute unguided<br>meditation session`;
+
+    const badge = document.getElementById('badge');
+    const intro = document.getElementById('intro');
+    badge.innerText = String(minutes);
+
     function playBell() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -98,25 +144,29 @@
           osc.start(start);
           osc.stop(start + 2.3);
         });
-      } catch (e) {
-        console.log('Audio blocked:', e);
-      }
+      } catch (e) { console.log('Audio blocked:', e); }
     }
 
+    function tick() {
+      timeRemaining--;
+      if (timeRemaining <= 0) {
+        clearInterval(timer);
+        badge.innerText = '0:00';
+        playBell();
+        return;
+      }
+      const m = Math.floor(timeRemaining / 60);
+      const s = timeRemaining % 60;
+      badge.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    let timer;
+    // Show the welcome card for 5s, fade it out, then run the countdown.
     setTimeout(() => {
-      const timer = setInterval(() => {
-        timeRemaining--;
-        if (timeRemaining <= 0) {
-          clearInterval(timer);
-          ccText.innerText = "0:00";
-          playBell();
-        } else {
-          const m = Math.floor(timeRemaining / 60);
-          const s = timeRemaining % 60;
-          ccText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        }
-      }, 1000);
-    }, 2000);
+      intro.style.opacity = '0';
+      setTimeout(() => { intro.style.display = 'none'; }, 1000);
+      timer = setInterval(tick, 1000);
+    }, 5000);
   </script>
 </body>
 </html>
