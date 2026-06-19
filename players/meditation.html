@@ -106,15 +106,18 @@
 
   <script type="module">
     /* ───────────────────────────────────────────────────────────────
-       BACKGROUND IMAGES — drop your files in  images/meditation/  named
-       01.jpg, 02.jpg, 03.jpg …  then set IMAGE_COUNT to how many there are.
-       One is shown per day, rotating. Missing file → dark fallback.
+       BACKGROUND IMAGES — live in images/meditation/. One per day, rotating.
+       Add a filename to this list whenever you drop a new image in.
+       Missing file → dark fallback (never looks broken).
        ─────────────────────────────────────────────────────────────── */
-    const IMAGE_COUNT = 10;
-    const EXT = 'jpg';
+    const IMAGES = [
+      'meditation.jpg',
+      'meditation-1.jpg',
+      'meditation-2.jpg',
+      'meditation-3.jpg',
+    ];
 
-    const n = (new Date().getDate() % IMAGE_COUNT) + 1;          // 1..IMAGE_COUNT
-    const bgUrl = `../images/meditation/${String(n).padStart(2, '0')}.${EXT}`;
+    const bgUrl = `../images/meditation/${IMAGES[new Date().getDate() % IMAGES.length]}`;
     const probe = new Image();
     probe.onload = () => { document.getElementById('bg').style.backgroundImage = `url('${bgUrl}')`; };
     probe.src = bgUrl;   // onerror → leave the dark fallback in place
