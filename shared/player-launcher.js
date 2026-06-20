@@ -18,7 +18,7 @@ import { closeDrawer } from '../app.js';
    column (#playerColumn / #playerColumnFrame in index.html) instead
    of spawning a popup window. Falls back to a popup if the panel
    isn't on the page (e.g. launched from the logged-out home). */
-export function openPlayerInColumn(src) {
+export function openPlayerInColumn(src, ev) {
   if (typeof closeDrawer === 'function') closeDrawer();
   const panel = document.getElementById('playerColumn');
   const frame = document.getElementById('playerColumnFrame');
@@ -26,8 +26,10 @@ export function openPlayerInColumn(src) {
     window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes,menubar=no,toolbar=no');
     return;
   }
-  // Show the player inline in Column B, directly above the timers dropdown.
-  // Nothing else is hidden — it simply appears in place and scrolls into view.
+  // Drop the shared player panel directly BELOW whichever time grid was clicked,
+  // so every launcher (meditation, countdown, …) opens beneath its own buttons.
+  const grid = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid') : null;
+  if (grid) grid.insertAdjacentElement('afterend', panel);
   frame.src = src;
   panel.style.display = '';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -39,8 +41,8 @@ export function closePlayerColumn() {
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
   if (panel) panel.style.display = 'none';
-  // Roll the meditation time grid back up when the player closes.
-  document.getElementById('meditation-times-grid')?.classList.add('hidden');
+  // Roll every time grid back up when the player closes.
+  document.querySelectorAll('.player-times-grid').forEach(g => g.classList.add('hidden'));
 }
 
 /* Open the Affirmation player inline in the column (was a popout window). */
