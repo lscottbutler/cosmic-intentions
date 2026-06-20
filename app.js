@@ -2348,7 +2348,7 @@ function showVaultBuildSheet(idx) {
   // Populate workspace: header + the single 10-step AI roadmap view
   const hdr = document.getElementById('vaultWorkspaceHeader');
   if (hdr) hdr.innerHTML = buildWorkspaceHeader(intent, idx);
-  loadGoalVisualization(intent.title);
+  loadGoalVisualization(intent);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
   if (roadmapEl) roadmapEl.innerHTML = buildRoadmapPanel(intent, idx);
@@ -2361,20 +2361,36 @@ function showVaultBuildSheet(idx) {
 
 /* Fetch a Pexels visualization for the selected goal and slot it into the
    workspace header (keyword extraction + search happen server-side). */
-async function loadGoalVisualization(statement) {
+async function loadGoalVisualization(intent) {
   const img = document.getElementById('goalVisualizationImage');
   const loader = document.getElementById('goalVisualizationLoader');
   const box = document.getElementById('goalVisualizationContainer');
-  if (!img || !loader) return;
+  if (!img || !loader || !intent) return;
+
+  const show = (url) => {
+    img.onload = () => { loader.style.display = 'none'; img.style.display = 'block'; };
+    img.onerror = () => { if (box) box.style.display = 'none'; };
+    img.style.display = 'none';
+    loader.style.display = '';
+    img.src = url;
+  };
+
+  // Already stored for this goal → reuse it. No OpenAI/Pexels call, stable image.
+  if (intent.imageUrl && !intent.imageUrl.startsWith('data:')) {
+    show(intent.imageUrl);
+    return;
+  }
+
+  // First time → fetch once from Pexels, show it, and persist the URL to the goal.
   img.style.display = 'none';
   loader.style.display = '';
   loader.innerHTML = '<span class="inline-spinner"></span> Loading visualization…';
   try {
-    const data = await window.ciApiJson('image-search', { statement });
+    const data = await window.ciApiJson('image-search', { statement: intent.title });
     if (data && data.url) {
-      img.onload = () => { loader.style.display = 'none'; img.style.display = 'block'; };
-      img.onerror = () => { if (box) box.style.display = 'none'; };
-      img.src = data.url;
+      show(data.url);
+      intent.imageUrl = data.url;   // image_url column — persisted by saveIntentions()
+      saveIntentions();
     } else if (box) {
       box.style.display = 'none';   // nothing found — hide the placeholder
     }
