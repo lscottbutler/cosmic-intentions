@@ -137,10 +137,11 @@
 
     /* HOME — close the player. Inside the dashboard column it calls the parent's
        closePlayerColumn(); standalone it goes back / closes the window. */
-    document.getElementById('home').onclick = () => {
+    function closePlayer() {
       try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
       if (history.length > 1) history.back(); else window.close();
-    };
+    }
+    document.getElementById('home').onclick = closePlayer;
 
     /* TIMER */
     const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
@@ -179,6 +180,7 @@
         big.textContent = '0:00';
         sm.textContent = 'DONE';
         playBell();
+        setTimeout(closePlayer, 4000);   // let the bell ring out, then close
         return;
       }
       const m = Math.floor(timeRemaining / 60);
@@ -192,7 +194,7 @@
     const STEP = 60;
     function adjust(delta) {
       timeRemaining = Math.max(0, Math.min(minutes * 60, timeRemaining + delta));
-      if (timeRemaining <= 0) { clearInterval(timer); big.textContent = '0:00'; sm.textContent = 'DONE'; playBell(); return; }
+      if (timeRemaining <= 0) { clearInterval(timer); big.textContent = '0:00'; sm.textContent = 'DONE'; playBell(); setTimeout(closePlayer, 4000); return; }
       const m = Math.floor(timeRemaining / 60), s = timeRemaining % 60;
       big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
       sm.textContent = 'LEFT';
