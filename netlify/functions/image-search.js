@@ -11,6 +11,7 @@ exports.handler = async (event) => {
 
     // 1) Extract a single concrete, physical search keyword via OpenAI.
     let keyword = statement;
+    let _dbg = { aiStatus: null, aiErr: null };
     try {
       const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -30,12 +31,15 @@ Statement: "${statement}"`
           }]
         })
       });
+      _dbg.aiStatus = aiRes.status;
       if (aiRes.ok) {
         const aiData = await aiRes.json();
         const k = aiData.choices?.[0]?.message?.content?.trim();
         if (k) keyword = k.replace(/^["']+|["']+$/g, '');
+      } else {
+        _dbg.aiErr = (await aiRes.text()).slice(0, 200);
       }
-    } catch (e) { /* fall back to the raw statement */ }
+    } catch (e) { _dbg.aiErr = 'throw: ' + e.message; }
 
     // 2) Search Pexels for a landscape image.
     const pexKey = process.env.PEXELS_API_KEY;
@@ -59,7 +63,7 @@ Statement: "${statement}"`
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, keyword, photographer: photo.photographer || null })
+      body: JSON.stringify({ url, keyword, photographer: photo.photographer || null, _dbg })
     };
   } catch (e) {
     return { statusCode: 500, body: e.message };
