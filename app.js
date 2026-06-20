@@ -2348,6 +2348,7 @@ function showVaultBuildSheet(idx) {
   // Populate workspace: header + the single 10-step AI roadmap view
   const hdr = document.getElementById('vaultWorkspaceHeader');
   if (hdr) hdr.innerHTML = buildWorkspaceHeader(intent, idx);
+  loadGoalVisualization(intent.title);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
   if (roadmapEl) roadmapEl.innerHTML = buildRoadmapPanel(intent, idx);
@@ -2356,6 +2357,30 @@ function showVaultBuildSheet(idx) {
 
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+}
+
+/* Fetch a Pexels visualization for the selected goal and slot it into the
+   workspace header (keyword extraction + search happen server-side). */
+async function loadGoalVisualization(statement) {
+  const img = document.getElementById('goalVisualizationImage');
+  const loader = document.getElementById('goalVisualizationLoader');
+  const box = document.getElementById('goalVisualizationContainer');
+  if (!img || !loader) return;
+  img.style.display = 'none';
+  loader.style.display = '';
+  loader.innerHTML = '<span class="inline-spinner"></span> Loading visualization…';
+  try {
+    const data = await window.ciApiJson('image-search', { statement });
+    if (data && data.url) {
+      img.onload = () => { loader.style.display = 'none'; img.style.display = 'block'; };
+      img.onerror = () => { if (box) box.style.display = 'none'; };
+      img.src = data.url;
+    } else if (box) {
+      box.style.display = 'none';   // nothing found — hide the placeholder
+    }
+  } catch (e) {
+    if (box) box.style.display = 'none';   // fail quietly, don't block the workspace
+  }
 }
 
 export function vaultShowAddForm() {
@@ -2376,6 +2401,10 @@ function buildWorkspaceHeader(intent, idx) {
         style="display:inline-flex;align-items:center;gap:7px;background:#1A1A1A;border:1px solid #383838;
         border-radius:8px;color:#F5A623;font-family:var(--vault-mono);font-size:11px;font-weight:800;
         letter-spacing:0.8px;padding:9px 15px;cursor:pointer;margin-bottom:10px;">← BACK TO MY GOALS</button>
+      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid #333;background:#111;">
+        <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
+        <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:#666;font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+      </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
         <div style="flex:1;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
