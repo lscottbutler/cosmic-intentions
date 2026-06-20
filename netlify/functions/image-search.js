@@ -10,8 +10,11 @@ exports.handler = async (event) => {
     if (!statement) return { statusCode: 400, body: 'Missing statement' };
 
     // 1) Extract a single concrete, physical search keyword via OpenAI.
-    let keyword = statement;
-    let _dbg = { aiStatus: null, aiErr: null };
+    //    Deterministic fallback strips the "I AM ..." lead-in so Pexels still
+    //    gets a usable query if the AI call is unavailable (e.g. quota).
+    let keyword = statement
+      .replace(/^(?:\s*i\s*am\s+)?(?:(?:the|a|an|my|proud|owner|of)\s+)+/i, '')
+      .trim() || statement;
     try {
       const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -31,15 +34,12 @@ Statement: "${statement}"`
           }]
         })
       });
-      _dbg.aiStatus = aiRes.status;
       if (aiRes.ok) {
         const aiData = await aiRes.json();
         const k = aiData.choices?.[0]?.message?.content?.trim();
         if (k) keyword = k.replace(/^["']+|["']+$/g, '');
-      } else {
-        _dbg.aiErr = (await aiRes.text()).slice(0, 200);
       }
-    } catch (e) { _dbg.aiErr = 'throw: ' + e.message; }
+    } catch (e) { /* keep the deterministic fallback keyword */ }
 
     // 2) Search Pexels for a landscape image.
     const pexKey = process.env.PEXELS_API_KEY;
@@ -63,7 +63,7 @@ Statement: "${statement}"`
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, keyword, photographer: photo.photographer || null, _dbg })
+      body: JSON.stringify({ url, keyword, photographer: photo.photographer || null })
     };
   } catch (e) {
     return { statusCode: 500, body: e.message };
