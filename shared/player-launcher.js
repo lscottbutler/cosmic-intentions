@@ -39,6 +39,8 @@ export function closePlayerColumn() {
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
   if (panel) panel.style.display = 'none';
+  // Roll the meditation time grid back up when the player closes.
+  document.getElementById('meditation-times-grid')?.classList.add('hidden');
 }
 
 /* Open the Affirmation player inline in the column (was a popout window). */
