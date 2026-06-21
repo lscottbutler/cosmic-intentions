@@ -1651,6 +1651,47 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
+/* ── RECITE players ───────────────────────────────────────────
+   One reusable looping player (players/recite.html) per content type. The
+   parent collects the lines, writes them to ci_recite, then opens the player.
+   Adding a new library = one entry in RECITE_TYPES. */
+function _reciteBlendGoals(key) {            // blend a mindset list across all goals
+  const out = [];
+  (intentions || []).forEach(it => {
+    const arr = it?.mindset?.[key];
+    if (Array.isArray(arr)) arr.forEach(t => {
+      const text = (typeof t === 'string') ? t : (t.title || t.body || '');
+      if (text) out.push({ text, tag: it.title || key });
+    });
+  });
+  return out;
+}
+function _recitePegLines(field, tag) {       // split a pegboard field into lines
+  const raw = (getPB() || {})[field] || '';
+  return String(raw).split('\n').map(s => s.trim()).filter(Boolean).map(text => ({ text, tag }));
+}
+const RECITE_TYPES = {
+  affirmations: { label: 'Affirmations', collect: () => _reciteBlendGoals('affirmations') },
+  beliefs:      { label: 'Beliefs',      collect: () => _reciteBlendGoals('beliefs') },
+  values:       { label: 'Values',       collect: () => _recitePegLines('pb-values', 'Value') },
+  pegboard:     { label: 'My Pegboard',  collect: () => [
+                    ..._recitePegLines('pb-mission', 'Mission'),
+                    ..._recitePegLines('pb-lifegol', 'Life Goal'),
+                    ..._recitePegLines('pb-identity-anchor', 'Identity'),
+                    ..._recitePegLines('pb-values', 'Value'),
+                  ] },
+  // stoic / quotes — Phase 2 (Supabase content library + rotation).
+};
+export function launchRecite(type, ev) {
+  const def = RECITE_TYPES[type];
+  if (!def) { toast('Unknown library: ' + type, 'error'); return; }
+  const items = (def.collect() || []).filter(i => i.text);
+  if (!items.length) { toast(`No ${def.label.toLowerCase()} yet — generate your AI Library on a goal first.`, 'error'); return; }
+  localStorage.setItem('ci_recite', JSON.stringify({ type, label: def.label, items }));
+  if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(`players/recite.html?type=${type}`, ev);
+  else window.open(`players/recite.html?type=${type}`, 'ci_player', 'width=1100,height=720');
+}
+
 export async function launch3Min(idx) {
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
 
