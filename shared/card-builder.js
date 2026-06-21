@@ -727,8 +727,8 @@ export async function generateMindset(idx) {
     const pb      = getPB();
     const context = buildContext(pb);
     const title   = intentions[idx]?.title || '';
-    const system  = `You are a personal development AI coach. User profile:\n${context}\n\nRespond ONLY with valid JSON in this exact shape — no other text:\n{"affirmations":["..."],"beliefs":["..."],"attitudes":[{"title":"...","body":"..."}],"meditation":"..."}`;
-    const user    = `Generate a powerful mindset library for the intention: "${title}". Include 6 affirmations, 5 beliefs, 4 attitudes with title+body, and 1 short meditation sentence.`;
+    const system  = `You are a personal development AI coach. User profile:\n${context}\n\nRespond ONLY with valid JSON in this exact shape — no other text:\n{"affirmations":["..."],"beliefs":["..."],"attitudes":[{"title":"...","body":"..."}],"quotes":["quote — Author"],"meditation":"..."}`;
+    const user    = `Generate a powerful mindset library for the intention: "${title}". Include 6 affirmations, 5 beliefs, 4 attitudes with title+body, 5 real famous quotes (each "quote — Author") from notable thinkers directly relevant to this intention, and 1 short meditation sentence.`;
     const raw     = await callClaude(system, user, 1000);
     const result  = JSON.parse(raw.replace(/```json|```/g,'').trim());
     intentions[idx].mindset = result;

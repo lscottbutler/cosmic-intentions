@@ -380,7 +380,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
           <button onclick="launchRecite('pegboard', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">MY PEGBOARD</button>
           <button onclick="launchRecite('stoic', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">STOIC</button>
           <button onclick="launchRecite('quotes', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">QUOTES</button>
-          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: #000; border: 1px solid #444; color: #bbb; cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC / QUOTES LIBRARY</button>
+          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: #000; border: 1px solid #444; color: #bbb; cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
         </div>
 
         <!-- LIBRARY MANAGER MODAL (Stoic / Quotes) -->
@@ -390,20 +390,13 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
               <span style="color:#fff; font-weight:800; letter-spacing:1px;">RECITATION LIBRARIES</span>
               <button onclick="closeLibraryManager()" style="margin-left:auto; background:none; border:none; color:#aaa; font-size:20px; cursor:pointer;">&#10006;</button>
             </div>
-            <p style="color:#888; font-size:12px; margin:0 0 14px;">One line per entry. Shown as a rotating daily window so the whole library cycles over ~2 weeks.</p>
+            <p style="color:#888; font-size:12px; margin:0 0 14px;">One principle per line. Shown as a rotating daily window so the whole library cycles over ~2 weeks. (Quotes are generated per goal — use "✦ Generate AI Library" on each goal.)</p>
 
             <label style="color:#e02020; font-size:12px; font-weight:700; letter-spacing:1px;">STOIC PRINCIPLES</label>
-            <textarea id="libmgr-stoic" rows="7" placeholder="One stoic principle per line…" style="width:100%; box-sizing:border-box; margin:6px 0; background:#0d0d0d; color:#eee; border:1px solid #333; border-radius:6px; padding:10px; font-size:13px; line-height:1.5; resize:vertical;"></textarea>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+            <textarea id="libmgr-stoic" rows="9" placeholder="One stoic principle per line…" style="width:100%; box-sizing:border-box; margin:6px 0; background:#0d0d0d; color:#eee; border:1px solid #333; border-radius:6px; padding:10px; font-size:13px; line-height:1.5; resize:vertical;"></textarea>
+            <div style="display:flex; align-items:center; gap:10px;">
               <button onclick="saveLibrary('stoic')" style="background:#e02020; color:#fff; border:none; border-radius:6px; padding:9px 18px; font-weight:700; cursor:pointer;">Save Stoic</button>
               <span id="libmgr-status-stoic" style="color:#7CFC9B; font-size:12px;"></span>
-            </div>
-
-            <label style="color:#e02020; font-size:12px; font-weight:700; letter-spacing:1px;">QUOTES</label>
-            <textarea id="libmgr-quotes" rows="7" placeholder="One quote per line…" style="width:100%; box-sizing:border-box; margin:6px 0; background:#0d0d0d; color:#eee; border:1px solid #333; border-radius:6px; padding:10px; font-size:13px; line-height:1.5; resize:vertical;"></textarea>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <button onclick="saveLibrary('quotes')" style="background:#e02020; color:#fff; border:none; border-radius:6px; padding:9px 18px; font-weight:700; cursor:pointer;">Save Quotes</button>
-              <span id="libmgr-status-quotes" style="color:#7CFC9B; font-size:12px;"></span>
             </div>
           </div>
         </div>

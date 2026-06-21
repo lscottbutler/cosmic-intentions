@@ -63,6 +63,13 @@ export async function callClaude(system, user, maxTokens = 800) {
         {title:"Focused",    body:"I eliminate what doesn't serve me."}
       ],
       meditation: "You are exactly where you need to be. Breathe deeply and trust the process.",
+      quotes: [
+        "The only way to do great work is to love what you do. — Steve Jobs",
+        "Whether you think you can or you think you can't, you're right. — Henry Ford",
+        "It always seems impossible until it's done. — Nelson Mandela",
+        "Success is not final, failure is not fatal: the courage to continue is what counts. — Winston Churchill",
+        "The future belongs to those who believe in the beauty of their dreams. — Eleanor Roosevelt"
+      ],
       achiever: {
         name: "Arnold Schwarzenegger",
         tagline: "Bodybuilder, actor, governor — a textbook case of vision-led reinvention across three industries."
@@ -1720,7 +1727,7 @@ const RECITE_TYPES = {
                     ..._recitePegLines('pb-values', 'Value'),
                   ] },
   stoic:        { label: 'Stoic',  collect: () => _rotatingWindow(_getLibrary('stoic')).map(text => ({ text, tag: 'Stoic' })) },
-  quotes:       { label: 'Quotes', collect: () => _rotatingWindow(_getLibrary('quotes')).map(text => ({ text, tag: 'Quote' })) },
+  quotes:       { label: 'Quotes', collect: () => _reciteBlendGoals('quotes') },   // AI-generated per goal, blended
 };
 export function launchRecite(type, ev) {
   const def = RECITE_TYPES[type];
@@ -1734,7 +1741,7 @@ export function launchRecite(type, ev) {
 
 /* ── LIBRARY MANAGER — paste/edit the Stoic & Quotes libraries (content_blocks) ── */
 export function openLibraryManager() {
-  ['stoic', 'quotes'].forEach(t => {
+  ['stoic'].forEach(t => {        // Quotes are AI-generated per goal, not hand-managed
     const ta = document.getElementById('libmgr-' + t);
     if (ta) ta.value = _getLibrary(t).join('\n');
   });
