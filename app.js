@@ -7,7 +7,9 @@ import { logActivity, logDailyLogin } from './shared/activity.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
-const DEV_MODE = true; // true = fake data  |  false = real API only
+// Stub AI responses on localhost (fast, free dev); use the real OpenAI
+// functions everywhere else (production). Override by hardcoding true/false.
+const DEV_MODE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 
 /* ─────────────────────────────────────────────────────────
    STRIPE — REPLACE THESE WITH YOUR PAYMENT LINK URLs
