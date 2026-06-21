@@ -48,8 +48,10 @@ export function closePlayerColumn() {
 
 /* ── FAVORITES ───────────────────────────────────────────────
    Heart in each player saves {player, minutes} to localStorage
-   'ci_favorites'. The dashboard lists them for quick-play, plus an
-   Auto-Play All that chains them on a loop (fall-asleep mode). */
+   'ci_favorites'. The dashboard panel is a checkbox playlist: tick
+   the ones to include, drag the 6-dot grip to set the order, choose
+   how many loops, then Play — the selected set chains in the column
+   iframe (doze-off / fall-asleep mode). */
 const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
 
@@ -61,11 +63,65 @@ export function renderFavorites() {
     list.innerHTML = '<div style="color:#777;font-size:13px;padding:8px 2px;">No favorites yet — tap ♥ in any player.</div>';
     return;
   }
-  const rows = favs.map(f =>
-    `<button onclick="openPlayerInColumn('players/${f.player}.html?t=${f.minutes}', event)" style="display:block;width:100%;text-align:left;padding:11px 14px;margin-bottom:6px;background:#1A1A1A;border:1px solid #333;color:#fff;border-radius:6px;cursor:pointer;">&#9654; ${f.minutes} min ${FAV_LABEL[f.player] || f.player}</button>`
-  ).join('');
-  list.innerHTML =
-    `<button onclick="playAllFavorites()" style="display:block;width:100%;text-align:center;padding:12px;margin-bottom:10px;background:#5f9e3e;border:none;color:#fff;font-weight:700;letter-spacing:0.5px;border-radius:6px;cursor:pointer;">&#9654; AUTO-PLAY ALL</button>` + rows;
+  list.innerHTML = '';
+
+  // Loops control — how many times to play the whole selected list.
+  const loops = document.createElement('div');
+  loops.style.cssText = 'display:flex;align-items:center;gap:10px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:10px 14px;margin-bottom:10px;';
+  loops.innerHTML =
+    '<span style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#ccc;">Loops</span>' +
+    '<input id="fav-loops" type="number" min="1" max="99" value="1" style="width:60px;text-align:center;font-size:18px;font-weight:700;background:#0d0d0d;color:#fff;border:1px solid #444;border-radius:6px;padding:6px;">' +
+    '<span style="margin-left:auto;color:#777;font-size:12px;">how many times to play the list</span>';
+  list.appendChild(loops);
+
+  // Checkbox rows with drag-to-reorder grips.
+  let dragEl = null;
+  function syncPlay() {
+    const n = list.querySelectorAll('.fav-row input:checked').length;
+    play.disabled = n === 0;
+    play.style.opacity = n ? '1' : '.5';
+    play.innerHTML = n ? `&#9654; Play ${n} selected` : '&#9654; Play selected';
+  }
+  favs.forEach(f => {
+    const row = document.createElement('div');
+    row.className = 'fav-row';
+    row.draggable = true;
+    row._fav = f;
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    row.innerHTML =
+      '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
+      '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
+      `<span style="font-size:15px;font-weight:700;color:#fff;">${FAV_LABEL[f.player] || f.player}</span>` +
+      `<span style="margin-left:auto;color:#9a9a9a;font-size:14px;">${f.minutes} min</span>`;
+    const cb = row.querySelector('input');
+    cb.addEventListener('change', () => {
+      row.style.borderColor = cb.checked ? '#e02020' : '#333';
+      row.style.background  = cb.checked ? '#261515' : '#1A1A1A';
+      syncPlay();
+    });
+    row.addEventListener('click', e => {
+      if (e.target === cb || e.target.classList.contains('fav-grip')) return;
+      cb.checked = !cb.checked; cb.dispatchEvent(new Event('change'));
+    });
+    row.addEventListener('dragstart', () => { dragEl = row; row.style.opacity = '.4'; });
+    row.addEventListener('dragend',   () => { row.style.opacity = '1'; dragEl = null; });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!dragEl || dragEl === row) return;
+      const r = row.getBoundingClientRect();
+      list.insertBefore(dragEl, (e.clientY - r.top) < r.height / 2 ? row : row.nextSibling);
+    });
+    list.appendChild(row);
+  });
+
+  // Play button.
+  const play = document.createElement('button');
+  play.id = 'fav-play';
+  play.disabled = true;
+  play.style.cssText = 'display:block;width:100%;text-align:center;padding:13px;margin-top:4px;background:#e02020;border:none;color:#fff;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:6px;cursor:pointer;opacity:.5;';
+  play.innerHTML = '&#9654; Play selected';
+  play.addEventListener('click', playAllFavorites);
+  list.appendChild(play);
 }
 
 export function toggleFavorites() {
@@ -73,6 +129,13 @@ export function toggleFavorites() {
   if (!box) return;
   const nowHidden = box.classList.toggle('hidden');
   if (!nowHidden) renderFavorites();
+}
+
+/* Selected favorites, in the current top-to-bottom (drag-set) order. */
+function _selectedFavs() {
+  const list = document.getElementById('favorites-list');
+  if (!list) return [];
+  return [...list.querySelectorAll('.fav-row')].filter(r => r.querySelector('input').checked).map(r => r._fav);
 }
 
 let _favQueue = [];
@@ -83,22 +146,24 @@ function _openFav(f) {
   if (panel && anchor) anchor.insertAdjacentElement('afterend', panel);
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
 }
+
+/* Play the checked favorites for the chosen number of loops (finite queue). */
 export function playAllFavorites() {
-  const favs = readFavs();
-  if (!favs.length) return;
+  const sel = _selectedFavs();
+  if (!sel.length) return;
+  const box = document.getElementById('fav-loops');
+  const loops = Math.max(1, Math.min(99, parseInt(box && box.value, 10) || 1));
+  _favQueue = [];
+  for (let l = 0; l < loops; l++) _favQueue.push(...sel);
   _autoLooping = true;
-  _favQueue = favs.slice(1);
-  _openFav(favs[0]);
+  _openFav(_favQueue.shift());
 }
 
-/* Called by a player when its timer finishes naturally. Advance the auto-play
-   queue (looping); otherwise just close. */
+/* Called by a player when its timer finishes naturally. Advance the queue;
+   when it's empty (all loops played) just close. */
 export function playerFinished() {
-  if (_autoLooping) {
-    if (!_favQueue.length) _favQueue = readFavs().slice();   // loop back to the top
-    const f = _favQueue.shift();
-    if (f) { _openFav(f); return; }
-  }
+  if (_autoLooping && _favQueue.length) { _openFav(_favQueue.shift()); return; }
+  _autoLooping = false;
   closePlayerColumn();
 }
 
