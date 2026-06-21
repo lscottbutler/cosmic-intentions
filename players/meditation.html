@@ -8,11 +8,8 @@
     :root {
       --frame-gray:  #8b8b8b;
       --frame-width: 12px;
-      --frame-ratio: 5 / 6;      /* taller than the old 16:9 letterbox */
-      --panel:       #ffffff;     /* white control panel                */
-      --badge-ring:  #888888;
-      --badge-fill:  #ffffff;
-      --btn:         #111111;
+      --frame-ratio: 5 / 6;
+      --bar:         #1c1c1c;     /* dark control pill */
     }
     html, body {
       height: 100%;
@@ -35,69 +32,54 @@
       flex-direction: column;
       overflow: hidden;
     }
-    /* Sharp rotating image, top portion */
     .photo {
       flex: 0 0 56%;
-      background-size: contain;      /* whole image fits — never cropped */
+      background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       background-color: #ffffff;
     }
-    /* Dark control panel */
     .panel {
       flex: 1 1 auto;
-      background: var(--panel);
-      color: #000;
+      position: relative;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      gap: 14px;
-      padding: 16px 16px 18px;
+      gap: 12px;
+      padding: 14px 16px 18px;
       box-sizing: border-box;
     }
     .label {
       margin: 0;
       text-align: center;
-      font-size: clamp(16px, 4.4vw, 24px);
-      font-weight: 600;
-      letter-spacing: 0.3px;
+      font-size: clamp(13px, 3.2vw, 17px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #222;
     }
-    .controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 22px;
+    /* dark music-player control pill */
+    .bar {
+      background: var(--bar);
+      border-radius: 18px;
+      padding: 14px 18px 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
-    .badge {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: var(--badge-fill);
-      border: 4px solid var(--badge-ring);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      line-height: 1;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
-    }
-    .badge .big { font-size: 1.9rem; font-weight: 700; }
-    .badge .sm  { font-size: 0.8rem; letter-spacing: 2px; opacity: 0.85; margin-top: 3px; }
-    .nav, .home {
-      background: var(--btn);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.45);
-    }
-    .nav  { width: 54px; height: 54px; font-size: 1.2rem; }
-    .home { width: 40px; height: 40px; font-size: 0.95rem; font-weight: 700; }
-    .nav:active, .home:active { transform: scale(0.94); }
+    .track { position: relative; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; margin: 2px 0 7px; }
+    .fill  { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #fff; border-radius: 2px; }
+    .dot   { position: absolute; top: 50%; left: 0; width: 13px; height: 13px; background: #fff; border-radius: 50%; transform: translate(-50%,-50%); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    .times { display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-size: 11px; margin-bottom: 8px; }
+    .row   { display: flex; align-items: center; justify-content: space-between; }
+    .cbtn  { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
+    .cbtn:active { transform: scale(0.92); }
+    .play  { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .fav.on { color: #ff5a7a; }
+    /* ≡ dropdown menu */
+    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
+    .menu.hidden { display: none; }
+    .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .menu button:hover { background: #222; }
   </style>
 </head>
 <body>
@@ -105,54 +87,92 @@
     <div class="photo" id="photo"></div>
     <div class="panel">
       <p class="label" id="label">meditation</p>
-      <div class="controls">
-        <button class="nav" id="prev" aria-label="Previous image">&#9664;</button>
-        <div class="badge" id="badge"><span class="big" id="badgeBig">--</span><span class="sm" id="badgeSm">MIN</span></div>
-        <button class="nav" id="next" aria-label="Next image">&#9654;</button>
+
+      <div class="menu hidden" id="menu">
+        <button id="mHome">Home page</button>
+        <button id="mPeg">My Pegboard</button>
       </div>
-      <button class="home" id="home" title="Home" aria-label="Home">H</button>
+
+      <div class="bar">
+        <div class="track"><div class="fill" id="fill"></div><div class="dot" id="dot"></div></div>
+        <div class="times"><span id="elapsed">0:00</span><span id="remain">-0:00</span></div>
+        <div class="row">
+          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+          <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
+          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+          <button class="cbtn" id="fwd" aria-label="Forward">&#9197;</button>
+          <button class="cbtn fav" id="fav" aria-label="Favorite">&#9825;</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    /* ───────────────────────────────────────────────────────────────
-       BACKGROUND IMAGES — live in images/meditation/. One shown per day, rotating.
-       Add a filename here whenever you add a file.
-       ─────────────────────────────────────────────────────────────── */
-    const IMAGES = [
-      'meditation.jpg',
-      'meditation-1.jpg',
-      'meditation-2.jpg',
-      'meditation-3.jpg',
-    ];
+    const PLAYER = 'meditation';
+    const LABEL  = (m) => `${m} minute unguided meditation`;
 
+    /* Background images — live in images/meditation/. One per day, rotating. */
+    const IMAGES = ['meditation.jpg', 'meditation-1.jpg', 'meditation-2.jpg', 'meditation-3.jpg'];
     const photo = document.getElementById('photo');
-    const imgIdx = new Date().getDate() % IMAGES.length;   // image rotates daily
     (function showDailyImage() {
-      const url = `../images/meditation/${IMAGES[imgIdx]}`;
+      const url = `../images/meditation/${IMAGES[new Date().getDate() % IMAGES.length]}`;
       const probe = new Image();
       probe.onload = () => { photo.style.backgroundImage = `url('${url}')`; };
       probe.src = url;
     })();
 
-    /* HOME — close the player. Inside the dashboard column it calls the parent's
-       closePlayerColumn(); standalone it goes back / closes the window. */
+    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
+    const total = minutes * 60;
+    let timeRemaining = total;
+    document.getElementById('label').textContent = LABEL(minutes);
+
+    const fill = document.getElementById('fill');
+    const dot  = document.getElementById('dot');
+    const elapsedEl = document.getElementById('elapsed');
+    const remainEl  = document.getElementById('remain');
+    const playBtn = document.getElementById('play');
+
+    const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    function render() {
+      const elapsed = total - timeRemaining;
+      const pct = total ? (elapsed / total) * 100 : 0;
+      fill.style.width = pct + '%';
+      dot.style.left = pct + '%';
+      elapsedEl.textContent = fmt(elapsed);
+      remainEl.textContent = '-' + fmt(timeRemaining);
+    }
+    render();
+
+    /* ── close / parent navigation ── */
     function closePlayer() {
       try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
       if (history.length > 1) history.back(); else window.close();
     }
-    document.getElementById('home').onclick = closePlayer;
+    function nav(target) {
+      try {
+        if (window.parent && window.parent !== window) {
+          if (window.parent.closePlayerColumn) window.parent.closePlayerColumn();
+          if (window.parent.navTo) { window.parent.navTo(target); return; }
+        }
+      } catch (e) {}
+      window.location.href = '/';
+    }
 
-    /* TIMER */
-    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
-    let timeRemaining = minutes * 60;
-    document.getElementById('label').textContent = `${minutes} minute unguided meditation`;
+    /* ── ≡ menu ── */
+    const menu = document.getElementById('menu');
+    document.getElementById('menuBtn').onclick = () => menu.classList.toggle('hidden');
+    document.getElementById('mHome').onclick = () => nav('home');
+    document.getElementById('mPeg').onclick  = () => nav('setup');
 
-    const big = document.getElementById('badgeBig');
-    const sm  = document.getElementById('badgeSm');
-    big.textContent = String(minutes);
-    sm.textContent = 'MIN';
+    /* ── ♥ favorite (persisted locally) ── */
+    const favBtn = document.getElementById('fav');
+    const FAV_KEY = `ci_fav_${PLAYER}_${minutes}`;
+    let fav = localStorage.getItem(FAV_KEY) === '1';
+    function renderFav() { favBtn.innerHTML = fav ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', fav); }
+    favBtn.onclick = () => { fav = !fav; localStorage.setItem(FAV_KEY, fav ? '1' : '0'); renderFav(); };
+    renderFav();
 
+    /* ── bell ── */
     function playBell() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -173,37 +193,41 @@
       } catch (e) { console.log('Audio blocked:', e); }
     }
 
+    /* ── timer + play/pause ── */
+    let timer = null;
+    let playing = false;
     function tick() {
       timeRemaining--;
       if (timeRemaining <= 0) {
-        clearInterval(timer);
-        big.textContent = '0:00';
-        sm.textContent = 'DONE';
+        timeRemaining = 0;
+        setPlaying(false);
+        render();
         playBell();
         setTimeout(closePlayer, 4000);   // let the bell ring out, then close
         return;
       }
-      const m = Math.floor(timeRemaining / 60);
-      const s = timeRemaining % 60;
-      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-      sm.textContent = 'LEFT';
+      render();
     }
+    function setPlaying(p) {
+      playing = p;
+      playBtn.innerHTML = p ? '&#9208;' : '&#9654;';   // ⏸ / ▶
+      if (p && !timer) timer = setInterval(tick, 1000);
+      if (!p && timer) { clearInterval(timer); timer = null; }
+    }
+    playBtn.onclick = () => setPlaying(!playing);
 
-    // ◀ rewind = add time, ▶ forward = skip ahead (60s per press).
-    let timer;
+    /* |◀ rewind = +60s, ▶| forward = -60s (clamped) */
     const STEP = 60;
     function adjust(delta) {
-      timeRemaining = Math.max(0, Math.min(minutes * 60, timeRemaining + delta));
-      if (timeRemaining <= 0) { clearInterval(timer); big.textContent = '0:00'; sm.textContent = 'DONE'; playBell(); setTimeout(closePlayer, 4000); return; }
-      const m = Math.floor(timeRemaining / 60), s = timeRemaining % 60;
-      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-      sm.textContent = 'LEFT';
+      timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
+      render();
+      if (timeRemaining === 0) { setPlaying(false); playBell(); setTimeout(closePlayer, 4000); }
     }
-    document.getElementById('prev').onclick = () => adjust(+STEP);   // ◀ rewind
-    document.getElementById('next').onclick = () => adjust(-STEP);   // ▶ forward
+    document.getElementById('rew').onclick = () => adjust(+STEP);
+    document.getElementById('fwd').onclick = () => adjust(-STEP);
 
-    // Hold "{t} MIN" for 2s, then run the countdown.
-    setTimeout(() => { timer = setInterval(tick, 1000); }, 2000);
+    // Auto-start after a brief beat.
+    setTimeout(() => setPlaying(true), 800);
   </script>
 </body>
 </html>
