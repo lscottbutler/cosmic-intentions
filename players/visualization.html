@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualization | Cosmic Intentions</title>
+  <style>
+    :root {
+      --frame-gray:  #8b8b8b;
+      --frame-width: 12px;
+      --frame-ratio: 5 / 6;
+      --bar:         #1c1c1c;     /* dark control pill */
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
+    }
+    .frame {
+      position: relative;
+      width: min(95vw, 95vh * 5 / 6, 560px);
+      aspect-ratio: var(--frame-ratio);
+      border: var(--frame-width) solid #e02020;
+      box-sizing: border-box;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .photo {
+      flex: 0 0 56%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: #ffffff;
+    }
+    .panel {
+      flex: 1 1 auto;
+      position: relative;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .label {
+      margin: 0;
+      padding: 16px 16px 10px;
+      text-align: center;
+      font-size: clamp(13px, 3.2vw, 17px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #222;
+    }
+    /* dark music-player control pill */
+    .bar {
+      background: #e02020;
+      border-radius: 0;
+      padding: 14px 18px;
+      box-shadow: none;
+    }
+    .row   { display: flex; align-items: center; justify-content: space-between; }
+    /* progress dot — straddles the image/panel seam, travels left→right with time */
+    .scrubdot {
+      position: absolute;
+      top: 56%;                 /* the bottom of the image / top of the white panel */
+      left: 0;
+      width: 16px; height: 16px;
+      background: radial-gradient(circle at center, #fff 0 3px, #000 3px 100%);
+      border: none;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.55);
+      z-index: 4;
+      pointer-events: none;
+      transition: left 1s linear;   /* glide between 1s ticks instead of jumping */
+    }
+    .cbtn  { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
+    .cbtn:active { transform: scale(0.92); }
+    .play  { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .fav.on { color: #ff5a7a; }
+    /* ≡ dropdown menu */
+    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
+    .menu.hidden { display: none; }
+    .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .menu button:hover { background: #222; }
+    /* DEV_MODE only — caption of the current VO block, overlaid on the image.
+       Hidden entirely in production so the UI is identical to Meditation. */
+    .cap { position: absolute; top: 0; left: 0; right: 0; z-index: 6; display: none;
+      padding: 8px 12px; background: rgba(0,0,0,0.62); color: #fff;
+      font-size: 12px; line-height: 1.35; letter-spacing: .3px; }
+    .cap.show { display: block; }
+    .cap b { color: #ff8a8a; text-transform: uppercase; letter-spacing: 1px; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="photo" id="photo"></div>
+    <div class="cap" id="cap"></div>
+    <div class="scrubdot" id="dot"></div>
+    <div class="panel">
+      <p class="label" id="label">visualization</p>
+
+      <div class="menu hidden" id="menu">
+        <button id="mHome">Home page</button>
+        <button id="mPeg">My Pegboard</button>
+      </div>
+
+      <div class="bar">
+        <div class="row">
+          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+          <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
+          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+          <button class="cbtn" id="fwd" aria-label="Forward">&#9197;</button>
+          <button class="cbtn fav" id="fav" aria-label="Favorite">&#9825;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const DEV_MODE = true;                 // true = on-screen block caption + console logs
+    const PLAYER = 'visualization';
+
+    /* ── inputs: duration (?t minutes) + goal text/image (URL or ci_goal_*) ── */
+    const params  = new URLSearchParams(location.search);
+    const minutes = parseInt(params.get('t')) || 3;
+    const total   = minutes * 60;
+    const goal    = (params.get('g') || localStorage.getItem('ci_goal_title') || 'your vision').trim();
+    const goalImg = params.get('img') || localStorage.getItem('ci_goal_image') || '../images/meditation/meditation.jpg';
+
+    let timeRemaining = total;
+    document.getElementById('label').textContent = goal;
+
+    /* goal image fills the top (same contain layout as Meditation) */
+    const photo = document.getElementById('photo');
+    (function showGoalImage() {
+      const probe = new Image();
+      probe.onload  = () => { photo.style.backgroundImage = `url('${goalImg}')`; };
+      probe.onerror = () => { photo.style.backgroundImage = `url('../images/meditation/meditation.jpg')`; };
+      probe.src = goalImg;
+    })();
+
+    const dot = document.getElementById('dot');
+    const playBtn = document.getElementById('play');
+    const cap = document.getElementById('cap');
+
+    function render() {
+      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
+      dot.style.left = pct + '%';
+    }
+    render();
+
+    /* ── close / parent navigation (identical to Meditation) ── */
+    function closePlayer() {
+      try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
+      if (history.length > 1) history.back(); else window.close();
+    }
+    function nav(target) {
+      try {
+        if (window.parent && window.parent !== window) {
+          if (window.parent.closePlayerColumn) window.parent.closePlayerColumn();
+          if (window.parent.navTo) { window.parent.navTo(target); return; }
+        }
+      } catch (e) {}
+      window.location.href = '/';
+    }
+    function finishPlayer() {
+      try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
+      closePlayer();
+    }
+
+    /* ── ≡ menu ── */
+    const menu = document.getElementById('menu');
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
+    document.addEventListener('click', (e) => {
+      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== menuBtn) menu.classList.add('hidden');
+    });
+    document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
+    document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
+
+    /* ── ♥ favorite (shares ci_favorites with the playlist) ── */
+    const favBtn = document.getElementById('fav');
+    const FAVS_KEY = 'ci_favorites';
+    const readFavs = () => { try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch (e) { return []; } };
+    const isFav = (a) => a.some(f => f.player === PLAYER && f.minutes === minutes);
+    function renderFav() { const on = isFav(readFavs()); favBtn.innerHTML = on ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', on); }
+    favBtn.onclick = () => {
+      let a = readFavs();
+      if (isFav(a)) a = a.filter(f => !(f.player === PLAYER && f.minutes === minutes));
+      else a.push({ player: PLAYER, minutes });
+      localStorage.setItem(FAVS_KEY, JSON.stringify(a));
+      renderFav();
+    };
+    renderFav();
+
+    /* ── bell (identical) ── */
+    function playBell() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        [660, 990].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = now + i * 0.18;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 2.3);
+        });
+      } catch (e) { console.log('Audio blocked:', e); }
+    }
+
+    /* ── 7-BLOCK MODULAR STATE MACHINE ───────────────────────────
+       Phase 1 HOOK · Phase 2 DESCENT/LUNGS · Phase 3 CORE VISUALIZE (×3,
+       scales with duration) · Phase 4 EXIT. Fixed blocks play pre-rendered
+       static MP3s; the first Core block speaks the user's actual GOAL via
+       runtime TTS (/api/tts). On-screen text only shown in DEV_MODE. */
+    const CORE = total - 56;               // seconds available for the core block
+    const VO_DIR = '../images/visualization/vo';
+    const BLOCKS = [
+      { key: 'hook',    phase: 'Hook',    at: 0,
+        text: 'Close your eyes. For the next few minutes, your only job is to see what you want as if it is already yours.',
+        src:  `${VO_DIR}/vo-hook.mp3` },
+      { key: 'descent', phase: 'Descent', at: 8,
+        text: 'Take a slow breath in... and let it go. With each breath, let your body soften and sink down.',
+        src:  `${VO_DIR}/vo-descent.mp3` },
+      { key: 'lungs',   phase: 'Lungs',   at: 20,
+        text: 'One more deep breath in. And out. Feel yourself dropping into a calm, focused state.',
+        src:  `${VO_DIR}/vo-lungs.mp3` },
+      { key: 'core1',   phase: 'Core · Enter', at: 34,
+        text: `Picture it now, already real. ${goal}.`,
+        runtime: true },                   // spoken via runtime TTS with the goal
+      { key: 'deepen',  phase: 'Core · Deepen', at: 34 + Math.round(CORE * 0.34),
+        text: 'Step inside the picture. Feel it on your skin, hear the sounds around you. Notice how good it feels to be here.',
+        src:  `${VO_DIR}/vo-deepen.mp3` },
+      { key: 'embody',  phase: 'Core · Embody', at: 34 + Math.round(CORE * 0.68),
+        text: 'This is yours. Feel the gratitude of already having it. Say silently to yourself: this is who I am.',
+        src:  `${VO_DIR}/vo-embody.mp3` },
+      { key: 'exit',    phase: 'Exit',    at: total - 22,
+        text: 'Hold that feeling. Slowly begin to return. When you are ready, open your eyes, and carry it with you.',
+        src:  `${VO_DIR}/vo-exit.mp3` },
+    ];
+
+    // Pre-load the static clips.
+    BLOCKS.filter(b => b.src).forEach(b => { b.audio = new Audio(b.src); b.audio.preload = 'auto'; });
+
+    // Runtime-generate the goal clip (ready well before block 'core1' at 34s).
+    const coreBlock = BLOCKS.find(b => b.runtime);
+    (async function makeGoalClip() {
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: coreBlock.text.slice(0, 150), voice: 'shimmer' }),
+        });
+        if (!res.ok) throw new Error('tts ' + res.status);
+        const { audio } = await res.json();
+        coreBlock.audio = new Audio('data:audio/mpeg;base64,' + audio);
+      } catch (e) { console.log('goal TTS unavailable (caption only):', e.message); }
+    })();
+
+    function fireBlock(b) {
+      if (DEV_MODE) {
+        console.log(`[VO ${b.phase}] @${total - timeRemaining}s: ${b.text}`);
+        cap.innerHTML = `<b>${b.phase}</b><br>${b.text}`;
+        cap.classList.add('show');
+      }
+      if (b.audio) { try { b.audio.currentTime = 0; const p = b.audio.play(); if (p) p.catch(() => {}); } catch (e) {} }
+    }
+
+    // Prime audio on first gesture (browsers block autoplay until then).
+    let unlocked = false;
+    document.addEventListener('pointerdown', () => {
+      if (unlocked) return; unlocked = true;
+      BLOCKS.forEach(b => { if (!b.audio) return; b.audio.muted = true;
+        const p = b.audio.play(); if (p) p.then(() => { b.audio.pause(); b.audio.currentTime = 0; b.audio.muted = false; }).catch(() => { b.audio.muted = false; }); });
+    }, { once: true });
+
+    /* ── timer + play/pause (same engine as Meditation) ── */
+    const fired = new Set();
+    let timer = null, playing = false, ended = false;
+    function endSession() {
+      if (ended) return;
+      ended = true;
+      timeRemaining = 0;
+      setPlaying(false);
+      render();
+      playBell();
+      setTimeout(finishPlayer, 4000);
+    }
+    function tick() {
+      timeRemaining--;
+      if (timeRemaining <= 0) { endSession(); return; }
+      render();
+      const elapsed = total - timeRemaining;
+      BLOCKS.forEach(b => { if (b.at > 0 && b.at < total && !fired.has(b.key) && elapsed >= b.at) { fired.add(b.key); fireBlock(b); } });
+    }
+    function setPlaying(p) {
+      playing = p;
+      playBtn.innerHTML = p ? '&#9208;' : '&#9654;';   // ⏸ / ▶
+      if (p && !timer) timer = setInterval(tick, 1000);
+      if (!p && timer) { clearInterval(timer); timer = null; }
+    }
+    playBtn.onclick = () => setPlaying(!playing);
+
+    const STEP = 10;
+    function adjust(delta) {
+      timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
+      render();
+      if (timeRemaining === 0) endSession();
+    }
+    document.getElementById('rew').onclick = () => adjust(+STEP);
+    document.getElementById('fwd').onclick = () => adjust(-STEP);
+
+    // Auto-start; the Hook block fires as it begins.
+    setTimeout(() => {
+      setPlaying(true);
+      const hook = BLOCKS[0];
+      if (!fired.has(hook.key)) { fired.add(hook.key); fireBlock(hook); }
+    }, 800);
+  </script>
+</body>
+</html>
