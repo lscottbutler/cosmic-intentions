@@ -1,0 +1,10 @@
+key,phase,at_3,at_10,text
+@voice,,,,shimmer
+@image,,,,
+hook,Hook,0,0,"Close your eyes. For the next few minutes, your only job is to see what you want as if it is already yours."
+descent,Descent,8,8,"Take a slow breath in... and let it go. With each breath, let your body soften and sink down."
+lungs,Lungs,20,20,"One more deep breath in. And out. Feel yourself dropping into a calm, focused state."
+core_enter,Core · Enter,34,34,"Picture it now, already real. {GOAL}."
+core_deepen,Core · Deepen,76,219,"Step inside the picture. Feel it on your skin, hear the sounds around you. Notice how good it feels to be here."
+core_embody,Core · Embody,118,404,"This is yours. Feel the gratitude of already having it. Say silently to yourself: this is who I am."
+exit,Exit,158,578,"Hold that feeling. Slowly begin to return. When you are ready, open your eyes, and carry it with you."

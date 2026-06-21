@@ -224,53 +224,46 @@
       } catch (e) { console.log('Audio blocked:', e); }
     }
 
-    /* ── 7-BLOCK MODULAR STATE MACHINE ───────────────────────────
-       Phase 1 HOOK · Phase 2 DESCENT/LUNGS · Phase 3 CORE VISUALIZE (×3,
-       scales with duration) · Phase 4 EXIT. Fixed blocks play pre-rendered
-       static MP3s; the first Core block speaks the user's actual GOAL via
-       runtime TTS (/api/tts). On-screen text only shown in DEV_MODE. */
-    const CORE = total - 56;               // seconds available for the core block
-    const VO_DIR = '../images/visualization/vo';
-    const BLOCKS = [
-      { key: 'hook',    phase: 'Hook',    at: 0,
-        text: 'Close your eyes. For the next few minutes, your only job is to see what you want as if it is already yours.',
-        src:  `${VO_DIR}/vo-hook.mp3` },
-      { key: 'descent', phase: 'Descent', at: 8,
-        text: 'Take a slow breath in... and let it go. With each breath, let your body soften and sink down.',
-        src:  `${VO_DIR}/vo-descent.mp3` },
-      { key: 'lungs',   phase: 'Lungs',   at: 20,
-        text: 'One more deep breath in. And out. Feel yourself dropping into a calm, focused state.',
-        src:  `${VO_DIR}/vo-lungs.mp3` },
-      { key: 'core1',   phase: 'Core · Enter', at: 34,
-        text: `Picture it now, already real. ${goal}.`,
-        runtime: true },                   // spoken via runtime TTS with the goal
-      { key: 'deepen',  phase: 'Core · Deepen', at: 34 + Math.round(CORE * 0.34),
-        text: 'Step inside the picture. Feel it on your skin, hear the sounds around you. Notice how good it feels to be here.',
-        src:  `${VO_DIR}/vo-deepen.mp3` },
-      { key: 'embody',  phase: 'Core · Embody', at: 34 + Math.round(CORE * 0.68),
-        text: 'This is yours. Feel the gratitude of already having it. Say silently to yourself: this is who I am.',
-        src:  `${VO_DIR}/vo-embody.mp3` },
-      { key: 'exit',    phase: 'Exit',    at: total - 22,
-        text: 'Hold that feeling. Slowly begin to return. When you are ready, open your eyes, and carry it with you.',
-        src:  `${VO_DIR}/vo-exit.mp3` },
-    ];
+    /* ── CONFIG-DRIVEN VO STATE MACHINE ──────────────────────────
+       Blocks (timing + text) come from a Google Sheet via /api/viz-config.
+       Each block is spoken with cached runtime TTS, so editing the sheet text
+       changes what you hear. {GOAL} in any line becomes the user's goal.
+       Falls back to these built-in defaults if the config can't be fetched.
+       (Edit timing/words in the sheet — see docs/VIZ_SHEET_SETUP.md.) */
+    const DEFAULT_CFG = {
+      settings: { voice: 'shimmer', image: '' },
+      blocks: [
+        { key:'hook',        phase:'Hook',          at:{ '3':0,   '10':0   }, text:'Close your eyes. For the next few minutes, your only job is to see what you want as if it is already yours.' },
+        { key:'descent',     phase:'Descent',       at:{ '3':8,   '10':8   }, text:'Take a slow breath in... and let it go. With each breath, let your body soften and sink down.' },
+        { key:'lungs',       phase:'Lungs',         at:{ '3':20,  '10':20  }, text:'One more deep breath in. And out. Feel yourself dropping into a calm, focused state.' },
+        { key:'core_enter',  phase:'Core · Enter',  at:{ '3':34,  '10':34  }, text:'Picture it now, already real. {GOAL}.' },
+        { key:'core_deepen', phase:'Core · Deepen', at:{ '3':76,  '10':219 }, text:'Step inside the picture. Feel it on your skin, hear the sounds around you. Notice how good it feels to be here.' },
+        { key:'core_embody', phase:'Core · Embody', at:{ '3':118, '10':404 }, text:'This is yours. Feel the gratitude of already having it. Say silently to yourself: this is who I am.' },
+        { key:'exit',        phase:'Exit',          at:{ '3':158, '10':578 }, text:'Hold that feeling. Slowly begin to return. When you are ready, open your eyes, and carry it with you.' },
+      ],
+    };
 
-    // Pre-load the static clips.
-    BLOCKS.filter(b => b.src).forEach(b => { b.audio = new Audio(b.src); b.audio.preload = 'auto'; });
+    let VOICE = 'shimmer';
+    let BLOCKS = [];
 
-    // Runtime-generate the goal clip (ready well before block 'core1' at 34s).
-    const coreBlock = BLOCKS.find(b => b.runtime);
-    (async function makeGoalClip() {
+    /* cached runtime TTS — repeat sessions are instant + free; sheet edits regenerate */
+    const TTS_CACHE = 'ci_vizvo_v1';
+    const readCache  = () => { try { return JSON.parse(localStorage.getItem(TTS_CACHE) || '{}'); } catch (e) { return {}; } };
+    const writeCache = (c) => { try { localStorage.setItem(TTS_CACHE, JSON.stringify(c)); } catch (e) {} };
+    const hashStr = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h.toString(36); };
+    async function ttsAudio(text) {
+      if (!text) return null;
+      const key = hashStr(VOICE + '|' + text);
+      const cache = readCache();
+      if (cache[key]) return new Audio('data:audio/mpeg;base64,' + cache[key]);
       try {
-        const res = await fetch('/api/tts', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: coreBlock.text.slice(0, 150), voice: 'shimmer' }),
-        });
+        const res = await fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text.slice(0, 150), voice: VOICE }) });
         if (!res.ok) throw new Error('tts ' + res.status);
         const { audio } = await res.json();
-        coreBlock.audio = new Audio('data:audio/mpeg;base64,' + audio);
-      } catch (e) { console.log('goal TTS unavailable (caption only):', e.message); }
-    })();
+        cache[key] = audio; writeCache(cache);
+        return new Audio('data:audio/mpeg;base64,' + audio);
+      } catch (e) { console.log('TTS unavailable (caption only):', e.message); return null; }
+    }
 
     function fireBlock(b) {
       if (DEV_MODE) {
@@ -288,6 +281,22 @@
       BLOCKS.forEach(b => { if (!b.audio) return; b.audio.muted = true;
         const p = b.audio.play(); if (p) p.then(() => { b.audio.pause(); b.audio.currentTime = 0; b.audio.muted = false; }).catch(() => { b.audio.muted = false; }); });
     }, { once: true });
+
+    /* Fetch the sheet config, build BLOCKS for this duration, pre-generate audio. */
+    async function initBlocks() {
+      let cfg = null;
+      try { const r = await fetch('/api/viz-config'); if (r.ok) cfg = await r.json(); } catch (e) {}
+      if (!cfg || !Array.isArray(cfg.blocks) || !cfg.blocks.length) cfg = DEFAULT_CFG;
+      VOICE = (cfg.settings && cfg.settings.voice) || 'shimmer';
+      if (cfg.settings && cfg.settings.image) photo.style.backgroundImage = `url('${cfg.settings.image}')`;
+      const durKey = (minutes >= 10) ? '10' : '3';
+      BLOCKS = cfg.blocks.map(b => ({
+        key: b.key, phase: b.phase || b.key,
+        at: Number((b.at && (b.at[durKey] != null ? b.at[durKey] : b.at['3'])) || 0) || 0,
+        text: String(b.text || '').replace(/\{GOAL\}/gi, goal),
+      }));
+      await Promise.all(BLOCKS.map(async b => { b.audio = await ttsAudio(b.text); }));
+    }
 
     /* ── timer + play/pause (same engine as Meditation) ── */
     const fired = new Set();
@@ -325,12 +334,14 @@
     document.getElementById('rew').onclick = () => adjust(+STEP);
     document.getElementById('fwd').onclick = () => adjust(-STEP);
 
-    // Auto-start; the Hook block fires as it begins.
-    setTimeout(() => {
-      setPlaying(true);
-      const hook = BLOCKS[0];
-      if (!fired.has(hook.key)) { fired.add(hook.key); fireBlock(hook); }
-    }, 800);
+    // Build from the sheet config (→ cached TTS), then auto-start; Hook fires first.
+    initBlocks().then(() => {
+      setTimeout(() => {
+        setPlaying(true);
+        const hook = BLOCKS[0];
+        if (hook && !fired.has(hook.key)) { fired.add(hook.key); fireBlock(hook); }
+      }, 800);
+    });
   </script>
 </body>
 </html>
