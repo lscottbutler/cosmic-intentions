@@ -5,87 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recite | Cosmic Intentions</title>
   <style>
-    :root { --frame-width: 12px; --frame-ratio: 5 / 6; }
     html, body {
       height: 100%; margin: 0; background: #1a1a1a;
-      display: flex; justify-content: center; align-items: center; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      overflow: hidden; gap: 14px;
       font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
     }
-    .frame {
+    /* barrel frame card — SVG draws the curved gray border + white fill + badge,
+       the text overlay sits in the white interior */
+    .card {
       position: relative;
-      width: min(95vw, 95vh * 5 / 6, 560px);
-      aspect-ratio: var(--frame-ratio);
-      border: var(--frame-width) solid #e02020;
-      box-sizing: border-box; background: #fff;
-      display: flex; flex-direction: column; overflow: hidden;
+      width: min(95vw, 92vh * 5 / 4, 600px);
+      aspect-ratio: 5 / 4;
     }
-    .photo {
-      flex: 0 0 40%;
-      background-size: contain; background-repeat: no-repeat; background-position: center;
-      background-color: #fff;
-    }
-    .panel {
-      flex: 1 1 auto; position: relative; background: #fff;
-      display: flex; flex-direction: column; justify-content: space-between;
-      padding: 0; box-sizing: border-box;
-    }
-    .stage {
-      flex: 1 1 auto; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 10px;
-      padding: 18px 22px; text-align: center;
+    .card svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .overlay {
+      position: absolute; top: 12%; left: 9%; right: 9%; bottom: 20%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; text-align: center; overflow: hidden;
     }
     .tag {
-      font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
-      color: #e02020;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e02020;
+      flex: 0 0 auto;
     }
     .line {
-      margin: 0; color: #181818; font-weight: 700; line-height: 1.32;
-      font-size: clamp(17px, 4.6vw, 26px);
-      transition: opacity .5s ease;
+      margin: 0; color: #151515; font-weight: 700; line-height: 1.3;
+      font-size: 30px;                 /* auto-shrinks to fit via JS */
+      transition: opacity .45s ease;
+      max-height: 100%; overflow: hidden;
     }
     .line.fade { opacity: 0; }
-    /* dot showing position within the current pass through the list */
-    .scrubdot {
-      position: absolute; top: 40%; left: 0;
-      width: 14px; height: 14px;
-      background: radial-gradient(circle at center, #fff 0 3px, #000 3px 100%);
-      border-radius: 50%; transform: translate(-50%, -50%);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.55); z-index: 4; pointer-events: none;
-      transition: left .5s ease;
-    }
-    .bar { background: #e02020; padding: 14px 18px; }
-    .row { display: flex; align-items: center; justify-content: space-around; }
-    .cbtn { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
+
+    /* minimal controls below the frame */
+    .controls { display: flex; align-items: center; gap: 28px; }
+    .cbtn { background: none; border: none; color: #cfcfcf; font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 6px; }
     .cbtn:active { transform: scale(0.92); }
-    .play { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
+    .play { background: #fff; color: #111; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+    .menu { position: absolute; left: 50%; transform: translateX(-50%); bottom: 70px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
     .menu.hidden { display: none; }
     .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
     .menu button:hover { background: #222; }
   </style>
 </head>
 <body>
-  <div class="frame">
-    <div class="photo" id="photo"></div>
-    <div class="scrubdot" id="dot"></div>
-    <div class="panel">
-      <div class="stage">
-        <div class="tag" id="tag">RECITE</div>
-        <p class="line" id="line">…</p>
-      </div>
-
-      <div class="menu hidden" id="menu">
-        <button id="mHome">Home page</button>
-        <button id="mPeg">My Pegboard</button>
-      </div>
-
-      <div class="bar">
-        <div class="row">
-          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
-          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
-        </div>
-      </div>
+  <div class="card">
+    <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <path d="M 40 70 Q 500 15 960 70 L 960 720 Q 500 775 40 720 Z"
+            fill="#ffffff" stroke="#9a9a9a" stroke-width="18" stroke-linejoin="round"/>
+      <circle cx="500" cy="747" r="52" fill="#111111" stroke="#9a9a9a" stroke-width="10"/>
+      <text id="badge" x="500" y="752" text-anchor="middle"
+            fill="#ffffff" font-size="46" font-weight="800"
+            font-family="Arial, system-ui, sans-serif">A</text>
+    </svg>
+    <div class="overlay">
+      <div class="tag" id="tag">AFFIRMATION</div>
+      <p class="line" id="line">…</p>
     </div>
+  </div>
+
+  <div class="menu hidden" id="menu">
+    <button id="mHome">Home page</button>
+    <button id="mPeg">My Pegboard</button>
+  </div>
+
+  <div class="controls">
+    <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
   </div>
 
   <script type="module">
@@ -93,31 +78,30 @@
     const type   = params.get('type') || 'recite';
     const PERIOD = (parseInt(params.get('s')) || 7) * 1000;   // ms per card
 
-    /* Content payload is written by the parent (app.js) before launch:
-       localStorage['ci_recite'] = { label, items:[{text, tag}] }.
-       Falls back to a tiny demo so the player is testable standalone. */
+    /* Content payload written by the parent (app.js): ci_recite = {label, items:[{text,tag}]} */
     let payload;
     try { payload = JSON.parse(localStorage.getItem('ci_recite') || 'null'); } catch (e) { payload = null; }
     if (!payload || !Array.isArray(payload.items) || !payload.items.length) {
-      payload = { label: type.toUpperCase(), items: [
-        { text: 'No items yet — generate your library first.', tag: type.toUpperCase() },
-      ] };
+      payload = { label: type.toUpperCase(), items: [{ text: 'No items yet — generate your library first.', tag: type.toUpperCase() }] };
     }
     const items = payload.items;
 
-    /* calm backdrop (rotating meditation image) */
-    const photo = document.getElementById('photo');
-    (function bg() {
-      const url = '../images/meditation/meditation.jpg';
-      const probe = new Image();
-      probe.onload = () => { photo.style.backgroundImage = `url('${url}')`; };
-      probe.src = url;
-    })();
+    // badge = first letter of the library label (A=Affirmations, B=Beliefs, …)
+    document.getElementById('badge').textContent = (payload.label || type || '?').trim().charAt(0).toUpperCase();
 
     const tagEl  = document.getElementById('tag');
     const lineEl = document.getElementById('line');
-    const dot    = document.getElementById('dot');
+    const overlay = document.querySelector('.overlay');
     const playBtn = document.getElementById('play');
+
+    /* shrink the statement until it fits the white interior (handles long lines) */
+    function fitText() {
+      let size = 30;
+      lineEl.style.fontSize = size + 'px';
+      while ((lineEl.scrollHeight > overlay.clientHeight - tagEl.offsetHeight - 14 || lineEl.scrollWidth > overlay.clientWidth) && size > 13) {
+        size -= 1; lineEl.style.fontSize = size + 'px';
+      }
+    }
 
     let idx = 0;
     function paint() {
@@ -126,12 +110,12 @@
       setTimeout(() => {
         tagEl.textContent  = it.tag || payload.label || type.toUpperCase();
         lineEl.textContent = it.text;
-        dot.style.left = (items.length > 1 ? (idx / (items.length - 1)) * 100 : 0) + '%';
+        fitText();
         lineEl.classList.remove('fade');
-      }, 220);
+      }, 200);
     }
 
-    /* ── soft chime on advance (single gentle note) ── */
+    /* soft chime on advance */
     function chime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -139,14 +123,14 @@
         const osc = ctx.createOscillator(), gain = ctx.createGain();
         osc.type = 'sine'; osc.frequency.value = 880;
         gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.16, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
         osc.connect(gain).connect(ctx.destination);
         osc.start(now); osc.stop(now + 1.2);
       } catch (e) {}
     }
 
-    /* ── close / nav (same hooks as the other players) ── */
+    /* close / nav */
     function closePlayer() {
       try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
       if (history.length > 1) history.back(); else window.close();
@@ -160,7 +144,6 @@
       } catch (e) {}
       window.location.href = '/';
     }
-
     const menu = document.getElementById('menu');
     const menuBtn = document.getElementById('menuBtn');
     menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
@@ -170,7 +153,7 @@
     document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
     document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
 
-    /* ── play / pause + the loop ── */
+    /* play / pause + loop */
     let timer = null, playing = false;
     function advance() { idx = (idx + 1) % items.length; chime(); paint(); }
     function setPlaying(p) {
@@ -180,6 +163,7 @@
       if (!p && timer) { clearInterval(timer); timer = null; }
     }
     playBtn.onclick = () => setPlaying(!playing);
+    window.addEventListener('resize', fitText);
 
     paint();
     setTimeout(() => setPlaying(true), 600);
