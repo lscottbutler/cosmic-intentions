@@ -158,18 +158,32 @@
       window.location.href = '/';
     }
 
+    /* Natural end → tell the parent so it can advance an auto-play queue;
+       falls back to a plain close when standalone. */
+    function finishPlayer() {
+      try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
+      closePlayer();
+    }
+
     /* ── ≡ menu ── */
     const menu = document.getElementById('menu');
     document.getElementById('menuBtn').onclick = () => menu.classList.toggle('hidden');
     document.getElementById('mHome').onclick = () => nav('home');
     document.getElementById('mPeg').onclick  = () => nav('setup');
 
-    /* ── ♥ favorite (persisted locally) ── */
+    /* ── ♥ favorite — add/remove this player+duration from the favorites list ── */
     const favBtn = document.getElementById('fav');
-    const FAV_KEY = `ci_fav_${PLAYER}_${minutes}`;
-    let fav = localStorage.getItem(FAV_KEY) === '1';
-    function renderFav() { favBtn.innerHTML = fav ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', fav); }
-    favBtn.onclick = () => { fav = !fav; localStorage.setItem(FAV_KEY, fav ? '1' : '0'); renderFav(); };
+    const FAVS_KEY = 'ci_favorites';
+    const readFavs = () => { try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch (e) { return []; } };
+    const isFav = (a) => a.some(f => f.player === PLAYER && f.minutes === minutes);
+    function renderFav() { const on = isFav(readFavs()); favBtn.innerHTML = on ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', on); }
+    favBtn.onclick = () => {
+      let a = readFavs();
+      if (isFav(a)) a = a.filter(f => !(f.player === PLAYER && f.minutes === minutes));
+      else a.push({ player: PLAYER, minutes });
+      localStorage.setItem(FAVS_KEY, JSON.stringify(a));
+      renderFav();
+    };
     renderFav();
 
     /* ── bell ── */
@@ -203,7 +217,7 @@
         setPlaying(false);
         render();
         playBell();
-        setTimeout(closePlayer, 4000);   // let the bell ring out, then close
+        setTimeout(finishPlayer, 4000);   // let the bell ring out, then close
         return;
       }
       render();
@@ -221,7 +235,7 @@
     function adjust(delta) {
       timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
       render();
-      if (timeRemaining === 0) { setPlaying(false); playBell(); setTimeout(closePlayer, 4000); }
+      if (timeRemaining === 0) { setPlaying(false); playBell(); setTimeout(finishPlayer, 4000); }
     }
     document.getElementById('rew').onclick = () => adjust(+STEP);
     document.getElementById('fwd').onclick = () => adjust(-STEP);
