@@ -1626,9 +1626,26 @@ function arsenalStopProgress() {
 }
 /* ── END ARSENAL ─────────────────────────────────────── */
 
+/* Open the new Visualization player (players/visualization.html) for a goal.
+   Stashes the goal's title + image in ci_goal_* so the player reads them, then
+   embeds it in the dashboard column. minutes = 3 or 10. */
+export function launchVisualization(idx, minutes) {
+  if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
+  const intn  = intentions[idx] || intentions[0];
+  const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  localStorage.setItem('ci_goal_title', title);
+  if (intn?.imageUrl) localStorage.setItem('ci_goal_image', intn.imageUrl);
+  else localStorage.removeItem('ci_goal_image');
+  if (typeof window.openPlayerInColumn === 'function') {
+    window.openPlayerInColumn(`players/visualization.html?t=${minutes || 3}`);
+  } else {
+    window.open(`players/visualization.html?t=${minutes || 3}`, 'ci_player', 'width=1100,height=720');
+  }
+}
+
 export async function launch3Min(idx) {
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
-  
+
   mSt.idx     = idx;
   mSt.slide   = 0;
   mSt.running = true;

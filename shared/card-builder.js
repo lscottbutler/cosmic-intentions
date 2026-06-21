@@ -18,7 +18,7 @@ export function buildCardHTML(intention, idx, color) {
   return `
     <!-- CARD HEADER -->
     <div class="card-header-v2" style="background:${color}" onclick="toggleCardV2(${idx})">
-      <button class="card-play-btn" onclick="launch3Min(${idx});event.stopPropagation()">▶</button>
+      <button class="card-play-btn" onclick="launchVisualization(${idx},3);event.stopPropagation()">▶</button>
       <div class="card-num-circle">${idx+1}</div>
       <div class="card-title-v2">${esc(intention.title)}</div>
       <div class="card-views">👁 ${views}</div>
@@ -52,8 +52,8 @@ export function buildCardHTML(intention, idx, color) {
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)">
-        ${buildActionBtn(idx, 1, '3 Min',    'Manifest',   `launch3Min(${idx})`)}
-        ${buildActionBtn(idx, 3, '60 Sec',   'Gratitude',  `launch3Min(${idx})`)}
+        ${buildActionBtn(idx, 1, '3 Min',    'Visualize',  `launchVisualization(${idx},3)`)}
+        ${buildActionBtn(idx, 3, '10 Min',   'Visualize',  `launchVisualization(${idx},10)`)}
         ${buildActionBtnBorder(idx, 4, 'Dash',   '#2',       `switchPDTab(${idx},'mindset')`)}
         ${buildActionBtnBorder(idx, 5, 'Dash',   '#3',       `switchPDTab(${idx},'roadmap')`)}
         ${buildActionBtnBorder(idx, 6, 'More',   '···',      '')}
