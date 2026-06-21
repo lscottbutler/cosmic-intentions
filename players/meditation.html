@@ -167,9 +167,16 @@
 
     /* ── ≡ menu ── */
     const menu = document.getElementById('menu');
-    document.getElementById('menuBtn').onclick = () => menu.classList.toggle('hidden');
-    document.getElementById('mHome').onclick = () => nav('home');
-    document.getElementById('mPeg').onclick  = () => nav('setup');
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
+    // Click anywhere else closes it.
+    document.addEventListener('click', (e) => {
+      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== menuBtn) {
+        menu.classList.add('hidden');
+      }
+    });
+    document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
+    document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
 
     /* ── ♥ favorite — add/remove this player+duration from the favorites list ── */
     const favBtn = document.getElementById('fav');
