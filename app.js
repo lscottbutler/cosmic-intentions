@@ -1629,7 +1629,7 @@ function arsenalStopProgress() {
 /* Open the new Visualization player (players/visualization.html) for a goal.
    Stashes the goal's title + image in ci_goal_* so the player reads them, then
    embeds it in the dashboard column. minutes = 3 or 10. */
-export function launchVisualization(idx, minutes) {
+export function launchVisualization(idx, minutes, ev) {
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
   const intn  = intentions[idx] || intentions[0];
   const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
@@ -1637,10 +1637,18 @@ export function launchVisualization(idx, minutes) {
   if (intn?.imageUrl) localStorage.setItem('ci_goal_image', intn.imageUrl);
   else localStorage.removeItem('ci_goal_image');
   if (typeof window.openPlayerInColumn === 'function') {
-    window.openPlayerInColumn(`players/visualization.html?t=${minutes || 3}`);
+    window.openPlayerInColumn(`players/visualization.html?t=${minutes || 3}`, ev);
   } else {
     window.open(`players/visualization.html?t=${minutes || 3}`, 'ci_player', 'width=1100,height=720');
   }
+}
+
+/* Sidebar VISUALIZATION dropdown launcher — visualizes the currently-selected
+   goal (or the first one if none selected) so the player shows its image and
+   speaks it. */
+export function launchViz(minutes, ev) {
+  const idx = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
+  launchVisualization(idx, minutes, ev);
 }
 
 export async function launch3Min(idx) {

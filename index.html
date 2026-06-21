@@ -356,6 +356,17 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
           <button onclick="openPlayerInColumn('players/countdown.html?t=60', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">60 MIN</button>
         </div>
 
+        <!-- VISUALIZATION — black dropdown banner + time grid (visualizes your selected goal) -->
+        <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+          <span style="font-weight:700; letter-spacing:1px;">VISUALIZATION</span>
+          <span style="font-size:0.85rem;">▼</span>
+        </div>
+
+        <div id="visualization-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
+          <button onclick="launchViz(3, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">3 MIN</button>
+          <button onclick="launchViz(10, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">10 MIN</button>
+        </div>
+
         <!-- FAVORITES — quick-play saved players + auto-play-all -->
         <div class="player-banner" onclick="toggleFavorites()" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
           <span style="font-weight:700; letter-spacing:1px;">FAVORITES</span>
