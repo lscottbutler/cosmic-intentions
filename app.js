@@ -1670,6 +1670,27 @@ function _recitePegLines(field, tag) {       // split a pegboard field into line
   const raw = (getPB() || {})[field] || '';
   return String(raw).split('\n').map(s => s.trim()).filter(Boolean).map(text => ({ text, tag }));
 }
+/* Universal libraries (Stoic, Quotes) live in the global content_blocks table
+   (slug lib_<type>), loaded into _libCache on init. Shown as a rotating daily
+   window so the whole library cycles over ~2 weeks. */
+let _libCache = {};
+function _getLibrary(type) {
+  const slug = 'lib_' + type;
+  let body = _libCache[slug];
+  if (body == null) { try { body = localStorage.getItem('ci_' + slug) || ''; } catch (e) { body = ''; } }
+  return String(body || '').split('\n').map(s => s.trim()).filter(Boolean);
+}
+function _rotatingWindow(items, days = 14) {
+  const n = items.length;
+  if (!n) return [];
+  const size   = Math.ceil(n / days);
+  const dayIdx = Math.floor(Date.now() / 86400000) % days;
+  const start  = (dayIdx * size) % n;
+  const win = [];
+  for (let i = 0; i < Math.min(size, n); i++) win.push(items[(start + i) % n]);
+  return win;
+}
+
 const RECITE_TYPES = {
   affirmations: { label: 'Affirmations', collect: () => _reciteBlendGoals('affirmations') },
   beliefs:      { label: 'Beliefs',      collect: () => _reciteBlendGoals('beliefs') },
@@ -1680,7 +1701,8 @@ const RECITE_TYPES = {
                     ..._recitePegLines('pb-identity-anchor', 'Identity'),
                     ..._recitePegLines('pb-values', 'Value'),
                   ] },
-  // stoic / quotes — Phase 2 (Supabase content library + rotation).
+  stoic:        { label: 'Stoic',  collect: () => _rotatingWindow(_getLibrary('stoic')).map(text => ({ text, tag: 'Stoic' })) },
+  quotes:       { label: 'Quotes', collect: () => _rotatingWindow(_getLibrary('quotes')).map(text => ({ text, tag: 'Quote' })) },
 };
 export function launchRecite(type, ev) {
   const def = RECITE_TYPES[type];
@@ -1690,6 +1712,37 @@ export function launchRecite(type, ev) {
   localStorage.setItem('ci_recite', JSON.stringify({ type, label: def.label, items }));
   if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(`players/recite.html?type=${type}`, ev);
   else window.open(`players/recite.html?type=${type}`, 'ci_player', 'width=1100,height=720');
+}
+
+/* ── LIBRARY MANAGER — paste/edit the Stoic & Quotes libraries (content_blocks) ── */
+export function openLibraryManager() {
+  ['stoic', 'quotes'].forEach(t => {
+    const ta = document.getElementById('libmgr-' + t);
+    if (ta) ta.value = _getLibrary(t).join('\n');
+  });
+  const m = document.getElementById('libraryManager');
+  if (m) m.style.display = 'flex';
+}
+export function closeLibraryManager() {
+  const m = document.getElementById('libraryManager');
+  if (m) m.style.display = 'none';
+}
+export async function saveLibrary(type) {
+  const ta = document.getElementById('libmgr-' + type);
+  const st = document.getElementById('libmgr-status-' + type);
+  if (!ta) return;
+  const slug = 'lib_' + type;
+  const body = ta.value.split('\n').map(s => s.trim()).filter(Boolean).join('\n');
+  _libCache[slug] = body;
+  try { localStorage.setItem('ci_' + slug, body); } catch (e) {}
+  const count = body.split('\n').filter(Boolean).length;
+  if (st) st.textContent = 'Saving…';
+  try {
+    const { error } = await sb.from('content_blocks')
+      .upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+    if (st) st.textContent = error ? ('✗ ' + error.message) : `✓ Saved ${count} lines`;
+  } catch (e) { if (st) st.textContent = '✗ ' + e.message; }
+  if (st) setTimeout(() => { st.textContent = ''; }, 3500);
 }
 
 export async function launch3Min(idx) {
@@ -2700,6 +2753,7 @@ async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
   data.forEach(({ slug, body }) => {
+    if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
     // Inject into display elements
     document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
       if (body && body.trim()) {
