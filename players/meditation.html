@@ -240,7 +240,7 @@
     playBtn.onclick = () => setPlaying(!playing);
 
     /* |◀ rewind = +60s, ▶| forward = -60s (clamped) */
-    const STEP = 60;
+    const STEP = 10;
     function adjust(delta) {
       timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
       render();
