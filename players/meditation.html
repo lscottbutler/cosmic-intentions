@@ -63,14 +63,24 @@
     .bar {
       background: var(--bar);
       border-radius: 18px;
-      padding: 14px 18px 12px;
+      padding: 12px 18px;
       box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
-    .track { position: relative; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; margin: 2px 0 7px; }
-    .fill  { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #fff; border-radius: 2px; }
-    .dot   { position: absolute; top: 50%; left: 0; width: 13px; height: 13px; background: #fff; border-radius: 50%; transform: translate(-50%,-50%); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-    .times { display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-size: 11px; margin-bottom: 8px; }
     .row   { display: flex; align-items: center; justify-content: space-between; }
+    /* progress dot — straddles the image/panel seam, travels left→right with time */
+    .scrubdot {
+      position: absolute;
+      top: 56%;                 /* the bottom of the image / top of the white panel */
+      left: 0;
+      width: 16px; height: 16px;
+      background: #fff;
+      border: 2px solid #888;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.55);
+      z-index: 4;
+      pointer-events: none;
+    }
     .cbtn  { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
     .cbtn:active { transform: scale(0.92); }
     .play  { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
@@ -85,6 +95,7 @@
 <body>
   <div class="frame">
     <div class="photo" id="photo"></div>
+    <div class="scrubdot" id="dot"></div>
     <div class="panel">
       <p class="label" id="label">meditation</p>
 
@@ -94,8 +105,6 @@
       </div>
 
       <div class="bar">
-        <div class="track"><div class="fill" id="fill"></div><div class="dot" id="dot"></div></div>
-        <div class="times"><span id="elapsed">0:00</span><span id="remain">-0:00</span></div>
         <div class="row">
           <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
           <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
@@ -126,20 +135,12 @@
     let timeRemaining = total;
     document.getElementById('label').textContent = LABEL(minutes);
 
-    const fill = document.getElementById('fill');
-    const dot  = document.getElementById('dot');
-    const elapsedEl = document.getElementById('elapsed');
-    const remainEl  = document.getElementById('remain');
+    const dot = document.getElementById('dot');
     const playBtn = document.getElementById('play');
 
-    const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
     function render() {
-      const elapsed = total - timeRemaining;
-      const pct = total ? (elapsed / total) * 100 : 0;
-      fill.style.width = pct + '%';
+      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
       dot.style.left = pct + '%';
-      elapsedEl.textContent = fmt(elapsed);
-      remainEl.textContent = '-' + fmt(timeRemaining);
     }
     render();
 
