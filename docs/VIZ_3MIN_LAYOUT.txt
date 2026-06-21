@@ -1,0 +1,143 @@
+==================================================================================
+  COSMIC INTENTIONS — 3-MINUTE VISUALIZATION PLAYER  ·  LOCKED LAYOUT SPEC
+  File: players/visualization.html      Launch: launchViz(3) / ?t=3   (total = 180s)
+  (10-min viz = identical; only the CORE block stretches — see TIMELINE note)
+==================================================================================
+
+
+================================ 1. SCREEN WIREFRAME ============================
+   (portrait card, aspect 5:6, centered on #1a1a1a, sized to fit viewport)
+
+  +============================================================+  <-- .frame
+  |                  12px RED BORDER  (#e02020)                |      red 12px solid
+  | +--------------------------------------------------------+ |
+  | | [DEV] CORE · ENTER ------------------------------------ | | <-- .cap  (DEV_MODE
+  | |       "Picture it now, already real. <GOAL>."          | |     only; caption of
+  | |                                                        | |     the live VO block)
+  | |                                                        | |
+  | |            G O A L   I M A G E                         | | <-- .photo
+  | |            ci_goal_image  ·  contain                   | |     flex 0 0 56%
+  | |            (falls back to meditation.jpg)              | |
+  | |                                                        | |
+  | O========================================================| | <-- .scrubdot ●
+  | |   ^ progress dot rides the image/panel seam @ 56%      | |     left% = elapsed/total
+  | |                                                        | |
+  | |            I  A M   A   P U B L I S H E D              | | <-- .label
+  | |                  A U T H O R                           | |     (goal text, UPPER)
+  | |                                                        | |
+  | |                                                        | |
+  | | +----------------------------------------------------+ | |
+  | | |   (≡)     (|◀)      ( ⏯ )      (▶|)     (♥)        | | | <-- .bar  RED control row
+  | | +----------------------------------------------------+ | |     menu rew PLAY fwd fav
+  | +--------------------------------------------------------+ |
+  +============================================================+
+
+
+============================== 2. REGION ANATOMY ==============================
+   |  REGION      |  ID / CLASS     |  ROLE                                     |
+   |--------------|-----------------|-------------------------------------------|
+   |  Frame       |  .frame         |  red border, white bg, clips overflow     |
+   |  Caption     |  #cap  .cap     |  DEV_MODE only — shows current VO block    |
+   |  Image       |  #photo .photo  |  goal image (top 56%), contain            |
+   |  Progress    |  #dot  .scrubdot|  dot on the seam, left% tracks elapsed     |
+   |  Goal text   |  #label .label  |  the goal, uppercase, centered            |
+   |  Menu        |  #menu .menu    |  Home page / My Pegboard (≡ toggles)       |
+   |  Control bar |  .bar .row      |  ≡  |◀  ⏯  ▶|  ♥   (red bar, white icons)  |
+   |--------------|-----------------|-------------------------------------------|
+
+
+=========================== 3. CONTROL BAR DETAIL ============================
+   |  BTN  |  ID       |  GLYPH |  ACTION                                       |
+   |-------|-----------|--------|-----------------------------------------------|
+   |  Menu |  #menuBtn |   ≡    |  toggle Home / Pegboard menu                  |
+   |  Rew  |  #rew     |   |◀   |  +10s  (adjust(+STEP), STEP=10)               |
+   |  Play |  #play    |  ⏯/▶  |  play / pause the 1s tick                     |
+   |  Fwd  |  #fwd     |   ▶|   |  -10s  (adjust(-STEP))                        |
+   |  Fav  |  #fav     |  ♥/♡   |  add/remove {player:'visualization', minutes} |
+   |-------|-----------|--------|-----------------------------------------------|
+
+
+===================== 4. TIMELINE — 7-BLOCK STATE MACHINE =====================
+   total = 180s   CORE = total-56 = 124s   STEP scrub = 10s
+   (deepen/embody scale with CORE, so 10-min just stretches this middle band)
+
+   PHASE 1: HOOK          PHASE 2: DESCENT/LUNGS      PHASE 3: CORE (x3)     PH4
+   |                      |                           |                      |
+   v                      v                           v                      v
+   0s    8s         20s   34s          76s           118s             158s   180s
+   |-----|-----------|-----|------------|--------------|----------------|-----|
+   B1    B2          B3    B4           B5             B6               B7   END
+   HOOK  DESCENT    LUNGS  CORE·ENTER   CORE·DEEPEN    CORE·EMBODY      EXIT  bell
+   @0    @8         @20    @34          @76            @118            @158   +4s
+                           ^^^^ speaks the user's GOAL via runtime /api/tts
+   ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+   formulae:  B5 = 34 + round(CORE*0.34) = 76     B6 = 34 + round(CORE*0.68) = 118
+              B7 = total - 22 = 158               END = total = 180 -> bell, close
+
+
+========================= 5. VOICE-OVER PAYLOADS (7) =========================
+   B1 HOOK     @0    [static vo-hook.mp3]
+      "Close your eyes. For the next few minutes, your only job is to see
+       what you want as if it is already yours."
+   ----------------------------------------------------------------------------
+   B2 DESCENT  @8    [static vo-descent.mp3]
+      "Take a slow breath in... and let it go. With each breath, let your
+       body soften and sink down."
+   ----------------------------------------------------------------------------
+   B3 LUNGS    @20   [static vo-lungs.mp3]
+      "One more deep breath in. And out. Feel yourself dropping into a calm,
+       focused state."
+   ----------------------------------------------------------------------------
+   B4 CORE·ENTER @34  [RUNTIME /api/tts — injects the goal]
+      "Picture it now, already real. <GOAL>."
+   ----------------------------------------------------------------------------
+   B5 CORE·DEEPEN @76 [static vo-deepen.mp3]
+      "Step inside the picture. Feel it on your skin, hear the sounds around
+       you. Notice how good it feels to be here."
+   ----------------------------------------------------------------------------
+   B6 CORE·EMBODY @118 [static vo-embody.mp3]
+      "This is yours. Feel the gratitude of already having it. Say silently
+       to yourself: this is who I am."
+   ----------------------------------------------------------------------------
+   B7 EXIT     @158  [static vo-exit.mp3]
+      "Hold that feeling. Slowly begin to return. When you are ready, open
+       your eyes, and carry it with you."
+   ============================================================================
+   ASSETS: images/visualization/vo/vo-{hook,descent,lungs,deepen,embody,exit}.mp3
+           (regenerate via  node scripts/gen-visualization-vo.mjs)
+           B4 is generated live each session from the goal text.
+
+
+=========================== 6. DATA INPUTS / SOURCES =========================
+   |  INPUT      |  SOURCE (priority order)                    |  FALLBACK     |
+   |-------------|---------------------------------------------|---------------|
+   |  minutes    |  ?t  ->                                     |  3            |
+   |  goal text  |  ?g  ->  localStorage ci_goal_title  ->     |  'your vision'|
+   |  goal image |  ?img -> localStorage ci_goal_image  ->     |  meditation.jpg|
+   |-------------|---------------------------------------------|---------------|
+   Set by:  launchViz(3) / launchVisualization(idx,3) in app.js
+            -> writes ci_goal_title + ci_goal_image, opens players/visualization.html?t=3
+
+
+============================= 7. AUDIO ARCHITECTURE =========================
+   |||  static cues (6)  ............  preloaded <audio>, played at block time
+   |||  goal cue (B4)  ..............  fetch /api/tts {text, voice:'shimmer'}
+   |||                                 -> data:audio/mpeg base64 -> <audio>
+   |||  end bell  ...................  WebAudio 2-tone sine on session end
+   |||  autoplay unlock  ............  first pointerdown primes all clips (muted play)
+
+
+============================== 8. LIFECYCLE / FLOW ==========================
+   load -> read inputs -> paint label + image -> preload static cues
+        -> kick off B4 runtime TTS (ready well before @34)
+   +0.8s  auto-start: setPlaying(true), fire B1 HOOK
+   every 1s  tick(): elapsed++, move dot, fire any block whose .at <= elapsed
+   @180s  endSession(): stop, play bell, setTimeout(finishPlayer, 4000)
+          finishPlayer -> parent.playerFinished() (advance favorites) or close
+   ============================================================================
+   DEV_MODE = true -> on-screen caption of each block (verify without audio)
+              (note: app DEV_MODE is hostname-based; this player flag is its own)
+
+==================================================================================
+   END OF SPEC — 3-MINUTE VISUALIZATION  ·  cosmicintentions.com
+==================================================================================
