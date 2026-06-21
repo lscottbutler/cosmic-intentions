@@ -1674,20 +1674,38 @@ function _recitePegLines(field, tag) {       // split a pegboard field into line
    (slug lib_<type>), loaded into _libCache on init. Shown as a rotating daily
    window so the whole library cycles over ~2 weeks. */
 let _libCache = {};
+/* Built-in defaults so a library is never empty on first use. Saving your own
+   via the Library Manager overrides the seed. */
+const SEED_LIBRARIES = {
+  stoic: [
+    'You have power over your mind — not outside events. Realize this, and you will find strength.',
+    'We suffer more often in imagination than in reality.',
+    'It is not what happens to you, but how you react to it, that matters.',
+    'The happiness of your life depends upon the quality of your thoughts.',
+    'The obstacle is the way — what stands in the way becomes the way.',
+    'Waste no more time arguing what a good person should be. Be one.',
+    'He who fears death will never do anything worthy of a living person.',
+    'You are disturbed not by things, but by the view you take of them.',
+    'First say to yourself what you would be; then do what you must do.',
+    'If it is not right, do not do it; if it is not true, do not say it.',
+  ],
+};
 function _getLibrary(type) {
   const slug = 'lib_' + type;
   let body = _libCache[slug];
   if (body == null) { try { body = localStorage.getItem('ci_' + slug) || ''; } catch (e) { body = ''; } }
-  return String(body || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const lines = String(body || '').split('\n').map(s => s.trim()).filter(Boolean);
+  if (!lines.length && SEED_LIBRARIES[type]) return SEED_LIBRARIES[type].slice();
+  return lines;
 }
 function _rotatingWindow(items, days = 14) {
   const n = items.length;
-  if (!n) return [];
+  if (n <= days) return items;          // small library → just loop the whole set
   const size   = Math.ceil(n / days);
   const dayIdx = Math.floor(Date.now() / 86400000) % days;
   const start  = (dayIdx * size) % n;
   const win = [];
-  for (let i = 0; i < Math.min(size, n); i++) win.push(items[(start + i) % n]);
+  for (let i = 0; i < size; i++) win.push(items[(start + i) % n]);
   return win;
 }
 
