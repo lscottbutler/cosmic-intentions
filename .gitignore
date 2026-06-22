@@ -35,3 +35,11 @@ MP4/
 
 # Local Netlify folder
 .netlify
+
+# video dissection scratch (local only)
+/slides/
+/3-min-viz.mp4
+images/videos/_dissect3/
+/tools/
+/slides_semi/
+/*.mp4

@@ -1660,15 +1660,39 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
-/* Creative Visualization player (players/creative-viz.html) — guided card +
-   countdown-hold session for the selected goal. */
+/* Creative Visualization player (players/creative-viz.html) — a guided
+   "manifestation" that weaves the goal's own generated content (a quote,
+   gratitude items, affirmations) into the reverse-engineered card + countdown
+   structure. Builds ci_creative_scene from the selected goal, then opens it. */
 export function launchCreativeViz(ev) {
-  const idx = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
-  const intn = intentions[idx] || intentions[0];
-  if (intn) {
-    const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
-    localStorage.setItem('ci_goal_title', title);
-  }
+  const idx  = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
+  const intn = intentions[idx] || intentions[0] || {};
+  const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  const m = intn.mindset || {};
+  const affs   = (m.affirmations || []).slice(0, 6);
+  const quote  = (m.quotes || [])[0];
+  let grat = [];
+  try { grat = JSON.parse(localStorage.getItem('ci_goal_gratitude') || '[]'); } catch (e) {}
+
+  const events = []; let t = 0;
+  const add = (type, dur, text) => { events.push({ type, start: t, dur, ...(text != null ? { text } : {}) }); t += dur; };
+  add('card', 6,  'Welcome to your creative visualization.');
+  add('card', 10, 'Awesome effort today. Be mindful of all the positive outcomes you are expecting for yourself.');
+  if (quote) add('card', 11, quote);
+  if (grat.length) { add('card', 4, 'Gratitude.'); grat.slice(0, 6).forEach(g => add('card', 6, /^i am grateful/i.test(g) ? g : ('I am grateful for ' + g))); }
+  add('card', 9,  'As we get ready to visualize, take sixty seconds to relax your body and mind with a few deep breaths.');
+  add('hold', 60);
+  add('card', 6,  'Get ready to invoke your emotions.');
+  add('card', 8,  title);
+  add('card', 8,  'Picture it as already real. See it, feel it, hear it.');
+  add('card', 4,  'Close your eyes and visualize.');
+  add('hold', 120);
+  if (affs.length) { add('card', 4, 'Today I will...'); affs.forEach(a => add('card', 6, a)); }
+  add('card', 9,  'Awesome effort on your creative visualization. Carry this feeling with you.');
+  add('bell', 0);
+
+  localStorage.setItem('ci_goal_title', title);
+  localStorage.setItem('ci_creative_scene', JSON.stringify({ events }));
   if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn('players/creative-viz.html', ev);
   else window.open('players/creative-viz.html', 'ci_player', 'width=1100,height=720');
 }
