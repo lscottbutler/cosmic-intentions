@@ -1,0 +1,18 @@
+type,start,end,text,image,audio,voice,fade_in,fade_out,volume,loop,section,notes
+@voice,,,shimmer,,,,,,,,,default TTS voice
+@border,,,#1c1c1c,,,,,,,,,frame border color
+music,0:00,3:00,,,calm-bed.mp3,,,2,0.3,y,,background bed (loops, low volume)
+text,0:00,0:03,3 MINUTE MANIFEST,,,,0.5,0.5,,,Title,
+image,0:03,0:06,,skull.jpg,,,0.5,,,,Image,
+text,0:06,0:13,{GOAL},,,shimmer,0.5,0.5,,,Goal,
+vo,0:06,0:12,{GOAL},,,shimmer,,,,,,goal spoken aloud
+sfx,0:06,0:07,,,chime.mp3,,,,0.8,,,soft chime on the goal
+text,0:16,0:23,Recall a memory that fills you with joy or gratitude.,,,,0.5,0.5,,,Prep,
+text,0:26,0:32,Get ready to intensify and maintain that feeling for twenty seconds.,,,,0.5,0.5,,,Prep,
+text,0:33,0:37,OK. Close your eyes and begin.,,,,0.5,0.5,,,,
+hold,0:37,1:07,,,,,,,,,Visualize,30s eyes-closed countdown
+text,1:07,1:16,"While maintaining that feeling, visualize what your life looks, feels, sounds and smells like once your goal is achieved.",,,,0.5,0.5,,,Visualize,
+hold,1:18,1:48,,,,,,,,,Visualize,
+text,1:50,1:58,Release your intention. Believe it has been granted and is now on its way.,,,,0.5,0.5,,,Close,
+bell,1:58,1:59,,,,,,,,,,closing bell
+text,2:00,2:08,Awesome effort today. Carry this feeling with you.,,,,0.5,0.5,,,Close,
