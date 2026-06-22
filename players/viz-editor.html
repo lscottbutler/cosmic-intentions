@@ -65,7 +65,8 @@
         <button class="btn" data-add="hold">+ Hold</button>
         <button class="btn" data-add="bell">+ Bell</button>
         <span style="flex:1"></span>
-        <button class="btn ghost" id="reset">Reset</button>
+        <button class="btn ghost" id="clear">Clear</button>
+        <button class="btn ghost" id="defaults">Defaults</button>
         <button class="btn red" id="save">Save</button>
       </div>
       <input type="file" id="imgFile" accept="image/*" multiple style="display:none">
@@ -225,8 +226,11 @@
       render();
     }));
 
-    document.getElementById('reset').addEventListener('click', () => {
-      if (confirm('Reset to the default 3-min timeline?')) { scene = JSON.parse(JSON.stringify(DEFAULT)); render(); }
+    document.getElementById('clear').addEventListener('click', () => {
+      if (confirm('Clear the timeline to a blank slate?')) { scene.events = []; render(); }
+    });
+    document.getElementById('defaults').addEventListener('click', () => {
+      if (confirm('Load the default 7 VO lines?')) { scene = JSON.parse(JSON.stringify(DEFAULT)); render(); }
     });
     function save() {
       scene.settings.voice = voiceEl.value;
