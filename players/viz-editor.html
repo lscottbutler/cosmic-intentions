@@ -26,6 +26,8 @@
            background:#1c1c1c; border:1px solid #333; border-left:4px solid #555; border-radius:8px; padding:8px 10px; }
     .row.vo{ border-left-color:#e02020; } .row.fade{ border-left-color:#3a86ff; }
     .row.hold{ border-left-color:#8a8a8a; } .row.bell{ border-left-color:#ffbe0b; }
+    .row.image{ border-left-color:#3ddc84; }
+    .row .thumb{ height:42px; border-radius:4px; border:1px solid #333; }
     .row .type { font-weight:700; }
     .row .clock { color:#888; font-size:11px; }
     .row .detail { display:flex; gap:6px; align-items:center; }
@@ -57,14 +59,17 @@
       </div>
 
       <div class="toolbar">
+        <button class="btn" id="addImg">+ Image</button>
         <button class="btn" data-add="vo">+ VO</button>
-        <button class="btn" data-add="fade">+ Image fade</button>
+        <button class="btn" data-add="fade">+ Fade</button>
         <button class="btn" data-add="hold">+ Hold</button>
         <button class="btn" data-add="bell">+ Bell</button>
         <span style="flex:1"></span>
         <button class="btn ghost" id="reset">Reset</button>
         <button class="btn red" id="save">Save</button>
       </div>
+      <input type="file" id="imgFile" accept="image/*" multiple style="display:none">
+      <input type="file" id="imgReplace" accept="image/*" style="display:none">
 
       <div class="rows" id="rows"></div>
       <div class="warn" id="warn"></div>
@@ -110,6 +115,9 @@
     const jsonEl = document.getElementById('json');
 
     function detailFields(ev, i) {
+      if (ev.type === 'image')
+        return (ev.image ? `<img class="thumb" src="${ev.image}">` : `<span style="color:#888;font-size:12px;">no image</span>`) +
+          `<button class="btn" data-replace="${i}" style="padding:5px 10px;font-size:12px;">${ev.image?'replace':'pick image'}</button>`;
       if (ev.type === 'vo')
         return `<input type="text" data-i="${i}" data-k="text" placeholder="What is spoken (use {GOAL})" value="${(ev.text||'').replace(/"/g,'&quot;')}">`;
       if (ev.type === 'fade')
@@ -165,11 +173,46 @@
       jsonEl.value = JSON.stringify(scene, null, 2);
       validate();
     });
+    let _replaceIdx = -1;
     rowsEl.addEventListener('click', (e) => {
-      const up = e.target.dataset.up, dn = e.target.dataset.down, del = e.target.dataset.del;
+      const up = e.target.dataset.up, dn = e.target.dataset.down, del = e.target.dataset.del, rep = e.target.dataset.replace;
       if (up != null) { const i=+up; if(i>0){ [scene.events[i-1],scene.events[i]]=[scene.events[i],scene.events[i-1]]; render(); } }
       else if (dn != null) { const i=+dn; if(i<scene.events.length-1){ [scene.events[i+1],scene.events[i]]=[scene.events[i],scene.events[i+1]]; render(); } }
       else if (del != null) { scene.events.splice(+del,1); render(); }
+      else if (rep != null) { _replaceIdx = +rep; document.getElementById('imgReplace').click(); }
+    });
+
+    /* downscale an image file to a compact data URL so the scene saves cleanly */
+    function loadImageScaled(file, maxW = 1280) {
+      return new Promise(res => {
+        const img = new Image(), url = URL.createObjectURL(file);
+        img.onload = () => {
+          const sc = Math.min(1, maxW / img.width), w = Math.round(img.width*sc), h = Math.round(img.height*sc);
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); res(''); };
+        img.src = url;
+      });
+    }
+    function nextStart() { const last = scene.events[scene.events.length-1]; return last ? Math.min(TOTAL-1, (last.start||0)+4) : 0; }
+
+    // + Image → pick one or many; each becomes a slide 4s apart
+    document.getElementById('addImg').addEventListener('click', () => document.getElementById('imgFile').click());
+    document.getElementById('imgFile').addEventListener('change', async (e) => {
+      let start = nextStart();
+      for (const f of e.target.files) {
+        const data = await loadImageScaled(f);
+        if (data) { scene.events.push({ type:'image', start, dur:4, image:data }); start = Math.min(TOTAL-1, start+4); }
+      }
+      e.target.value = ''; render(); flash('Images added ✓');
+    });
+    document.getElementById('imgReplace').addEventListener('change', async (e) => {
+      if (_replaceIdx < 0 || !e.target.files[0]) return;
+      const data = await loadImageScaled(e.target.files[0]);
+      if (data) { scene.events[_replaceIdx].image = data; render(); }
+      _replaceIdx = -1; e.target.value = '';
     });
     voiceEl.addEventListener('change', () => { scene.settings.voice = voiceEl.value; jsonEl.value = JSON.stringify(scene,null,2); });
 

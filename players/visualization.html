@@ -277,12 +277,18 @@
     /* run one timeline element: VO (speak), FADE (image), BELL, or HOLD (silence) */
     function execute(ev) {
       if (DEV_MODE) {
-        console.log(`[${ev.type}] @${total - timeRemaining}s (${ev.dur || 0}s): ${ev.text || ev.to || ev.image || ''}`);
+        console.log(`[${ev.type}] @${total - timeRemaining}s (${ev.dur || 0}s): ${ev.text || ev.to || (ev.image ? '[image]' : '')}`);
         cap.innerHTML = `<b>${ev.phase || ev.type}</b>` + (ev.text ? `<br>${ev.text}` : '');
         cap.classList.add('show');
       }
       if (ev.type === 'vo') {
         if (ev.audio) { try { ev.audio.currentTime = 0; const p = ev.audio.play(); if (p) p.catch(() => {}); } catch (e) {} }
+      } else if (ev.type === 'image') {            // slideshow slide — crossfade to it
+        const d = Number(ev.fade) || 0.6;
+        photoB.style.backgroundImage = `url('${ev.image}')`;
+        photoB.style.transition = `opacity ${d}s ease`;
+        requestAnimationFrame(() => { photoB.style.opacity = '1'; });
+        setTimeout(() => { photo.style.backgroundImage = `url('${ev.image}')`; photoB.style.transition = 'none'; photoB.style.opacity = '0'; }, d * 1000 + 60);
       } else if (ev.type === 'bell') {
         playBell();
       } else if (ev.type === 'fade') {
