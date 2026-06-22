@@ -50,13 +50,14 @@
   <script>
     /* ── decorative dotted mandala (original, no stock image) ── */
     (function buildMandala(){
-      const PAL=['#1f7e86','#2f9e9e','#6fce8f','#4aa3d6','#16313d','#a7d8c4','#0f5f66'];
       const svg=document.getElementById('mandala'), NS='http://www.w3.org/2000/svg', cx=200, cy=200;
-      const disc=document.createElementNS(NS,'circle'); disc.setAttribute('cx',cx); disc.setAttribute('cy',cy); disc.setAttribute('r',195); disc.setAttribute('fill','#2c8e8e'); disc.setAttribute('opacity','.16'); svg.appendChild(disc);
-      const dot=(x,y,r,f)=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',r); c.setAttribute('fill',f); svg.appendChild(c); };
+      const circle=(r,attrs)=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); for(const k in attrs)c.setAttribute(k,attrs[k]); svg.appendChild(c); };
+      const PAL=['#6fce8f','#3a9bbf','#16263f','#6db8d8','#2ec5cc','#a7d8c4','#3f7d6f'];
+      circle(196,{fill:'#2f6b5e',opacity:0.97});                                            // solid deep teal-green base
+      [52,104,156,192].forEach((r,i)=>circle(r,{fill:'none',stroke:'#2ec9cf','stroke-width':i%2?8:13,opacity:0.85})); // bright cyan ring bands
       for(let ring=1; ring<=9; ring++){ const rad=ring*20, count=Math.max(8,Math.round(rad/7)), dr=3+(ring%3)*2.2;
-        for(let i=0;i<count;i++){ const a=(i/count)*Math.PI*2+ring*0.3; dot(cx+Math.cos(a)*rad, cy+Math.sin(a)*rad, dr, PAL[(ring+i)%PAL.length]); } }
-      [70,150].forEach((r,i)=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill','none'); c.setAttribute('stroke',i?'#36cccc':'#a7d8c4'); c.setAttribute('stroke-width','3'); c.setAttribute('stroke-dasharray','2 8'); c.setAttribute('opacity','.7'); svg.appendChild(c); });
+        for(let i=0;i<count;i++){ const a=(i/count)*Math.PI*2+ring*0.3, x=cx+Math.cos(a)*rad, y=cy+Math.sin(a)*rad;
+          const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',dr); c.setAttribute('fill',PAL[(ring+i)%PAL.length]); svg.appendChild(c); } }
     })();
 
     /* ── inputs ── */
