@@ -365,6 +365,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
         <div id="visualization-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
           <button onclick="launchViz(3, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">3 MIN</button>
           <button onclick="launchViz(10, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">10 MIN</button>
+          <button onclick="window.open('players/viz-editor.html','_blank')" style="grid-column: 1 / -1; padding: 10px; background: #000; border: 1px solid #444; color: #bbb; cursor: pointer; font-size: 12px; letter-spacing: 1px;">&#9998; EDIT TIMELINE</button>
         </div>
 
         <!-- RECITATIONS — loop your own affirmations / beliefs / values / pegboard -->
