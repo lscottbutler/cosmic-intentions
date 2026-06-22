@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Frame | Cosmic Intentions</title>
+  <style>
+    * { box-sizing:border-box; }
+    html, body { height:100%; margin:0; background:#0c0c10; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:16px; overflow:hidden;
+      font-family:'Arial Narrow',system-ui,sans-serif; }
+    .frame { position:relative; width:min(94vw, 86vh); aspect-ratio:1/1; background:#fff; border:18px solid #888;
+      transition:border-color .6s ease; overflow:hidden; box-shadow:0 10px 50px rgba(0,0,0,.55); }
+    .art, .artB { position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat; opacity:0; transition:opacity .7s ease; }
+    .controls { display:flex; align-items:center; gap:26px; }
+    .cbtn { background:none; border:none; color:#cfcfcf; font-size:1.3rem; cursor:pointer; line-height:1; padding:6px; }
+    .play { background:#fff; color:#111; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .menu { position:absolute; left:50%; transform:translateX(-50%); bottom:62px; background:#111; border:1px solid #333; border-radius:10px; overflow:hidden; z-index:7; }
+    .menu.hidden { display:none; }
+    .menu button { display:block; width:100%; text-align:left; background:none; border:none; color:#fff; padding:11px 20px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <div class="frame" id="frame">
+    <div class="art"  id="artA"></div>
+    <div class="art artB" id="artB"></div>
+  </div>
+  <div class="menu hidden" id="menu"><button id="mHome">Home page</button><button id="mPeg">My Pegboard</button></div>
+  <div class="controls">
+    <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+  </div>
+
+  <script>
+    const DIR = '../images/art/';
+    const SECS = (parseInt(new URLSearchParams(location.search).get('s')) || 8); // seconds per art
+    const frame=document.getElementById('frame'), playBtn=document.getElementById('play');
+    let front=document.getElementById('artA'), back=document.getElementById('artB');
+
+    /* dominant colour: downscale to canvas, bucket colours (ignoring near
+       white/black), pick the most populous bucket, return its average. */
+    function dominant(img){
+      try{
+        const c=document.createElement('canvas'), W=c.width=80, H=c.height=80, ctx=c.getContext('2d');
+        ctx.drawImage(img,0,0,W,H);
+        const d=ctx.getImageData(0,0,W,H).data, buckets={};
+        for(let i=0;i<d.length;i+=4){
+          const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];
+          if(a<200) continue;
+          if(r>235&&g>235&&b>235) continue;          // skip near-white
+          if(r<22&&g<22&&b<22) continue;              // skip near-black
+          const k=(r>>4)+'-'+(g>>4)+'-'+(b>>4);
+          (buckets[k]||(buckets[k]={n:0,r:0,g:0,b:0}));
+          const o=buckets[k]; o.n++; o.r+=r; o.g+=g; o.b+=b;
+        }
+        let best=null; for(const k in buckets){ if(!best||buckets[k].n>best.n) best=buckets[k]; }
+        if(!best) return '#888';
+        return `rgb(${Math.round(best.r/best.n)},${Math.round(best.g/best.n)},${Math.round(best.b/best.n)})`;
+      } catch(e){ return '#888'; }
+    }
+
+    function paint(file, instant){
+      const url = DIR + file;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const color = dominant(img);
+        frame.style.borderColor = color;
+        back.style.backgroundImage = `url('${url}')`;
+        back.style.transition = instant ? 'none' : 'opacity .7s ease';
+        const prev = front; front = back; back = prev;
+        requestAnimationFrame(()=>{ front.style.opacity='1'; if(!instant) back.style.opacity='0'; });
+      };
+      img.src = url;
+    }
+
+    function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
+    function nav(t){ try{ if(window.parent&&window.parent!==window){ if(window.parent.closePlayerColumn)window.parent.closePlayerColumn(); if(window.parent.navTo){window.parent.navTo(t);return;} } }catch(e){} location.href='/'; }
+    const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
+    menuBtn.onclick=(e)=>{e.stopPropagation();menu.classList.toggle('hidden');};
+    document.addEventListener('click',(e)=>{ if(!menu.classList.contains('hidden')&&!menu.contains(e.target)&&e.target!==menuBtn)menu.classList.add('hidden'); });
+    document.getElementById('mHome').onclick=()=>{menu.classList.add('hidden');nav('home');};
+    document.getElementById('mPeg').onclick =()=>{menu.classList.add('hidden');nav('setup');};
+
+    let LIST=[], idx=0, timer=null, playing=false;
+    function advance(){ idx=(idx+1)%LIST.length; paint(LIST[idx]); }
+    function setPlaying(p){ playing=p; playBtn.innerHTML=p?'&#9208;':'&#9654;'; if(p&&!timer&&LIST.length>1)timer=setInterval(advance,SECS*1000); if(!p&&timer){clearInterval(timer);timer=null;} }
+    playBtn.onclick=()=>setPlaying(!playing);
+
+    fetch(DIR+'list.json').then(r=>r.json()).then(list=>{
+      LIST = (list||[]).filter(Boolean);
+      if(!LIST.length){ document.getElementById('artA').style.background='#222'; return; }
+      paint(LIST[0], true);
+      setTimeout(()=>setPlaying(true), 600);
+    }).catch(()=>{ document.getElementById('artA').style.background='#222'; });
+  </script>
+</body>
+</html>
