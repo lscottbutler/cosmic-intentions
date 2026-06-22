@@ -1660,6 +1660,19 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
+/* Creative Visualization player (players/creative-viz.html) — guided card +
+   countdown-hold session for the selected goal. */
+export function launchCreativeViz(ev) {
+  const idx = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
+  const intn = intentions[idx] || intentions[0];
+  if (intn) {
+    const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+    localStorage.setItem('ci_goal_title', title);
+  }
+  if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn('players/creative-viz.html', ev);
+  else window.open('players/creative-viz.html', 'ci_player', 'width=1100,height=720');
+}
+
 /* ── RECITE players ───────────────────────────────────────────
    One reusable looping player (players/recite.html) per content type. The
    parent collects the lines, writes them to ci_recite, then opens the player.

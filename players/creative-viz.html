@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creative Visualization | Cosmic Intentions</title>
+  <style>
+    :root { --teal:#36cccc; --teal-d:#1f7e86; --maroon:#6e1614; --ink:#16313d; }
+    * { box-sizing:border-box; }
+    html, body { height:100%; margin:0; background:#0f1417; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
+      font-family:'Courier New','Roboto Mono',monospace; }
+    .stage { position:relative; width:min(96vw, 90vh * 16 / 9); aspect-ratio:16/9; background:#fff; border:14px solid var(--teal); overflow:hidden; }
+    .mandala { position:absolute; top:50%; right:-14%; transform:translateY(-50%); width:62%; height:130%; z-index:1; }
+    .card { position:absolute; inset:0 38% 0 0; z-index:2; display:flex; align-items:center; justify-content:center; padding:5% 4%; text-align:center; }
+    .card p { margin:0; color:var(--maroon); text-transform:uppercase; letter-spacing:.12em; font-weight:700; line-height:1.5; font-size:clamp(13px,2.4vw,30px); transition:opacity .5s ease; }
+    .card p.fade { opacity:0; }
+    .baseband { position:absolute; left:0; right:0; bottom:0; height:14%; background:var(--ink); z-index:3; display:none; }
+    .baseband.show { display:block; }
+    .badge { position:absolute; left:50%; bottom:-2px; transform:translate(-50%,50%); z-index:5; width:9%; aspect-ratio:1; border-radius:50%;
+      background:#fff; border:5px solid var(--teal-d); display:none; align-items:center; justify-content:center; color:var(--ink); font-weight:700; font-size:clamp(15px,2.4vw,32px); box-shadow:0 2px 10px rgba(0,0,0,.25); }
+    .badge.show { display:flex; }
+    /* controls below the stage */
+    .controls { display:flex; align-items:center; gap:26px; }
+    .cbtn { background:none; border:none; color:#cfcfcf; font-size:1.3rem; cursor:pointer; line-height:1; padding:6px; }
+    .cbtn:active { transform:scale(.92); }
+    .play { background:var(--teal); color:#06343a; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.05rem; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .menu { position:absolute; left:50%; transform:translateX(-50%); bottom:64px; background:#111; border:1px solid #333; border-radius:10px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.45); z-index:6; }
+    .menu.hidden { display:none; }
+    .menu button { display:block; width:100%; text-align:left; background:none; border:none; color:#fff; padding:11px 20px; font-size:13px; cursor:pointer; white-space:nowrap; }
+    .menu button:hover { background:#222; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <svg class="mandala" id="mandala" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    <div class="baseband" id="band"></div>
+    <div class="card"><p class="line" id="line">…</p></div>
+    <div class="badge" id="badge">0</div>
+  </div>
+
+  <div class="menu hidden" id="menu">
+    <button id="mHome">Home page</button>
+    <button id="mPeg">My Pegboard</button>
+  </div>
+  <div class="controls">
+    <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+  </div>
+
+  <script>
+    /* ── decorative dotted mandala (original, no stock image) ── */
+    (function buildMandala(){
+      const PAL=['#1f7e86','#2f9e9e','#6fce8f','#4aa3d6','#16313d','#a7d8c4','#0f5f66'];
+      const svg=document.getElementById('mandala'), NS='http://www.w3.org/2000/svg', cx=200, cy=200;
+      const disc=document.createElementNS(NS,'circle'); disc.setAttribute('cx',cx); disc.setAttribute('cy',cy); disc.setAttribute('r',195); disc.setAttribute('fill','#2c8e8e'); disc.setAttribute('opacity','.16'); svg.appendChild(disc);
+      const dot=(x,y,r,f)=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',r); c.setAttribute('fill',f); svg.appendChild(c); };
+      for(let ring=1; ring<=9; ring++){ const rad=ring*20, count=Math.max(8,Math.round(rad/7)), dr=3+(ring%3)*2.2;
+        for(let i=0;i<count;i++){ const a=(i/count)*Math.PI*2+ring*0.3; dot(cx+Math.cos(a)*rad, cy+Math.sin(a)*rad, dr, PAL[(ring+i)%PAL.length]); } }
+      [70,150].forEach((r,i)=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill','none'); c.setAttribute('stroke',i?'#36cccc':'#a7d8c4'); c.setAttribute('stroke-width','3'); c.setAttribute('stroke-dasharray','2 8'); c.setAttribute('opacity','.7'); svg.appendChild(c); });
+    })();
+
+    /* ── inputs ── */
+    const params = new URLSearchParams(location.search);
+    const goal = (params.get('g') || localStorage.getItem('ci_goal_title') || 'your vision').trim();
+
+    /* Scene = ordered events: card (show text), hold (countdown), bell.
+       Read ci_creative_scene if present, else this built-in guided default.
+       {GOAL} is replaced with the user's goal. */
+    const DEFAULT_SCENE = { events: [
+      { type:'card', start:0,   dur:7, text:'Welcome. Find a comfortable position and take a slow, deep breath.' },
+      { type:'card', start:8,   dur:7, text:'Today you will visualize your goal as if it is already achieved.' },
+      { type:'card', start:16,  dur:7, text:'{GOAL}' },
+      { type:'card', start:24,  dur:7, text:'Picture it clearly. Where are you? What do you see around you?' },
+      { type:'card', start:32,  dur:4, text:'OK. Close your eyes and begin.' },
+      { type:'hold', start:37,  dur:30 },
+      { type:'card', start:68,  dur:8, text:'While maintaining that feeling, notice what your life looks, feels, sounds and smells like now that your goal is achieved.' },
+      { type:'card', start:77,  dur:4, text:'Close your eyes and continue.' },
+      { type:'hold', start:82,  dur:30 },
+      { type:'card', start:113, dur:8, text:'Release your intention. Believe it has been granted and is now on its way.' },
+      { type:'card', start:122, dur:8, text:'Awesome effort today. Be mindful of all the positive outcomes you are expecting for yourself.' },
+      { type:'bell', start:131, dur:0 },
+    ]};
+    let scene; try { scene = JSON.parse(localStorage.getItem('ci_creative_scene')); } catch(e){ scene = null; }
+    if (!scene || !Array.isArray(scene.events) || !scene.events.length) scene = DEFAULT_SCENE;
+    const EVENTS = scene.events.map(e => ({ ...e, start:Number(e.start)||0, dur:Number(e.dur)||0, text:String(e.text||'').replace(/\{GOAL\}/gi, goal) }));
+    const total = Math.max(...EVENTS.map(e => e.start + e.dur)) + 3;
+
+    const line=document.getElementById('line'), band=document.getElementById('band'), badge=document.getElementById('badge'), playBtn=document.getElementById('play');
+    const fired=new Set();
+    let elapsed=0, timer=null, playing=false, ended=false;
+
+    function setCard(txt){ line.classList.add('fade'); setTimeout(()=>{ line.textContent=txt; line.classList.remove('fade'); }, 180); }
+
+    function chime(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(), n=c.currentTime, o=c.createOscillator(), g=c.createGain();
+      o.type='sine'; o.frequency.value=880; g.gain.setValueAtTime(.0001,n); g.gain.exponentialRampToValueAtTime(.25,n+.02); g.gain.exponentialRampToValueAtTime(.0001,n+1.4);
+      o.connect(g).connect(c.destination); o.start(n); o.stop(n+1.5);}catch(e){} }
+
+    /* close / nav */
+    function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
+    function nav(t){ try{ if(window.parent&&window.parent!==window){ if(window.parent.closePlayerColumn)window.parent.closePlayerColumn(); if(window.parent.navTo){window.parent.navTo(t);return;} } }catch(e){} location.href='/'; }
+    function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
+    const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
+    menuBtn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('hidden'); };
+    document.addEventListener('click',(e)=>{ if(!menu.classList.contains('hidden')&&!menu.contains(e.target)&&e.target!==menuBtn) menu.classList.add('hidden'); });
+    document.getElementById('mHome').onclick=()=>{ menu.classList.add('hidden'); nav('home'); };
+    document.getElementById('mPeg').onclick =()=>{ menu.classList.add('hidden'); nav('setup'); };
+
+    /* current hold (if elapsed falls inside one) */
+    function activeHold(){ return EVENTS.find(e => e.type==='hold' && elapsed >= e.start && elapsed < e.start + e.dur); }
+
+    function tick(){
+      elapsed++;
+      if (elapsed >= total){ end(); return; }
+      // fire card/bell exactly at their start
+      EVENTS.forEach((e,i)=>{ if(!fired.has(i) && elapsed>=e.start){ fired.add(i);
+        if(e.type==='card') setCard(e.text);
+        else if(e.type==='bell') chime();
+      }});
+      // hold → dark band + counting-down badge, blank card
+      const h = activeHold();
+      if (h){ band.classList.add('show'); badge.classList.add('show'); badge.textContent = (h.start + h.dur - elapsed); if(line.textContent) setCard(''); }
+      else { band.classList.remove('show'); badge.classList.remove('show'); }
+    }
+    function setPlaying(p){ playing=p; playBtn.innerHTML = p?'&#9208;':'&#9654;'; if(p&&!timer)timer=setInterval(tick,1000); if(!p&&timer){clearInterval(timer);timer=null;} }
+    function end(){ if(ended)return; ended=true; setPlaying(false); band.classList.remove('show'); badge.classList.remove('show'); setCard(''); chime(); setTimeout(finishPlayer, 4000); }
+    playBtn.onclick=()=>setPlaying(!playing);
+
+    // first card + auto-start
+    const first = EVENTS.find(e=>e.start<=0);
+    if (first && first.type==='card') line.textContent = first.text; else line.textContent='';
+    if (first) fired.add(EVENTS.indexOf(first));
+    setTimeout(()=>setPlaying(true), 700);
+  </script>
+</body>
+</html>
