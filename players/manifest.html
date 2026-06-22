@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manifest | Cosmic Intentions</title>
+  <style>
+    :root { --magenta:#c0246e; --maroon:#6e1614; --ink:#3a1020; }
+    * { box-sizing:border-box; }
+    html, body { height:100%; margin:0; background:#140a10; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
+      font-family:'Courier New','Roboto Mono',monospace; }
+    .stage { position:relative; display:flex; width:min(96vw, 92vh * 16 / 9); aspect-ratio:16/9; border:14px solid var(--magenta); overflow:hidden; background:#fff; }
+    .left { position:relative; flex:1 1 auto; background:#fff; display:flex; align-items:center; justify-content:center; padding:5% 5%; text-align:center; }
+    .skull { flex:0 0 42%; background:url('../images/visualization/manifest-skull.jpg') center/cover no-repeat; }
+    .txt { margin:0; color:var(--maroon); text-transform:uppercase; letter-spacing:.1em; font-weight:700; line-height:1.5; font-size:clamp(13px,2.3vw,30px); opacity:0; transition:opacity .45s ease; }
+    .baseband { position:absolute; left:0; right:0; bottom:0; height:14%; background:var(--ink); z-index:3; display:none; }
+    .baseband.show { display:block; }
+    .badge { position:absolute; left:50%; bottom:-2px; transform:translate(-50%,50%); z-index:5; width:8.5%; aspect-ratio:1; border-radius:50%;
+      background:#fff; border:5px solid var(--magenta); display:none; align-items:center; justify-content:center; color:var(--ink); font-weight:700; font-size:clamp(15px,2.4vw,32px); box-shadow:0 2px 10px rgba(0,0,0,.3); }
+    .badge.show { display:flex; }
+    .cover { position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:4; }
+    .controls { display:flex; align-items:center; gap:26px; }
+    .cbtn { background:none; border:none; color:#cfcfcf; font-size:1.3rem; cursor:pointer; line-height:1; padding:6px; }
+    .play { background:var(--magenta); color:#fff; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .menu { position:absolute; left:50%; transform:translateX(-50%); bottom:62px; background:#111; border:1px solid #333; border-radius:10px; overflow:hidden; z-index:7; }
+    .menu.hidden { display:none; }
+    .menu button { display:block; width:100%; text-align:left; background:none; border:none; color:#fff; padding:11px 20px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="left"><p class="txt" id="txt">…</p></div>
+    <div class="skull" id="skull"></div>
+    <div class="baseband" id="band"></div>
+    <div class="badge" id="badge">0</div>
+    <div class="cover" id="cover"></div>
+  </div>
+  <div class="menu hidden" id="menu"><button id="mHome">Home page</button><button id="mPeg">My Pegboard</button></div>
+  <div class="controls">
+    <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const goal = (params.get('g') || localStorage.getItem('ci_goal_title') || 'your vision').trim();
+    const txt=document.getElementById('txt'), band=document.getElementById('band'), badge=document.getElementById('badge'),
+          cover=document.getElementById('cover'), skull=document.getElementById('skull'), playBtn=document.getElementById('play');
+
+    /* scene from the editor (ci_viz_scene) — events {type,start,dur,text,image}.
+       Types: vo/text/card → text card; image → swap the right panel; hold →
+       countdown; bell; fade. Falls back to a short default. */
+    let scene; try { scene = JSON.parse(localStorage.getItem('ci_viz_scene')); } catch(e){ scene=null; }
+    if (!scene || !Array.isArray(scene.events) || !scene.events.length) scene = { events:[
+      { type:'vo', start:0, dur:5, text:'3 Minute Manifest.' },
+      { type:'vo', start:6, dur:7, text:'{GOAL}' },
+      { type:'vo', start:14, dur:6, text:'Recall a memory that fills you with joy or gratitude.' },
+      { type:'vo', start:21, dur:4, text:'OK. Close your eyes and begin.' },
+      { type:'hold', start:26, dur:20 },
+      { type:'vo', start:47, dur:7, text:'Release your intention. Believe it has been granted.' },
+      { type:'bell', start:55, dur:0 },
+    ]};
+    const EVENTS = scene.events.map((e,i)=>({ ...e, _i:i, start:Number(e.start)||0, dur:Number(e.dur)||0, text:String(e.text||'').replace(/\{GOAL\}/gi, goal) }));
+    const total = Math.max(...EVENTS.map(e=>e.start+e.dur)) + 3;
+
+    function setCard(t){ txt.style.opacity='0'; setTimeout(()=>{ txt.textContent=t; txt.style.opacity = t?'1':'0'; }, 160); }
+    function chime(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(),n=c.currentTime,o=c.createOscillator(),g=c.createGain(); o.type='sine'; o.frequency.value=880; g.gain.setValueAtTime(.0001,n); g.gain.exponentialRampToValueAtTime(.25,n+.02); g.gain.exponentialRampToValueAtTime(.0001,n+1.4); o.connect(g).connect(c.destination); o.start(n); o.stop(n+1.5);}catch(e){} }
+
+    function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
+    function nav(t){ try{ if(window.parent&&window.parent!==window){ if(window.parent.closePlayerColumn)window.parent.closePlayerColumn(); if(window.parent.navTo){window.parent.navTo(t);return;} } }catch(e){} location.href='/'; }
+    function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
+    const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
+    menuBtn.onclick=(e)=>{e.stopPropagation();menu.classList.toggle('hidden');};
+    document.addEventListener('click',(e)=>{ if(!menu.classList.contains('hidden')&&!menu.contains(e.target)&&e.target!==menuBtn)menu.classList.add('hidden'); });
+    document.getElementById('mHome').onclick=()=>{menu.classList.add('hidden');nav('home');};
+    document.getElementById('mPeg').onclick =()=>{menu.classList.add('hidden');nav('setup');};
+
+    const ASSET=(v)=>/^(https?:|data:|\/|\.\.?\/)/.test(v)?v:('../images/visualization/'+v);
+    function execute(e){
+      if(e.type==='vo'||e.type==='text'||e.type==='card') setCard(e.text);
+      else if(e.type==='image' && e.image) skull.style.backgroundImage=`url('${ASSET(e.image)}')`;
+      else if(e.type==='bell') chime();
+      else if(e.type==='fade'){ const d=e.dur||1.2; cover.style.transition=`opacity ${d}s ease`; requestAnimationFrame(()=>cover.style.opacity = e.text==='reveal'?'0':'1'); }
+    }
+    function activeHold(){ return EVENTS.find(e=>e.type==='hold'&&elapsed>=e.start&&elapsed<e.start+e.dur); }
+    const fired=new Set(); let elapsed=0, timer=null, playing=false, ended=false;
+    function tick(){
+      elapsed++;
+      if(elapsed>=total){ end(); return; }
+      EVENTS.forEach(e=>{ if(!fired.has(e._i)&&elapsed>=e.start){ fired.add(e._i); execute(e); } });
+      const h=activeHold();
+      if(h){ band.classList.add('show'); badge.classList.add('show'); badge.textContent=(h.start+h.dur-elapsed); if(txt.textContent)setCard(''); }
+      else { band.classList.remove('show'); badge.classList.remove('show'); }
+    }
+    function setPlaying(p){ playing=p; playBtn.innerHTML=p?'&#9208;':'&#9654;'; if(p&&!timer)timer=setInterval(tick,1000); if(!p&&timer){clearInterval(timer);timer=null;} }
+    function end(){ if(ended)return; ended=true; setPlaying(false); band.classList.remove('show'); badge.classList.remove('show'); setCard(''); chime(); setTimeout(finishPlayer,4000); }
+    playBtn.onclick=()=>setPlaying(!playing);
+
+    const first=EVENTS.find(e=>e.start<=0);
+    if(first){ fired.add(first._i); execute(first); }
+    setTimeout(()=>setPlaying(true), 700);
+  </script>
+</body>
+</html>

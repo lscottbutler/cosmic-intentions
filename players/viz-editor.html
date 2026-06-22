@@ -244,7 +244,7 @@
     document.getElementById('preview').addEventListener('click', () => {
       save();
       if (!localStorage.getItem('ci_goal_title')) localStorage.setItem('ci_goal_title', 'I am living my vision');
-      document.getElementById('frame').src = 'visualization.html?t=3&_=' + Date.now();
+      document.getElementById('frame').src = 'manifest.html?_=' + Date.now();
     });
     function flash(msg, bad) { warnEl.style.color = bad?'#ff6b6b':'#7CFC9B'; warnEl.textContent = msg; setTimeout(()=>{ warnEl.style.color='#ff6b6b'; validate(); }, 1800); }
 
