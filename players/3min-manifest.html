@@ -51,10 +51,11 @@
     let front=la;
     function show(url, fade){
       const back = (front===la)?lb:la;
+      const prev = front;                       // capture before we reassign
       back.style.backgroundImage = `url('${url}')`;
       back.style.transition = fade===false ? 'none' : 'opacity .6s ease';
-      requestAnimationFrame(()=>{ back.style.opacity='1'; if(fade!==false) front.style.opacity='0'; });
       front = back;
+      requestAnimationFrame(()=>{ back.style.opacity='1'; if(fade!==false) prev.style.opacity='0'; });
     }
 
     function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
