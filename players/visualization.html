@@ -32,13 +32,16 @@
       flex-direction: column;
       overflow: hidden;
     }
+    .photowrap { position: relative; flex: 0 0 56%; overflow: hidden; }
     .photo {
-      flex: 0 0 56%;
+      position: absolute; inset: 0;
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       background-color: #ffffff;
     }
+    .photo-b { opacity: 0; }                          /* crossfade layer */
+    .fade-cover { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 3; }
     .panel {
       flex: 1 1 auto;
       position: relative;
@@ -103,8 +106,12 @@
 </head>
 <body>
   <div class="frame">
-    <div class="photo" id="photo"></div>
-    <div class="cap" id="cap"></div>
+    <div class="photowrap">
+      <div class="photo" id="photo"></div>
+      <div class="photo photo-b" id="photoB"></div>
+      <div class="fade-cover" id="fadeCover"></div>
+      <div class="cap" id="cap"></div>
+    </div>
     <div class="scrubdot" id="dot"></div>
     <div class="panel">
       <p class="label" id="label">visualization</p>
@@ -244,7 +251,9 @@
     };
 
     let VOICE = 'shimmer';
-    let BLOCKS = [];
+    let EVENTS = [];
+    const photoB = document.getElementById('photoB');
+    const fadeCover = document.getElementById('fadeCover');
 
     /* cached runtime TTS — repeat sessions are instant + free; sheet edits regenerate */
     const TTS_CACHE = 'ci_vizvo_v1';
@@ -265,37 +274,75 @@
       } catch (e) { console.log('TTS unavailable (caption only):', e.message); return null; }
     }
 
-    function fireBlock(b) {
+    /* run one timeline element: VO (speak), FADE (image), BELL, or HOLD (silence) */
+    function execute(ev) {
       if (DEV_MODE) {
-        console.log(`[VO ${b.phase}] @${total - timeRemaining}s: ${b.text}`);
-        cap.innerHTML = `<b>${b.phase}</b><br>${b.text}`;
+        console.log(`[${ev.type}] @${total - timeRemaining}s (${ev.dur || 0}s): ${ev.text || ev.to || ev.image || ''}`);
+        cap.innerHTML = `<b>${ev.phase || ev.type}</b>` + (ev.text ? `<br>${ev.text}` : '');
         cap.classList.add('show');
       }
-      if (b.audio) { try { b.audio.currentTime = 0; const p = b.audio.play(); if (p) p.catch(() => {}); } catch (e) {} }
+      if (ev.type === 'vo') {
+        if (ev.audio) { try { ev.audio.currentTime = 0; const p = ev.audio.play(); if (p) p.catch(() => {}); } catch (e) {} }
+      } else if (ev.type === 'bell') {
+        playBell();
+      } else if (ev.type === 'fade') {
+        const d = Number(ev.dur) || 1.5;
+        if (ev.to === 'black') {
+          fadeCover.style.transition = `opacity ${d}s ease`;
+          requestAnimationFrame(() => { fadeCover.style.opacity = '1'; });
+        } else if (ev.to === 'reveal' || ev.to === 'clear') {
+          fadeCover.style.transition = `opacity ${d}s ease`;
+          requestAnimationFrame(() => { fadeCover.style.opacity = '0'; });
+        } else if (ev.image) {                       // crossfade to a new image
+          photoB.style.backgroundImage = `url('${ev.image}')`;
+          photoB.style.transition = `opacity ${d}s ease`;
+          requestAnimationFrame(() => { photoB.style.opacity = '1'; });
+          setTimeout(() => { photo.style.backgroundImage = `url('${ev.image}')`; photoB.style.transition = 'none'; photoB.style.opacity = '0'; }, d * 1000 + 60);
+        }
+      }
+      /* 'hold' = intentional silence; nothing to do */
     }
 
     // Prime audio on first gesture (browsers block autoplay until then).
     let unlocked = false;
     document.addEventListener('pointerdown', () => {
       if (unlocked) return; unlocked = true;
-      BLOCKS.forEach(b => { if (!b.audio) return; b.audio.muted = true;
-        const p = b.audio.play(); if (p) p.then(() => { b.audio.pause(); b.audio.currentTime = 0; b.audio.muted = false; }).catch(() => { b.audio.muted = false; }); });
+      EVENTS.forEach(ev => { if (!ev.audio) return; ev.audio.muted = true;
+        const p = ev.audio.play(); if (p) p.then(() => { ev.audio.pause(); ev.audio.currentTime = 0; ev.audio.muted = false; }).catch(() => { ev.audio.muted = false; }); });
     }, { once: true });
 
-    /* Fetch the sheet config, build BLOCKS for this duration, pre-generate audio. */
-    async function initBlocks() {
-      let cfg = null;
-      try { const r = await fetch('/api/viz-config'); if (r.ok) cfg = await r.json(); } catch (e) {}
-      if (!cfg || !Array.isArray(cfg.blocks) || !cfg.blocks.length) cfg = DEFAULT_CFG;
-      VOICE = (cfg.settings && cfg.settings.voice) || 'shimmer';
-      if (cfg.settings && cfg.settings.image) photo.style.backgroundImage = `url('${cfg.settings.image}')`;
+    /* convert the legacy /api/viz-config block format into timeline events */
+    function cfgToScene(cfg) {
       const durKey = (minutes >= 10) ? '10' : '3';
-      BLOCKS = cfg.blocks.map(b => ({
-        key: b.key, phase: b.phase || b.key,
-        at: Number((b.at && (b.at[durKey] != null ? b.at[durKey] : b.at['3'])) || 0) || 0,
-        text: String(b.text || '').replace(/\{GOAL\}/gi, goal),
+      return {
+        settings: cfg.settings || { voice: 'shimmer' },
+        events: (cfg.blocks || []).map(b => ({
+          type: 'vo', phase: b.phase || b.key, dur: 6,
+          start: Number((b.at && (b.at[durKey] != null ? b.at[durKey] : b.at['3'])) || 0) || 0,
+          text: b.text,
+        })),
+      };
+    }
+
+    /* Load the scene: the editor's ci_viz_scene wins; otherwise /api/viz-config
+       (Google Sheet → built-in defaults). Then pre-generate VO audio. */
+    async function initScene() {
+      let scene = null;
+      try { scene = JSON.parse(localStorage.getItem('ci_viz_scene') || 'null'); } catch (e) {}
+      if (!scene || !Array.isArray(scene.events)) {
+        let cfg = null;
+        try { const r = await fetch('/api/viz-config'); if (r.ok) cfg = await r.json(); } catch (e) {}
+        scene = cfgToScene(cfg && Array.isArray(cfg.blocks) ? cfg : DEFAULT_CFG);
+      }
+      VOICE = (scene.settings && scene.settings.voice) || 'shimmer';
+      if (scene.settings && scene.settings.image) photo.style.backgroundImage = `url('${scene.settings.image}')`;
+      EVENTS = scene.events.map((e, i) => ({
+        ...e, _i: i,
+        start: Number(e.start) || 0,
+        dur:   Number(e.dur) || 0,
+        text:  String(e.text || '').replace(/\{GOAL\}/gi, goal),
       }));
-      await Promise.all(BLOCKS.map(async b => { b.audio = await ttsAudio(b.text); }));
+      await Promise.all(EVENTS.filter(e => e.type === 'vo' && e.text).map(async e => { e.audio = await ttsAudio(e.text); }));
     }
 
     /* ── timer + play/pause (same engine as Meditation) ── */
@@ -315,7 +362,7 @@
       if (timeRemaining <= 0) { endSession(); return; }
       render();
       const elapsed = total - timeRemaining;
-      BLOCKS.forEach(b => { if (b.at > 0 && b.at < total && !fired.has(b.key) && elapsed >= b.at) { fired.add(b.key); fireBlock(b); } });
+      EVENTS.forEach(ev => { if (ev.start > 0 && ev.start < total && !fired.has(ev._i) && elapsed >= ev.start) { fired.add(ev._i); execute(ev); } });
     }
     function setPlaying(p) {
       playing = p;
@@ -334,12 +381,11 @@
     document.getElementById('rew').onclick = () => adjust(+STEP);
     document.getElementById('fwd').onclick = () => adjust(-STEP);
 
-    // Build from the sheet config (→ cached TTS), then auto-start; Hook fires first.
-    initBlocks().then(() => {
+    // Build the scene (→ cached TTS), then auto-start; fire any start=0 elements.
+    initScene().then(() => {
       setTimeout(() => {
         setPlaying(true);
-        const hook = BLOCKS[0];
-        if (hook && !fired.has(hook.key)) { fired.add(hook.key); fireBlock(hook); }
+        EVENTS.forEach(ev => { if (ev.start <= 0 && !fired.has(ev._i)) { fired.add(ev._i); execute(ev); } });
       }, 800);
     });
   </script>
