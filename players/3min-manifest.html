@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 Minute Manifest | Cosmic Intentions</title>
+  <style>
+    * { box-sizing:border-box; }
+    html, body { height:100%; margin:0; background:#0c0810; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
+      font-family:'Arial Narrow',system-ui,sans-serif; }
+    .stage { position:relative; width:min(96vw, 92vh * 16 / 9); aspect-ratio:16/9; background:#000; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+    .layer { position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat; opacity:0; transition:opacity .6s ease; }
+    .controls { display:flex; align-items:center; gap:26px; }
+    .cbtn { background:none; border:none; color:#cfcfcf; font-size:1.3rem; cursor:pointer; line-height:1; padding:6px; }
+    .play { background:#c0246e; color:#fff; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .menu { position:absolute; left:50%; transform:translateX(-50%); bottom:62px; background:#111; border:1px solid #333; border-radius:10px; overflow:hidden; z-index:7; }
+    .menu.hidden { display:none; }
+    .menu button { display:block; width:100%; text-align:left; background:none; border:none; color:#fff; padding:11px 20px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="layer" id="la"></div>
+    <div class="layer" id="lb"></div>
+  </div>
+  <div class="menu hidden" id="menu"><button id="mHome">Home page</button><button id="mPeg">My Pegboard</button></div>
+  <div class="controls">
+    <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+  </div>
+
+  <script>
+    /* Slideshow built from the Google Slides deck — each designed slide shown
+       full-frame at its RUN TIME. Re-export the deck to update. */
+    const DIR = '../images/visualization/3min/';
+    const CUES = [
+      { img:'s1.png', at:0  },   // OK CLOSE YOUR EYES
+      { img:'s3.png', at:4  },   // I AM ... 400K subscribers
+      { img:'s2.png', at:12 },   // GET READY TO INTENSIFY
+      { img:'s4.png', at:14 },   // RECALL A MEMORY
+      { img:'s2.png', at:21 },   // GET READY TO INTENSIFY
+      { img:'s5.png', at:26 },   // OK CLOSE YOUR EYES
+      { img:'s6.png', at:31 },   // GET READY TO INTENSIFY
+    ];
+    const total = CUES[CUES.length-1].at + 4;
+
+    // preload
+    CUES.forEach(c => { const i = new Image(); i.src = DIR + c.img; });
+
+    const la=document.getElementById('la'), lb=document.getElementById('lb'), playBtn=document.getElementById('play');
+    let front=la;
+    function show(url, fade){
+      const back = (front===la)?lb:la;
+      back.style.backgroundImage = `url('${url}')`;
+      back.style.transition = fade===false ? 'none' : 'opacity .6s ease';
+      requestAnimationFrame(()=>{ back.style.opacity='1'; if(fade!==false) front.style.opacity='0'; });
+      front = back;
+    }
+
+    function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
+    function nav(t){ try{ if(window.parent&&window.parent!==window){ if(window.parent.closePlayerColumn)window.parent.closePlayerColumn(); if(window.parent.navTo){window.parent.navTo(t);return;} } }catch(e){} location.href='/'; }
+    function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
+    const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
+    menuBtn.onclick=(e)=>{e.stopPropagation();menu.classList.toggle('hidden');};
+    document.addEventListener('click',(e)=>{ if(!menu.classList.contains('hidden')&&!menu.contains(e.target)&&e.target!==menuBtn)menu.classList.add('hidden'); });
+    document.getElementById('mHome').onclick=()=>{menu.classList.add('hidden');nav('home');};
+    document.getElementById('mPeg').onclick =()=>{menu.classList.add('hidden');nav('setup');};
+
+    const fired=new Set(); let elapsed=0, timer=null, playing=false, ended=false;
+    function tick(){
+      elapsed++;
+      if(elapsed>=total){ end(); return; }
+      CUES.forEach((c,i)=>{ if(!fired.has(i)&&elapsed>=c.at){ fired.add(i); show(DIR+c.img); } });
+    }
+    function setPlaying(p){ playing=p; playBtn.innerHTML=p?'&#9208;':'&#9654;'; if(p&&!timer)timer=setInterval(tick,1000); if(!p&&timer){clearInterval(timer);timer=null;} }
+    function end(){ if(ended)return; ended=true; setPlaying(false); setTimeout(finishPlayer,2500); }
+    playBtn.onclick=()=>setPlaying(!playing);
+
+    show(DIR + CUES[0].img, false); fired.add(0);   // first slide instantly
+    setTimeout(()=>setPlaying(true), 600);
+  </script>
+</body>
+</html>
