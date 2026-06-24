@@ -6,7 +6,8 @@
   <title>3 Minute Visualization | Cosmic Intentions</title>
   <style>
     /* defaults — overridden at runtime by CONFIG (see <script>) */
-    :root { --pink:#bf4170; --maroon:#6e1614; --ink:#2b2b2b; --bw:14px; --skullcol:40%; --cardfont:2.1vw; --fade:.8s; --navsize:14%; }
+    :root { --pink:#bf4170; --maroon:#6e1614; --ink:#2b2b2b; --bw:14px; --skullcol:40%; --cardfont:2.1vw; --fade:.8s;
+            --arch-fill:#9c1a86; --arch-line:#ee1c25; --arch-ring:#a0398f; --arch-circle:#000; --arch-icon:#fff; --iconsize:9%; }
     * { box-sizing:border-box; }
     html, body { height:100%; margin:0; background:#0c0810; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
       font-family:'Courier New','Roboto Mono',monospace; }
@@ -32,10 +33,15 @@
     .card { position:absolute; max-width:90%; text-align:center; color:var(--maroon); text-transform:uppercase; letter-spacing:.07em; font-weight:700; line-height:1.5; font-size:clamp(13px,var(--cardfont),27px); opacity:0; transition:opacity var(--fade) ease; }
     .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.12em; margin-bottom:.4em; }
 
-    #nav { position:absolute; left:calc(50% - var(--navsize)/2); bottom:0; transform:translateY(50%); z-index:10; width:var(--navsize); aspect-ratio:1; border-radius:50%;
-      background:#fff; border:5px solid var(--pink); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity var(--fade) ease;
-      color:var(--ink); font-weight:700; font-size:clamp(16px,2.6vw,34px); box-shadow:0 2px 10px rgba(0,0,0,.3); }
-    #nav svg { width:54%; height:54%; fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    /* bottom dome (red line + purple fill) with the black icon circle on its peak */
+    #arch { position:absolute; inset:0; z-index:8; opacity:0; transition:opacity var(--fade) ease; pointer-events:none; }
+    .archsvg { position:absolute; left:0; right:0; bottom:0; width:100%; height:30%; display:block; }
+    .archsvg .af { fill:var(--arch-fill); }
+    .archsvg .al { fill:none; stroke:var(--arch-line); stroke-width:12; }
+    .iconcircle { position:absolute; left:50%; bottom:19%; transform:translateX(-50%); width:var(--iconsize); aspect-ratio:1; border-radius:50%;
+      background:var(--arch-circle); border:5px solid var(--arch-ring); display:flex; align-items:center; justify-content:center;
+      color:var(--arch-icon); font-weight:700; font-size:clamp(15px,2.4vw,32px); box-shadow:0 2px 10px rgba(0,0,0,.45); }
+    .iconcircle svg { width:54%; height:54%; fill:none; stroke:var(--arch-icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     #navNum { display:none; }
 
     .controls { display:flex; align-items:center; gap:26px; }
@@ -58,8 +64,14 @@
         <div class="colB" id="colB"></div>
       </div>
       <div class="scene" id="logo"><img src="../images/clip-art/blue-hair-logo.png" alt="Cosmic Intentions"></div>
+      <div id="arch">
+        <svg class="archsvg" viewBox="0 0 1920 300" preserveAspectRatio="none">
+          <path class="af" d="M0 120 Q960 0 1920 120 L1920 300 L0 300 Z"/>
+          <path class="al" d="M0 120 Q960 0 1920 120"/>
+        </svg>
+        <div class="iconcircle"><svg id="navIcon" viewBox="0 0 24 24"></svg><span id="navNum"></span></div>
+      </div>
     </div>
-    <div id="nav"><svg id="navIcon" viewBox="0 0 24 24"></svg><span id="navNum"></span></div>
   </div>
   <div class="menu hidden" id="menu"><button id="mHome">Home page</button><button id="mPeg">My Pegboard</button></div>
   <div class="controls">
@@ -69,25 +81,15 @@
 
   <script>
   /* ════════════════════════════════════════════════════════════════════
-     CONFIG — every dial in one place. Change a number, that's the tweak.
-     Live-test in the browser via URL params (no rebuild):
-       ?border=%23ff0000   pink/border colour   ?speed=3   fast preview
-       ?skull=50           skull column width %  ?nav=18    nav circle %
-       ?bw=10              border thickness px   ?fade=0.4  fade seconds
+     CONFIG — every dial in one place. Live-test via URL params:
+       ?border=%23ff0000  ?skull=50  ?nav=18  ?bw=10  ?fade=0.4  ?speed=3
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
-    // ── LOOK ──
-    border:'#bf4170',     // frame + center post + nav ring colour
-    maroon:'#6e1614',     // card text colour (light side)
-    borderWidth:14,       // px — frame border + center post thickness
-    skullColumn:40,       // %  — width of the skull (right) column
-    cardFont:2.1,         // vw — card text size (clamped 13–27px)
-    navSize:14,           // %  — nav circle diameter
-    fadeSpeed:0.8,        // s  — text fade in/out duration
-    voice:'shimmer',      // TTS voice
-    speed:1,              // playback speed (1 = normal, 2 = 2× for preview)
-
-    // ── TIMING (seconds) — each section's key beats ──
+    border:'#bf4170', maroon:'#6e1614', borderWidth:14, skullColumn:40,
+    cardFont:2.1, iconSize:9, fadeSpeed:0.8, voice:'shimmer', speed:1,
+    // bottom dome + icon circle
+    arch:{ fill:'#9c1a86', line:'#ee1c25', ring:'#a0398f', circle:'#000', icon:'#fff' },
+    // timing (seconds)
     t:{ s1_logoOut:7, s1_splitIn:9,
         s2_titleIn:10, s2_titleOut:15,
         s3_in:20, s3_vo:21.4, s3_out:27,
@@ -97,8 +99,6 @@
         s7_in:90, s7_vo:91.6, s7_out:97, s7_count:100, s7_countSecs:20,
         s8_in:160, s8_vo:161.5, s8_out:167,
         s9_logoIn:170, end:175 },
-
-    // ── WORDS (on-screen + spoken) ──
     vo:{ recall:'Recall a memory that fills you with joy or gratitude.',
          intensify:'Get ready to intensify and maintain that feeling for twenty seconds.',
          closeEyes:'OK. Close your eyes and begin.',
@@ -106,11 +106,10 @@
          release:'Release your intention. Believe it has been granted and is now on its way.' }
   };
 
-  /* apply URL-param overrides (live tweaking), then push CONFIG → CSS vars */
   const P = new URLSearchParams(location.search);
   if (P.get('border')) CONFIG.border = P.get('border');
   if (P.get('skull'))  CONFIG.skullColumn = +P.get('skull');
-  if (P.get('nav'))    CONFIG.navSize = +P.get('nav');
+  if (P.get('nav'))    CONFIG.iconSize = +P.get('nav');
   if (P.get('bw'))     CONFIG.borderWidth = +P.get('bw');
   if (P.get('fade'))   CONFIG.fadeSpeed = +P.get('fade');
   if (P.get('speed'))  CONFIG.speed = +P.get('speed');
@@ -120,8 +119,13 @@
   R.setProperty('--bw', CONFIG.borderWidth + 'px');
   R.setProperty('--skullcol', CONFIG.skullColumn + '%');
   R.setProperty('--cardfont', CONFIG.cardFont + 'vw');
-  R.setProperty('--navsize', CONFIG.navSize + '%');
+  R.setProperty('--iconsize', CONFIG.iconSize + '%');
   R.setProperty('--fade', CONFIG.fadeSpeed + 's');
+  R.setProperty('--arch-fill', CONFIG.arch.fill);
+  R.setProperty('--arch-line', CONFIG.arch.line);
+  R.setProperty('--arch-ring', CONFIG.arch.ring);
+  R.setProperty('--arch-circle', CONFIG.arch.circle);
+  R.setProperty('--arch-icon', CONFIG.arch.icon);
 
   const T = CONFIG.t, VOTEXT = CONFIG.vo, VOICE = CONFIG.voice;
   const goal = (P.get('g') || localStorage.getItem('ci_goal_title')
@@ -130,7 +134,7 @@
   const logo=document.getElementById('logo'), split=document.getElementById('split'),
         colA=document.getElementById('colA'), colB=document.getElementById('colB'),
         badge=document.getElementById('badge'), card=document.getElementById('card'),
-        nav=document.getElementById('nav'), navIcon=document.getElementById('navIcon'),
+        arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
         navNum=document.getElementById('navNum'), playBtn=document.getElementById('play');
   const ICON = {
     eyeOpen:  '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2"/>',
@@ -175,7 +179,7 @@
   const SEQ = [
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
-    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; } },
+    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
     { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); colB.classList.add('sharp'); } },
     { t:T.s2_titleOut,fn:()=>{ badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
@@ -184,7 +188,7 @@
     { t:T.s4_in,  fn:()=>setCard(VOTEXT.recall) },
     { t:T.s4_vo,  fn:()=>playVO('recall') },
     { t:T.s4_out, fn:fadeCard },
-    { t:T.s5_in,  fn:()=>{ setCard(VOTEXT.intensify); navShowIcon('eyeOpen'); nav.style.opacity='1'; } },
+    { t:T.s5_in,  fn:()=>{ setCard(VOTEXT.intensify); navShowIcon('eyeOpen'); } },    // open eye in the circle
     { t:T.s5_vo,  fn:()=>playVO('intensify') },
     { t:T.s5_out, fn:fadeCard },
     { t:T.s6_in,  fn:()=>{ colA.classList.add('dark'); setCard(VOTEXT.closeEyes); navShowIcon('eyeClosed'); } },
@@ -198,7 +202,7 @@
     { t:T.s8_in,  fn:()=>{ setCard(VOTEXT.release); navShowIcon('rocket'); } },
     { t:T.s8_vo,  fn:()=>playVO('release') },
     { t:T.s8_out, fn:fadeCard },
-    { t:T.s9_logoIn,fn:()=>{ nav.style.opacity='0'; logo.style.opacity='1'; } },
+    { t:T.s9_logoIn,fn:()=>{ arch.style.opacity='0'; logo.style.opacity='1'; } },     // dome out, outro logo
     { t:T.end,    fn:()=>end() },
   ].sort((a,b)=>a.t-b.t);
 
