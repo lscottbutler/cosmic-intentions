@@ -114,7 +114,7 @@
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
     accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:1.6, skullColumn:50, centerPost:1.6, dome:false,
-    cardFont:2.1, iconSize:12.96, fadeSpeed:0.8, voice:'shimmer', speed:1,
+    cardFont:2.1, iconSize:11.664, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
@@ -219,11 +219,14 @@
 
   let muted=false;     // TEMP: preview mute toggle
   let seeking=false;   // TEMP: true while the scrubber is seeking (suppress audio)
-  function chime3(){ if(muted||seeking)return; try{ const c=new (window.AudioContext||window.webkitAudioContext)();
+  // shared AudioContext + master gain so mute can silence in-progress tones (not just future ones)
+  let actx=null, masterGain=null;
+  function actxGet(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=actx.createGain(); masterGain.gain.value=muted?0:1; masterGain.connect(actx.destination); }catch(e){} } return actx; }
+  function chime3(){ if(seeking)return; const c=actxGet(); if(!c)return; try{
     [660,880,1175].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+i*0.16; o.type='sine'; o.frequency.value=f;
-      g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.35,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.55); o.connect(g).connect(c.destination); o.start(s); o.stop(s+.6); }); }catch(e){} }
-  function bell(){ if(muted||seeking)return; try{ const c=new (window.AudioContext||window.webkitAudioContext)(),n=c.currentTime;
-    [880,1320].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=n+i*0.16; o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.4,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+2.2); o.connect(g).connect(c.destination); o.start(s); o.stop(s+2.3); }); }catch(e){} }
+      g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.35,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.55); o.connect(g).connect(masterGain); o.start(s); o.stop(s+.6); }); }catch(e){} }
+  function bell(){ if(seeking)return; const c=actxGet(); if(!c)return; try{ const n=c.currentTime;
+    [880,1320].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=n+i*0.16; o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.4,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+2.2); o.connect(g).connect(masterGain); o.start(s); o.stop(s+2.3); }); }catch(e){} }
 
   const CACHE='ci_vizmod_vo';
   const rc=()=>{try{return JSON.parse(localStorage.getItem(CACHE)||'{}');}catch(e){return{};}};
@@ -248,7 +251,8 @@
     else { (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } });
   document.getElementById('mutebtn').addEventListener('click', (e)=>{ e.stopPropagation();
     muted=!muted;
-    Object.values(VO).forEach(a=>{ if(a) a.muted=muted; });
+    if(masterGain) masterGain.gain.value = muted ? 0 : 1;      // silence in-progress chime/bell
+    Object.values(VO).forEach(a=>{ if(a) a.muted=muted; });    // silence VO (current + future via playVO)
     e.currentTarget.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
 
   let cd=null;
