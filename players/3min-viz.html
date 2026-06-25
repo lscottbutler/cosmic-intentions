@@ -48,6 +48,12 @@
     .iconcircle svg { width:54%; height:54%; fill:none; stroke:var(--arch-icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     #navNum { display:none; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
+    /* TEMP: fullscreen button — remove before launch */
+    #fsbtn { position:fixed; top:12px; right:12px; z-index:9999; padding:8px 12px;
+      font:600 13px/1 system-ui,sans-serif; color:#fff; background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
+    #fsbtn:hover { background:rgba(0,0,0,.8); }
+    :fullscreen #fsbtn, :-webkit-full-screen #fsbtn { opacity:.25; }
   </style>
 </head>
 <body>
@@ -72,6 +78,9 @@
       </div>
     </div>
   </div>
+
+  <!-- TEMP: fullscreen button — remove before launch -->
+  <button id="fsbtn">⛶ Full screen</button>
 
   <script>
   /* ════════════════════════════════════════════════════════════════════
@@ -204,6 +213,11 @@
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
   badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='scale(1)'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
+  /* TEMP: fullscreen toggle — remove before launch */
+  document.getElementById('fsbtn').addEventListener('click', (e)=>{ e.stopPropagation();
+    const el=document.documentElement;
+    if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
+    else { (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } });
 
   let cd=null;
   function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; navShowNum(secs); }
