@@ -301,7 +301,8 @@
   function bell(){ if(seeking)return; const c=actxGet(); if(!c)return; try{ const n=c.currentTime;
     [880,1320].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=n+i*0.16; o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.4,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+2.2); o.connect(g).connect(masterGain); o.start(s); o.stop(s+2.3); }); }catch(e){} }
 
-  const CACHE='ci_vizmod_vo';
+  const CACHE='ci_vizmod_vo2';   // bumped: invalidates old OpenAI clips so ElevenLabs regenerates
+  try{ localStorage.removeItem('ci_vizmod_vo'); }catch(e){}   // drop the stale v1 cache
   const rc=()=>{try{return JSON.parse(localStorage.getItem(CACHE)||'{}');}catch(e){return{};}};
   const wc=(o)=>{try{localStorage.setItem(CACHE,JSON.stringify(o));}catch(e){}};
   const hash=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h.toString(36);};
