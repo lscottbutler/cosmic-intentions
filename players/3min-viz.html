@@ -42,7 +42,7 @@
     .archsvg .af { fill:var(--arch-fill); }
     .archsvg .al { fill:none; stroke:var(--arch-line); stroke-width:12; }
     .iconcircle { position:absolute; left:50%; bottom:19%; transform:translateX(-50%); width:var(--iconsize); aspect-ratio:1; border-radius:50%;
-      background:var(--arch-circle); border:5px solid var(--arch-ring); display:flex; align-items:center; justify-content:center;
+      background:var(--arch-circle); border:var(--bw) solid var(--arch-ring); display:flex; align-items:center; justify-content:center;
       color:var(--arch-icon); font-weight:700; font-size:clamp(15px,2.4vw,32px); box-shadow:0 2px 10px rgba(0,0,0,.45);
       pointer-events:auto; cursor:pointer; }
     .iconcircle svg { width:54%; height:54%; fill:none; stroke:var(--arch-icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
@@ -89,7 +89,7 @@
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
     accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:1.6, skullColumn:50, centerPost:1.6, dome:false,
-    cardFont:2.1, iconSize:9, fadeSpeed:0.8, voice:'shimmer', speed:1,
+    cardFont:2.1, iconSize:16.2, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
