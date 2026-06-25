@@ -69,6 +69,11 @@
       border:1px solid rgba(255,255,255,.4); border-radius:6px; cursor:pointer; white-space:nowrap; }
     #scrub button:hover { background:rgba(255,255,255,.3); }
     :fullscreen #scrub, :-webkit-full-screen #scrub { opacity:.3; }
+    /* TEMP: art-derived accent swatches — click to set border/post/I-AM colour. Remove before launch. */
+    #palette { position:fixed; top:52px; right:12px; z-index:9999; display:flex; gap:6px; }
+    #palette button { width:26px; height:26px; padding:0; border:2px solid rgba(255,255,255,.85); border-radius:6px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.5); }
+    #palette button.sel { outline:2px solid #fff; outline-offset:2px; }
+    :fullscreen #palette, :-webkit-full-screen #palette { opacity:.3; }
     /* TEMP: shrink the stage a touch so the scrubber sits BELOW the frame (not over the bottom border) */
     .stagewrap { width:min(96vw, 84vh * 16 / 9); }
   </style>
@@ -102,6 +107,9 @@
     <button id="mutebtn">🔊 Sound on</button>
     <button id="fsbtn">⛶ Full screen</button>
   </div>
+
+  <!-- TEMP: art-derived accent swatches — remove before launch -->
+  <div id="palette"></div>
 
   <!-- TEMP: timeline scrubber — remove before launch -->
   <div id="scrub">
@@ -200,6 +208,38 @@
   const colbFile = imgQ ? (COLB_IMAGES.find(f => f.includes(imgQ)) || COLB_IMAGES[0])
                         : COLB_IMAGES[dayOfYear() % COLB_IMAGES.length];
   bg.style.backgroundImage = `url('../images/50-50/${encodeURIComponent(colbFile)}')`;
+
+  /* TEMP: derive the accent (border + center post + I AM) from the current art.
+     Auto-applies the most vibrant colour; the swatch row (top-right) lets you pick another
+     (e.g. the purple). Same-origin canvas read — works on the server, not file://. Remove before launch. */
+  const lockAccent = !!(P.get('accent')||P.get('border'));   // explicit ?accent wins over auto
+  function _hsl(r,g,b){ r/=255;g/=255;b/=255; const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;
+    let s=0; if(mx!==mn){ const d=mx-mn; s=l>0.5?d/(2-mx-mn):d/(mx+mn); } return {s,l}; }
+  const _hx=(n)=>Math.max(0,Math.min(255,n|0)).toString(16).padStart(2,'0');
+  const _hex=(r,g,b)=>'#'+_hx(r)+_hx(g)+_hx(b);
+  function applyAccent(hex){ R.setProperty('--pink', hex);
+    document.querySelectorAll('#palette button').forEach(b=>b.classList.toggle('sel', b.dataset.hex===hex)); }
+  (function(){
+    const im=new Image();
+    im.onload=()=>{ const w=72, h=Math.max(1,Math.round(72*im.height/im.width));
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      const cx=cv.getContext('2d',{willReadFrequently:true}); cx.drawImage(im,0,0,w,h);
+      let d; try{ d=cx.getImageData(0,0,w,h).data; }catch(e){ return; }   // file:// taints canvas -> skip
+      const B={};
+      for(let i=0;i<d.length;i+=4){ const r=d[i],g=d[i+1],b=d[i+2]; if(d[i+3]<200)continue;
+        const {s,l}=_hsl(r,g,b); if(l<0.12||l>0.9||s<0.2)continue;        // drop near-black/white + greys
+        const k=(r>>4)+'_'+(g>>4)+'_'+(b>>4); if(!B[k])B[k]={r:0,g:0,b:0,n:0,sc:0};
+        const o=B[k]; o.r+=r;o.g+=g;o.b+=b;o.n++; o.sc+=s*(1-Math.abs(l-0.5)); }   // favour vibrant, mid-light
+      const pal=Object.values(B).map(o=>({hex:_hex(o.r/o.n,o.g/o.n,o.b/o.n), sc:o.sc}))
+        .sort((a,b)=>b.sc-a.sc).slice(0,6).map(o=>o.hex);
+      const box=document.getElementById('palette');
+      if(box){ box.innerHTML=''; pal.forEach(hex=>{ const b=document.createElement('button');
+        b.style.background=hex; b.dataset.hex=hex; b.title=hex;
+        b.addEventListener('click',(e)=>{ e.stopPropagation(); applyAccent(hex); }); box.appendChild(b); }); }
+      if(pal.length && !lockAccent) applyAccent(pal[0]);
+    };
+    im.src='../images/50-50/'+encodeURIComponent(colbFile);
+  })();
   const ICON = {
     eyeOpen:  '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2"/>',
     eyeClosed:'<path d="M3 10c2.6 4 6.4 5 9 5s6.4-1 9-5"/><path d="M5 14l-1 2M19 14l1 2M12 16v2.2"/>',
