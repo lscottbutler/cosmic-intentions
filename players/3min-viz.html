@@ -22,7 +22,9 @@
     .colA { position:relative; flex:1 1 50%; background:#fff; display:flex; align-items:center; justify-content:center; padding:5% 6%; overflow:hidden; transition:background var(--fade) ease; }
     .colA.dark { background:#262626; }
     .colA.dark .card { color:#f3f3f3; }
-    .post { flex:0 0 var(--postw); background:var(--frame); }
+    /* center post: overlay on the 50% seam (doesn't take flex space -> columns stay exactly 50/50);
+       fades in over the same window the column-B art sharpens */
+    .post { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:var(--postw); background:var(--pink); z-index:3; opacity:0; transition:opacity 1.2s ease; }
     .colB { position:relative; flex:0 0 var(--skullcol); }
     /* full-frame art = bottom layer; colA's opaque 50% panel covers its LEFT half, so only the RIGHT half shows */
     .bg { position:absolute; inset:0; z-index:1; background:#000 center/cover no-repeat; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
@@ -77,7 +79,7 @@
        ?border=%23ff0000  ?skull=50  ?nav=18  ?bw=10  ?fade=0.4  ?speed=3
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
-    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:2.2, skullColumn:50, centerPost:0, dome:false,
+    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:2.2, skullColumn:50, centerPost:1.6, dome:false,
     cardFont:2.1, iconSize:9, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
@@ -111,7 +113,7 @@
   const R = document.documentElement.style;
   R.setProperty('--pink', CONFIG.accent);
   R.setProperty('--frame', CONFIG.frame);
-  R.setProperty('--postw', CONFIG.centerPost + 'px');
+  R.setProperty('--postw', CONFIG.centerPost + 'cqw');
   R.setProperty('--maroon', CONFIG.maroon);
   R.setProperty('--bw', CONFIG.borderWidth + 'cqw');
   R.setProperty('--skullcol', CONFIG.skullColumn + '%');
@@ -133,7 +135,8 @@
         colA=document.getElementById('colA'), colB=document.getElementById('colB'), bg=document.getElementById('bg'),
         badge=document.getElementById('badge'), card=document.getElementById('card'),
         arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
-        navNum=document.getElementById('navNum'), stage=document.querySelector('.stage');
+        navNum=document.getElementById('navNum'), stage=document.querySelector('.stage'),
+        post=document.querySelector('.post');
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -210,7 +213,7 @@
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
-    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
+    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); post.style.opacity='1'; } },
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
