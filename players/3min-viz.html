@@ -48,12 +48,12 @@
     .iconcircle svg { width:54%; height:54%; fill:none; stroke:var(--arch-icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     #navNum { display:none; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
-    /* TEMP: fullscreen button — remove before launch */
-    #fsbtn { position:fixed; top:12px; right:12px; z-index:9999; padding:8px 12px;
-      font:600 13px/1 system-ui,sans-serif; color:#fff; background:rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
-    #fsbtn:hover { background:rgba(0,0,0,.8); }
-    :fullscreen #fsbtn, :-webkit-full-screen #fsbtn { opacity:.25; }
+    /* TEMP: preview controls (mute + fullscreen) — remove before launch */
+    #ctlbtns { position:fixed; top:12px; right:12px; z-index:9999; display:flex; gap:8px; }
+    #ctlbtns button { padding:8px 12px; font:600 13px/1 system-ui,sans-serif; color:#fff;
+      background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
+    #ctlbtns button:hover { background:rgba(0,0,0,.8); }
+    :fullscreen #ctlbtns button, :-webkit-full-screen #ctlbtns button { opacity:.25; }
   </style>
 </head>
 <body>
@@ -79,8 +79,11 @@
     </div>
   </div>
 
-  <!-- TEMP: fullscreen button — remove before launch -->
-  <button id="fsbtn">⛶ Full screen</button>
+  <!-- TEMP: preview controls (mute + fullscreen) — remove before launch -->
+  <div id="ctlbtns">
+    <button id="mutebtn">🔊 Sound on</button>
+    <button id="fsbtn">⛶ Full screen</button>
+  </div>
 
   <script>
   /* ════════════════════════════════════════════════════════════════════
@@ -192,10 +195,11 @@
   function navShowIcon(name){ curIcon=name; curNum=null; renderNav(); }
   function navShowNum(n){ curNum=n; renderNav(); }
 
-  function chime3(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)();
+  let muted=false;   // TEMP: preview mute toggle
+  function chime3(){ if(muted)return; try{ const c=new (window.AudioContext||window.webkitAudioContext)();
     [660,880,1175].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+i*0.16; o.type='sine'; o.frequency.value=f;
       g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.35,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.55); o.connect(g).connect(c.destination); o.start(s); o.stop(s+.6); }); }catch(e){} }
-  function bell(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(),n=c.currentTime;
+  function bell(){ if(muted)return; try{ const c=new (window.AudioContext||window.webkitAudioContext)(),n=c.currentTime;
     [880,1320].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(),s=n+i*0.16; o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.4,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+2.2); o.connect(g).connect(c.destination); o.start(s); o.stop(s+2.3); }); }catch(e){} }
 
   const CACHE='ci_vizmod_vo';
@@ -204,7 +208,7 @@
   const hash=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h.toString(36);};
   async function tts(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
     try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,160),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
-  const VO={}; function playVO(k){ const a=VO[k]; if(a){try{a.currentTime=0;a.play().catch(()=>{});}catch(e){}} }
+  const VO={}; function playVO(k){ const a=VO[k]; if(a){ a.muted=muted; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){}} }
 
   function setCard(html){ card.style.opacity='0'; setTimeout(()=>{ card.innerHTML=html; card.style.opacity='1'; },120); }
   function fadeCard(){ card.style.opacity='0'; }
@@ -213,11 +217,15 @@
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
   badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='scale(1)'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
-  /* TEMP: fullscreen toggle — remove before launch */
+  /* TEMP: fullscreen + mute toggles — remove before launch */
   document.getElementById('fsbtn').addEventListener('click', (e)=>{ e.stopPropagation();
     const el=document.documentElement;
     if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
     else { (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } });
+  document.getElementById('mutebtn').addEventListener('click', (e)=>{ e.stopPropagation();
+    muted=!muted;
+    Object.values(VO).forEach(a=>{ if(a) a.muted=muted; });
+    e.currentTarget.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
 
   let cd=null;
   function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; navShowNum(secs); }
