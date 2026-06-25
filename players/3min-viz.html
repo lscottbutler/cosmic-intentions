@@ -59,6 +59,7 @@
     #ctlbtns button { padding:8px 12px; font:600 13px/1 system-ui,sans-serif; color:#fff;
       background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
     #ctlbtns button:hover { background:rgba(0,0,0,.8); }
+    #ctlbtns #imglabel { align-self:center; min-width:46px; text-align:center; color:#fff; font:700 12px/1 system-ui,sans-serif; }
     :fullscreen #ctlbtns button, :-webkit-full-screen #ctlbtns button { opacity:.25; }
     /* TEMP: timeline scrubber — remove before launch */
     #scrub { position:fixed; left:12px; right:12px; bottom:12px; z-index:9999; display:flex; align-items:center; gap:10px;
@@ -104,6 +105,9 @@
 
   <!-- TEMP: preview controls (mute + fullscreen) — remove before launch -->
   <div id="ctlbtns">
+    <button id="previmg" title="previous art">◀</button>
+    <span id="imglabel">—</span>
+    <button id="nextimg" title="next art">▶</button>
     <button id="mutebtn">🔊 Sound on</button>
     <button id="fsbtn">⛶ Full screen</button>
   </div>
@@ -205,9 +209,8 @@
   ];
   const dayOfYear = () => { const n=new Date(); return Math.floor((n - new Date(n.getFullYear(),0,0)) / 86400000); };
   const imgQ = P.get('img');
-  const colbFile = imgQ ? (COLB_IMAGES.find(f => f.includes(imgQ)) || COLB_IMAGES[0])
-                        : COLB_IMAGES[dayOfYear() % COLB_IMAGES.length];
-  bg.style.backgroundImage = `url('../images/50-50/${encodeURIComponent(colbFile)}')`;
+  let colbIndex = imgQ ? Math.max(0, COLB_IMAGES.findIndex(f => f.includes(imgQ)))
+                       : dayOfYear() % COLB_IMAGES.length;
 
   /* TEMP: derive the accent (border + center post + I AM) from the current art.
      Auto-applies the most vibrant colour; the swatch row (top-right) lets you pick another
@@ -219,7 +222,7 @@
   const _hex=(r,g,b)=>'#'+_hx(r)+_hx(g)+_hx(b);
   function applyAccent(hex){ R.setProperty('--pink', hex);
     document.querySelectorAll('#palette button').forEach(b=>b.classList.toggle('sel', b.dataset.hex===hex)); }
-  (function(){
+  function extractAccent(file){
     const im=new Image();
     im.onload=()=>{ const w=72, h=Math.max(1,Math.round(72*im.height/im.width));
       const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
@@ -240,8 +243,20 @@
         b.addEventListener('click',(e)=>{ e.stopPropagation(); applyAccent(hex); }); box.appendChild(b); }); }
       if(pal.length && !lockAccent) applyAccent(pal[0]);
     };
-    im.src='../images/50-50/'+encodeURIComponent(colbFile);
-  })();
+    im.src='../images/50-50/'+encodeURIComponent(file);
+  }
+  function setColb(file){
+    bg.style.backgroundImage=`url('../images/50-50/${encodeURIComponent(file)}')`;
+    extractAccent(file);
+    const lbl=document.getElementById('imglabel');
+    if(lbl) lbl.textContent=file.replace(/^\[\d+\]\s*/,'').replace(/\.jpg$/i,'');
+  }
+  setColb(COLB_IMAGES[colbIndex]);
+  /* TEMP: art cycling buttons — remove before launch */
+  function cycleColb(d){ colbIndex=(colbIndex+d+COLB_IMAGES.length)%COLB_IMAGES.length; setColb(COLB_IMAGES[colbIndex]); }
+  const _ni=document.getElementById('nextimg'), _pi=document.getElementById('previmg');
+  if(_ni) _ni.addEventListener('click',(e)=>{ e.stopPropagation(); cycleColb(1); });
+  if(_pi) _pi.addEventListener('click',(e)=>{ e.stopPropagation(); cycleColb(-1); });
   const ICON = {
     eyeOpen:  '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2"/>',
     eyeClosed:'<path d="M3 10c2.6 4 6.4 5 9 5s6.4-1 9-5"/><path d="M5 14l-1 2M19 14l1 2M12 16v2.2"/>',
