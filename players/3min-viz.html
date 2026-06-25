@@ -227,11 +227,13 @@
       let d; try{ d=cx.getImageData(0,0,w,h).data; }catch(e){ return; }   // file:// taints canvas -> skip
       const B={};
       for(let i=0;i<d.length;i+=4){ const r=d[i],g=d[i+1],b=d[i+2]; if(d[i+3]<200)continue;
-        const {s,l}=_hsl(r,g,b); if(l<0.12||l>0.9||s<0.2)continue;        // drop near-black/white + greys
-        const k=(r>>4)+'_'+(g>>4)+'_'+(b>>4); if(!B[k])B[k]={r:0,g:0,b:0,n:0,sc:0};
-        const o=B[k]; o.r+=r;o.g+=g;o.b+=b;o.n++; o.sc+=s*(1-Math.abs(l-0.5)); }   // favour vibrant, mid-light
-      const pal=Object.values(B).map(o=>({hex:_hex(o.r/o.n,o.g/o.n,o.b/o.n), sc:o.sc}))
-        .sort((a,b)=>b.sc-a.sc).slice(0,6).map(o=>o.hex);
+        const {s,l}=_hsl(r,g,b); if(l<0.22||l>0.85||s<0.35)continue;      // punchy only: drop dark/pale/muddy
+        const k=(r>>4)+'_'+(g>>4)+'_'+(b>>4); if(!B[k])B[k]={r:0,g:0,b:0,n:0};
+        const o=B[k]; o.r+=r;o.g+=g;o.b+=b;o.n++; }
+      const pal=Object.values(B).map(o=>{ const r=o.r/o.n,g=o.g/o.n,b=o.b/o.n,{s,l}=_hsl(r,g,b);
+          const lf=Math.max(0,1-Math.abs(l-0.55)/0.4);                    // favour mid-bright (contrast on white)
+          return {hex:_hex(r,g,b), sc:s*s*lf*Math.sqrt(o.n)}; })          // saturation^2 x brightness x damped coverage
+        .filter(o=>o.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,6).map(o=>o.hex);
       const box=document.getElementById('palette');
       if(box){ box.innerHTML=''; pal.forEach(hex=>{ const b=document.createElement('button');
         b.style.background=hex; b.dataset.hex=hex; b.title=hex;
