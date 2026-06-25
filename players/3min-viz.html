@@ -75,7 +75,7 @@
        ?border=%23ff0000  ?skull=50  ?nav=18  ?bw=10  ?fade=0.4  ?speed=3
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
-    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:18, skullColumn:40, centerPost:18,
+    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:18, skullColumn:40, centerPost:18, dome:true,
     cardFont:2.1, iconSize:9, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
@@ -103,6 +103,7 @@
   if (P.get('nav'))    CONFIG.iconSize = +P.get('nav');
   if (P.get('bw'))     CONFIG.borderWidth = +P.get('bw');
   if (P.get('post'))   CONFIG.centerPost = +P.get('post');
+  if (P.get('dome')!==null) CONFIG.dome = P.get('dome')!=='0';
   if (P.get('fade'))   CONFIG.fadeSpeed = +P.get('fade');
   if (P.get('speed'))  CONFIG.speed = +P.get('speed');
   const R = document.documentElement.style;
@@ -120,6 +121,7 @@
   R.setProperty('--arch-ring', CONFIG.arch.ring);
   R.setProperty('--arch-circle', CONFIG.arch.circle);
   R.setProperty('--arch-icon', CONFIG.arch.icon);
+  document.querySelector('.archsvg').style.display = CONFIG.dome ? '' : 'none';   // hide dome, keep circle
 
   const T = CONFIG.t, VOTEXT = CONFIG.vo, VOICE = CONFIG.voice;
   const goal = (P.get('g') || localStorage.getItem('ci_goal_title')
