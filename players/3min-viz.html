@@ -6,7 +6,7 @@
   <title>3 Minute Visualization | Cosmic Intentions</title>
   <style>
     /* defaults — overridden at runtime by CONFIG (see <script>) */
-    :root { --pink:#bf4170; --maroon:#6e1614; --ink:#2b2b2b; --bw:14px; --frame:#58585a; --postw:0px; --skullcol:40%; --cardfont:2.1vw; --fade:.8s;
+    :root { --pink:#bf4170; --maroon:#6e1614; --ink:#2b2b2b; --bw:14px; --frame:#58585a; --postw:0px; --skullcol:40%; --cardfont:2.1vw; --fade:.8s; --artzoom:100;
             --arch-fill:#000; --arch-line:#58585a; --arch-ring:#58585a; --arch-circle:#fff; --arch-icon:#444; --iconsize:9%; }
     * { box-sizing:border-box; }
     html, body { height:100%; margin:0; background:#0c0810; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
@@ -30,7 +30,9 @@
     .post { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:var(--postw); background:var(--pink); z-index:3; opacity:0; transition:opacity var(--fade) ease; }
     .colB { position:relative; flex:0 0 var(--skullcol); }
     /* full-frame art = bottom layer; colA's opaque 50% panel covers its LEFT half, so only the RIGHT half shows */
-    .bg { position:absolute; inset:0; z-index:1; background:#000 center/cover no-repeat; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
+    /* art zoom: 100% = full-bleed right half (no bands); lower shows more of the composition with
+       accent-coloured bands top/bottom (anchored right so column B's edge stays full) */
+    .bg { position:absolute; inset:0; z-index:1; background-color:var(--pink); background-repeat:no-repeat; background-position:right center; background-size:calc(var(--artzoom) * 1%) auto; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
     .bg.sharp { filter:blur(0); }
 
     .badge { border:.55cqw solid var(--pink); border-radius:10px; background:#f1f1f1; padding:1.3cqw 2.6cqw; text-align:center; line-height:1.12; font-style:italic; font-weight:800; letter-spacing:.13em; color:#2b2b2b; font-size:3.1cqw; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
@@ -129,7 +131,7 @@
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
     accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:1.6, skullColumn:50, centerPost:1.6, dome:false,
-    cardFont:2.1, iconSize:11.664, fadeSpeed:0.8, voice:'shimmer', speed:1,
+    cardFont:2.1, iconSize:11.664, fadeSpeed:0.8, voice:'shimmer', speed:1, artZoom:85,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
@@ -159,6 +161,7 @@
   if (P.get('dome')!==null) CONFIG.dome = P.get('dome')!=='0';
   if (P.get('fade'))   CONFIG.fadeSpeed = +P.get('fade');
   if (P.get('speed'))  CONFIG.speed = +P.get('speed');
+  if (P.get('artzoom')) CONFIG.artZoom = +P.get('artzoom');
   const R = document.documentElement.style;
   R.setProperty('--pink', CONFIG.accent);
   R.setProperty('--frame', CONFIG.frame);
@@ -169,6 +172,7 @@
   R.setProperty('--cardfont', CONFIG.cardFont + 'vw');
   R.setProperty('--iconsize', CONFIG.iconSize + '%');
   R.setProperty('--fade', CONFIG.fadeSpeed + 's');
+  R.setProperty('--artzoom', CONFIG.artZoom);
   R.setProperty('--arch-fill', CONFIG.arch.fill);
   R.setProperty('--arch-line', CONFIG.arch.line);
   R.setProperty('--arch-ring', CONFIG.arch.ring);
