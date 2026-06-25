@@ -12,7 +12,10 @@
     html, body { height:100%; margin:0; background:#0c0810; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
       font-family:'Courier New','Roboto Mono',monospace; }
     .stagewrap { position:relative; width:min(96vw, 92vh * 16 / 9); aspect-ratio:16/9; container-type:inline-size; }
-    .stage { position:absolute; inset:0; background:#fff; border:var(--bw) solid var(--pink); overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+    .stage { position:absolute; inset:0; background:#fff; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+    /* frame border as a fade-able overlay (a real CSS border can't transition smoothly);
+       fades in together with the center post when the split appears */
+    .frame { position:absolute; inset:0; border:var(--bw) solid var(--pink); pointer-events:none; z-index:7; opacity:0; transition:opacity 1.2s ease; }
     .scene { position:absolute; inset:0; }
 
     #logo { z-index:5; background:#fff; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity var(--fade) ease; }
@@ -69,6 +72,7 @@
         <div class="colB" id="colB"></div>
       </div>
       <div class="scene" id="logo"><img src="../images/clip-art/blue-hair-logo.png" alt="Cosmic Intentions"></div>
+      <div class="frame" id="frame"></div>
       <div id="arch">
         <svg class="archsvg" viewBox="0 0 1920 300" preserveAspectRatio="none">
           <path class="af" d="M0 120 Q960 0 1920 120 L1920 300 L0 300 Z"/>
@@ -148,7 +152,7 @@
         badge=document.getElementById('badge'), card=document.getElementById('card'),
         arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
         navNum=document.getElementById('navNum'), stage=document.querySelector('.stage'),
-        post=document.querySelector('.post');
+        post=document.querySelector('.post'), frame=document.getElementById('frame');
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -234,8 +238,8 @@
   const SEQ = [
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
-    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
-    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); post.style.opacity='1'; } },
+    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; frame.style.opacity='1'; post.style.opacity='1'; } },   // frame + post fade in with the split
+    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
