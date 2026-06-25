@@ -39,10 +39,10 @@
     .badge.reveal { animation:zoomin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes zoomin { from { opacity:0; transform:scale(.2);} 70%{opacity:1;} to { opacity:1; transform:scale(1);} }
     /* text block anchored above center; sides padded 200px; I AM colour = border colour (--pink) */
-    .card { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:calc(100% - 400px); text-align:center; color:#333;
-      font-family:'Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:.16em; font-weight:700; line-height:1.7;
+    .card { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:86%; max-width:20ch; text-align:center; color:#333;
+      font-family:'Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:.1em; font-weight:700; line-height:1.4; text-wrap:balance;
       font-size:clamp(13px,var(--cardfont),30px); opacity:0; transition:opacity var(--fade) ease; }
-    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.12em; margin-bottom:.5em; font-size:1.5em; }
+    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.08em; margin-bottom:.55em; font-size:1.45em; }
 
     /* bottom dome (red line + purple fill) with the black icon circle on its peak */
     #arch { position:absolute; inset:0; z-index:8; opacity:0; transition:opacity var(--fade) ease; pointer-events:none; }
