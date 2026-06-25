@@ -39,7 +39,7 @@
     .badge.reveal { animation:zoomin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes zoomin { from { opacity:0; transform:scale(.2);} 70%{opacity:1;} to { opacity:1; transform:scale(1);} }
     /* text block anchored above center; sides padded 200px; I AM colour = border colour (--pink) */
-    .card { position:absolute; left:50%; top:33%; transform:translateX(-50%); width:calc(100% - 400px); text-align:center; color:#333;
+    .card { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:calc(100% - 400px); text-align:center; color:#333;
       font-family:'Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:.16em; font-weight:700; line-height:1.7;
       font-size:clamp(13px,var(--cardfont),30px); opacity:0; transition:opacity var(--fade) ease; }
     .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.12em; margin-bottom:.5em; font-size:1.5em; }
@@ -312,8 +312,16 @@
       const u=new SpeechSynthesisUtterance(VOTXT[k]); u.rate=0.92; speechSynthesis.speak(u); }catch(e){} } }
 
   let cardTimer=null;
-  function setCard(html){ clearTimeout(cardTimer); card.style.opacity='0'; cardTimer=setTimeout(()=>{ card.innerHTML=html; card.style.opacity='1'; },120); }
+  function fitCard(){                                  // shrink font so any goal length fits column A
+    card.style.fontSize='';                            // reset to CSS clamp max
+    if(!card.textContent.trim()) return;
+    const avail = colA.clientHeight * 0.9;
+    let fs = parseFloat(getComputedStyle(card).fontSize), guard=60;
+    while(card.scrollHeight > avail && fs > 9 && guard-- > 0){ fs -= 1; card.style.fontSize = fs + 'px'; }
+  }
+  function setCard(html){ clearTimeout(cardTimer); card.style.opacity='0'; cardTimer=setTimeout(()=>{ card.innerHTML=html; fitCard(); card.style.opacity='1'; },120); }
   function fadeCard(){ clearTimeout(cardTimer); card.style.opacity='0'; }
+  window.addEventListener('resize', fitCard);
 
   function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
