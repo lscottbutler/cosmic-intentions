@@ -11,8 +11,8 @@
     * { box-sizing:border-box; }
     html, body { height:100%; margin:0; background:#0c0810; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; overflow:hidden;
       font-family:'Courier New','Roboto Mono',monospace; }
-    .stagewrap { position:relative; width:min(96vw, 92vh * 16 / 9); aspect-ratio:16/9; }
-    .stage { position:absolute; inset:0; background:#fff; border:var(--bw) solid var(--frame); overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+    .stagewrap { position:relative; width:min(96vw, 92vh * 16 / 9); aspect-ratio:16/9; container-type:inline-size; }
+    .stage { position:absolute; inset:0; background:#fff; border:var(--bw) solid var(--pink); overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.5); }
     .scene { position:absolute; inset:0; }
 
     #logo { z-index:5; background:#fff; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity var(--fade) ease; }
@@ -28,12 +28,11 @@
     .bg { position:absolute; inset:0; z-index:1; background:#000 center/cover no-repeat; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
     .bg.sharp { filter:blur(0); }
 
-    .badge { position:absolute; border:4px solid var(--pink); border-radius:9px; background:#fff; padding:10px 20px; text-align:center; line-height:1.15; font-weight:800; letter-spacing:3px; color:#333; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
-    .badge .m { color:var(--pink); }
+    .badge { border:.55cqw solid var(--pink); border-radius:10px; background:#f1f1f1; padding:1.3cqw 2.6cqw; text-align:center; line-height:1.12; font-style:italic; font-weight:800; letter-spacing:.13em; color:#2b2b2b; font-size:3.1cqw; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
     .badge.reveal { animation:zoomin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes zoomin { from { opacity:0; transform:scale(.2);} 70%{opacity:1;} to { opacity:1; transform:scale(1);} }
-    .card { position:absolute; max-width:90%; text-align:center; color:var(--maroon); text-transform:uppercase; letter-spacing:.07em; font-weight:700; line-height:1.5; font-size:clamp(13px,var(--cardfont),27px); opacity:0; transition:opacity var(--fade) ease; }
-    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.12em; margin-bottom:.4em; }
+    .card { position:absolute; left:8%; top:50%; transform:translateY(-50%); max-width:80%; text-align:left; color:#2b2b2b; text-transform:uppercase; letter-spacing:.05em; font-weight:800; line-height:1.45; font-size:clamp(13px,var(--cardfont),30px); opacity:0; transition:opacity var(--fade) ease; }
+    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.1em; margin-bottom:.35em; font-size:1.3em; }
 
     /* bottom dome (red line + purple fill) with the black icon circle on its peak */
     #arch { position:absolute; inset:0; z-index:8; opacity:0; transition:opacity var(--fade) ease; pointer-events:none; }
@@ -55,7 +54,7 @@
       <div class="bg" id="bg"></div>
       <div class="scene" id="split">
         <div class="colA" id="colA">
-          <div class="badge" id="badge"><span class="m">3 MIN</span><br>MANIFEST</div>
+          <div class="badge" id="badge">3 MINUTE<br>MANIFEST</div>
           <p class="card" id="card"></p>
         </div>
         <div class="post"></div>
@@ -78,7 +77,7 @@
        ?border=%23ff0000  ?skull=50  ?nav=18  ?bw=10  ?fade=0.4  ?speed=3
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
-    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:0, skullColumn:50, centerPost:0, dome:false,
+    accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:2.2, skullColumn:50, centerPost:0, dome:false,
     cardFont:2.1, iconSize:9, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
@@ -114,7 +113,7 @@
   R.setProperty('--frame', CONFIG.frame);
   R.setProperty('--postw', CONFIG.centerPost + 'px');
   R.setProperty('--maroon', CONFIG.maroon);
-  R.setProperty('--bw', CONFIG.borderWidth + 'px');
+  R.setProperty('--bw', CONFIG.borderWidth + 'cqw');
   R.setProperty('--skullcol', CONFIG.skullColumn + '%');
   R.setProperty('--cardfont', CONFIG.cardFont + 'vw');
   R.setProperty('--iconsize', CONFIG.iconSize + '%');
@@ -212,7 +211,7 @@
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
     { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
-    { t:T.s2_titleOut,fn:()=>{ badge.style.opacity='0'; } },
+    { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
     { t:T.s3_out, fn:fadeCard },
