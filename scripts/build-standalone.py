@@ -21,7 +21,7 @@ from PIL import Image
 ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC    = os.path.join(ROOT, 'players', '3min-viz.html')
 ART    = os.path.join(ROOT, 'images', '50-50')
-LOGO   = os.path.join(ROOT, 'images', 'logo', 'CI LOGO.JPG')
+LOGO   = os.path.join(ROOT, 'images', 'logo', 'ci-logo-trim.jpg')
 OUT    = os.path.join(ROOT, 'standalone-3mv')
 
 def palette(path, topn=6):
@@ -60,7 +60,7 @@ def main():
 
     html = open(SRC, encoding='utf-8').read()
     html = html.replace('../images/50-50/', 'art/')
-    html = html.replace('../images/logo/CI%20LOGO.JPG', 'assets/ci-logo.jpg')
+    html = html.replace('../images/logo/ci-logo-trim.jpg', 'assets/ci-logo.jpg')
 
     inline = '<script>window.ACCENTS=' + json.dumps(accents, ensure_ascii=False) + ';</script>\n  '
     html = html.replace('<body>', '<body>\n  ' + inline, 1)
