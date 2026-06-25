@@ -232,6 +232,7 @@
       b.style.background=hex; b.dataset.hex=hex; b.title=hex;
       b.addEventListener('click',(e)=>{ e.stopPropagation(); applyAccent(hex); }); box.appendChild(b); }); }
     if(pal.length && !lockAccent) applyAccent(pal[0]);
+    if(pal[1]) R.setProperty('--arch-ring', pal[1]);   // nav circle ring = 2nd most popular colour
   }
   function extractAccent(file){
     if(window.ACCENTS && ACCENTS[file]){ buildSwatches(ACCENTS[file]); return; }   // pre-baked palette (standalone/file://)
