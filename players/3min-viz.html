@@ -36,8 +36,10 @@
     .badge { border:.55cqw solid var(--pink); border-radius:10px; background:#f1f1f1; padding:1.3cqw 2.6cqw; text-align:center; line-height:1.12; font-style:italic; font-weight:800; letter-spacing:.13em; color:#2b2b2b; font-size:3.1cqw; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
     .badge.reveal { animation:zoomin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes zoomin { from { opacity:0; transform:scale(.2);} 70%{opacity:1;} to { opacity:1; transform:scale(1);} }
-    .card { position:absolute; left:8%; top:50%; transform:translateY(-50%); max-width:80%; text-align:left; color:#2b2b2b; text-transform:uppercase; letter-spacing:.05em; font-weight:800; line-height:1.45; font-size:clamp(13px,var(--cardfont),30px); opacity:0; transition:opacity var(--fade) ease; }
-    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.1em; margin-bottom:.35em; font-size:1.3em; }
+    .card { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:86%; text-align:center; color:#333;
+      font-family:'Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:.16em; font-weight:700; line-height:1.7;
+      font-size:clamp(13px,var(--cardfont),30px); opacity:0; transition:opacity var(--fade) ease; }
+    .card .iam { display:block; color:var(--pink); font-style:italic; font-weight:800; letter-spacing:.12em; margin-bottom:.5em; font-size:1.5em; }
 
     /* bottom dome (red line + purple fill) with the black icon circle on its peak */
     #arch { position:absolute; inset:0; z-index:8; opacity:0; transition:opacity var(--fade) ease; pointer-events:none; }
