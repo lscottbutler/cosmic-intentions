@@ -33,6 +33,9 @@ images/svg-library/
 MP4/
 *.mp4
 
+# PSD source masters — keep local, never commit (avoid repo bloat); JPGs are the web assets
+*.psd
+
 # Local Netlify folder
 .netlify
 

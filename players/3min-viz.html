@@ -23,8 +23,10 @@
     .colA.dark { background:#262626; }
     .colA.dark .card { color:#f3f3f3; }
     .post { flex:0 0 var(--postw); background:var(--frame); }
-    .colB { position:relative; flex:0 0 var(--skullcol); background:url('../images/visualization/manifest-skull.jpg') center/cover no-repeat; filter:blur(16px); transition:filter 1.2s ease; }
-    .colB.sharp { filter:blur(0); }
+    .colB { position:relative; flex:0 0 var(--skullcol); }
+    /* full-frame art = bottom layer; colA's opaque 50% panel covers its LEFT half, so only the RIGHT half shows */
+    .bg { position:absolute; inset:0; z-index:1; background:#000 center/cover no-repeat; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
+    .bg.sharp { filter:blur(0); }
 
     .badge { position:absolute; border:4px solid var(--pink); border-radius:9px; background:#fff; padding:10px 20px; text-align:center; line-height:1.15; font-weight:800; letter-spacing:3px; color:#333; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
     .badge .m { color:var(--pink); }
@@ -50,6 +52,7 @@
 <body>
   <div class="stagewrap">
     <div class="stage">
+      <div class="bg" id="bg"></div>
       <div class="scene" id="split">
         <div class="colA" id="colA">
           <div class="badge" id="badge"><span class="m">3 MIN</span><br>MANIFEST</div>
@@ -128,10 +131,36 @@
     || 'I am the proud owner of a successful online business with 1000 subscribers').trim();
 
   const logo=document.getElementById('logo'), split=document.getElementById('split'),
-        colA=document.getElementById('colA'), colB=document.getElementById('colB'),
+        colA=document.getElementById('colA'), colB=document.getElementById('colB'), bg=document.getElementById('bg'),
         badge=document.getElementById('badge'), card=document.getElementById('card'),
         arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
         navNum=document.getElementById('navNum'), stage=document.querySelector('.stage');
+
+  /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
+       override for testing: ?img=1060 picks the file whose name contains "1060" ── */
+  const COLB_IMAGES = [
+    '[000] 480.jpg','[000] 570.jpg','[000] 580.jpg','[000] 670.jpg','[000] 690.jpg',
+    '[000] 700.jpg','[000] 710.jpg','[000] 720.jpg','[000] 740.jpg','[000] 810.jpg',
+    '[000] 830.jpg','[000] 840.jpg','[000] 940.jpg','[000] 950.jpg','[000] 970.jpg',
+    '[000] 990.jpg','[000] 1010.jpg','[000] 1020.jpg','[000] 1030.jpg','[000] 1040.jpg',
+    '[000] 1060.jpg','[000] 1070.jpg','[000] 1080.jpg','[000] 1090.jpg','[000] 1100.jpg',
+    '[000] 1160.jpg','[000] 1170.jpg','[000] 1180.jpg','[000] 1200.jpg','[000] 1210.jpg',
+    '[000] 1230.jpg','[000] 1270.jpg','[000] 1280.jpg','[000] 1290.jpg','[000] 1300.jpg',
+    '[000] 1330.jpg','[000] 1340.jpg','[000] 1350.jpg','[000] 1370.jpg','[000] 1380.jpg',
+    '[000] 1390.jpg','[000] 1410.jpg','[000] 1420.jpg','[000] 1450.jpg','[000] 1460.jpg',
+    '[000] 1500.jpg','[000] 1510.jpg','[000] 1550.jpg','[000] 1560.jpg','[000] 1570.jpg',
+    '[000] 1660.jpg','[000] 1670.jpg','[000] 1690.jpg','[000] 1710.jpg','[000] 1720.jpg',
+    '[000] 1730.jpg','[000] 1740.jpg','[000] 1750.jpg','[000] 1760.jpg','[000] 1770.jpg',
+    '[000] 1880.jpg','[000] 1940.jpg','[000] 1950.jpg','[000] 1980.jpg','[000] 1990.jpg',
+    '[000] 2000.jpg','[000] 2010.jpg','[000] 2040.jpg','[000] 2170.jpg','[000] 2230.jpg',
+    '[000] 2260.jpg','[000] 2300.jpg','[000] 2330.jpg','[000] 2340.jpg','[000] 2490.jpg',
+    '[000] 2500.jpg','[000] 2510.jpg','[000] 2560.jpg','[000] 2580.jpg'
+  ];
+  const dayOfYear = () => { const n=new Date(); return Math.floor((n - new Date(n.getFullYear(),0,0)) / 86400000); };
+  const imgQ = P.get('img');
+  const colbFile = imgQ ? (COLB_IMAGES.find(f => f.includes(imgQ)) || COLB_IMAGES[0])
+                        : COLB_IMAGES[dayOfYear() % COLB_IMAGES.length];
+  bg.style.backgroundImage = `url('../images/50-50/${encodeURIComponent(colbFile)}')`;
   const ICON = {
     eyeOpen:  '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2"/>',
     eyeClosed:'<path d="M3 10c2.6 4 6.4 5 9 5s6.4-1 9-5"/><path d="M5 14l-1 2M19 14l1 2M12 16v2.2"/>',
@@ -181,8 +210,8 @@
   const SEQ = [
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
-    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
-    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); colB.classList.add('sharp'); } },
+    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; } },   // sections 2-8: dome visible
+    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
     { t:T.s2_titleOut,fn:()=>{ badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
