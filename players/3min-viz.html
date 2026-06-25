@@ -62,7 +62,12 @@
       background:rgba(0,0,0,.62); padding:9px 14px; border-radius:8px; font:600 12px/1 system-ui,sans-serif; color:#fff; }
     #scrubrange { flex:1; cursor:pointer; }
     #scrubtime { min-width:58px; text-align:right; font-variant-numeric:tabular-nums; }
+    #scrub button { padding:6px 12px; font:600 12px/1 system-ui,sans-serif; color:#fff; background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.4); border-radius:6px; cursor:pointer; white-space:nowrap; }
+    #scrub button:hover { background:rgba(255,255,255,.3); }
     :fullscreen #scrub, :-webkit-full-screen #scrub { opacity:.3; }
+    /* TEMP: shrink the stage a touch so the scrubber sits BELOW the frame (not over the bottom border) */
+    .stagewrap { width:min(96vw, 84vh * 16 / 9); }
   </style>
 </head>
 <body>
@@ -97,6 +102,7 @@
 
   <!-- TEMP: timeline scrubber — remove before launch -->
   <div id="scrub">
+    <button id="ppbtn">▶ Play</button>
     <input id="scrubrange" type="range" min="0" max="175" step="0.1" value="0">
     <span id="scrubtime">0.0s</span>
   </div>
@@ -108,7 +114,7 @@
      ════════════════════════════════════════════════════════════════════ */
   const CONFIG = {
     accent:'#bf4170', frame:'#58585a', maroon:'#6e1614', borderWidth:1.6, skullColumn:50, centerPost:1.6, dome:false,
-    cardFont:2.1, iconSize:16.2, fadeSpeed:0.8, voice:'shimmer', speed:1,
+    cardFont:2.1, iconSize:12.96, fadeSpeed:0.8, voice:'shimmer', speed:1,
     // bottom "dome skeleton" — grey/black/white
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
@@ -287,7 +293,8 @@
       if(t>=cd.secs){ if(!cd.fired){cd.fired=true; cd.onZero&&cd.onZero();} cd=null; curNum=null; } }
     if(typeof scrubRange!=='undefined'){ scrubRange.value=elapsed; scrubTime.textContent=elapsed.toFixed(1)+'s'; }  /* TEMP scrubber sync */
   }
-  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;} }
+  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;}
+    const _pp=document.getElementById('ppbtn'); if(_pp)_pp.textContent=p?'⏸ Pause':'▶ Play'; }   /* TEMP: sync play/pause button */
   function end(){ if(seeking)return; if(ended)return; ended=true; setPlaying(false); setTimeout(finishPlayer,2500); }
 
   /* TEMP: timeline scrubber — remove before launch.
@@ -315,6 +322,7 @@
   }
   scrubRange.addEventListener('input', (e)=>{ e.stopPropagation(); const t=+scrubRange.value; seek(t); scrubTime.textContent=t.toFixed(1)+'s'; });
   scrubRange.addEventListener('click', (e)=>e.stopPropagation());
+  document.getElementById('ppbtn').addEventListener('click', (e)=>{ e.stopPropagation(); setPlaying(!playing); });
 
   Promise.all([
     tts(goal).then(a=>VO.goal=a),
