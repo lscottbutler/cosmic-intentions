@@ -36,6 +36,9 @@ MP4/
 # PSD source masters — keep local, never commit (avoid repo bloat); JPGs are the web assets
 *.psd
 
+# generated standalone build (regenerate with scripts/build-standalone.py) — bundles ~70MB of art
+standalone-3mv/
+
 # Local Netlify folder
 .netlify
 
