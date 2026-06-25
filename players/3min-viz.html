@@ -27,7 +27,7 @@
     .colA.dark .card { color:#f3f3f3; }
     /* center post: overlay on the 50% seam (doesn't take flex space -> columns stay exactly 50/50);
        fades in over the same window the column-B art sharpens */
-    .post { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:var(--postw); background:var(--pink); z-index:3; opacity:0; transition:opacity 1.2s ease; }
+    .post { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:var(--postw); background:var(--pink); z-index:3; opacity:0; transition:opacity var(--fade) ease; }
     .colB { position:relative; flex:0 0 var(--skullcol); }
     /* full-frame art = bottom layer; colA's opaque 50% panel covers its LEFT half, so only the RIGHT half shows */
     .bg { position:absolute; inset:0; z-index:1; background:#000 center/cover no-repeat; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
@@ -251,8 +251,8 @@
   const goalHtml = '<span class="iam">I AM</span>' + goal.replace(/^i am\s+/i,'');
   const SEQ = [
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
-    { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; post.style.opacity='1'; } },   // post fades in as the logo fades out
-    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; } },
+    { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
+    { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; post.style.opacity='1'; } },   // post fades in with the nav circle (same time + rate)
     { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
