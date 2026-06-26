@@ -319,11 +319,15 @@
     try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,600),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
   const VO={};
   const VOTXT = Object.assign({goal, welcomeA, welcomeB}, VOTEXT);   // key -> text, for the offline browser-speech fallback
-  function playVO(k){ if(seeking||muted)return;
+  function pickVoice(u){ try{ const vs=speechSynthesis.getVoices()||[];   // prefer a female english voice for the local fallback
+    const v = vs.find(x=>/en/i.test(x.lang) && /female|samantha|zira|aria|jenny|sonia|libby|eva|natural|google us english/i.test(x.name))
+           || vs.find(x=>/^en-US/i.test(x.lang)) || vs.find(x=>/^en/i.test(x.lang));
+    if(v) u.voice=v; }catch(e){} }
+  function playVO(k, onEnd){ if(seeking||muted)return;   // onEnd fires when this line finishes (used to chain para1->para2 seamlessly)
     const a=VO[k];
-    if(a){ a.muted=muted; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
-    if(window.speechSynthesis && VOTXT[k]){ try{ speechSynthesis.cancel();   // no /api/tts (standalone) -> browser voice
-      const u=new SpeechSynthesisUtterance(VOTXT[k]); u.rate=0.92; speechSynthesis.speak(u); }catch(e){} } }
+    if(a){ a.muted=muted; if(onEnd) a.onended=onEnd; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
+    if(window.speechSynthesis && VOTXT[k]){ try{ speechSynthesis.cancel();   // no /api/tts -> browser voice
+      const u=new SpeechSynthesisUtterance(VOTXT[k]); u.rate=0.92; pickVoice(u); if(onEnd) u.onend=onEnd; speechSynthesis.speak(u); }catch(e){} } }
 
   let cardTimer=null;
   function fitCard(){                                  // shrink font so any goal length fits column A
@@ -341,6 +345,8 @@
   }
   function setBadge(html){ badge.classList.remove('reveal'); badge.style.opacity='0';   // cross-fade welcome para 1 -> para 2
     setTimeout(()=>{ badge.innerHTML=html; fitBadge(); badge.style.opacity='1'; }, 700); }
+  let welcomeStage2=false;
+  function showPara2(){ if(welcomeStage2)return; welcomeStage2=true; setBadge(welBhtml); playVO('welcomeB'); }
   function setCard(html){ clearTimeout(cardTimer); card.style.opacity='0'; cardTimer=setTimeout(()=>{ card.innerHTML=html; fitCard(); card.style.opacity='1'; },120); }
   function fadeCard(){ clearTimeout(cardTimer); card.style.opacity='0'; }
   window.addEventListener('resize', fitCard);
@@ -369,9 +375,9 @@
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; post.style.opacity='1'; } },   // post fades in with the nav circle (same time + rate)
-    { t:T.s2_titleIn, fn:()=>{ badge.innerHTML=welAhtml; fitBadge(); badge.classList.add('reveal'); bg.classList.add('sharp'); } },
-    { t:T.s2_vo,      fn:()=>playVO('welcomeA') },
-    { t:T.s2b,        fn:()=>{ setBadge(welBhtml); playVO('welcomeB'); } },   // para1 -> para2 cross-fade + speak
+    { t:T.s2_titleIn, fn:()=>{ welcomeStage2=false; badge.innerHTML=welAhtml; fitBadge(); badge.classList.add('reveal'); bg.classList.add('sharp'); } },
+    { t:T.s2_vo,      fn:()=>playVO('welcomeA', showPara2) },   // para2 fires the instant para1's VO ends (no gap)
+    { t:T.s2b,        fn:showPara2 },                           // fallback if VO 'ended' never fires (e.g. muted)
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
@@ -421,7 +427,7 @@
     badge.classList.remove('reveal'); badge.style.opacity='0'; badge.style.transform='scale(.2)';
     card.style.opacity='0'; card.innerHTML='';
     colA.classList.remove('dark');
-    cd=null; curIcon=null; curNum=null; idx=0; ended=false;
+    cd=null; curIcon=null; curNum=null; idx=0; ended=false; welcomeStage2=false;
   }
   function seek(t){
     setPlaying(false); seeking=true;
