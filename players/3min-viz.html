@@ -36,9 +36,10 @@
     .bg { position:absolute; inset:0; z-index:1; background-color:var(--pink); background-repeat:no-repeat; background-position:right center; background-size:calc(var(--artzoom) * 1%) auto; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
     .bg.sharp { filter:blur(0); }
 
-    .badge { border:.55cqw solid var(--pink); border-radius:10px; background:#f1f1f1; padding:1.3cqw 2.6cqw; text-align:center; line-height:1.12; font-style:italic; font-weight:800; letter-spacing:.13em; color:#2b2b2b; font-size:3.1cqw; opacity:0; transform:scale(.2); transition:opacity .6s ease; }
-    .badge.reveal { animation:zoomin .9s cubic-bezier(.16,.84,.3,1) both; }
-    @keyframes zoomin { from { opacity:0; transform:scale(.2);} 70%{opacity:1;} to { opacity:1; transform:scale(1);} }
+    .badge { max-width:82%; text-align:center; color:#2b2b2b; font-family:'Helvetica Neue',Arial,sans-serif; font-weight:600; line-height:1.5; font-size:clamp(11px,1.6vw,21px); opacity:0; transition:opacity .6s ease; }
+    .badge .wb { display:block; color:var(--pink); font-style:italic; font-weight:800; font-size:1.45em; letter-spacing:.04em; margin-bottom:.6em; }
+    .badge.reveal { animation:flyin .9s cubic-bezier(.16,.84,.3,1) both; }
+    @keyframes flyin { from { opacity:0; transform:translateY(26px);} to { opacity:1; transform:translateY(0);} }
     /* text block anchored above center; sides padded 200px; I AM colour = border colour (--pink) */
     .card { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:86%; max-width:20ch; text-align:center; color:#333;
       font-family:'Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:.1em; font-weight:700; line-height:1.4; text-wrap:balance;
@@ -88,7 +89,7 @@
       <div class="bg" id="bg"></div>
       <div class="scene" id="split">
         <div class="colA" id="colA">
-          <div class="badge" id="badge">3 MINUTE<br>MANIFEST</div>
+          <div class="badge" id="badge"><span class="wb">Welcome Back <span id="wbName">Scott</span>,</span>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</div>
           <p class="card" id="card"></p>
         </div>
         <div class="colB" id="colB"></div>
@@ -194,6 +195,8 @@
         arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
         navNum=document.getElementById('navNum'), stage=document.querySelector('.stage'),
         post=document.querySelector('.post'), frame=document.getElementById('frame');
+  const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
+  const wbName = document.getElementById('wbName'); if(wbName) wbName.textContent = userName;   // personalized welcome
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -330,7 +333,7 @@
 
   function closePlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.closePlayerColumn){window.parent.closePlayerColumn();return;} }catch(e){} if(history.length>1)history.back(); else window.close(); }
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
-  badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='scale(1)'; });
+  badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='none'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
   /* TEMP: fullscreen + mute toggles — remove before launch */
   document.getElementById('fsbtn').addEventListener('click', (e)=>{ e.stopPropagation();
