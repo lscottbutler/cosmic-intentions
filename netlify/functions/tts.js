@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   try {
     const { text, voice } = JSON.parse(event.body || '{}');
     if (!text) return { statusCode: 400, body: 'Missing text' };
-    const clean = text.trim().substring(0, 400);
+    const clean = text.trim().substring(0, 600);
 
     // ── 1) ElevenLabs (preferred) ──────────────────────────────────────────
     const elKey = process.env.ELEVENLABS_API_KEY;

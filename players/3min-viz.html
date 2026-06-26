@@ -36,9 +36,9 @@
     .bg { position:absolute; inset:0; z-index:1; background-color:var(--pink); background-repeat:no-repeat; background-position:right center; background-size:calc(var(--artzoom) * 1%) auto; filter:blur(16px); opacity:0; transition:filter 1.2s ease, opacity var(--fade) ease; }
     .bg.sharp { filter:blur(0); }
 
-    .badge { max-width:82%; text-align:center; color:#2b2b2b; font-family:'Helvetica Neue',Arial,sans-serif; font-weight:600; line-height:1.5; font-size:clamp(11px,1.6vw,21px); opacity:0; transition:opacity .6s ease; }
-    .badge .wb { display:block; color:var(--pink); font-style:italic; font-weight:800; font-size:1.45em; letter-spacing:.04em; margin-bottom:.6em; }
-    .badge p { margin:0 0 .7em; } .badge p:last-child { margin-bottom:0; }
+    .badge { max-width:82%; text-align:center; color:#2b2b2b; font-family:'Helvetica Neue',Arial,sans-serif; font-weight:400; line-height:1.6; font-size:16pt; opacity:0; transition:opacity .7s ease; }
+    .badge .wb { display:block; color:var(--pink); font-style:italic; font-weight:800; font-size:1.4em; letter-spacing:.04em; margin-bottom:.7em; }
+    .badge p { margin:0; }
     .badge.reveal { animation:flyin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes flyin { from { opacity:0; transform:translateY(26px);} to { opacity:1; transform:translateY(0);} }
     /* text block anchored above center; sides padded 200px; I AM colour = border colour (--pink) */
@@ -90,11 +90,7 @@
       <div class="bg" id="bg"></div>
       <div class="scene" id="split">
         <div class="colA" id="colA">
-          <div class="badge" id="badge">
-            <span class="wb">Welcome Back <span id="wbName">Scott</span>,</span>
-            <p>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</p>
-            <p>As we get set to move yourself another step closer to achieving your goal of <span id="wbGoal">your goal</span>, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you'll recall to get you in the emotional state of joy or gratitude.</p>
-          </div>
+          <div class="badge" id="badge"></div>
           <p class="card" id="card"></p>
         </div>
         <div class="colB" id="colB"></div>
@@ -146,7 +142,7 @@
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
     t:{ s1_logoOut:7, s1_splitIn:9,
-        s2_titleIn:10, s2_vo:11, s2_titleOut:58,        // welcome shown 10-58, spoken at 11 (~45s of VO)
+        s2_titleIn:10, s2_vo:11, s2b:33, s2_titleOut:58, // welcome: para1 (10-33) -> para2 (33-58), each spoken
         s3_in:63, s3_vo:64.4, s3_out:70,
         s4_in:73, s4_vo:74.4, s4_out:81,
         s5_in:83, s5_vo:84.4, s5_out:90,
@@ -201,10 +197,12 @@
         navNum=document.getElementById('navNum'), stage=document.querySelector('.stage'),
         post=document.querySelector('.post'), frame=document.getElementById('frame');
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
-  const wbName = document.getElementById('wbName'); if(wbName) wbName.textContent = userName;   // personalized welcome
   const goalPhrase = goal.replace(/^i am\s+/i,'').replace(/[.,]\s*$/,'');                       // goal without "I am"/trailing punctuation
-  const wbGoal = document.getElementById('wbGoal'); if(wbGoal) wbGoal.textContent = goalPhrase;
-  const welcomeText = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal. As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you will recall to get you in the emotional state of joy or gratitude.`;
+  // welcome shown in two beats: para 1 (with greeting), then cross-fades to para 2 (with the goal)
+  const welAhtml = `<span class="wb">Welcome Back ${userName},</span><p>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</p>`;
+  const welBhtml = `<p>As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you'll recall to get you in the emotional state of joy or gratitude.</p>`;
+  const welcomeA = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal.`;
+  const welcomeB = `As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you will recall to get you in the emotional state of joy or gratitude.`;
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -318,9 +316,9 @@
   const wc=(o)=>{try{localStorage.setItem(CACHE,JSON.stringify(o));}catch(e){}};
   const hash=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h.toString(36);};
   async function tts(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
-    try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,400),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
+    try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,600),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
   const VO={};
-  const VOTXT = Object.assign({goal, welcome:welcomeText}, VOTEXT);   // key -> text, for the offline browser-speech fallback
+  const VOTXT = Object.assign({goal, welcomeA, welcomeB}, VOTEXT);   // key -> text, for the offline browser-speech fallback
   function playVO(k){ if(seeking||muted)return;
     const a=VO[k];
     if(a){ a.muted=muted; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
@@ -341,6 +339,8 @@
     let fs = parseFloat(getComputedStyle(badge).fontSize), guard=60;
     while(badge.scrollHeight > avail && fs > 8 && guard-- > 0){ fs -= 1; badge.style.fontSize = fs + 'px'; }
   }
+  function setBadge(html){ badge.classList.remove('reveal'); badge.style.opacity='0';   // cross-fade welcome para 1 -> para 2
+    setTimeout(()=>{ badge.innerHTML=html; fitBadge(); badge.style.opacity='1'; }, 700); }
   function setCard(html){ clearTimeout(cardTimer); card.style.opacity='0'; cardTimer=setTimeout(()=>{ card.innerHTML=html; fitCard(); card.style.opacity='1'; },120); }
   function fadeCard(){ clearTimeout(cardTimer); card.style.opacity='0'; }
   window.addEventListener('resize', fitCard);
@@ -369,8 +369,9 @@
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; post.style.opacity='1'; } },   // post fades in with the nav circle (same time + rate)
-    { t:T.s2_titleIn, fn:()=>{ fitBadge(); badge.classList.add('reveal'); bg.classList.add('sharp'); } },
-    { t:T.s2_vo,      fn:()=>playVO('welcome') },
+    { t:T.s2_titleIn, fn:()=>{ badge.innerHTML=welAhtml; fitBadge(); badge.classList.add('reveal'); bg.classList.add('sharp'); } },
+    { t:T.s2_vo,      fn:()=>playVO('welcomeA') },
+    { t:T.s2b,        fn:()=>{ setBadge(welBhtml); playVO('welcomeB'); } },   // para1 -> para2 cross-fade + speak
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
@@ -437,7 +438,8 @@
 
   Promise.all([
     tts(goal).then(a=>VO.goal=a),
-    tts(welcomeText).then(a=>VO.welcome=a),
+    tts(welcomeA).then(a=>VO.welcomeA=a),
+    tts(welcomeB).then(a=>VO.welcomeB=a),
     ...Object.entries(VOTEXT).map(([k,t])=>tts(t).then(a=>VO[k]=a)),
   ]).finally(()=>{ setTimeout(()=>setPlaying(true), 400); });
   </script>
