@@ -38,6 +38,7 @@
 
     .badge { max-width:82%; text-align:center; color:#2b2b2b; font-family:'Helvetica Neue',Arial,sans-serif; font-weight:600; line-height:1.5; font-size:clamp(11px,1.6vw,21px); opacity:0; transition:opacity .6s ease; }
     .badge .wb { display:block; color:var(--pink); font-style:italic; font-weight:800; font-size:1.45em; letter-spacing:.04em; margin-bottom:.6em; }
+    .badge p { margin:0 0 .7em; } .badge p:last-child { margin-bottom:0; }
     .badge.reveal { animation:flyin .9s cubic-bezier(.16,.84,.3,1) both; }
     @keyframes flyin { from { opacity:0; transform:translateY(26px);} to { opacity:1; transform:translateY(0);} }
     /* text block anchored above center; sides padded 200px; I AM colour = border colour (--pink) */
@@ -89,7 +90,11 @@
       <div class="bg" id="bg"></div>
       <div class="scene" id="split">
         <div class="colA" id="colA">
-          <div class="badge" id="badge"><span class="wb">Welcome Back <span id="wbName">Scott</span>,</span>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</div>
+          <div class="badge" id="badge">
+            <span class="wb">Welcome Back <span id="wbName">Scott</span>,</span>
+            <p>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</p>
+            <p>As we get set to move yourself another step closer to achieving your goal of <span id="wbGoal">your goal</span>, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you'll recall to get you in the emotional state of joy or gratitude.</p>
+          </div>
           <p class="card" id="card"></p>
         </div>
         <div class="colB" id="colB"></div>
@@ -141,14 +146,14 @@
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
     t:{ s1_logoOut:7, s1_splitIn:9,
-        s2_titleIn:10, s2_vo:11, s2_titleOut:30,        // welcome shown 10-30, spoken at 11
-        s3_in:35, s3_vo:36.4, s3_out:42,
-        s4_in:45, s4_vo:46.4, s4_out:53,
-        s5_in:55, s5_vo:56.4, s5_out:62,
-        s6_in:65, s6_vo:66.5, s6_out:68, s6_count:69, s6_countSecs:20,
-        s7_in:105, s7_vo:106.6, s7_out:112, s7_count:115, s7_countSecs:20,
-        s8_in:175, s8_vo:176.5, s8_out:182,
-        s9_logoIn:185, end:190 },
+        s2_titleIn:10, s2_vo:11, s2_titleOut:58,        // welcome shown 10-58, spoken at 11 (~45s of VO)
+        s3_in:63, s3_vo:64.4, s3_out:70,
+        s4_in:73, s4_vo:74.4, s4_out:81,
+        s5_in:83, s5_vo:84.4, s5_out:90,
+        s6_in:93, s6_vo:94.5, s6_out:96, s6_count:97, s6_countSecs:20,
+        s7_in:133, s7_vo:134.6, s7_out:140, s7_count:143, s7_countSecs:20,
+        s8_in:203, s8_vo:204.5, s8_out:210,
+        s9_logoIn:213, end:218 },
     vo:{ recall:'Recall a memory that fills you with joy or gratitude.',
          intensify:'Get ready to intensify and maintain that feeling for twenty seconds.',
          closeEyes:'OK. Close your eyes and begin.',
@@ -197,7 +202,9 @@
         post=document.querySelector('.post'), frame=document.getElementById('frame');
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
   const wbName = document.getElementById('wbName'); if(wbName) wbName.textContent = userName;   // personalized welcome
-  const welcomeText = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal.`;
+  const goalPhrase = goal.replace(/^i am\s+/i,'').replace(/[.,]\s*$/,'');                       // goal without "I am"/trailing punctuation
+  const wbGoal = document.getElementById('wbGoal'); if(wbGoal) wbGoal.textContent = goalPhrase;
+  const welcomeText = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal. As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you will recall to get you in the emotional state of joy or gratitude.`;
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -328,6 +335,12 @@
     let fs = parseFloat(getComputedStyle(card).fontSize), guard=60;
     while(card.scrollHeight > avail && fs > 9 && guard-- > 0){ fs -= 1; card.style.fontSize = fs + 'px'; }
   }
+  function fitBadge(){                                 // shrink welcome text so it fits column A
+    badge.style.fontSize='';
+    const avail = colA.clientHeight * 0.9;
+    let fs = parseFloat(getComputedStyle(badge).fontSize), guard=60;
+    while(badge.scrollHeight > avail && fs > 8 && guard-- > 0){ fs -= 1; badge.style.fontSize = fs + 'px'; }
+  }
   function setCard(html){ clearTimeout(cardTimer); card.style.opacity='0'; cardTimer=setTimeout(()=>{ card.innerHTML=html; fitCard(); card.style.opacity='1'; },120); }
   function fadeCard(){ clearTimeout(cardTimer); card.style.opacity='0'; }
   window.addEventListener('resize', fitCard);
@@ -356,7 +369,7 @@
     { t:0,            fn:()=>{ logo.style.opacity='1'; chime3(); } },
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; post.style.opacity='1'; } },   // post fades in with the nav circle (same time + rate)
-    { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
+    { t:T.s2_titleIn, fn:()=>{ fitBadge(); badge.classList.add('reveal'); bg.classList.add('sharp'); } },
     { t:T.s2_vo,      fn:()=>playVO('welcome') },
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
