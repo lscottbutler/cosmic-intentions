@@ -141,14 +141,14 @@
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
     t:{ s1_logoOut:7, s1_splitIn:9,
-        s2_titleIn:10, s2_titleOut:15,
-        s3_in:20, s3_vo:21.4, s3_out:27,
-        s4_in:30, s4_vo:31.4, s4_out:38,
-        s5_in:40, s5_vo:41.4, s5_out:47,
-        s6_in:50, s6_vo:51.5, s6_out:53, s6_count:54, s6_countSecs:20,
-        s7_in:90, s7_vo:91.6, s7_out:97, s7_count:100, s7_countSecs:20,
-        s8_in:160, s8_vo:161.5, s8_out:167,
-        s9_logoIn:170, end:175 },
+        s2_titleIn:10, s2_vo:11, s2_titleOut:30,        // welcome shown 10-30, spoken at 11
+        s3_in:35, s3_vo:36.4, s3_out:42,
+        s4_in:45, s4_vo:46.4, s4_out:53,
+        s5_in:55, s5_vo:56.4, s5_out:62,
+        s6_in:65, s6_vo:66.5, s6_out:68, s6_count:69, s6_countSecs:20,
+        s7_in:105, s7_vo:106.6, s7_out:112, s7_count:115, s7_countSecs:20,
+        s8_in:175, s8_vo:176.5, s8_out:182,
+        s9_logoIn:185, end:190 },
     vo:{ recall:'Recall a memory that fills you with joy or gratitude.',
          intensify:'Get ready to intensify and maintain that feeling for twenty seconds.',
          closeEyes:'OK. Close your eyes and begin.',
@@ -197,6 +197,7 @@
         post=document.querySelector('.post'), frame=document.getElementById('frame');
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
   const wbName = document.getElementById('wbName'); if(wbName) wbName.textContent = userName;   // personalized welcome
+  const welcomeText = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal.`;
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -310,9 +311,9 @@
   const wc=(o)=>{try{localStorage.setItem(CACHE,JSON.stringify(o));}catch(e){}};
   const hash=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h.toString(36);};
   async function tts(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
-    try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,160),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
+    try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,400),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
   const VO={};
-  const VOTXT = Object.assign({goal}, VOTEXT);   // key -> text, for the offline browser-speech fallback
+  const VOTXT = Object.assign({goal, welcome:welcomeText}, VOTEXT);   // key -> text, for the offline browser-speech fallback
   function playVO(k){ if(seeking||muted)return;
     const a=VO[k];
     if(a){ a.muted=muted; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
@@ -356,6 +357,7 @@
     { t:T.s1_logoOut, fn:()=>{ logo.style.opacity='0'; } },
     { t:T.s1_splitIn, fn:()=>{ split.style.opacity='1'; bg.style.opacity='1'; arch.style.opacity='1'; post.style.opacity='1'; } },   // post fades in with the nav circle (same time + rate)
     { t:T.s2_titleIn, fn:()=>{ badge.classList.add('reveal'); bg.classList.add('sharp'); } },
+    { t:T.s2_vo,      fn:()=>playVO('welcome') },
     { t:T.s2_titleOut,fn:()=>{ badge.classList.remove('reveal'); badge.style.opacity='0'; } },
     { t:T.s3_in,  fn:()=>setCard(goalHtml) },
     { t:T.s3_vo,  fn:()=>playVO('goal') },
@@ -422,6 +424,7 @@
 
   Promise.all([
     tts(goal).then(a=>VO.goal=a),
+    tts(welcomeText).then(a=>VO.welcome=a),
     ...Object.entries(VOTEXT).map(([k,t])=>tts(t).then(a=>VO[k]=a)),
   ]).finally(()=>{ setTimeout(()=>setPlaying(true), 400); });
   </script>

@@ -45,7 +45,7 @@ exports.handler = async (event) => {
     const res = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${process.env.OPEN_AI_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'tts-1', input: clean.substring(0, 150), voice: oaVoice })
+      body: JSON.stringify({ model: 'tts-1', input: clean, voice: oaVoice })
     });
     if (!res.ok) {
       return { statusCode: res.status, body: await res.text() };
