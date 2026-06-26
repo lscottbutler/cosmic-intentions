@@ -147,19 +147,18 @@
     arch:{ fill:'#000000', line:'#58585a', ring:'#58585a', circle:'#ffffff', icon:'#444444' },
     // timing (seconds)
     t:{ s1_logoOut:7, s1_splitIn:9,
-        s2_titleIn:10, s2_vo:11, s2b:33, s2_titleOut:58, // welcome: para1 (10-33) -> para2 (33-58), each spoken
-        s3_in:63, s3_vo:64.4, s3_out:70,
-        s4_in:73, s4_vo:74.4, s4_out:81,
-        s5_in:83, s5_vo:84.4, s5_out:90,
-        s6_in:93, s6_vo:94.5, s6_out:96, s6_count:97, s6_countSecs:20,
-        s7_in:133, s7_vo:134.6, s7_out:140, s7_count:143, s7_countSecs:20,
-        s8_in:203, s8_vo:204.5, s8_out:210,
-        s9_logoIn:213, end:218 },
-    vo:{ recall:'Bring that memory to mind now.',
-         intensify:'Get ready to intensify and maintain that feeling for twenty seconds.',
-         closeEyes:'OK. Close your eyes and begin.',
-         maintain:'While maintaining your heightened emotional state, visualize what your life would look, feel, sound and smell like once your goal has been achieved.',
-         release:'Release your intention. Believe it has been granted and is now on its way.' }
+        s2_titleIn:10, s2_vo:11, s2b:42, s2_titleOut:64,  // welcome: para1 (10-) -> para2 (chained), each spoken
+        s3_in:66, s3_vo:67, s3_out:78,                    // goal / declaration
+        s4_in:80, s4_vo:81, s4_out:91,                    // recall the memory
+        s5_in:93, s5_vo:94, s5_out:103,                   // let it rise (brief, ~a few breaths)
+        s6_in:104, s6_vo:105, s6_out:112,                 // close eyes (transition, no long hold)
+        s7_in:113, s7_vo:114, s7_out:136, s7_count:137, s7_countSecs:35,  // visualize: VO then 35s silent hold
+        s8_in:175, s8_vo:176, s8_out:196,                 // release
+        s9_logoIn:198, end:204 },
+    vo:{ recall:"There's your memory. See it... hear it... and feel that warmth spreading softly through you.",
+         intensify:'Beautiful. Let that good feeling grow — warm, easy, gentle — just for a few breaths.',
+         closeEyes:'Now softly close your eyes... and keep that warmth close.',
+         maintain:"Still wrapped in that feeling, picture your goal as already real. Look around — what do you see? Who's smiling there beside you? Hear the sounds of this life you've created. Let yourself feel how wonderful it is to already be here. This is yours." }
   };
 
   const P = new URLSearchParams(location.search);
@@ -204,11 +203,13 @@
         bigcount=document.getElementById('bigcount');
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
   const goalPhrase = goal.replace(/^i am\s+/i,'').replace(/[.,]\s*$/,'');                       // goal without "I am"/trailing punctuation
-  // welcome shown in two beats: para 1 (with greeting), then cross-fades to para 2 (with the goal)
-  const welAhtml = `<span class="wb">Welcome Back ${userName},</span><p>Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you'd have once you were successful in accomplishing this goal.</p>`;
-  const welBhtml = `<p>As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you'll recall to get you in the emotional state of joy or gratitude.</p>`;
-  const welcomeA = `Welcome back ${userName}. Your effort today is a testament to your discipline and desire to live life on your terms. Your success today stems from your ability to invoke the feeling of joy or gratitude, the feeling you would have once you were successful in accomplishing this goal.`;
-  const welcomeB = `As we get set to move yourself another step closer to achieving your goal of ${goalPhrase}, as we begin to get ourselves in the ideal state of mind, take a moment to identify the memory that you will recall to get you in the emotional state of joy or gratitude.`;
+  // welcome shown in two beats: para 1 (greeting), then cross-fades to para 2 (the goal + memory)
+  const welAhtml = `<span class="wb">Welcome Back ${userName},</span><p>I'm so glad you're here. Just by showing up, you're doing what so few people do — choosing your future on purpose. And here's the beautiful part: when you picture something vividly, with real feeling, your body responds as if it's already happening. So these next few minutes aren't wishful thinking... they're gentle, joyful practice for a life that's on its way to you.</p>`;
+  const welBhtml = `<p>In a moment, we'll picture you becoming ${goalPhrase}. But first, let's fill your heart. Bring to mind a memory that makes you smile — a moment of pure joy, or deep gratitude. Something you'd happily live again. Let it drift back to you now.</p>`;
+  const welcomeA = `Welcome back ${userName}. I'm so glad you're here. Just by showing up, you're doing what so few people do — choosing your future on purpose. And here's the beautiful part: when you picture something vividly, with real feeling, your body responds as if it's already happening. So these next few minutes aren't wishful thinking... they're gentle, joyful practice for a life that's on its way to you.`;
+  const welcomeB = `In a moment, we'll picture you becoming ${goalPhrase}. But first, let's fill your heart. Bring to mind a memory that makes you smile — a moment of pure joy, or deep gratitude. Something you'd happily live again. Let it drift back to you now.`;
+  const goalSpoken = `And gently, lovingly, claim it as already yours. ${goal}`;
+  const releaseText = `Now, with a grateful heart, gently let it go — trusting it's already finding its way to you. Nothing to force, nothing to chase. Simply expect good things. Open your eyes when you're ready, ${userName}... and carry this feeling with you all day long.`;
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */
@@ -324,7 +325,7 @@
   async function tts(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
     try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,600),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
   const VO={};
-  const VOTXT = Object.assign({goal, welcomeA, welcomeB}, VOTEXT);   // key -> text, for the offline browser-speech fallback
+  const VOTXT = Object.assign({goal:goalSpoken, welcomeA, welcomeB, release:releaseText}, VOTEXT);   // key -> text, for the offline browser-speech fallback
   function pickVoice(u){ try{ const vs=speechSynthesis.getVoices()||[];   // prefer a female english voice for the local fallback
     const v = vs.find(x=>/en/i.test(x.lang) && /female|samantha|zira|aria|jenny|sonia|libby|eva|natural|google us english/i.test(x.name))
            || vs.find(x=>/^en-US/i.test(x.lang)) || vs.find(x=>/^en/i.test(x.lang));
@@ -397,12 +398,11 @@
     { t:T.s6_in,  fn:()=>{ colA.classList.add('dark'); setCard(VOTEXT.closeEyes); navShowIcon('eyeClosed'); } },
     { t:T.s6_vo,  fn:()=>playVO('closeEyes') },
     { t:T.s6_out, fn:fadeCard },
-    { t:T.s6_count,fn:()=>startCountdown(T.s6_countSecs, ()=>navShowIcon('eyeClosed')) },
     { t:T.s7_in,  fn:()=>setCard(VOTEXT.maintain) },
     { t:T.s7_vo,  fn:()=>playVO('maintain') },
     { t:T.s7_out, fn:fadeCard },
     { t:T.s7_count,fn:()=>startCountdown(T.s7_countSecs, ()=>{ bell(); navShowIcon('bell'); }) },
-    { t:T.s8_in,  fn:()=>{ setCard(VOTEXT.release); navShowIcon('rocket'); } },
+    { t:T.s8_in,  fn:()=>{ colA.classList.remove('dark'); setCard(releaseText); navShowIcon('rocket'); } },
     { t:T.s8_vo,  fn:()=>playVO('release') },
     { t:T.s8_out, fn:fadeCard },
     { t:T.s9_logoIn,fn:()=>{ arch.style.opacity='0'; logo.style.opacity='1'; } },     // dome out, outro logo
@@ -449,9 +449,10 @@
   document.getElementById('ppbtn').addEventListener('click', (e)=>{ e.stopPropagation(); setPlaying(!playing); });
 
   Promise.all([
-    tts(goal).then(a=>VO.goal=a),
+    tts(goalSpoken).then(a=>VO.goal=a),
     tts(welcomeA).then(a=>VO.welcomeA=a),
     tts(welcomeB).then(a=>VO.welcomeB=a),
+    tts(releaseText).then(a=>VO.release=a),
     ...Object.entries(VOTEXT).map(([k,t])=>tts(t).then(a=>VO[k]=a)),
   ]).finally(()=>{ setTimeout(()=>setPlaying(true), 400); });
   </script>
