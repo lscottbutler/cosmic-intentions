@@ -58,6 +58,10 @@
       pointer-events:auto; cursor:pointer; }
     .iconcircle svg { width:54%; height:54%; fill:none; stroke:var(--arch-icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     #navNum { display:none; }
+    /* big countdown — bottom-left corner, above the play button */
+    #bigcount { position:absolute; left:5%; bottom:6%; z-index:8; font-family:'Helvetica Neue',Arial,sans-serif;
+      font-weight:800; line-height:.9; font-size:clamp(90px, 20vw, 380px); color:var(--pink); opacity:0;
+      transition:opacity .3s ease; pointer-events:none; font-variant-numeric:tabular-nums; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
     /* TEMP: preview controls (mute + fullscreen) — remove before launch */
     #ctlbtns { position:fixed; top:12px; right:12px; z-index:9999; display:flex; gap:8px; }
@@ -101,6 +105,7 @@
         <div class="logosub">3 Minute Creative Visualization</div>
       </div>
       <div class="frame" id="frame"></div>
+      <div id="bigcount"></div>
       <div id="arch">
         <svg class="archsvg" viewBox="0 0 1920 300" preserveAspectRatio="none">
           <path class="af" d="M0 120 Q960 0 1920 120 L1920 300 L0 300 Z"/>
@@ -195,7 +200,8 @@
         badge=document.getElementById('badge'), card=document.getElementById('card'),
         arch=document.getElementById('arch'), navIcon=document.getElementById('navIcon'),
         navNum=document.getElementById('navNum'), stage=document.querySelector('.stage'),
-        post=document.querySelector('.post'), frame=document.getElementById('frame');
+        post=document.querySelector('.post'), frame=document.getElementById('frame'),
+        bigcount=document.getElementById('bigcount');
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
   const goalPhrase = goal.replace(/^i am\s+/i,'').replace(/[.,]\s*$/,'');                       // goal without "I am"/trailing punctuation
   // welcome shown in two beats: para 1 (with greeting), then cross-fades to para 2 (with the goal)
@@ -368,7 +374,7 @@
     e.currentTarget.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
 
   let cd=null;
-  function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; navShowNum(secs); }
+  function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; bigcount.textContent=secs; bigcount.style.opacity='1'; }
 
   const goalHtml = '<span class="iam">I AM</span>' + goal.replace(/^i am\s+/i,'');
   const SEQ = [
@@ -407,8 +413,8 @@
   function step(){
     elapsed += 0.1 * CONFIG.speed;
     while(idx<SEQ.length && elapsed>=SEQ[idx].t){ try{SEQ[idx].fn();}catch(e){} idx++; }
-    if(cd){ const t=elapsed-cd.start, rem=Math.max(0,Math.ceil(cd.secs-t)); curNum=rem; navNum.textContent=rem;
-      if(t>=cd.secs){ if(!cd.fired){cd.fired=true; cd.onZero&&cd.onZero();} cd=null; curNum=null; } }
+    if(cd){ const t=elapsed-cd.start, rem=Math.max(0,Math.ceil(cd.secs-t)); bigcount.textContent=rem;
+      if(t>=cd.secs){ if(!cd.fired){cd.fired=true; cd.onZero&&cd.onZero();} cd=null; bigcount.style.opacity='0'; } }
     if(typeof scrubRange!=='undefined'){ scrubRange.value=elapsed; scrubTime.textContent=elapsed.toFixed(1)+'s'; }  /* TEMP scrubber sync */
   }
   function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;}
@@ -427,7 +433,7 @@
     badge.classList.remove('reveal'); badge.style.opacity='0'; badge.style.transform='scale(.2)';
     card.style.opacity='0'; card.innerHTML='';
     colA.classList.remove('dark');
-    cd=null; curIcon=null; curNum=null; idx=0; ended=false; welcomeStage2=false;
+    cd=null; curIcon=null; curNum=null; idx=0; ended=false; welcomeStage2=false; bigcount.style.opacity='0';
   }
   function seek(t){
     setPlaying(false); seeking=true;
@@ -435,7 +441,7 @@
     while(idx<SEQ.length && SEQ[idx].t<=t){ try{SEQ[idx].fn();}catch(e){} idx++; }
     elapsed=t;
     if(cd){ const tt=elapsed-cd.start;
-      if(tt>=cd.secs){ cd=null; curNum=null; } else { curNum=Math.max(0,Math.ceil(cd.secs-tt)); navNum.textContent=curNum; } }
+      if(tt>=cd.secs){ cd=null; bigcount.style.opacity='0'; } else { bigcount.textContent=Math.max(0,Math.ceil(cd.secs-tt)); bigcount.style.opacity='1'; } }
     seeking=false; renderNav();
   }
   scrubRange.addEventListener('input', (e)=>{ e.stopPropagation(); const t=+scrubRange.value; seek(t); scrubTime.textContent=t.toFixed(1)+'s'; });
