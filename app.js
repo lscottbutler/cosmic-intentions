@@ -1982,8 +1982,29 @@ export let selectedVaultIdx    = null;
 let vaultActiveCategory = 'all';
 let inlineGoalPlayer = null;   // { idx, src } — the per-goal player rendered inline under its goal box
 
+/* Mindset categories shown in the ASS player. Each maps a stored mindset key to
+   an on-screen slide label. Order here = play order in the unified player. */
+const MINDSET_KINDS = [
+  { key: 'affirmations', label: 'AFFIRMATION'     },
+  { key: 'beliefs',      label: 'BELIEF'          },
+  { key: 'stoic',        label: 'STOIC PRINCIPLE' },
+  { key: 'attitudes',    label: 'WINNING ATTITUDE' },
+];
+
+/* Turn one mindset array into player slides {text, tag}. Attitudes are stored as
+   {title, body} objects; everything else is a plain string. */
+function mindsetSlides(mindset, kind, label) {
+  return (mindset?.[kind] || []).filter(Boolean).map(item => {
+    let text;
+    if (item && typeof item === 'object') text = item.title ? `${item.title}. ${item.body || ''}`.trim() : (item.body || item.text || '');
+    else text = String(item);
+    return { text, tag: label };
+  }).filter(s => s.text);
+}
+
 /* Open a player INLINE under its goal box (Column A), surviving list re-renders.
-   kind: '3min' (visualization) or a mindset key like 'affirmations' (ASS player). */
+   kind: '3min' (visualization), 'mindset' (unified — all categories), or a single
+   mindset key like 'affirmations' / 'beliefs' / 'stoic' / 'attitudes' (ASS player). */
 export function playGoalInline(idx, kind, ev) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
@@ -1994,10 +2015,16 @@ export function playGoalInline(idx, kind, ev) {
   if (kind === '3min') {
     src = `players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}`;
   } else {
-    const slides = (intn?.mindset?.[kind] || []).filter(Boolean);
-    if (!slides.length) { toast(`No ${kind} yet — generate this goal's mindset first.`, 'error'); return; }
+    let slides;
+    if (kind === 'mindset') {                         // unified — all categories, grouped in order
+      slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intn?.mindset, k.key, k.label));
+    } else {                                          // single category
+      const meta = MINDSET_KINDS.find(k => k.key === kind);
+      slides = mindsetSlides(intn?.mindset, kind, meta ? meta.label : '');
+    }
+    if (!slides.length) { toast(`Nothing here yet — generate this goal's AI Library first.`, 'error'); return; }
     localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
-    src = `players/ass-template.html?type=${kind}&_=${Date.now()}`;
+    src = `players/ass-template.html?type=${kind}&g=${encodeURIComponent(title)}&_=${Date.now()}`;
   }
   inlineGoalPlayer = { idx, src };
   renderVaultSidebar();
@@ -2124,12 +2151,23 @@ export function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
-          <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
-            onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
-            style="margin-left:auto; flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
-          <span class="vault-item-play" title="Play THIS goal's affirmations"
-            onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
-            style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
+          <span style="margin-left:auto; display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; align-items:center;">
+            <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
+              onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
+              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
+            <span class="vault-item-play" title="Play THIS goal's affirmations"
+              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
+              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
+            <span class="vault-item-play" title="Play THIS goal's beliefs"
+              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'beliefs', event)"
+              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; BELIEFS</span>
+            <span class="vault-item-play" title="Play THIS goal's stoic principles"
+              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'stoic', event)"
+              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; STOIC</span>
+            <span class="vault-item-play" title="Play THIS goal's winning attitudes"
+              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'attitudes', event)"
+              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; ATTITUDES</span>
+          </span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
