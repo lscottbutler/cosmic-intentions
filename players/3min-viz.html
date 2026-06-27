@@ -63,12 +63,6 @@
       font-weight:800; line-height:.9; font-size:clamp(90px, 20vw, 380px); color:var(--pink); opacity:0;
       transition:opacity .3s ease; pointer-events:none; font-variant-numeric:tabular-nums; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
-    /* TEMP: fullscreen button — remove before launch */
-    #ctlbtns { position:fixed; top:12px; right:12px; z-index:9999; display:flex; gap:8px; }
-    #ctlbtns button { padding:8px 12px; font:600 13px/1 system-ui,sans-serif; color:#fff;
-      background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
-    #ctlbtns button:hover { background:rgba(0,0,0,.8); }
-    :fullscreen #ctlbtns button, :-webkit-full-screen #ctlbtns button { opacity:.25; }
   </style>
 </head>
 <body>
@@ -97,11 +91,6 @@
         <div class="iconcircle"><svg id="navIcon" viewBox="0 0 24 24"></svg><span id="navNum"></span></div>
       </div>
     </div>
-  </div>
-
-  <!-- TEMP: fullscreen button — remove before launch -->
-  <div id="ctlbtns">
-    <button id="fsbtn">⛶ Full screen</button>
   </div>
 
   <script>
@@ -331,11 +320,6 @@
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
   badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='none'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
-  /* TEMP: fullscreen toggle — remove before launch */
-  document.getElementById('fsbtn').addEventListener('click', (e)=>{ e.stopPropagation();
-    const el=document.documentElement;
-    if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } });
 
   let cd=null;
   function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; bigcount.textContent=secs; bigcount.style.opacity='1'; }

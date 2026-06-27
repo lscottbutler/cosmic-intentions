@@ -414,10 +414,14 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
 
         <!-- SHARED PLAYER PANEL — drops below whichever time grid was clicked -->
         <div id="playerColumn" style="display:none;margin-top:4px;margin-bottom:10px;">
-          <button class="player-col-back" onclick="closePlayerColumn()"
-            style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-bottom:8px;">← Back</button>
-          <iframe id="playerColumnFrame" title="Player" allow="autoplay"
-            style="width:100%;aspect-ratio:5/6;border:0;display:block;border-radius:8px;background:#1a1a1a;"></iframe>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <button class="player-col-back" onclick="closePlayerColumn()"
+              style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">← Back</button>
+            <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(document.getElementById('playerColumnFrame'))"
+              style="background:#1a1a1a;border:1px solid #bf4170;color:#ff8ab8;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">&#9974; Full screen</button>
+          </div>
+          <iframe id="playerColumnFrame" title="Player" allow="autoplay; fullscreen" allowfullscreen
+            style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:8px;background:#1a1a1a;"></iframe>
         </div>
 
       </aside>
