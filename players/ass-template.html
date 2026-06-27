@@ -60,7 +60,10 @@
   const P = new URLSearchParams(location.search);
   if (P.get('secs')) CONFIG.secsPerSlide = +P.get('secs');
 
-  const SLIDES = [
+  // slides come from the launcher (this goal's affirmations/beliefs/stoic) via localStorage
+  let SLIDES;
+  try { SLIDES = JSON.parse(localStorage.getItem('ci_ass_slides') || 'null'); } catch (e) {}
+  if (!Array.isArray(SLIDES) || !SLIDES.length) SLIDES = [   // placeholder when opened standalone
     'I am calm, capable, and in control.',
     'Every day, in every way, I am getting better.',
     'I attract what I focus on — so I focus on what I want.',

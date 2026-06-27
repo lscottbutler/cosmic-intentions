@@ -1666,6 +1666,22 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
+/* ── ASS (Audio Slide Show) players: Affirmations / Beliefs / Stoic ───────────
+   Each reads the SELECTED-by-idx goal's own mindset list (already AI-generated &
+   saved to Supabase), drops it in localStorage, and opens the shared ASS player. */
+function launchAss(idx, type, ev) {
+  if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
+  const intn   = intentions[idx] || intentions[0];
+  const slides = (intn?.mindset?.[type] || []).filter(Boolean);
+  if (!slides.length) { toast(`No ${type} yet — generate this goal's mindset first.`, 'error'); return; }
+  localStorage.setItem('ci_goal_title', (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM '));
+  localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
+  const src = `players/ass-template.html?type=${type}&_=${Date.now()}`;
+  if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(src, ev);
+  else window.open(src, 'ci_player', 'width=1100,height=720');
+}
+export function launchAffirmations(idx, ev) { launchAss(idx, 'affirmations', ev); }
+
 /* Creative Visualization player (players/creative-viz.html) — a guided
    "manifestation" that weaves the goal's own generated content (a quote,
    gratitude items, affirmations) into the reverse-engineered card + countdown
@@ -2087,6 +2103,9 @@ export function renderVaultSidebar() {
           <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
             onclick="event.stopPropagation(); launchVisualization(${i._idx}, 3, event)"
             style="margin-left:auto; flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
+          <span class="vault-item-play" title="Play THIS goal's affirmations"
+            onclick="event.stopPropagation(); launchAffirmations(${i._idx}, event)"
+            style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
         </button>`;
       }).join('');
     }
