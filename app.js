@@ -2166,24 +2166,24 @@ export function renderVaultSidebar() {
           <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+              <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
+                onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
+                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
+              <span class="vault-item-play" title="Play THIS goal's affirmations"
+                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
+                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
+              <span class="vault-item-play" title="Play THIS goal's beliefs"
+                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'beliefs', event)"
+                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; BELIEFS</span>
+              <span class="vault-item-play" title="Play THIS goal's stoic principles"
+                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'stoic', event)"
+                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; STOIC</span>
+              <span class="vault-item-play" title="Play THIS goal's winning attitudes"
+                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'attitudes', event)"
+                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; ATTITUDES</span>
+            </div>
           </div>
-          <span style="margin-left:auto; display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; align-items:center;">
-            <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
-              onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
-              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
-            <span class="vault-item-play" title="Play THIS goal's affirmations"
-              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
-              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
-            <span class="vault-item-play" title="Play THIS goal's beliefs"
-              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'beliefs', event)"
-              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; BELIEFS</span>
-            <span class="vault-item-play" title="Play THIS goal's stoic principles"
-              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'stoic', event)"
-              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; STOIC</span>
-            <span class="vault-item-play" title="Play THIS goal's winning attitudes"
-              onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'attitudes', event)"
-              style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; ATTITUDES</span>
-          </span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
