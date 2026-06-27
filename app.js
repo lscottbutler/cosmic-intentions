@@ -1645,10 +1645,12 @@ export function launchVisualization(idx, minutes, ev) {
   localStorage.setItem('ci_goal_title', title);
   if (intn?.imageUrl) localStorage.setItem('ci_goal_image', intn.imageUrl);
   else localStorage.removeItem('ci_goal_image');
-  // 3-minute → new 3MV player (reads the goal from ci_goal_title); other durations → legacy player for now
+  // Pass the goal in the URL (+ cache-buster) so the iframe RELOADS with this goal every time —
+  // reusing the same src keeps the first goal that loaded (that was the "everything plays the same goal" bug).
+  const q = `g=${encodeURIComponent(title)}&_=${Date.now()}`;
   const src = (!minutes || minutes === 3)
-    ? 'players/3min-viz.html'
-    : `players/visualization.html?t=${minutes}`;
+    ? `players/3min-viz.html?${q}`
+    : `players/visualization.html?t=${minutes}&${q}`;
   if (typeof window.openPlayerInColumn === 'function') {
     window.openPlayerInColumn(src, ev);
   } else {
