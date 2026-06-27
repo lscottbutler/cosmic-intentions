@@ -2084,6 +2084,9 @@ export function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
+          <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
+            onclick="event.stopPropagation(); launchVisualization(${i._idx}, 3, event)"
+            style="margin-left:auto; flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
         </button>`;
       }).join('');
     }
