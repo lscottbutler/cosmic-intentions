@@ -38,6 +38,12 @@
       background:rgba(255,255,255,.7); border:1px solid rgba(0,0,0,.25); border-radius:8px; cursor:pointer; }
     #ctl button:hover { background:#fff; }
     :fullscreen #ctl button, :-webkit-full-screen #ctl button { opacity:.3; }
+    /* TEMP: slide scrubber — remove before launch */
+    #scrub { position:fixed; left:14px; right:14px; bottom:12px; z-index:9999; display:flex; align-items:center; gap:10px;
+      background:rgba(0,0,0,.6); padding:9px 14px; border-radius:8px; font:700 12px/1 'Helvetica Neue',Arial,sans-serif; color:#fff; }
+    #scrubrange { flex:1; cursor:pointer; }
+    #scrubtime { min-width:54px; text-align:right; font-variant-numeric:tabular-nums; }
+    :fullscreen #scrub, :-webkit-full-screen #scrub { opacity:.3; }
   </style>
 </head>
 <body>
@@ -49,6 +55,12 @@
   <div id="ctl">
     <button id="mute">🔊 Sound on</button>
     <button id="fs">⛶ Full screen</button>
+  </div>
+
+  <!-- TEMP: slide scrubber — remove before launch -->
+  <div id="scrub">
+    <input id="scrubrange" type="range" min="0" max="0" step="1" value="0">
+    <span id="scrubtime">1 / 1</span>
   </div>
 
   <script>
@@ -93,11 +105,16 @@
     return d;
   });
 
+  const scrubRange = document.getElementById('scrubrange');   // TEMP scrubber
+  const scrubTime  = document.getElementById('scrubtime');
+  scrubRange.max = Math.max(0, slideEls.length - 1);
+
   let cur = 0, playing = false, timer = null, muted = false;
 
   function show(i) {
     cur = (i + slideEls.length) % slideEls.length;
     slideEls.forEach((el, n) => el.classList.toggle('show', n === cur));
+    scrubRange.value = cur; scrubTime.textContent = (cur + 1) + ' / ' + slideEls.length;   // TEMP scrubber sync
   }
   function renderPlay() { playSvg.innerHTML = playing ? ICON.pause : ICON.play; }
   function tick() { show(cur + 1); }
@@ -112,6 +129,8 @@
 
   muteBtn.addEventListener('click', (e) => { e.stopPropagation();
     muted = !muted; muteBtn.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
+
+  scrubRange.addEventListener('input', () => { setPlaying(false); show(+scrubRange.value); });   // TEMP scrub through slides
 
   fsBtn.addEventListener('click', (e) => { e.stopPropagation();
     const el = document.documentElement;
