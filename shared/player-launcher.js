@@ -28,9 +28,11 @@ export function openPlayerInColumn(src, ev) {
   }
   // Drop the shared player panel directly BELOW whichever time grid was clicked,
   // so the global launchers (meditation, countdown, visualization…) open beneath their buttons.
+  // Meditation's grid lives in a collapsible drawer, so it anchors to its [data-player-box]
+  // wrapper instead — the player opens right under the meditation banner, not page-bottom.
   // (Per-goal play buttons use the inline player in the vault list instead — see playGoalInline.)
-  const grid = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid') : null;
-  if (grid) grid.insertAdjacentElement('afterend', panel);
+  const anchor = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid, [data-player-box]') : null;
+  if (anchor) anchor.insertAdjacentElement('afterend', panel);
   frame.src = src;
   panel.style.display = '';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
