@@ -323,10 +323,10 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
           .med-dot:hover { background:#fffceb; }
           .med-banner-wrap { position:relative; line-height:0; }
           .med-banner-wrap img { width:100%; display:block; border-radius:9px; }
-          .med-navcircle { position:absolute; left:50%; bottom:-21px; transform:translateX(-50%);
-            width:46px; height:46px; border-radius:50%; background:#0a0a0a; border:3px solid #fff; cursor:pointer;
+          .med-navcircle { position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
+            width:48px; height:48px; border-radius:50%; background:#0a0a0a; border:3px solid #fff; cursor:pointer;
             display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
-          .med-navcircle svg { width:42%; height:42%; fill:none; stroke:#fff; stroke-width:3;
+          .med-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
             stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
           .med-navcircle.open svg { transform:rotate(180deg); }
           .med-panel-collapse { max-height:0; overflow:hidden; opacity:0; margin-top:0;
@@ -353,6 +353,12 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
               </div>
+              <button title="Show / hide timers" onclick="document.getElementById('meditation-times-grid').classList.toggle('hidden')"
+                style="flex:0 0 auto; align-self:stretch; background:#7c5cc4; border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              </button>
             </div>
           </div>
         </div>
