@@ -2190,7 +2190,7 @@ export function renderVaultSidebar() {
             <button onclick="closeGoalPlayer()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&times; Close</button>
             <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(this.parentElement.nextElementSibling)" style="background:#1a1a1a;border:1px solid #bf4170;color:#ff8ab8;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&#9974; Full screen</button>
           </div>
-          <iframe src="${inlineGoalPlayer.src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#1a1a1a;display:block;"></iframe>
+          <iframe src="${inlineGoalPlayer.src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:transparent;display:block;"></iframe>
         </div>` : ''}`;
       }).join('');
     }
