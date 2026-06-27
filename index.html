@@ -353,7 +353,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
               </div>
-              <button title="Show / hide timers" onclick="document.getElementById('meditation-times-grid').classList.toggle('hidden')"
+              <button title="Close" onclick="document.getElementById('medPanel').classList.remove('open'); document.getElementById('medNav').classList.remove('open');"
                 style="flex:0 0 auto; align-self:stretch; background:#7c5cc4; border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
