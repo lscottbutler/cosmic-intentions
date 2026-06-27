@@ -315,27 +315,35 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
           </div>
         </div>
 
-        <!-- MEDITATIONS — decorative title card -->
-        <div style="border:1px solid #333; border-radius:6px; overflow:hidden; margin-bottom:8px; line-height:0;">
-          <img src="images/meditation-banner.png" alt="Meditations" style="width:100%; display:block;" />
-        </div>
-
-        <!-- MEDITATION TIMERS — black dropdown banner; click toggles the time grid -->
-        <div class="player-banner" onclick="document.getElementById('meditation-times-grid').classList.toggle('hidden')" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9790;&#65038;</span>MEDITATION TIMERS</span>
-          <span style="font-size:0.85rem;">▼</span>
-        </div>
-
-        <div id="meditation-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
-          <button onclick="openPlayerInColumn('players/meditation.html?t=1', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">1 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=3', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">3 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=5', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">5 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=10', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">10 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=15', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">15 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=20', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">20 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=30', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">30 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=45', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">45 MIN</button>
-          <button onclick="openPlayerInColumn('players/meditation.html?t=60', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">60 MIN</button>
+        <!-- MEDITATIONS — amber frame + teal panel with circular timer dots -->
+        <style>
+          .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid #f5b820;
+            color:#111; font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
+          .med-dot:hover { background:#fffceb; }
+        </style>
+        <div style="background:#f5b820; padding:9px; border-radius:12px; margin-bottom:16px;">
+          <div style="border-radius:9px; overflow:hidden; line-height:0; margin-bottom:9px;">
+            <img src="images/meditation-banner.png" alt="Meditations" style="width:100%; display:block;" />
+          </div>
+          <div style="background:#1bb3b3; border-radius:9px; padding:16px 14px; display:flex; align-items:center; gap:14px;">
+            <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
+            </div>
+            <button title="Show / hide timers" onclick="document.getElementById('meditation-times-grid').classList.toggle('hidden')"
+              style="flex:0 0 auto; align-self:stretch; background:#7c5cc4; border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+            </button>
+          </div>
         </div>
 
         <!-- COUNTDOWN — black dropdown banner + time grid -->
