@@ -1645,10 +1645,14 @@ export function launchVisualization(idx, minutes, ev) {
   localStorage.setItem('ci_goal_title', title);
   if (intn?.imageUrl) localStorage.setItem('ci_goal_image', intn.imageUrl);
   else localStorage.removeItem('ci_goal_image');
+  // 3-minute → new 3MV player (reads the goal from ci_goal_title); other durations → legacy player for now
+  const src = (!minutes || minutes === 3)
+    ? 'players/3min-viz.html'
+    : `players/visualization.html?t=${minutes}`;
   if (typeof window.openPlayerInColumn === 'function') {
-    window.openPlayerInColumn(`players/visualization.html?t=${minutes || 3}`, ev);
+    window.openPlayerInColumn(src, ev);
   } else {
-    window.open(`players/visualization.html?t=${minutes || 3}`, 'ci_player', 'width=1100,height=720');
+    window.open(src, 'ci_player', 'width=1100,height=720');
   }
 }
 
