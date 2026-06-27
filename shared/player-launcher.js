@@ -26,12 +26,11 @@ export function openPlayerInColumn(src, ev) {
     window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes,menubar=no,toolbar=no');
     return;
   }
-  // Drop the shared player panel directly BELOW whatever was clicked — a goal box
-  // (vault item) for the per-goal play buttons, or a time grid for the global launchers.
-  const anchor = (ev && ev.target && ev.target.closest)
-    ? (ev.target.closest('.vault-item') || ev.target.closest('.player-times-grid'))
-    : null;
-  if (anchor) anchor.insertAdjacentElement('afterend', panel);
+  // Drop the shared player panel directly BELOW whichever time grid was clicked,
+  // so the global launchers (meditation, countdown, visualization…) open beneath their buttons.
+  // (Per-goal play buttons use the inline player in the vault list instead — see playGoalInline.)
+  const grid = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid') : null;
+  if (grid) grid.insertAdjacentElement('afterend', panel);
   frame.src = src;
   panel.style.display = '';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

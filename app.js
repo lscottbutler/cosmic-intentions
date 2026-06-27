@@ -1980,6 +1980,30 @@ const PB_FIELDS_DEF = [
 ───────────────────────────────────────────────────────── */
 export let selectedVaultIdx    = null;
 let vaultActiveCategory = 'all';
+let inlineGoalPlayer = null;   // { idx, src } — the per-goal player rendered inline under its goal box
+
+/* Open a player INLINE under its goal box (Column A), surviving list re-renders.
+   kind: '3min' (visualization) or a mindset key like 'affirmations' (ASS player). */
+export function playGoalInline(idx, kind, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
+  const intn  = intentions[idx] || intentions[0];
+  const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  localStorage.setItem('ci_goal_title', title);
+  let src;
+  if (kind === '3min') {
+    src = `players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}`;
+  } else {
+    const slides = (intn?.mindset?.[kind] || []).filter(Boolean);
+    if (!slides.length) { toast(`No ${kind} yet — generate this goal's mindset first.`, 'error'); return; }
+    localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
+    src = `players/ass-template.html?type=${kind}&_=${Date.now()}`;
+  }
+  inlineGoalPlayer = { idx, src };
+  renderVaultSidebar();
+  setTimeout(() => { const el = document.getElementById('goalPlayer-' + idx); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 60);
+}
+export function closeGoalPlayer() { inlineGoalPlayer = null; renderVaultSidebar(); }
 
 const VAULT_CATEGORIES = [
   { key: 'all',          label: 'All'          },
@@ -2101,12 +2125,19 @@ export function renderVaultSidebar() {
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
           <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
-            onclick="event.stopPropagation(); launchVisualization(${i._idx}, 3, event)"
+            onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
             style="margin-left:auto; flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
           <span class="vault-item-play" title="Play THIS goal's affirmations"
-            onclick="event.stopPropagation(); launchAffirmations(${i._idx}, event)"
+            onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
             style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
-        </button>`;
+        </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
+        <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
+          <div style="display:flex; gap:8px; margin-bottom:6px;">
+            <button onclick="closeGoalPlayer()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&times; Close</button>
+            <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(this.parentElement.nextElementSibling)" style="background:#1a1a1a;border:1px solid #bf4170;color:#ff8ab8;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&#9974; Full screen</button>
+          </div>
+          <iframe src="${inlineGoalPlayer.src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#1a1a1a;display:block;"></iframe>
+        </div>` : ''}`;
       }).join('');
     }
   }
