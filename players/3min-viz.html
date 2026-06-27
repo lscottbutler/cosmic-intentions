@@ -63,29 +63,12 @@
       font-weight:800; line-height:.9; font-size:clamp(90px, 20vw, 380px); color:var(--pink); opacity:0;
       transition:opacity .3s ease; pointer-events:none; font-variant-numeric:tabular-nums; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
-    /* TEMP: preview controls (mute + fullscreen) — remove before launch */
+    /* TEMP: fullscreen button — remove before launch */
     #ctlbtns { position:fixed; top:12px; right:12px; z-index:9999; display:flex; gap:8px; }
     #ctlbtns button { padding:8px 12px; font:600 13px/1 system-ui,sans-serif; color:#fff;
       background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.4); border-radius:8px; cursor:pointer; }
     #ctlbtns button:hover { background:rgba(0,0,0,.8); }
-    #ctlbtns #imglabel { align-self:center; min-width:46px; text-align:center; color:#fff; font:700 12px/1 system-ui,sans-serif; }
     :fullscreen #ctlbtns button, :-webkit-full-screen #ctlbtns button { opacity:.25; }
-    /* TEMP: timeline scrubber — remove before launch */
-    #scrub { position:fixed; left:12px; right:12px; bottom:12px; z-index:9999; display:flex; align-items:center; gap:10px;
-      background:rgba(0,0,0,.62); padding:9px 14px; border-radius:8px; font:600 12px/1 system-ui,sans-serif; color:#fff; }
-    #scrubrange { flex:1; cursor:pointer; }
-    #scrubtime { min-width:58px; text-align:right; font-variant-numeric:tabular-nums; }
-    #scrub button { padding:6px 12px; font:600 12px/1 system-ui,sans-serif; color:#fff; background:rgba(255,255,255,.18);
-      border:1px solid rgba(255,255,255,.4); border-radius:6px; cursor:pointer; white-space:nowrap; }
-    #scrub button:hover { background:rgba(255,255,255,.3); }
-    :fullscreen #scrub, :-webkit-full-screen #scrub { opacity:.3; }
-    /* TEMP: art-derived accent swatches — click to set border/post/I-AM colour. Remove before launch. */
-    #palette { position:fixed; top:52px; right:12px; z-index:9999; display:flex; gap:6px; }
-    #palette button { width:26px; height:26px; padding:0; border:2px solid rgba(255,255,255,.85); border-radius:6px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.5); }
-    #palette button.sel { outline:2px solid #fff; outline-offset:2px; }
-    :fullscreen #palette, :-webkit-full-screen #palette { opacity:.3; }
-    /* TEMP: shrink the stage a touch so the scrubber sits BELOW the frame (not over the bottom border) */
-    .stagewrap { width:min(96vw, 84vh * 16 / 9); }
   </style>
 </head>
 <body>
@@ -116,23 +99,9 @@
     </div>
   </div>
 
-  <!-- TEMP: preview controls (mute + fullscreen) — remove before launch -->
+  <!-- TEMP: fullscreen button — remove before launch -->
   <div id="ctlbtns">
-    <button id="previmg" title="previous art">◀</button>
-    <span id="imglabel">—</span>
-    <button id="nextimg" title="next art">▶</button>
-    <button id="mutebtn">🔊 Sound on</button>
     <button id="fsbtn">⛶ Full screen</button>
-  </div>
-
-  <!-- TEMP: art-derived accent swatches — remove before launch -->
-  <div id="palette"></div>
-
-  <!-- TEMP: timeline scrubber — remove before launch -->
-  <div id="scrub">
-    <button id="ppbtn">▶ Play</button>
-    <input id="scrubrange" type="range" min="0" max="175" step="0.1" value="0">
-    <span id="scrubtime">0.0s</span>
   </div>
 
   <script>
@@ -362,17 +331,11 @@
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
   badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='none'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
-  /* TEMP: fullscreen + mute toggles — remove before launch */
+  /* TEMP: fullscreen toggle — remove before launch */
   document.getElementById('fsbtn').addEventListener('click', (e)=>{ e.stopPropagation();
     const el=document.documentElement;
     if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
     else { (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } });
-  document.getElementById('mutebtn').addEventListener('click', (e)=>{ e.stopPropagation();
-    muted=!muted;
-    if(masterGain) masterGain.gain.value = muted ? 0 : 1;      // silence in-progress chime/bell
-    Object.values(VO).forEach(a=>{ if(a) a.muted=muted; });    // silence VO (current + future via playVO)
-    if(muted && window.speechSynthesis) speechSynthesis.cancel();   // stop browser-speech fallback
-    e.currentTarget.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
 
   let cd=null;
   function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; bigcount.textContent=secs; bigcount.style.opacity='1'; }
@@ -415,38 +378,9 @@
     while(idx<SEQ.length && elapsed>=SEQ[idx].t){ try{SEQ[idx].fn();}catch(e){} idx++; }
     if(cd){ const t=elapsed-cd.start, rem=Math.max(0,Math.ceil(cd.secs-t)); bigcount.textContent=rem;
       if(t>=cd.secs){ if(!cd.fired){cd.fired=true; cd.onZero&&cd.onZero();} cd=null; bigcount.style.opacity='0'; } }
-    if(typeof scrubRange!=='undefined'){ scrubRange.value=elapsed; scrubTime.textContent=elapsed.toFixed(1)+'s'; }  /* TEMP scrubber sync */
   }
-  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;}
-    const _pp=document.getElementById('ppbtn'); if(_pp)_pp.textContent=p?'⏸ Pause':'▶ Play'; }   /* TEMP: sync play/pause button */
-  function end(){ if(seeking)return; if(ended)return; ended=true; setPlaying(false); setTimeout(finishPlayer,2500); }
-
-  /* TEMP: timeline scrubber — remove before launch.
-     seek() resets all visual state, then replays every SEQ event up to t with
-     audio suppressed, so any point in the timeline renders correctly (paused). */
-  const scrubRange=document.getElementById('scrubrange'), scrubTime=document.getElementById('scrubtime');
-  scrubRange.max=T.end;
-  function resetForSeek(){
-    clearTimeout(cardTimer);
-    logo.style.opacity='0'; split.style.opacity='0'; bg.style.opacity='0'; arch.style.opacity='0';
-    bg.classList.remove('sharp'); post.style.opacity='0';
-    badge.classList.remove('reveal'); badge.style.opacity='0'; badge.style.transform='scale(.2)';
-    card.style.opacity='0'; card.innerHTML='';
-    colA.classList.remove('dark');
-    cd=null; curIcon=null; curNum=null; idx=0; ended=false; welcomeStage2=false; bigcount.style.opacity='0';
-  }
-  function seek(t){
-    setPlaying(false); seeking=true;
-    resetForSeek(); elapsed=0;
-    while(idx<SEQ.length && SEQ[idx].t<=t){ try{SEQ[idx].fn();}catch(e){} idx++; }
-    elapsed=t;
-    if(cd){ const tt=elapsed-cd.start;
-      if(tt>=cd.secs){ cd=null; bigcount.style.opacity='0'; } else { bigcount.textContent=Math.max(0,Math.ceil(cd.secs-tt)); bigcount.style.opacity='1'; } }
-    seeking=false; renderNav();
-  }
-  scrubRange.addEventListener('input', (e)=>{ e.stopPropagation(); const t=+scrubRange.value; seek(t); scrubTime.textContent=t.toFixed(1)+'s'; });
-  scrubRange.addEventListener('click', (e)=>e.stopPropagation());
-  document.getElementById('ppbtn').addEventListener('click', (e)=>{ e.stopPropagation(); setPlaying(!playing); });
+  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;} }
+  function end(){ if(ended)return; ended=true; setPlaying(false); setTimeout(finishPlayer,2500); }
 
   Promise.all([
     tts(goalSpoken).then(a=>VO.goal=a),
