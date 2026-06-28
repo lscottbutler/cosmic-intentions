@@ -49,13 +49,37 @@ body {
   --vault-mono: 'Courier New', 'IBM Plex Mono', monospace;
 }
 
+/* ── THEMES ───────────────────────────────────────────────────
+   Default (:root above) = DARK / "night" (men, default). Each theme just
+   re-points the same tokens — one codebase, swappable palettes. data-theme is
+   set on <html> by the picker (inline script in index.html). */
+[data-theme="light"] {            /* WHITE / daylight (women) */
+  --white:#ffffff; --off:#f3f3f3; --black:#1a1a1a;
+  --border:#dcdcdc; --muted:#6a6a6a; --mid:#8a8a8a; --accent:#2f6fd0;
+}
+[data-theme="kids"] {             /* WHITE + primary colors (kids) */
+  --white:#ffffff; --off:#fff3d6; --black:#15233b;
+  --border:#ffd23f; --muted:#4a63b5; --mid:#7a86c0; --accent:#e8413a;
+}
+
+/* THEME PICKER (header) */
+.theme-picker { display:flex; gap:4px; }
+.theme-picker button { width:28px; height:28px; padding:0; border-radius:6px; cursor:pointer;
+  border:1px solid var(--border); background:var(--off); color:var(--muted);
+  font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center; }
+.theme-picker button:hover { color:var(--black); }
+[data-theme="dark"]  .theme-picker [data-theme-btn="dark"],
+[data-theme="light"] .theme-picker [data-theme-btn="light"],
+[data-theme="kids"]  .theme-picker [data-theme-btn="kids"] {
+  color:var(--black); border-color:var(--accent); }
+
 /* ── HEADER ───────────────────────────────────────────────── */
 .hdr {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--hdr);
-  background: #1A1A1A;
-  border-bottom: 1px solid #383838;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -68,8 +92,8 @@ body {
   top: var(--hdr);
   left: 0; right: 0;
   height: var(--topnav);
-  background: #111;
-  border-bottom: 1px solid #2a2a2a;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -83,7 +107,7 @@ body {
 .tnav-btn {
   background: none;
   border: none;
-  color: #888;
+  color: var(--muted);
   font-family: var(--vault-mono);
   font-size: 10px;
   font-weight: 700;
@@ -95,7 +119,7 @@ body {
   white-space: nowrap;
   transition: color 0.15s, background 0.15s;
 }
-.tnav-btn:hover { color: #fff; background: #1e1e1e; }
+.tnav-btn:hover { color: var(--black); background: var(--off); }
 .tnav-btn.active { color: #F5A623; }
 .tnav-signout {
   margin-left: auto;
@@ -110,7 +134,7 @@ body {
   font-weight: 700;
   letter-spacing: 5px;
   text-transform: uppercase;
-  color: #EFEFEF;
+  color: var(--black);
   cursor: pointer;
   user-select: none;
 }
@@ -293,7 +317,7 @@ body {
 #page-dashboard {
   max-width: 1280px;
   margin: 0 auto;
-  background: #222222;
+  background: var(--off);
 }
 
 /* ── PAGE CONTENT PLACEHOLDER ─────────────────────────────── */
@@ -1598,7 +1622,7 @@ input, textarea, select {
 ═══════════════════════════════════════════════════════ */
 
 #page-dashboard.active {
-  background: #252525;
+  background: var(--off);
   min-height: calc(100vh - var(--hdr));
 }
 .vault-layout {
@@ -1606,15 +1630,15 @@ input, textarea, select {
   min-height: calc(100vh - var(--hdr));
 }
 /* Columns swapped: sidebar (players) now renders on the right, main on the left */
-.vault-sidebar { order: 2; border-right: none; border-left: 1px solid #383838; }
+.vault-sidebar { order: 2; border-right: none; border-left: 1px solid var(--border); }
 .vault-main { order: 1; }
 
 /* ── VAULT SIDEBAR ─────────────────────────────────── */
 .vault-sidebar {
   width: 272px;
   min-width: 272px;
-  background: #252525;
-  border-right: 1px solid #383838;
+  background: var(--off);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -1821,7 +1845,7 @@ input, textarea, select {
 .vault-main {
   flex: 1;
   min-width: 0;
-  background: #252525;
+  background: var(--off);
   overflow-y: auto;
   padding: 24px 24px 0;
   box-sizing: border-box;
