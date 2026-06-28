@@ -16,6 +16,8 @@
     /* frame border as a fade-able overlay (a real CSS border can't transition smoothly);
        fades in together with the center post when the split appears */
     .frame { position:absolute; inset:0; border:var(--bw) solid var(--pink); pointer-events:none; z-index:7; opacity:1; }
+    /* embedded inline (in an iframe on the dashboard) → no frame, visualization goes edge-to-edge */
+    .embedded .frame { display:none; }
     .scene { position:absolute; inset:0; }
 
     #logo { z-index:5; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8%; padding:6%; text-align:center; opacity:0; transition:opacity var(--fade) ease; }
@@ -64,6 +66,7 @@
       transition:opacity .3s ease; pointer-events:none; font-variant-numeric:tabular-nums; }
     .stage { cursor:pointer; }   /* tap anywhere to play/pause */
   </style>
+  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
 </head>
 <body>
   <div class="stagewrap">
