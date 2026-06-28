@@ -25,17 +25,28 @@ body {
   font-family: 'Courier New', monospace !important;
 }
 
-/* ── DESIGN TOKENS ────────────────────────────────────────── */
+/* ── DESIGN TOKENS ────────────────────────────────────────────
+   THREE THEMES, one codebase. :root = DARK (men, default). The
+   [data-theme] blocks re-point the SAME tokens for light (women) and kids.
+   Dark values equal the original hardcoded colors, so dark is byte-identical.
+   Token roles:
+     surfaces  --bg(page) --off(container) --card(box) --sunken(input/deep) --ink(dark accent: nav circles, banners)
+     text      --text(primary) --mid(secondary) --muted(tertiary/labels) --text-warm(vault titles)
+     lines     --border --border-2(subtle)
+     accents   --brand(amber) --accent(blue) --danger --success --pink --purple --teal-ui --maroon
+   NOTE legacy names kept: --white = page bg, --black = primary text. */
 :root {
-  --black:  #EFEFEF;
-  --white:  #1A1A1A;
-  --off:    #252525;
-  --border: #383838;
-  --muted:  #888888;
-  --mid:    #AAAAAA;
-  --accent: #3D7FD4;
-  --teal:   #2E8B9A;
-  --green:  #5C7A5C;
+  /* surfaces */
+  --white:  #1A1A1A;   --bg:      #1A1A1A;
+  --off:    #252525;   --card:    #1A1A1A;   --sunken: #111111;   --ink: #0A0A0A;
+  /* text */
+  --black:  #EFEFEF;   --text:    #FFFFFF;   --mid:  #AAAAAA;  --muted: #888888;  --text-warm:#9A948F;
+  /* lines */
+  --border: #383838;   --border-2:#2A2A2A;
+  /* accents */
+  --brand:  #F5A623;   --accent: #3D7FD4;   --teal: #2E8B9A;   --teal-ui:#1BB3B3;
+  --green:  #5C7A5C;   --danger: #F87171;   --success:#4ADE80; --pink:#FF8AB8; --purple:#7C5CC4; --maroon:#BF4170;
+  /* metrics */
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
   --hdr:    56px;
@@ -49,17 +60,19 @@ body {
   --vault-mono: 'Courier New', 'IBM Plex Mono', monospace;
 }
 
-/* ── THEMES ───────────────────────────────────────────────────
-   Default (:root above) = DARK / "night" (men, default). Each theme just
-   re-points the same tokens — one codebase, swappable palettes. data-theme is
-   set on <html> by the picker (inline script in index.html). */
-[data-theme="light"] {            /* WHITE / daylight (women) */
-  --white:#ffffff; --off:#f3f3f3; --black:#1a1a1a;
-  --border:#dcdcdc; --muted:#6a6a6a; --mid:#8a8a8a; --accent:#2f6fd0;
+/* WHITE / daylight (women) */
+[data-theme="light"] {
+  --white:#FFFFFF; --bg:#FFFFFF; --off:#EEF0F2; --card:#FFFFFF; --sunken:#E6E8EA; --ink:#1A1A1A;
+  --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
+  --border:#D9DEE3; --border-2:#E7EAED;
+  --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;
 }
-[data-theme="kids"] {             /* WHITE + primary colors (kids) */
-  --white:#ffffff; --off:#fff3d6; --black:#15233b;
-  --border:#ffd23f; --muted:#4a63b5; --mid:#7a86c0; --accent:#e8413a;
+/* WHITE + primary colors (kids) */
+[data-theme="kids"] {
+  --white:#FFFFFF; --bg:#FFFFFF; --off:#FFF6E0; --card:#FFFFFF; --sunken:#FFF0CF; --ink:#1D3557;
+  --black:#1D3557; --text:#1D3557; --mid:#4A6FA5; --muted:#6A8FC0; --text-warm:#7A6A4A;
+  --border:#FFCE3A; --border-2:#FFE08A;
+  --brand:#FF8C00; --accent:#E63946; --teal-ui:#17A2B8; --danger:#E63946; --success:#2FA94B; --pink:#FF5FA2; --purple:#7B5CD6; --maroon:#E63946;
 }
 
 /* THEME PICKER (header) */
@@ -120,14 +133,14 @@ body {
   transition: color 0.15s, background 0.15s;
 }
 .tnav-btn:hover { color: var(--black); background: var(--off); }
-.tnav-btn.active { color: #F5A623; }
+.tnav-btn.active { color: var(--brand); }
 .tnav-signout {
   margin-left: auto;
   background: transparent !important;
-  color: #888888;
+  color: var(--muted);
 }
-.tnav-signout:hover { color: #ffffff !important; background: transparent !important; }
-.tnav-sep { color: #2a2a2a; font-size: 12px; padding: 0 2px; flex-shrink: 0; }
+.tnav-signout:hover { color: var(--text) !important; background: transparent !important; }
+.tnav-sep { color: var(--border-2); font-size: 12px; padding: 0 2px; flex-shrink: 0; }
 
 .hdr-logo {
   font-size: 11px;
@@ -236,7 +249,7 @@ body {
 .nav-count-dot {
   margin-left: auto;
   background: #38A038;
-  color: #fff;
+  color: var(--text);
   font-size: 11px;
   font-weight: 700;
   min-width: 22px;
@@ -292,7 +305,7 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #000000;
+  background: var(--ink);
   border: none;
   display: flex;
   align-items: center;
@@ -303,7 +316,7 @@ body {
 }
 .hdr-nav-btn:hover:not(:disabled) { opacity: 0.7; transform: scale(1.08); }
 .hdr-nav-btn:disabled { opacity: 0.25; cursor: default; }
-.hdr-nav-btn svg { width: 18px; height: 18px; fill: #FFFFFF; }
+.hdr-nav-btn svg { width: 18px; height: 18px; fill: var(--text); }
 
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
@@ -661,8 +674,8 @@ body {
   font-size: 12px;
   font-family: inherit;
   font-weight: 600;
-  background: #252525;
-  color: #EFEFEF;
+  background: var(--off);
+  color: var(--black);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -672,8 +685,8 @@ body {
 }
 .pb-add-intention-btn {
   padding: 8px 14px;
-  background: #000;
-  color: #fff;
+  background: var(--ink);
+  color: var(--text);
   border: none;
   border-radius: 6px;
   font-size: 12px;
@@ -823,9 +836,9 @@ textarea.field-input.tall { min-height: 110px; }
 
 /* Mindset Results */
 .meditation-box {
-  background: #252525;
-  color: #EFEFEF;
-  border: 1px solid #383838;
+  background: var(--off);
+  color: var(--black);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px 18px;
   font-size: 14px;
@@ -1066,8 +1079,8 @@ textarea.field-input.tall { min-height: 110px; }
 .manifest-close-btn {
   margin-top: 20px;
   padding: 13px 28px;
-  background: #000000;
-  color: #FFFFFF;
+  background: var(--ink);
+  color: var(--text);
   border: none;
   border-radius: 8px;
   font-size: 15px;
@@ -1123,7 +1136,7 @@ input, textarea, select {
   display: block;
   width: 100%;
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   border: none;
   border-radius: var(--radius);
   padding: 11px 16px;
@@ -1219,7 +1232,7 @@ input, textarea, select {
   left: 50%;
   transform: translateX(-50%);
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -1260,7 +1273,7 @@ input, textarea, select {
   display: block;
   width: 100%;
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   border: none;
   border-radius: 12px;
   padding: 16px;
@@ -1291,7 +1304,7 @@ input, textarea, select {
   width: 100%;
   padding: 12px;
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   border: none;
   border-radius: 10px;
   font-size: 13px;
@@ -1311,7 +1324,7 @@ input, textarea, select {
   cursor: pointer;
   font-family: inherit;
 }
-.hn-signout:hover { color: var(--white); border-color: #555; }
+.hn-signout:hover { color: var(--white); border-color: var(--muted); }
 
 .home-member-hero {
   padding: 32px 20px 24px;
@@ -1400,7 +1413,7 @@ input, textarea, select {
   border-radius: 4px !important;
   padding: 1.5rem !important;
   font-size: 14px;
-  color: #FFCC00 !important;
+  color: var(--brand) !important;
   line-height: 1.7;
   margin: 14px 0;
   width: 100% !important;
@@ -1416,7 +1429,7 @@ input, textarea, select {
 .cb-display div,
 .cb-display span {
   background: transparent !important;
-  color: #fff !important;
+  color: var(--text) !important;
   max-width: 100% !important;
   width: auto !important;
   column-count: 1 !important;
@@ -1433,7 +1446,7 @@ input, textarea, select {
   padding: 0 !important;
 }
 .cb-display br + br { display: none; }
-.cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: #FFCC00 !important; text-transform: uppercase; letter-spacing: 0.03em; }
+.cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: var(--brand) !important; text-transform: uppercase; letter-spacing: 0.03em; }
 .cb-display strong { font-weight: 700; }
 .cb-display em { font-style: italic; }
 .cb-display a { color: var(--accent) !important; text-decoration: underline; }
@@ -1444,12 +1457,12 @@ input, textarea, select {
 .admin-page { padding: 28px 24px; max-width: 820px; margin: 0 auto; }
 .admin-page h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
 .admin-page-sub { font-size: 13px; color: var(--mid); margin-bottom: 28px; }
-.admin-block { background: #222; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-.admin-block-hd { background: #252525; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.admin-block-slug { font-size: 10px; color: #555; font-family: monospace; }
-.admin-toolbar { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: #1E1E1E; }
-.admin-tb-btn { background: #333; border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
-.admin-tb-btn:hover { background: #444; }
+.admin-block { background: var(--off); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+.admin-block-hd { background: var(--off); padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.admin-block-slug { font-size: 10px; color: var(--muted); font-family: monospace; }
+.admin-toolbar { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
+.admin-tb-btn { background: var(--border); border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.admin-tb-btn:hover { background: var(--border-2); }
 .admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; width: 100%; max-width: 100%; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word; }
 .admin-editor *, .admin-editor p, .admin-editor div, .admin-editor span {
   max-width: 100% !important;
@@ -1467,8 +1480,8 @@ input, textarea, select {
   padding: 0 !important;
 }
 .admin-editor a { color: var(--accent); }
-.admin-block-foot { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); background: #1E1E1E; }
-.admin-save-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 7px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.admin-block-foot { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); background: var(--card); }
+.admin-save-btn { background: var(--accent); color: var(--text); border: none; border-radius: 6px; padding: 7px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .admin-save-btn:hover { opacity: 0.85; }
 .admin-save-status { font-size: 11px; color: var(--mid); }
 
@@ -1487,7 +1500,7 @@ input, textarea, select {
   margin-top: 16px;
   border-radius: 10px;
   overflow: hidden;
-  background: #1a1a1a;
+  background: var(--card);
 }
 .ent-slide {
   position: absolute;
@@ -1573,7 +1586,7 @@ input, textarea, select {
   left: 50%;
   transform: translateX(-50%);
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   font-size: 9px;
   font-weight: 800;
   padding: 2px 8px;
@@ -1649,7 +1662,7 @@ input, textarea, select {
 }
 .vault-sidebar::-webkit-scrollbar { width: 3px; }
 .vault-sidebar::-webkit-scrollbar-track { background: transparent; }
-.vault-sidebar::-webkit-scrollbar-thumb { background: #CCCCCC; border-radius: 2px; }
+.vault-sidebar::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
 
 /* ── GRAND GAUGE (Progress Bar) ─────────────────────── */
 
@@ -1662,15 +1675,15 @@ input, textarea, select {
 /* Depository file items */
 .vault-item { border-left: 2px solid transparent; }
 .vault-item.selected { border-left: 2px solid var(--orange); background: rgba(56,160,56,0.07); }
-.vault-item-num { font-family: var(--vault-mono); color: #9A948F; }
+.vault-item-num { font-family: var(--vault-mono); color: var(--text-warm); }
 
 /* Blueprint Build Sheet headers */
 .bs-section-hd {
   font-family: var(--vault-mono);
   font-size: 9px;
   letter-spacing: 2px;
-  color: #888888;
-  border-bottom: 1px solid #EEEEEE;
+  color: var(--muted);
+  border-bottom: 1px solid var(--black);
   padding: 11px 20px 9px;
 }
 
@@ -1689,8 +1702,8 @@ input, textarea, select {
   padding: 4px 10px;
   border-radius: 20px;
   border: none;
-  background: #000000;
-  color: #FFFFFF;
+  background: var(--ink);
+  color: var(--text);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -1698,8 +1711,8 @@ input, textarea, select {
   font-family: inherit;
   white-space: nowrap;
 }
-.vault-cat-btn:hover { background: #333333; }
-.vault-cat-btn.active { background: #000000; }
+.vault-cat-btn:hover { background: var(--off); }
+.vault-cat-btn.active { background: var(--ink); }
 .vault-cat-btn.all-btn { background: #1A8A3A; }
 .vault-cat-btn.all-btn:hover { background: #157030; }
 .vault-cat-count {
@@ -1710,8 +1723,8 @@ input, textarea, select {
   height: 16px;
   padding: 0 4px;
   border-radius: 50px;
-  background: #E82020;
-  color: #FFFFFF;
+  background: var(--danger);
+  color: var(--text);
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
@@ -1759,7 +1772,7 @@ input, textarea, select {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #1c1c1c;
+  background: var(--card);
   border: none;
   border-radius: 12px;
   padding: 11px 14px;
@@ -1768,12 +1781,12 @@ input, textarea, select {
   text-align: left;
   transition: background 0.15s;
 }
-.vin-row:hover { background: #272727; }
+.vin-row:hover { background: var(--off); }
 .vin-icon {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #000;
+  background: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1786,18 +1799,18 @@ input, textarea, select {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.07em;
-  color: #ffffff;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.vin-arrow { color: #555; font-size: 11px; flex-shrink: 0; }
+.vin-arrow { color: var(--muted); font-size: 11px; flex-shrink: 0; }
 .vault-item-num {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #000000;
-  color: #FFFFFF;
+  background: var(--ink);
+  color: var(--text);
   font-size: 10px;
   font-weight: 800;
   display: flex;
@@ -1809,37 +1822,37 @@ input, textarea, select {
 .vault-item-title {
   font-size: 14px;
   font-weight: 600;
-  color: #5A5550;
+  color: var(--text-warm);
   white-space: normal;
   word-break: break-word;
   line-height: 1.4;
 }
-.vault-item.selected .vault-item-title { color: #EFEFEF; }
+.vault-item.selected .vault-item-title { color: var(--black); }
 .vault-item-num {
   font-size: 10px;
   font-weight: 700;
-  color: #9A948F;
+  color: var(--text-warm);
   flex-shrink: 0;
 }
 
 .vault-add-wrap {
   padding: 10px 0 0;
-  border-top: 1px solid #383838;
+  border-top: 1px solid var(--border);
 }
 .vault-add-btn {
   width: 100%;
   padding: 9px;
-  background: #252525;
-  border: 1px solid #383838;
+  background: var(--off);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #EFEFEF;
+  color: var(--black);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
 }
-.vault-add-btn:hover { border-color: #EFEFEF; background: #252525; }
+.vault-add-btn:hover { border-color: var(--black); background: var(--off); }
 
 /* ── VAULT MAIN ────────────────────────────────────── */
 .vault-main {
@@ -1862,16 +1875,16 @@ input, textarea, select {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #FFFFFF;
-  background: #000000;
+  color: var(--text);
+  background: var(--ink);
   padding: 10px 14px;
   line-height: 1.4;
   text-align: center;
 }
 /* ── BRAND BANNER ───────────────────────────────────── */
 #brand-banner, .brand-banner {
-  background: #111;
-  border-bottom: 2px solid #2a2a2a;
+  background: var(--sunken);
+  border-bottom: 2px solid var(--border-2);
   padding: 10px 16px;
   border-radius: 6px 6px 0 0;
   box-sizing: border-box;
@@ -1887,14 +1900,14 @@ input, textarea, select {
   font-size: clamp(10px, 4.5vw, 22px);
   font-weight: 800;
   letter-spacing: 1px !important;
-  color: #ffffff !important;
+  color: var(--text) !important;
   text-transform: uppercase;
   white-space: nowrap !important;
 }
 
 /* ── AFFIRMATION TICKER ──────────────────────────────── */
 #affirmation-ticker-text {
-  color: #90b8ff;
+  color: var(--accent);
   font-size: 13px;
   font-weight: 600;
   text-align: center;
@@ -1905,23 +1918,23 @@ input, textarea, select {
 }
 
 /* ── PLAYER ACCORDIONS ──────────────────────────────── */
-.acc-item { border-radius: 10px; overflow: hidden; border: 1px solid #383838; }
+.acc-item { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
 .acc-trigger {
   display: flex; align-items: center; gap: 10px;
   width: 100%; padding: 12px 16px;
-  background: #2E2E2E; border: none; cursor: pointer;
+  background: var(--off); border: none; cursor: pointer;
   font-family: inherit; font-size: 14px; font-weight: 600;
-  color: #EFEFEF; text-align: left; transition: background 0.15s;
+  color: var(--black); text-align: left; transition: background 0.15s;
   box-sizing: border-box;
 }
-.acc-trigger:hover, .acc-trigger.open { background: #383838; }
+.acc-trigger:hover, .acc-trigger.open { background: var(--border); }
 .acc-label { flex: 1; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Roboto Condensed', sans-serif; font-size: 16px; font-weight: 400; word-break: break-word; min-width: 0; }
-.acc-arrow { font-size: 9px; color: #888; flex-shrink: 0; transition: transform 0.2s; }
+.acc-arrow { font-size: 9px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
 .acc-trigger.open .acc-arrow { transform: rotate(90deg); }
 .acc-panel {
   max-height: 0; overflow: hidden;
   transition: max-height 0.3s ease;
-  background: #1E1E1E;
+  background: var(--card);
 }
 .acc-panel.open { max-height: 400px; }
 .acc-panel.acc-panel-tall.open { max-height: 4000px; overflow-y: auto; }
@@ -1929,7 +1942,7 @@ input, textarea, select {
 .acc-panel-inner { padding: 12px 14px 14px; }
 .acc-svg-circle {
   width: 34px; height: 34px; border-radius: 50%;
-  background: #000; display: flex; align-items: center;
+  background: var(--ink); display: flex; align-items: center;
   justify-content: center; flex-shrink: 0;
 }
 .acc-svg-circle svg { width: 21px; height: 21px; }
@@ -1937,7 +1950,7 @@ input, textarea, select {
 /* Add form (vault style) */
 .vault-add-form { padding: 24px 32px; max-width: 580px; margin: 0 auto; }
 .vault-add-form-inner {
-  background: #252525;
+  background: var(--off);
   border: 1px solid #E8E5E0;
   border-radius: 12px;
   padding: 20px;
@@ -1946,45 +1959,45 @@ input, textarea, select {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: #9A948F;
+  color: var(--text-warm);
   text-transform: uppercase;
   margin-bottom: 10px;
 }
 .vaf-input {
   width: 100%;
   padding: 12px 14px;
-  background: #252525;
-  border: 1px solid #383838;
+  background: var(--off);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 15px;
   font-family: inherit;
-  color: #EFEFEF;
+  color: var(--black);
   outline: none;
   margin-bottom: 12px;
   transition: border-color 0.15s;
 }
 .vaf-input:focus { border-color: var(--accent); }
-.vaf-input::placeholder { color: #AAAAAA; }
+.vaf-input::placeholder { color: var(--mid); }
 .vaf-btns { display: flex; gap: 8px; }
 .vaf-cancel {
   padding: 10px 16px;
   background: transparent;
-  border: 1px solid #CCCCCC;
+  border: 1px solid var(--mid);
   border-radius: 8px;
-  color: #5A5550;
+  color: var(--text-warm);
   font-size: 14px;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.15s;
 }
-.vaf-cancel:hover { border-color: #888888; color: #EFEFEF; }
+.vaf-cancel:hover { border-color: var(--muted); color: var(--black); }
 .vaf-confirm {
   flex: 1;
   padding: 10px;
   background: var(--accent);
   border: none;
   border-radius: 8px;
-  color: #fff;
+  color: var(--text);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -1998,7 +2011,7 @@ input, textarea, select {
 /* Core Structural Fix for Goal Box Contrast Frame */
 
 [id*="colb-active-state"] .card {
-  background-color: #ffffff !important;
+  background-color: var(--text) !important;
   color: #000000 !important;
   border: 4px solid #F05252 !important;
   border-radius: 0px !important;
@@ -2025,13 +2038,13 @@ input, textarea, select {
 }
 .bs-close-btn:hover { background: rgba(0,0,0,0.12); }
 
-.bs-section { border-bottom: 1px solid #EEEEEE; }
+.bs-section { border-bottom: 1px solid var(--black); }
 .bs-section-hd {
   padding: 13px 20px 9px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: #888888;
+  color: var(--muted);
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -2057,7 +2070,7 @@ input, textarea, select {
   align-items: flex-start;
   gap: 12px;
   padding: 9px 0;
-  border-bottom: 1px solid #EEEEEE;
+  border-bottom: 1px solid var(--black);
 }
 .bs-roadmap-item:last-child { border-bottom: none; }
 .bs-roadmap-num {
@@ -2065,7 +2078,7 @@ input, textarea, select {
   height: 22px;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   font-size: 10px;
   font-weight: 800;
   display: flex;
@@ -2076,7 +2089,7 @@ input, textarea, select {
 }
 .bs-roadmap-text {
   font-size: 13px;
-  color: #5A5550;
+  color: var(--text-warm);
   line-height: 1.55;
   flex: 1;
 }
@@ -2085,8 +2098,8 @@ input, textarea, select {
   margin: 10px 20px 14px;
   padding: 12px;
   width: calc(100% - 40px);
-  background: #000000;
-  color: #fff;
+  background: var(--ink);
+  color: var(--text);
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -2115,13 +2128,13 @@ input, textarea, select {
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  color: #6A9ED8;
+  color: var(--accent);
 }
 .bs-belief-item {
   padding: 8px 20px;
   font-size: 13px;
-  color: #5A5550;
-  border-bottom: 1px solid #EEEEEE;
+  color: var(--text-warm);
+  border-bottom: 1px solid var(--black);
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -2131,12 +2144,12 @@ input, textarea, select {
 .bs-attitude-card {
   margin: 5px 20px;
   padding: 12px 14px;
-  background: #252525;
+  background: var(--off);
   border: 1px solid #E8E5E0;
   border-radius: 8px;
 }
-.bs-attitude-title { font-size: 13px; font-weight: 700; color: #EFEFEF; margin-bottom: 3px; }
-.bs-attitude-body  { font-size: 12px; color: #5A5550; line-height: 1.5; }
+.bs-attitude-title { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+.bs-attitude-body  { font-size: 12px; color: var(--text-warm); line-height: 1.5; }
 .bs-meditation-box {
   margin: 5px 20px 14px;
   padding: 14px 16px;
@@ -2145,7 +2158,7 @@ input, textarea, select {
   border-radius: 8px;
   font-size: 14px;
   font-style: italic;
-  color: #88888E;
+  color: var(--muted);
   line-height: 1.65;
 }
 
@@ -2154,20 +2167,20 @@ input, textarea, select {
   display: flex;
   gap: 14px;
   padding: 9px 20px;
-  border-bottom: 1px solid #EEEEEE;
+  border-bottom: 1px solid var(--black);
   align-items: flex-start;
 }
 .bs-pb-label {
   font-size: 10px;
   font-weight: 700;
-  color: #888888;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   min-width: 100px;
   flex-shrink: 0;
   padding-top: 2px;
 }
-.bs-pb-value { font-size: 13px; color: #5A5550; line-height: 1.55; }
+.bs-pb-value { font-size: 13px; color: var(--text-warm); line-height: 1.55; }
 
 /* Delete / nav row */
 
@@ -2316,7 +2329,7 @@ input, textarea, select {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--text);
   line-height: 1.1;
 }
 .colb-banner-arrow {
@@ -2391,9 +2404,9 @@ input, textarea, select {
 ─────────────────────────────────────────────────────────────────────────── */
 
 .dashboard-note-container{width:100%;margin-top:30px;margin-bottom:1rem;display:flex;justify-content:center;}
-.dashboard-note-box{width:100%;background:#1A1A1A;border-left:4px solid #FFCC00;border-top:1px solid #2A2A2A;border-right:1px solid #2A2A2A;border-bottom:1px solid #2A2A2A;padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;border-radius:0 4px 4px 0;}
+.dashboard-note-box{width:100%;background:var(--card);border-left:4px solid var(--brand);border-top:1px solid var(--border-2);border-right:1px solid var(--border-2);border-bottom:1px solid var(--border-2);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;border-radius:0 4px 4px 0;}
 .note-pin-icon{font-size:1.1rem;line-height:1.4;}
-.dashboard-note-text{font-family:inherit;font-size:1rem;font-weight:500;line-height:1.5;color:#E0E0E0;margin:0;}
+.dashboard-note-text{font-family:inherit;font-size:1rem;font-weight:500;line-height:1.5;color:var(--mid);margin:0;}
 
 /* Global readability bump — force small inline font-sizes up. KEEP (PurgeCSS can't see attr selectors). */
 [style*="font-size:12px"], [style*="font-size: 12px"] { font-size: 17px !important; }
