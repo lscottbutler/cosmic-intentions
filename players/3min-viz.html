@@ -323,6 +323,10 @@
   function finishPlayer(){ try{ if(window.parent&&window.parent!==window&&window.parent.playerFinished){window.parent.playerFinished();return;} }catch(e){} closePlayer(); }
   badge.addEventListener('animationend', ()=>{ badge.classList.remove('reveal'); badge.style.opacity='1'; badge.style.transform='none'; });
   stage.addEventListener('click', ()=>setPlaying(!playing));   // tap anywhere = play/pause
+  // the nav circle is the explicit play/pause button (stopPropagation so the stage
+  // handler doesn't also fire and cancel the toggle)
+  const _navCircle = document.querySelector('.iconcircle');
+  if(_navCircle) _navCircle.addEventListener('click', (e)=>{ e.stopPropagation(); setPlaying(!playing); });
 
   let cd=null;
   function startCountdown(secs, onZero){ cd={ start:elapsed, secs, onZero, fired:false }; bigcount.textContent=secs; bigcount.style.opacity='1'; }
