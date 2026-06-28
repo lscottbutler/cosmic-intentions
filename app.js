@@ -2067,14 +2067,19 @@ export async function playGoalInWorkspace(idx, kind, ev) {
 /* STANDALONE unified Mindset player (bottom of Column B). Plays the SELECTED
    goal's full mindset — all categories grouped & labeled — in the shared column
    panel. Defaults to the first goal when nothing is selected. */
-export function launchMindset(ev) {
+export async function launchMindset(ev) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
   if (!intentions.length) { toast('Add an intention first.', 'error'); return; }
   const idx   = (selectedVaultIdx != null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
   const intn  = intentions[idx];
   const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
-  const slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intn?.mindset, k.key, k.label));
-  if (!slides.length) { toast(`No mindset yet for "${title}" — generate this goal's AI Library first.`, 'error'); return; }
+  let slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intn?.mindset, k.key, k.label));
+  if (!slides.length) {                              // no AI Library yet → generate it, then play
+    toast(`Generating "${title}"'s AI Library…`);
+    try { await generateMindset(idx); } catch (e) {}
+    slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intentions[idx]?.mindset, k.key, k.label));
+    if (!slides.length) { toast(`Couldn’t generate the AI Library. Try again.`, 'error'); return; }
+  }
   localStorage.setItem('ci_goal_title', title);
   localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
   window.openPlayerInColumn(`players/ass-template.html?type=mindset&g=${encodeURIComponent(title)}&_=${Date.now()}`, ev);
