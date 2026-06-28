@@ -1,4 +1,4 @@
-import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
+import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
@@ -2035,24 +2035,33 @@ export function closeGoalPlayer() { inlineGoalPlayer = null; renderVaultSidebar(
 /* Play a goal's player inside the OPEN workspace (build sheet), in the 16:9
    visualization slot — used by the 3 MIN / AFF / BELIEFS / STOIC / ATTITUDES
    buttons now living under the goal title in the workspace header. */
-export function playGoalInWorkspace(idx, kind, ev) {
+export async function playGoalInWorkspace(idx, kind, ev) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
   const intn = intentions[idx]; if (!intn) return;
   const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('ci_goal_title', title);
-  let src;
-  if (kind === '3min') {
-    src = `players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}`;
-  } else {
-    const meta   = MINDSET_KINDS.find(k => k.key === kind);
-    const slides = mindsetSlides(intn.mindset, kind, meta ? meta.label : '');
-    if (!slides.length) { toast(`Nothing here yet — generate this goal's AI Library first.`, 'error'); return; }
-    localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
-    src = `players/ass-template.html?type=${kind}&g=${encodeURIComponent(title)}&_=${Date.now()}`;
+
+  const play = (src) => {
+    const c = document.getElementById('goalVisualizationContainer');
+    if (c) c.innerHTML = `<iframe src="${src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:transparent;"></iframe>`;
+  };
+
+  if (kind === '3min') { play(`players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}`); return; }
+
+  const meta = MINDSET_KINDS.find(k => k.key === kind);
+  let slides = mindsetSlides(intn.mindset, kind, meta ? meta.label : '');
+
+  // empty → this goal's AI Library is missing (or predates this category): generate it, then play
+  if (!slides.length) {
+    const c = document.getElementById('goalVisualizationContainer');
+    if (c) c.innerHTML = '<div style="padding:30px;text-align:center;color:#9b8fd0;font-size:13px;"><span class="inline-spinner"></span> Generating this goal’s AI Library…</div>';
+    try { await generateMindset(idx); } catch (e) {}
+    slides = mindsetSlides(intentions[idx]?.mindset, kind, meta ? meta.label : '');
+    if (!slides.length) { toast(`Couldn’t generate ${meta ? meta.label.toLowerCase() : kind}. Try again.`, 'error'); loadGoalVisualization(intentions[idx]); return; }
   }
-  const c = document.getElementById('goalVisualizationContainer');
-  if (!c) return;
-  c.innerHTML = `<iframe src="${src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:transparent;"></iframe>`;
+
+  localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
+  play(`players/ass-template.html?type=${kind}&g=${encodeURIComponent(title)}&_=${Date.now()}`);
 }
 
 /* STANDALONE unified Mindset player (bottom of Column B). Plays the SELECTED
