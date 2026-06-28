@@ -2727,10 +2727,11 @@ function buildWorkspaceHeader(intent, idx) {
         <div style="flex:1;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:6px 4px 10px;">
-        ${[['3min','3 MIN'],['affirmations','AFF'],['beliefs','BELIEFS'],['stoic','STOIC'],['attitudes','ATTITUDES']].map(([k,lbl]) =>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
+        ${[['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']].map(([k,ic,lbl]) =>
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)"
-            style="flex:0 0 auto;padding:7px 13px;background:#1A1A1A;border:1px solid #F5A623;color:#F5A623;border-radius:6px;font-size:11px;font-weight:800;letter-spacing:.5px;cursor:pointer;white-space:nowrap;">&#9654; ${lbl}</button>`
+            style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:#000;border:1px solid #333;color:#F5A623;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;">
+            <span style="font-size:13px;line-height:1;">${ic}</span>${lbl}</button>`
         ).join('')}
       </div>
       <div class="dashboard-note-container">
