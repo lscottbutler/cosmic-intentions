@@ -111,7 +111,13 @@
     slideEls.forEach((el, n) => el.classList.toggle('show', n === cur));
   }
   function renderPlay() { playSvg.innerHTML = playing ? ICON.pause : ICON.play; }
-  function tick() { show(cur + 1); }
+  // ?once=1 → play through all slides once, then tell the favorites loop to advance
+  const ONCE = new URLSearchParams(location.search).get('once') === '1';
+  function finishOnce() {
+    setPlaying(false);
+    try { if (window.parent && window.parent !== window && window.parent.playerFinished) window.parent.playerFinished(); } catch (e) {}
+  }
+  function tick() { if (ONCE && cur + 1 >= slideEls.length) { finishOnce(); return; } show(cur + 1); }
   function setPlaying(p) {
     playing = p; renderPlay();
     if (p && !timer) timer = setInterval(tick, CONFIG.secsPerSlide * 1000);

@@ -2002,6 +2002,31 @@ function mindsetSlides(mindset, kind, label) {
   }).filter(s => s.text);
 }
 
+/* A goal's FULL mindset as player slides (all categories, in order). */
+function goalMindsetSlides(idx) {
+  return MINDSET_KINDS.flatMap(k => mindsetSlides(intentions[idx]?.mindset, k.key, k.label));
+}
+/* Bridge so the favorites loop (player-launcher.js) can fetch a goal's mindset
+   slides without importing app internals. */
+if (typeof window !== 'undefined') window.__ciGoalSlides = goalMindsetSlides;
+
+/* ♥ on a goal box — toggle the goal in the FAVORITES loop (plays its full
+   mindset). Stored in ci_favorites as { player:'mindset', goal:idx, title }. */
+export function toggleGoalFavorite(idx, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  const intn = intentions[idx]; if (!intn) return;
+  const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  let favs; try { favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { favs = []; }
+  if (!Array.isArray(favs)) favs = [];
+  const at = favs.findIndex(f => f && f.player === 'mindset' && f.goal === idx);
+  if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'success'); }
+  else { favs.push({ player: 'mindset', goal: idx, title }); toast('Added to favorites loop ♥', 'success'); }
+  localStorage.setItem('ci_favorites', JSON.stringify(favs));
+  renderVaultSidebar();
+  const box = document.getElementById('favorites-list');
+  if (box && !box.classList.contains('hidden') && typeof window.renderFavorites === 'function') window.renderFavorites();
+}
+
 /* Open a player INLINE under its goal box (Column A), surviving list re-renders.
    kind: '3min' (visualization), 'mindset' (unified — all categories), or a single
    mindset key like 'affirmations' / 'beliefs' / 'stoic' / 'attitudes' (ASS player). */
@@ -2191,9 +2216,11 @@ export function renderVaultSidebar() {
           </button>
         </div>`;
 
+      let _favs; try { _favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { _favs = []; }
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const isSelected = selectedVaultIdx === i._idx;
+        const isFav    = Array.isArray(_favs) && _favs.some(f => f && f.player === 'mindset' && f.goal === i._idx);
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
         return `
         <button class="vault-item${isSelected ? ' selected' : ''}"
@@ -2204,6 +2231,9 @@ export function renderVaultSidebar() {
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
+          <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
+            title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
+            style="margin-left:auto;flex:0 0 auto;cursor:pointer;font-size:20px;line-height:1;color:${shade.text};opacity:${isFav ? '1' : '.5'};padding:4px 8px;">${isFav ? '&#9829;' : '&#9825;'}</span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">

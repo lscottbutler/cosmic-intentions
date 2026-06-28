@@ -94,8 +94,8 @@ export function renderFavorites() {
     row.innerHTML =
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
-      `<span style="font-size:15px;font-weight:700;color:#fff;">${FAV_LABEL[f.player] || f.player}</span>` +
-      `<span style="margin-left:auto;color:#9a9a9a;font-size:14px;">${f.minutes} min</span>`;
+      `<span style="font-size:15px;font-weight:700;color:#fff;">${f.player === 'mindset' ? (f.title || 'Goal mindset') : (FAV_LABEL[f.player] || f.player)}</span>` +
+      `<span style="margin-left:auto;color:#9a9a9a;font-size:14px;">${f.player === 'mindset' ? 'Mindset' : f.minutes + ' min'}</span>`;
     const cb = row.querySelector('input');
     cb.addEventListener('change', () => {
       row.style.borderColor = cb.checked ? '#e02020' : '#333';
@@ -147,6 +147,13 @@ function _openFav(f) {
   const panel = document.getElementById('playerColumn');
   const anchor = document.getElementById('favorites-list');
   if (panel && anchor) anchor.insertAdjacentElement('afterend', panel);
+  // Goal favorite → play that goal's full mindset once (so the loop advances).
+  if (f.player === 'mindset' && f.goal != null && typeof window.__ciGoalSlides === 'function') {
+    const slides = window.__ciGoalSlides(f.goal) || [];
+    if (slides.length) { try { localStorage.setItem('ci_ass_slides', JSON.stringify(slides)); localStorage.setItem('ci_goal_title', f.title || ''); } catch (e) {} }
+    openPlayerInColumn(`players/ass-template.html?type=mindset&once=1&_=${Date.now()}`);
+    return;
+  }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
 }
 
