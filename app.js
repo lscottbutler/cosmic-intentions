@@ -2032,6 +2032,29 @@ export function playGoalInline(idx, kind, ev) {
 }
 export function closeGoalPlayer() { inlineGoalPlayer = null; renderVaultSidebar(); }
 
+/* Play a goal's player inside the OPEN workspace (build sheet), in the 16:9
+   visualization slot — used by the 3 MIN / AFF / BELIEFS / STOIC / ATTITUDES
+   buttons now living under the goal title in the workspace header. */
+export function playGoalInWorkspace(idx, kind, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  const intn = intentions[idx]; if (!intn) return;
+  const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  localStorage.setItem('ci_goal_title', title);
+  let src;
+  if (kind === '3min') {
+    src = `players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}`;
+  } else {
+    const meta   = MINDSET_KINDS.find(k => k.key === kind);
+    const slides = mindsetSlides(intn.mindset, kind, meta ? meta.label : '');
+    if (!slides.length) { toast(`Nothing here yet — generate this goal's AI Library first.`, 'error'); return; }
+    localStorage.setItem('ci_ass_slides', JSON.stringify(slides));
+    src = `players/ass-template.html?type=${kind}&g=${encodeURIComponent(title)}&_=${Date.now()}`;
+  }
+  const c = document.getElementById('goalVisualizationContainer');
+  if (!c) return;
+  c.innerHTML = `<iframe src="${src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:transparent;"></iframe>`;
+}
+
 /* STANDALONE unified Mindset player (bottom of Column B). Plays the SELECTED
    goal's full mindset — all categories grouped & labeled — in the shared column
    panel. Defaults to the first goal when nothing is selected. */
@@ -2166,23 +2189,6 @@ export function renderVaultSidebar() {
           <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-              <span class="vault-item-play" title="Play 3-minute visualization of THIS goal"
-                onclick="event.stopPropagation(); playGoalInline(${i._idx}, '3min', event)"
-                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; 3 MIN</span>
-              <span class="vault-item-play" title="Play THIS goal's affirmations"
-                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'affirmations', event)"
-                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; AFF</span>
-              <span class="vault-item-play" title="Play THIS goal's beliefs"
-                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'beliefs', event)"
-                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; BELIEFS</span>
-              <span class="vault-item-play" title="Play THIS goal's stoic principles"
-                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'stoic', event)"
-                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; STOIC</span>
-              <span class="vault-item-play" title="Play THIS goal's winning attitudes"
-                onclick="event.stopPropagation(); playGoalInline(${i._idx}, 'attitudes', event)"
-                style="flex:0 0 auto; padding:6px 11px; border:1px solid currentColor; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.5px; cursor:pointer; white-space:nowrap">&#9654; ATTITUDES</span>
-            </div>
           </div>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
@@ -2720,6 +2726,12 @@ function buildWorkspaceHeader(intent, idx) {
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
         <div style="flex:1;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:6px 4px 10px;">
+        ${[['3min','3 MIN'],['affirmations','AFF'],['beliefs','BELIEFS'],['stoic','STOIC'],['attitudes','ATTITUDES']].map(([k,lbl]) =>
+          `<button onclick="playGoalInWorkspace(${idx},'${k}',event)"
+            style="flex:0 0 auto;padding:7px 13px;background:#1A1A1A;border:1px solid #F5A623;color:#F5A623;border-radius:6px;font-size:11px;font-weight:800;letter-spacing:.5px;cursor:pointer;white-space:nowrap;">&#9654; ${lbl}</button>`
+        ).join('')}
       </div>
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
