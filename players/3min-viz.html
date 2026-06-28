@@ -257,7 +257,7 @@
   };
   /* the nav circle IS the play/pause: ▶ when paused, the section icon / countdown
      while playing, and ⏸ when playing with no section icon (so it never blocks one) */
-  let playing=false, curIcon=null, curNum=null;
+  let playing=false, curIcon=null, curNum=null, currentVO=null;
   function renderNav(){
     if(!playing){ navNum.style.display='none'; navIcon.style.display=''; navIcon.innerHTML=ICON.play; return; }
     if(curNum!=null){ navIcon.style.display='none'; navNum.style.display=''; navNum.textContent=curNum; return; }
@@ -293,7 +293,7 @@
     if(v) u.voice=v; }catch(e){} }
   function playVO(k, onEnd){ if(seeking||muted)return;   // onEnd fires when this line finishes (used to chain para1->para2 seamlessly)
     const a=VO[k];
-    if(a){ a.muted=muted; if(onEnd) a.onended=onEnd; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
+    if(a){ a.muted=muted; currentVO=a; a.onended=()=>{ if(currentVO===a) currentVO=null; if(onEnd) onEnd(); }; try{a.currentTime=0;a.play().catch(()=>{});}catch(e){} return; }
     if(window.speechSynthesis && VOTXT[k]){ try{ speechSynthesis.cancel();   // no /api/tts -> browser voice
       const u=new SpeechSynthesisUtterance(VOTXT[k]); u.rate=0.92; pickVoice(u); if(onEnd) u.onend=onEnd; speechSynthesis.speak(u); }catch(e){} } }
 
@@ -366,7 +366,10 @@
     if(cd){ const t=elapsed-cd.start, rem=Math.max(0,Math.ceil(cd.secs-t)); bigcount.textContent=rem;
       if(t>=cd.secs){ if(!cd.fired){cd.fired=true; cd.onZero&&cd.onZero();} cd=null; bigcount.style.opacity='0'; } }
   }
-  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;} }
+  function setPlaying(p){ playing=p; renderNav(); if(p&&!timer)timer=setInterval(step,100); if(!p&&timer){clearInterval(timer);timer=null;}
+    // pause/resume the in-progress voice-over together with the timeline
+    if(p){ if(currentVO){try{currentVO.play().catch(()=>{});}catch(e){}} try{ if(window.speechSynthesis&&speechSynthesis.paused) speechSynthesis.resume(); }catch(e){} }
+    else { if(currentVO){try{currentVO.pause();}catch(e){}} try{ if(window.speechSynthesis&&speechSynthesis.speaking) speechSynthesis.pause(); }catch(e){} } }
   function end(){ if(ended)return; ended=true; setPlaying(false); setTimeout(finishPlayer,2500); }
 
   Promise.all([
