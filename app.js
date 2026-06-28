@@ -2744,7 +2744,7 @@ function buildWorkspaceHeader(intent, idx) {
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;font-size:18px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
+        <div style="flex:1;background:#D92121;color:#fff;padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
