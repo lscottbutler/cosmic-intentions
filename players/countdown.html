@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Countdown | Cosmic Intentions</title>
+  <script>(function(){var t;try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark';}catch(e){t='dark';}document.documentElement.setAttribute('data-theme',t);})();</script>
   <style>
     :root {
       --frame-gray:  #8b8b8b;
@@ -13,11 +14,14 @@
       --badge-ring:  #888888;
       --badge-fill:  #ffffff;
       --btn:         #111111;
+      --bg:          #1a1a1a;     /* surround (themed per group) */
     }
+    [data-theme="light"] { --bg:#EEF0F2; }
+    [data-theme="kids"]  { --bg:#FFF6E0; }
     html, body {
       height: 100%;
       margin: 0;
-      background: #1a1a1a;
+      background: var(--bg);
       display: flex;
       justify-content: center;
       align-items: center;

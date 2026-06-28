@@ -4,11 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audio Slide Show | Cosmic Intentions</title>
+  <script>(function(){var t;try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark';}catch(e){t='dark';}document.documentElement.setAttribute('data-theme',t);})();</script>
   <style>
     /* ── ASS (Audio Slide Show) foundation — Affirmations / Beliefs / Stoic ─────────
        Amber stage, dark slide panel (maroon edge), black play/pause circle on the
        bottom seam, mute + fullscreen. Slides cross-fade on a timer. ──────────────── */
     :root { --amber:#f5b820; --panel:#ffffff; --edge:#6e1614; --slidefont:4vw; --fade:1s; }
+    /* per-group theming (men=default amber, women=deep amber, kids=orange) — slide stays white */
+    [data-theme="light"] { --amber:#C8810B; --edge:#9A3D3B; }
+    [data-theme="kids"]  { --amber:#FF8C00; --edge:#1D3557; }
     * { box-sizing:border-box; }
     html, body { height:100%; margin:0; background:var(--amber); overflow:hidden;
       display:flex; align-items:center; justify-content:center;
