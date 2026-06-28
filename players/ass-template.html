@@ -8,7 +8,7 @@
     /* ── ASS (Audio Slide Show) foundation — Affirmations / Beliefs / Stoic ─────────
        Amber stage, dark slide panel (maroon edge), black play/pause circle on the
        bottom seam, mute + fullscreen. Slides cross-fade on a timer. ──────────────── */
-    :root { --amber:#f5b820; --panel:#2e2e30; --edge:#6e1614; --slidefont:4vw; --fade:1s; }
+    :root { --amber:#f5b820; --panel:#ffffff; --edge:#6e1614; --slidefont:4vw; --fade:1s; }
     * { box-sizing:border-box; }
     html, body { height:100%; margin:0; background:var(--amber); overflow:hidden;
       display:flex; align-items:center; justify-content:center;
@@ -20,10 +20,10 @@
 
     .slide { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
       gap:3%; text-align:center; padding:7% 9%; opacity:0; transition:opacity var(--fade) ease;
-      color:#fff; font-weight:700; line-height:1.4; letter-spacing:.04em; text-transform:uppercase;
+      color:#1a1a1a; font-weight:700; line-height:1.4; letter-spacing:.04em; text-transform:uppercase;
       font-size:clamp(18px, var(--slidefont), 56px); text-wrap:balance; }
     .slide.show { opacity:1; }
-    .slidetag { font-size:.34em; letter-spacing:.3em; font-weight:800; opacity:.5; }
+    .slidetag { font-size:.34em; letter-spacing:.3em; font-weight:800; color:#b07a00; opacity:.85; }
     .slide.img { padding:0; }
     .slide.img img { width:100%; height:100%; object-fit:cover; }
 
@@ -39,12 +39,6 @@
       background:rgba(255,255,255,.7); border:1px solid rgba(0,0,0,.25); border-radius:8px; cursor:pointer; }
     #ctl button:hover { background:#fff; }
     :fullscreen #ctl button, :-webkit-full-screen #ctl button { opacity:.3; }
-    /* TEMP: slide scrubber — remove before launch */
-    #scrub { position:fixed; left:14px; right:14px; bottom:12px; z-index:9999; display:flex; align-items:center; gap:10px;
-      background:rgba(0,0,0,.6); padding:9px 14px; border-radius:8px; font:700 12px/1 'Helvetica Neue',Arial,sans-serif; color:#fff; }
-    #scrubrange { flex:1; cursor:pointer; }
-    #scrubtime { min-width:54px; text-align:right; font-variant-numeric:tabular-nums; }
-    :fullscreen #scrub, :-webkit-full-screen #scrub { opacity:.3; }
   </style>
 </head>
 <body>
@@ -56,12 +50,6 @@
   <div id="ctl">
     <button id="mute">🔊 Sound on</button>
     <button id="fs">⛶ Full screen</button>
-  </div>
-
-  <!-- TEMP: slide scrubber — remove before launch -->
-  <div id="scrub">
-    <input id="scrubrange" type="range" min="0" max="0" step="1" value="0">
-    <span id="scrubtime">1 / 1</span>
   </div>
 
   <script>
@@ -112,16 +100,11 @@
     return d;
   });
 
-  const scrubRange = document.getElementById('scrubrange');   // TEMP scrubber
-  const scrubTime  = document.getElementById('scrubtime');
-  scrubRange.max = Math.max(0, slideEls.length - 1);
-
   let cur = 0, playing = false, timer = null, muted = false;
 
   function show(i) {
     cur = (i + slideEls.length) % slideEls.length;
     slideEls.forEach((el, n) => el.classList.toggle('show', n === cur));
-    scrubRange.value = cur; scrubTime.textContent = (cur + 1) + ' / ' + slideEls.length;   // TEMP scrubber sync
   }
   function renderPlay() { playSvg.innerHTML = playing ? ICON.pause : ICON.play; }
   function tick() { show(cur + 1); }
@@ -136,8 +119,6 @@
 
   muteBtn.addEventListener('click', (e) => { e.stopPropagation();
     muted = !muted; muteBtn.textContent = muted ? '🔇 Muted' : '🔊 Sound on'; });
-
-  scrubRange.addEventListener('input', () => { setPlaying(false); show(+scrubRange.value); });   // TEMP scrub through slides
 
   fsBtn.addEventListener('click', (e) => { e.stopPropagation();
     const el = document.documentElement;
