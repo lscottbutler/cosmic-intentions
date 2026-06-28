@@ -2653,12 +2653,23 @@ function showVaultBuildSheet(idx) {
   loadGoalVisualization(intent);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
-  if (roadmapEl) roadmapEl.innerHTML = buildRoadmapPanel(intent, idx);
+  if (roadmapEl) { roadmapEl.innerHTML = buildRoadmapPanel(intent, idx); roadmapEl.style.display = 'none'; }   // collapsed; banner toggles it
 
   populateWorkspaceBrandBanner();
 
   const offset = document.getElementById('page-dashboard')?.getBoundingClientRect().top + window.scrollY - 96;
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+}
+
+/* The "…'S PERSONAL ROADMAP" banner is a dropdown: show/hide the roadmap content
+   below it and rotate the banner arrow. */
+export function toggleRoadmap() {
+  const c = document.getElementById('layer-content-roadmap');
+  const a = document.getElementById('brand-banner-arrow');
+  if (!c) return;
+  const open = c.style.display !== 'none';        // currently open → about to close
+  c.style.display = open ? 'none' : '';
+  if (a) a.style.transform = 'translateY(-50%) rotate(' + (open ? '-90deg' : '0deg') + ')';
 }
 
 /* Fetch a Pexels visualization for the selected goal and slot it into the
@@ -2740,8 +2751,9 @@ function buildWorkspaceHeader(intent, idx) {
           <p class="dashboard-note-text">Focus on high-protein fueling today and visualize the energy shift post-workout.</p>
         </div>
       </div>
-      <div id="brand-banner" style="margin:8px 0;">
+      <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
         <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
+        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(-90deg); color:#F5A623; font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
       </div>
     </div>`;
 }
