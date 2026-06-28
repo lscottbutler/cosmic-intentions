@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 <script>/* DEV-ONLY error surface — only on localhost; inert in production. Surfaces any
    runtime error as a visible red overlay so nothing fails silently while testing. */
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  var __showErr=function(msg){var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999999;background:#300;color:#fff;font:12px/1.5 monospace;padding:14px;white-space:pre-wrap;max-height:50vh;overflow:auto';(document.body||document.documentElement).appendChild(d);}d.textContent+=msg+'\n';};
+  var __showErr=function(msg){var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999999;background:#300;color:var(--text);font:12px/1.5 monospace;padding:14px;white-space:pre-wrap;max-height:50vh;overflow:auto';(document.body||document.documentElement).appendChild(d);}d.textContent+=msg+'\n';};
   window.addEventListener('error',function(e){var m=e.message||'';if(m.indexOf('ResizeObserver')>-1)return;/* benign, universally ignored */__showErr('ERROR: '+m+'  @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||''));});
   window.addEventListener('unhandledrejection',function(e){__showErr('PROMISE: '+((e.reason&&e.reason.message)||e.reason||''));});
 }</script>
@@ -325,14 +325,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MEDITATIONS — banner with nav circle; tap it to slide the teal timer panel down -->
         <style>
-          .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid #f5b820;
-            color:#111; font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+          .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--brand);
+            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
             margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
           .med-dot:hover { background:#fffceb; }
           .med-banner-wrap { position:relative; line-height:0; }
           .med-banner-wrap img { width:100%; display:block; border-radius:9px; }
           .med-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
-            width:48px; height:48px; border-radius:50%; background:#0a0a0a; border:3px solid #fff; cursor:pointer;
+            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
             display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
           .med-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
             stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
@@ -341,7 +341,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
           .med-panel-collapse.open { max-height:360px; opacity:1; margin-top:9px; }
         </style>
-        <div data-player-box style="background:#f5b820; padding:9px; border-radius:12px; margin-bottom:16px;">
+        <div data-player-box style="background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
           <div class="med-banner-wrap">
             <img src="images/meditation-banner.png" alt="Meditations" />
             <button class="med-navcircle" id="medNav" title="Show / hide timers"
@@ -350,7 +350,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </button>
           </div>
           <div class="med-panel-collapse" id="medPanel">
-            <div style="background:#1bb3b3; border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
+            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
               <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
@@ -362,7 +362,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
               </div>
               <button title="Close" onclick="document.getElementById('medPanel').classList.remove('open'); document.getElementById('medNav').classList.remove('open');"
-                style="flex:0 0 auto; align-self:stretch; background:#7c5cc4; border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
@@ -376,13 +376,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <style>
           .cd-box { --cd-accent:#0075ac; }
           .cd-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--cd-accent);
-            color:#111; font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
             margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
           .cd-dot:hover { background:#f3faff; }
           .cd-banner-wrap { position:relative; line-height:0; }
           .cd-banner-wrap img { width:100%; display:block; border-radius:9px; }
           .cd-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
-            width:48px; height:48px; border-radius:50%; background:#0a0a0a; border:3px solid #fff; cursor:pointer;
+            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
             display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
           .cd-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
             stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
@@ -400,7 +400,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </button>
           </div>
           <div class="cd-panel-collapse" id="cdPanel">
-            <div style="background:#1bb3b3; border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
+            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
               <div id="countdown-times-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:13px 10px; flex:1;">
                 <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=1', event)">1</button>
                 <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=3', event)">3</button>
@@ -413,7 +413,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=60', event)">60</button>
               </div>
               <button title="Close" onclick="document.getElementById('cdPanel').classList.remove('open'); document.getElementById('cdNav').classList.remove('open');"
-                style="flex:0 0 auto; align-self:stretch; background:#7c5cc4; border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
                 <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
@@ -423,56 +423,56 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
 
         <!-- VISUALIZATION — black dropdown banner + time grid (visualizes your selected goal) -->
-        <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+        <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
           <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9673;</span>VISUALIZATION</span>
           <span style="font-size:0.85rem;">▼</span>
         </div>
 
         <div id="visualization-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
-          <button onclick="launchViz(3, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">3 MIN</button>
-          <button onclick="launchViz(10, event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">10 MIN</button>
-          <button onclick="launchCreativeViz(event)" style="grid-column: 1 / -1; padding: 12px; background: #1A1A1A; border: 1px solid #36cccc; color: #36cccc; cursor: pointer; letter-spacing: 1px;">CREATIVE VISUALIZATION</button>
-          <button onclick="launchViz(3, event)" style="grid-column: 1 / -1; padding: 12px; background: #1A1A1A; border: 1px solid #bf4170; color: #ff8ab8; cursor: pointer; letter-spacing: 1px;">3 MIN VISUALIZATION</button>
-          <button onclick="openPlayerInColumn('players/art-frame.html', event)" style="grid-column: 1 / -1; padding: 12px; background: #1A1A1A; border: 1px solid #b7895b; color: #d6b48c; cursor: pointer; letter-spacing: 1px;">ART FRAME &mdash; AUTO BORDER</button>
-          <button onclick="window.open('players/viz-editor.html','_blank')" style="grid-column: 1 / -1; padding: 10px; background: #000; border: 1px solid #444; color: #bbb; cursor: pointer; font-size: 12px; letter-spacing: 1px;">&#9998; EDIT TIMELINE</button>
+          <button onclick="launchViz(3, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">3 MIN</button>
+          <button onclick="launchViz(10, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">10 MIN</button>
+          <button onclick="launchCreativeViz(event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--teal-ui); color: var(--teal-ui); cursor: pointer; letter-spacing: 1px;">CREATIVE VISUALIZATION</button>
+          <button onclick="launchViz(3, event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--maroon); color: var(--pink); cursor: pointer; letter-spacing: 1px;">3 MIN VISUALIZATION</button>
+          <button onclick="openPlayerInColumn('players/art-frame.html', event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid #b7895b; color: #d6b48c; cursor: pointer; letter-spacing: 1px;">ART FRAME &mdash; AUTO BORDER</button>
+          <button onclick="window.open('players/viz-editor.html','_blank')" style="grid-column: 1 / -1; padding: 10px; background: var(--ink); border: 1px solid var(--border-2); color: var(--muted); cursor: pointer; font-size: 12px; letter-spacing: 1px;">&#9998; EDIT TIMELINE</button>
         </div>
 
         <!-- RECITATIONS — loop your own affirmations / beliefs / values / pegboard -->
-        <div class="player-banner" onclick="document.getElementById('recite-grid').classList.toggle('hidden')" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+        <div class="player-banner" onclick="document.getElementById('recite-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
           <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#10077;</span>RECITATIONS</span>
           <span style="font-size:0.85rem;">▼</span>
         </div>
 
         <div id="recite-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
-          <button onclick="launchRecite('affirmations', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">AFFIRMATIONS</button>
-          <button onclick="launchRecite('beliefs', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">BELIEFS</button>
-          <button onclick="launchRecite('values', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">VALUES</button>
-          <button onclick="launchRecite('pegboard', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">MY PEGBOARD</button>
-          <button onclick="launchRecite('stoic', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">STOIC</button>
-          <button onclick="launchRecite('quotes', event)" style="padding: 12px; background: #1A1A1A; border: 1px solid #333; color: white; cursor: pointer;">QUOTES</button>
-          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: #000; border: 1px solid #444; color: #bbb; cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
+          <button onclick="launchRecite('affirmations', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">AFFIRMATIONS</button>
+          <button onclick="launchRecite('beliefs', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">BELIEFS</button>
+          <button onclick="launchRecite('values', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">VALUES</button>
+          <button onclick="launchRecite('pegboard', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">MY PEGBOARD</button>
+          <button onclick="launchRecite('stoic', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">STOIC</button>
+          <button onclick="launchRecite('quotes', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">QUOTES</button>
+          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: var(--ink); border: 1px solid var(--border-2); color: var(--muted); cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
         </div>
 
         <!-- LIBRARY MANAGER MODAL (Stoic / Quotes) -->
         <div id="libraryManager" style="display:none; position:fixed; inset:0; z-index:700; background:rgba(0,0,0,0.72); align-items:center; justify-content:center; padding:20px;">
-          <div style="background:#161616; border:1px solid #333; border-radius:10px; width:min(560px,94vw); max-height:88vh; overflow:auto; padding:18px 18px 22px;">
+          <div style="background:var(--sunken); border:1px solid var(--border); border-radius:10px; width:min(560px,94vw); max-height:88vh; overflow:auto; padding:18px 18px 22px;">
             <div style="display:flex; align-items:center; margin-bottom:12px;">
-              <span style="color:#fff; font-weight:800; letter-spacing:1px;">RECITATION LIBRARIES</span>
-              <button onclick="closeLibraryManager()" style="margin-left:auto; background:none; border:none; color:#aaa; font-size:20px; cursor:pointer;">&#10006;</button>
+              <span style="color:var(--text); font-weight:800; letter-spacing:1px;">RECITATION LIBRARIES</span>
+              <button onclick="closeLibraryManager()" style="margin-left:auto; background:none; border:none; color:var(--mid); font-size:20px; cursor:pointer;">&#10006;</button>
             </div>
-            <p style="color:#888; font-size:12px; margin:0 0 14px;">One principle per line. Shown as a rotating daily window so the whole library cycles over ~2 weeks. (Quotes are generated per goal — use "✦ Generate AI Library" on each goal.)</p>
+            <p style="color:var(--muted); font-size:12px; margin:0 0 14px;">One principle per line. Shown as a rotating daily window so the whole library cycles over ~2 weeks. (Quotes are generated per goal — use "✦ Generate AI Library" on each goal.)</p>
 
-            <label style="color:#e02020; font-size:12px; font-weight:700; letter-spacing:1px;">STOIC PRINCIPLES</label>
-            <textarea id="libmgr-stoic" rows="9" placeholder="One stoic principle per line…" style="width:100%; box-sizing:border-box; margin:6px 0; background:#0d0d0d; color:#eee; border:1px solid #333; border-radius:6px; padding:10px; font-size:13px; line-height:1.5; resize:vertical;"></textarea>
+            <label style="color:var(--danger); font-size:12px; font-weight:700; letter-spacing:1px;">STOIC PRINCIPLES</label>
+            <textarea id="libmgr-stoic" rows="9" placeholder="One stoic principle per line…" style="width:100%; box-sizing:border-box; margin:6px 0; background:var(--sunken); color:var(--black); border:1px solid var(--border); border-radius:6px; padding:10px; font-size:13px; line-height:1.5; resize:vertical;"></textarea>
             <div style="display:flex; align-items:center; gap:10px;">
-              <button onclick="saveLibrary('stoic')" style="background:#e02020; color:#fff; border:none; border-radius:6px; padding:9px 18px; font-weight:700; cursor:pointer;">Save Stoic</button>
-              <span id="libmgr-status-stoic" style="color:#7CFC9B; font-size:12px;"></span>
+              <button onclick="saveLibrary('stoic')" style="background:var(--danger); color:var(--text); border:none; border-radius:6px; padding:9px 18px; font-weight:700; cursor:pointer;">Save Stoic</button>
+              <span id="libmgr-status-stoic" style="color:var(--success); font-size:12px;"></span>
             </div>
           </div>
         </div>
 
         <!-- FAVORITES — quick-play saved players + auto-play-all -->
-        <div class="player-banner" onclick="toggleFavorites()" style="background:#000; color:#fff; padding:14px 16px; border:1px solid #333; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+        <div class="player-banner" onclick="toggleFavorites()" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
           <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9829;&#65038;</span>FAVORITES</span>
           <span style="font-size:0.85rem;">▼</span>
         </div>
@@ -482,9 +482,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="playerColumn" style="display:none;margin-top:4px;margin-bottom:10px;">
           <div style="display:flex;gap:8px;margin-bottom:8px;">
             <button class="player-col-back" onclick="closePlayerColumn()"
-              style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">← Back</button>
+              style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">← Back</button>
             <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(document.getElementById('playerColumnFrame'))"
-              style="background:#1a1a1a;border:1px solid #bf4170;color:#ff8ab8;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">&#9974; Full screen</button>
+              style="background:var(--card);border:1px solid var(--maroon);color:var(--pink);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">&#9974; Full screen</button>
           </div>
           <iframe id="playerColumnFrame" title="Player" allow="autoplay; fullscreen" allowfullscreen
             style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:8px;background:transparent;"></iframe>
@@ -494,11 +494,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div data-player-box style="background:#1a1430; border:1px solid #4a3a7a; border-radius:10px; padding:16px; margin:18px 0 10px;">
           <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
             <span style="font-size:20px; line-height:1;">&#10022;</span>
-            <span style="font-weight:800; letter-spacing:1px; color:#fff;">MINDSET</span>
+            <span style="font-weight:800; letter-spacing:1px; color:var(--text);">MINDSET</span>
             <span style="margin-left:auto; font-size:11px; color:#9b8fd0; letter-spacing:.5px;">FULL SESSION</span>
           </div>
           <p style="margin:0 0 12px; font-size:12px; line-height:1.5; color:#b8aee0;">Plays your selected goal's affirmations, beliefs, stoic principles &amp; winning attitudes — back to back.</p>
-          <button onclick="launchMindset(event)" style="width:100%; padding:12px; background:#7c5cc4; border:none; border-radius:8px; color:#fff; font-weight:800; letter-spacing:1px; cursor:pointer;">&#9654; PLAY FULL MINDSET</button>
+          <button onclick="launchMindset(event)" style="width:100%; padding:12px; background:var(--purple); border:none; border-radius:8px; color:var(--text); font-weight:800; letter-spacing:1px; cursor:pointer;">&#9654; PLAY FULL MINDSET</button>
         </div>
 
       </aside>
@@ -531,7 +531,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <div class="vaf-label">New I AM Statement</div>
 
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-              <span style="font-size:13px;font-weight:700;color:#9A948F;white-space:nowrap;flex-shrink:0;">I AM</span>
+              <span style="font-size:13px;font-weight:700;color:var(--text-warm);white-space:nowrap;flex-shrink:0;">I AM</span>
               <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
                 placeholder="proud owner of"
                 maxlength="60"
@@ -546,8 +546,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               onkeydown="if(event.key==='Enter')confirmAddIntention()" />
 
             <div id="iam-preview" style="
-              font-size:14px;font-weight:700;color:#fff;
-              background:#1a1a1a;border:1px solid #333;border-radius:8px;
+              font-size:14px;font-weight:700;color:var(--text);
+              background:var(--card);border:1px solid var(--border);border-radius:8px;
               padding:10px 14px;margin-bottom:12px;line-height:1.4;
               min-height:42px;transition:opacity 0.2s;opacity:0.3;
             ">I AM …</div>
@@ -601,10 +601,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-setup">
     <div class="setup-page">
 
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#111;border-bottom:1px solid #2a2a2a;margin:-20px -20px 20px;">
-        <button onclick="history.back()" style="background:#1a1a1a;border:1px solid #333;color:#ccc;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">← Back</button>
-        <button onclick="navTo('home')" style="background:#1a1a1a;border:1px solid #333;color:#ccc;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">⌂ Home</button>
-        <button onclick="history.forward()" style="background:#1a1a1a;border:1px solid #333;color:#ccc;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">Forward →</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--sunken);border-bottom:1px solid var(--border-2);margin:-20px -20px 20px;">
+        <button onclick="history.back()" style="background:var(--card);border:1px solid var(--border);color:var(--mid);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">← Back</button>
+        <button onclick="navTo('home')" style="background:var(--card);border:1px solid var(--border);color:var(--mid);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">⌂ Home</button>
+        <button onclick="history.forward()" style="background:var(--card);border:1px solid var(--border);color:var(--mid);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;">Forward →</button>
       </div>
 
       <div class="setup-page-header">

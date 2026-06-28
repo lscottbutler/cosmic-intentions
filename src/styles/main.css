@@ -40,7 +40,7 @@ body {
   --white:  #1A1A1A;   --bg:      #1A1A1A;
   --off:    #252525;   --card:    #1A1A1A;   --sunken: #111111;   --ink: #0A0A0A;
   /* text */
-  --black:  #EFEFEF;   --text:    #FFFFFF;   --mid:  #AAAAAA;  --muted: #888888;  --text-warm:#9A948F;
+  --black:  #EFEFEF;   --text:    #FFFFFF;   --on-ink:#FFFFFF;   --mid:  #AAAAAA;  --muted: #888888;  --text-warm:#9A948F;
   /* lines */
   --border: #383838;   --border-2:#2A2A2A;
   /* accents */
@@ -686,7 +686,7 @@ body {
 .pb-add-intention-btn {
   padding: 8px 14px;
   background: var(--ink);
-  color: var(--text);
+  color: var(--on-ink);
   border: none;
   border-radius: 6px;
   font-size: 12px;
@@ -1080,7 +1080,7 @@ textarea.field-input.tall { min-height: 110px; }
   margin-top: 20px;
   padding: 13px 28px;
   background: var(--ink);
-  color: var(--text);
+  color: var(--on-ink);
   border: none;
   border-radius: 8px;
   font-size: 15px;
@@ -1703,7 +1703,7 @@ input, textarea, select {
   border-radius: 20px;
   border: none;
   background: var(--ink);
-  color: var(--text);
+  color: var(--on-ink);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -1810,7 +1810,7 @@ input, textarea, select {
   height: 24px;
   border-radius: 50%;
   background: var(--ink);
-  color: var(--text);
+  color: var(--on-ink);
   font-size: 10px;
   font-weight: 800;
   display: flex;
@@ -2099,7 +2099,7 @@ input, textarea, select {
   padding: 12px;
   width: calc(100% - 40px);
   background: var(--ink);
-  color: var(--text);
+  color: var(--on-ink);
   border: none;
   border-radius: 8px;
   font-size: 14px;
