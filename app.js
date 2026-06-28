@@ -2187,7 +2187,7 @@ export function renderVaultSidebar() {
         </div>`;
 
       listEl.innerHTML = filtered.map((i, listIdx) => {
-        const shade    = GREY_SHADES[listIdx % GREY_SHADES.length];
+        const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const isSelected = selectedVaultIdx === i._idx;
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
         return `
@@ -2732,6 +2732,7 @@ export function vaultShowAddForm() {
 /* ── WORKSPACE HEADER — goal card + brand banner ──────── */
 function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
+  const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same palette as the goal box → title matches its card
   return `
     <div style="padding:12px 16px 0;">
       <!-- clear way back to the goal list -->
@@ -2744,7 +2745,7 @@ function buildWorkspaceHeader(intent, idx) {
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;background:#D92121;color:#fff;padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
+        <div style="flex:1;background:${shade.bg};color:${shade.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
