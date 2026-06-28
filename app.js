@@ -577,15 +577,15 @@ function renderUlyssesContracts(contracts) {
   const list = document.getElementById('ulyssesContractList');
   if (!list) return;
   if (!contracts || contracts.length === 0) {
-    list.innerHTML = `<div style="font-size:11px;color:#383840;padding:8px 0;">No contracts yet. Add your first pre-commitment above.</div>`;
+    list.innerHTML = `<div style="font-size:11px;color:var(--border);padding:8px 0;">No contracts yet. Add your first pre-commitment above.</div>`;
     return;
   }
   list.innerHTML = contracts.map((c, i) => `
     <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:#1a0808;border:1px solid #3a1a1a;border-radius:8px;margin-bottom:8px;">
-      <span style="font-family:var(--vault-mono);font-size:8px;color:#F87171;font-weight:800;white-space:nowrap;margin-top:3px;">⚓ ${i+1}</span>
-      <span style="flex:1;font-size:11px;color:#C8C8D0;line-height:1.6;">${esc(c.text)}</span>
+      <span style="font-family:var(--vault-mono);font-size:8px;color:var(--danger);font-weight:800;white-space:nowrap;margin-top:3px;">⚓ ${i+1}</span>
+      <span style="flex:1;font-size:11px;color:var(--mid);line-height:1.6;">${esc(c.text)}</span>
       <button onclick="removeUlyssesContract(${i})"
-        style="background:none;border:none;color:#F87171;cursor:pointer;font-size:14px;flex-shrink:0;opacity:0.5;"
+        style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;flex-shrink:0;opacity:0.5;"
         title="Remove">✕</button>
     </div>`).join('');
 }
@@ -991,13 +991,13 @@ function checkHotStateAlert() {
     <span style="font-size:20px;flex-shrink:0;">🌙</span>
     <div style="flex:1;">
       <div style="font-family:'Roboto Condensed',sans-serif;font-size:10px;font-weight:800;
-        color:#F87171;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">
+        color:var(--danger);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">
         Hot State — ${start}:00–${end}:00</div>
-      <div style="font-size:11px;color:#C8C8D0;line-height:1.5;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:8px;">
         Your high-risk window is active. You pre-wired the plan. Execute it.</div>
     </div>
     <button onclick="this.closest('#hotStateToast').remove()"
-      style="background:none;border:none;color:#505058;cursor:pointer;font-size:16px;
+      style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;
       flex-shrink:0;line-height:1;">✕</button>
   `;
   document.body.appendChild(toast);
@@ -2162,9 +2162,9 @@ export function renderVaultSidebar() {
       .filter(i => vaultActiveCategory === 'all' || detectCategory(i.title) === vaultActiveCategory);
 
     if (filtered.length === 0) {
-      listEl.innerHTML = `<div style="padding:16px 14px;font-size:12px;color:#40404A;line-height:1.6">${
+      listEl.innerHTML = `<div style="padding:16px 14px;font-size:12px;color:var(--muted);line-height:1.6">${
         intentions.length === 0
-          ? 'No intentions yet.<br>Tap <strong style="color:#68686E">+ Add Intention</strong> below.'
+          ? 'No intentions yet.<br>Tap <strong style="color:var(--muted)">+ Add Intention</strong> below.'
           : 'No intentions in this category.'
       }</div>`;
     } else {
@@ -2195,15 +2195,15 @@ export function renderVaultSidebar() {
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:#000;color:#fff">${i._idx + 1}</div>
+          <div class="vault-item-num" style="background:var(--ink);color:var(--on-ink)">${i._idx + 1}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
-            <button onclick="closeGoalPlayer()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&times; Close</button>
-            <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(this.parentElement.nextElementSibling)" style="background:#1a1a1a;border:1px solid #bf4170;color:#ff8ab8;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&#9974; Full screen</button>
+            <button onclick="closeGoalPlayer()" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&times; Close</button>
+            <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(this.parentElement.nextElementSibling)" style="background:var(--card);border:1px solid var(--maroon);color:var(--pink);border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&#9974; Full screen</button>
           </div>
           <iframe src="${inlineGoalPlayer.src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:transparent;display:block;"></iframe>
         </div>` : ''}`;
@@ -2230,7 +2230,7 @@ async function renderEmbeddedProgress() {
   const el = document.getElementById('embedded-progress-workspace');
   if (!el) return;
 
-  el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:2px;padding:4px 0 8px;">LOADING…</div>`;
+  el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);letter-spacing:2px;padding:4px 0 8px;">LOADING…</div>`;
 
   const weekStart = (() => {
     const d = new Date(); const day = d.getDay() || 7;
@@ -2284,7 +2284,7 @@ async function renderEmbeddedProgress() {
   const systemFrac    = Math.min((goalsSet/5*0.3) + ((roadmapsGen||0)/3*0.4) + ((mapFilled||0)/3*0.3), 1);
   const systemScore   = systemFrac * 25;
   const ciScore       = Math.round(streakScore + practiceScore + systemScore);
-  const scoreColor    = ciScore >= 75 ? '#4ADE80' : ciScore >= 40 ? '#F5A623' : '#60A0FF';
+  const scoreColor    = ciScore >= 75 ? 'var(--success)' : ciScore >= 40 ? 'var(--brand)' : 'var(--accent)';
   const scoreLabel    = ciScore >= 75 ? 'ELITE' : ciScore >= 40 ? 'BUILDING' : 'STARTING';
 
   const practices = [
@@ -2310,59 +2310,59 @@ async function renderEmbeddedProgress() {
   const nextUnlock = unlockQueue.find(u => u.test);
   const isNew = sessionsAll === 0 && goalsSet === 0;
 
-  el.innerHTML = `<div style="border-top:1px solid #1e1e1e;padding-top:16px;margin-top:4px;">
+  el.innerHTML = `<div style="border-top:1px solid var(--card);padding-top:16px;margin-top:4px;">
 
-    <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;margin-bottom:16px;">◈ PROGRESS</div>
+    <div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);font-weight:800;letter-spacing:2px;margin-bottom:16px;">◈ PROGRESS</div>
 
     <!-- CI SCORE HERO -->
-    <div style="background:#1A1A1A;border:1px solid #2a2a2a;border-radius:12px;padding:20px 16px;margin-bottom:16px;
+    <div style="background:var(--card);border:1px solid var(--border-2);border-radius:12px;padding:20px 16px;margin-bottom:16px;
       display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
       <div style="text-align:center;flex-shrink:0;">
         <div style="font-size:56px;font-weight:900;color:${scoreColor};line-height:1;font-family:var(--vault-mono);">${ciScore}</div>
         <div style="font-family:var(--vault-mono);font-size:9px;color:${scoreColor};letter-spacing:2px;margin-top:4px;font-weight:800;">${scoreLabel}</div>
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#383840;letter-spacing:1px;margin-top:2px;">CI SCORE</div>
+        <div style="font-family:var(--vault-mono);font-size:8px;color:var(--border);letter-spacing:1px;margin-top:2px;">CI SCORE</div>
       </div>
       <div style="flex:1;min-width:140px;">
-        ${streak > 0 ? `<div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:3px;">🔥 ${streak}-day streak</div>` : ''}
-        ${daysAsMember > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:#505058;margin-bottom:12px;">Member ${daysAsMember}d</div>` : ''}
-        ${_epScoreBar('Consistency', streakScore, 35, '#F5A623')}
-        ${_epScoreBar('Practice',    practiceScore, 40, '#60A0FF')}
-        ${_epScoreBar('System',      systemScore, 25, '#4ADE80')}
-        <div style="font-size:9px;color:#383840;margin-top:8px;">Hit 75 to reach Elite.</div>
+        ${streak > 0 ? `<div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;">🔥 ${streak}-day streak</div>` : ''}
+        ${daysAsMember > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);margin-bottom:12px;">Member ${daysAsMember}d</div>` : ''}
+        ${_epScoreBar('Consistency', streakScore, 35, 'var(--brand)')}
+        ${_epScoreBar('Practice',    practiceScore, 40, 'var(--accent)')}
+        ${_epScoreBar('System',      systemScore, 25, 'var(--success)')}
+        <div style="font-size:9px;color:var(--border);margin-top:8px;">Hit 75 to reach Elite.</div>
       </div>
     </div>
 
     ${isNew ? `
-    <div style="background:#1A1A1A;border:1px solid #222;border-radius:10px;padding:20px;text-align:center;margin-bottom:16px;">
+    <div style="background:var(--card);border:1px solid var(--border-2);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px;">
       <div style="font-size:24px;margin-bottom:8px;">◈</div>
-      <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;">Your dashboard activates as you use CI.</div>
-      <div style="font-size:11px;color:#505058;line-height:1.6;">Every session you run shows up here.</div>
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Your dashboard activates as you use CI.</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.6;">Every session you run shows up here.</div>
     </div>` : ''}
 
     ${practices.length > 0 ? `
     <div style="margin-bottom:16px;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;margin-bottom:10px;">WHAT'S MOVING</div>
+      <div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);font-weight:800;letter-spacing:2px;margin-bottom:10px;">WHAT'S MOVING</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">
         ${practices.map(p => `
-          <div style="background:#1A1A1A;border:1px solid #222;border-radius:10px;padding:12px 10px;text-align:center;
+          <div style="background:var(--card);border:1px solid var(--border-2);border-radius:10px;padding:12px 10px;text-align:center;
             ${p.nav ? 'cursor:pointer;' : ''}" ${p.nav ? `onclick="${p.nav}"` : ''}>
             <div style="font-size:18px;margin-bottom:4px;">${p.icon}</div>
-            <div style="font-size:20px;font-weight:900;color:#fff;font-family:var(--vault-mono);line-height:1;">${p.count.toLocaleString()}</div>
-            <div style="font-size:8px;color:#505058;font-family:var(--vault-mono);margin-top:3px;letter-spacing:0.5px;">${p.label.toUpperCase()}</div>
+            <div style="font-size:20px;font-weight:900;color:var(--text);font-family:var(--vault-mono);line-height:1;">${p.count.toLocaleString()}</div>
+            <div style="font-size:8px;color:var(--muted);font-family:var(--vault-mono);margin-top:3px;letter-spacing:0.5px;">${p.label.toUpperCase()}</div>
           </div>`).join('')}
       </div>
     </div>` : ''}
 
     ${system.length > 0 ? `
     <div style="margin-bottom:16px;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;margin-bottom:10px;">YOUR SYSTEM</div>
-      <div style="background:#1A1A1A;border:1px solid #222;border-radius:10px;overflow:hidden;">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);font-weight:800;letter-spacing:2px;margin-bottom:10px;">YOUR SYSTEM</div>
+      <div style="background:var(--card);border:1px solid var(--border-2);border-radius:10px;overflow:hidden;">
         ${system.map((s,i) => `
           <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;
-            ${i < system.length-1 ? 'border-bottom:1px solid #1f1f1f;' : ''}">
+            ${i < system.length-1 ? 'border-bottom:1px solid var(--card);' : ''}">
             <span style="font-size:14px;width:20px;text-align:center;">${s.icon}</span>
-            <span style="font-size:11px;color:#aaa;flex:1;">${s.label}</span>
-            <span style="font-family:var(--vault-mono);font-size:13px;font-weight:800;color:#fff;">${s.count.toLocaleString()}</span>
+            <span style="font-size:11px;color:var(--mid);flex:1;">${s.label}</span>
+            <span style="font-family:var(--vault-mono);font-size:13px;font-weight:800;color:var(--text);">${s.count.toLocaleString()}</span>
           </div>`).join('')}
       </div>
     </div>` : ''}
@@ -2370,23 +2370,23 @@ async function renderEmbeddedProgress() {
     ${mapGoals.length > 0 ? `
     <div style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;font-weight:800;letter-spacing:2px;">MY ROADMAP</div>
-        ${mapTodos > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:#4ADE80;">${mapTodos} done</div>` : ''}
+        <div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);font-weight:800;letter-spacing:2px;">MY ROADMAP</div>
+        ${mapTodos > 0 ? `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--success);">${mapTodos} done</div>` : ''}
       </div>
-      <div style="background:#1A1A1A;border:1px solid #222;border-radius:10px;overflow:hidden;">
+      <div style="background:var(--card);border:1px solid var(--border-2);border-radius:10px;overflow:hidden;">
         ${mapGoals.map((g,i) => {
           const pct  = g.total > 0 ? Math.round((g.checked / g.total) * 100) : 0;
           const done = g.checked === g.total && g.total > 0;
-          const barColor = done ? '#4ADE80' : pct >= 50 ? '#F5A623' : '#60A0FF';
+          const barColor = done ? 'var(--success)' : pct >= 50 ? 'var(--brand)' : 'var(--accent)';
           const title = g.title.replace(/^i am\s+/i,'').replace(/\b\w/g, c => c.toUpperCase());
           return `
-          <div style="padding:12px 14px;${i < mapGoals.length-1 ? 'border-bottom:1px solid #1f1f1f;' : ''}">
+          <div style="padding:12px 14px;${i < mapGoals.length-1 ? 'border-bottom:1px solid var(--card);' : ''}">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-              <div style="font-size:11px;color:${done?'#4ADE80':'#ccc'};font-weight:${done?'700':'400'};
+              <div style="font-size:11px;color:${done?'var(--success)':'var(--mid)'};font-weight:${done?'700':'400'};
                 overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">${done?'✓ ':''} ${title}</div>
               <div style="font-family:var(--vault-mono);font-size:9px;color:${barColor};font-weight:800;flex-shrink:0;">${g.checked}/${g.total}</div>
             </div>
-            <div style="height:3px;background:#252525;border-radius:2px;">
+            <div style="height:3px;background:var(--off);border-radius:2px;">
               <div style="height:3px;background:${barColor};border-radius:2px;width:${pct}%;"></div>
             </div>
           </div>`;
@@ -2401,10 +2401,10 @@ function _epScoreBar(label, score, max, color) {
   const pct = max > 0 ? Math.round((score / max) * 100) : 0;
   return `<div style="margin-bottom:8px;">
     <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-family:var(--vault-mono);font-size:8px;color:#505058;">${label}</span>
+      <span style="font-family:var(--vault-mono);font-size:8px;color:var(--muted);">${label}</span>
       <span style="font-family:var(--vault-mono);font-size:8px;color:${color};">${Math.round(score)}/${max}</span>
     </div>
-    <div style="height:3px;background:#252525;border-radius:2px;">
+    <div style="height:3px;background:var(--off);border-radius:2px;">
       <div style="height:3px;background:${color};border-radius:2px;width:${pct}%;transition:width 0.4s;"></div>
     </div>
   </div>`;
@@ -2637,9 +2637,9 @@ function switchWorkspaceLayer(name) {
     const layer = document.getElementById(`layer-content-${n}`);
     if (btn) {
       const on = n === name;
-      btn.style.color        = on ? '#F5A623' : '#888';
-      btn.style.borderBottom = on ? '2px solid #F5A623' : '2px solid transparent';
-      btn.style.background   = on ? '#1A1A1A' : 'transparent';
+      btn.style.color        = on ? 'var(--brand)' : 'var(--muted)';
+      btn.style.borderBottom = on ? '2px solid var(--brand)' : '2px solid transparent';
+      btn.style.background   = on ? 'var(--card)' : 'transparent';
     }
     if (layer) layer.style.display = n === name ? '' : 'none';
   });
@@ -2736,22 +2736,22 @@ function buildWorkspaceHeader(intent, idx) {
     <div style="padding:12px 16px 0;">
       <!-- clear way back to the goal list -->
       <button onclick="closeVaultBuildSheet()"
-        style="display:inline-flex;align-items:center;gap:7px;background:#1A1A1A;border:1px solid #383838;
-        border-radius:8px;color:#F5A623;font-family:var(--vault-mono);font-size:11px;font-weight:800;
+        style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);
+        border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;
         letter-spacing:0.8px;padding:9px 15px;cursor:pointer;margin-bottom:10px;">← BACK TO MY GOALS</button>
-      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid #333;background:#111;">
+      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
-        <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:#666;font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+        <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
+        <div style="flex:1;font-size:18px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
         ${[['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']].map(([k,ic,lbl]) =>
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)"
-            style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:#000;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;">
-            <span style="font-size:13px;line-height:1;color:#F5A623;">${ic}</span>${lbl}</button>`
+            style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;">
+            <span style="font-size:13px;line-height:1;color:var(--brand);">${ic}</span>${lbl}</button>`
         ).join('')}
       </div>
       <div class="dashboard-note-container">
@@ -2762,7 +2762,7 @@ function buildWorkspaceHeader(intent, idx) {
       </div>
       <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
         <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
-        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(-90deg); color:#F5A623; font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
+        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(-90deg); color:var(--brand); font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
       </div>
     </div>`;
 }
@@ -2775,9 +2775,9 @@ function buildStrategyContent(intent, idx) {
     </div>
     <div style="text-align:right;padding:4px 16px 8px;">
       <button onclick="deleteIntention(${idx})"
-        style="background:none;border:none;color:#383838;font-size:11px;cursor:pointer;
+        style="background:none;border:none;color:var(--border);font-size:11px;cursor:pointer;
         letter-spacing:0.05em;padding:4px 8px;transition:color 0.15s;"
-        onmouseover="this.style.color='#F87171'" onmouseout="this.style.color='#383838'">
+        onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--border)'">
         🗑 remove intention
       </button>
     </div>`;
@@ -2796,10 +2796,10 @@ function _renderTactics(intent, idx) {
   if (!ops.length && !mile) {
     return `
       <div style="padding:48px 24px;text-align:center;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#505058;letter-spacing:2px;margin-bottom:16px;">NO BRIEF YET</div>
-        <div style="font-size:12px;color:#505058;line-height:1.8;margin-bottom:24px;">Generate your Strategy first — the Tactics brief is built in the same pass.</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;">NO BRIEF YET</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:24px;">Generate your Strategy first — the Tactics brief is built in the same pass.</div>
         <button onclick="generateBBFW(${idx}, true)"
-          style="background:#F5A623;border:none;border-radius:6px;padding:10px 20px;
+          style="background:var(--brand);border:none;border-radius:6px;padding:10px 20px;
           font-family:var(--vault-mono);font-size:10px;font-weight:800;color:#000;cursor:pointer;letter-spacing:1px;">
           ◈ BUILD BRIEF
         </button>
@@ -2807,28 +2807,28 @@ function _renderTactics(intent, idx) {
   }
 
   const opsHtml = ops.map((op, i) => `
-    <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #1E1E1E;">
-      <div style="width:20px;height:20px;flex-shrink:0;margin-top:1px;border:1.5px solid #F5A623;border-radius:4px;"></div>
-      <div style="font-size:13px;color:#D0D0D0;line-height:1.5;">${esc(op)}</div>
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--card);">
+      <div style="width:20px;height:20px;flex-shrink:0;margin-top:1px;border:1.5px solid var(--brand);border-radius:4px;"></div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.5;">${esc(op)}</div>
     </div>`).join('');
 
   const mileHtml = mile ? `
-    <div style="margin-top:24px;border:1px solid #2A2A2A;border-radius:8px;padding:16px 18px;background:#111;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#60A0FF;letter-spacing:1.5px;margin-bottom:10px;">⚡ WEEKLY MILESTONE</div>
-      <div style="font-size:14px;font-weight:600;color:#E0E0E0;line-height:1.5;">${esc(mile)}</div>
+    <div style="margin-top:24px;border:1px solid var(--border-2);border-radius:8px;padding:16px 18px;background:var(--sunken);">
+      <div style="font-family:var(--vault-mono);font-size:9px;color:var(--accent);letter-spacing:1.5px;margin-bottom:10px;">⚡ WEEKLY MILESTONE</div>
+      <div style="font-size:14px;font-weight:600;color:var(--mid);line-height:1.5;">${esc(mile)}</div>
     </div>` : '';
 
   return `
     <div style="padding:20px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ EXECUTION BRIEF</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--brand);font-weight:800;letter-spacing:1.5px;">◈ EXECUTION BRIEF</div>
         <button onclick="generateBBFW(${idx}, true)"
-          style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
-          font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
+          style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;
+          font-family:var(--vault-mono);font-size:9px;color:var(--muted);cursor:pointer;letter-spacing:0.5px;">
           ↺ Regenerate
         </button>
       </div>
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#505058;letter-spacing:1px;margin-bottom:4px;">DAILY OPERATIONS</div>
+      <div style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">DAILY OPERATIONS</div>
       ${opsHtml}
       ${mileHtml}
     </div>`;
@@ -2843,8 +2843,8 @@ export function buildBBFWPanel(intent, idx) {
   if (!_hasBbfw(bbfw)) {
     return `
       <div id="bbfw-loading-${idx}" style="padding:40px 20px;text-align:center;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:10px;">◈ BUILDING YOUR FRAMEWORK</div>
-        <div style="font-size:12px;color:#505058;line-height:2;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--brand);letter-spacing:2px;margin-bottom:10px;">◈ BUILDING YOUR FRAMEWORK</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2;">
           Connecting to your entrepreneur identity…<br>
           Mapping your friction points…<br>
           Building your executive brief…
@@ -2861,23 +2861,23 @@ export function renderBBFW(bbfw, idx) {
     ? `<div style="background:#2A2410;border:1px solid #5C4A12;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
          <span style="font-size:14px;flex-shrink:0;">↺</span>
          <div style="flex:1;font-size:11px;color:#E8C76A;line-height:1.5;">Built with an older engine — refresh for the streamlined format.</div>
-         <button onclick="generateBBFW(${idx}, true)" style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#000;cursor:pointer;letter-spacing:0.5px;">REFRESH</button>
+         <button onclick="generateBBFW(${idx}, true)" style="flex-shrink:0;background:var(--brand);border:none;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;color:#000;cursor:pointer;letter-spacing:0.5px;">REFRESH</button>
        </div>`
     : '';
 
   // Identity phrase
   const rawIdentity = (bbfw.identity_phrase || (window.activeEntCard ? `YOU ARE ${String(window.activeEntCard).toUpperCase()}` : '')).trim();
   const identityHtml = rawIdentity
-    ? `<div style="font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#F5A623;margin-bottom:16px;">${esc(rawIdentity)}</div>`
+    ? `<div style="font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--brand);margin-bottom:16px;">${esc(rawIdentity)}</div>`
     : '';
 
   // Coaching paragraph
   const strategyHtml = (typeof bbfw.strategy_narrative === 'string' && bbfw.strategy_narrative.trim())
-    ? `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.6;letter-spacing:-0.01em;margin:0 0 20px;white-space:pre-wrap;">${esc(bbfw.strategy_narrative)}</p>`
+    ? `<p style="font-size:1rem;font-weight:500;color:var(--mid);line-height:1.6;letter-spacing:-0.01em;margin:0 0 20px;white-space:pre-wrap;">${esc(bbfw.strategy_narrative)}</p>`
     : (bbfw.eternal_problems || []).map(ep => {
         const insight = esc(ep.insight || '');
-        const action  = ep.action ? `<div style="font-size:12px;color:#FFCC00;margin:2px 0 14px;line-height:1.5;">→ ${esc(ep.action)}</div>` : '';
-        return `<p style="font-size:1rem;font-weight:500;color:#E0E0E0;line-height:1.6;letter-spacing:-0.01em;margin:0 0 10px;">${insight}</p>${action}`;
+        const action  = ep.action ? `<div style="font-size:12px;color:var(--brand);margin:2px 0 14px;line-height:1.5;">→ ${esc(ep.action)}</div>` : '';
+        return `<p style="font-size:1rem;font-weight:500;color:var(--mid);line-height:1.6;letter-spacing:-0.01em;margin:0 0 10px;">${insight}</p>${action}`;
       }).join('');
 
   // Single friction warning
@@ -2891,10 +2891,10 @@ export function renderBBFW(bbfw, idx) {
   return `
     <div style="padding:20px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;font-weight:800;letter-spacing:1.5px;">◈ STRATEGY</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--brand);font-weight:800;letter-spacing:1.5px;">◈ STRATEGY</div>
         <button onclick="generateBBFW(${idx}, true)" id="bbfw-gen-btn-${idx}"
-          style="background:none;border:1px solid #383838;border-radius:6px;padding:5px 10px;
-          font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">
+          style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;
+          font-family:var(--vault-mono);font-size:9px;color:var(--muted);cursor:pointer;letter-spacing:0.5px;">
           ↺ Regenerate
         </button>
       </div>
@@ -2928,8 +2928,8 @@ export async function generateBBFW(idx, force) {
   if (panel) {
     panel.innerHTML = `
       <div style="padding:40px 20px;text-align:center;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#F5A623;letter-spacing:2px;margin-bottom:16px;">◈ APEX PROTOCOL ACTIVE</div>
-        <div id="apex-status-${idx}" style="font-family:var(--vault-mono);font-size:9px;color:#888;letter-spacing:1px;line-height:1.8;min-height:40px;transition:opacity 0.4s;">${_apexSteps[0].msg}</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--brand);letter-spacing:2px;margin-bottom:16px;">◈ APEX PROTOCOL ACTIVE</div>
+        <div id="apex-status-${idx}" style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);letter-spacing:1px;line-height:1.8;min-height:40px;transition:opacity 0.4s;">${_apexSteps[0].msg}</div>
       </div>`;
     _apexSteps.forEach(step => {
       _apexTimers.push(setTimeout(() => {
@@ -2949,8 +2949,8 @@ export async function generateBBFW(idx, force) {
     if (panel) panel.innerHTML = `
       <div style="padding:24px 20px;">
         <div style="color:#FF375F;font-family:var(--vault-mono);font-size:11px;margin-bottom:12px;">Generation failed</div>
-        <div style="font-size:12px;color:#888;">${esc(e.message)}</div>
-        <button onclick="generateBBFW(${idx}, true)" style="margin-top:16px;background:#F5A623;color:#000;border:none;border-radius:8px;
+        <div style="font-size:12px;color:var(--muted);">${esc(e.message)}</div>
+        <button onclick="generateBBFW(${idx}, true)" style="margin-top:16px;background:var(--brand);color:#000;border:none;border-radius:8px;
           padding:10px 20px;font-family:var(--vault-mono);font-size:11px;font-weight:800;cursor:pointer;">Try Again</button>
       </div>`;
   }
@@ -3053,7 +3053,7 @@ function buildBSRoadmapPanel(intent, idx) {
     roadmapHTML = `
       <div class="bs-section">
         <div class="bs-section-hd">◈ AI ROADMAP</div>
-        <p style="padding:8px 20px 4px;font-size:13px;color:#50505A;line-height:1.6">
+        <p style="padding:8px 20px 4px;font-size:13px;color:var(--muted);line-height:1.6">
           Generate a personalized 7-step action strategy for this intention.
         </p>
         <button class="bs-gen-btn" id="bsRoadmapBtn-${idx}"
@@ -3083,7 +3083,7 @@ function buildBSLibraryPanel(intent, idx) {
     return `
       <div class="bs-section" style="border-bottom:none">
         <div class="bs-section-hd">✦ AI LIBRARY</div>
-        <p style="padding:8px 20px 4px;font-size:13px;color:#50505A;line-height:1.6">
+        <p style="padding:8px 20px 4px;font-size:13px;color:var(--muted);line-height:1.6">
           Generate personalized affirmations, beliefs, attitudes &amp; meditation for this intention.
         </p>
         <button class="bs-gen-btn" id="bsLibraryBtn-${idx}"
@@ -3144,7 +3144,7 @@ function buildBSPegboardPanel(intent) {
   const empty = fields.every(f => !f.value);
   const launchBtn = '';
   return (empty
-    ? `<div style="padding:20px;font-size:13px;color:#40404A;line-height:1.6">
+    ? `<div style="padding:20px;font-size:13px;color:var(--muted);line-height:1.6">
          Your Pegboard is empty.
          <button style="color:var(--accent);background:none;border:none;cursor:pointer;font-size:13px;font-family:inherit"
            onclick="navTo('setup')">Fill in My Pegboard →</button>
