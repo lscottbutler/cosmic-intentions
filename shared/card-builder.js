@@ -223,7 +223,7 @@ export function toggleRoadmapLock(idx, i) {
   const locked = !!r.locks[i];
   const btn = document.getElementById(`roadmapLock-${idx}-${i}`);
   if (btn) {
-    btn.textContent = locked ? '🔒 LOCKED' : '🔓 KEEP';
+    btn.textContent = locked ? '🔒' : '🔓';
     btn.style.color = locked ? '#F5A623' : '#505058';
     btn.title = locked ? 'Unlock' : 'Lock — return to this next visit';
   }
@@ -280,11 +280,11 @@ function renderRoadmapAI(r, idx) {
   const tasks = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     return `<div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
-      <span style="flex-shrink:0;width:64px;height:64px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:45px;font-weight:800;color:#fff;line-height:1;">${String(i + 1).padStart(2, '0')}</span>
+      <span style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:22px;font-weight:800;color:#fff;line-height:1;">${String(i + 1).padStart(2, '0')}</span>
       <span style="flex:1;min-width:0;font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
       <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:2px 0;font-family:var(--vault-mono);font-size:8px;letter-spacing:0.5px;color:${locked ? '#F5A623' : '#505058'};"
-        title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒 LOCKED' : '🔓 KEEP'}</button>
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:22px;line-height:1;color:${locked ? '#F5A623' : '#505058'};"
+        title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒' : '🔓'}</button>
     </div>`;
   }).join('');
 
