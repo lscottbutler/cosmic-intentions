@@ -603,21 +603,24 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="setup-section">
         <div class="setup-section-title">Identity</div>
 
-        <div class="field-group">
-          <label class="field-label" for="pb-name">Your Name</label>
-          <input class="field-input" type="text" id="pb-name" placeholder="First name or full name" />
+        <div style="background:#ED7D31;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
+          <label for="pb-name" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;">YOUR NAME</label>
+          <input type="text" id="pb-name" placeholder="First name or full name"
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="pb-mission">Life Mission</label>
-          <span class="field-hint">Your reason for being. What drives everything you do.</span>
-          <textarea class="field-input" id="pb-mission" placeholder="e.g. To inspire others to live boldly and build a life they love."></textarea>
+        <div style="background:#3FB4E8;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
+          <label for="pb-mission" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">LIFE MISSION</label>
+          <div style="color:#fff;font-size:12px;opacity:.9;margin-bottom:10px;">Your reason for being. What drives everything you do.</div>
+          <textarea id="pb-mission" placeholder="e.g. To inspire others to live boldly and build a life they love."
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:90px;resize:vertical;"></textarea>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="pb-lifegol">Ultimate Life Intention</label>
-          <span class="field-hint">Your biggest goal — phrased as an I AM statement.</span>
-          <textarea class="field-input" id="pb-lifegol" placeholder="e.g. I AM a financially free entrepreneur living on my own terms."></textarea>
+        <div style="background:#7AC943;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
+          <label for="pb-lifegol" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">ULTIMATE LIFE INTENTION</label>
+          <div style="color:#fff;font-size:12px;opacity:.9;margin-bottom:10px;">Your biggest goal — phrased as an I AM statement.</div>
+          <textarea id="pb-lifegol" placeholder="e.g. I AM a financially free entrepreneur living on my own terms."
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:90px;resize:vertical;"></textarea>
         </div>
       </div>
 
