@@ -593,26 +593,64 @@ export function renderPBIntentionList() {
     { value: 'creative',     label: 'Create'       },
     { value: 'growth',       label: 'Growth'       },
   ];
+  const fld = 'width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
+  const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
   el.innerHTML = intentions.map((i, idx) => {
     const optHtml = catOptions.map(o =>
       `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
     ).join('');
+    const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     return `
-    <div class="pb-intention-item" style="flex-wrap:wrap;">
-      <div class="pb-intention-num">${idx + 1}</div>
-      <div class="pb-intention-text" contenteditable="true"
-        onblur="pbSaveIntentionTitle(${idx}, this.textContent)"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
-        oninput="if(this.textContent.length>150){const s=window.getSelection();this.textContent=this.textContent.slice(0,150);s.collapse(this.firstChild||this,Math.min(150,(this.firstChild||this).length||0));}"
-        style="flex:1;min-width:0;"
-      >${esc(i.title)}</div>
-      <button class="pb-intention-del" onclick="pbDeleteIntention(${idx})" title="Remove">✕</button>
-      <div style="width:100%;padding:4px 0 2px 28px;">
-        <select class="pb-cat-select" style="font-size:11px;padding:4px 28px 4px 8px;"
-          onchange="pbSaveCategory(${idx}, this.value)">${optHtml}</select>
+    <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
+      <div style="position:relative;padding:18px 20px;background:var(--off);">
+        <div style="font-size:20px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Set this goal's details below.</div>
+        <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
+          style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
+      </div>
+      <div style="background:#ED7D31;padding:18px 20px;">
+        <div style="${lbl}">GOAL</div>
+        <input type="text" value="${esc(i.title)}" maxlength="150"
+          onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${fld}" />
+      </div>
+      <div style="background:#3FB4E8;padding:18px 20px;">
+        <div style="${lbl}">START &amp; END DATES</div>
+        <div style="display:flex;gap:12px;">
+          <div style="flex:1;">
+            <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
+            <div style="color:#fff;font-size:11px;margin-top:5px;opacity:.9;">Start</div>
+          </div>
+          <div style="flex:1;">
+            <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
+            <div style="color:#fff;font-size:11px;margin-top:5px;opacity:.9;">End</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#7AC943;padding:18px 20px;">
+        <div style="${lbl}">CATEGORY</div>
+        <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
+      </div>
+      <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);">
+        <div>
+          <div style="font-weight:800;color:var(--text);font-size:14px;letter-spacing:.5px;">AI FOR THIS GOAL</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">Auto-generate affirmations, beliefs, roadmap &amp; more.</div>
+        </div>
+        <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on' : 'AI off'}"
+          style="flex:0 0 auto;width:52px;height:30px;border-radius:15px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#34C759' : '#999'};transition:background .2s;">
+          <span style="position:absolute;top:3px;left:${aiOn ? '25px' : '3px'};width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
+        </button>
       </div>
     </div>`;
   }).join('');
+}
+
+/* Per-goal AI on/off. Persisted to the dedicated `ai_enabled` Supabase column.
+   OFF stops AI auto-generation for the goal. */
+export async function pbToggleAI(idx) {
+  const intn = intentions[idx]; if (!intn) return;
+  intn.aiEnabled = (intn.aiEnabled === false);   // false→on(true), else→off(false)
+  await saveIntentions();
+  renderPBIntentionList();
 }
 
 export async function pbSaveCategory(idx, val) {

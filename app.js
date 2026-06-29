@@ -785,6 +785,8 @@ export async function syncIntentionsToSupabase() {
     achievers:   intention.achievers   || null,
     target_date: intention.targetDate  || null,
     start_date:  intention.startDate   || null,
+    category:    intention.category    || null,
+    ai_enabled:  intention.aiEnabled !== false,
     the_map:     intention.theMap      || null,
     bbfw:        intention.bbfw        || null,
     // Only persist a lightweight Storage URL — never a base64 data: URL.
@@ -794,7 +796,7 @@ export async function syncIntentionsToSupabase() {
     updated_at:  new Date().toISOString()
   }));
   // Resilient upsert: if an optional column doesn't exist yet, drop it and retry.
-  const OPTIONAL_COLS = ['image_url', 'roadmap_ai', 'active_danger_zone'];
+  const OPTIONAL_COLS = ['image_url', 'roadmap_ai', 'active_danger_zone', 'category', 'ai_enabled'];
   let payload = rows;
   let { error } = await sb.from('intentions').upsert(payload, { onConflict: 'id' });
   let guard = 0;
@@ -848,6 +850,11 @@ async function syncIntentionsFromSupabase() {
         const prevBbfw = prev.bbfw;
         return hydrateIntent({
           ...row,
+          startDate:    row.start_date  ?? prev.startDate  ?? '',
+          targetDate:   row.target_date ?? prev.targetDate ?? '',
+          category:     row.category    ?? prev.category   ?? '',
+          aiEnabled:    (typeof row.ai_enabled === 'boolean') ? row.ai_enabled
+                          : (typeof prev.aiEnabled === 'boolean' ? prev.aiEnabled : true),
           imageUrl:     row.image_url     || prev.imageUrl || null,
           imageOptions: prev.imageOptions || ((row.image_url || prev.imageUrl) ? [row.image_url || prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
@@ -2078,6 +2085,7 @@ export async function playGoalInWorkspace(idx, kind, ev) {
 
   // empty → this goal's AI Library is missing (or predates this category): generate it, then play
   if (!slides.length) {
+    if (intn.aiEnabled === false) { toast('AI is off for this goal — turn it on in My Pegboard.', 'error'); return; }
     const c = document.getElementById('goalVisualizationContainer');
     if (c) c.innerHTML = '<div style="padding:30px;text-align:center;color:#9b8fd0;font-size:13px;"><span class="inline-spinner"></span> Generating this goal’s AI Library…</div>';
     try { await generateMindset(idx); } catch (e) {}
@@ -2100,6 +2108,7 @@ export async function launchMindset(ev) {
   const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
   let slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intn?.mindset, k.key, k.label));
   if (!slides.length) {                              // no AI Library yet → generate it, then play
+    if (intn && intn.aiEnabled === false) { toast('AI is off for this goal — turn it on in My Pegboard.', 'error'); return; }
     toast(`Generating "${title}"'s AI Library…`);
     try { await generateMindset(idx); } catch (e) {}
     slides = MINDSET_KINDS.flatMap(k => mindsetSlides(intentions[idx]?.mindset, k.key, k.label));
