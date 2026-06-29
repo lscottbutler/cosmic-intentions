@@ -2846,11 +2846,6 @@ function buildWorkspaceHeader(intent, idx) {
   const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same palette as the goal box → title matches its card
   return `
     <div style="padding:12px 16px 0;">
-      <!-- clear way back to the goal list -->
-      <button onclick="closeVaultBuildSheet()"
-        style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);
-        border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;
-        letter-spacing:0.8px;padding:9px 15px;cursor:pointer;margin-bottom:10px;">← BACK TO MY GOALS</button>
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
@@ -2865,6 +2860,9 @@ function buildWorkspaceHeader(intent, idx) {
             style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;">
             <span style="font-size:13px;line-height:1;color:var(--brand);">${ic}</span>${lbl}</button>`
         ).join('')}
+        <button onclick="closeVaultBuildSheet()"
+          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;cursor:pointer;text-align:center;line-height:1.2;">
+          <span style="font-size:13px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
       </div>
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
