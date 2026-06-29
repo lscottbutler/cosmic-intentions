@@ -213,6 +213,23 @@ export function setActiveDangerZone(idx, value) {
   saveIntentions();
 }
 
+/* Lock/unlock a roadmap task so the user can return to it next visit.
+   State persists on the intention (saved + synced via saveIntentions). */
+export function toggleRoadmapLock(idx, i) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r) return;
+  if (!r.locks) r.locks = {};
+  r.locks[i] = !r.locks[i];
+  const locked = !!r.locks[i];
+  const btn = document.getElementById(`roadmapLock-${idx}-${i}`);
+  if (btn) {
+    btn.textContent = locked ? '🔒 LOCKED' : '🔓 KEEP';
+    btn.style.color = locked ? '#F5A623' : '#505058';
+    btn.title = locked ? 'Unlock' : 'Lock — return to this next visit';
+  }
+  saveIntentions();
+}
+
 /* Resolve the single active danger zone for an intention. Uses the explicit
    user selection if set, else falls back to the first logged danger zone. */
 function getActiveDangerZone(intent) {
@@ -259,11 +276,17 @@ export async function generateRoadmapAI(idx) {
 function renderRoadmapAI(r, idx) {
   // Surgical view: active Intention + Danger Zone chips, then the flat top-10
   // tactical task list. No paragraphs, no fluff.
-  const tasks = (r.tasks || []).map((t, i) =>
-    `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1A1A1A;">
-      <span style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;flex-shrink:0;padding-top:2px;min-width:22px;">${String(i + 1).padStart(2, '0')}</span>
-      <span style="font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
-    </div>`).join('');
+  const locks = r.locks || {};
+  const tasks = (r.tasks || []).map((t, i) => {
+    const locked = !!locks[i];
+    return `<div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+      <span style="flex-shrink:0;width:64px;height:64px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:45px;font-weight:800;color:#fff;line-height:1;">${String(i + 1).padStart(2, '0')}</span>
+      <span style="flex:1;min-width:0;font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
+      <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:2px 0;font-family:var(--vault-mono);font-size:8px;letter-spacing:0.5px;color:${locked ? '#F5A623' : '#505058'};"
+        title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒 LOCKED' : '🔓 KEEP'}</button>
+    </div>`;
+  }).join('');
 
   return `
     <div style="padding:4px 0 16px;">
