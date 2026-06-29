@@ -5,6 +5,7 @@ import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, h
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings } from './shared/rings.js';
+import { renderWrapup } from './shared/wrapup.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
@@ -2231,6 +2232,7 @@ export function renderVaultSidebar() {
   setEl('vsVizPlays', LS.get('ci_viz_plays')  || 0);
   setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
   renderRings();
+  renderWrapup();
 
   // Date line: "Monday, May 26  ·  146/365"
   const _now      = new Date();

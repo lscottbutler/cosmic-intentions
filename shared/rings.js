@@ -1,4 +1,5 @@
 import { LS, toast } from '../app.js';
+import { renderWrapup } from './wrapup.js';
 /* ── DAILY PILLARS (RINGS) ───────────────────────────────
    Phase 1 of the Evening Wrap-Up / tracking system.
    Three daily disciplines — Review · Visualize · Meditate.
@@ -64,6 +65,31 @@ function _computeMomentum() {
   return { score, streak };
 }
 
+/* ── Summaries for the Evening Wrap-Up ───────────────── */
+export function ringsSummary() {
+  const r = _getRings(_todayKey());
+  const { score, streak } = _computeMomentum();
+  return {
+    closed:  PILLARS.filter(p => r[p.key]).map(p => p.label),
+    open:    PILLARS.filter(p => !r[p.key]).map(p => p.label),
+    perfect: _isPerfect(r),
+    count:   _closedCount(r),
+    score, streak,
+  };
+}
+
+export function ringsWeekSummary() {
+  const today = new Date();
+  let perfectDays = 0, pillarsClosed = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const c = _closedCount(_getRings(_dayKey(d)));
+    pillarsClosed += c;
+    if (c === 3) perfectDays++;
+  }
+  return { perfectDays, pillarsClosed };
+}
+
 /* ── Toggle one pillar for today ─────────────────────── */
 export function toggleRing(key) {
   const today = _todayKey();
@@ -76,6 +102,7 @@ export function toggleRing(key) {
     toast('✦ Perfect Day — all 3 pillars closed', 'success');
   }
   renderRings();
+  renderWrapup();
 }
 
 /* ── Render the widget ───────────────────────────────── */
