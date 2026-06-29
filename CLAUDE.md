@@ -85,3 +85,19 @@ Don't ask for step-by-step permission. State the plan in one line, then do it.
 - Netlify: static hosting. No server-side code. All logic is client-side JS.
 - Google Sheets: used as data source, accessed via API or Apps Script.
 - No build step. No bundler. Pure HTML/CSS/JS files served directly.
+
+## Claude Code Behavior & Output Guidelines
+
+### Deep Linking & App Location Requirements
+- For every bug, traceback, or code change, you must provide the exact, copyable link or file-path reference.
+- Format local files as terminal-friendly OSC 8 clickable paths or clean Markdown links like `[src/components/Auth.tsx:42](src/components/Auth.tsx)`.
+- If referring to specific app screens or routing endpoints, provide the exact application deep link format (e.g., `myapp://settings/notifications` or `http://localhost:3000/dashboard?user=123`) so they are copyable and instantly accessible.
+
+### Verification Requirements (Double-Check Policy)
+- CRITICAL: You must explicitly double-check your logic and verify syntax before printing any code or file paths.
+- Run appropriate local tests, lints, or dry-runs using available bash tools to ensure your troubleshooting path is completely accurate before responding.
+- End your troubleshooting insights with a brief "Verification Summary" confirming exactly what was double-checked.
+
+### Dead-Simple External-Tool Instructions
+- When steps happen in an external dashboard (Supabase, GitHub, Netlify, VS Code): give ONE path, lead with a direct deep-link, exact numbered clicks, no options, no menu-hunting.
+- Supabase deep links use the project ref `wbqzwbubbeorcknevips`, e.g. SQL editor: `https://supabase.com/dashboard/project/wbqzwbubbeorcknevips/sql/new`
