@@ -599,35 +599,58 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <p>Your pegboard. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
 
-      <!-- IDENTITY -->
-      <div class="setup-section">
-        <div class="setup-section-title">Identity</div>
+      <!-- YOUR NAME (top, above the sections) -->
+      <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:22px;">
+        <label for="pb-name" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;">YOUR NAME</label>
+        <input type="text" id="pb-name" placeholder="First name or full name"
+          style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
+      </div>
 
-        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
-          <label for="pb-name" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;">YOUR NAME</label>
-          <input type="text" id="pb-name" placeholder="First name or full name"
-            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
-        </div>
-
-        <div style="background:#555555;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
+      <!-- ① MY LIFE & PURPOSE -->
+      <button onclick="pbToggleSection('pbsec1')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
+        <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">My Life &amp; Purpose</span>
+        <span id="pbsec1-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(-90deg);">&#9660;</span>
+      </button>
+      <div id="pbsec1-body" style="display:none;margin-bottom:18px;">
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
           <label for="pb-mission" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">LIFE MISSION</label>
-          <div style="color:#fff;font-size:12px;opacity:.9;margin-bottom:10px;">Your reason for being. What drives everything you do.</div>
+          <div style="color:#cfcfcf;font-size:12px;margin-bottom:10px;">Your reason for being. What drives everything you do.</div>
           <textarea id="pb-mission" placeholder="e.g. To inspire others to live boldly and build a life they love."
-            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:90px;resize:vertical;"></textarea>
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:80px;resize:vertical;"></textarea>
         </div>
-
-        <div style="background:#7E7E7E;padding:18px 20px;border-radius:14px;margin-bottom:18px;">
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
           <label for="pb-lifegol" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">ULTIMATE LIFE INTENTION</label>
-          <div style="color:#fff;font-size:12px;opacity:.9;margin-bottom:10px;">Your biggest goal — phrased as an I AM statement.</div>
+          <div style="color:#cfcfcf;font-size:12px;margin-bottom:10px;">Your biggest goal — phrased as an I AM statement.</div>
           <textarea id="pb-lifegol" placeholder="e.g. I AM a financially free entrepreneur living on my own terms."
-            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:90px;resize:vertical;"></textarea>
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:80px;resize:vertical;"></textarea>
+        </div>
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
+          <label for="pb-lifegoal" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">MY LIFE GOAL</label>
+          <div style="color:#cfcfcf;font-size:12px;margin-bottom:10px;">A concrete goal for this chapter of your life.</div>
+          <textarea id="pb-lifegoal" placeholder="e.g. Build a profitable business that helps 10,000 people."
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:80px;resize:vertical;"></textarea>
+        </div>
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
+          <label for="pb-words" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">WORDS I LIVE BY</label>
+          <div style="color:#cfcfcf;font-size:12px;margin-bottom:10px;">The principles or mantra that guide you.</div>
+          <textarea id="pb-words" placeholder="e.g. Discipline equals freedom. Do it scared."
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:80px;resize:vertical;"></textarea>
+        </div>
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
+          <label for="pb-quote" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">MY FAVORITE QUOTE</label>
+          <div style="color:#cfcfcf;font-size:12px;margin-bottom:10px;">A line that inspires you — with the author if you like.</div>
+          <textarea id="pb-quote" placeholder="e.g. &quot;Whether you think you can or you can't, you're right.&quot; — Henry Ford"
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;min-height:80px;resize:vertical;"></textarea>
         </div>
       </div>
 
-      <!-- INTENTIONS -->
-      <div class="setup-section">
-        <div class="setup-section-title">Intentions</div>
-        <div id="pbIntentionList" style="margin-bottom:10px;"></div>
+      <!-- ② MY INTENTIONS (open by default) -->
+      <button onclick="pbToggleSection('pbsec2')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
+        <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">My Intentions</span>
+        <span id="pbsec2-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">&#9660;</span>
+      </button>
+      <div id="pbsec2-body" style="margin-bottom:18px;">
+        <div id="pbIntentionList" style="margin-bottom:14px;"></div>
         <div id="pbAddIntentionRow" style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
           <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A GOAL</div>
           <input type="text" id="pbNewIntentionInput" placeholder="I AM …" maxlength="150"
@@ -659,6 +682,16 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="pbConfirmAddIntention()"
             style="width:100%;padding:14px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add Intention</button>
         </div>
+      </div>
+
+      <!-- ③ MY THOUGHTS (collapsed) -->
+      <button onclick="pbToggleSection('pbsec3')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
+        <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">My Thoughts</span>
+        <span id="pbsec3-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(-90deg);">&#9660;</span>
+      </button>
+      <div id="pbsec3-body" style="display:none;margin-bottom:18px;">
+        <div style="color:var(--muted);font-size:12px;margin-bottom:14px;">Capture the words, ideas, and reminders that matter most to you. Fill a box and a new one appears.</div>
+        <div id="pbThoughtsList"></div>
       </div>
 
       <div style="height: 20px;"></div>

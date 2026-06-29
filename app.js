@@ -498,7 +498,7 @@ function updateUI(user) {
    SETUP & BTS — SAVE / LOAD
 ───────────────────────────────────────────────────────── */
 const PB_FIELDS = [
-  'pb-name','pb-mission','pb-lifegol','pb-values','pb-beliefs',
+  'pb-name','pb-mission','pb-lifegol','pb-lifegoal','pb-words','pb-quote','pb-values','pb-beliefs',
   'pb-attitudes','pb-stoicism','pb-traits',
   'pb-limiting','pb-rolemodels','pb-nonneg',
   'pb-target6m','pb-target1y','pb-target5y',
@@ -628,6 +628,55 @@ export function setSpirituality(val, save = true) {
 export function loadPegboard() {
   const pb = LS.get('ci_pegboard') || {};
   populateForm(pb);
+  renderPBThoughts();
+}
+
+/* Collapse/expand a Pegboard section (My Life & Purpose / My Intentions / My Thoughts). */
+export function pbToggleSection(key) {
+  const body = document.getElementById(key + '-body');
+  const arr  = document.getElementById(key + '-arr');
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (arr) arr.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+/* ── MY THOUGHTS (section 3) — up to 20 {title,text} boxes. Show the filled
+   ones plus one empty "add" box; filling it auto-adds the next. Stored in
+   ci_pegboard['pb-thoughts'] and synced to the pb_thoughts column. */
+function pbGetThoughts() {
+  const t = (LS.get('ci_pegboard') || {})['pb-thoughts'];
+  return Array.isArray(t) ? t : [];
+}
+export function renderPBThoughts() {
+  const el = document.getElementById('pbThoughtsList');
+  if (!el) return;
+  const boxes = pbGetThoughts().slice(0, 20);
+  const showAdd = boxes.length < 20;
+  if (showAdd) boxes.push({ title: '', text: '', _add: true });
+  el.innerHTML = boxes.map((b, i) => `
+    <div style="background:#2E2E2E;padding:16px 18px;border-radius:14px;margin-bottom:12px;${b._add ? 'border:1px dashed #5E5E5E;' : ''}">
+      <input type="text" value="${esc(b.title || '')}" maxlength="80" data-th="${i}" data-f="title"
+        onchange="pbSaveThought()" placeholder="${b._add ? '＋ New thought — title…' : 'Title…'}"
+        style="width:100%;box-sizing:border-box;padding:10px 12px;border:none;border-radius:7px;font-size:14px;font-weight:700;color:#1a1a1a;background:#fff;margin-bottom:8px;" />
+      <textarea data-th="${i}" data-f="text" onchange="pbSaveThought()" placeholder="Write what matters to you…"
+        style="width:100%;box-sizing:border-box;padding:10px 12px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;min-height:64px;resize:vertical;">${esc(b.text || '')}</textarea>
+    </div>`).join('');
+}
+export async function pbSaveThought() {
+  const el = document.getElementById('pbThoughtsList');
+  if (!el) return;
+  const map = {};
+  el.querySelectorAll('[data-th]').forEach(node => {
+    const i = node.getAttribute('data-th'), f = node.getAttribute('data-f');
+    (map[i] = map[i] || { title: '', text: '' })[f] = node.value.trim();
+  });
+  const arr = Object.keys(map).map(k => map[k]).filter(b => b.title || b.text).slice(0, 20);
+  const pb = LS.get('ci_pegboard') || {};
+  pb['pb-thoughts'] = arr;
+  LS.set('ci_pegboard', pb);
+  renderPBThoughts();
+  try { await syncToSupabase(); } catch (e) {}
 }
 
 export async function saveSetup() {
@@ -686,6 +735,10 @@ async function syncProfileToSupabase(pb) {
     pb_attitudes:  pb['pb-attitudes']  || '',
     pb_stoicism:   pb['pb-stoicism']   || '',
     pb_traits:     pb['pb-traits']     || '',
+    pb_lifegoal:   pb['pb-lifegoal']   || '',
+    pb_words:      pb['pb-words']       || '',
+    pb_quote:      pb['pb-quote']       || '',
+    pb_thoughts:   pb['pb-thoughts']    || [],
     bts_tone:      pb['bts-tone']      || '',
     bts_authors:   pb['bts-authors']   || '',
     bts_obstacles: pb['bts-obstacles'] || '',
@@ -694,8 +747,18 @@ async function syncProfileToSupabase(pb) {
     openai_voice:  pb['openai_voice']  || 'alloy',
     spirituality:  pb['spirituality']  || ''
   };
-  console.log('[Supabase] upsert payload:', payload);
-  const { error } = await sb.from('profiles').upsert(payload);
+  // Resilient upsert: if an optional column doesn't exist yet, drop it and retry
+  // (so saving never breaks before you run the column-add SQL).
+  const OPTIONAL = ['pb_lifegoal', 'pb_words', 'pb_quote', 'pb_thoughts'];
+  let body = { ...payload };
+  let { error } = await sb.from('profiles').upsert(body);
+  let guard = 0;
+  while (error && guard++ < OPTIONAL.length) {
+    const col = OPTIONAL.find(c => c in body && (error.message || '').includes(c));
+    if (!col) break;
+    delete body[col];
+    ({ error } = await sb.from('profiles').upsert(body));
+  }
   if (error) {
     console.error('[Supabase] upsert error:', error);
     throw new Error(error.message);
@@ -734,6 +797,10 @@ async function syncFromSupabase() {
       'pb-attitudes':  data.pb_attitudes  || '',
       'pb-stoicism':   data.pb_stoicism   || '',
       'pb-traits':     data.pb_traits     || '',
+      'pb-lifegoal':   data.pb_lifegoal   || '',
+      'pb-words':      data.pb_words      || '',
+      'pb-quote':      data.pb_quote      || '',
+      'pb-thoughts':   Array.isArray(data.pb_thoughts) ? data.pb_thoughts : [],
       'bts-tone':      data.bts_tone      || '',
       'bts-authors':   data.bts_authors   || '',
       'bts-obstacles': data.bts_obstacles || '',
