@@ -38,14 +38,24 @@ jobs:
 
       - name: Dump database
         env:
+          # Easiest: set ONLY SUPABASE_DB_PASSWORD (your raw DB password, symbols and all).
+          # Advanced/optional: set SUPABASE_DB_URL to a full connection string to override.
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
-          if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "::warning::SUPABASE_DB_URL secret not set — skipping backup. Add it in repo Settings → Secrets → Actions."
+          DUMP=/tmp/cosmic-intentions.sql
+          if [ -n "$SUPABASE_DB_URL" ]; then
+            pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --clean --if-exists -f "$DUMP"
+          elif [ -n "$PGPASSWORD" ]; then
+            # Session pooler (IPv4, works from GitHub). Host/user are this project's, not secret.
+            pg_dump -h aws-0-ap-northeast-1.pooler.supabase.com -p 5432 \
+                    -U postgres.wbqzwbubbeorcknevips -d postgres \
+                    --no-owner --no-privileges --clean --if-exists -f "$DUMP"
+          else
+            echo "::warning::Set SUPABASE_DB_PASSWORD (or SUPABASE_DB_URL) in repo Settings → Secrets → Actions — skipping."
             exit 0
           fi
-          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --clean --if-exists -f /tmp/cosmic-intentions.sql
-          echo "Dumped $(wc -l < /tmp/cosmic-intentions.sql) lines, $(du -h /tmp/cosmic-intentions.sql | cut -f1)"
+          echo "Dumped $(wc -l < "$DUMP") lines, $(du -h "$DUMP" | cut -f1)"
 
       - name: Commit to db-backups branch (isolated from main / Netlify)
         run: |
