@@ -44,13 +44,27 @@ jobs:
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           DUMP=/tmp/cosmic-intentions.sql
+          export PGCONNECT_TIMEOUT=12
           if [ -n "$SUPABASE_DB_URL" ]; then
             pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --clean --if-exists -f "$DUMP"
           elif [ -n "$PGPASSWORD" ]; then
-            # Session pooler (IPv4, works from GitHub). Host/user are this project's, not secret.
-            pg_dump -h aws-0-ap-northeast-1.pooler.supabase.com -p 5432 \
-                    -U postgres.wbqzwbubbeorcknevips -d postgres \
-                    --no-owner --no-privileges --clean --if-exists -f "$DUMP"
+            # Session pooler (IPv4, works from GitHub). Try both pooler prefixes for the region;
+            # host/user are this project's identifiers, not secrets.
+            OK=0
+            for H in aws-0-ap-northeast-1.pooler.supabase.com aws-1-ap-northeast-1.pooler.supabase.com; do
+              echo "Connecting via $H ..."
+              if pg_dump -h "$H" -p 5432 -U postgres.wbqzwbubbeorcknevips -d postgres \
+                         --no-owner --no-privileges --clean --if-exists -f "$DUMP" 2>/tmp/pgerr; then
+                echo "✅ connected via $H"; OK=1; break
+              else
+                echo "  ✗ $(tail -n1 /tmp/pgerr)"
+              fi
+            done
+            if [ "$OK" != 1 ]; then
+              echo "::error::Could not connect to Supabase. Most likely a wrong password. Full error:"
+              cat /tmp/pgerr
+              exit 1
+            fi
           else
             echo "::warning::Set SUPABASE_DB_PASSWORD (or SUPABASE_DB_URL) in repo Settings → Secrets → Actions — skipping."
             exit 0
