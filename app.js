@@ -2244,7 +2244,8 @@ export function renderVaultSidebar() {
   const _diff     = _now - _start;
   const _dayOfYear = Math.floor(_diff / 86400000);
   const _remaining = _daysInYear - _dayOfYear;
-  setEl('vaultDateLine', `Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
+  const _ord = (d) => { const s = ['th','st','nd','rd'], v = d % 100; return d + (s[(v - 20) % 10] || s[v] || s[0]); };
+  setEl('vaultDateLine', `${_dayName} ${_month} ${_ord(_date)} — Day ${_dayOfYear} of ${_daysInYear} — ${_remaining} Remaining`);
   // Category filter strip
   const catsEl = document.getElementById('vaultCats');
   if (catsEl) {

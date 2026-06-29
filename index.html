@@ -322,9 +322,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
-        <!-- MILESTONE BAR — top of Column B (this column renders on the right after the A/B swap) -->
-        <div class="vault-date-line" id="vaultDateLine" style="flex-shrink:0;margin-bottom:8px;"></div>
-
         <!-- hidden ticker keeps JS targeting safe -->
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
@@ -520,6 +517,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
+
+        <!-- DATE / MILESTONE BAR — top of Column A -->
+        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
 
         <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of Column A -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
