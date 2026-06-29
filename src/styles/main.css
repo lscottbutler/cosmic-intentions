@@ -1699,6 +1699,34 @@ input, textarea, select {
 .vault-sidebar { order: 2; border-right: none; border-left: 1px solid var(--border); }
 .vault-main { order: 1; }
 
+/* ── VAULT STATS ROW — what you've done, top of Column A ── */
+.vault-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.vault-stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+}
+.vs-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+.vs-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
 /* ── VAULT SIDEBAR ─────────────────────────────────── */
 .vault-sidebar {
   width: 272px;
