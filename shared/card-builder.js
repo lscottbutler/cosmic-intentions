@@ -280,7 +280,7 @@ function renderRoadmapAI(r, idx) {
   const tasks = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     return `<div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
-      <span style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:22px;font-weight:800;color:#fff;line-height:1;">${String(i + 1).padStart(2, '0')}</span>
+      <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:15px;font-weight:800;color:#fff;line-height:1;">${i + 1}</span>
       <span style="flex:1;min-width:0;font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
       <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
         style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:22px;line-height:1;color:${locked ? '#F5A623' : '#505058'};"
