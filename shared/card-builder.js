@@ -300,7 +300,7 @@ function renderRoadmapAI(r, idx) {
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
       </div>` : ''}
 
-      <button onclick="generateRoadmapAI(${idx})" style="background:none;border:1px solid #383838;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">↺ Regenerate</button>
+      <button onclick="generateRoadmapAI(${idx})" style="display:flex;align-items:center;width:100%;background:var(--ink);color:var(--on-ink);padding:14px 16px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:1px;font-size:14px;"><span style="display:inline-block;width:1.3em;margin-right:9px;text-align:center;">↺</span>REGENERATE</button>
     </div>`;
 }
 
