@@ -271,7 +271,6 @@ function renderRoadmapAI(r, idx) {
         <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:0.5px;">${esc(r.intention || '')}</span>
       </div>
 
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">◈ TOP 10 TACTICAL TASKS</div>
       <div style="margin-bottom:18px;">${tasks}</div>
 
       ${r.danger_zone ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
