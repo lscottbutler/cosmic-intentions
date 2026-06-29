@@ -521,15 +521,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
 
-        <!-- STATS — what you've done — top of Column A -->
+        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of Column A -->
+        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
+
+        <!-- STATS — what you've done — below the welcome paragraph, above goal #1 -->
         <div class="vault-stats-row">
           <div class="vault-stat"><div class="vs-num" id="vsStreak">0</div><div class="vs-lbl">Day Streak</div></div>
           <div class="vault-stat"><div class="vs-num" id="vsVizPlays">0</div><div class="vs-lbl">Viz Plays</div></div>
           <div class="vault-stat"><div class="vs-num" id="vsMedPlays">0</div><div class="vs-lbl">Med Plays</div></div>
         </div>
-
-        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of Column A -->
-        <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
