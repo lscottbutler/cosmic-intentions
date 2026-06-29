@@ -270,13 +270,13 @@ function renderRoadmapAI(r, idx) {
       <div style="background:#E84B3C;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:0.5px;">${esc(r.intention || '')}</span>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#9A948F;background:#1A1A1A;border:1px solid #2a2a2a;border-radius:6px;padding:5px 9px;">◎ ${esc(r.intention || '')}</span>
-        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone || '')}</span>
-      </div>
 
       <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:6px;">◈ TOP 10 TACTICAL TASKS</div>
       <div style="margin-bottom:18px;">${tasks}</div>
+
+      ${r.danger_zone ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
+      </div>` : ''}
 
       <button onclick="generateRoadmapAI(${idx})" style="background:none;border:1px solid #383838;border-radius:6px;padding:6px 12px;font-family:var(--vault-mono);font-size:9px;color:#888;cursor:pointer;letter-spacing:0.5px;">↺ Regenerate</button>
     </div>`;
