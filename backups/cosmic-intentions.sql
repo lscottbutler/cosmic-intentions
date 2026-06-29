@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 88OaYN5rIFR94v5otWIzybm3ef13TY9tVbW4B7xv6HAbFBA4swdImoPmyhwKiGH
+\restrict BokN4P2jaI1ilZJbKYugh5DYPdHHIfSYJD03VrRNcpc0r7eOlQ8Pi4TtqRkQGax
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10 (Ubuntu 17.10-1.pgdg24.04+1)
@@ -2830,6 +2830,7 @@ CREATE TABLE auth.custom_oauth_providers (
     jwks_uri text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    custom_claims_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT custom_oauth_providers_authorization_url_https CHECK (((authorization_url IS NULL) OR (authorization_url ~~ 'https://%'::text))),
     CONSTRAINT custom_oauth_providers_authorization_url_length CHECK (((authorization_url IS NULL) OR (char_length(authorization_url) <= 2048))),
     CONSTRAINT custom_oauth_providers_client_id_length CHECK (((char_length(client_id) >= 1) AND (char_length(client_id) <= 512))),
@@ -4012,7 +4013,7 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 -- Data for Name: custom_oauth_providers; Type: TABLE DATA; Schema: auth; Owner: -
 --
 
-COPY auth.custom_oauth_providers (id, provider_type, identifier, name, client_id, client_secret, acceptable_client_ids, scopes, pkce_enabled, attribute_mapping, authorization_params, enabled, email_optional, issuer, discovery_url, skip_nonce_check, cached_discovery, discovery_cached_at, authorization_url, token_url, userinfo_url, jwks_uri, created_at, updated_at) FROM stdin;
+COPY auth.custom_oauth_providers (id, provider_type, identifier, name, client_id, client_secret, acceptable_client_ids, scopes, pkce_enabled, attribute_mapping, authorization_params, enabled, email_optional, issuer, discovery_url, skip_nonce_check, cached_discovery, discovery_cached_at, authorization_url, token_url, userinfo_url, jwks_uri, created_at, updated_at, custom_claims_allowlist) FROM stdin;
 \.
 
 
@@ -4234,6 +4235,7 @@ COPY auth.schema_migrations (version) FROM stdin;
 20260121000000
 20260219120000
 20260302000000
+20260625000000
 \.
 
 
@@ -6496,5 +6498,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 88OaYN5rIFR94v5otWIzybm3ef13TY9tVbW4B7xv6HAbFBA4swdImoPmyhwKiGH
+\unrestrict BokN4P2jaI1ilZJbKYugh5DYPdHHIfSYJD03VrRNcpc0r7eOlQ8Pi4TtqRkQGax
 
