@@ -4,6 +4,7 @@ import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
+import { renderRings } from './shared/rings.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
@@ -2229,6 +2230,7 @@ export function renderVaultSidebar() {
   setEl('vsStreak',    LS.get('ci_streak')     || 0);
   setEl('vsVizPlays', LS.get('ci_viz_plays')  || 0);
   setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
+  renderRings();
 
   // Date line: "Monday, May 26  ·  146/365"
   const _now      = new Date();
