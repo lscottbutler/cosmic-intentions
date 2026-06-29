@@ -192,6 +192,9 @@ body {
 .tnav-sep { color: var(--border-2); font-size: 12px; padding: 0 2px; flex-shrink: 0; }
 
 .hdr-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 5px;
@@ -204,6 +207,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 .hdr-user {
   font-size: 13px;
