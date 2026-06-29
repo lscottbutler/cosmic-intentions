@@ -73,6 +73,14 @@ No reformatting, no renaming, no refactoring bystanders.
 When given a goal ("make this button use the new icon"), solve the goal.
 Don't ask for step-by-step permission. State the plan in one line, then do it.
 
+## Autonomy & Implementation Thresholds
+- **Autonomous Execution:** Full permission to hardcode, debug, and execute fixes for minor bugs, styling tweaks, small components, configuration updates, and file creation. Do not ask for confirmation or state what you "plan" to do for routine changes — just execute them.
+- **Escalation (Big Things):** Pause, explain your strategy, and request human review ONLY if a task involves:
+  - Destructive data migrations or major schema alterations.
+  - Introducing massive new architectural patterns or heavy third-party core libraries.
+  - High-risk security configurations or destructive `git` operations outside the feature branch.
+- **The Rule:** If it's isolated code logic, build it, test it, and hardcode it directly.
+
 ## Solved — Do Not Re-Suggest
 - Player images compressed (181MB → 14MB)
 - Daily rotating images per player using PLAYER_OFFSETS

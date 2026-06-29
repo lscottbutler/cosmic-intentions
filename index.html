@@ -46,13 +46,41 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 <!-- TOP NAV BAR -->
 <nav id="topNav">
-  <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
-  <span class="tnav-sep">·</span>
-  <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
-  <span class="tnav-sep">·</span>
-  <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
-  <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
+  <div class="ham-wrap">
+    <button id="hamBtn" class="ham-btn" aria-label="Menu" aria-expanded="false" aria-controls="hamMenu" onclick="toggleHamMenu()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="ham-menu" id="hamMenu">
+      <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+      <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
+      <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
+      <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
+    </div>
+  </div>
 </nav>
+<script>
+  function toggleHamMenu() {
+    var b = document.getElementById('hamBtn'), m = document.getElementById('hamMenu');
+    var open = m.classList.toggle('open');
+    b.setAttribute('aria-expanded', String(open));
+  }
+  // Close after picking an item, or when clicking outside the menu.
+  document.getElementById('hamMenu').addEventListener('click', function(e) {
+    if (e.target.closest('.tnav-btn')) {
+      this.classList.remove('open');
+      document.getElementById('hamBtn').setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ham-wrap')) {
+      var m = document.getElementById('hamMenu');
+      if (m.classList.contains('open')) {
+        m.classList.remove('open');
+        document.getElementById('hamBtn').setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+</script>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
 <nav class="drawer" id="drawer" style="display:none">

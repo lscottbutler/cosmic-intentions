@@ -339,7 +339,7 @@ export function buildRoadmapPanel(intention, idx) {
 
   return `
     <div style="padding:16px;">
-      <div style="font-family:var(--vault-mono);font-size:9px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ 10 THINGS TO DO RIGHT NOW</div>
+      <div style="font-family:var(--vault-mono);font-size:22px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ TODAY I WILL</div>
       ${intakeControls}
       <div id="panel-roadmap-ai-${idx}">
         ${intention.roadmapAI ? renderRoadmapAI(intention.roadmapAI, idx) : ''}
