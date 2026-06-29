@@ -45,12 +45,16 @@ function _isPerfect(r) {
 function _computeMomentum() {
   let score = 0;
   const today = new Date();
+  // Days the user logged at least one mini-win — discretionary bonus layer.
+  const winDays = new Set((LS.get('ci_wins') || []).map(w => w.date));
   for (let i = MOMENTUM_WINDOW - 1; i >= 0; i--) {
     const d = new Date(today); d.setDate(today.getDate() - i);
-    const c = _closedCount(_getRings(_dayKey(d)));
+    const key = _dayKey(d);
+    const c = _closedCount(_getRings(key));
     if (c === 3) score += 12;
     else if (c > 0) score += 4;
     else score -= 8;
+    if (winDays.has(key)) score += 3;   // wins nudge momentum up
     score = Math.max(0, Math.min(100, score));
   }
   // Current streak of Perfect Days. Today-in-progress doesn't break it.

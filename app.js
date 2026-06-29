@@ -6,6 +6,7 @@ import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings } from './shared/rings.js';
 import { renderWrapup } from './shared/wrapup.js';
+import { renderWins } from './shared/wins.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
@@ -2233,6 +2234,7 @@ export function renderVaultSidebar() {
   setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
   renderRings();
   renderWrapup();
+  renderWins();
 
   // Date line: "Monday, May 26  ·  146/365"
   const _now      = new Date();
