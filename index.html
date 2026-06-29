@@ -628,33 +628,36 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="setup-section">
         <div class="setup-section-title">Intentions</div>
         <div id="pbIntentionList" style="margin-bottom:10px;"></div>
-        <div id="pbAddIntentionRow">
-          <input type="text" id="pbNewIntentionInput" class="field-input"
-            placeholder="I AM …" style="margin-bottom:10px;" maxlength="150" />
-          <div class="pb-add-dates-row">
-            <div class="pb-add-date-field">
-              <label class="field-label" style="font-size:10px;margin-bottom:4px;">Started</label>
-              <input type="date" id="pbNewStartDate" class="field-input" style="font-size:13px;" />
+        <div id="pbAddIntentionRow" style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
+          <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A GOAL</div>
+          <input type="text" id="pbNewIntentionInput" placeholder="I AM …" maxlength="150"
+            style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;margin-bottom:14px;" />
+          <div style="display:flex;gap:12px;margin-bottom:14px;">
+            <div style="flex:1;">
+              <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">STARTED</label>
+              <input type="date" id="pbNewStartDate"
+                style="width:100%;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
             </div>
-            <div class="pb-add-date-field">
-              <label class="field-label" style="font-size:10px;margin-bottom:4px;">Target Date</label>
-              <input type="date" id="pbNewTargetDate" class="field-input" style="font-size:13px;" />
+            <div style="flex:1;">
+              <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">TARGET DATE</label>
+              <input type="date" id="pbNewTargetDate"
+                style="width:100%;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
             </div>
           </div>
-          <div class="pb-cat-row">
-            <label class="field-label" style="font-size:10px;margin-bottom:4px;display:block;">Category</label>
-            <select id="pbNewCategory" class="pb-cat-select">
-              <option value="">— Select a category —</option>
-              <option value="wealth">Wealth</option>
-              <option value="health">Health</option>
-              <option value="relationship">Relationship</option>
-              <option value="purpose">Purpose</option>
-              <option value="mindset">Mindset</option>
-              <option value="creative">Create</option>
-              <option value="growth">Growth</option>
-            </select>
-          </div>
-          <button class="pb-add-intention-btn" style="margin-top:10px;width:100%;" onclick="pbConfirmAddIntention()">+ Add Intention</button>
+          <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">CATEGORY</label>
+          <select id="pbNewCategory"
+            style="width:100%;box-sizing:border-box;padding:12px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;margin-bottom:16px;">
+            <option value="">— Select a category —</option>
+            <option value="wealth">Wealth</option>
+            <option value="health">Health</option>
+            <option value="relationship">Relationship</option>
+            <option value="purpose">Purpose</option>
+            <option value="mindset">Mindset</option>
+            <option value="creative">Create</option>
+            <option value="growth">Growth</option>
+          </select>
+          <button onclick="pbConfirmAddIntention()"
+            style="width:100%;padding:14px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add Intention</button>
         </div>
       </div>
 
