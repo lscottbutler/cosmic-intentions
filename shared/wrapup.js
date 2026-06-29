@@ -1,5 +1,5 @@
-import { ringsSummary, ringsWeekSummary } from './rings.js';
-import { LS } from '../app.js';
+import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
+import { LS, esc, toast, buildContext, getPB } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -61,22 +61,70 @@ function _winCounts() {
   };
 }
 
+function _aiKey() { return `ci_wrapup_ai_${new Date().toISOString().slice(0, 10)}`; }
+
+/* Build a compact plain-text data summary for the AI passes. */
+function _aiSummary() {
+  const s = ringsSummary();
+  const wk = ringsWeekSummary();
+  const { tier, total } = currentTier();
+  const w = _winCounts();
+  const recent = (LS.get('ci_wins') || []).slice(0, 3).map(x => x.text);
+  return {
+    summary: [
+      `Pillars today: ${s.closed.length ? s.closed.join(', ') : 'none yet'} closed (${s.count}/3)${s.perfect ? ' — a Perfect Day' : ''}.`,
+      `Streak: ${s.streak} day(s). Momentum: ${s.score}/100. Rank: ${tier.name} (${total} lifetime Perfect Days).`,
+      `This week: ${wk.perfectDays} Perfect Day(s), ${wk.pillarsClosed} pillars closed, ${w.week} win(s) logged.`,
+    ].join(' '),
+    recentWins: recent,
+  };
+}
+
+/* Multi-pass AI personalization — cached per day to control cost. */
+export async function wrapupPersonalize() {
+  const btn = document.getElementById('wrapupAiBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '✦ Personalizing…'; }
+  try {
+    const { summary, recentWins } = _aiSummary();
+    const context = typeof buildContext === 'function' ? buildContext() : '';
+    const name = (typeof getPB === 'function' && getPB()['pb-name']) || 'there';
+    const data = await window.ciApiJson('wrapup-ai', { name, summary, context, recentWins });
+    if (data && data.paragraph) {
+      LS.set(_aiKey(), data.paragraph);
+      renderWrapup();
+    } else {
+      throw new Error('No paragraph returned');
+    }
+  } catch (e) {
+    if (typeof toast === 'function') toast('Personalize failed — using the standard recap.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '✦ Personalize'; }
+  }
+}
+
 export function renderWrapup() {
   const el = document.getElementById('wrapupWidget');
   if (!el) return;
 
   const w = _winCounts();
-  const daily  = _dailyStory(ringsSummary(), w.today);
+  const aiPara = LS.get(_aiKey());
+  const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
 
   el.innerHTML = `
     <div style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;margin-bottom:12px;">◈ EVENING WRAP-UP</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ EVENING WRAP-UP</div>
+        ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:${BRAND};letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
+      </div>
 
       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
       <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
 
       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0;">${weekly}</p>
+      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
+
+      <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
+        style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
+        ${aiPara ? '↺ Regenerate' : '✦ Personalize'}</button>
     </div>`;
 }
