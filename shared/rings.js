@@ -105,6 +105,34 @@ export function toggleRing(key) {
   renderWrapup();
 }
 
+/* Map a player URL to the pillar a completed session should close.
+   null = that player doesn't count toward a pillar (e.g. countdown). */
+export function pillarForSrc(src) {
+  const s = (src || '').toLowerCase();
+  if (/meditation/.test(s)) return 'meditate';
+  if (/creative-viz|3min-viz|viz-player|visualization|manifest|art-frame/.test(s)) return 'visualize';
+  if (/affirmation|recite|ass-template/.test(s)) return 'review';
+  return null;
+}
+
+/* Close a pillar from a COMPLETED session (idempotent for the day) and
+   bump its lifetime counter. Called by playerFinished(). */
+export function markPillar(key) {
+  if (!PILLARS.some(p => p.key === key)) return;
+  const today = _todayKey();
+  const rings = _getRings(today);
+  const wasPerfect = _isPerfect(rings);
+  if (!rings[key]) { rings[key] = true; _setRings(today, rings); }
+
+  // Lifetime play counters (finally wired — feed the stats row too).
+  if (key === 'visualize') LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
+  if (key === 'meditate')  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
+
+  if (!wasPerfect && _isPerfect(rings)) toast('✦ Perfect Day — all 3 pillars closed', 'success');
+  renderRings();
+  renderWrapup();
+}
+
 /* ── Render the widget ───────────────────────────────── */
 export function renderRings() {
   const el = document.getElementById('ringsWidget');

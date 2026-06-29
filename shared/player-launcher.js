@@ -1,4 +1,9 @@
 import { closeDrawer } from '../app.js';
+import { markPillar, pillarForSrc } from './rings.js';
+
+/* Pillar of the player currently open in the column — set on open,
+   consumed (and cleared) when that session finishes naturally. */
+let _currentPillar = null;
 /* ── PLAYER LAUNCHER — Affirmation only ───────────────────
    Cosmic Intentions ships ONE player: the Affirmation player.
      • Inline:     the .ent-slideshow loop driven by
@@ -33,6 +38,7 @@ export function openPlayerInColumn(src, ev) {
   // (Per-goal play buttons use the inline player in the vault list instead — see playGoalInline.)
   const anchor = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid, [data-player-box]') : null;
   if (anchor) anchor.insertAdjacentElement('afterend', panel);
+  _currentPillar = pillarForSrc(src);   // remember which ring a natural finish should close
   frame.src = src;
   panel.style.display = '';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -41,6 +47,7 @@ export function openPlayerInColumn(src, ev) {
 /* Close the inline player (unload the iframe to stop its audio/timer). */
 export function closePlayerColumn() {
   _autoLooping = false;                    // a manual/real close stops auto-play
+  _currentPillar = null;                   // dropped before finishing → no ring credit
   const panel = document.getElementById('playerColumn');
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
@@ -172,6 +179,8 @@ export function playAllFavorites() {
 /* Called by a player when its timer finishes naturally. Advance the queue;
    when it's empty (all loops played) just close. */
 export function playerFinished() {
+  // A session finished naturally → close its pillar ring for today.
+  if (_currentPillar) { markPillar(_currentPillar); _currentPillar = null; }
   if (_autoLooping && _favQueue.length) { _openFav(_favQueue.shift()); return; }
   _autoLooping = false;
   closePlayerColumn();
