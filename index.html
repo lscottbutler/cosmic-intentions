@@ -55,6 +55,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
       <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
+      <div class="ham-menu-sep"></div>
+      <div class="theme-picker ham-theme" role="group" aria-label="Theme">
+        <button data-theme-btn="dark"  onclick="setTheme('dark')"  title="Night mode">&#9790;</button>
+        <button data-theme-btn="light" onclick="setTheme('light')" title="Daylight mode">&#9728;</button>
+        <button data-theme-btn="kids"  onclick="setTheme('kids')"  title="Kids mode">&#9733;</button>
+      </div>
     </div>
   </div>
 </nav>

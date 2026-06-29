@@ -164,6 +164,8 @@ body {
   border-radius: 6px;
 }
 .ham-menu .tnav-signout { margin-left: 0; }
+.ham-menu-sep { height: 1px; background: var(--border); margin: 6px 4px; }
+.ham-menu .ham-theme { justify-content: center; padding: 4px 0 2px; }
 .tnav-btn {
   background: none;
   border: none;
