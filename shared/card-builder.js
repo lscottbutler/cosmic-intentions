@@ -608,12 +608,12 @@ export function renderPBIntentionList() {
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
           style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
       </div>
-      <div style="background:#ED7D31;padding:18px 20px;">
+      <div style="background:#2E2E2E;padding:18px 20px;">
         <div style="${lbl}">GOAL</div>
         <input type="text" value="${esc(i.title)}" maxlength="150"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${fld}" />
       </div>
-      <div style="background:#3FB4E8;padding:18px 20px;">
+      <div style="background:#555555;padding:18px 20px;">
         <div style="${lbl}">START &amp; END DATES</div>
         <div style="display:flex;gap:12px;">
           <div style="flex:1;">
@@ -626,7 +626,7 @@ export function renderPBIntentionList() {
           </div>
         </div>
       </div>
-      <div style="background:#7AC943;padding:18px 20px;">
+      <div style="background:#7E7E7E;padding:18px 20px;">
         <div style="${lbl}">CATEGORY</div>
         <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
       </div>
