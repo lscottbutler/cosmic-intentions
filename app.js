@@ -774,6 +774,22 @@ async function syncToSupabase() {
   await syncProfileToSupabase(pb);
 }
 
+/* Wins Wall → cloud. Stored as a `wins` JSONB column on profiles.
+   Resilient: if the column hasn't been added yet, this no-ops quietly
+   so the local Wins Wall keeps working. Fire-and-forget from wins.js. */
+export async function syncWinsToSupabase() {
+  if (!currentUser) return;
+  try {
+    const wins = LS.get('ci_wins') || [];
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      wins,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] wins sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncWinsToSupabase failed:', e); }
+}
+
 async function syncFromSupabase() {
   if (!currentUser) return;
   syncPending = true;
@@ -830,6 +846,8 @@ async function syncFromSupabase() {
     LS.set('ci_spirituality', pb['spirituality']);
     if (pb['openai_voice']) localStorage.setItem('openai_voice', pb['openai_voice']);
     populateForm(pb);
+    // Wins Wall — restore the cloud copy if present (column may not exist yet).
+    if (Array.isArray(data.wins)) LS.set('ci_wins', data.wins);
     console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);
 
     currentMember = data?.is_member === true;

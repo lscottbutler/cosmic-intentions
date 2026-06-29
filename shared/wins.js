@@ -1,4 +1,4 @@
-import { LS, toast, esc } from '../app.js';
+import { LS, toast, esc, syncWinsToSupabase } from '../app.js';
 import { renderRings } from './rings.js';
 import { renderWrapup } from './wrapup.js';
 /* ── WINS WALL ───────────────────────────────────────────
@@ -49,6 +49,7 @@ function _refresh() {
   renderWins();
   renderRings();    // momentum may shift
   renderWrapup();
+  if (typeof syncWinsToSupabase === 'function') syncWinsToSupabase();  // fire-and-forget cloud sync
 }
 
 export function renderWins() {
