@@ -23,6 +23,17 @@ const MOMENTUM_WINDOW = 30;   // days scanned to derive momentum
 const DONE  = '#4ADE80';
 const BRAND = '#F5A623';
 
+/* Identity tiers — earned by cumulative Perfect Days (consistency,
+   not points). Citadel-themed. */
+export const TIERS = [
+  { min: 0,   name: 'Initiate' },
+  { min: 3,   name: 'Aspirant' },
+  { min: 7,   name: 'Sentinel' },
+  { min: 21,  name: 'Guardian' },
+  { min: 50,  name: 'Keeper' },
+  { min: 100, name: 'Warden of the Citadel' },
+];
+
 function _dayKey(d) { return d.toISOString().slice(0, 10); }
 function _todayKey() { return _dayKey(new Date()); }
 
@@ -109,6 +120,28 @@ export function toggleRing(key) {
   renderWrapup();
 }
 
+/* Cumulative lifetime Perfect Days — scan all ci_rings_* day records. */
+export function totalPerfectDays() {
+  let n = 0;
+  try {
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith('ci_rings_') && _isPerfect(LS.get(k) || {})) n++;
+    }
+  } catch (e) {}
+  return n;
+}
+
+/* Current tier + next tier, from cumulative Perfect Days. */
+export function currentTier() {
+  const total = totalPerfectDays();
+  let tier = TIERS[0], next = null;
+  for (let i = 0; i < TIERS.length; i++) {
+    if (total >= TIERS[i].min) tier = TIERS[i];
+    else { next = TIERS[i]; break; }
+  }
+  return { tier, next, total };
+}
+
 /* Map a player URL to the pillar a completed session should close.
    null = that player doesn't count toward a pillar (e.g. countdown). */
 export function pillarForSrc(src) {
@@ -145,6 +178,7 @@ export function renderRings() {
   const rings = _getRings(_todayKey());
   const { score, streak } = _computeMomentum();
   const perfect = _isPerfect(rings);
+  const { tier, next, total } = currentTier();
 
   const cells = PILLARS.map(p => {
     const done = !!rings[p.key];
@@ -177,6 +211,10 @@ export function renderRings() {
       </div>
       <div style="height:6px;background:#1A1A1A;border-radius:3px;overflow:hidden;">
         <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${BRAND},#FF7A1A);border-radius:3px;transition:width .3s;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:${BRAND};">⛨ ${tier.name}</span>
+        <span style="font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
       </div>
     </div>`;
 }
