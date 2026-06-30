@@ -73,7 +73,7 @@ function _renderTimer() {
       const mm = Math.floor(toSlot / 60000), ss = Math.floor((toSlot % 60000) / 1000);
       voSec = mm; sessTxt = `${mm}:${ss.toString().padStart(2, '0')} TO NEXT`;
     } else {
-      voSec = '☀'; sessTxt = 'EVERY :00 & :30';
+      voSec = '▶'; sessTxt = 'EVERY :00 & :30';   // idle → play affordance
     }
   } else if (_playing) {
     const now  = Date.now();
@@ -91,6 +91,7 @@ function _renderTimer() {
       sessTxt = h > 0 ? `∞  ${h}h ${m}m` : `∞  ${m}m`;
     }
   } else {
+    voSec = '▶';   // idle → play affordance
     sessTxt = _sessionMin > 0 ? `${_sessionMin} MIN` : 'ALL NIGHT';
   }
   el.innerHTML = _timerSVG(sessionFrac, voRem, voSec, sessTxt);
@@ -327,11 +328,10 @@ export function renderSleepLoop() {
               style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
           </div>` : ''}
         </div>
-        ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;padding-right:20px;"><div id="sleepTimer" style="width:100%;"></div></div>` : ''}
+        ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;padding-right:20px;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
       </div>
-      <button onclick="sleepLoopToggle()"
-        style="width:100%;background:${_playing ? '#2A1515' : BRAND};border:1px solid ${_playing ? '#5a2a2a' : BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:${_playing ? '#FF6B6B' : '#0a0a0a'};cursor:pointer;">
-        ${_playing ? '■ STOP' : '▶ START'}</button>
+      ${!count ? `<button onclick="sleepLoopToggle()"
+        style="width:100%;background:${BRAND};border:1px solid ${BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:#0a0a0a;cursor:pointer;">▶ START</button>` : ''}
       ${status}
       <div style="text-align:center;font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:1.5px;margin-top:12px;border-top:1px solid #222;padding-top:10px;">◎ ${_impressions().toLocaleString()} TOTAL IMPRESSIONS</div>
     </div>`;
