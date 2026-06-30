@@ -20,6 +20,50 @@ const DONE  = '#4ADE80';
 
 const TTS_VER = 'v3';            // bump to invalidate cached audio (e.g. voice/model change / format)
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
+let _lastVoAt = 0, _uiTimer = null;   // timer animation state
+
+/* Dual-ring timer SVG. Outer ring = session time remaining (counter-clockwise);
+   inner hashed ring = time until the next voice line. Light-on-dark. */
+function _timerSVG(sessionFrac, voRem, voSec, sessTxt) {
+  const r = 52, C = 2 * Math.PI * r;
+  const showSess = Math.max(0, Math.min(1, sessionFrac));
+  const N = 48, rIn = 40, tick = 7;
+  let ticks = '';
+  for (let i = 0; i < N; i++) {
+    const ang = (-90 - (i / N) * 360) * Math.PI / 180;   // counter-clockwise from top
+    const on  = (i / N) < Math.max(0, Math.min(1, voRem));
+    const x1 = 60 + rIn * Math.cos(ang),          y1 = 60 + rIn * Math.sin(ang);
+    const x2 = 60 + (rIn - tick) * Math.cos(ang), y2 = 60 + (rIn - tick) * Math.sin(ang);
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${on ? '#e8e8e8' : '#333'}" stroke-width="1.5"/>`;
+  }
+  const col = _playing ? DONE : '#fff';
+  return `<svg width="116" height="116" viewBox="0 0 120 120" style="display:block;margin:0 auto;">
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#262626" stroke-width="6"/>
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round"
+      stroke-dasharray="${(C * showSess).toFixed(1)} ${C.toFixed(1)}"
+      transform="rotate(-90 60 60) scale(-1,1) translate(-120,0)"/>
+    <g>${ticks}</g>
+    <text x="60" y="57" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="26" font-weight="800" fill="#fff">${voSec}</text>
+    <text x="60" y="73" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8" letter-spacing="0.5" fill="#888">${sessTxt}</text>
+  </svg>`;
+}
+
+function _renderTimer() {
+  const el = document.getElementById('sleepTimer');
+  if (!el) return;
+  let sessionFrac = 1, voRem = 1, voSec = Math.round(GAP_MS / 1000), sessTxt = `${Math.round(SESSION_MS / 60000)} MIN`;
+  if (_playing) {
+    const now   = Date.now();
+    const remMs = Math.max(0, _endAt - now);
+    sessionFrac = remMs / SESSION_MS;
+    const into  = now - _lastVoAt;
+    voRem = 1 - (into / GAP_MS);
+    voSec = Math.max(0, Math.ceil((GAP_MS - into) / 1000));
+    const mm = Math.floor(remMs / 60000), ss = Math.floor((remMs % 60000) / 1000);
+    sessTxt = `${mm}:${ss.toString().padStart(2, '0')} LEFT`;
+  }
+  el.innerHTML = _timerSVG(sessionFrac, voRem, voSec, sessTxt);
+}
 
 /* Stable short key for a line of text. */
 function _hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
@@ -114,7 +158,7 @@ async function _playGoal(text) {
 function _tick() {
   if (!_playing) return;
   if (Date.now() >= _endAt) { sleepLoopStop(); return; }
-  if (_list.length) { _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
+  if (_list.length) { _lastVoAt = Date.now(); _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
   _timer = setTimeout(_tick, GAP_MS);
 }
 
@@ -126,13 +170,16 @@ export function sleepLoopToggle() {
     return;
   }
   _purgeOldCache();   // free the old localStorage audio blobs
-  _playing = true; _idx = 0; _endAt = Date.now() + SESSION_MS;
+  _playing = true; _idx = 0; _endAt = Date.now() + SESSION_MS; _lastVoAt = Date.now();
+  if (_uiTimer) clearInterval(_uiTimer);
+  _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
   _tick();   // speak first immediately, then rotate
 }
 
 export function sleepLoopStop() {
   _playing = false;
   if (_timer) { clearTimeout(_timer); _timer = null; }
+  if (_uiTimer) { clearInterval(_uiTimer); _uiTimer = null; }
   if (_audio) { try { _audio.pause(); } catch (e) {} _audio = null; }
   if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
   renderSleepLoop();
@@ -161,9 +208,11 @@ export function renderSleepLoop() {
         <div style="font-family:var(--vault-mono);font-size:10px;color:${count ? BRAND : '#505058'};">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
       <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">Your favorited goals, spoken on a gentle rotation. Press play as you drift off.</p>
+      ${count ? `<div id="sleepTimer" style="margin:2px 0 14px;"></div>` : ''}
       <button onclick="sleepLoopToggle()"
         style="width:100%;background:${_playing ? '#2A1515' : BRAND};border:1px solid ${_playing ? '#5a2a2a' : BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:${_playing ? '#FF6B6B' : '#0a0a0a'};cursor:pointer;">
         ${_playing ? '■ STOP' : '▶ START'}</button>
       ${status}
     </div>`;
+  if (count) _renderTimer();
 }
