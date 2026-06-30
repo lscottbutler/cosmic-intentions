@@ -6,6 +6,10 @@
    Env:
      ELEVENLABS_API_KEY          (required)
      ELEVENLABS_VOICE_ID         (optional — defaults to a calm preset voice)
+     ELEVENLABS_MODEL            (optional — quality vs cost. Defaults to
+                                  eleven_multilingual_v2 (1 credit/char, richest).
+                                  Set to eleven_turbo_v2_5 to HALVE cost
+                                  (0.5 credit/char, faster, near-identical).)
      SUPABASE_SERVICE_ROLE_KEY   (optional — enables the global cache; without
                                   it the function still works, returning audio
                                   inline for per-device caching only)
@@ -13,6 +17,7 @@
 const crypto   = require('crypto');
 const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
 const BUCKET   = 'goal-audio';
+const ALLOWED_MODELS = ['eleven_multilingual_v2', 'eleven_turbo_v2_5', 'eleven_flash_v2_5'];
 
 exports.handler = async (event) => {
   const headers = {
@@ -32,12 +37,17 @@ exports.handler = async (event) => {
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'ELEVENLABS_API_KEY not configured' }) };
 
   const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'; // "Rachel" — calm default
+  // Model: request override (whitelisted) → env → safe default. Drives the cost.
+  const reqModel = String(body.model || '').trim();
+  const model = ALLOWED_MODELS.includes(reqModel) ? reqModel
+              : (ALLOWED_MODELS.includes(process.env.ELEVENLABS_MODEL) ? process.env.ELEVENLABS_MODEL : 'eleven_multilingual_v2');
   const text = String(body.text || '').trim().slice(0, 400);   // short lines only — keeps cost down
   if (!text) return { statusCode: 400, headers, body: JSON.stringify({ error: 'text is required' }) };
 
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const hash       = crypto.createHash('sha1').update(voiceId + '|' + text).digest('hex');
-  const objectPath = `${voiceId}/${hash}.mp3`;
+  // Cache key includes the model + voice so each model caches separately (clean A/B).
+  const hash       = crypto.createHash('sha1').update(voiceId + '|' + model + '|' + text).digest('hex');
+  const objectPath = `${voiceId}/${model}/${hash}.mp3`;
   const publicUrl  = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${objectPath}`;
 
   try {
@@ -55,7 +65,7 @@ exports.handler = async (event) => {
       headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json', 'Accept': 'audio/mpeg' },
       body: JSON.stringify({
         text,
-        model_id: 'eleven_multilingual_v2',
+        model_id: model,
         voice_settings: { stability: 0.5, similarity_boost: 0.75 },
       }),
     });

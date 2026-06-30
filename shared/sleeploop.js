@@ -18,7 +18,7 @@ const SESSION_MS = 20 * 60000;   // bounded 20-min wind-down
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
-const TTS_VER = 'v2';            // bump to invalidate cached audio (e.g. voice change / format)
+const TTS_VER = 'v3';            // bump to invalidate cached audio (e.g. voice/model change / format)
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
 
 /* Stable short key for a line of text. */
