@@ -324,7 +324,7 @@ export function renderSleepLoop() {
           <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
           ${(!day && !_playing && count) ? `<div style="display:flex;flex-wrap:wrap;gap:4px;">
             ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
-              style="flex:1;min-width:40px;background:${_sessionMin === m ? '#262626' : 'transparent'};border:1px solid ${_sessionMin === m ? BRAND : '#333'};border-radius:5px;padding:5px;font-family:var(--vault-mono);font-size:8px;font-weight:700;letter-spacing:0.5px;color:${_sessionMin === m ? '#fff' : '#777'};cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
+              style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
           </div>` : ''}
         </div>
         ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;padding-right:20px;"><div id="sleepTimer" style="width:100%;"></div></div>` : ''}
