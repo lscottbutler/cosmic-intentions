@@ -10,12 +10,14 @@
                                   eleven_multilingual_v2 (1 credit/char, richest).
                                   Set to eleven_turbo_v2_5 to HALVE cost
                                   (0.5 credit/char, faster, near-identical).)
-     SUPABASE_SERVICE_ROLE_KEY   (optional — enables the global cache; without
-                                  it the function still works, returning audio
-                                  inline for per-device caching only)
+   Global cache: Supabase Storage bucket `goal-audio` (public). On a hit we
+   return the stored URL with NO ElevenLabs call. Uploads use the PUBLIC anon
+   key (safe — already exposed client-side); needs a storage INSERT policy for
+   the anon role. Falls back to inline audio if the bucket/policy isn't set up.
 ─────────────────────────────────────────────────────────────────────────── */
 const crypto   = require('crypto');
 const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
 const BUCKET   = 'goal-audio';
 const ALLOWED_MODELS = ['eleven_multilingual_v2', 'eleven_turbo_v2_5', 'eleven_flash_v2_5'];
 
@@ -44,20 +46,18 @@ exports.handler = async (event) => {
   const text = String(body.text || '').trim().slice(0, 400);   // short lines only — keeps cost down
   if (!text) return { statusCode: 400, headers, body: JSON.stringify({ error: 'text is required' }) };
 
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   // Cache key includes the model + voice so each model caches separately (clean A/B).
   const hash       = crypto.createHash('sha1').update(voiceId + '|' + model + '|' + text).digest('hex');
   const objectPath = `${voiceId}/${model}/${hash}.mp3`;
   const publicUrl  = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${objectPath}`;
 
   try {
-    // 1. GLOBAL CACHE HIT — already in Supabase Storage → return URL, no ElevenLabs bill.
-    if (serviceKey) {
-      try {
-        const head = await fetch(publicUrl, { method: 'HEAD' });
-        if (head.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: true }) };
-      } catch (e) { /* fall through to generate */ }
-    }
+    // 1. GLOBAL CACHE HIT — already in Supabase Storage → return URL, NO ElevenLabs bill.
+    //    (public bucket → readable without auth; works even if upload policy is missing)
+    try {
+      const head = await fetch(publicUrl, { method: 'HEAD' });
+      if (head.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: true }) };
+    } catch (e) { /* fall through to generate */ }
 
     // 2. GENERATE via ElevenLabs (the only path that bills).
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
@@ -75,19 +75,17 @@ exports.handler = async (event) => {
     }
     const buf = Buffer.from(await res.arrayBuffer());
 
-    // 3. STORE for everyone (best-effort), return the cached URL.
-    if (serviceKey) {
-      try {
-        const up = await fetch(`${SUPA_URL}/storage/v1/object/${BUCKET}/${objectPath}`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': serviceKey, 'Content-Type': 'audio/mpeg', 'x-upsert': 'true' },
-          body: buf,
-        });
-        if (up.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: false }) };
-      } catch (e) { /* fall through to inline */ }
-    }
+    // 3. STORE for everyone (best-effort, anon key) → return the cached URL.
+    try {
+      const up = await fetch(`${SUPA_URL}/storage/v1/object/${BUCKET}/${objectPath}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${SUPA_ANON}`, 'apikey': SUPA_ANON, 'Content-Type': 'audio/mpeg' },
+        body: buf,
+      });
+      if (up.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: false }) };
+    } catch (e) { /* fall through to inline */ }
 
-    // 4. FALLBACK — no service key / upload failed: return audio inline (client caches per-device).
+    // 4. FALLBACK — bucket/policy not set up yet: return audio inline (client caches per-device).
     return { statusCode: 200, headers, body: JSON.stringify({ audio: buf.toString('base64'), mime: 'audio/mpeg' }) };
   } catch (e) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: String(e.message || e) }) };
