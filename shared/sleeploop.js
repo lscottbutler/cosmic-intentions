@@ -17,7 +17,11 @@ const SESSION_MS = 20 * 60000;   // bounded 20-min wind-down
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
-let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [];
+const TTS_VER = 'v1';            // bump to invalidate cached audio (e.g. voice change)
+let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
+
+/* Stable short key for a line of text. */
+function _hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
 
 /* The loop set = favorited goals ("I AM…" statements). */
 function _favGoalTexts() {
@@ -36,10 +40,37 @@ function _speak(text) {
   try { window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
 }
 
+/* Premium ElevenLabs audio — generate once, cache the mp3 per-device so we
+   never re-bill the same line. Returns true if it played, false to fall back. */
+async function _playPremium(text) {
+  if (typeof window.ciApiJson !== 'function') return false;
+  const key = `ci_tts_${TTS_VER}_${_hash(text)}`;
+  let b64 = LS.get(key);
+  if (!b64) {
+    try {
+      const data = await window.ciApiJson('tts-elevenlabs', { text });
+      if (data && data.audio) { b64 = data.audio; try { LS.set(key, b64); } catch (e) {} }
+    } catch (e) { return false; }   // no key / dev / error → caller falls back
+  }
+  if (!b64 || !_playing) return false;
+  try {
+    if (_audio) { try { _audio.pause(); } catch (e) {} }
+    _audio = new Audio('data:audio/mpeg;base64,' + b64);
+    await _audio.play();
+    return true;
+  } catch (e) { return false; }
+}
+
+/* Speak one goal — premium voice if available, else browser speech. */
+async function _playGoal(text) {
+  const ok = await _playPremium(text);
+  if (!ok && _playing) _speak(text);
+}
+
 function _tick() {
   if (!_playing) return;
   if (Date.now() >= _endAt) { sleepLoopStop(); return; }
-  if (_list.length) { _speak(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
+  if (_list.length) { _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
   _timer = setTimeout(_tick, GAP_MS);
 }
 
@@ -57,6 +88,7 @@ export function sleepLoopToggle() {
 export function sleepLoopStop() {
   _playing = false;
   if (_timer) { clearTimeout(_timer); _timer = null; }
+  if (_audio) { try { _audio.pause(); } catch (e) {} _audio = null; }
   if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
   renderSleepLoop();
 }
@@ -74,7 +106,7 @@ export function renderSleepLoop() {
     ? `<div style="margin-top:10px;font-size:12px;color:${DONE};line-height:1.5;">▸ “${esc(now)}”</div>
        <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">rotating every 30s · ~${minsLeft} min left</div>`
     : (count
-        ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">spoken by your device · premium audio coming</div>`
+        ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">ElevenLabs voice · falls back to your device</div>`
         : `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Favorite goals (♥) to build your loop.</div>`);
 
   el.innerHTML = `
