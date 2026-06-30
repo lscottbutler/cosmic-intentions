@@ -313,27 +313,33 @@ export function renderSleepLoop() {
   const modeBtn = (m, label) => `<button onclick="sleepLoopSetMode('${m}')"
     style="flex:1;background:${_mode === m ? BRAND : 'transparent'};border:1px solid ${_mode === m ? BRAND : '#333'};border-radius:6px;padding:7px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:${_mode === m ? '#0a0a0a' : '#888'};cursor:pointer;">${label}</button>`;
 
+  const secLbl = 'color:#fff;font-weight:800;font-size:10px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;';
   el.innerHTML = `
-    <div style="background:#141414;border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ MIND LOOP</div>
-        <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
-      </div>
-      <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
-      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;">
-        <div style="flex:2 1 0;min-width:0;">
-          <div style="display:flex;gap:6px;margin-bottom:8px;">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
-          ${(!day && !_playing && count) ? `<div style="display:flex;flex-wrap:wrap;gap:5px;">
-            ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
-              style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
-          </div>` : ''}
+    <div style="background:#141414;border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 13px;">
+        <div style="min-width:0;">
+          <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;text-transform:uppercase;">Mind Loop</div>
+          <div style="font-size:12px;color:#9a9a9a;margin-top:3px;line-height:1.4;">${day ? 'One goal + one mindset line at :00 &amp; :30 each hour.' : 'Your favorited goals, spoken on a gentle rotation.'}</div>
         </div>
-        ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;padding-right:20px;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
+        <div style="flex-shrink:0;margin-left:12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
-      ${!count ? `<button onclick="sleepLoopToggle()"
-        style="width:100%;background:${BRAND};border:1px solid ${BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:#0a0a0a;cursor:pointer;">▶ START</button>` : ''}
-      ${status}
-      <div style="text-align:center;font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:1.5px;margin-top:12px;border-top:1px solid #222;padding-top:10px;">◎ ${_impressions().toLocaleString()} TOTAL IMPRESSIONS</div>
+      <div style="background:#2E2E2E;padding:16px;border-top:1px solid #3a3a3a;">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <div style="flex:2 1 0;min-width:0;">
+            <div style="${secLbl}">Mode</div>
+            <div style="display:flex;gap:6px;${(!day && !_playing && count) ? 'margin-bottom:14px;' : ''}">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
+            ${(!day && !_playing && count) ? `<div style="${secLbl}">Length</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;">
+              ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
+                style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
+            </div>` : ''}
+          </div>
+          ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
+        </div>
+      </div>
+      ${!count ? `<div style="padding:14px 16px;"><button onclick="sleepLoopToggle()" style="width:100%;background:${BRAND};border:1px solid ${BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:#0a0a0a;cursor:pointer;">▶ START</button></div>` : ''}
+      <div style="padding:12px 16px 0;">${status}</div>
+      <div style="text-align:center;font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:1.5px;margin-top:12px;border-top:1px solid #222;padding:10px 16px 14px;">◎ ${_impressions().toLocaleString()} TOTAL IMPRESSIONS</div>
     </div>`;
   if (count) _renderTimer();
 }
