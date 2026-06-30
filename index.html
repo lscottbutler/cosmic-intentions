@@ -322,6 +322,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- DASHBOARD WIDGETS — moved to top of Column B -->
+        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
+        <div id="ringsWidget"></div>
+        <div id="wrapupWidget"></div>
+        <div id="winsWidget"></div>
+        <div id="sleepLoopWidget"></div>
+
         <!-- hidden ticker keeps JS targeting safe -->
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
@@ -518,22 +525,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- MAIN CONTENT -->
       <div class="vault-main" id="vaultMain">
 
-        <!-- DATE / MILESTONE BAR — top of Column A -->
-        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
-
-        <!-- DAILY PILLARS (RINGS) — Phase 1 tracking -->
-        <div id="ringsWidget"></div>
-
-        <!-- EVENING WRAP-UP — story recap (daily + weekly) -->
-        <div id="wrapupWidget"></div>
-
-        <!-- WINS WALL — mini-wins / convictions -->
-        <div id="winsWidget"></div>
-
-        <!-- SLEEP LOOP — favorited goals spoken on rotation -->
-        <div id="sleepLoopWidget"></div>
-
-        <!-- Block: home-video-1 — MY DASHBOARD welcome box, moved to top of Column A -->
+        <!-- Block: home-video-1 — MY DASHBOARD welcome box -->
         <div class="cb-display" data-block="home-video-1" style="margin-bottom:8px;"></div>
 
         <!-- STATS — what you've done — below the welcome paragraph, above goal #1 -->
