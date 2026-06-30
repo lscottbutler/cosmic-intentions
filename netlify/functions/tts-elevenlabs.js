@@ -21,7 +21,12 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
-  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'ELEVENLABS_API_KEY not configured' }) };
+  if (!apiKey) {
+    // Safe diagnostic: names only (no values) of any var that looks related,
+    // so we can spot a typo / wrong-name without leaking secrets.
+    const sawKeys = Object.keys(process.env).filter(k => /eleven|xi[_-]?api|11labs|voice/i.test(k));
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'ELEVENLABS_API_KEY not configured', sawRelatedKeys: sawKeys }) };
+  }
 
   const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'; // "Rachel" — calm default
   const text = String(body.text || '').trim().slice(0, 400);   // short lines only — keeps cost down
