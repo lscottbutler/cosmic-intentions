@@ -1,15 +1,16 @@
-import { LS, intentions, esc, toast } from '../app.js';
+import { intentions, esc, toast } from '../app.js';
 /* ── SLEEP LOOP ──────────────────────────────────────────
    Plays the user's FAVORITED goals on a gentle rotation as
-   they fall asleep. v1 uses the browser's built-in speech
-   (free, works today); ElevenLabs premium audio is a later
-   upgrade — see project_wrapup_tracking_vision.
+   they fall asleep. Uses ElevenLabs premium audio (via the
+   tts-elevenlabs function), cached per-device in IndexedDB so
+   each clip generates ONCE then plays free; falls back to the
+   browser's built-in speech if the function/audio is unavailable.
 
    Loop technique (decided): audible, first-person present
    (goals are already "I AM…"), ROTATE don't hammer (~30s
    cadence), bounded pre-sleep session.
 
-   Depends on globals (from app.js): LS, intentions, esc, toast.
+   Depends on globals (from app.js): intentions, esc, toast.
 ───────────────────────────────────────────────────────── */
 
 const GAP_MS     = 30000;        // ~30s between goals (spacing, not hammering)
@@ -22,6 +23,46 @@ let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = 
 
 /* Stable short key for a line of text. */
 function _hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
+
+/* ── AUDIO CACHE (IndexedDB) ─────────────────────────────
+   localStorage (~5MB) was too small for mp3 blobs — writes
+   failed silently and re-billed ElevenLabs on every repeat.
+   IndexedDB holds hundreds of MB, so each clip generates ONCE
+   per device, then plays free forever. */
+const IDB_NAME = 'ci_tts', IDB_STORE = 'audio';
+function _idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => { try { req.result.createObjectStore(IDB_STORE); } catch (e) {} };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  });
+}
+async function _idbGet(key) {
+  try {
+    const db = await _idbOpen();
+    return await new Promise((resolve) => {
+      const r = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key);
+      r.onsuccess = () => resolve(r.result || null);
+      r.onerror   = () => resolve(null);
+    });
+  } catch (e) { return null; }
+}
+async function _idbPut(key, val) {
+  try {
+    const db = await _idbOpen();
+    await new Promise((resolve) => {
+      const r = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).put(val, key);
+      r.onsuccess = () => resolve(); r.onerror = () => resolve();
+    });
+  } catch (e) {}
+}
+/* One-time: purge the old localStorage audio blobs that were eating quota. */
+let _purged = false;
+function _purgeOldCache() {
+  if (_purged) return; _purged = true;
+  try { Object.keys(localStorage).filter(k => k.startsWith('ci_tts_')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+}
 
 /* The loop set = favorited goals ("I AM…" statements). */
 function _favGoalTexts() {
@@ -44,12 +85,12 @@ function _speak(text) {
    never re-bill the same line. Returns true if it played, false to fall back. */
 async function _playPremium(text) {
   if (typeof window.ciApiJson !== 'function') return false;
-  const key = `ci_tts_${TTS_VER}_${_hash(text)}`;
-  let b64 = LS.get(key);
+  const key = `${TTS_VER}_${_hash(text)}`;
+  let b64 = await _idbGet(key);
   if (!b64) {
     try {
       const data = await window.ciApiJson('tts-elevenlabs', { text });
-      if (data && data.audio) { b64 = data.audio; try { LS.set(key, b64); } catch (e) {} }
+      if (data && data.audio) { b64 = data.audio; _idbPut(key, b64); }   // cache once → never re-bill
     } catch (e) { return false; }   // no key / dev / error → caller falls back
   }
   if (!b64 || !_playing) return false;
@@ -81,6 +122,7 @@ export function sleepLoopToggle() {
     if (typeof toast === 'function') toast('Favorite some goals first — they become your loop.', 'error');
     return;
   }
+  _purgeOldCache();   // free the old localStorage audio blobs
   _playing = true; _idx = 0; _endAt = Date.now() + SESSION_MS;
   _tick();   // speak first immediately, then rotate
 }
