@@ -22,8 +22,13 @@ const TTS_VER = 'v3';            // bump to invalidate cached audio (e.g. voice/
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
 let _lastVoAt = 0, _uiTimer = null, _lastLine = '';   // timer + current-line state
 let _mode = (() => { try { return localStorage.getItem('ci_loop_mode') || 'sleep'; } catch (e) { return 'sleep'; } })();
+// Sleep-session length in minutes; 0 = continuous (all day/night, no auto-stop).
+let _sessionMin = (() => { try { const v = parseInt(localStorage.getItem('ci_loop_minutes'), 10); return isNaN(v) ? 20 : v; } catch (e) { return 20; } })();
+let _startedAt = 0;
 const SLOT_MS  = 30 * 60000;   // daytime: a play at :00 and :30
 const SLOT_GAP = 14000;        // gap between the goal and the mindset line within a slot
+const DURATIONS = [20, 60, 240, 480, 0];   // minutes; 0 = ∞
+function _durLabel(m) { return m === 0 ? '∞' : m < 60 ? `${m}m` : `${m / 60}h`; }
 
 /* Dual-ring timer SVG. Outer ring = session time remaining (counter-clockwise);
    inner hashed ring = time until the next voice line. Light-on-dark. */
@@ -54,7 +59,7 @@ function _timerSVG(sessionFrac, voRem, voSec, sessTxt) {
 function _renderTimer() {
   const el = document.getElementById('sleepTimer');
   if (!el) return;
-  let sessionFrac = 1, voRem = 1, voSec = Math.round(GAP_MS / 1000), sessTxt = `${Math.round(SESSION_MS / 60000)} MIN`;
+  let sessionFrac = 1, voRem = 1, voSec = Math.round(GAP_MS / 1000), sessTxt = '';
   if (_mode === 'daytime') {
     if (_playing) {
       const toSlot = _msToNextSlot();
@@ -66,14 +71,22 @@ function _renderTimer() {
       voSec = '☀'; sessTxt = 'EVERY :00 & :30';
     }
   } else if (_playing) {
-    const now   = Date.now();
-    const remMs = Math.max(0, _endAt - now);
-    sessionFrac = remMs / SESSION_MS;
-    const into  = now - _lastVoAt;
+    const now  = Date.now();
+    const into = now - _lastVoAt;
     voRem = 1 - (into / GAP_MS);
     voSec = Math.max(0, Math.ceil((GAP_MS - into) / 1000));
-    const mm = Math.floor(remMs / 60000), ss = Math.floor((remMs % 60000) / 1000);
-    sessTxt = `${mm}:${ss.toString().padStart(2, '0')} LEFT`;
+    if (_sessionMin > 0) {
+      const remMs = Math.max(0, _endAt - now);
+      sessionFrac = remMs / (_sessionMin * 60000);
+      const mm = Math.floor(remMs / 60000), ss = Math.floor((remMs % 60000) / 1000);
+      sessTxt = `${mm}:${ss.toString().padStart(2, '0')} LEFT`;
+    } else {
+      sessionFrac = 1;   // continuous — ring stays full
+      const e = now - _startedAt, h = Math.floor(e / 3600000), m = Math.floor((e % 3600000) / 60000);
+      sessTxt = h > 0 ? `∞  ${h}h ${m}m` : `∞  ${m}m`;
+    }
+  } else {
+    sessTxt = _sessionMin > 0 ? `${_sessionMin} MIN` : 'ALL NIGHT';
   }
   el.innerHTML = _timerSVG(sessionFrac, voRem, voSec, sessTxt);
 }
@@ -235,16 +248,23 @@ export function sleepLoopToggle() {
     return;
   }
   _purgeOldCache();   // free the old localStorage audio blobs
-  _playing = true; _idx = 0; _lastVoAt = Date.now();
+  _playing = true; _idx = 0; _lastVoAt = Date.now(); _startedAt = Date.now();
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
   if (_mode === 'daytime') {
     _playDaytimeSlot();      // play one now, then align to :00 / :30
     _scheduleDaytime();
   } else {
-    _endAt = Date.now() + SESSION_MS;
+    _endAt = _sessionMin > 0 ? _startedAt + _sessionMin * 60000 : Infinity;   // 0 = run until stopped
     _tick();                 // sleep: continuous rotation
   }
+  renderSleepLoop();
+}
+
+export function sleepLoopSetDuration(min) {
+  _sessionMin = min;
+  try { localStorage.setItem('ci_loop_minutes', String(min)); } catch (e) {}
+  if (_playing && _mode === 'sleep') _endAt = min > 0 ? _startedAt + min * 60000 : Infinity;
   renderSleepLoop();
 }
 
@@ -293,6 +313,10 @@ export function renderSleepLoop() {
       </div>
       <div style="display:flex;gap:6px;margin-bottom:12px;">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
       <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
+      ${(!day && !_playing && count) ? `<div style="display:flex;gap:4px;margin-bottom:12px;">
+        ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
+          style="flex:1;background:${_sessionMin === m ? '#262626' : 'transparent'};border:1px solid ${_sessionMin === m ? BRAND : '#333'};border-radius:5px;padding:5px;font-family:var(--vault-mono);font-size:8px;font-weight:700;letter-spacing:0.5px;color:${_sessionMin === m ? '#fff' : '#777'};cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
+      </div>` : ''}
       ${count ? `<div id="sleepTimer" style="margin:2px 0 14px;"></div>` : ''}
       <button onclick="sleepLoopToggle()"
         style="width:100%;background:${_playing ? '#2A1515' : BRAND};border:1px solid ${_playing ? '#5a2a2a' : BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:${_playing ? '#FF6B6B' : '#0a0a0a'};cursor:pointer;">
