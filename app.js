@@ -7,6 +7,7 @@ import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings } from './shared/rings.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderWins } from './shared/wins.js';
+import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
 ───────────────────────────────────────────────────────── */
@@ -2253,6 +2254,7 @@ export function renderVaultSidebar() {
   renderRings();
   renderWrapup();
   renderWins();
+  renderSleepLoop();
 
   // Date line: "Monday, May 26  ·  146/365"
   const _now      = new Date();
