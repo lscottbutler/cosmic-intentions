@@ -30,6 +30,11 @@ const SLOT_GAP = 14000;        // gap between the goal and the mindset line with
 const DURATIONS = [20, 60, 240, 480, 0];   // minutes; 0 = ∞
 function _durLabel(m) { return m === 0 ? '∞' : m < 60 ? `${m}m` : `${m / 60}h`; }
 
+/* Total impressions — every line the loop speaks (goal or mindset). Accumulates
+   forever in ci_impressions. (Supabase sync is a later upgrade.) */
+function _impressions() { try { return parseInt(localStorage.getItem('ci_impressions'), 10) || 0; } catch (e) { return 0; } }
+function _bumpImpressions() { const n = _impressions() + 1; try { localStorage.setItem('ci_impressions', String(n)); } catch (e) {} return n; }
+
 /* Dual-ring timer SVG. Outer ring = session time remaining (counter-clockwise);
    inner hashed ring = time until the next voice line. Light-on-dark. */
 function _timerSVG(sessionFrac, voRem, voSec, sessTxt) {
@@ -186,6 +191,7 @@ async function _playPremium(text) {
 /* Speak one line (goal or mindset) — premium voice if available, else browser. */
 async function _playGoal(text) {
   _lastLine = text;
+  _bumpImpressions();   // every spoken line is one impression
   const ok = await _playPremium(text);
   if (!ok && _playing) _speak(text);
 }
@@ -322,6 +328,7 @@ export function renderSleepLoop() {
         style="width:100%;background:${_playing ? '#2A1515' : BRAND};border:1px solid ${_playing ? '#5a2a2a' : BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:${_playing ? '#FF6B6B' : '#0a0a0a'};cursor:pointer;">
         ${_playing ? '■ STOP' : '▶ START'}</button>
       ${status}
+      <div style="text-align:center;font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:1.5px;margin-top:12px;border-top:1px solid #222;padding-top:10px;">◎ ${_impressions().toLocaleString()} TOTAL IMPRESSIONS</div>
     </div>`;
   if (count) _renderTimer();
 }
