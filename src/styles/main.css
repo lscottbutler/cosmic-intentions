@@ -105,8 +105,8 @@ body {
   top: var(--hdr);
   left: 0; right: 0;
   height: var(--topnav);
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: none;
   display: flex;
   align-items: center;
   justify-content: center;
