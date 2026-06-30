@@ -1,5 +1,5 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
-import { LS, esc, toast, buildContext, getPB } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, intentions } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -8,6 +8,30 @@ import { LS, esc, toast, buildContext, getPB } from '../app.js';
 ───────────────────────────────────────────────────────── */
 
 const BRAND = '#F5A623';
+const DONE  = '#4ADE80';
+
+/* Nightly checklist: every goal's 10 "Today I Will" actions with their
+   done status. Clicking a row toggles it (logs a win + momentum) via the
+   same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
+function _todayChecklist() {
+  const items = (intentions || [])
+    .map((it, idx) => ({ it, idx }))
+    .filter(o => o.it && o.it.roadmapAI && Array.isArray(o.it.roadmapAI.tasks) && o.it.roadmapAI.tasks.length);
+  if (!items.length) return null;
+  let total = 0, done = 0, rows = '';
+  items.forEach(({ it, idx }) => {
+    const dones = it.roadmapAI.done || {};
+    rows += `<div style="font-family:var(--vault-mono);font-size:8px;color:#888;letter-spacing:1px;margin:10px 0 4px;">◎ ${esc(it.title)}</div>`;
+    it.roadmapAI.tasks.forEach((t, i) => {
+      const d = !!dones[i]; total++; if (d) done++;
+      rows += `<div onclick="toggleRoadmapTaskDone(${idx},${i})" style="display:flex;gap:8px;align-items:flex-start;padding:5px 2px;cursor:pointer;">
+        <span style="color:${d ? DONE : '#555'};font-size:14px;line-height:1.45;flex-shrink:0;">${d ? '✓' : '○'}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#666' : '#ccc'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
+      </div>`;
+    });
+  });
+  return { rows, total, done };
+}
 
 /* Join labels into natural prose: "Review and Visualize",
    "Review, Visualize and Meditate". */
@@ -109,6 +133,7 @@ export function renderWrapup() {
   const aiPara = LS.get(_aiKey());
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
+  const chk    = _todayChecklist();
 
   el.innerHTML = `
     <div style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
@@ -122,6 +147,13 @@ export function renderWrapup() {
 
       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
       <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
+
+      ${chk ? `
+      <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;margin-bottom:6px;">
+        <span style="color:#666;">TODAY I WILL — TICK WHAT YOU DID</span>
+        <span style="color:${chk.total && chk.done === chk.total ? DONE : '#888'};">${chk.done}/${chk.total} done</span>
+      </div>
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-bottom:14px;">${chk.rows}</div>` : ''}
 
       <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
         style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
