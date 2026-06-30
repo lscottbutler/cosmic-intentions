@@ -319,14 +319,14 @@ export function renderSleepLoop() {
         <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ AFFIRMATION LOOP</div>
         <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:12px;">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
+      ${(!day && !_playing && count) ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">
+        ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
+          style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
+      </div>` : ''}
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;">
         <div style="flex:2 1 0;min-width:0;">
-          <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
-          ${(!day && !_playing && count) ? `<div style="display:flex;flex-wrap:wrap;gap:4px;">
-            ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
-              style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
-          </div>` : ''}
+          <p style="font-size:12px;line-height:1.5;color:#999;margin:0;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
         </div>
         ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;padding-right:20px;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
       </div>
