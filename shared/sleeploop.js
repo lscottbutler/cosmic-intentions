@@ -18,7 +18,7 @@ const SESSION_MS = 20 * 60000;   // bounded 20-min wind-down
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
-const TTS_VER = 'v1';            // bump to invalidate cached audio (e.g. voice change)
+const TTS_VER = 'v2';            // bump to invalidate cached audio (e.g. voice change / format)
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
 
 /* Stable short key for a line of text. */
@@ -86,17 +86,20 @@ function _speak(text) {
 async function _playPremium(text) {
   if (typeof window.ciApiJson !== 'function') return false;
   const key = `${TTS_VER}_${_hash(text)}`;
-  let b64 = await _idbGet(key);
-  if (!b64) {
+  // L1: this device (IndexedDB) — stores a ready-to-play src (Supabase URL or data URI).
+  let src = await _idbGet(key);
+  if (!src) {
     try {
       const data = await window.ciApiJson('tts-elevenlabs', { text });
-      if (data && data.audio) { b64 = data.audio; _idbPut(key, b64); }   // cache once → never re-bill
+      if (data && data.url)        src = data.url;                              // global cache (Supabase)
+      else if (data && data.audio) src = 'data:audio/mpeg;base64,' + data.audio; // inline fallback
+      if (src) _idbPut(key, src);   // cache locally → no function round-trip next time
     } catch (e) { return false; }   // no key / dev / error → caller falls back
   }
-  if (!b64 || !_playing) return false;
+  if (!src || !_playing) return false;
   try {
     if (_audio) { try { _audio.pause(); } catch (e) {} }
-    _audio = new Audio('data:audio/mpeg;base64,' + b64);
+    _audio = new Audio(src);
     await _audio.play();
     return true;
   } catch (e) { return false; }
