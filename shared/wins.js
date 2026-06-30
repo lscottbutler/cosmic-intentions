@@ -45,6 +45,21 @@ export function winDelete(ts) {
   _refresh();
 }
 
+/* Auto-win tied to a source (e.g. a checked Today-I-Will task).
+   Idempotent: `on` adds it once; `!on` removes it. Lets a task check
+   log a win and an uncheck remove it without duplicates. */
+export function setTaskWin(srcKey, text, on) {
+  const wins   = getWins();
+  const exists = wins.some(w => w.src === srcKey);
+  if (on && !exists) {
+    wins.unshift({ text: String(text || '').trim(), date: _todayKey(), ts: Date.now(), src: srcKey });
+    _save(wins); _refresh();
+  } else if (!on && exists) {
+    _save(wins.filter(w => w.src !== srcKey));
+    _refresh();
+  }
+}
+
 function _refresh() {
   renderWins();
   renderRings();    // momentum may shift

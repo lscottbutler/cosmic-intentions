@@ -1,5 +1,6 @@
 import { buildContext, callClaude, currentUser, esc, getPB, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
+import { setTaskWin } from './wins.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
    Depends on globals: intentions, esc, getPB, buildContext,
    callClaude, saveIntentions, syncIntentionsToSupabase,
@@ -213,6 +214,21 @@ export function setActiveDangerZone(idx, value) {
   saveIntentions();
 }
 
+/* Check/uncheck a roadmap task. Checking marks it done for this goal,
+   auto-logs it to the Wins Wall (→ momentum), and re-renders the panel.
+   Unchecking reverses all of it. */
+export function toggleRoadmapTaskDone(idx, i) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r || !Array.isArray(r.tasks)) return;
+  if (!r.done) r.done = {};
+  r.done[i] = !r.done[i];
+  const done = !!r.done[i];
+  saveIntentions();
+  setTaskWin(`task-${idx}-${i}`, `✓ ${r.tasks[i] || ''}`, done);   // log/remove the win + momentum
+  const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
+  if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
+}
+
 /* Lock/unlock a roadmap task so the user can return to it next visit.
    State persists on the intention (saved + synced via saveIntentions). */
 export function toggleRoadmapLock(idx, i) {
@@ -277,13 +293,18 @@ function renderRoadmapAI(r, idx) {
   // Surgical view: active Intention + Danger Zone chips, then the flat top-10
   // tactical task list. No paragraphs, no fluff.
   const locks = r.locks || {};
+  const dones = r.done  || {};
   const tasks = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
-    return `<div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+    const done   = !!dones[i];
+    return `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
       <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:15px;font-weight:800;color:#fff;line-height:1;">${i + 1}</span>
-      <span style="flex:1;min-width:0;font-size:13px;color:#ddd;line-height:1.6;">${esc(t)}</span>
+      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${done ? 'text-decoration:line-through;color:#666;' : 'color:#ddd;'}">${esc(t)}</span>
+      <button onclick="toggleRoadmapTaskDone(${idx},${i});event.stopPropagation();"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${done ? '#4ADE80' : '#555'};"
+        title="${done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${done ? '✓' : '○'}</button>
       <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:22px;line-height:1;color:${locked ? '#F5A623' : '#505058'};"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:18px;line-height:1;color:${locked ? '#F5A623' : '#505058'};"
         title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒' : '🔓'}</button>
     </div>`;
   }).join('');
