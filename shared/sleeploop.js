@@ -20,7 +20,10 @@ const DONE  = '#4ADE80';
 
 const TTS_VER = 'v3';            // bump to invalidate cached audio (e.g. voice/model change / format)
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
-let _lastVoAt = 0, _uiTimer = null;   // timer animation state
+let _lastVoAt = 0, _uiTimer = null, _lastLine = '';   // timer + current-line state
+let _mode = (() => { try { return localStorage.getItem('ci_loop_mode') || 'sleep'; } catch (e) { return 'sleep'; } })();
+const SLOT_MS  = 30 * 60000;   // daytime: a play at :00 and :30
+const SLOT_GAP = 14000;        // gap between the goal and the mindset line within a slot
 
 /* Dual-ring timer SVG. Outer ring = session time remaining (counter-clockwise);
    inner hashed ring = time until the next voice line. Light-on-dark. */
@@ -52,7 +55,17 @@ function _renderTimer() {
   const el = document.getElementById('sleepTimer');
   if (!el) return;
   let sessionFrac = 1, voRem = 1, voSec = Math.round(GAP_MS / 1000), sessTxt = `${Math.round(SESSION_MS / 60000)} MIN`;
-  if (_playing) {
+  if (_mode === 'daytime') {
+    if (_playing) {
+      const toSlot = _msToNextSlot();
+      sessionFrac = Math.max(0, Math.min(1, toSlot / SLOT_MS));
+      voRem = sessionFrac;
+      const mm = Math.floor(toSlot / 60000), ss = Math.floor((toSlot % 60000) / 1000);
+      voSec = mm; sessTxt = `${mm}:${ss.toString().padStart(2, '0')} TO NEXT`;
+    } else {
+      voSec = '☀'; sessTxt = 'EVERY :00 & :30';
+    }
+  } else if (_playing) {
     const now   = Date.now();
     const remMs = Math.max(0, _endAt - now);
     sessionFrac = remMs / SESSION_MS;
@@ -63,6 +76,14 @@ function _renderTimer() {
     sessTxt = `${mm}:${ss.toString().padStart(2, '0')} LEFT`;
   }
   el.innerHTML = _timerSVG(sessionFrac, voRem, voSec, sessTxt);
+}
+
+export function sleepLoopSetMode(mode) {
+  if (mode !== 'sleep' && mode !== 'daytime') return;
+  if (_playing) sleepLoopStop();
+  _mode = mode;
+  try { localStorage.setItem('ci_loop_mode', mode); } catch (e) {}
+  renderSleepLoop();
 }
 
 /* Stable short key for a line of text. */
@@ -149,10 +170,54 @@ async function _playPremium(text) {
   } catch (e) { return false; }
 }
 
-/* Speak one goal — premium voice if available, else browser speech. */
+/* Speak one line (goal or mindset) — premium voice if available, else browser. */
 async function _playGoal(text) {
+  _lastLine = text;
   const ok = await _playPremium(text);
   if (!ok && _playing) _speak(text);
+}
+
+/* ── DAYTIME MODE ───────────────────────────────────────
+   At :00 and :30 of each hour, play 1 favorited goal + 1 random
+   mindset line (affirmation/belief/stoic/quote). Runs while the
+   tab is open. */
+function _randomMindset() {
+  const pool = [];
+  (intentions || []).forEach(it => {
+    const m = it && it.mindset;
+    if (!m) return;
+    (m.affirmations || []).forEach(x => pool.push(x));
+    (m.beliefs      || []).forEach(x => pool.push(x));
+    (m.stoic        || []).forEach(x => pool.push(x));
+    (m.quotes       || []).forEach(x => pool.push(x));
+    (m.attitudes    || []).forEach(a => pool.push(a && (a.body || a.title)));
+  });
+  const clean = pool.map(s => String(s || '').trim()).filter(Boolean);
+  return clean.length ? clean[Math.floor(Math.random() * clean.length)] : '';
+}
+
+function _msToNextSlot() {
+  const now = new Date();
+  const minsToNext = now.getMinutes() < 30 ? 30 - now.getMinutes() : 60 - now.getMinutes();
+  return Math.max(1000, (minsToNext * 60 - now.getSeconds()) * 1000 - now.getMilliseconds());
+}
+
+async function _playDaytimeSlot() {
+  if (!_playing || !_list.length) return;
+  _lastVoAt = Date.now();
+  await _playGoal(_list[_idx % _list.length]); _idx++;
+  renderSleepLoop();
+  const mind = _randomMindset();   // +1 mindset line, after a short gap
+  if (mind) setTimeout(() => { if (_playing) { _lastVoAt = Date.now(); _playGoal(mind); renderSleepLoop(); } }, SLOT_GAP);
+}
+
+function _scheduleDaytime() {
+  if (!_playing) return;
+  _timer = setTimeout(() => {
+    if (!_playing) return;
+    _playDaytimeSlot();
+    _scheduleDaytime();
+  }, _msToNextSlot());
 }
 
 function _tick() {
@@ -170,10 +235,17 @@ export function sleepLoopToggle() {
     return;
   }
   _purgeOldCache();   // free the old localStorage audio blobs
-  _playing = true; _idx = 0; _endAt = Date.now() + SESSION_MS; _lastVoAt = Date.now();
+  _playing = true; _idx = 0; _lastVoAt = Date.now();
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
-  _tick();   // speak first immediately, then rotate
+  if (_mode === 'daytime') {
+    _playDaytimeSlot();      // play one now, then align to :00 / :30
+    _scheduleDaytime();
+  } else {
+    _endAt = Date.now() + SESSION_MS;
+    _tick();                 // sleep: continuous rotation
+  }
+  renderSleepLoop();
 }
 
 export function sleepLoopStop() {
@@ -191,23 +263,36 @@ export function renderSleepLoop() {
 
   const list  = _playing ? _list : _favGoalTexts();
   const count = list.length;
-  const now   = list.length ? list[(_idx - 1 + list.length) % list.length] : '';
-  const minsLeft = _playing ? Math.max(0, Math.ceil((_endAt - Date.now()) / 60000)) : 0;
+  const day   = _mode === 'daytime';
 
-  const status = _playing
-    ? `<div style="margin-top:10px;font-size:12px;color:${DONE};line-height:1.5;">▸ “${esc(now)}”</div>
-       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">rotating every 30s · ~${minsLeft} min left</div>`
-    : (count
-        ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">ElevenLabs voice · falls back to your device</div>`
-        : `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Favorite goals (♥) to build your loop.</div>`);
+  let status;
+  if (_playing) {
+    let sub;
+    if (day) {
+      const nextStr = new Date(Date.now() + _msToNextSlot()).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      sub = `next play at ${nextStr}`;
+    } else {
+      sub = `rotating every 30s · ~${Math.max(0, Math.ceil((_endAt - Date.now()) / 60000))} min left`;
+    }
+    status = `<div style="margin-top:10px;font-size:12px;color:${DONE};line-height:1.5;">▸ “${esc(_lastLine)}”</div>
+       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">${sub}</div>`;
+  } else if (count) {
+    status = `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">${day ? 'Plays on the hour &amp; half-hour · keep this tab open' : 'ElevenLabs voice · falls back to your device'}</div>`;
+  } else {
+    status = `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Favorite goals (♥) to build your loop.</div>`;
+  }
+
+  const modeBtn = (m, label) => `<button onclick="sleepLoopSetMode('${m}')"
+    style="flex:1;background:${_mode === m ? BRAND : 'transparent'};border:1px solid ${_mode === m ? BRAND : '#333'};border-radius:6px;padding:7px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:${_mode === m ? '#0a0a0a' : '#888'};cursor:pointer;">${label}</button>`;
 
   el.innerHTML = `
     <div style="background:#141414;border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ SLEEP LOOP</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ AFFIRMATION LOOP</div>
         <div style="font-family:var(--vault-mono);font-size:10px;color:${count ? BRAND : '#505058'};">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
-      <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">Your favorited goals, spoken on a gentle rotation. Press play as you drift off.</p>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
+      <p style="font-size:12px;line-height:1.5;color:#999;margin:0 0 12px;">${day ? 'One goal + one mindset line at the top &amp; half of every hour. Keep this tab open.' : 'Your favorited goals, spoken on a gentle rotation. Press play as you drift off.'}</p>
       ${count ? `<div id="sleepTimer" style="margin:2px 0 14px;"></div>` : ''}
       <button onclick="sleepLoopToggle()"
         style="width:100%;background:${_playing ? '#2A1515' : BRAND};border:1px solid ${_playing ? '#5a2a2a' : BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:${_playing ? '#FF6B6B' : '#0a0a0a'};cursor:pointer;">
