@@ -659,7 +659,7 @@ export function renderPBIntentionList() {
         <input type="text" value="${esc(i.title)}" maxlength="150"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${fld}" />
       </div>
-      <div style="background:#555555;padding:18px 20px;">
+      <div style="background:#2E2E2E;padding:18px 20px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">START &amp; END DATES</div>
         <div style="display:flex;gap:12px;">
           <div style="flex:1;">
@@ -672,7 +672,7 @@ export function renderPBIntentionList() {
           </div>
         </div>
       </div>
-      <div style="background:#7E7E7E;padding:18px 20px;">
+      <div style="background:#2E2E2E;padding:18px 20px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">CATEGORY</div>
         <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
       </div>
