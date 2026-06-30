@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict BokN4P2jaI1ilZJbKYugh5DYPdHHIfSYJD03VrRNcpc0r7eOlQ8Pi4TtqRkQGax
+\restrict hLSjpbn6aZja8N95b51kasDFigP4Zee3MjEj9j5Jod3UCfr6qbBbx3REQhCwe9q
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10 (Ubuntu 17.10-1.pgdg24.04+1)
@@ -3567,7 +3567,8 @@ CREATE TABLE public.profiles (
     pb_name text,
     openai_api_key text DEFAULT ''::text,
     openai_voice text DEFAULT 'alloy'::text,
-    viz_quick_sessions integer DEFAULT 0 NOT NULL
+    viz_quick_sessions integer DEFAULT 0 NOT NULL,
+    wins jsonb DEFAULT '[]'::jsonb
 );
 
 
@@ -4132,9 +4133,20 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	779	qfjvyjlllbv4	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 13:24:52.369982+00	2026-06-29 14:23:22.3384+00	ljawopyvuoko	3301752e-bc68-4f0f-bedf-f04de53cc9e5
 00000000-0000-0000-0000-000000000000	781	6zwdqmhctvmc	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-06-29 14:23:22.342759+00	2026-06-29 14:23:22.342759+00	qfjvyjlllbv4	3301752e-bc68-4f0f-bedf-f04de53cc9e5
 00000000-0000-0000-0000-000000000000	775	myhunbcmcehz	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 11:43:48.374823+00	2026-06-29 14:34:22.282901+00	c54j4a4w5i34	439835d5-9c1d-4e73-8b0f-61081d6253b2
-00000000-0000-0000-0000-000000000000	782	ueph5pip3nzu	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-06-29 14:34:22.287825+00	2026-06-29 14:34:22.287825+00	myhunbcmcehz	439835d5-9c1d-4e73-8b0f-61081d6253b2
 00000000-0000-0000-0000-000000000000	780	fyuven6gjggj	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 13:42:49.708055+00	2026-06-29 14:41:19.570928+00	te6z426jk6n3	83f2ab6c-eab0-4a86-a63a-f7d657160575
-00000000-0000-0000-0000-000000000000	783	jj2of5qggnkd	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-06-29 14:41:19.57811+00	2026-06-29 14:41:19.57811+00	fyuven6gjggj	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	783	jj2of5qggnkd	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 14:41:19.57811+00	2026-06-29 22:29:29.997142+00	fyuven6gjggj	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	782	ueph5pip3nzu	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 14:34:22.287825+00	2026-06-29 22:29:29.997521+00	myhunbcmcehz	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	785	k4wj2h2xyj27	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 22:29:30.015238+00	2026-06-29 23:28:36.950374+00	jj2of5qggnkd	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	784	6o6zulnyg5vk	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 22:29:30.015235+00	2026-06-30 00:29:34.240788+00	ueph5pip3nzu	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	786	64d3kioghe3q	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-29 23:28:36.96165+00	2026-06-30 01:19:49.766773+00	k4wj2h2xyj27	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	787	5wwweim4lbuc	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 00:29:34.247446+00	2026-06-30 01:27:55.272293+00	6o6zulnyg5vk	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	789	bu65kprj7cal	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 01:27:55.283212+00	2026-06-30 02:26:25.352393+00	5wwweim4lbuc	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	788	btgqnqlv4zsy	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 01:19:49.773624+00	2026-06-30 03:07:44.997949+00	64d3kioghe3q	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	790	ii3d46eeu2lb	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 02:26:25.363499+00	2026-06-30 03:24:36.090625+00	bu65kprj7cal	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	792	mp4wgdoq4geg	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 03:24:36.09822+00	2026-06-30 04:22:55.427697+00	ii3d46eeu2lb	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	793	e3nnfisijrn5	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-06-30 04:22:55.44824+00	2026-06-30 04:22:55.44824+00	mp4wgdoq4geg	439835d5-9c1d-4e73-8b0f-61081d6253b2
+00000000-0000-0000-0000-000000000000	791	qbygllge75g5	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-06-30 03:07:45.012351+00	2026-06-30 04:23:03.903633+00	btgqnqlv4zsy	83f2ab6c-eab0-4a86-a63a-f7d657160575
+00000000-0000-0000-0000-000000000000	794	a7bh5glsh7sz	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-06-30 04:23:03.904439+00	2026-06-30 04:23:03.904439+00	qbygllge75g5	83f2ab6c-eab0-4a86-a63a-f7d657160575
 \.
 
 
@@ -4245,8 +4257,8 @@ COPY auth.schema_migrations (version) FROM stdin;
 
 COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_after, refreshed_at, user_agent, ip, tag, oauth_client_id, refresh_token_hmac_key, refresh_token_counter, scopes) FROM stdin;
 3301752e-bc68-4f0f-bedf-f04de53cc9e5	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-06-28 15:48:53.914693+00	2026-06-29 14:23:22.357718+00	\N	aal1	\N	2026-06-29 14:23:22.357596	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36	124.120.207.26	\N	\N	\N	\N	\N
-439835d5-9c1d-4e73-8b0f-61081d6253b2	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-06-29 01:44:42.749331+00	2026-06-29 14:34:22.307288+00	\N	aal1	\N	2026-06-29 14:34:22.307176	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36	124.120.207.26	\N	\N	\N	\N	\N
-83f2ab6c-eab0-4a86-a63a-f7d657160575	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-06-29 05:40:15.164762+00	2026-06-29 14:41:19.595553+00	\N	aal1	\N	2026-06-29 14:41:19.595438	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36	124.120.207.26	\N	\N	\N	\N	\N
+439835d5-9c1d-4e73-8b0f-61081d6253b2	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-06-29 01:44:42.749331+00	2026-06-30 04:22:55.465899+00	\N	aal1	\N	2026-06-30 04:22:55.465794	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36	124.120.207.26	\N	\N	\N	\N	\N
+83f2ab6c-eab0-4a86-a63a-f7d657160575	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-06-29 05:40:15.164762+00	2026-06-30 04:23:03.907369+00	\N	aal1	\N	2026-06-30 04:23:03.90727	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36	124.120.207.26	\N	\N	\N	\N	\N
 \.
 
 
@@ -4271,8 +4283,8 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-06-29 05:40:15.164645+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-06-30 04:23:03.905448+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-06-29 05:40:15.164645+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-06-29 14:41:19.58591+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
 
@@ -4417,9 +4429,9 @@ d1c0af7f-8d70-4748-9e65-3c7dd8207bdf	0fa88179-af12-4659-ad95-c6ae5fbc23e1	I AM O
 -- Data for Name: profiles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.profiles (id, name, mission, lifegol, "values", beliefs, attitudes, stoicism, traits, tone, authors, obstacles, why, context, spirituality, anthropic_key, eleven_key, voice_id, updated_at, bts_authors, is_member, pegboard, bts_context, bts_obstacles, bts_why, bts_tone, pb_stoicism, pb_traits, pb_eleven, pb_voiceid, pb_attitudes, pb_beliefs, pb_values, pb_lifegol, pb_mission, pb_name, openai_api_key, openai_voice, viz_quick_sessions) FROM stdin;
-0fa88179-af12-4659-ad95-c6ae5fbc23e1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	universe	\N	\N	\N	2026-06-29 15:21:11.141+00		f	\N		FEAR OF FAILURE  ---  STRIVING FOR PERFECTION  ---	SELF EFFACACY ---  EASING THE BURDENS OF THOSE THAT I LOVE  ---  I AM DOING THIS FOR MORE EXOTIC EXPERIENCES  ---	ENCOURAGING  -- SARCASTIC  ---  FIRM  ---  FAIR  ---	Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.	I am the most curious person on earth.  I am creative with a keen eye for style and design.  I live by the Golden Rule.			I am one of the luckiest people in the world.	I am sympothetic toward those less fortunae.  I am not my thoughts.	I do what I say I'm going to do. Honesty,	Experience Joy	Discover My gifts.  Serve Humanity	eL		alloy	2
-868440e8-823b-4ca9-8e3b-385af4fb8879	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	humanist	\N	\N	\N	2026-05-28 08:00:48.831+00		t	\N					“When you wake up in the morning, tell yourself: the people I deal with today will be meddling, ungrateful, arrogant… but I cannot be harmed by them, nor can I hate them.”	Persistence, An Eye For Good Design, I AM Smart, I AM A Good Listener, I AM Creative, I AM Disciplined, Trauma Survivor	3f64bf97aa7b42cab16ef6ef80fdff1835d26baf0d69022a	U9VgC8Xinl7nnNsyDd3J	Imperfect action beats perfect planning.  No panic, no ego spirals, no emotional decisions.  You show up daily whether you full like it or not.  I trust my process.  Win or Lose--I stay steady.	I can figure anything out.  I am responsible for my life.  Action Creates Clarity,  I AM One Of The Luckiest People In The World, Discomfort Is Growth, Consistency Beats Intensity, Focus Creates Results, Everything Is Figureoutable,	Integrity, Ownership, Discipline, Growth, Courage, Focus, Excellence, Resilience, Contribution	I AM easing the burden of those less fortunate.	Discover my gifts. Serve humanity.	Scott	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	alloy	0
+COPY public.profiles (id, name, mission, lifegol, "values", beliefs, attitudes, stoicism, traits, tone, authors, obstacles, why, context, spirituality, anthropic_key, eleven_key, voice_id, updated_at, bts_authors, is_member, pegboard, bts_context, bts_obstacles, bts_why, bts_tone, pb_stoicism, pb_traits, pb_eleven, pb_voiceid, pb_attitudes, pb_beliefs, pb_values, pb_lifegol, pb_mission, pb_name, openai_api_key, openai_voice, viz_quick_sessions, wins) FROM stdin;
+0fa88179-af12-4659-ad95-c6ae5fbc23e1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	universe	\N	\N	\N	2026-06-30 02:51:31.629+00		f	\N		FEAR OF FAILURE  ---  STRIVING FOR PERFECTION  ---	SELF EFFACACY ---  EASING THE BURDENS OF THOSE THAT I LOVE  ---  I AM DOING THIS FOR MORE EXOTIC EXPERIENCES  ---	ENCOURAGING  -- SARCASTIC  ---  FIRM  ---  FAIR  ---	Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.	I am the most curious person on earth.  I am creative with a keen eye for style and design.  I live by the Golden Rule.			I am one of the luckiest people in the world.	I am sympothetic toward those less fortunae.  I am not my thoughts.	I do what I say I'm going to do. Honesty,	Experience Joy	Discover My gifts.  Serve Humanity	eL		alloy	2	[{"ts": 1782787891627, "date": "2026-06-30", "text": "TODAY I ADHERED TO MY DIET AND EXERCISE PLAN."}]
+868440e8-823b-4ca9-8e3b-385af4fb8879	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	humanist	\N	\N	\N	2026-05-28 08:00:48.831+00		t	\N					“When you wake up in the morning, tell yourself: the people I deal with today will be meddling, ungrateful, arrogant… but I cannot be harmed by them, nor can I hate them.”	Persistence, An Eye For Good Design, I AM Smart, I AM A Good Listener, I AM Creative, I AM Disciplined, Trauma Survivor	3f64bf97aa7b42cab16ef6ef80fdff1835d26baf0d69022a	U9VgC8Xinl7nnNsyDd3J	Imperfect action beats perfect planning.  No panic, no ego spirals, no emotional decisions.  You show up daily whether you full like it or not.  I trust my process.  Win or Lose--I stay steady.	I can figure anything out.  I am responsible for my life.  Action Creates Clarity,  I AM One Of The Luckiest People In The World, Discomfort Is Growth, Consistency Beats Intensity, Focus Creates Results, Everything Is Figureoutable,	Integrity, Ownership, Discipline, Growth, Courage, Focus, Excellence, Resilience, Contribution	I AM easing the burden of those less fortunate.	Discover my gifts. Serve humanity.	Scott	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	alloy	0	[]
 \.
 
 
@@ -4603,6 +4615,7 @@ COPY realtime.subscription (id, subscription_id, entity, filters, claims, create
 
 COPY storage.buckets (id, name, owner, created_at, updated_at, public, avif_autodetection, file_size_limit, allowed_mime_types, owner_id, type) FROM stdin;
 vision-images	vision-images	\N	2026-06-17 04:39:08.564787+00	2026-06-17 04:39:08.564787+00	t	f	\N	\N	\N	STANDARD
+goal-audio	goal-audio	\N	2026-06-30 03:21:00.581911+00	2026-06-30 03:21:00.581911+00	t	f	\N	\N	\N	STANDARD
 \.
 
 
@@ -4735,7 +4748,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 783, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 794, true);
 
 
 --
@@ -6498,5 +6511,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict BokN4P2jaI1ilZJbKYugh5DYPdHHIfSYJD03VrRNcpc0r7eOlQ8Pi4TtqRkQGax
+\unrestrict hLSjpbn6aZja8N95b51kasDFigP4Zee3MjEj9j5Jod3UCfr6qbBbx3REQhCwe9q
 
