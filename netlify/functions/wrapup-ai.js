@@ -54,17 +54,12 @@ exports.handler = async (event) => {
       { role: 'user', content: `${who}${winsBlock}WHAT THEY DID TODAY (the data):\n${summary}\n\nWrite their end-of-day recap.` },
     ], 0.7, 220);
 
-    // ── Pass 2: critique ───────────────────────────────────────────────────
-    const critique = await call([
-      { role: 'system', content: 'You are a ruthless editor. Critique the recap ONLY for genericness and missed personalization. List, tersely, what to cut (anything that could apply to anyone) and what to make more specific to THIS person and THIS data. No rewrite — just the critique.' },
-      { role: 'user', content: `${who}DATA:\n${summary}\n\nRECAP TO CRITIQUE:\n"${draft}"` },
-    ], 0.4, 220);
-
-    // ── Pass 3: refine ─────────────────────────────────────────────────────
+    // ── Pass 2: critical refine (critique criteria folded in — 2 passes total
+    //    keeps us safely under Netlify's 10s function limit) ──────────────────
     const finalPara = await call([
-      { role: 'system', content: 'You are a warm, perceptive personal coach. Rewrite the recap applying the critique. Second person, 2–3 sentences, specific, warm, progress-framed. No clichés, no preamble, no emojis, no quotes. Output ONLY the final paragraph.' },
-      { role: 'user', content: `${who}DATA:\n${summary}\n\nDRAFT:\n"${draft}"\n\nCRITIQUE TO APPLY:\n${critique}\n\nFinal recap for ${name}:` },
-    ], 0.6, 220);
+      { role: 'system', content: 'You are a warm, perceptive personal coach AND a ruthless editor. Rewrite the draft recap so it is SPECIFIC to this person and this data: cut anything generic that could apply to anyone, lean on the concrete numbers/wins/goals. Second person, 2–3 sentences, warm, progress-framed. No clichés, no preamble, no emojis, no quotes. Output ONLY the final paragraph.' },
+      { role: 'user', content: `${who}${winsBlock}DATA:\n${summary}\n\nDRAFT TO SHARPEN:\n"${draft}"\n\nFinal recap for ${name}:` },
+    ], 0.6, 240);
 
     const paragraph = finalPara.replace(/^["']|["']$/g, '').trim();
     if (!paragraph) return { statusCode: 502, headers, body: JSON.stringify({ error: 'empty result' }) };
