@@ -231,16 +231,16 @@ async function _playDaytimeSlot() {
 }
 
 function _scheduleDaytime() {
-  if (!_playing) return;
+  if (!_playing || _mode !== 'daytime') return;
   _timer = setTimeout(() => {
-    if (!_playing) return;
+    if (!_playing || _mode !== 'daytime') return;
     _playDaytimeSlot();
     _scheduleDaytime();
   }, _msToNextSlot());
 }
 
 function _tick() {
-  if (!_playing) return;
+  if (!_playing || _mode !== 'sleep') return;   // sleep-only; never run in daytime
   if (Date.now() >= _endAt) { sleepLoopStop(); return; }
   if (_list.length) { _lastVoAt = Date.now(); _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
   _timer = setTimeout(_tick, GAP_MS);
@@ -254,6 +254,7 @@ export function sleepLoopToggle() {
     return;
   }
   _purgeOldCache();   // free the old localStorage audio blobs
+  if (_timer) { clearTimeout(_timer); _timer = null; }   // kill any stale scheduler before starting
   _playing = true; _idx = 0; _lastVoAt = Date.now(); _startedAt = Date.now();
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
