@@ -62,7 +62,7 @@ body {
 
 /* WHITE / daylight (women) */
 [data-theme="light"] {
-  --white:#FFFFFF; --bg:#FFFFFF; --off:#EEF0F2; --card:#FFFFFF; --sunken:#E6E8EA; --ink:#1A1A1A;
+  --white:#FFFFFF; --bg:#F6F1E0; --off:#EDE8D6; --card:#FFFFFF; --sunken:#E6E1D0; --ink:#1A1A1A;
   --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
   --border:#D9DEE3; --border-2:#E7EAED;
   --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;
