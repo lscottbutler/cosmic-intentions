@@ -79,14 +79,14 @@ body {
 
 /* THEME PICKER (header) */
 .theme-picker { display:flex; gap:4px; }
-.theme-picker button { width:28px; height:28px; padding:0; border-radius:6px; cursor:pointer;
-  border:1px solid var(--border); background:var(--off); color:var(--muted);
+.theme-picker button { width:30px; height:30px; padding:0; border-radius:50%; cursor:pointer;
+  border:1px solid #000; background:#000; color:#fff;
   font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center; }
-.theme-picker button:hover { color:var(--black); }
+.theme-picker button:hover { background:#222; color:#fff; }
 [data-theme="dark"]  .theme-picker [data-theme-btn="dark"],
 [data-theme="light"] .theme-picker [data-theme-btn="light"],
 [data-theme="kids"]  .theme-picker [data-theme-btn="kids"] {
-  color:var(--black); border-color:var(--accent); }
+  color:#fff; border-color:var(--accent); }
 
 /* ── HEADER ───────────────────────────────────────────────── */
 .hdr {
