@@ -149,7 +149,9 @@ body {
   top: calc(var(--hdr) + var(--topnav) + 6px);
   left: 50%;
   transform: translateX(-50%);
+  width: max-content;
   min-width: 200px;
+  max-width: 94vw;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -164,12 +166,17 @@ body {
   text-align: center;
   padding: 12px 14px;
   border-radius: 6px;
-  font-size: 8pt;
-  color: #fff;
+  font-size: 40pt;
+  color: var(--text);
 }
 .ham-menu .tnav-signout { margin-left: 0; }
 .ham-menu-sep { height: 1px; background: var(--border); margin: 6px 4px; }
 .ham-menu .ham-theme { justify-content: center; padding: 4px 0 2px; }
+/* Roadmap collapsible dropdowns (MY ACTION PLAN / PROVEN ACTIONS = RESULTS) */
+details.rm-drop > summary { list-style: none; cursor: pointer; }
+details.rm-drop > summary::-webkit-details-marker { display: none; }
+details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
+details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 .tnav-btn {
   background: none;
   border: none;

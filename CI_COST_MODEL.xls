@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Cosmic Intentions — Cost &amp; Profit Model (v2)</title>
+<style>
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:900px;margin:0 auto;padding:40px 28px 80px;color:#1a1a1a;line-height:1.55;}
+  h1{font-size:30px;margin:0 0 4px;} h2{font-size:20px;margin:34px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px;}
+  h3{font-size:15px;margin:20px 0 8px;color:#444;} .sub{color:#777;font-size:14px;margin:0 0 8px;}
+  blockquote{background:#fafafa;border-left:4px solid #F5A623;margin:14px 0;padding:10px 16px;color:#555;font-size:14px;border-radius:0 6px 6px 0;}
+  table{border-collapse:collapse;width:100%;margin:12px 0 18px;font-size:14px;}
+  th,td{border:1px solid #e2e2e2;padding:8px 11px;text-align:left;}
+  th{background:#2b2b2b;color:#fff;font-weight:600;} tr:nth-child(even){background:#f7f7f7;}
+  td.n,th.n{text-align:right;} .big{background:#0a7d2e;color:#fff;font-weight:700;} .hl{color:#0a7d2e;font-weight:700;}
+  .tag{display:inline-block;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:700;}
+  .var{background:#fde2c8;color:#9a4d00;} .fix{background:#d8e8ff;color:#0a467d;} .dev{background:#eadcff;color:#5a2d9a;}
+  .foot{color:#999;font-size:12px;margin-top:40px;border-top:1px solid #eee;padding-top:12px;}
+</style></head><body>
+
+<h1>Cosmic Intentions — Cost &amp; Profit Model <span style="color:#999;font-size:18px;">(v2 · $15/mo)</span></h1>
+<p class="sub">Full stack, every cost. Prices are best estimates as of mid-2026 — verify on each provider's pricing page. Change any input and the downstream math shifts.</p>
+
+<h2>1. What you charge (revenue)</h2>
+<table>
+<tr><th>Plan</th><th class="n">Price</th><th class="n">Effective $/month</th></tr>
+<tr><td>Monthly</td><td class="n">$15 / mo</td><td class="n">$15.00</td></tr>
+<tr><td>Annual</td><td class="n">$75 / yr</td><td class="n">$6.25</td></tr>
+</table>
+<p class="sub">Base case below uses <strong>$15/mo</strong>. Annual ($6.25/mo effective) shown in §8.</p>
+
+<h2>2. Every cost (the whole stack)</h2>
+<p class="sub"><span class="tag var">VARIABLE</span> scales with users · <span class="tag fix">INFRA</span> stepped with scale · <span class="tag dev">TOOLING</span> your fixed build/maintenance overhead</p>
+<table>
+<tr><th>Service</th><th>Type</th><th>What it does</th><th>Price</th></tr>
+<tr><td>ElevenLabs</td><td><span class="tag var">VARIABLE</span></td><td>Goal/affirmation voice (TTS)</td><td>~$0.00009/char on Turbo (0.5 credit/char); ~$0.00018 on multilingual_v2</td></tr>
+<tr><td>OpenAI (gpt-4o-mini)</td><td><span class="tag var">VARIABLE</span></td><td>Roadmap, mindset, AI wrap-up</td><td>$0.15/1M input · $0.60/1M output tokens</td></tr>
+<tr><td>Stripe</td><td><span class="tag var">VARIABLE</span></td><td>Payment processing</td><td>2.9% + $0.30 per charge (~$0.74 on $15)</td></tr>
+<tr><td>Netlify</td><td><span class="tag fix">INFRA</span></td><td>Hosting + serverless functions</td><td>Free → Pro $19/mo → scales w/ bandwidth</td></tr>
+<tr><td>Supabase</td><td><span class="tag fix">INFRA</span></td><td>Auth + Postgres + audio cache storage</td><td>Free → Pro $25/mo → + usage</td></tr>
+<tr><td>Sentry</td><td><span class="tag fix">INFRA</span></td><td>Error monitoring (sentry.js)</td><td>Free (5k errors/mo) → Team ~$26/mo</td></tr>
+<tr><td>Domain</td><td><span class="tag fix">INFRA</span></td><td>cosmicintentions.com</td><td>~$12/yr (~$1/mo)</td></tr>
+<tr><td>Claude Code</td><td><span class="tag dev">TOOLING</span></td><td>Building/maintaining the app (dev)</td><td>~$100–200/mo (Max plan) — fixed, doesn't scale with users</td></tr>
+<tr><td>Gemini</td><td><span class="tag dev">TOOLING</span></td><td>Dev assistant / content help</td><td>~$20/mo — fixed</td></tr>
+</table>
+<blockquote><strong>Architectural win:</strong> audio is cached (generated once, globally). Nightly loop playback = <strong>$0</strong>. ElevenLabs only bills when a goal's text is created or changed.</blockquote>
+
+<h2>3. Usage assumptions (per user / month)</h2>
+<ul>
+<li>Avg goal text: <strong>50 characters</strong>.</li>
+<li><strong>5 changes per goal per month</strong> → 5 voice regenerations per goal.</li>
+<li>TTS model = <strong>Turbo</strong> (0.5 credit/char) → 50 chars = 25 credits/generation.</li>
+<li>Each change re-runs ~1 AI pass (~$0.01). Playback after generation = <strong>free</strong> (cached).</li>
+</ul>
+
+<h2>4. Variable cost PER USER / month (Turbo, $15/mo)</h2>
+<table>
+<tr><th class="n">Goals/mo</th><th class="n">EL credits</th><th class="n">ElevenLabs $</th><th class="n">OpenAI $</th><th class="n">Stripe $</th><th class="n">Total/user $</th></tr>
+<tr><td class="n">10</td><td class="n">1,250</td><td class="n">$0.22</td><td class="n">$0.10</td><td class="n">$0.74</td><td class="n hl">$1.06</td></tr>
+<tr><td class="n">25</td><td class="n">3,125</td><td class="n">$0.56</td><td class="n">$0.25</td><td class="n">$0.74</td><td class="n hl">$1.55</td></tr>
+<tr><td class="n">50</td><td class="n">6,250</td><td class="n">$1.13</td><td class="n">$0.50</td><td class="n">$0.74</td><td class="n hl">$2.37</td></tr>
+<tr><td class="n">100</td><td class="n">12,500</td><td class="n">$2.25</td><td class="n">$1.00</td><td class="n">$0.74</td><td class="n hl">$3.99</td></tr>
+</table>
+
+<h3>Gross margin per user @ $15/mo</h3>
+<table>
+<tr><th class="n">Goals/mo</th><th class="n">Cost/user</th><th class="n">Margin/user</th><th class="n">Margin %</th></tr>
+<tr><td class="n">10</td><td class="n">$1.06</td><td class="n hl">$13.94</td><td class="n hl">93%</td></tr>
+<tr><td class="n">25</td><td class="n">$1.55</td><td class="n hl">$13.45</td><td class="n hl">90%</td></tr>
+<tr><td class="n">50</td><td class="n">$2.37</td><td class="n hl">$12.63</td><td class="n hl">84%</td></tr>
+<tr><td class="n">100</td><td class="n">$3.99</td><td class="n hl">$11.01</td><td class="n hl">73%</td></tr>
+</table>
+
+<h2>5. Fixed monthly costs (infra + tooling)</h2>
+<table>
+<tr><th class="n">Subscribers</th><th class="n">Netlify</th><th class="n">Supabase</th><th class="n">Sentry</th><th class="n">Domain</th><th class="n">Claude Code</th><th class="n">Gemini</th><th class="n">Fixed total</th></tr>
+<tr><td class="n">100</td><td class="n">$19</td><td class="n">$25</td><td class="n">$0</td><td class="n">$1</td><td class="n">$150</td><td class="n">$20</td><td class="n">~$215</td></tr>
+<tr><td class="n">1,000</td><td class="n">$19</td><td class="n">$25</td><td class="n">$26</td><td class="n">$1</td><td class="n">$150</td><td class="n">$20</td><td class="n">~$241</td></tr>
+<tr><td class="n">5,000</td><td class="n">$99</td><td class="n">$75</td><td class="n">$26</td><td class="n">$1</td><td class="n">$150</td><td class="n">$20</td><td class="n">~$371</td></tr>
+<tr><td class="n">10,000</td><td class="n">$200</td><td class="n">$150</td><td class="n">$26</td><td class="n">$1</td><td class="n">$150</td><td class="n">$20</td><td class="n">~$547</td></tr>
+</table>
+<p class="sub">Claude Code + Gemini are <em>your</em> overhead (building/running it) — fixed, they don't grow with users. Big share of cost at 100 subs, a rounding error by 1,000+.</p>
+
+<h2>6. END GAME — profit at scale ($15/mo, avg 10 goals/user)</h2>
+<table>
+<tr><th class="n">Subscribers</th><th class="n">Revenue/mo</th><th class="n">Variable/mo</th><th class="n">Fixed/mo</th><th class="n">Profit/mo</th><th class="n">Margin</th><th class="n">Profit/YEAR</th></tr>
+<tr><td class="n">100</td><td class="n">$1,500</td><td class="n">$106</td><td class="n">$215</td><td class="n hl">$1,179</td><td class="n">79%</td><td class="n hl">$14,148</td></tr>
+<tr><td class="n">1,000</td><td class="n">$15,000</td><td class="n">$1,060</td><td class="n">$241</td><td class="n hl">$13,699</td><td class="n">91%</td><td class="n hl">$164,388</td></tr>
+<tr><td class="n">5,000</td><td class="n">$75,000</td><td class="n">$5,300</td><td class="n">$371</td><td class="n hl">$69,329</td><td class="n">92%</td><td class="n hl">$831,948</td></tr>
+<tr class="big"><td class="n">10,000</td><td class="n">$150,000</td><td class="n">$10,600</td><td class="n">$547</td><td class="n">$138,853</td><td class="n">93%</td><td class="n">$1,666,236</td></tr>
+</table>
+
+<h2>7. Sensitivity — power users (avg 25 goals/mo)</h2>
+<table>
+<tr><th class="n">Subscribers</th><th class="n">Variable/mo</th><th class="n">Profit/mo</th><th class="n">Profit/YEAR</th></tr>
+<tr><td class="n">10,000</td><td class="n">$15,500</td><td class="n">$133,953</td><td class="n hl">~$1.61M</td></tr>
+</table>
+<p class="sub">Heavier usage barely dents it — cached audio makes voice nearly free after first generation.</p>
+
+<h2>8. Annual plan ($75/yr = $6.25/mo)</h2>
+<p class="sub">Lower monthly revenue, but only <strong>one</strong> Stripe charge/year (~$0.21/mo amortized vs $0.74) and better cash flow. Variable cost/user drops to ~$0.53/mo; margin stays ~92%.</p>
+<table>
+<tr><th class="n">Subscribers (all annual)</th><th class="n">Revenue/mo (eff.)</th><th class="n">Profit/mo</th><th class="n">Profit/YEAR</th></tr>
+<tr><td class="n">10,000</td><td class="n">$62,500</td><td class="n hl">~$56,650</td><td class="n hl">~$680K</td></tr>
+</table>
+<p class="sub">A realistic mix of monthly + annual lands between §6 and here. Annual = less revenue but lower churn and you get the cash up front.</p>
+
+<h2>9. The "so I'm rich" summary</h2>
+<ul>
+<li><strong>Gross margin ≈ 90%+</strong> once past ~500 subscribers — textbook SaaS, even with premium AI voice.</li>
+<li>At <strong>10,000 subscribers @ $15/mo → ~$1.67M/year profit.</strong></li>
+<li>Biggest variable cost is now <strong>Stripe (~5%)</strong>; ElevenLabs is tiny thanks to caching + Turbo.</li>
+<li>Your fixed <strong>tooling</strong> (Claude Code + Gemini, ~$170/mo) only matters at very small scale.</li>
+</ul>
+<h3>Levers</h3>
+<ol>
+<li><strong>Caching</strong> ✅ — playback free forever.</li>
+<li><strong>Turbo TTS</strong> ✅ toggle — already halved voice cost vs the v1 model.</li>
+<li><strong>Push annual</strong> — kills 11 of 12 Stripe fees/yr, cash up front, lower churn.</li>
+<li><strong>ElevenLabs Business tier</strong> at scale — another ~33% off $/credit.</li>
+</ol>
+<h3>The honest catch</h3>
+<p>These are <strong>unit economics</strong> — they assume subscribers exist. At 90%+ margins, servers/AI/tooling are basically free. <strong>The real cost of getting rich is customer acquisition + your time</strong>, not infrastructure. The upside: fat margins let you spend hard to acquire users. It's a growth problem, not a cost problem.</p>
+
+<p class="foot">v2 built 2026-06-30 · pricing $15/mo · $75/yr · all-stack costs incl. ElevenLabs, OpenAI, Netlify, Supabase, Sentry, Stripe, domain, Claude Code, Gemini. Adjust §2–3 inputs to rework.</p>
+</body></html>

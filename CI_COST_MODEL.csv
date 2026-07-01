@@ -1,0 +1,50 @@
+Cosmic Intentions — Cost & Profit Model (v2)
+
+PRICING
+Plan,Price,Effective $/month
+Monthly,$15/mo,15.00
+Annual,$75/yr,6.25
+
+EVERY COST (whole stack)
+Service,Type,Role,Price
+ElevenLabs,VARIABLE,Goal/affirmation voice (TTS),~$0.00009/char (Turbo) / ~$0.00018 (v2)
+OpenAI gpt-4o-mini,VARIABLE,Roadmap / mindset / AI wrap-up,$0.15 per 1M in / $0.60 per 1M out
+Stripe,VARIABLE,Payment processing,2.9% + $0.30 (~$0.74 on $15)
+Netlify,INFRA,Hosting + serverless functions,Free -> Pro $19/mo
+Supabase,INFRA,Auth + Postgres + audio cache,Free -> Pro $25/mo
+Sentry,INFRA,Error monitoring,Free (5k/mo) -> Team $26/mo
+Domain,INFRA,cosmicintentions.com,~$1/mo
+Claude Code,TOOLING,Dev / build (your overhead),~$150/mo (fixed)
+Gemini,TOOLING,Dev assistant,~$20/mo (fixed)
+
+PER-USER VARIABLE COST / MONTH (Turbo TTS, $15/mo plan)
+Goals/mo,EL credits,ElevenLabs $,OpenAI $,Stripe $,Total/user $,Margin/user,Margin %
+10,1250,0.22,0.10,0.74,1.06,13.94,93%
+25,3125,0.56,0.25,0.74,1.55,13.45,90%
+50,6250,1.13,0.50,0.74,2.37,12.63,84%
+100,12500,2.25,1.00,0.74,3.99,11.01,73%
+
+FIXED MONTHLY COSTS (infra + tooling)
+Subscribers,Netlify,Supabase,Sentry,Domain,Claude Code,Gemini,Fixed total
+100,19,25,0,1,150,20,215
+1000,19,25,26,1,150,20,241
+5000,99,75,26,1,150,20,371
+10000,200,150,26,1,150,20,547
+
+END GAME — PROFIT AT SCALE ($15/mo, avg 10 goals/user)
+Subscribers,Revenue/mo,Variable/mo,Fixed/mo,Profit/mo,Margin,Profit/YEAR
+100,1500,106,215,1179,79%,14148
+1000,15000,1060,241,13699,91%,164388
+5000,75000,5300,371,69329,92%,831948
+10000,150000,10600,547,138853,93%,1666236
+
+ANNUAL PLAN ($75/yr = $6.25/mo effective)
+Subscribers (all annual),Revenue/mo eff,Profit/mo,Profit/YEAR
+10000,62500,56650,680000
+
+NOTES
+Caching = nightly playback is free; ElevenLabs only bills on goal create/change.
+Turbo TTS model halves voice cost vs multilingual_v2.
+Claude Code + Gemini are fixed founder tooling; negligible past ~1000 subs.
+Gross margin ~90%+ at scale. The real cost of growth is customer acquisition not infrastructure.
+Prices are mid-2026 estimates — verify on each provider before relying on them.

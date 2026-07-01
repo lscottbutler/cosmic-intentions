@@ -286,6 +286,16 @@ export function toggleRoadmapLock(idx, i) {
   saveIntentions();
 }
 
+/* Remember whether a roadmap dropdown (MY ACTION PLAN / PROVEN ACTIONS) is
+   open, so a re-render (checking a task, adding one) doesn't collapse it. */
+export function roadmapSectionToggle(idx, key, open) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r) return;
+  if (!r.ui) r.ui = {};
+  r.ui[key] = !!open;
+  saveIntentions();
+}
+
 /* Resolve the single active danger zone for an intention. Uses the explicit
    user selection if set, else falls back to the first logged danger zone. */
 function getActiveDangerZone(intent) {
@@ -337,29 +347,62 @@ function renderRoadmapAI(r, idx) {
   const tasks = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     const done   = !!dones[i];
-    return `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+    return `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
       <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:15px;font-weight:800;color:#fff;line-height:1;">${i + 1}</span>
-      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${done ? 'text-decoration:line-through;color:#666;' : 'color:#ddd;'}">${esc(t)}</span>
+      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t)}</span>
       <button onclick="toggleRoadmapTaskDone(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${done ? '#4ADE80' : '#555'};"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${done ? '#4ADE80' : '#999'};"
         title="${done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${done ? '✓' : '○'}</button>
       <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:18px;line-height:1;color:${locked ? '#F5A623' : '#505058'};"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:18px;line-height:1;color:${locked ? '#F5A623' : '#999'};"
         title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒' : '🔓'}</button>
     </div>`;
   }).join('');
 
   const uTasks = (r.userTasks || []);
   const userTasks = uTasks.map(t => `
-    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
       <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#8ba6a9;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0a0a0a;line-height:1;">✎</span>
-      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${t.done ? 'text-decoration:line-through;color:#666;' : 'color:#ddd;'}">${esc(t.text)}</span>
+      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${t.done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t.text)}</span>
       <button onclick="toggleRoadmapUserTaskDone(${idx},${t.id});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${t.done ? '#4ADE80' : '#555'};"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${t.done ? '#4ADE80' : '#999'};"
         title="${t.done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${t.done ? '✓' : '○'}</button>
       <button onclick="deleteRoadmapUserTask(${idx},${t.id});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:#555;" title="Delete">×</button>
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:#999;" title="Delete">×</button>
     </div>`).join('');
+
+  const ui         = r.ui || {};
+  const planOpen   = ui.plan   !== false;   // default open
+  const provenOpen = ui.proven !== false;   // default open
+
+  const summaryCss = (bg, fg) => `display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:${bg};color:${fg};font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;border-radius:10px;`;
+
+  // DROPDOWN 1 — MY ACTION PLAN (the user's own actions)
+  const planBody = `
+    ${userTasks ? `<div style="margin-bottom:10px;">${userTasks}</div>` : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0 10px;">No actions yet — add your first one below.</div>`}
+    ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;">
+      <input id="roadmapUserInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'){addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
+        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);font-family:inherit;">
+      <button onclick="addRoadmapUserTask(${idx});event.stopPropagation();"
+        style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+    </div>` : `<div style="font-family:var(--vault-mono);font-size:8px;color:var(--muted);">Max 25 reached.</div>`}`;
+
+  const planDrop = `
+    <details class="rm-drop" ${planOpen ? 'open' : ''} ontoggle="roadmapSectionToggle(${idx},'plan',this.open)" style="margin-bottom:14px;">
+      <summary style="${summaryCss('#8ba6a9', '#0a0a0a')}">
+        <span>✎ MY ACTION PLAN · ${uTasks.length}/25</span><span class="rm-caret">▾</span>
+      </summary>
+      <div style="padding:12px 4px 4px;">${planBody}</div>
+    </details>`;
+
+  // DROPDOWN 2 — PROVEN ACTIONS = RESULTS (the AI-generated 10)
+  const provenDrop = `
+    <details class="rm-drop" ${provenOpen ? 'open' : ''} ontoggle="roadmapSectionToggle(${idx},'proven',this.open)" style="margin-bottom:16px;">
+      <summary style="${summaryCss('#000', '#fff')}">
+        <span>◈ PROVEN ACTIONS = RESULTS</span><span class="rm-caret">▾</span>
+      </summary>
+      <div style="padding:12px 4px 4px;">${tasks || `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0;">Generate your 10 steps below.</div>`}</div>
+    </details>`;
 
   return `
     <div style="padding:4px 0 16px;">
@@ -367,16 +410,8 @@ function renderRoadmapAI(r, idx) {
         <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:0.5px;">${esc(r.intention || '')}</span>
       </div>
 
-      <div style="margin-bottom:14px;">${tasks}</div>
-
-      <div style="font-family:var(--vault-mono);font-size:8px;color:#8ba6a9;letter-spacing:1px;margin-bottom:8px;">＋ YOUR OWN ACTIONS · ${uTasks.length}/${25}</div>
-      ${userTasks ? `<div style="margin-bottom:10px;">${userTasks}</div>` : ''}
-      ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;margin-bottom:18px;">
-        <input id="roadmapUserInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'){addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
-          style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
-        <button onclick="addRoadmapUserTask(${idx});event.stopPropagation();"
-          style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
-      </div>` : `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;margin-bottom:18px;">Max 25 reached.</div>`}
+      ${planDrop}
+      ${provenDrop}
 
       ${r.danger_zone ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
