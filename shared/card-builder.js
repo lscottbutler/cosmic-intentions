@@ -296,6 +296,16 @@ export function roadmapSectionToggle(idx, key, open) {
   saveIntentions();
 }
 
+/* Expand/collapse a roadmap list beyond the top 5 (key = 'plan' | 'proven'). */
+export function roadmapShowMore(idx, key) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r) return;
+  if (!r.ui) r.ui = {};
+  r.ui[key + 'More'] = !r.ui[key + 'More'];
+  saveIntentions();
+  _rerenderRoadmap(idx, r);
+}
+
 /* Resolve the single active danger zone for an intention. Uses the explicit
    user selection if set, else falls back to the first logged danger zone. */
 function getActiveDangerZone(intent) {
@@ -344,7 +354,7 @@ function renderRoadmapAI(r, idx) {
   // tactical task list. No paragraphs, no fluff.
   const locks = r.locks || {};
   const dones = r.done  || {};
-  const tasks = (r.tasks || []).map((t, i) => {
+  const taskRows = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     const done   = !!dones[i];
     return `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
@@ -357,10 +367,10 @@ function renderRoadmapAI(r, idx) {
         style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:18px;line-height:1;color:${locked ? '#F5A623' : '#999'};"
         title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒' : '🔓'}</button>
     </div>`;
-  }).join('');
+  });
 
   const uTasks = (r.userTasks || []);
-  const userTasks = uTasks.map(t => `
+  const userRows = uTasks.map(t => `
     <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
       <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#8ba6a9;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0a0a0a;line-height:1;">✎</span>
       <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${t.done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t.text)}</span>
@@ -369,17 +379,25 @@ function renderRoadmapAI(r, idx) {
         title="${t.done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${t.done ? '✓' : '○'}</button>
       <button onclick="deleteRoadmapUserTask(${idx},${t.id});event.stopPropagation();"
         style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:#999;" title="Delete">×</button>
-    </div>`).join('');
+    </div>`);
 
   const ui         = r.ui || {};
   const planOpen   = ui.plan   !== false;   // default open
   const provenOpen = ui.proven !== false;   // default open
 
+  // Collapse long lists to the top 5, with a Show more / Show less toggle.
+  const LIMIT = 5;
+  const rows = (arr, key) => (ui[key + 'More'] ? arr : arr.slice(0, LIMIT)).join('');
+  const moreBtn = (arr, key) => arr.length > LIMIT
+    ? `<button onclick="roadmapShowMore(${idx},'${key}');event.stopPropagation();"
+        style="width:100%;margin-top:10px;background:none;border:1px dashed var(--border);border-radius:6px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">${ui[key + 'More'] ? '▲ SHOW LESS' : `▾ SHOW ${arr.length - LIMIT} MORE`}</button>`
+    : '';
+
   const summaryCss = (bg, fg) => `display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:${bg};color:${fg};font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;border-radius:10px;`;
 
   // DROPDOWN 1 — MY ACTION PLAN (the user's own actions)
   const planBody = `
-    ${userTasks ? `<div style="margin-bottom:10px;">${userTasks}</div>` : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0 10px;">No actions yet — add your first one below.</div>`}
+    ${userRows.length ? `<div style="margin-bottom:10px;">${rows(userRows, 'plan')}${moreBtn(userRows, 'plan')}</div>` : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0 10px;">No actions yet — add your first one below.</div>`}
     ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;">
       <input id="roadmapUserInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'){addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
         style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);font-family:inherit;">
@@ -401,7 +419,7 @@ function renderRoadmapAI(r, idx) {
       <summary style="${summaryCss('#000', '#fff')}">
         <span>◈ PROVEN ACTIONS = RESULTS</span><span class="rm-caret">▾</span>
       </summary>
-      <div style="padding:12px 4px 4px;">${tasks || `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0;">Generate your 10 steps below.</div>`}</div>
+      <div style="padding:12px 4px 4px;">${taskRows.length ? rows(taskRows, 'proven') + moreBtn(taskRows, 'proven') : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0;">Generate your 10 steps below.</div>`}</div>
     </details>`;
 
   return `
