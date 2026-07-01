@@ -1933,18 +1933,18 @@ input, textarea, select {
 }
 .vault-add-btn {
   width: 100%;
-  padding: 9px;
-  background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--black);
+  padding: 11px;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 999px;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
 }
-.vault-add-btn:hover { border-color: var(--black); background: var(--off); }
+.vault-add-btn:hover { background: #222; border-color: #000; }
 
 /* ── VAULT MAIN ────────────────────────────────────── */
 .vault-main {
