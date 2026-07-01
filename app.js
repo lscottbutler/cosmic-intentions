@@ -2868,6 +2868,25 @@ export function vaultShowAddForm() {
   renderVaultSidebar();
 }
 
+/* A real, per-goal daily focus line for the pink workspace note. Rotates daily
+   from the goal's OWN content (roadmap steps → your own actions → affirmations →
+   beliefs) — no API call, stable within a day, and offset by idx so each goal
+   shows a different line on the same day. Falls back to a visualization prompt
+   built from the title when nothing's been generated yet. */
+function buildDailyNote(intent, idx) {
+  const pool = [];
+  const r = intent.roadmapAI || {};
+  (r.tasks || []).forEach(t => { if (t) pool.push(`Today's focus: ${t}`); });
+  (r.userTasks || []).forEach(t => { if (t && t.text) pool.push(`Today's focus: ${t.text}`); });
+  const m = intent.mindset || {};
+  (m.affirmations || []).forEach(a => { if (a) pool.push(a); });
+  (m.beliefs || []).forEach(b => { if (b) pool.push(b); });
+  if (!pool.length) return `Picture "${intent.title}" as already real — hold that feeling for 60 seconds.`;
+  const d = new Date();
+  const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+  return pool[(dayOfYear + (idx || 0)) % pool.length];
+}
+
 /* ── WORKSPACE HEADER — goal card + brand banner ──────── */
 function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
@@ -2895,7 +2914,7 @@ function buildWorkspaceHeader(intent, idx) {
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
           <span class="note-pin-icon">📍</span>
-          <p class="dashboard-note-text">Focus on high-protein fueling today and visualize the energy shift post-workout.</p>
+          <p class="dashboard-note-text">${esc(buildDailyNote(intent, idx))}</p>
         </div>
       </div>
       <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
