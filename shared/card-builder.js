@@ -284,6 +284,7 @@ export function deleteRoadmapTask(idx, i) {
   saveIntentions();
   r.tasks.forEach((t, k) => { if (r.done[k]) setTaskWin(`task-${idx}-${k}`, `✓ ${t}`, true, { goal: it?.title || '', category: it?.category || '' }); });
   _rerenderRoadmap(idx, r);
+  if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // reflect the deletion in the wrap-up
 }
 
 /* Lock/unlock a roadmap task so the user can return to it next visit.
@@ -300,6 +301,7 @@ export function toggleRoadmapLock(idx, i) {
     btn.title = locked ? 'Unlock' : 'Lock — return to this next visit';
   }
   saveIntentions();
+  if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // wrap-up shows the same rows
 }
 
 /* Remember whether a roadmap dropdown (MY ACTION PLAN / PROVEN ACTIONS) is
@@ -366,9 +368,9 @@ export async function generateRoadmapAI(idx) {
 }
 
 // Shared look for every roadmap row button: white icon inside a black circle.
-const RM_CIRCLE = 'flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#000;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;line-height:1;';
-const LOCK_CLOSED = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
-const LOCK_OPEN   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 7.8-1"/></svg>';
+export const RM_CIRCLE = 'flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#000;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;line-height:1;';
+export const LOCK_CLOSED = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
+export const LOCK_OPEN   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 7.8-1"/></svg>';
 
 function renderRoadmapAI(r, idx) {
   // Surgical view: active Intention + Danger Zone chips, then the flat top-10
