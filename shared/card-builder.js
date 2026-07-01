@@ -407,7 +407,7 @@ function renderRoadmapAI(r, idx) {
 
   const planDrop = `
     <details class="rm-drop" ${planOpen ? 'open' : ''} ontoggle="roadmapSectionToggle(${idx},'plan',this.open)" style="margin-bottom:14px;">
-      <summary style="${summaryCss('#8ba6a9', '#0a0a0a')}">
+      <summary style="${summaryCss('#577590', '#fff')}">
         <span>✎ MY ACTION PLAN · ${uTasks.length}/25</span><span class="rm-caret">▾</span>
       </summary>
       <div style="padding:12px 4px 4px;">${planBody}</div>
@@ -416,7 +416,7 @@ function renderRoadmapAI(r, idx) {
   // DROPDOWN 2 — PROVEN ACTIONS = RESULTS (the AI-generated 10)
   const provenDrop = `
     <details class="rm-drop" ${provenOpen ? 'open' : ''} ontoggle="roadmapSectionToggle(${idx},'proven',this.open)" style="margin-bottom:16px;">
-      <summary style="${summaryCss('#000', '#fff')}">
+      <summary style="${summaryCss('#577590', '#fff')}">
         <span>◈ PROVEN ACTIONS = RESULTS</span><span class="rm-caret">▾</span>
       </summary>
       <div style="padding:12px 4px 4px;">${taskRows.length ? rows(taskRows, 'proven') + moreBtn(taskRows, 'proven') : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0;">Generate your 10 steps below.</div>`}</div>
@@ -435,7 +435,7 @@ function renderRoadmapAI(r, idx) {
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
       </div>` : ''}
 
-      <button onclick="generateRoadmapAI(${idx})" style="display:flex;align-items:center;width:100%;background:var(--ink);color:var(--on-ink);padding:14px 16px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:1px;font-size:14px;"><span style="display:inline-block;width:1.3em;margin-right:9px;text-align:center;">↺</span>REGENERATE</button>
+      <button onclick="generateRoadmapAI(${idx})" style="display:flex;align-items:center;width:100%;background:#577590;color:#fff;padding:14px 16px;border:1px solid #577590;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:1px;font-size:14px;"><span style="display:inline-block;width:1.3em;margin-right:9px;text-align:center;">↺</span>REGENERATE</button>
     </div>`;
 }
 

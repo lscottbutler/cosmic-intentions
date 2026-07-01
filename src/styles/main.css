@@ -1975,7 +1975,7 @@ input, textarea, select {
 }
 /* ── BRAND BANNER ───────────────────────────────────── */
 #brand-banner, .brand-banner {
-  background: var(--sunken);
+  background: #577590;
   border-bottom: 2px solid var(--border-2);
   padding: 10px 16px;
   border-radius: 6px 6px 0 0;
@@ -1992,7 +1992,7 @@ input, textarea, select {
   font-size: clamp(10px, 4.5vw, 22px);
   font-weight: 800;
   letter-spacing: 1px !important;
-  color: var(--text) !important;
+  color: #fff !important;
   text-transform: uppercase;
   white-space: nowrap !important;
 }
