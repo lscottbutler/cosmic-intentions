@@ -392,14 +392,13 @@ function renderRoadmapAI(r, idx) {
 
   const uTasks = (r.userTasks || []);
   const userRows = uTasks.map(t => `
-    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#8ba6a9;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0a0a0a;line-height:1;">✎</span>
+    <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <button onclick="deleteRoadmapUserTask(${idx},${t.id});event.stopPropagation();" title="Delete this action"
+        style="${RM_CIRCLE}font-size:14px;">✕</button>
+      <span style="${RM_CIRCLE}font-size:13px;">✎</span>
       <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${t.done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t.text)}</span>
       <button onclick="toggleRoadmapUserTaskDone(${idx},${t.id});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${t.done ? '#4ADE80' : '#999'};"
-        title="${t.done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${t.done ? '✓' : '○'}</button>
-      <button onclick="deleteRoadmapUserTask(${idx},${t.id});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:#999;" title="Delete">×</button>
+        style="${RM_CIRCLE}font-size:14px;" title="${t.done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${t.done ? '✓' : '○'}</button>
     </div>`);
 
   const ui         = r.ui || {};
