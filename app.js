@@ -1015,7 +1015,7 @@ const CARD_COLORS = [
   '#E8524A','#E8893A','#88B83A','#52B896',
   '#4A9EAD','#5A8EA8','#6A7E9E','#8A7A9E'
 ];
-const GREY_SHADES = [
+export const GREY_SHADES = [
   { bg: '#E84040', text: '#FFFFFF' },
   { bg: '#E86030', text: '#FFFFFF' },
   { bg: '#E88020', text: '#FFFFFF' },

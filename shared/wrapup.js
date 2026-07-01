@@ -1,5 +1,5 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
-import { LS, esc, toast, buildContext, getPB, intentions } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -21,14 +21,16 @@ function _todayChecklist() {
   let total = 0, done = 0, rows = '';
   items.forEach(({ it, idx }) => {
     const dones = it.roadmapAI.done || {};
-    rows += `<div style="font-family:var(--vault-mono);font-size:8px;color:var(--text);letter-spacing:1px;margin:10px 0 4px;">◎ ${esc(it.title)}</div>`;
+    const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
+    let group = `<div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;color:${shade.text};letter-spacing:1px;margin:0 0 6px;">◎ ${esc(it.title)}</div>`;
     it.roadmapAI.tasks.forEach((t, i) => {
       const d = !!dones[i]; total++; if (d) done++;
-      rows += `<div onclick="toggleRoadmapTaskDone(${idx},${i})" style="display:flex;gap:8px;align-items:flex-start;padding:5px 2px;cursor:pointer;">
-        <span style="color:${d ? DONE : '#555'};font-size:14px;line-height:1.45;flex-shrink:0;">${d ? '✓' : '○'}</span>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#666' : '#ccc'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
+      group += `<div onclick="toggleRoadmapTaskDone(${idx},${i})" style="display:flex;gap:8px;align-items:flex-start;padding:4px 2px;cursor:pointer;">
+        <span style="color:${shade.text};opacity:${d ? 1 : 0.7};font-size:14px;line-height:1.45;flex-shrink:0;">${d ? '✓' : '○'}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${shade.text};opacity:${d ? 0.6 : 1};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
       </div>`;
     });
+    rows += `<div style="background:${shade.bg};border-radius:12px;padding:11px 13px;margin-bottom:10px;">${group}</div>`;
   });
   return { rows, total, done };
 }
