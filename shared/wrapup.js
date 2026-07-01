@@ -152,7 +152,10 @@ export function renderWrapup() {
       <details class="rm-drop" open style="margin-bottom:14px;">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL — TICK WHAT YOU DID</span>
-          <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};">${chk.done}/${chk.total} done <span class="rm-caret" style="display:inline-block;">▾</span></span>
+          <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+            <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${chk.done}/${chk.total} done</span>
+            <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
+          </span>
         </summary>
         <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
       </details>` : ''}
