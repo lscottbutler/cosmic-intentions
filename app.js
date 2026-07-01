@@ -180,6 +180,7 @@ export function showPage(id) {
 
   if (id === 'dashboard') renderDashboard();
   if (id === 'setup')     renderPBIntentionList();
+  if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
@@ -216,7 +217,7 @@ export function subnavForward() {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup'];
+  const auth_required = ['dashboard','setup','wins'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');

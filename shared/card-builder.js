@@ -223,8 +223,9 @@ export function toggleRoadmapTaskDone(idx, i) {
   if (!r.done) r.done = {};
   r.done[i] = !r.done[i];
   const done = !!r.done[i];
+  const it = intentions[idx];
   saveIntentions();
-  setTaskWin(`task-${idx}-${i}`, `✓ ${r.tasks[i] || ''}`, done);   // log/remove the win + momentum
+  setTaskWin(`task-${idx}-${i}`, `✓ ${r.tasks[i] || ''}`, done, { goal: it?.title || '', category: it?.category || '' });   // log/remove the win + momentum
   const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
 }
@@ -254,8 +255,9 @@ export function toggleRoadmapUserTaskDone(idx, id) {
   const t = r?.userTasks?.find(x => x.id === id);
   if (!t) return;
   t.done = !t.done;
+  const it = intentions[idx];
   saveIntentions();
-  setTaskWin(`task-${idx}-u${id}`, `✓ ${t.text}`, t.done);
+  setTaskWin(`task-${idx}-u${id}`, `✓ ${t.text}`, t.done, { goal: it?.title || '', category: it?.category || '' });
   _rerenderRoadmap(idx, r);
 }
 export function deleteRoadmapUserTask(idx, id) {

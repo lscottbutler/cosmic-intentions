@@ -47,6 +47,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
       <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
+      <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
       <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
       <div class="ham-menu-sep"></div>
@@ -736,6 +737,16 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <!-- LIBRARY -->
 
   <!-- ADMIN PAGE -->
+  <!-- MY WINS PAGE -->
+  <div class="page" id="page-wins">
+    <div style="max-width:760px;margin:0 auto;padding:18px 16px 90px;">
+      <button onclick="goMemberDashboard()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:0.8px;padding:8px 14px;cursor:pointer;margin-bottom:16px;">← BACK</button>
+      <div style="font-size:26px;font-weight:800;color:var(--text);letter-spacing:0.3px;">My Wins</div>
+      <p style="font-size:13px;color:var(--muted);margin:4px 0 20px;">Everything you've done — grouped by goal, filtered, and counted.</p>
+      <div id="winsPageBody"></div>
+    </div>
+  </div>
+
   <div class="page" id="page-admin">
     <div class="admin-page">
       <h2>⚙ Content Blocks</h2>
