@@ -21,7 +21,7 @@ function _todayChecklist() {
   let total = 0, done = 0, rows = '';
   items.forEach(({ it, idx }) => {
     const dones = it.roadmapAI.done || {};
-    rows += `<div style="font-family:var(--vault-mono);font-size:8px;color:#888;letter-spacing:1px;margin:10px 0 4px;">◎ ${esc(it.title)}</div>`;
+    rows += `<div style="font-family:var(--vault-mono);font-size:8px;color:var(--text);letter-spacing:1px;margin:10px 0 4px;">◎ ${esc(it.title)}</div>`;
     it.roadmapAI.tasks.forEach((t, i) => {
       const d = !!dones[i]; total++; if (d) done++;
       rows += `<div onclick="toggleRoadmapTaskDone(${idx},${i})" style="display:flex;gap:8px;align-items:flex-start;padding:5px 2px;cursor:pointer;">
