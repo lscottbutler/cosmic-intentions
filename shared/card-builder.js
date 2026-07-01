@@ -648,7 +648,7 @@ export function renderPBIntentionList() {
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     return `
     <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="position:relative;padding:18px 20px;background:var(--off);">
+      <div style="position:relative;padding:18px 20px;background:#8ba6a9;">
         <div style="font-size:20px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">Set this goal's details below.</div>
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
