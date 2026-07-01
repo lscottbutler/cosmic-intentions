@@ -229,6 +229,44 @@ export function toggleRoadmapTaskDone(idx, i) {
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
 }
 
+/* ── USER-ADDED ROADMAP TASKS (up to 25/goal) ─────────────
+   Stored separately (r.userTasks) so they SURVIVE AI regenerate.
+   Each is {id, text, done}; checking one logs a win + momentum. */
+const MAX_USER_TASKS = 25;
+function _rerenderRoadmap(idx, r) {
+  const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
+  if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
+}
+export function addRoadmapUserTask(idx) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r) return;
+  if (!Array.isArray(r.userTasks)) r.userTasks = [];
+  const input = document.getElementById(`roadmapUserInput-${idx}`);
+  const text = (input?.value || '').trim();
+  if (!text) return;
+  if (r.userTasks.length >= MAX_USER_TASKS) { toast(`Max ${MAX_USER_TASKS} of your own tasks per goal.`, 'error'); return; }
+  r.userTasks.push({ id: Date.now(), text: text.slice(0, 160), done: false });
+  saveIntentions();
+  _rerenderRoadmap(idx, r);
+}
+export function toggleRoadmapUserTaskDone(idx, id) {
+  const r = intentions[idx]?.roadmapAI;
+  const t = r?.userTasks?.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  saveIntentions();
+  setTaskWin(`task-${idx}-u${id}`, `✓ ${t.text}`, t.done);
+  _rerenderRoadmap(idx, r);
+}
+export function deleteRoadmapUserTask(idx, id) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r || !Array.isArray(r.userTasks)) return;
+  setTaskWin(`task-${idx}-u${id}`, '', false);   // drop any logged win for it
+  r.userTasks = r.userTasks.filter(x => x.id !== id);
+  saveIntentions();
+  _rerenderRoadmap(idx, r);
+}
+
 /* Lock/unlock a roadmap task so the user can return to it next visit.
    State persists on the intention (saved + synced via saveIntentions). */
 export function toggleRoadmapLock(idx, i) {
@@ -309,13 +347,34 @@ function renderRoadmapAI(r, idx) {
     </div>`;
   }).join('');
 
+  const uTasks = (r.userTasks || []);
+  const userTasks = uTasks.map(t => `
+    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1A1A1A;">
+      <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#8ba6a9;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0a0a0a;line-height:1;">✎</span>
+      <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${t.done ? 'text-decoration:line-through;color:#666;' : 'color:#ddd;'}">${esc(t.text)}</span>
+      <button onclick="toggleRoadmapUserTaskDone(${idx},${t.id});event.stopPropagation();"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${t.done ? '#4ADE80' : '#555'};"
+        title="${t.done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${t.done ? '✓' : '○'}</button>
+      <button onclick="deleteRoadmapUserTask(${idx},${t.id});event.stopPropagation();"
+        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:#555;" title="Delete">×</button>
+    </div>`).join('');
+
   return `
     <div style="padding:4px 0 16px;">
       <div style="background:#E84B3C;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:0.5px;">${esc(r.intention || '')}</span>
       </div>
 
-      <div style="margin-bottom:18px;">${tasks}</div>
+      <div style="margin-bottom:14px;">${tasks}</div>
+
+      <div style="font-family:var(--vault-mono);font-size:8px;color:#8ba6a9;letter-spacing:1px;margin-bottom:8px;">＋ YOUR OWN ACTIONS · ${uTasks.length}/${25}</div>
+      ${userTasks ? `<div style="margin-bottom:10px;">${userTasks}</div>` : ''}
+      ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;margin-bottom:18px;">
+        <input id="roadmapUserInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'){addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
+          style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
+        <button onclick="addRoadmapUserTask(${idx});event.stopPropagation();"
+          style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+      </div>` : `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;margin-bottom:18px;">Max 25 reached.</div>`}
 
       ${r.danger_zone ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
