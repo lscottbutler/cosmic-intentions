@@ -166,7 +166,7 @@ body {
   text-align: center;
   padding: 12px 14px;
   border-radius: 6px;
-  font-size: 40pt;
+  font-size: 13pt;
   color: var(--text);
 }
 .ham-menu .tnav-signout { margin-left: 0; }
