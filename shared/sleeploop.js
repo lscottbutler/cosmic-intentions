@@ -331,7 +331,7 @@ export function renderSleepLoop() {
             ${(!day && !_playing && count) ? `<div style="${secLbl}">Length</div>
             <div style="display:flex;flex-wrap:wrap;gap:5px;">
               ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
-                style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#000'};border:1px solid #E0102B;border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
+                style="flex:1;min-width:40px;background:${_sessionMin === m ? '#E0102B' : '#8ba6a9'};border:1px solid ${_sessionMin === m ? '#E0102B' : '#8ba6a9'};border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
             </div>` : ''}
           </div>
           ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
