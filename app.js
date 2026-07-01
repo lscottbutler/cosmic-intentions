@@ -2801,7 +2801,7 @@ function showVaultBuildSheet(idx) {
   loadGoalVisualization(intent);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
-  if (roadmapEl) { roadmapEl.innerHTML = buildRoadmapPanel(intent, idx); roadmapEl.style.display = 'none'; }   // collapsed; banner toggles it
+  if (roadmapEl) { roadmapEl.innerHTML = buildRoadmapPanel(intent, idx); roadmapEl.style.display = ''; }   // OPEN by default — Visualization + Roadmap stacked; banner can still collapse it
 
   populateWorkspaceBrandBanner();
 
@@ -2900,7 +2900,7 @@ function buildWorkspaceHeader(intent, idx) {
       </div>
       <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
         <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
-        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(-90deg); color:var(--brand); font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
+        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(0deg); color:var(--brand); font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
       </div>
     </div>`;
 }
