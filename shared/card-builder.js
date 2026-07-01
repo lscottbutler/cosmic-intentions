@@ -269,6 +269,23 @@ export function deleteRoadmapUserTask(idx, id) {
   _rerenderRoadmap(idx, r);
 }
 
+/* Delete an AI/proven task. done & locks are keyed by task index, so we clear
+   every task-win for this goal, splice the task, reindex the maps, then re-log
+   wins for the survivors that are still done — keeps the Wins Wall consistent. */
+export function deleteRoadmapTask(idx, i) {
+  const r = intentions[idx]?.roadmapAI;
+  if (!r || !Array.isArray(r.tasks)) return;
+  const it = intentions[idx];
+  r.tasks.forEach((t, k) => setTaskWin(`task-${idx}-${k}`, '', false));   // clear all, re-add survivors below
+  r.tasks.splice(i, 1);
+  const remap = (m) => { const out = {}; Object.keys(m || {}).forEach(key => { const n = Number(key); if (n < i) out[n] = m[key]; else if (n > i) out[n - 1] = m[key]; }); return out; };
+  r.done  = remap(r.done);
+  r.locks = remap(r.locks);
+  saveIntentions();
+  r.tasks.forEach((t, k) => { if (r.done[k]) setTaskWin(`task-${idx}-${k}`, `✓ ${t}`, true, { goal: it?.title || '', category: it?.category || '' }); });
+  _rerenderRoadmap(idx, r);
+}
+
 /* Lock/unlock a roadmap task so the user can return to it next visit.
    State persists on the intention (saved + synced via saveIntentions). */
 export function toggleRoadmapLock(idx, i) {
@@ -279,8 +296,7 @@ export function toggleRoadmapLock(idx, i) {
   const locked = !!r.locks[i];
   const btn = document.getElementById(`roadmapLock-${idx}-${i}`);
   if (btn) {
-    btn.textContent = locked ? '🔒' : '🔓';
-    btn.style.color = locked ? '#F5A623' : '#505058';
+    btn.innerHTML = locked ? LOCK_CLOSED : LOCK_OPEN;
     btn.title = locked ? 'Unlock' : 'Lock — return to this next visit';
   }
   saveIntentions();
@@ -349,6 +365,11 @@ export async function generateRoadmapAI(idx) {
   }
 }
 
+// Shared look for every roadmap row button: white icon inside a black circle.
+const RM_CIRCLE = 'flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#000;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;line-height:1;';
+const LOCK_CLOSED = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
+const LOCK_OPEN   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 7.8-1"/></svg>';
+
 function renderRoadmapAI(r, idx) {
   // Surgical view: active Intention + Danger Zone chips, then the flat top-10
   // tactical task list. No paragraphs, no fluff.
@@ -357,15 +378,15 @@ function renderRoadmapAI(r, idx) {
   const taskRows = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     const done   = !!dones[i];
-    return `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-size:15px;font-weight:800;color:#fff;line-height:1;">${i + 1}</span>
+    return `<div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <button onclick="deleteRoadmapTask(${idx},${i});event.stopPropagation();" title="Delete this action"
+        style="${RM_CIRCLE}font-size:14px;">✕</button>
+      <span style="${RM_CIRCLE}font-family:var(--vault-mono);font-size:14px;font-weight:800;">${i + 1}</span>
       <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t)}</span>
       <button onclick="toggleRoadmapTaskDone(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:20px;line-height:1;color:${done ? '#4ADE80' : '#999'};"
-        title="${done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${done ? '✓' : '○'}</button>
+        style="${RM_CIRCLE}font-size:14px;" title="${done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${done ? '✓' : '○'}</button>
       <button id="roadmapLock-${idx}-${i}" onclick="toggleRoadmapLock(${idx},${i});event.stopPropagation();"
-        style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;font-size:18px;line-height:1;color:${locked ? '#F5A623' : '#999'};"
-        title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? '🔒' : '🔓'}</button>
+        style="${RM_CIRCLE}" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
     </div>`;
   });
 
