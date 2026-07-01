@@ -39,6 +39,7 @@ body {
   /* surfaces */
   --white:  #1A1A1A;   --bg:      #1A1A1A;
   --off:    #252525;   --card:    #1A1A1A;   --sunken: #111111;   --ink: #0A0A0A;
+  --widget-bg: #141414;  --widget-band: #2E2E2E;   /* citadel widget card + section (light theme overrides to brown) */
   /* text */
   --black:  #EFEFEF;   --text:    #FFFFFF;   --on-ink:#FFFFFF;   --mid:  #AAAAAA;  --muted: #888888;  --text-warm:#9A948F;
   /* lines */
@@ -63,6 +64,7 @@ body {
 /* WHITE / daylight (women) */
 [data-theme="light"] {
   --white:#FFFFFF; --bg:#F4EBBE; --off:#ECE2A6; --card:#FFFFFF; --sunken:#E2D690; --ink:#1A1A1A;
+  --widget-bg:#75704e; --widget-band:#857f5a;   /* brown palette — replaces the black widget cards in light theme */
   --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
   --border:#D9DEE3; --border-2:#E7EAED;
   --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;

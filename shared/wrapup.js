@@ -136,7 +136,7 @@ export function renderWrapup() {
   const chk    = _todayChecklist();
 
   el.innerHTML = `
-    <div style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ EVENING WRAP-UP</div>
         ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:${BRAND};letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}

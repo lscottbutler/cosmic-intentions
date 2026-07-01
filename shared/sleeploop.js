@@ -315,7 +315,7 @@ export function renderSleepLoop() {
 
   const secLbl = 'color:#fff;font-weight:800;font-size:10px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;';
   el.innerHTML = `
-    <div style="background:#141414;border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
+    <div style="background:var(--widget-bg);border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 13px;">
         <div style="min-width:0;">
           <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;text-transform:uppercase;">Mind Loop</div>
@@ -323,7 +323,7 @@ export function renderSleepLoop() {
         </div>
         <div style="flex-shrink:0;margin-left:12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
-      <div style="background:#2E2E2E;padding:16px;border-top:1px solid #3a3a3a;">
+      <div style="background:var(--widget-band);padding:16px;border-top:1px solid #3a3a3a;">
         <div style="display:flex;gap:14px;align-items:center;">
           <div style="flex:2 1 0;min-width:0;">
             <div style="${secLbl}">Mode</div>
