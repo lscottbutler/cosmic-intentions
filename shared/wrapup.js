@@ -153,7 +153,7 @@ export function renderWrapup() {
         <span style="color:#666;">TODAY I WILL — TICK WHAT YOU DID</span>
         <span style="color:${chk.total && chk.done === chk.total ? DONE : '#888'};">${chk.done}/${chk.total} done</span>
       </div>
-      <div style="max-height:220px;overflow-y:auto;border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-bottom:14px;">${chk.rows}</div>` : ''}
+      <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-bottom:14px;">${chk.rows}</div>` : ''}
 
       <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
         style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
