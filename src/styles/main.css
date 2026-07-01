@@ -1967,7 +1967,7 @@ input, textarea, select {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text);
+  color: var(--on-ink);
   background: var(--ink);
   padding: 10px 14px;
   line-height: 1.4;
