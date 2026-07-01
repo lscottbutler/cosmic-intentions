@@ -398,9 +398,9 @@ function renderRoadmapAI(r, idx) {
   // DROPDOWN 1 — MY ACTION PLAN (the user's own actions)
   const planBody = `
     ${userRows.length ? `<div style="margin-bottom:10px;">${rows(userRows, 'plan')}${moreBtn(userRows, 'plan')}</div>` : `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0 10px;">No actions yet — add your first one below.</div>`}
-    ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;">
-      <input id="roadmapUserInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'){addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
-        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);font-family:inherit;">
+    ${uTasks.length < 25 ? `<div style="display:flex;gap:6px;align-items:flex-end;">
+      <textarea id="roadmapUserInput-${idx}" maxlength="160" rows="3" placeholder="Add your own action…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addRoadmapUserTask(${idx});}" onclick="event.stopPropagation();"
+        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:13px;line-height:1.5;color:var(--text);font-family:inherit;resize:vertical;"></textarea>
       <button onclick="addRoadmapUserTask(${idx});event.stopPropagation();"
         style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
     </div>` : `<div style="font-family:var(--vault-mono);font-size:8px;color:var(--muted);">Max 25 reached.</div>`}`;
