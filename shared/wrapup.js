@@ -149,11 +149,13 @@ export function renderWrapup() {
       <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
 
       ${chk ? `
-      <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;margin-bottom:6px;">
-        <span style="color:#666;">TODAY I WILL — TICK WHAT YOU DID</span>
-        <span style="color:${chk.total && chk.done === chk.total ? DONE : '#888'};">${chk.done}/${chk.total} done</span>
-      </div>
-      <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-bottom:14px;">${chk.rows}</div>` : ''}
+      <details class="rm-drop" open style="margin-bottom:14px;">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
+          <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL — TICK WHAT YOU DID</span>
+          <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};">${chk.done}/${chk.total} done <span class="rm-caret" style="display:inline-block;">▾</span></span>
+        </summary>
+        <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
+      </details>` : ''}
 
       <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
         style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
