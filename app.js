@@ -6,6 +6,7 @@ import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings } from './shared/rings.js';
 import { renderWrapup } from './shared/wrapup.js';
+import { renderHabits } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
@@ -2254,6 +2255,7 @@ export function renderVaultSidebar() {
   setEl('vsMedPlays', LS.get('ci_med_plays')  || 0);
   renderRings();
   renderWrapup();
+  renderHabits();
   renderWins();
   renderSleepLoop();
 
