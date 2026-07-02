@@ -15,15 +15,18 @@
 -- ── 1. FIX: user_scores (the leak) ──────────────────────────
 -- Keep the leaderboard working (logged-in users can read scores) but stop
 -- anonymous visitors from reading anything. Only the owner can write.
-alter table public.user_scores enable row level security;
+-- RLS is permissive (OR of all policies) so we drop EVERY existing policy by
+-- name first — a single leftover "allow all" policy keeps the door open.
+do $$
+declare pol record;
+begin
+  for pol in select policyname from pg_policies
+             where schemaname='public' and tablename='user_scores' loop
+    execute format('drop policy if exists %I on public.user_scores', pol.policyname);
+  end loop;
+end $$;
 
--- Remove any permissive/anon read policies that may exist (safe if absent).
-drop policy if exists "public read scores"        on public.user_scores;
-drop policy if exists "anon read"                 on public.user_scores;
-drop policy if exists "Enable read access for all" on public.user_scores;
-drop policy if exists "authed can read scores"    on public.user_scores;
-drop policy if exists "owner writes score"        on public.user_scores;
-drop policy if exists "owner updates score"       on public.user_scores;
+alter table public.user_scores enable row level security;
 
 -- Logged-in users can read scores (needed for ranking/leaderboard counts).
 create policy "authed can read scores" on public.user_scores

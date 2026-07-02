@@ -689,15 +689,20 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 /* ── SETUP / BTS PAGES ────────────────────────────────────── */
 .setup-page {
   padding: 24px 20px 60px;
+  max-width: 1120px;      /* double-wide, but bounded */
+  margin: 0 auto;         /* centered — top rows + columns share this width */
 }
-/* Pegboard 50/50 columns: Goals | Daily Tracker */
+/* Pegboard 50/50 columns: Goals | Daily Tracker.
+   minmax(0,1fr) forces a true 50/50 split — plain 1fr lets wide content
+   (long goal titles, tracker rows) blow a column past half and overflow. */
 .pb-cols {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
   align-items: start;
   margin-bottom: 18px;
 }
+.pb-cols > div { min-width: 0; }
 @media (max-width: 760px) { .pb-cols { grid-template-columns: 1fr; } }
 .setup-page-header {
   margin-bottom: 28px;
