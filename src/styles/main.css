@@ -121,7 +121,7 @@ body {
 #topNav::-webkit-scrollbar { display: none; }
 
 /* ── HAMBURGER NAV (red circle, centered) ───────────── */
-.ham-wrap { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 300; }
+.ham-wrap { position: relative; }
 .ham-btn {
   width: 64px; height: 64px;
   border-radius: 50%;
@@ -145,7 +145,7 @@ body {
 }
 .ham-menu {
   display: none;
-  position: absolute;         /* drops from the now-fixed .ham-wrap, so it follows the button */
+  position: absolute;         /* drops from .ham-wrap (in-flow), so the button scrolls away with the page */
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
