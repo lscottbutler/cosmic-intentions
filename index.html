@@ -723,6 +723,25 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="pbThoughtsList"></div>
       </div>
 
+      <!-- ④ DAILY TRACKER (collapsed) -->
+      <button onclick="pbToggleSection('pbsec4')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
+        <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">Daily Tracker</span>
+        <span id="pbsec4-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(-90deg);">&#9660;</span>
+      </button>
+      <div id="pbsec4-body" style="display:none;margin-bottom:18px;">
+        <div style="color:var(--muted);font-size:12px;margin-bottom:14px;">Your daily habits — rename, reorder, add or delete. They show as a checklist on your dashboard and reset every morning.</div>
+        <div id="pbHabitList" style="margin-bottom:14px;"></div>
+        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
+          <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A HABIT</div>
+          <div style="display:flex;gap:10px;">
+            <input type="text" id="pbNewHabitInput" placeholder="e.g. STRETCH" maxlength="40" onkeydown="if(event.key==='Enter')pbAddHabit()"
+              style="flex:1;min-width:0;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
+            <button onclick="pbAddHabit()"
+              style="flex-shrink:0;padding:12px 20px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add</button>
+          </div>
+        </div>
+      </div>
+
       <div style="height: 20px;"></div>
     </div>
 

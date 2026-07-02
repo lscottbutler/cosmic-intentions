@@ -180,7 +180,7 @@ export function showPage(id) {
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
   if (id === 'dashboard') renderDashboard();
-  if (id === 'setup')     renderPBIntentionList();
+  if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
 
   closeDrawer();
@@ -635,6 +635,7 @@ export function loadPegboard() {
   const pb = LS.get('ci_pegboard') || {};
   populateForm(pb);
   renderPBThoughts();
+  if (typeof window !== 'undefined' && window.renderPBHabitList) window.renderPBHabitList();
 }
 
 /* Collapse/expand a Pegboard section (My Life & Purpose / My Intentions / My Thoughts). */
