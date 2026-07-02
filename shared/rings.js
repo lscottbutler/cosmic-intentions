@@ -186,35 +186,35 @@ export function renderRings() {
       <button onclick="toggleRing('${p.key}')" title="${p.hint}"
         style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:0;">
         <span style="width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-          font-size:20px;line-height:1;transition:all .15s;
+          font-size:20px;line-height:1;transition:all .15s;color:#fff;
           ${done
-            ? `background:${DONE};color:#0a0a0a;border:2px solid ${DONE};box-shadow:0 0 12px rgba(74,222,128,0.35);`
-            : `background:#161616;color:#666;border:2px solid #333;`}">
+            ? `background:${DONE};border:2px solid ${DONE};box-shadow:0 0 12px rgba(74,222,128,0.35);`
+            : `background:#161616;border:2px solid #666;`}">
           ${done ? '✓' : p.icon}</span>
         <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;
-          color:${done ? DONE : '#888'};">${p.label}</span>
+          color:#fff;">${p.label}</span>
       </button>`;
   }).join('');
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid ${perfect ? DONE : '#2a2a2a'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ TODAY'S 3 PILLARS</div>
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${streak > 0 ? BRAND : '#505058'};">🔥 ${streak} day${streak === 1 ? '' : 's'}</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#fff;font-weight:800;letter-spacing:1px;">◈ TODAY'S 3 PILLARS</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#fff;">🔥 ${streak} day${streak === 1 ? '' : 's'}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
         ${cells}
       </div>
-      ${perfect ? `<div style="text-align:center;font-family:var(--vault-mono);font-size:10px;color:${DONE};letter-spacing:0.5px;margin-bottom:10px;">✦ PERFECT DAY — all 3 pillars closed</div>` : ''}
-      <div style="display:flex;justify-content:space-between;font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:4px;">
+      ${perfect ? `<div style="text-align:center;font-family:var(--vault-mono);font-size:10px;color:#fff;letter-spacing:0.5px;margin-bottom:10px;">✦ PERFECT DAY — all 3 pillars closed</div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:1px;margin-bottom:4px;">
         <span>MOMENTUM</span><span>${score}</span>
       </div>
       <div style="height:6px;background:#1A1A1A;border-radius:3px;overflow:hidden;">
         <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${BRAND},#FF7A1A);border-radius:3px;transition:width .3s;"></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:${BRAND};">⛨ ${tier.name}</span>
-        <span style="font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
+        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;">⛨ ${tier.name}</span>
+        <span style="font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
       </div>
     </div>`;
 }
