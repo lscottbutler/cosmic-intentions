@@ -1,4 +1,4 @@
-import { buildContext, callClaude, currentUser, esc, getPB, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
+import { buildContext, callClaude, currentUser, esc, getPB, GREY_SHADES, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
 import { setTaskWin } from './wins.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
@@ -784,13 +784,14 @@ export function renderPBIntentionList() {
       `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
     ).join('');
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
+    const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     return `
     <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="position:relative;padding:12px 14px;background:#8ba6a9;">
-        <div style="font-size:20px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Set this goal's details below.</div>
+      <div style="position:relative;padding:12px 14px;background:${shade.bg};">
+        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
+        <div style="font-size:12px;color:${shade.text};opacity:.75;margin-top:4px;">Set this goal's details below.</div>
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
-          style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
+          style="position:absolute;top:14px;right:14px;background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;">✕</button>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;">
         <textarea maxlength="150" rows="3"
