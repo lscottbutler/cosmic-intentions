@@ -687,6 +687,21 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 .hidden { display: none !important; }
 
 /* ── SETUP / BTS PAGES ────────────────────────────────────── */
+/* ── THE CITADEL (tabbed two-pillar view) ───────────────── */
+.cit-wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 70px; }
+.cit-spine { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.cit-gpill { border: none; border-radius: 999px; padding: 10px 15px; font-weight: 800; font-size: 13px; color: #fff; cursor: pointer; opacity: .5; display: flex; align-items: center; gap: 8px; }
+.cit-gpill .n { width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.cit-gpill.on { opacity: 1; box-shadow: 0 3px 10px rgba(0,0,0,.2); }
+.cit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 760px) { .cit-cols { grid-template-columns: 1fr; } }
+.cit-colhead { font-family: var(--vault-mono); font-size: 10px; letter-spacing: 2px; font-weight: 800; margin: 0 2px 8px; opacity: .6; text-transform: uppercase; color: var(--text); }
+.cit-tabs { display: flex; align-items: flex-end; padding-left: 4px; position: relative; z-index: 2; overflow-x: auto; }
+.cit-tab { border: none; border-radius: 9px 9px 0 0; padding: 9px 12px 12px; margin-left: -4px; font-size: 11px; font-weight: 800; color: #fff; cursor: pointer; opacity: .6; transform: translateY(4px); white-space: nowrap; }
+.cit-tab:first-child { margin-left: 0; }
+.cit-tab.on { opacity: 1; transform: translateY(0); padding-bottom: 16px; z-index: 3; }
+.cit-panel { background: var(--card); border-radius: 0 12px 12px 12px; padding: 16px; min-height: 240px; box-shadow: 0 6px 18px rgba(0,0,0,.12); border-top: 4px solid #333; position: relative; z-index: 1; }
+
 .setup-page {
   padding: 24px 20px 60px;
   max-width: 1120px;      /* double-wide, but bounded */
