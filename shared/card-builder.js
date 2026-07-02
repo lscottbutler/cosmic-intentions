@@ -777,6 +777,8 @@ export function renderPBIntentionList() {
   ];
   const fld = 'width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
   const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
+  // Roomier, multi-line goal box (10pt, ~3 lines of space) so long "I AM…" goals show in full.
+  const goalFld = 'width:100%;box-sizing:border-box;padding:14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:78px;';
   el.innerHTML = intentions.map((i, idx) => {
     const optHtml = catOptions.map(o =>
       `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
@@ -792,8 +794,8 @@ export function renderPBIntentionList() {
       </div>
       <div style="background:#2E2E2E;padding:18px 20px;">
         <div style="${lbl}">GOAL</div>
-        <input type="text" value="${esc(i.title)}" maxlength="150"
-          onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${fld}" />
+        <textarea maxlength="150" rows="3"
+          onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
       <div style="background:#2E2E2E;padding:18px 20px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">START &amp; END DATES</div>

@@ -176,8 +176,8 @@ export function renderPBHabitList() {
     items.forEach((h, gi) => {
       html += `
       <div style="background:#2E2E2E;padding:11px 12px;border-radius:10px;margin-bottom:8px;">
-        <input type="text" value="${esc(h.name)}" maxlength="40" onchange="pbSaveHabitName('${h.id}',this.value)"
-          style="width:100%;box-sizing:border-box;padding:11px 13px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:14px;margin-bottom:8px;" />
+        <textarea maxlength="60" rows="2" onchange="pbSaveHabitName('${h.id}',this.value)"
+          style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:vertical;min-height:62px;margin-bottom:8px;">${esc(h.name)}</textarea>
         <div style="display:flex;gap:8px;align-items:center;">
           <button onclick="pbMoveHabit('${h.id}',-1)" title="Move up"   style="${arrow}${gi === 0 ? 'opacity:.3;pointer-events:none;' : ''}">▲</button>
           <button onclick="pbMoveHabit('${h.id}',1)"  title="Move down" style="${arrow}${gi === items.length - 1 ? 'opacity:.3;pointer-events:none;' : ''}">▼</button>
