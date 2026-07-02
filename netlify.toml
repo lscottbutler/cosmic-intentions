@@ -19,4 +19,15 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# Pretty URLs for the free I AM Statement Generator lead-magnet page
+[[redirects]]
+  from = "/iam"
+  to = "/standalone/iam-generator.html"
+  status = 200
+
+[[redirects]]
+  from = "/i-am-generator"
+  to = "/standalone/iam-generator.html"
+  status = 200
   
