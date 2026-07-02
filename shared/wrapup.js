@@ -154,9 +154,9 @@ export function renderWrapup() {
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ EVENING WRAP-UP</div>
-        ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:${BRAND};letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
+        <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
+        ${aiPara ? `<span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
       </div>
 
       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
