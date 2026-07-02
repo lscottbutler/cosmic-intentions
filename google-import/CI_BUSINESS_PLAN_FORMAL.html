@@ -1,0 +1,596 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Cosmic Intentions — Business Plan & Financial Model</title><style>body{font-family:Georgia,'Times New Roman',serif;max-width:800px;margin:0 auto;padding:30px;line-height:1.5;color:#111}
+h1{font-size:26px;border-bottom:2px solid #333;padding-bottom:6px}h2{font-size:20px;margin-top:24px}h3{font-size:16px}
+table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #999;padding:6px 9px;text-align:left;font-size:13px}
+th{background:#eee}code{background:#f2f2f2;padding:1px 4px}</style></head><body><h1>COSMIC INTENTIONS — BUSINESS PLAN &amp; 3-YEAR FINANCIAL MODEL</h1>
+<p><strong>Prepared:</strong> July 1, 2026 | <strong>Entity:</strong> Cosmic Intentions (cosmicintentions.com) | <strong>Founder:</strong> Scott (solo, bootstrapped)
+<strong>Status:</strong> Pre-revenue, pre-launch. Public launch target: <strong>September 2026.</strong>
+<strong>Companion document:</strong> CI_BUSINESS_PLAN.md (Strategy &amp; GTM Playbook) and CI_LAUNCH_KIT.md (execution).</p>
+<hr>
+<h2>1. COMPANY OVERVIEW</h2>
+<h3>Mission</h3>
+<p>Help people become who they intend to be — by turning written goals into a daily, multi-sensory identity practice (voice, visualization, habit, and reflection) powered by AI.</p>
+<h3>Vision</h3>
+<p>The default daily companion for the manifestation / intentional-living audience: the app you open when you wake, the audio you fall asleep to, and the story you read about your own day each evening.</p>
+<h3>Value Proposition</h3>
+<p>Manifestation content is everywhere; a manifestation <strong>system</strong> is not. Cosmic Intentions converts a user&#39;s &quot;I AM…&quot; intention into (a) a concrete 10-step AI roadmap, (b) a personalized mindset library, and (c) — the differentiator — a <strong>personalized, ElevenLabs-voiced &quot;Mind Loop&quot;</strong> the user hears in their own chosen voice, on repeat, at night and during the day. Competitors sell generic libraries; Cosmic Intentions manufactures <strong>personal</strong> audio at near-zero marginal cost.</p>
+<h3>Current-State Snapshot (July 1, 2026)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Revenue</td>
+<td>$0 (pre-launch)</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>Working web app: intentions + dates/categories, AI 10-step roadmaps, mindset library, Mind Loop player (sleep + daytime, impressions counter), visualization workspace, gamified rings, streaks/momentum/identity tiers, AI Evening Wrap-Up, reorderable Daily Habit Tracker, Wins Wall, themes, Pegboard</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td>Web only (responsive). No native app.</td>
+</tr>
+<tr>
+<td>Assets owned</td>
+<td>Codebase (100% founder-owned), domain, brand, Supabase schema + cached audio, pre-launch social accounts</td>
+</tr>
+<tr>
+<td>Monthly cost today</td>
+<td>~$70–120</td>
+</tr>
+<tr>
+<td>Debt / investors</td>
+<td>None. 100% founder equity.</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Stage</td>
+<td>Pre-launch: hardening product, building waitlist, preparing Founding Member offer</td>
+</tr>
+</tbody></table>
+<h3>Business Model</h3>
+<p>Consumer subscription SaaS. <strong>$15/month or $119/year (~34% off)</strong>, 7-day card-required free trial. Launch offer: <strong>Founding Member lifetime, $199, capped at 200 seats.</strong> Target gross margin floor 85% (modeled ~89–90%).</p>
+<hr>
+<h2>2. MARKET ANALYSIS</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Definition</th>
+<th>Size (est. 2026)</th>
+<th>Growth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TAM</strong></td>
+<td>Global mental-wellness &amp; self-improvement app spend</td>
+<td>~$10–12B/yr (within ~$45B self-improvement industry)</td>
+<td>~14–16% CAGR</td>
+</tr>
+<tr>
+<td><strong>SAM</strong></td>
+<td>English-speaking 25–50 already paying for mindset/manifestation digital products (~15M × ~$120/yr)</td>
+<td>~$1.8B/yr</td>
+<td>~15% CAGR</td>
+</tr>
+<tr>
+<td><strong>SOM</strong></td>
+<td>Realistic 3-yr capture: ~5,000 paying subs</td>
+<td>~$800K ARR by mid-2029 = 0.04% of SAM</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>The SOM is deliberately tiny — this plan converts a rounding error of a huge, high-intent, underserved niche.</p>
+<p><strong>Target segment:</strong> &quot;Manifestation Melissa,&quot; 28–45, ~70% female, US/UK/CA/AU, Atomic Habits + The Secret crowd, already pays for Calm/journals/courses, wants structure + belief. WTP proven (To Be Magnetic $27/mo; Mindvalley $399/yr).</p>
+<p><strong>Why now:</strong> (1) AI cost collapse makes personalized audio viable (~$0.70/user/mo cached); (2) manifestation went mainstream but tooling is stuck at journals/PDFs; (3) meditation-app fatigue; (4) solo-founder viability via static hosting + serverless + AI-assisted dev.</p>
+<hr>
+<h2>3. COMPETITIVE ANALYSIS</h2>
+<table>
+<thead>
+<tr>
+<th>Competitor</th>
+<th>Price</th>
+<th>Model</th>
+<th>Strength</th>
+<th>Gap CI exploits</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Calm</td>
+<td>$70/yr</td>
+<td>Content library</td>
+<td>Brand, sleep, celebrity voices</td>
+<td>Generic; no goal system</td>
+</tr>
+<tr>
+<td>Headspace</td>
+<td>$70/yr</td>
+<td>Content library</td>
+<td>Clinical, B2B</td>
+<td>Meditation-only; avoids manifestation</td>
+</tr>
+<tr>
+<td>Finch</td>
+<td>Free/~$40–70/yr</td>
+<td>Gamified pet</td>
+<td>Viral Gen-Z</td>
+<td>No goal/identity engine, no audio, younger</td>
+</tr>
+<tr>
+<td>Fabulous</td>
+<td>~$40–80/yr</td>
+<td>Habit journeys</td>
+<td>Behavioral science</td>
+<td>Rigid, no personalization</td>
+</tr>
+<tr>
+<td>To Be Magnetic</td>
+<td>$27/mo</td>
+<td>Manifestation workshops</td>
+<td>Niche trust</td>
+<td>Static content, no app mechanics, pricier</td>
+</tr>
+<tr>
+<td>Mindvalley</td>
+<td>$399/yr</td>
+<td>Courses</td>
+<td>Production, gurus</td>
+<td>Expensive; courses ≠ daily practice</td>
+</tr>
+<tr>
+<td>Generic manifestation apps</td>
+<td>$10–20/mo</td>
+<td>Templates</td>
+<td>Cheap, App Store</td>
+<td>Low quality, no AI personalization — set the price anchor</td>
+</tr>
+</tbody></table>
+<p><strong>The wedge:</strong> personalized voice audio as a COGS-advantaged practice moat · a closed daily loop (not a library) · positioning nobody big will touch (&quot;manifestation&quot;) · price-to-value asymmetry ($15 &lt; TBM&#39;s $27). Honest caveat: not patent-grade — the durable moat is accumulated user data + brand + community, which is why retention KPIs dominate.</p>
+<hr>
+<h2>4. PRODUCT &amp; ROADMAP</h2>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>Ship</th>
+<th>Success metric</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jul–Aug 2026</td>
+<td>Stripe + 7-day card trial; &lt;10-min onboarding to first Mind Loop; trial audio cap (1 loop); waitlist</td>
+<td>Trial→paid machinery works; ≥1,500 waitlist</td>
+</tr>
+<tr>
+<td>Sep 2026</td>
+<td>Public launch + Founding Member (200×$199); FM referral link</td>
+<td>≥100 FM seats in 60 days</td>
+</tr>
+<tr>
+<td>Oct–Nov 2026</td>
+<td><strong>PWA</strong>: installable, offline audio, push</td>
+<td>Neutralizes &quot;no app&quot;; 30% of actives install</td>
+</tr>
+<tr>
+<td>Dec 26–Jan 27</td>
+<td>Retention #1: streak-repair, weekly recap email, annual upgrade prompts</td>
+<td>D30 +5pts; annual mix ≥25%</td>
+</tr>
+<tr>
+<td>Feb–Mar 2027</td>
+<td>Retention #2: goal-completion ceremony + &quot;next intention&quot;; Wins Wall share images</td>
+<td>Post-completion churn &lt; overall</td>
+</tr>
+<tr>
+<td>Apr–Jun 2027</td>
+<td>Community-lite Wins feed; more voices; gift subs</td>
+<td>Referral ≥15% of signups</td>
+</tr>
+</tbody></table>
+<p><strong>NOT building (12 mo):</strong> native apps (PWA first, revisit at $30K MRR) · B2B/teams · live coaching/forums · widgets/wearables/AI chat · free tier (breaks trial math + invites voice-COGS abuse).</p>
+<hr>
+<h2>5. OPERATIONS PLAN</h2>
+<table>
+<thead>
+<tr>
+<th>Vendor</th>
+<th>Role</th>
+<th>Now</th>
+<th>@~1,000 subs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Netlify Pro</td>
+<td>Hosting + functions</td>
+<td>$19</td>
+<td>$19–40</td>
+</tr>
+<tr>
+<td>Supabase Pro</td>
+<td>Auth/DB/storage/audio cache</td>
+<td>$25</td>
+<td>$25–75</td>
+</tr>
+<tr>
+<td>OpenAI (gpt-4o-mini)</td>
+<td>Roadmaps, mindset, Wrap-Up</td>
+<td>~$5</td>
+<td>~$80</td>
+</tr>
+<tr>
+<td>ElevenLabs</td>
+<td>Mind Loop voice (cached)</td>
+<td>$22</td>
+<td>$99–330</td>
+</tr>
+<tr>
+<td>Stripe</td>
+<td>Billing</td>
+<td>fees</td>
+<td>~4.5%</td>
+</tr>
+<tr>
+<td>Email (Kit)</td>
+<td>List, sequences</td>
+<td>$29</td>
+<td>$79</td>
+</tr>
+<tr>
+<td>Domain/Workspace/Canva/misc</td>
+<td>—</td>
+<td>~$30</td>
+<td>~$50</td>
+</tr>
+<tr>
+<td><strong>Fixed total</strong></td>
+<td></td>
+<td><strong>~$130</strong></td>
+<td><strong>~$250–300</strong> (excl. usage COGS)</td>
+</tr>
+</tbody></table>
+<p><strong>COGS controls (protect 85%+ margin):</strong> (1) cache everything — generate once, replay forever; (2) gate generation behind payment intent — trials get 1 loop, per-tier regen limits, budget alarm at 2× forecast.</p>
+<p><strong>Solo support:</strong> email-only, batch once daily; in-app FAQ + Looms deflect ~50–60%; Stripe portal for self-serve billing. ~3–4 hrs/wk at 1,000 subs.</p>
+<p><strong>Data/security:</strong> RLS on all tables; no card data on our servers; daily pg_dump via GitHub Action; positioning discipline — goals &amp; habits, NOT health/medical data; ToS+privacy lawyer-reviewed (~$1,200).</p>
+<p><strong>Weekly rhythm (~45–50 hrs):</strong> product/dev 15 · marketing 15 · support 5 · metrics/finance 4 · customer convos 4 · buffer 5. Contract out recurring non-judgment work before burnout.</p>
+<hr>
+<h2>6. ORGANIZATION &amp; TEAM</h2>
+<p><strong>Now:</strong> Scott — founder/operator, AI-assisted dev (the operating model, not a stopgap).</p>
+<p><strong>Contractor timeline (revenue-triggered):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Hire</th>
+<th>Cost</th>
+<th>Buys back</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$6K MRR (~Mar &#39;27)</td>
+<td>Video editor (10–15 vids/wk)</td>
+<td>$400–600/mo</td>
+<td>8–10 hrs/wk</td>
+</tr>
+<tr>
+<td>$12K MRR</td>
+<td>VA (support/admin)</td>
+<td>$500–800/mo</td>
+<td>6–8 hrs/wk + burnout task</td>
+</tr>
+<tr>
+<td>$20K MRR</td>
+<td>Fractional dev (5–10 hrs/wk)</td>
+<td>$1,000–1,500/mo</td>
+<td>Key-person de-risk</td>
+</tr>
+<tr>
+<td>$35K MRR</td>
+<td>Community/content mgr (PT)</td>
+<td>$1,500/mo</td>
+<td>Retention content loop</td>
+</tr>
+</tbody></table>
+<p>No FTEs through Year 3; contractor spend &lt;12% of revenue. Advisors (by Q4 &#39;26): a subscription operator, a niche creator, a bookkeeper/CPA ($150–250/mo from month 1 of revenue). De-risk founder dependence via ops manual + password-manager emergency access + fractional dev.</p>
+<hr>
+<h2>7. FULL FINANCIAL MODEL</h2>
+<h3>7.1 Core Assumptions (Base)</h3>
+<p>Visitor→trial 2.5% · Trial→paid 45% (card-required) · Monthly churn 7% Y1 → 6% Y2 → 5% Y3 · Annual mix 25% · <strong>Blended ARPU $13.70/mo</strong> · FM 150/200 sold @ $199 · Traffic 3,000 (Sep) → 18,000 (Jun-27), ~15%/mo · Variable COGS $0.78/mo/active + $2.50 one-time voice gen/new paid · Payment fees 4.5% · Founder draw $0 → $3K/mo (Feb &#39;27) → $5K (Y2) → $7.5K (Y3).</p>
+<h3>7.2 Year 1 Monthly (Base) — key line</h3>
+<table>
+<thead>
+<tr>
+<th>Month</th>
+<th>Active Subs</th>
+<th>MRR</th>
+<th>FM Cash</th>
+<th>Cash Balance</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sep-26</td>
+<td>34</td>
+<td>$466</td>
+<td>$19,900</td>
+<td>$17,336</td>
+</tr>
+<tr>
+<td>Dec-26</td>
+<td>187</td>
+<td>$2,562</td>
+<td>—</td>
+<td>$29,167</td>
+</tr>
+<tr>
+<td>Mar-27</td>
+<td>469</td>
+<td>$6,425</td>
+<td>—</td>
+<td>$32,087</td>
+</tr>
+<tr>
+<td>Jun-27</td>
+<td>884</td>
+<td>$12,111</td>
+<td>—</td>
+<td>$43,564</td>
+</tr>
+</tbody></table>
+<p>Y1: 1,082 new paid, 884 EOY, $80,924 total revenue (incl. $29,850 FM), $8,860 COGS, +$43,564 net cash. Subscription revenue alone (~$51K) covers all costs incl. founder draw — never needs outside cash. FM cash is acceleration/buffer, not survival.</p>
+<h3>7.3 Years 2–3 (Base)</h3>
+<p>Y2: 2,756 subs EOY, ~$453K ARR, 89.4% GM. Y3: 4,977 subs EOY, ~$68K MRR, ~$818K ARR, ~90% GM.</p>
+<h3>7.4 Three Scenarios</h3>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Conservative</th>
+<th>Base</th>
+<th>Stretch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ARR @ Jun-29</td>
+<td>~$296K</td>
+<td>~$818K</td>
+<td>~$1.56M</td>
+</tr>
+<tr>
+<td>Subs @ Jun-29</td>
+<td>~1,800</td>
+<td>~4,977</td>
+<td>~9,500</td>
+</tr>
+<tr>
+<td>Op break-even</td>
+<td>Feb 2027</td>
+<td>Nov 2026</td>
+<td>Oct 2026</td>
+</tr>
+<tr>
+<td>Cash needed beyond FM</td>
+<td>~$4K savings</td>
+<td>$0</td>
+<td>$0</td>
+</tr>
+</tbody></table>
+<p>Even Conservative = viable lifestyle business (~$296K ARR × ~89% GM ≈ $180K+/yr profit).</p>
+<h3>7.5 P&amp;L Summary (Base)</h3>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Y1</th>
+<th>Y2</th>
+<th>Y3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Total revenue</td>
+<td>$80,924</td>
+<td>$299,500</td>
+<td>$635,500</td>
+</tr>
+<tr>
+<td>Total COGS</td>
+<td>$8,860</td>
+<td>$31,600</td>
+<td>$64,500</td>
+</tr>
+<tr>
+<td>Gross margin</td>
+<td>89.1%</td>
+<td>89.4%</td>
+<td>89.9%</td>
+</tr>
+<tr>
+<td>Total opex</td>
+<td>$13,500</td>
+<td>$46,100</td>
+<td>$98,300</td>
+</tr>
+<tr>
+<td>Operating profit (pre-draw)</td>
+<td>$58,564</td>
+<td>$221,800</td>
+<td>$472,700</td>
+</tr>
+<tr>
+<td>Net after draw</td>
+<td>$43,564</td>
+<td>$161,800</td>
+<td>$382,700</td>
+</tr>
+</tbody></table>
+<h3>7.6 Cash / Break-even</h3>
+<p>Max cumulative outflow before revenue: <strong>−$1,800</strong> (Jul–Aug &#39;26) — the entire at-risk capital. Operating break-even <strong>Nov 2026</strong> (month 3); full break-even incl. $3K draw <strong>Feb 2027</strong> (month 6). <strong>Total cash to break-even &lt;$2,000.</strong> Bootstrappable on a credit-card budget.</p>
+<h3>7.7 Unit Economics (Base)</h3>
+<p>ARPU $13.70 · lifetime 14.3 mo @ 7% churn · LTV (revenue) $196 · <strong>GM-LTV $176</strong> · CAC target ≤$45 · <strong>LTV:CAC 3.9:1</strong> · <strong>payback 3.7 months</strong>.</p>
+<h3>7.8 Sensitivity — churn is everything</h3>
+<table>
+<thead>
+<tr>
+<th>Churn</th>
+<th>GM-LTV</th>
+<th>Steady-state subs</th>
+<th>ARR</th>
+<th>Value @3× ARR</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5%</td>
+<td>$246</td>
+<td>~7,500</td>
+<td>~$1.23M</td>
+<td>~$3.7M</td>
+</tr>
+<tr>
+<td>8%</td>
+<td>$154</td>
+<td>~4,700</td>
+<td>~$771K</td>
+<td>~$2.3M</td>
+</tr>
+<tr>
+<td>12%</td>
+<td>$102</td>
+<td>~3,100</td>
+<td>~$514K</td>
+<td>~$1.5M</td>
+</tr>
+</tbody></table>
+<p>Moving churn 8%→5% = ~$450K ARR and ~$1.4M enterprise value on identical spend.</p>
+<hr>
+<h2>8. FUNDING STRATEGY</h2>
+<p><strong>Bootstrap.</strong> Math doesn&#39;t require capital (&lt;$2K at-risk, break-even month 3–6, 89% margins fund growth). Category rewards authenticity over ad spend. FM cash ($16–40K) is the &quot;round&quot; — growth capital, not salary (draw starts when MRR covers it). Raise only if: proven LTV:CAC &gt;4:1 on a spend-constrained channel AND churn ≤5% for 6+ months AND speed genuinely matters. Risk of not raising: speed vs a funded copycat, founder fragility, no war chest for a native-app moment — accepted, reviewed quarterly.</p>
+<hr>
+<h2>9. KPI DASHBOARD</h2>
+<p><strong>Weekly:</strong> visitors (+10–15% w/w), trial starts (≥2.5%), trial→paid (≥45%), <strong>activation</strong> (intention+loop+ring in 48h ≥60%), support tickets/100 (≤5), email growth (≥150 net/wk).</p>
+<p><strong>Monthly:</strong> MRR growth (≥12% Y1), <strong>gross churn ≤7%→5%</strong> (red line &gt;9% → freeze paid), <strong>D30 retention ≥55%</strong>, annual mix ≥25%, CAC ≤$45, LTV:CAC ≥3:1 (pause paid &lt;2.5:1), <strong>gross margin ≥88%</strong> (audit ElevenLabs &lt;85%), Mind-Loop listens/active/wk ≥4, cash runway ≥6 months.</p>
+<hr>
+<h2>10. RISK REGISTER &amp; SWOT</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Risk</th>
+<th>Score</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>R1</td>
+<td>High churn (&gt;9%)</td>
+<td>20</td>
+<td>Card trial, retention roadmap, annual push, paid circuit-breaker</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Founder key-person/burnout</td>
+<td>15</td>
+<td>Revenue-triggered contractors, ops manual, hour cap, product runs untouched</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Platform/algorithm dependence</td>
+<td>12</td>
+<td>Email list (owned), multi-channel, referral/affiliate, SEO</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>ElevenLabs cost blowout</td>
+<td>12</td>
+<td>Caching, trial cap, budget alarm, cheaper-TTS fallback (2-wk swap)</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Competition/copycat</td>
+<td>12</td>
+<td>Speed + niche, switching costs, incumbents can&#39;t say &quot;manifestation&quot;</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>No native app</td>
+<td>12</td>
+<td>PWA + push (Oct–Nov), revisit native at $30K MRR, no 30% tax</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Health/claims liability</td>
+<td>8</td>
+<td>Goals not therapy, no outcome claims, disclaimer, LLC shield</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>Involuntary billing churn</td>
+<td>6</td>
+<td>Stripe Smart Retries + dunning</td>
+</tr>
+<tr>
+<td>R9</td>
+<td>OpenAI dependence</td>
+<td>4</td>
+<td>Trivial usage; any mini model is a drop-in</td>
+</tr>
+</tbody></table>
+<p><strong>SWOT —</strong> Strengths: 89–90% margins, personalized voice gap, complete retention loop, full-stack founder speed, tiny at-risk capital. Weaknesses: solo SPOF, no native app, no audience yet, non-technical ceiling, unknown brand. Opportunities: huge under-served niche, falling AI costs, creator/affiliate fit, micro-SaaS acquirers pay 3–4× ARR. Threats: incumbent adds AI audio, algorithm shifts, trend cools/FTC, ElevenLabs pricing power, rising CAC.</p>
+<hr>
+<h2>11. MILESTONES</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Milestone</th>
+<th>Metric</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jul &#39;26</td>
+<td>Billing + entity + ToS</td>
+<td>Test purchase succeeds</td>
+</tr>
+<tr>
+<td>Aug &#39;26</td>
+<td>Waitlist + launch content</td>
+<td>≥1,500 emails</td>
+</tr>
+<tr>
+<td>Sep &#39;26</td>
+<td>LAUNCH + Founding Member</td>
+<td>≥50 FM seats/30d</td>
+</tr>
+<tr>
+<td>Nov &#39;26</td>
+<td>Operating break-even</td>
+<td>Rev &gt; COGS+opex</td>
+</tr>
+<tr>
+<td>Feb &#39;27</td>
+<td>Break-even incl. draw</td>
+<td>Net cash positive w/ draw</td>
+</tr>
+<tr>
+<td>Jun &#39;27</td>
+<td>Year-1 exit rate</td>
+<td>~880 subs, ~$12K MRR, ~$145K ARR, D30 ≥55%</td>
+</tr>
+<tr>
+<td>Jun &#39;28</td>
+<td>Year-2; decision gate</td>
+<td>~2,750 subs, ~$38K MRR, ~$453K ARR</td>
+</tr>
+<tr>
+<td>Jun &#39;29</td>
+<td>Year-3</td>
+<td>~5,000 subs, ~$68K MRR, ~$818K ARR; asset ~$2–3M</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>12. ONE-PAGE SUMMARY</h2>
+<p>Bootstrapped consumer-subscription web app for the manifestation audience. Differentiator: personalized ElevenLabs &quot;Mind Loop&quot; wrapped in a complete daily retention loop. $15/mo or $119/yr, 7-day card trial, 200-seat $199 lifetime launch tier (~$30K injection). ~89–90% GM; GM-LTV ~$176; CAC ≤$45 → 3.9:1, 3.7-mo payback. Base: ~$12K MRR by Jun &#39;27 → ~$453K ARR Jun &#39;28 → ~$818K ARR / ~5,000 subs Jun &#39;29 at ~74% op margin (Conservative still ~$296K ARR). At-risk capital &lt;$2,000; op break-even month 3, full break-even month 6; no raise planned. Biggest risk = churn (top of the KPI dashboard and the 12-month retention roadmap). The 2029 asset: ~$800K-ARR, ~90%-margin, low-touch subscription business — 3–4× ARR to a micro-acquirer, or ~$400K+/yr kept.</p>
+</body></html>
