@@ -228,7 +228,6 @@ export function toggleRoadmapTaskDone(idx, i) {
   setTaskWin(`task-${idx}-${i}`, `✓ ${r.tasks[i] || ''}`, done, { goal: it?.title || '', category: it?.category || '' });   // log/remove the win + momentum
   const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
-  if (typeof window !== 'undefined' && window.renderCitadel) window.renderCitadel();
 }
 
 /* ── USER-ADDED ROADMAP TASKS (up to 25/goal) ─────────────
@@ -238,7 +237,6 @@ const MAX_USER_TASKS = 25;
 function _rerenderRoadmap(idx, r) {
   const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
-  if (typeof window !== 'undefined' && window.renderCitadel) window.renderCitadel();   // Citadel view mirrors the roadmap
 }
 export function addRoadmapUserTask(idx) {
   const it = intentions[idx];
@@ -306,7 +304,6 @@ export function toggleRoadmapLock(idx, i) {
   }
   saveIntentions();
   if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // wrap-up shows the same rows
-  if (typeof window !== 'undefined' && window.renderCitadel) window.renderCitadel();
 }
 
 /* Remember whether a roadmap dropdown (MY ACTION PLAN / PROVEN ACTIONS) is
@@ -362,7 +359,6 @@ export async function generateRoadmapAI(idx) {
     intent.roadmapAI = result;
     await saveIntentions();
     if (panel) panel.innerHTML = renderRoadmapAI(result, idx);
-    if (typeof window !== 'undefined' && window.renderCitadel) window.renderCitadel();
     toast('Roadmap generated ✓', 'success');
   } catch(e) {
     if (panel) panel.innerHTML = `<div style="padding:16px;color:#FF375F;font-size:12px;">${esc(e.message)}</div>`;
@@ -962,7 +958,6 @@ export async function generateMindset(idx) {
     await saveIntentions();
     const panel = document.getElementById(`panel-mindset-${idx}`);
     if (panel) panel.innerHTML = renderMindsetResult(result, idx);
-    if (typeof window !== 'undefined' && window.renderCitadel) window.renderCitadel();
     toast('AI Library generated ✓', 'success');
   } catch(e) {
     toast('Generation failed. Try again.', 'error');

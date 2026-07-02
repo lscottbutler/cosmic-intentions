@@ -46,7 +46,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
-      <button class="tnav-btn" onclick="navTo('citadel')">✦ The Citadel 2.0</button>
       <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
@@ -788,14 +787,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <p style="font-size:13px;color:var(--muted);margin:4px 0 20px;">Everything you've done — grouped by goal, filtered, and counted.</p>
       <div id="winsPageBody"></div>
     </div>
-  </div>
-
-  <!-- THE CITADEL — tabbed two-pillar view -->
-  <div class="page" id="page-citadel">
-    <div style="padding:14px 12px 0;">
-      <button onclick="goMemberDashboard()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:0.8px;padding:8px 14px;cursor:pointer;">← BACK</button>
-    </div>
-    <div id="citadelBody"></div>
   </div>
 
   <div class="page" id="page-admin">

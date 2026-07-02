@@ -182,7 +182,6 @@ export function showPage(id) {
   if (id === 'dashboard') renderDashboard();
   if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
-  if (id === 'citadel' && typeof window.renderCitadel === 'function') window.renderCitadel();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
@@ -219,7 +218,7 @@ export function subnavForward() {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','wins','citadel'];
+  const auth_required = ['dashboard','setup','wins'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
