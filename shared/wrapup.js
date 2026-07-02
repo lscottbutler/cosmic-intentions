@@ -154,17 +154,6 @@ export function renderWrapup() {
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
-        <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
-        ${aiPara ? `<span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
-      </div>
-
-      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
-      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
-
-      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
-
       ${chk ? `
       <details class="rm-drop" open style="margin-bottom:14px;">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
@@ -176,6 +165,17 @@ export function renderWrapup() {
         </summary>
         <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
       </details>` : ''}
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
+        <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
+        ${aiPara ? `<span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
+      </div>
+
+      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
+      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
+
+      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
+      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
 
       <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
         style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
