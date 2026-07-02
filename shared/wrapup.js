@@ -187,6 +187,9 @@ export function renderWrapup() {
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
+        <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ MY MORNING RUN THROUGH</span>
+      </div>
       ${chk ? `
       <details class="rm-drop" open style="margin-bottom:14px;">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
