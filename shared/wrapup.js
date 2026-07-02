@@ -11,6 +11,10 @@ import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES } from '..
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
+// Which goal dropdowns are expanded in the wrap-up (survives re-renders).
+const _openGoals = new Set();
+export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -24,17 +28,24 @@ function _todayChecklist() {
     const dones = it.roadmapAI.done || {};
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
     const locks = it.roadmapAI.locks || {};
-    // Only the goal TITLE sits in the goal's color; the tasks render on the widget bg below it.
-    rows += `<div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;margin:14px 0 8px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">◎ ${esc(it.title)}</div>`;
+    // Each goal is a collapsible dropdown: the colored title is the summary,
+    // its AI tasks are hidden until expanded.
+    let tasksHtml = '';
     it.roadmapAI.tasks.forEach((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i]; total++; if (d) done++;
-      rows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+      tasksHtml += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
         <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
       </div>`;
     });
+    rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
+      <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">
+        <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
+      </summary>
+      <div style="padding-top:6px;">${tasksHtml}</div>
+    </details>`;
   });
   return { rows, total, done };
 }
