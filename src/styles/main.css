@@ -690,6 +690,15 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 .setup-page {
   padding: 24px 20px 60px;
 }
+/* Pegboard 50/50 columns: Goals | Daily Tracker */
+.pb-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+@media (max-width: 760px) { .pb-cols { grid-template-columns: 1fr; } }
 .setup-page-header {
   margin-bottom: 28px;
 }
