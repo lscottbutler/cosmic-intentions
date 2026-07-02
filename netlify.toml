@@ -30,4 +30,10 @@
   from = "/i-am-generator"
   to = "/standalone/iam-generator.html"
   status = 200
+
+# Waitlist / early-access landing page
+[[redirects]]
+  from = "/early"
+  to = "/standalone/early.html"
+  status = 200
   

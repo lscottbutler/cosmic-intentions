@@ -26,7 +26,7 @@ export default defineConfig({
         // app.js + shared/*.js are now ES modules bundled via src/main.js — not copied.
         { src: 'player', dest: '.' },
         { src: 'players', dest: '.' },
-        { src: 'standalone/iam-generator.html', dest: '.' },
+        { src: 'standalone', dest: '.' },
         { src: 'images', dest: '.' },
       ],
     }),

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cosmic Intentions — Early Access</title>
+<meta name="description" content="Your goals. Your voice. On loop while you sleep. Cosmic Intentions turns your goals into 'I AM' audio loops in a calm AI voice. Join the launch waitlist for Founding Member pricing." />
+<link rel="canonical" href="https://cosmicintentions.com/early" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Cosmic Intentions — Early Access" />
+<meta property="og:description" content="Your goals, in your own AI voice, on loop while you sleep. Join the waitlist for Founding Member pricing." />
+<meta property="og:url" content="https://cosmicintentions.com/early" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cosmic Intentions — Early Access" />
+<meta name="twitter:description" content="Your goals, in your own AI voice, on loop while you sleep." />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --brand:#F5A623; --brand2:#7C5CC4; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #ECECF2; min-height: 100vh; line-height: 1.5;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, rgba(124,92,196,0.35), transparent 60%),
+      radial-gradient(900px 500px at 90% 8%, rgba(245,166,35,0.15), transparent 55%),
+      linear-gradient(180deg, #0a0a12 0%, #0d0d18 100%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 30px 20px 70px; }
+  .brand { display:flex; align-items:center; gap:8px; font-family: ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 3px; color: var(--brand); font-weight: 800; text-transform: uppercase; margin-bottom: 44px; }
+  .brand .dot { width:9px; height:9px; border-radius:50%; background: var(--brand); box-shadow: 0 0 12px var(--brand); }
+
+  /* HERO */
+  h1 { font-size: clamp(32px, 8vw, 52px); line-height: 1.05; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
+  h1 .grad { background: linear-gradient(90deg, var(--brand), #ffd27a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { font-size: 17px; color: #B3B3C6; margin-bottom: 26px; max-width: 560px; }
+  .form { display:flex; gap: 8px; flex-wrap: wrap; max-width: 520px; }
+  .form input { flex: 1; min-width: 190px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 15px 16px; font-size: 16px; color: #fff; font-family: inherit; }
+  .form input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(245,166,35,0.15); }
+  .form button { flex-shrink: 0; padding: 15px 26px; border: none; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(90deg, var(--brand), #ffb63a); color: #1a1206; font-weight: 800; font-size: 16px; transition: filter .15s; }
+  .form button:hover { filter: brightness(1.06); }
+  .form button:disabled { opacity: .6; }
+  .socialproof { font-size: 13px; color: #7c7c92; margin-top: 12px; }
+  .err { color: #ff8a8a; font-size: 13px; margin-top: 10px; display: none; }
+  .done { display:none; margin-top: 14px; font-size: 16px; font-weight: 700; color: #7CE0A0; }
+
+  /* DEMO */
+  .demo { margin: 40px 0; border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(160deg, rgba(124,92,196,0.22), rgba(10,10,18,0.4)); position: relative; }
+  .demo-inner { padding: 40px 24px; text-align: center; }
+  .demo .play { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; display:flex; align-items:center; justify-content:center;
+    background: rgba(245,166,35,0.18); border: 1px solid var(--brand); font-size: 24px; color: var(--brand); }
+  .demo .wave { display:flex; gap:4px; justify-content:center; align-items:flex-end; height: 34px; margin-top: 18px; }
+  .demo .wave span { width: 4px; background: linear-gradient(180deg, var(--brand), var(--brand2)); border-radius: 2px; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ height: 8px; opacity:.5 } 50%{ height: 32px; opacity:1 } }
+  .demo-cap { font-size: 13px; color: #9a9ab0; margin-top: 16px; font-style: italic; }
+
+  /* SECTIONS */
+  .sec-label { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 2px; color: var(--brand); text-transform: uppercase; margin-bottom: 16px; }
+  section { margin: 44px 0; }
+  h2 { font-size: 24px; font-weight: 800; margin-bottom: 18px; letter-spacing: -0.3px; }
+  .steps { display: grid; gap: 14px; }
+  .step { display:flex; gap: 14px; align-items:flex-start; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 16px; }
+  .step .n { flex-shrink:0; width: 32px; height: 32px; border-radius: 50%; background: var(--brand); color:#1a1206; font-weight: 800; display:flex; align-items:center; justify-content:center; }
+  .step .t { font-size: 15px; color: #D6D6E2; }
+  .step .t b { color: #fff; }
+  .whofor { font-size: 18px; line-height: 1.6; color: #C8C8D8; border-left: 3px solid var(--brand); padding-left: 18px; }
+  .founding { background: linear-gradient(160deg, rgba(245,166,35,0.14), rgba(124,92,196,0.14)); border: 1px solid rgba(245,166,35,0.35);
+    border-radius: 16px; padding: 24px; text-align: center; }
+  .founding .big { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .founding .small { font-size: 14px; color: #C2C2D4; }
+  .foundernote { display:flex; gap: 14px; align-items:center; margin-top: 8px; }
+  .foundernote .avatar { flex-shrink:0; width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--brand2), var(--brand)); display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size: 18px; }
+  .foundernote .fn-text { font-size: 14px; color: #B3B3C6; font-style: italic; }
+  .altcta { text-align:center; font-size: 14px; color: #8a8aa0; margin-top: 30px; }
+  .altcta a { color: var(--brand); font-weight: 700; text-decoration: none; }
+  footer { margin-top: 40px; text-align: center; font-size: 13px; color: #6c6c82; }
+  footer a { color: var(--brand); text-decoration: none; font-weight: 700; }
+  .spinner { display:inline-block; width:15px; height:15px; border:2px solid rgba(26,18,6,0.35); border-top-color:#1a1206; border-radius:50%; animation: spin .7s linear infinite; vertical-align:-3px; margin-right:8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Cosmic Intentions</div>
+
+    <!-- HERO -->
+    <h1>Your goals. Your voice.<br><span class="grad">On loop while you sleep.</span></h1>
+    <p class="sub">Cosmic Intentions turns your biggest goals into "I AM" statements, voiced by AI, and plays them back to your subconscious — day and night. Launching September.</p>
+
+    <div class="form" id="form1">
+      <input type="email" id="email1" placeholder="you@email.com" autocomplete="email" />
+      <button id="btn1" onclick="join('email1','btn1','done1','err1')">Get Early Access →</button>
+    </div>
+    <div class="err" id="err1"></div>
+    <div class="done" id="done1">✓ You're on the list. Founding Member details coming to your inbox. 🚀</div>
+    <div class="socialproof">Join the waitlist · Founding Member pricing reserved for early birds</div>
+
+    <!-- DEMO -->
+    <div class="demo">
+      <div class="demo-inner">
+        <div class="play">▶</div>
+        <div style="font-size:16px;font-weight:700;">Hear your goals in a calm AI voice</div>
+        <div class="wave" aria-hidden="true">
+          <span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span>
+          <span style="animation-delay:.3s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.5s"></span>
+          <span style="animation-delay:.4s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span>
+          <span style="animation-delay:.1s"></span><span style="animation-delay:0s"></span>
+        </div>
+        <div class="demo-cap">"I am calm, focused, and building the life I intend." — on a gentle loop, all night.</div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section>
+      <div class="sec-label">How it works</div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="t"><b>Tell it your goals.</b> Write what you want as simple "I AM" intentions.</div></div>
+        <div class="step"><div class="n">2</div><div class="t"><b>It writes &amp; voices them.</b> AI turns each goal into affirmations and reads them in a calm voice.</div></div>
+        <div class="step"><div class="n">3</div><div class="t"><b>Press play.</b> Sleep mode, daytime mode, and a counter for every impression your mind absorbs.</div></div>
+      </div>
+    </section>
+
+    <!-- WHO IT'S FOR -->
+    <section>
+      <div class="sec-label">Who it's for</div>
+      <p class="whofor">You've read the books. You've bought the journals. You've quit the meditation apps. You don't need more information — you need <b style="color:#fff;">repetition</b>.</p>
+    </section>
+
+    <!-- FOUNDING MEMBER -->
+    <section>
+      <div class="founding">
+        <div class="big">🌙 200 Founding Member seats at launch</div>
+        <div class="small">Lifetime access, locked-in pricing, and a hand in shaping the app. The waitlist gets first dibs.</div>
+      </div>
+    </section>
+
+    <!-- SECOND CTA -->
+    <section>
+      <div class="sec-label">Get in early</div>
+      <div class="form" id="form2">
+        <input type="email" id="email2" placeholder="you@email.com" autocomplete="email" />
+        <button id="btn2" onclick="join('email2','btn2','done2','err2')">Join the waitlist</button>
+      </div>
+      <div class="err" id="err2"></div>
+      <div class="done" id="done2">✓ You're in. See you at launch. 🚀</div>
+      <div class="foundernote">
+        <div class="avatar">S</div>
+        <div class="fn-text">"I'm Scott — I'm building the app I always wished existed: my own goals, in my own voice, working on me while I sleep. Come build it with me."</div>
+      </div>
+    </section>
+
+    <div class="altcta">Not ready to join? <a href="/iam">Try the free I AM Statement Generator →</a></div>
+
+    <footer>Made with intention by <a href="https://cosmicintentions.com">Cosmic Intentions</a></footer>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  async function join(emailId, btnId, doneId, errId) {
+    const email = $(emailId).value.trim();
+    const err = $(errId); err.style.display = 'none';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; err.style.display = 'block'; return; }
+    const btn = $(btnId); const label = btn.textContent; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Joining…';
+    try {
+      const res = await fetch('/api/waitlist-signup', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'waitlist-early' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not save — try again.');
+      $(emailId).parentElement.style.display = 'none';
+      $(doneId).style.display = 'block';
+    } catch (e) {
+      err.textContent = e.message; err.style.display = 'block';
+      btn.disabled = false; btn.textContent = label;
+    }
+  }
+  ['email1','email2'].forEach(id => {
+    const el = $(id); if (!el) return;
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); el.nextElementSibling.click(); } });
+  });
+</script>
+</body>
+</html>
