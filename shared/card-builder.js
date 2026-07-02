@@ -786,35 +786,35 @@ export function renderPBIntentionList() {
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     return `
     <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="position:relative;padding:18px 20px;background:#8ba6a9;">
+      <div style="position:relative;padding:12px 14px;background:#8ba6a9;">
         <div style="font-size:20px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">Set this goal's details below.</div>
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
           style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
       </div>
-      <div style="background:#2E2E2E;padding:18px 20px;">
+      <div style="background:#2E2E2E;padding:12px 14px;">
         <div style="${lbl}">GOAL</div>
         <textarea maxlength="150" rows="3"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
-      <div style="background:#2E2E2E;padding:18px 20px;border-top:1px solid #3a3a3a;">
+      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">START &amp; END DATES</div>
-        <div style="display:flex;gap:12px;">
-          <div style="flex:1;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="min-width:0;">
             <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
-            <div style="color:#fff;font-size:11px;margin-top:5px;opacity:.9;">Start</div>
+            <div style="color:#fff;font-size:11px;margin-top:4px;opacity:.9;">Start</div>
           </div>
-          <div style="flex:1;">
+          <div style="min-width:0;">
             <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
-            <div style="color:#fff;font-size:11px;margin-top:5px;opacity:.9;">End</div>
+            <div style="color:#fff;font-size:11px;margin-top:4px;opacity:.9;">End</div>
           </div>
         </div>
       </div>
-      <div style="background:#2E2E2E;padding:18px 20px;border-top:1px solid #3a3a3a;">
+      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">CATEGORY</div>
         <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
       </div>
-      <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);">
+      <div style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);">
         <div>
           <div style="font-weight:800;color:var(--text);font-size:14px;letter-spacing:.5px;">AI FOR THIS GOAL</div>
           <div style="font-size:12px;color:var(--muted);margin-top:3px;">Auto-generate affirmations, beliefs, roadmap &amp; more.</div>
