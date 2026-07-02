@@ -239,8 +239,10 @@ function _rerenderRoadmap(idx, r) {
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
 }
 export function addRoadmapUserTask(idx) {
-  const r = intentions[idx]?.roadmapAI;
-  if (!r) return;
+  const it = intentions[idx];
+  if (!it) return;
+  if (!it.roadmapAI) it.roadmapAI = { intention: it.title || '', tasks: [], userTasks: [] };   // allow adding your own tasks before generating AI steps
+  const r = it.roadmapAI;
   if (!Array.isArray(r.userTasks)) r.userTasks = [];
   const input = document.getElementById(`roadmapUserInput-${idx}`);
   const text = (input?.value || '').trim();
@@ -457,7 +459,7 @@ function renderRoadmapAI(r, idx) {
         <span style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;color:#FF375F;background:#1A0505;border:1px solid #3a1010;border-radius:6px;padding:5px 9px;">⚠ ${esc(r.danger_zone)}</span>
       </div>` : ''}
 
-      <button onclick="generateRoadmapAI(${idx})" style="display:flex;align-items:center;width:100%;background:#577590;color:#fff;padding:14px 16px;border:1px solid #577590;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:1px;font-size:14px;"><span style="display:inline-block;width:1.3em;margin-right:9px;text-align:center;">↺</span>REGENERATE</button>
+      <button id="btn-roadmap-ai-${idx}" onclick="generateRoadmapAI(${idx})" style="display:flex;align-items:center;width:100%;background:#577590;color:#fff;padding:14px 16px;border:1px solid #577590;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:1px;font-size:14px;"><span style="display:inline-block;width:1.3em;margin-right:9px;text-align:center;">${taskRows.length ? '↺' : '✦'}</span>${taskRows.length ? 'REGENERATE' : 'GENERATE MY 10 STEPS'}</button>
     </div>`;
 }
 
@@ -524,9 +526,8 @@ export function buildRoadmapPanel(intention, idx) {
       <div style="font-family:var(--vault-mono);font-size:22px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ TODAY I WILL</div>
       ${intakeControls}
       <div id="panel-roadmap-ai-${idx}">
-        ${intention.roadmapAI ? renderRoadmapAI(intention.roadmapAI, idx) : ''}
+        ${renderRoadmapAI(intention.roadmapAI || { intention: intention.title || '', tasks: [], userTasks: [] }, idx)}
       </div>
-      ${!intention.roadmapAI ? `<button class="ai-gen-btn" id="btn-roadmap-ai-${idx}" onclick="generateRoadmapAI(${idx})">✦ Generate My 10 Steps</button>` : ''}
     </div>`;
 }
 
