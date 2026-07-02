@@ -15,6 +15,24 @@ const DONE  = '#4ADE80';
 const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
 
+// Free-standing "my actions" the user adds directly under the checklist header
+// (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
+function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
+function _saveWrapActs(a) { LS.set('ci_wrapup_actions', a); }
+export function wrapAddAction() {
+  const input = document.getElementById('wrapActionInput');
+  const text = (input?.value || '').trim(); if (!text) return;
+  const a = _wrapActs(); a.unshift({ id: Date.now(), text: text.slice(0, 160), done: false });
+  _saveWrapActs(a); if (input) input.value = ''; renderWrapup();
+}
+export function wrapToggleAction(id) {
+  const a = _wrapActs(); const t = a.find(x => x.id === id); if (!t) return;
+  t.done = !t.done; _saveWrapActs(a); renderWrapup();
+}
+export function wrapDeleteAction(id) {
+  _saveWrapActs(_wrapActs().filter(x => x.id !== id)); renderWrapup();
+}
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -152,6 +170,21 @@ export function renderWrapup() {
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
   const chk    = _todayChecklist();
 
+  // Free-standing "add your own action" box, shown directly under the checklist header.
+  const acts = _wrapActs();
+  const actionsBlock = `
+    ${acts.map(t => `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+      <button onclick="wrapDeleteAction(${t.id})" title="Delete" style="${RM_CIRCLE}font-size:14px;">✕</button>
+      <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${t.done ? '#8a8a8a' : '#ddd'};${t.done ? 'text-decoration:line-through;' : ''}">${esc(t.text)}</span>
+      <button onclick="wrapToggleAction(${t.id})" title="${t.done ? 'Undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${t.done ? '✓' : '○'}</button>
+    </div>`).join('')}
+    <div style="display:flex;gap:6px;margin:6px 0 12px;">
+      <input id="wrapActionInput" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter')wrapAddAction()"
+        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);">
+      <button onclick="wrapAddAction()"
+        style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+    </div>`;
+
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
       ${chk ? `
@@ -163,7 +196,7 @@ export function renderWrapup() {
             <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
           </span>
         </summary>
-        <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
+        <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${actionsBlock}${chk.rows}</div>
       </details>` : ''}
 
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
