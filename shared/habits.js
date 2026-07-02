@@ -160,7 +160,7 @@ export function renderPBHabitList() {
   if (!el) return;
   const list = getHabitList();
   const groups = _grouped(list);
-  const arrow = 'width:26px;height:20px;display:flex;align-items:center;justify-content:center;background:#454545;border:none;border-radius:5px;color:#fff;cursor:pointer;font-size:9px;line-height:1;';
+  const arrow = 'width:30px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#454545;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:10px;line-height:1;';
   const catOpts = (cur) => ['<option value=""' + (cur === '' ? ' selected' : '') + '>— Unsorted —</option>']
     .concat(HABIT_CATS.map(c => `<option value="${c}"${cur === c ? ' selected' : ''}>${c}</option>`)).join('');
 
@@ -175,17 +175,17 @@ export function renderPBHabitList() {
     }
     items.forEach((h, gi) => {
       html += `
-      <div style="display:flex;gap:8px;align-items:center;background:#2E2E2E;padding:10px 12px;border-radius:10px;margin-bottom:8px;">
-        <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;">
+      <div style="background:#2E2E2E;padding:11px 12px;border-radius:10px;margin-bottom:8px;">
+        <input type="text" value="${esc(h.name)}" maxlength="40" onchange="pbSaveHabitName('${h.id}',this.value)"
+          style="width:100%;box-sizing:border-box;padding:11px 13px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:14px;margin-bottom:8px;" />
+        <div style="display:flex;gap:8px;align-items:center;">
           <button onclick="pbMoveHabit('${h.id}',-1)" title="Move up"   style="${arrow}${gi === 0 ? 'opacity:.3;pointer-events:none;' : ''}">▲</button>
           <button onclick="pbMoveHabit('${h.id}',1)"  title="Move down" style="${arrow}${gi === items.length - 1 ? 'opacity:.3;pointer-events:none;' : ''}">▼</button>
+          <select onchange="pbSetHabitCat('${h.id}',this.value)"
+            style="flex:1;min-width:0;box-sizing:border-box;padding:9px 8px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:12px;">${catOpts(_cat(h))}</select>
+          <button onclick="pbDeleteHabit('${h.id}')" title="Delete habit"
+            style="flex-shrink:0;width:34px;height:34px;background:#3a1010;border:1px solid #5a1a1a;color:#ff8a8a;border-radius:8px;cursor:pointer;font-size:15px;">✕</button>
         </div>
-        <input type="text" value="${esc(h.name)}" maxlength="40" onchange="pbSaveHabitName('${h.id}',this.value)"
-          style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:14px;" />
-        <select onchange="pbSetHabitCat('${h.id}',this.value)"
-          style="flex-shrink:0;box-sizing:border-box;padding:10px 8px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:12px;">${catOpts(_cat(h))}</select>
-        <button onclick="pbDeleteHabit('${h.id}')" title="Delete habit"
-          style="flex-shrink:0;width:36px;height:36px;background:#3a1010;border:1px solid #5a1a1a;color:#ff8a8a;border-radius:8px;cursor:pointer;font-size:15px;">✕</button>
       </div>`;
     });
   });
