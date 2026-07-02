@@ -2307,15 +2307,6 @@ export function renderVaultSidebar() {
     } else {
       const playerNav = (idx) => `
         <div class="vault-item-nav">
-          <div class="acc-item dvb-roadmap-acc">
-            <button class="acc-trigger" id="accTrig-roadmap-${idx}" onclick="toggleAcc('roadmap-${idx}')">
-              <span class="acc-svg-circle"><svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span class="acc-label">My Roadmap</span><span class="acc-arrow">▶</span>
-            </button>
-            <div class="acc-panel acc-panel-tall" id="accPanel-roadmap-${idx}">
-              <div class="acc-panel-inner" id="panel-roadmap-${idx}">${buildRoadmapPanel(intentions[idx], idx)}</div>
-            </div>
-          </div>
           <button class="vin-row" onclick="window.location.href='players/roadmap.html?idx=${idx}'">
             <span class="vin-icon"><img src="images/icons/roadmap.png" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" alt="" style="width:22px;height:22px;object-fit:contain;"><span style="display:none;font-size:18px;">🗺</span></span>
             <span class="vin-label">MY ROADMAP</span>
