@@ -149,6 +149,7 @@ export function renderHabits() {
           </span>
         </summary>
         <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 8px;margin-top:8px;">${body}</div>
+        <div style="font-size:10px;color:#777;line-height:1.4;padding:9px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>
       </details>
     </div>`;
 }

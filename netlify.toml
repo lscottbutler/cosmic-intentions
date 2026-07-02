@@ -36,4 +36,15 @@
   from = "/early"
   to = "/standalone/early.html"
   status = 200
+
+# Legal pages
+[[redirects]]
+  from = "/terms"
+  to = "/standalone/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/standalone/privacy.html"
+  status = 200
   
