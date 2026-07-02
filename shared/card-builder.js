@@ -793,7 +793,6 @@ export function renderPBIntentionList() {
           style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;">
-        <div style="${lbl}">GOAL</div>
         <textarea maxlength="150" rows="3"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
