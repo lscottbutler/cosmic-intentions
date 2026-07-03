@@ -81,14 +81,18 @@ export async function wrapPromoteToGoal(idx, id) {
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
 function _todayChecklist() {
+  // Show EVERY real goal — even ones with no roadmap yet (e.g. a goal just
+  // promoted from an action). Empty goals still get an add-action box so you
+  // can start building them right here.
   const items = (intentions || [])
     .map((it, idx) => ({ it, idx }))
-    .filter(o => o.it && o.it.roadmapAI && Array.isArray(o.it.roadmapAI.tasks) && o.it.roadmapAI.tasks.length);
+    .filter(o => o.it && (o.it.title || '').trim());
   if (!items.length) return null;
   let total = 0, done = 0, rows = '', fullRows = '';
   items.forEach(({ it, idx }) => {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
-    const uTasks = Array.isArray(it.roadmapAI.userTasks) ? it.roadmapAI.userTasks : [];
+    const rai = it.roadmapAI || {};                         // goal may have no roadmap yet
+    const uTasks = Array.isArray(rai.userTasks) ? rai.userTasks : [];
     // Each goal is a collapsible dropdown. When OPENED it reveals, in order:
     //   1) an "add your own action" box for THIS goal,
     //   2) the custom actions you've already added, then
@@ -118,10 +122,10 @@ function _todayChecklist() {
     // actions are). They appear in MY TASK LIST below, visually separated with
     // their own tint + header. Building them here does NOT touch total/done —
     // the header count reflects your own actions only.
-    const dones = it.roadmapAI.done || {};
-    const locks = it.roadmapAI.locks || {};
+    const dones = rai.done || {};
+    const locks = rai.locks || {};
     let aiRows = '';
-    it.roadmapAI.tasks.forEach((t, i) => {
+    (rai.tasks || []).forEach((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i];
       aiRows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
