@@ -136,7 +136,7 @@ function _todayChecklist() {
       <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
-      <div style="padding-top:6px;">${addBox}${userHtml}</div>
+      <div style="padding-top:6px;">${userHtml}${addBox}</div>
     </details>`;
 
     // MY TASK LIST group: your own actions + proven actions, visually separated.
