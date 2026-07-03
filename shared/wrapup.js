@@ -1,5 +1,5 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
-import { RM_CIRCLE, LOCK_OPEN, LOCK_CLOSED } from './card-builder.js';
+import { RM_CIRCLE, LOCK_OPEN, LOCK_CLOSED, renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
@@ -55,6 +55,27 @@ export function wrapGoalAddAction(idx) {
   renderWrapup();
 }
 
+/* Promote a custom action into a full GOAL on the Pegboard. Non-destructive:
+   the action stays where it is; a new "I AM …" intention is created from its
+   text (same shape/prefix rule as the Pegboard's own add-intention). */
+export async function wrapPromoteToGoal(idx, id) {
+  const t = intentions[idx]?.roadmapAI?.userTasks?.find(x => x.id === id);
+  if (!t) return;
+  let title = (t.text || '').trim().slice(0, 150);
+  if (!title) return;
+  if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
+  intentions.push({
+    id: crypto.randomUUID(), title,
+    startDate: '', targetDate: '', category: '',
+    words: { mission: '', affirmations: '', beliefs: '', quotes: '', insights: '' },
+    mindset: null, achievers: null,
+  });
+  await saveIntentions();
+  if (typeof renderPBIntentionList === 'function') renderPBIntentionList();   // refresh the Pegboard list if it's on screen
+  renderWrapup();
+  toast(`Added “${title}” as a goal in your Pegboard ✓`, 'success');
+}
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -87,6 +108,7 @@ function _todayChecklist() {
       userHtml += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="deleteRoadmapUserTask(${idx},${u.id})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
         <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(u.text)}</span>
+        <button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>
         <button onclick="toggleRoadmapUserTaskDone(${idx},${u.id})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
       </div>`;
     });
@@ -281,4 +303,5 @@ if (typeof window !== 'undefined') {
   window.renderWrapup = renderWrapup;
   window.wrapGoalAddAction = wrapGoalAddAction;      // inline onclick in the Today-I-Will goal boxes
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
+  window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
 }
