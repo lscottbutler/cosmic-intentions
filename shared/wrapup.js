@@ -23,6 +23,10 @@ export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
 const _aiMoreOpen = new Set();
 export function wrapupAiMoreToggle(idx, open) { if (open) _aiMoreOpen.add(idx); else _aiMoreOpen.delete(idx); }
 
+// Whether the EVENING WRAP-UP card is expanded (survives re-renders). Default open.
+let _wrapupOpen = true;
+export function wrapupCardToggle(open) { _wrapupOpen = !!open; }
+
 // Free-standing "my actions" the user adds directly under the checklist header
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
@@ -297,20 +301,26 @@ export function renderWrapup() {
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
-        <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
-        ${aiPara ? `<span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
-      </div>
+      <details class="rm-drop" ${_wrapupOpen ? 'open' : ''} ontoggle="wrapupCardToggle(this.open)">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;cursor:pointer;">
+          <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
+          <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+            ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
+            <span class="rm-caret" style="color:#fff;">▾</span>
+          </span>
+        </summary>
+        <div style="margin-top:12px;">
+          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
+          <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
 
-      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
-      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
+          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
+          <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
 
-      <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-      <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
-
-      <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
-        style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
-        ${aiPara ? '↺ Regenerate' : '✦ Personalize'}</button>
+          <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
+            style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
+            ${aiPara ? '↺ Regenerate' : '✦ Personalize'}</button>
+        </div>
+      </details>
     </div>`;
 }
 
@@ -321,4 +331,5 @@ if (typeof window !== 'undefined') {
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
+  window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
