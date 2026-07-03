@@ -56,7 +56,7 @@ function _grouped(list) {
 
 function _refresh() {
   renderHabits();
-  renderMorningRun();
+  renderRunThroughs();
   if (typeof window !== 'undefined' && window.renderPBHabitList) window.renderPBHabitList();
 }
 
@@ -66,7 +66,7 @@ export function habitToggle(id) {
   if (d[id]) delete d[id]; else d[id] = true;
   LS.set(_doneKey(), d);
   renderHabits();
-  renderMorningRun();
+  renderRunThroughs();
 }
 
 /* ── Pegboard editing: add / rename / recategorize / delete / reorder ── */
@@ -123,31 +123,37 @@ function _habitRow(h, on) {
   </div>`;
 }
 
-/* ── MY MORNING RUN THROUGH — the MORNING-category habits, on their own ── */
-export function renderMorningRun() {
-  const el = document.getElementById('morningRunBody'); if (!el) return;
-  const list = getHabitList().filter(h => _cat(h) === 'MORNING');
+/* ── "RUN THROUGH" cards — one per time-of-day category ──
+   Each renders its own category's habits into its container. */
+const RUN_CATS = ['MORNING', 'DAY', 'EVENING'];   // these get their own banner cards
+function _renderRun(cat, elId) {
+  const el = document.getElementById(elId); if (!el) return;
+  const list = getHabitList().filter(h => _cat(h) === cat);
   const d = _done();
-  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No morning habits yet — set a habit's category to MORNING on your Pegboard.</div>`; return; }
+  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>`; return; }
   const done = list.filter(h => d[h.id]).length;
   el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:#fff;opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`
     + list.map(h => _habitRow(h, !!d[h.id])).join('');
 }
+export function renderMorningRun() { _renderRun('MORNING', 'morningRunBody'); }
+export function renderDayRun()     { _renderRun('DAY',     'dayRunBody'); }
+export function renderEveningRun() { _renderRun('EVENING', 'eveningRunBody'); }
+export function renderRunThroughs() { renderMorningRun(); renderDayRun(); renderEveningRun(); }
 
-/* ── Daily Tracker widget — every category EXCEPT morning
-   (morning habits live in the Morning Run Through above). ── */
+/* ── Daily Tracker widget — categories WITHOUT their own run-through card
+   (Bedtime, Health, Unsorted). Morning/Day/Evening live in their cards. ── */
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
 
-  const shown = getHabitList().filter(h => _cat(h) !== 'MORNING');
+  const shown = getHabitList().filter(h => !RUN_CATS.includes(_cat(h)));
   const d = _done();
   const done = shown.filter(h => d[h.id]).length;
   const allDone = shown.length && done === shown.length;
   const groups = _grouped(getHabitList());
 
   let body = '';
-  [...HABIT_CATS.filter(c => c !== 'MORNING'), ''].forEach(cat => {
+  [...HABIT_CATS.filter(c => !RUN_CATS.includes(c)), ''].forEach(cat => {
     const items = groups[cat];
     if (!items.length) return;
     body += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;padding:7px 11px;border-radius:7px;margin:12px 0 6px;">${CAT_LABEL(cat)}</div>`;
@@ -212,5 +218,6 @@ export function renderPBHabitList() {
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
   window.renderMorningRun = renderMorningRun;
+  window.renderRunThroughs = renderRunThroughs;
   window.renderPBHabitList = renderPBHabitList;
 }
