@@ -359,105 +359,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
         </div>
 
-        <!-- MEDITATIONS — banner with nav circle; tap it to slide the teal timer panel down -->
-        <style>
-          .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--brand);
-            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-            margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
-          .med-dot:hover { background:#fffceb; }
-          .med-banner-wrap { position:relative; line-height:0; }
-          .med-banner-wrap img { width:100%; display:block; border-radius:9px; }
-          .med-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
-            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
-            display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
-          .med-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
-            stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
-          .med-navcircle.open svg { transform:rotate(180deg); }
-          .med-panel-collapse { max-height:0; overflow:hidden; opacity:0; margin-top:0;
-            transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
-          .med-panel-collapse.open { max-height:360px; opacity:1; margin-top:9px; }
-        </style>
-        <div data-player-box style="background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
-          <div class="med-banner-wrap">
-            <img src="images/meditation-banner.png" alt="Meditations" />
-            <button class="med-navcircle" id="medNav" title="Show / hide timers"
-              onclick="document.getElementById('medPanel').classList.toggle('open'); this.classList.toggle('open');">
-              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="med-panel-collapse" id="medPanel">
-            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
-              <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
-              </div>
-              <button title="Close" onclick="document.getElementById('medPanel').classList.remove('open'); document.getElementById('medNav').classList.remove('open');"
-                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- COUNTDOWN — meditation-style box; frame color auto-derived from the banner art
-             (see scripts/make-countdown-banner.py → ACCENT). Re-run that script if the art changes. -->
-        <style>
-          .cd-box { --cd-accent:#0075ac; }
-          .cd-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--cd-accent);
-            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-            margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
-          .cd-dot:hover { background:#f3faff; }
-          .cd-banner-wrap { position:relative; line-height:0; }
-          .cd-banner-wrap img { width:100%; display:block; border-radius:9px; }
-          .cd-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
-            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
-            display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
-          .cd-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
-            stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
-          .cd-navcircle.open svg { transform:rotate(180deg); }
-          .cd-panel-collapse { max-height:0; overflow:hidden; opacity:0; margin-top:0;
-            transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
-          .cd-panel-collapse.open { max-height:420px; opacity:1; margin-top:9px; }
-        </style>
-        <div class="cd-box" data-player-box style="background:var(--cd-accent); padding:9px; border-radius:12px; margin:14px 0 16px;">
-          <div class="cd-banner-wrap">
-            <img src="images/countdown-banner.png" alt="Countdown" />
-            <button class="cd-navcircle" id="cdNav" title="Show / hide timers"
-              onclick="document.getElementById('cdPanel').classList.toggle('open'); this.classList.toggle('open');">
-              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="cd-panel-collapse" id="cdPanel">
-            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
-              <div id="countdown-times-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:13px 10px; flex:1;">
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=1', event)">1</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=3', event)">3</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=5', event)">5</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=10', event)">10</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=15', event)">15</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=20', event)">20</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=30', event)">30</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=45', event)">45</button>
-                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=60', event)">60</button>
-              </div>
-              <button title="Close" onclick="document.getElementById('cdPanel').classList.remove('open'); document.getElementById('cdNav').classList.remove('open');"
-                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- VISUALIZATION — black dropdown banner + time grid (visualizes your selected goal) -->
         <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
           <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9673;</span>VISUALIZATION</span>
@@ -614,6 +515,106 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="layer-content-roadmap"></div>
 
         </div><!-- end colb-active-state -->
+
+        <!-- Meditation + Countdown players (moved to bottom of Column A) -->
+        <!-- MEDITATIONS — banner with nav circle; tap it to slide the teal timer panel down -->
+        <style>
+          .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--brand);
+            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
+          .med-dot:hover { background:#fffceb; }
+          .med-banner-wrap { position:relative; line-height:0; }
+          .med-banner-wrap img { width:100%; display:block; border-radius:9px; }
+          .med-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
+            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
+          .med-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
+            stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
+          .med-navcircle.open svg { transform:rotate(180deg); }
+          .med-panel-collapse { max-height:0; overflow:hidden; opacity:0; margin-top:0;
+            transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
+          .med-panel-collapse.open { max-height:360px; opacity:1; margin-top:9px; }
+        </style>
+        <div data-player-box style="background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
+          <div class="med-banner-wrap">
+            <img src="images/meditation-banner.png" alt="Meditations" />
+            <button class="med-navcircle" id="medNav" title="Show / hide timers"
+              onclick="document.getElementById('medPanel').classList.toggle('open'); this.classList.toggle('open');">
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="med-panel-collapse" id="medPanel">
+            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
+              <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
+                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
+              </div>
+              <button title="Close" onclick="document.getElementById('medPanel').classList.remove('open'); document.getElementById('medNav').classList.remove('open');"
+                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COUNTDOWN — meditation-style box; frame color auto-derived from the banner art
+             (see scripts/make-countdown-banner.py → ACCENT). Re-run that script if the art changes. -->
+        <style>
+          .cd-box { --cd-accent:#0075ac; }
+          .cd-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--cd-accent);
+            color:var(--sunken); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
+          .cd-dot:hover { background:#f3faff; }
+          .cd-banner-wrap { position:relative; line-height:0; }
+          .cd-banner-wrap img { width:100%; display:block; border-radius:9px; }
+          .cd-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
+            width:48px; height:48px; border-radius:50%; background:var(--ink); border:3px solid #fff; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 12px rgba(0,0,0,.5); }
+          .cd-navcircle svg { width:52%; height:52%; fill:none; stroke:#fff; stroke-width:2.6;
+            stroke-linecap:round; stroke-linejoin:round; transition:transform .35s ease; }
+          .cd-navcircle.open svg { transform:rotate(180deg); }
+          .cd-panel-collapse { max-height:0; overflow:hidden; opacity:0; margin-top:0;
+            transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
+          .cd-panel-collapse.open { max-height:420px; opacity:1; margin-top:9px; }
+        </style>
+        <div class="cd-box" data-player-box style="background:var(--cd-accent); padding:9px; border-radius:12px; margin:14px 0 16px;">
+          <div class="cd-banner-wrap">
+            <img src="images/countdown-banner.png" alt="Countdown" />
+            <button class="cd-navcircle" id="cdNav" title="Show / hide timers"
+              onclick="document.getElementById('cdPanel').classList.toggle('open'); this.classList.toggle('open');">
+              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="cd-panel-collapse" id="cdPanel">
+            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
+              <div id="countdown-times-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:13px 10px; flex:1;">
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=1', event)">1</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=3', event)">3</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=5', event)">5</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=10', event)">10</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=15', event)">15</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=20', event)">20</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=30', event)">30</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=45', event)">45</button>
+                <button class="cd-dot" onclick="openPlayerInColumn('players/countdown.html?t=60', event)">60</button>
+              </div>
+              <button title="Close" onclick="document.getElementById('cdPanel').classList.remove('open'); document.getElementById('cdNav').classList.remove('open');"
+                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
 
 
         <!-- Alchemy Modal -->
