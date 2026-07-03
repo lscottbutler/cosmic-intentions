@@ -37,6 +37,12 @@
   to = "/standalone/early.html"
   status = 200
 
+# Launch OS — private marketing execution tool (not linked in the app)
+[[redirects]]
+  from = "/launch"
+  to = "/standalone/launch-os.html"
+  status = 200
+
 # Legal pages
 [[redirects]]
   from = "/terms"
