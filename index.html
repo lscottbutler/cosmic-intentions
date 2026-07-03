@@ -320,9 +320,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- DASHBOARD WIDGETS — moved to top of Column B -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
         <div id="ringsWidget"></div>
-        <!-- MY MORNING RUN THROUGH — section header for the Daily Tracker -->
-        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:8px;">
-          <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;white-space:nowrap;">◈ MY MORNING RUN THROUGH</span>
+        <!-- MY MORNING RUN THROUGH — the MORNING-category habits -->
+        <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;">
+            <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;white-space:nowrap;">◈ MY MORNING RUN THROUGH</span>
+          </div>
+          <div id="morningRunBody" style="border:1px solid #222;border-radius:8px;padding:2px 10px 8px;margin-top:10px;"></div>
         </div>
         <div id="habitsWidget"></div>
         <div id="wrapupWidget"></div>

@@ -56,6 +56,7 @@ function _grouped(list) {
 
 function _refresh() {
   renderHabits();
+  renderMorningRun();
   if (typeof window !== 'undefined' && window.renderPBHabitList) window.renderPBHabitList();
 }
 
@@ -65,6 +66,7 @@ export function habitToggle(id) {
   if (d[id]) delete d[id]; else d[id] = true;
   LS.set(_doneKey(), d);
   renderHabits();
+  renderMorningRun();
 }
 
 /* ── Pegboard editing: add / rename / recategorize / delete / reorder ── */
@@ -113,30 +115,45 @@ export function pbMoveHabit(id, dir) {
   _refresh();
 }
 
-/* ── Dashboard widget (collapsible, banner-grouped checklist) ── */
+/* One tickable habit row. */
+function _habitRow(h, on) {
+  return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+    <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
+    <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : '#ddd'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
+  </div>`;
+}
+
+/* ── MY MORNING RUN THROUGH — the MORNING-category habits, on their own ── */
+export function renderMorningRun() {
+  const el = document.getElementById('morningRunBody'); if (!el) return;
+  const list = getHabitList().filter(h => _cat(h) === 'MORNING');
+  const d = _done();
+  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No morning habits yet — set a habit's category to MORNING on your Pegboard.</div>`; return; }
+  const done = list.filter(h => d[h.id]).length;
+  el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:#fff;opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`
+    + list.map(h => _habitRow(h, !!d[h.id])).join('');
+}
+
+/* ── Daily Tracker widget — every category EXCEPT morning
+   (morning habits live in the Morning Run Through above). ── */
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
 
-  const list = getHabitList();
+  const shown = getHabitList().filter(h => _cat(h) !== 'MORNING');
   const d = _done();
-  const done = list.filter(h => d[h.id]).length;
-  const allDone = list.length && done === list.length;
-  const groups = _grouped(list);
+  const done = shown.filter(h => d[h.id]).length;
+  const allDone = shown.length && done === shown.length;
+  const groups = _grouped(getHabitList());
 
   let body = '';
-  [...HABIT_CATS, ''].forEach(cat => {
+  [...HABIT_CATS.filter(c => c !== 'MORNING'), ''].forEach(cat => {
     const items = groups[cat];
     if (!items.length) return;
     body += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;padding:7px 11px;border-radius:7px;margin:12px 0 6px;">${CAT_LABEL(cat)}</div>`;
-    body += items.map(h => {
-      const on = !!d[h.id];
-      return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
-        <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : '#ddd'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
-      </div>`;
-    }).join('');
+    body += items.map(h => _habitRow(h, !!d[h.id])).join('');
   });
+  const list = shown;
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
@@ -194,5 +211,6 @@ export function renderPBHabitList() {
 
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
+  window.renderMorningRun = renderMorningRun;
   window.renderPBHabitList = renderPBHabitList;
 }
