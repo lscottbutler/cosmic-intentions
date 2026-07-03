@@ -1770,6 +1770,12 @@ input, textarea, select {
 .vault-sidebar::-webkit-scrollbar-track { background: transparent; }
 .vault-sidebar::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
 
+/* Column A — same slim scrollbar as Column B (kill the fat grey default) */
+.vault-main { scrollbar-width: thin; scrollbar-color: var(--mid) transparent; }
+.vault-main::-webkit-scrollbar { width: 3px; }
+.vault-main::-webkit-scrollbar-track { background: transparent; }
+.vault-main::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
+
 /* ── GRAND GAUGE (Progress Bar) ─────────────────────── */
 
 /* ── BLUEPRINT TYPOGRAPHY ───────────────────────────── */
@@ -2333,7 +2339,7 @@ input, textarea, select {
     flex-direction: column !important;
     gap: 20px !important;
     width: 100% !important;
-    padding: 0 16px !important;
+    padding: 0 6px !important;   /* near full-width goal boxes on mobile */
   }
 }
 
