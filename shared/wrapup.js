@@ -19,6 +19,10 @@ export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); els
 let _taskListOpen = false;
 export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
 
+// Which goals have their proven-actions "Show N more" list expanded (survives re-renders).
+const _aiMoreOpen = new Set();
+export function wrapupAiMoreToggle(idx, open) { if (open) _aiMoreOpen.add(idx); else _aiMoreOpen.delete(idx); }
+
 // Free-standing "my actions" the user adds directly under the checklist header
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
@@ -124,16 +128,20 @@ function _todayChecklist() {
     // the header count reflects your own actions only.
     const dones = rai.done || {};
     const locks = rai.locks || {};
-    let aiRows = '';
-    (rai.tasks || []).forEach((t, i) => {
+    const _aiRowArr = (rai.tasks || []).map((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i];
-      aiRows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+      return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
         <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#1C2230'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.30);text-decoration-thickness:1px;' : ''}">${esc(t)}</span>
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
       </div>`;
     });
+    // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
+    const hasAi     = _aiRowArr.length > 0;
+    const aiHead    = _aiRowArr.slice(0, 5).join('');
+    const aiTail    = _aiRowArr.slice(5).join('');
+    const aiMoreCnt = _aiRowArr.length - 5;
 
     // GOAL BOX (per-goal view): your own actions only.
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
@@ -147,8 +155,11 @@ function _todayChecklist() {
     fullRows += `<div style="margin:12px 0 6px;">
       <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">◎ ${esc(it.title)}</div>
       ${userHtml ? `<div style="font-family:var(--vault-mono);font-size:10px;color:#aaa;letter-spacing:1px;margin:9px 2px 4px;">✎ MY OWN ACTIONS</div>${userHtml}` : ''}
-      ${aiRows ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#1C2230;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
+      ${hasAi ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#1C2230;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
+          <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);">
+            <span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span>
+          </summary>${aiTail}</details>` : ''}</div>` : ''}
     </div>`;
   });
   return { rows, total, done, fullRows };
@@ -309,4 +320,5 @@ if (typeof window !== 'undefined') {
   window.wrapGoalAddAction = wrapGoalAddAction;      // inline onclick in the Today-I-Will goal boxes
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
+  window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
 }
