@@ -90,7 +90,7 @@ body {
 
 /* ── HEADER ───────────────────────────────────────────────── */
 .hdr {
-  position: fixed;
+  position: relative;   /* in flow → scrolls away with the page */
   top: 0; left: 0; right: 0;
   height: var(--hdr);
   background: transparent;
@@ -103,8 +103,8 @@ body {
 }
 /* ── TOP NAV BAR ─────────────────────────────────────── */
 #topNav {
-  position: fixed;
-  top: var(--hdr);
+  position: relative;   /* in flow → scrolls away with the page */
+  top: 0;
   left: 0; right: 0;
   height: var(--topnav);
   background: transparent;
@@ -123,7 +123,7 @@ body {
 /* ── HAMBURGER NAV (red circle, centered) ───────────── */
 .ham-wrap { position: relative; }
 .ham-btn {
-  width: 64px; height: 64px;
+  width: 32px; height: 32px;
   border-radius: 50%;
   background: #e0102b;
   border: none;
@@ -132,14 +132,14 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 4px;
   padding: 0;
   box-shadow: 0 3px 12px rgba(0,0,0,0.28);
 }
 .ham-btn span {
   display: block;
-  width: 32px;
-  height: 4px;
+  width: 16px;
+  height: 2px;
   background: #fff;
   border-radius: 3px;
 }
@@ -204,8 +204,8 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 
 .hdr-logo {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 16px;
+  transform: none;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 5px;
@@ -384,7 +384,7 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
 
 /* ── PAGE WRAPPER ─────────────────────────────────────────── */
 .page-wrap {
-  margin-top: calc(var(--hdr) + var(--topnav));
+  margin-top: 0;   /* header is now in-flow, no fixed-header gap needed */
   min-height: calc(100vh - var(--hdr) - var(--topnav));
 }
 .page { display: none; }
