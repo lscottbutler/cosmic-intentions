@@ -112,7 +112,7 @@ function _todayChecklist() {
       const d = !!u.done; total++; if (d) done++;
       userHtml += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="toggleRoadmapUserTaskDone(${idx},${u.id})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(u.text)}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#ddd'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.22);text-decoration-thickness:1px;' : ''}">${esc(u.text)}</span>
         <button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>
         <button onclick="deleteRoadmapUserTask(${idx},${u.id})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
       </div>`;
@@ -129,7 +129,7 @@ function _todayChecklist() {
       const d = !!dones[i]; const locked = !!locks[i];
       aiRows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? 'rgba(28,34,48,0.55)' : '#1C2230'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#1C2230'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.30);text-decoration-thickness:1px;' : ''}">${esc(t)}</span>
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
       </div>`;
