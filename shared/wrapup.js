@@ -129,7 +129,7 @@ function _todayChecklist() {
       const d = !!dones[i]; const locked = !!locks[i];
       aiRows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? 'rgba(28,34,48,0.55)' : '#1C2230'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
       </div>`;
@@ -147,8 +147,8 @@ function _todayChecklist() {
     fullRows += `<div style="margin:12px 0 6px;">
       <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">◎ ${esc(it.title)}</div>
       ${userHtml ? `<div style="font-family:var(--vault-mono);font-size:10px;color:#aaa;letter-spacing:1px;margin:9px 2px 4px;">✎ MY OWN ACTIONS</div>${userHtml}` : ''}
-      ${aiRows ? `<div style="background:rgba(255,255,255,0.05);border:1px solid #2f2f2f;border-radius:8px;padding:7px 9px;margin-top:9px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#b8c6c8;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
+      ${aiRows ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#1C2230;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
     </div>`;
   });
   return { rows, total, done, fullRows };
