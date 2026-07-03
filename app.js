@@ -181,6 +181,7 @@ export function showPage(id) {
 
   if (id === 'dashboard') renderDashboard();
   if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
+  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
 
   closeDrawer();
@@ -218,7 +219,7 @@ export function subnavForward() {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','wins'];
+  const auth_required = ['dashboard','setup','habits','wins'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');

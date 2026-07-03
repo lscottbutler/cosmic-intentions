@@ -46,7 +46,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
-      <button class="tnav-btn" onclick="navTo('setup')">My Pegboard</button>
+      <button class="tnav-btn" onclick="navTo('setup')">My Goals</button>
+      <button class="tnav-btn" onclick="navTo('habits')">My Habits</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
       <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
@@ -95,8 +96,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('setup')">
-      <span class="nav-icon">📋</span> My Pegboard
+      <span class="nav-icon">📋</span> My Goals
       <span class="nav-count-dot" id="vaultIntentionCount">0</span>
+    </button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-nav-item" onclick="navTo('habits')">
+      <span class="nav-icon">✅</span> My Habits
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
@@ -657,8 +662,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="setup-page">
 
       <div class="setup-page-header">
-        <h1>My Pegboard</h1>
-        <p>Your pegboard. This context powers every AI output in the app. Take time to fill it in well.</p>
+        <h1>My Goals</h1>
+        <p>Your identity, purpose and goals. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
 
       <!-- YOUR NAME (top, above the sections) -->
@@ -706,11 +711,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
 
-      <!-- ══ 50/50 COLUMNS: A = Goals · B = Daily Tracker ══ -->
-      <div class="pb-cols">
-      <div><!-- COLUMN A: GOALS -->
-
-      <!-- ② MY INTENTIONS (open by default) -->
+      <!-- ② MY INTENTIONS (goals — full width; habits now live on the My Habits page) -->
       <button onclick="pbToggleSection('pbsec2')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
         <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">My Intentions</span>
         <span id="pbsec2-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">&#9660;</span>
@@ -750,42 +751,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
 
-      </div><!-- /COLUMN A -->
+      <!-- Daily Tracker / habits moved to their own page (page-habits) -->
 
-      <div><!-- COLUMN B: DAILY TRACKER -->
-      <!-- ④ DAILY TRACKER (open by default) -->
-      <button onclick="pbToggleSection('pbsec4')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
-        <span style="font-weight:800;font-size:15px;letter-spacing:1px;color:var(--text);text-transform:uppercase;">Daily Tracker</span>
-        <span id="pbsec4-arr" style="color:var(--mid);font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">&#9660;</span>
-      </button>
-      <div id="pbsec4-body" style="margin-bottom:18px;">
-        <svg viewBox="0 0 100 24" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;margin:2px 0 8px;">
-          <text x="50" y="19.5" text-anchor="middle" textLength="99" lengthAdjust="spacingAndGlyphs"
-            style="fill:var(--text);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:20px;letter-spacing:-0.5px;">HABITS</text>
-        </svg>
-        <div style="color:var(--muted);font-size:12px;margin-bottom:14px;">Your daily habits — rename, reorder, add or delete. They show as a checklist on your dashboard and reset every morning.</div>
-        <div id="pbHabitList" style="margin-bottom:14px;"></div>
-        <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
-          <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A HABIT</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <input type="text" id="pbNewHabitInput" placeholder="e.g. STRETCH" maxlength="160" onkeydown="if(event.key==='Enter')pbAddHabit()"
-              style="flex:1;min-width:120px;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
-            <select id="pbNewHabitCat"
-              style="flex-shrink:0;box-sizing:border-box;padding:12px 10px;border:none;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff;">
-              <option value="">— Unsorted —</option>
-              <option value="MORNING">Morning</option>
-              <option value="DAY">Day</option>
-              <option value="EVENING">Evening</option>
-              <option value="BEDTIME">Bedtime</option>
-              <option value="HEALTH">Health</option>
-            </select>
-            <button onclick="pbAddHabit()"
-              style="flex-shrink:0;padding:12px 20px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add</button>
-          </div>
-        </div>
-      </div>
-      </div><!-- /COLUMN B -->
-      </div><!-- /pb-cols -->
 
       <!-- ③ MY THOUGHTS (collapsed) -->
       <button onclick="pbToggleSection('pbsec3')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border);border-radius:10px;padding:15px 18px;cursor:pointer;margin-bottom:12px;">
@@ -803,7 +770,41 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <!-- SAVE BAR -->
     <div class="save-bar">
       <button class="btn-save-secondary" onclick="loadPegboard()">↺ Reload</button>
-      <button class="btn-save" id="btn-save-setup" onclick="saveSetup()">Save My Pegboard</button>
+      <button class="btn-save" id="btn-save-setup" onclick="saveSetup()">Save My Goals</button>
+    </div>
+  </div>
+
+  <!-- MY HABITS PAGE (split out of the Pegboard — habits save automatically) -->
+  <div class="page" id="page-habits">
+    <div class="setup-page">
+      <div class="setup-page-header">
+        <h1>My Habits</h1>
+        <p>Your daily habits — rename, reorder, add or delete. They show as a checklist on your dashboard and reset every morning. Changes save automatically.</p>
+      </div>
+      <svg viewBox="0 0 100 24" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;margin:2px 0 12px;">
+        <text x="50" y="19.5" text-anchor="middle" textLength="99" lengthAdjust="spacingAndGlyphs"
+          style="fill:var(--text);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:20px;letter-spacing:-0.5px;">HABITS</text>
+      </svg>
+      <div id="pbHabitList" style="margin-bottom:14px;"></div>
+      <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
+        <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A HABIT</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="text" id="pbNewHabitInput" placeholder="e.g. STRETCH" maxlength="160" onkeydown="if(event.key==='Enter')pbAddHabit()"
+            style="flex:1;min-width:120px;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;" />
+          <select id="pbNewHabitCat"
+            style="flex-shrink:0;box-sizing:border-box;padding:12px 10px;border:none;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff;">
+            <option value="">— Unsorted —</option>
+            <option value="MORNING">Morning</option>
+            <option value="DAY">Day</option>
+            <option value="EVENING">Evening</option>
+            <option value="BEDTIME">Bedtime</option>
+            <option value="HEALTH">Health</option>
+          </select>
+          <button onclick="pbAddHabit()"
+            style="flex-shrink:0;padding:12px 20px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add</button>
+        </div>
+      </div>
+      <div style="height: 20px;"></div>
     </div>
   </div>
 
