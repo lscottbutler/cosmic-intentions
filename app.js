@@ -956,6 +956,19 @@ async function syncIntentionsFromSupabase() {
           bbfw:         _hasBbfw(rowBbfw) ? rowBbfw : (_hasBbfw(prevBbfw) ? _parseJsonField(prevBbfw) : null),
         });
       });
+      // Supabase returns rows UNORDERED, which scrambles the goal list on every
+      // reload (a goal promoted to the top would drift away). Re-apply the local
+      // order so goals stay exactly where the user put them; ids we've never seen
+      // locally (e.g. added on another device) fall to the end.
+      const _localOrder = (LS.get(`ci_intentions_${currentUser.id}`) || []).map(i => i && i.id);
+      if (_localOrder.length) {
+        const _pos = new Map(_localOrder.map((id, i) => [id, i]));
+        intentions.sort((a, b) => {
+          const ai = _pos.has(a.id) ? _pos.get(a.id) : Number.MAX_SAFE_INTEGER;
+          const bi = _pos.has(b.id) ? _pos.get(b.id) : Number.MAX_SAFE_INTEGER;
+          return ai - bi;
+        });
+      }
       LS.set(`ci_intentions_${currentUser.id}`, intentions);
       // Re-render build sheet if a goal is open — Map/Backbone now loaded from Supabase
       if (selectedVaultIdx !== null && intentions[selectedVaultIdx]) {
