@@ -15,6 +15,10 @@ const DONE  = '#4ADE80';
 const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
 
+// Whether the "MY TASK LIST" (everything-at-once) panel is expanded (survives re-renders).
+let _taskListOpen = false;
+export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
+
 // Free-standing "my actions" the user adds directly under the checklist header
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
@@ -59,7 +63,7 @@ function _todayChecklist() {
     .map((it, idx) => ({ it, idx }))
     .filter(o => o.it && o.it.roadmapAI && Array.isArray(o.it.roadmapAI.tasks) && o.it.roadmapAI.tasks.length);
   if (!items.length) return null;
-  let total = 0, done = 0, rows = '';
+  let total = 0, done = 0, rows = '', fullRows = '';
   items.forEach(({ it, idx }) => {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
     const uTasks = Array.isArray(it.roadmapAI.userTasks) ? it.roadmapAI.userTasks : [];
@@ -87,18 +91,40 @@ function _todayChecklist() {
       </div>`;
     });
 
-    // NOTE: the goal's proven / AI "tracker" tasks are intentionally NOT shown
-    // here anymore — each goal box lists only YOUR OWN actions. The full list
-    // (custom + proven) lives behind the "MY TASK LIST" button.
+    // Proven / AI "tracker" tasks — NOT shown in the goal box (only your own
+    // actions are). They appear in MY TASK LIST below, visually separated with
+    // their own tint + header. Building them here does NOT touch total/done —
+    // the header count reflects your own actions only.
+    const dones = it.roadmapAI.done || {};
+    const locks = it.roadmapAI.locks || {};
+    let aiRows = '';
+    it.roadmapAI.tasks.forEach((t, i) => {
+      const d = !!dones[i]; const locked = !!locks[i];
+      aiRows += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+        <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(t)}</span>
+        <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
+        <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
+      </div>`;
+    });
 
+    // GOAL BOX (per-goal view): your own actions only.
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
       <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
       <div style="padding-top:6px;">${addBox}${userHtml}</div>
     </details>`;
+
+    // MY TASK LIST group: your own actions + proven actions, visually separated.
+    fullRows += `<div style="margin:12px 0 6px;">
+      <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">◎ ${esc(it.title)}</div>
+      ${userHtml ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#888;letter-spacing:1px;margin:9px 2px 4px;">✎ MY OWN ACTIONS</div>${userHtml}` : ''}
+      ${aiRows ? `<div style="background:rgba(255,255,255,0.05);border:1px solid #2f2f2f;border-radius:8px;padding:7px 9px;margin-top:9px;">
+        <div style="font-family:var(--vault-mono);font-size:8px;color:#9fb0b2;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
+    </div>`;
   });
-  return { rows, total, done };
+  return { rows, total, done, fullRows };
 }
 
 /* Join labels into natural prose: "Review and Visualize",
@@ -218,7 +244,15 @@ export function renderWrapup() {
               <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
             </span>
           </summary>
-          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
+          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">
+            ${chk.rows}
+            <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)" style="margin-top:14px;">
+              <summary style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;background:#1c1c1c;color:#fff;border:1px solid #333;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;">
+                <span>◈ MY TASK LIST — everything at once</span><span class="rm-caret">▾</span>
+              </summary>
+              <div style="padding-top:8px;">${chk.fullRows}</div>
+            </details>
+          </div>
         </details>
       </div>` : '';
   }
@@ -245,5 +279,6 @@ export function renderWrapup() {
 // Let card-builder re-render the wrap-up after a lock/delete (avoids an import cycle).
 if (typeof window !== 'undefined') {
   window.renderWrapup = renderWrapup;
-  window.wrapGoalAddAction = wrapGoalAddAction;   // inline onclick in the Today-I-Will goal boxes
+  window.wrapGoalAddAction = wrapGoalAddAction;      // inline onclick in the Today-I-Will goal boxes
+  window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
 }
