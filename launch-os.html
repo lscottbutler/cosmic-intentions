@@ -3,292 +3,291 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Launch OS — Reddit</title>
+<title>Launch OS — Cosmic Intentions</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --bg:#0c0c12; --card:#15151f; --card2:#1c1c28; --line:#2a2a38; --txt:#e8e8f0; --mut:#8a8a9e; --brand:#F5A623; --ok:#4ADE80; --bad:#ff6b6b; --purple:#7C5CC4; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :root { --bg:#0c0c12; --card:#15151f; --card2:#1c1c28; --line:#2a2a38; --txt:#e8e8f0; --mut:#8a8a9e; --brand:#F5A623; --ok:#4ADE80; --bad:#ff6b6b; --purple:#7C5CC4; --blue:#4A9EAD; --pink:#FF8AB8; }
   body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; background:var(--bg); color:var(--txt); line-height:1.5; padding-bottom:60px; }
-  .wrap { max-width:760px; margin:0 auto; padding:18px 16px; }
-  h1 { font-size:20px; letter-spacing:.5px; display:flex; align-items:center; gap:10px; }
+  .wrap { max-width:780px; margin:0 auto; padding:16px; }
+  h1 { font-size:19px; letter-spacing:.5px; display:flex; align-items:center; gap:10px; }
   h1 .dot { width:10px;height:10px;border-radius:50%;background:var(--brand);box-shadow:0 0 12px var(--brand); }
-  .sub { color:var(--mut); font-size:13px; margin-top:2px; }
-  .tabs { display:flex; gap:4px; margin:18px 0 16px; border-bottom:1px solid var(--line); overflow-x:auto; }
-  .tab { background:none; border:none; color:var(--mut); font-size:13px; font-weight:700; padding:10px 12px; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; }
-  .tab.on { color:var(--brand); border-bottom-color:var(--brand); }
+  .sub { color:var(--mut); font-size:12px; margin-top:2px; }
+  .mods { display:flex; gap:6px; flex-wrap:wrap; margin:16px 0; }
+  .mod { background:var(--card); border:1px solid var(--line); color:var(--mut); font-size:12px; font-weight:800; padding:9px 12px; border-radius:9px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .mod.on { color:#0a0a0a; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
-  .card h2 { font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-  .card h3 { font-size:13px; color:var(--mut); text-transform:uppercase; letter-spacing:1px; margin:14px 0 8px; }
-  .row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .card h2 { font-size:15px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .card h3 { font-size:12px; color:var(--brand); text-transform:uppercase; letter-spacing:1px; margin:16px 0 8px; }
+  .lead { color:var(--mut); font-size:13px; margin-bottom:6px; }
+  .row { display:flex; align-items:flex-start; gap:11px; padding:8px 0; border-bottom:1px solid var(--line); }
   .row:last-child { border-bottom:none; }
-  .chk { width:24px;height:24px;border-radius:6px;border:2px solid var(--line);background:var(--card2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ok); }
+  .chk { width:22px;height:22px;border-radius:6px;border:2px solid var(--line);background:var(--card2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ok);margin-top:1px; }
   .chk.on { background:var(--ok); border-color:var(--ok); color:#0a0a0a; }
   .row .t { flex:1; font-size:14px; }
   .row.done .t { color:var(--mut); text-decoration:line-through; }
   .muted { color:var(--mut); font-size:13px; }
+  .hint { font-size:12px; color:var(--mut); margin-top:6px; }
   .pill { display:inline-block; font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; letter-spacing:.5px; }
-  .pill.ok { background:rgba(74,222,128,.15); color:var(--ok); }
-  .pill.bad { background:rgba(255,107,107,.15); color:var(--bad); }
-  .pill.wait { background:rgba(245,166,35,.15); color:var(--brand); }
+  .pill.ok{background:rgba(74,222,128,.15);color:var(--ok);} .pill.bad{background:rgba(255,107,107,.15);color:var(--bad);} .pill.wait{background:rgba(245,166,35,.15);color:var(--brand);}
   .btn { background:var(--brand); color:#1a1206; border:none; border-radius:8px; padding:10px 16px; font-weight:800; font-size:13px; cursor:pointer; }
   .btn.ghost { background:none; border:1px solid var(--line); color:var(--txt); }
   .btn.sm { padding:6px 11px; font-size:12px; }
   .btn:disabled { opacity:.4; cursor:not-allowed; }
   .stepper { display:flex; align-items:center; gap:8px; }
   .stepper button { width:30px;height:30px;border-radius:7px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:16px;cursor:pointer; }
-  .stepper .n { min-width:34px; text-align:center; font-weight:800; font-size:16px; }
-  .meter { height:10px; background:var(--card2); border-radius:5px; overflow:hidden; margin:6px 0; }
+  .stepper .n { min-width:44px; text-align:center; font-weight:800; font-size:16px; }
+  .meter { height:9px; background:var(--card2); border-radius:5px; overflow:hidden; margin:6px 0; }
   .meter > div { height:100%; border-radius:5px; transition:width .3s; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  @media(max-width:560px){ .grid2{grid-template-columns:1fr;} }
-  .subcard { background:var(--card2); border:1px solid var(--line); border-radius:10px; padding:12px; }
-  .subcard .name { font-weight:800; font-size:14px; }
-  .subcard a { color:var(--brand); text-decoration:none; font-size:12px; font-weight:700; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; } @media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+  .box { background:var(--card2); border:1px solid var(--line); border-radius:10px; padding:12px; }
   .tmpl { background:var(--card2); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; position:relative; }
   .tmpl .lbl { font-weight:800; font-size:13px; margin-bottom:6px; color:var(--brand); }
-  .tmpl pre { white-space:pre-wrap; font-family:inherit; font-size:13px; color:var(--txt); }
+  .tmpl pre { white-space:pre-wrap; font-family:inherit; font-size:13px; }
   .tmpl .copy { position:absolute; top:10px; right:10px; }
-  .day-item { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
-  .day-item .badge { font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0; }
-  .locked { opacity:.5; }
-  input,textarea { background:var(--card2); border:1px solid var(--line); border-radius:7px; padding:9px 11px; color:var(--txt); font-family:inherit; font-size:13px; }
-  table { width:100%; border-collapse:collapse; font-size:12px; }
-  th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
-  th { color:var(--mut); font-size:11px; text-transform:uppercase; }
-  .big { font-size:28px; font-weight:800; }
-  .hint { font-size:12px; color:var(--mut); margin-top:4px; }
+  a { color:var(--brand); }
+  table{width:100%;border-collapse:collapse;font-size:12px;} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);} th{color:var(--mut);font-size:11px;text-transform:uppercase;}
+  input{background:var(--card2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--txt);font-family:inherit;font-size:13px;}
+  .modcard{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;}
+  .modcard .p{font-size:11px;color:var(--mut);margin-top:6px;}
+  .locked{opacity:.55;} .day-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;align-items:center;} .badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;flex-shrink:0;}
+  .tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--line);color:var(--mut);}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1><span class="dot"></span> LAUNCH OS <span class="muted" style="font-size:13px;font-weight:400;">· Reddit</span></h1>
-  <div class="sub">Your 14-day get-established system. It won't let you promote until you've earned it. 🛡</div>
-
-  <div class="tabs" id="tabs"></div>
+  <h1><span class="dot"></span> LAUNCH OS <span class="muted" style="font-size:12px;font-weight:400;">· Cosmic Intentions marketing</span></h1>
+  <div class="sub">Your whole go-to-market, as guided checklists — with guardrails that stop you shooting yourself in the foot. 🛡</div>
+  <div class="mods" id="mods"></div>
   <div id="view"></div>
 </div>
 
 <script>
-// ─────────── STATE ───────────
-const KEY = 'los_reddit_v1';
-const DEFAULT = { started:false, day:1, karma:0, days:{}, log:[] };
-function load(){ try { return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(KEY)||'{}')); } catch(e){ return {...DEFAULT}; } }
+// ═══════════ STATE ═══════════
+const KEY='los_mktg_v2';
+const DEFAULT={ reddit:{started:false,day:1,karma:0,days:{},log:[]}, checks:{}, tr:{emails:0,videos:0,followers:0,adBudget:0,cpl:0}, weekly:[] };
+function load(){ try{ return deepMerge(structuredClone(DEFAULT), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ return structuredClone(DEFAULT); } }
+function deepMerge(a,b){ for(const k in b){ if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])) a[k]=deepMerge(a[k]||{},b[k]); else a[k]=b[k]; } return a; }
 function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
-let S = load();
-function dayData(d){ if(!S.days[d]) S.days[d] = { tasks:{}, comments:0, upvotes:0, valuePosts:0, promos:0 }; return S.days[d]; }
+let S=load();
+const ck=id=>!!S.checks[id];
+function toggle(id){ S.checks[id]=!S.checks[id]; save(); render(); }
+function tr(k,n){ S.tr[k]=Math.max(0,(S.tr[k]||0)+n); save(); render(); }
 
-// ─────────── DATA ───────────
-const SUBS = [
-  { n:'r/DecidingToBeBetter', tier:'Warm-up', promo:'Rare — comment only', url:'https://reddit.com/r/DecidingToBeBetter' },
-  { n:'r/getdisciplined', tier:'Warm-up', promo:'Sunday "Share your progress" only', url:'https://reddit.com/r/getdisciplined' },
-  { n:'r/selfimprovement', tier:'Warm-up', promo:'No self-promo — comment only', url:'https://reddit.com/r/selfimprovement' },
-  { n:'r/lawofattraction', tier:'Core', promo:'Check weekly thread; be careful', url:'https://reddit.com/r/lawofattraction' },
-  { n:'r/Manifestation', tier:'Core', promo:'Check rules; DM-when-asked', url:'https://reddit.com/r/Manifestation' },
-  { n:'r/LawOfAssumption', tier:'Core', promo:'Very rules-strict — read pinned', url:'https://reddit.com/r/LawOfAssumption' },
-  { n:'r/NevilleGoddard', tier:'Devout', promo:'NEVER promote. Pure value only.', url:'https://reddit.com/r/NevilleGoddard' },
+// ═══════════ MODULES ═══════════
+const MODS=[
+  ['home','🏁 Home','var(--brand)'],
+  ['social','📱 Social Video','#4A9EAD'],
+  ['email','✉️ Email List','#48B860'],
+  ['reddit','👽 Reddit','#FF6b6b'],
+  ['ads','📣 Meta Ads','#7C5CC4'],
+  ['community','🤝 Community','#FF8AB8'],
+  ['metrics','📊 Metrics','#E8A828'],
 ];
-// phase for a given day
-function phase(d){
-  if(d<=3) return { name:'Warm-up', note:'Comment in WARM-UP subs only (DecidingToBeBetter, getdisciplined, selfimprovement). Build karma. Zero self-mention.' };
-  if(d<=7) return { name:'Core niche', note:'Add the manifestation subs. Answer with METHODS (repetition, RAS, own-voice affirmations). Still zero self-mention.' };
-  if(d<=10) return { name:'Value posts', note:'You can now POST value (every other day). Give the method away, no link. When asked "is there a tool?" → offer to DM.' };
-  return { name:'Compound + first mention', note:'Keep the routine. Use each sub\'s PROMO THREAD for your /iam link. DM the people who asked earlier.' };
-}
-function todayTasks(d){
-  const base = [
-    ['m1','☀️ Scan 6 subs (sort "New") — open 5–6 answerable questions'],
-    ['m2','☀️ Write 3 substantive comments (4–6 sentences, no links)'],
-    ['m3','☀️ Upvote 10 good in-niche posts/comments'],
-    ['e1','🌙 Write 2 more comments (reply-depth on your morning ones)'],
-    ['e2','🌙 Reply to anyone who responded to you'],
-    ['e3','🌙 Log the day + note your best comment topic'],
-  ];
-  if(d>=8) base.splice(3,0,['vp','✍️ (every other day) Post 1 VALUE post — method only, no link, end with a question']);
-  if(d>=11) base.push(['pr','📣 Post /iam link ONLY in a sub\'s promo thread + DM earlier "asks"']);
-  return base;
-}
-const TEMPLATES = {
-  posts: [
-    ['"Own voice" affirmations', `I stopped writing affirmations and started recording myself saying them out loud — and it finally clicked. After a year of nothing sticking, here are the 4 rules that made the difference:\n\n1. Present tense, as if already true ("I am", never "I will").\n2. First person + positive — say what IS, never what isn't.\n3. Include the FEELING, not just the outcome ("I am calm and unstoppable").\n4. Play them back in YOUR voice, on repeat, especially before sleep.\n\nThe repetition is the whole game — your brain believes what it hears most, and hearing it in your own voice bypasses the "yeah right" reflex.\n\nWhat's worked for you — writing, speaking, or listening?`],
-    ['The 3am window', `Ever notice you manifest better right before sleep and right after waking? That's not woo — it's your brain's theta state, when the critical filter (the RAS) is quiet and repetition sinks in deeper.\n\nHow I use it: the last 10 minutes before bed, I replay my goals as "I am" statements on a loop and just let them run while I drift off. Mornings, same thing before I touch my phone.\n\nCurious — does anyone else time their affirmations to sleep/wake on purpose, or is it random for you?`],
-    ['Atomic Habits × The Secret', `The Secret told me WHAT (assume the feeling of the wish fulfilled). Atomic Habits told me HOW (identity-based habits, tiny reps). Nobody put them together for me, so I built my own system and my consistency finally fixed itself:\n\n- Pick the identity ("I am someone who…").\n- Attach ONE tiny daily rep to it (a 60-second visualization, one spoken affirmation).\n- Stack it on an existing habit (after coffee, before sleep).\n- Track the streak, not the outcome.\n\nThe magic wasn't believing harder — it was repeating smaller.\n\nWhat's one identity you're building right now?`],
-  ],
-  comments: [
-    'The thing that changed it for me was repetition over intensity — small daily reps beat one big emotional session. What does your daily practice actually look like right now?',
-    'Have you tried saying them out loud instead of writing? Hearing it in your own voice hits different — it skips the "yeah right" reflex.',
-    'Your RAS (the brain\'s filter) only lets in what you repeat and feel. So the fix is usually frequency, not willpower. How often are you actually doing it?',
-    'Generic affirmations off a list rarely stick — they have to be YOUR words, present tense, with the feeling attached. Want the 4-rule format I use?',
-    'Timing matters more than people think — right before sleep and right after waking, your critical filter is quiet. That\'s the window.',
-  ],
-  dms: [
-    `Hey! You asked about a tool for this — I actually built a free little thing that turns any goal into 3 solid "I AM" statements (no signup, nothing to buy): cosmicintentions.com/iam. Would genuinely love your honest take if you try it. 🙏`,
-  ],
-};
+let active='home';
+function renderMods(){ document.getElementById('mods').innerHTML=MODS.map(([k,l,c])=>`<button class="mod ${k===active?'on':''}" style="${k===active?`background:${c};border-color:${c}`:''}" onclick="go('${k}')">${l}</button>`).join(''); }
+function go(k){ active=k; renderMods(); render(); window.scrollTo(0,0); }
 
-// ─────────── GUARDRAILS ───────────
-function totals(){
-  let val=0, promo=0;
-  Object.values(S.days).forEach(x=>{ val += (x.comments||0) + (x.valuePosts||0); promo += (x.promos||0); });
-  return { val, promo, ratio: promo===0 ? Infinity : val/promo };
-}
-function canValuePost(){ return S.day>=8; }
-function canPromo(){ const t=totals(); return S.day>=11 && S.karma>=50 && t.ratio>=9; }
+// checklist section helper
+function checklist(items){ return items.map(([id,txt])=>`<div class="row ${ck(id)?'done':''}"><div class="chk ${ck(id)?'on':''}" onclick="toggle('${id}')">${ck(id)?'✓':''}</div><span class="t">${txt}</span></div>`).join(''); }
+function pct(ids){ const d=ids.filter(ck).length; return ids.length?Math.round(d/ids.length*100):0; }
+function copyT(id,btn){ const t=document.getElementById(id).textContent; navigator.clipboard?.writeText(t); const o=btn.textContent; btn.textContent='Copied ✓'; setTimeout(()=>btn.textContent=o,1200); }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); } function hash(s){let h=0;for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i);h|=0;}return h;}
+function tmpl(lbl,txt){const id='t'+Math.abs(hash(lbl+txt));return `<div class="tmpl"><div class="lbl">${lbl}</div><button class="btn ghost sm copy" onclick="copyT('${id}',this)">Copy</button><pre id="${id}">${esc(txt)}</pre></div>`;}
+function counter(k,label){return `<div class="box"><div style="font-size:12px;margin-bottom:6px;">${label}</div><div class="stepper"><button onclick="tr('${k}',-1)">–</button><span class="n">${S.tr[k]||0}</span><button onclick="tr('${k}',1)">+</button></div></div>`;}
 
-// ─────────── RENDER ───────────
-const TABS = [['today','Today'],['plan','14-Day Plan'],['subs','Subs'],['templates','Templates'],['log','Log']];
-let active = 'today';
-function renderTabs(){ document.getElementById('tabs').innerHTML = TABS.map(([k,l])=>`<button class="tab ${k===active?'on':''}" onclick="go('${k}')">${l}</button>`).join(''); }
-function go(k){ active=k; renderTabs(); render(); }
+// ═══════════ RENDER ═══════════
+function render(){ const v=document.getElementById('view');
+  v.innerHTML = ({home:homeV,social:socialV,email:emailV,reddit:redditV,ads:adsV,community:commV,metrics:metricsV}[active])(); }
 
-function render(){
-  const v = document.getElementById('view');
-  if(!S.started){ v.innerHTML = startView(); return; }
-  if(active==='today') v.innerHTML = todayView();
-  if(active==='plan') v.innerHTML = planView();
-  if(active==='subs') v.innerHTML = subsView();
-  if(active==='templates') v.innerHTML = tmplView();
-  if(active==='log') v.innerHTML = logView();
+// ---------- HOME / RUNWAY ----------
+const RUNWAY=[
+  ['rw1','Wk 1 (now) — Claim handles, bio, pixel installed, waitlist page live, first 4 videos, Reddit Day 0 setup'],
+  ['rw2','Wk 2 — Full 6-post video week; 5-email welcome sequence live; Reddit Days 1–7'],
+  ['rw3','Wk 3 — Push the free I AM generator hard; comment-to-DM videos; ~120 emails'],
+  ['rw4','Wk 4 — Founding-Member tease; join FB groups/subreddits (lurk); survey email'],
+  ['rw5','Wk 5 — July review, top-3 formats; first coach DMs; PDF magnet; ~250 emails'],
+  ['rw6','Wk 6 — Remix winners; first community value posts; ADS ON $15/day → generator'],
+  ['rw7','Wk 7 — Double down on winning format; Pinterest starts; swap losing ad creative'],
+  ['rw8','Wk 8 — Coach seeding round 2; 10 podcast pitches; 5-Night Reset live; ~600 emails'],
+  ['rw9','Wk 9 — "3 weeks out" countdown; film launch-week videos in advance; ~750 emails'],
+  ['rw10','Wk 10 — Daily countdown; Product Hunt assets; retargeting ads on; ~900–1,000 emails'],
+  ['rw11','Wk 11 — "Doors open Tuesday" everywhere; coaches primed; T-3 pricing-reveal email'],
+  ['rw12','LAUNCH WEEK — Product Hunt Tue, daily emails, 10 videos, Founding Member countdown → 100 paying'],
+];
+function homeV(){
+  const modProg=[['social',SOCIAL_IDS],['email',EMAIL_IDS],['ads',ADS_IDS],['community',COMM_IDS]];
+  return `<div class="card"><h2>🏁 The 12-week runway</h2>
+    <p class="lead">One-sentence strategy: post Mind-Loop videos daily → funnel to the free /iam generator → warm the list with email for 10 weeks → open 200 Founding seats to a list that already wants in.</p>
+    ${checklist(RUNWAY)}
+  </div>
+  <div class="card"><h2>Module progress</h2><div class="grid2">
+    ${modProg.map(([k,ids])=>{const p=pct(ids);const c=MODS.find(m=>m[0]===k)[2];return `<div class="modcard" onclick="go('${k}')"><div style="display:flex;justify-content:space-between;"><b>${MODS.find(m=>m[0]===k)[1]}</b><span class="muted">${p}%</span></div><div class="meter" style="margin-top:8px;"><div style="width:${p}%;background:${c};"></div></div></div>`;}).join('')}
+    <div class="modcard" onclick="go('reddit')"><div style="display:flex;justify-content:space-between;"><b>👽 Reddit</b><span class="muted">${S.reddit.started?'Day '+S.reddit.day+'/14':'not started'}</span></div><div class="p">14-day anti-ban system</div></div>
+    <div class="modcard" onclick="go('metrics')"><div style="display:flex;justify-content:space-between;"><b>📊 Metrics</b><span class="muted">${S.tr.emails} emails</span></div><div class="p">Target: 1,000 by Sept 1</div></div>
+  </div></div>
+  <div class="card"><h2>North-star numbers</h2><div class="grid2">
+    ${counter('emails','✉️ Waitlist emails (→1,000)')}
+    ${counter('followers','👥 Followers')}
+  </div></div>`;
 }
 
-function startView(){
-  return `<div class="card" style="text-align:center;padding:28px 18px;">
-    <div class="big" style="color:var(--brand);">Start your 14 days</div>
-    <p class="muted" style="margin:10px 0 18px;max-width:440px;margin-left:auto;margin-right:auto;">The rule that keeps you un-banned: for the first 10 days you are NOT launching anything. You're just the most helpful person in the manifestation subs. This system enforces that for you.</p>
-    <button class="btn" onclick="S.started=true;S.day=1;save();go('today')">Begin Day 1 →</button>
+// ---------- SOCIAL VIDEO ----------
+const SOCIAL_IDS=['so_h','so_bio','so_pic','so_link','so_pin','so_capcut','so_canva','so_buffer','so_batch','so_drip','so_engage','so_pinterest'];
+function socialV(){
+  return `<div class="card"><h2>📱 Social Video <span class="pill wait">PRIMARY CHANNEL</span></h2>
+    <p class="lead">TikTok (primary) + Instagram Reels + YouTube Shorts — same vertical video, three platforms. Your product demos in 15 seconds. This is the top of your entire funnel.</p>
+    <h3>Set up once</h3>
+    ${checklist([['so_h','Claim @cosmicintentions (or @cosmicintentionsapp) on TikTok, IG, YouTube, Pinterest — check namechk.com'],['so_bio','Write bio (outcome/persona/founder version) with ONE link'],['so_pic','Profile pic = app logo on cosmic gradient (not your face)'],['so_link','Link-in-bio → /iam generator (one link, not Linktree)'],['so_pin','Pin 3: "What is the Mind Loop?" demo · founder story · best performer'],['so_capcut','Install CapCut (auto-captions ON always)'],['so_canva','Canva (carousels + PDF magnet)'],['so_buffer','Buffer (schedule Reels + Shorts) — export WITHOUT watermark']])}
+    <h3>The weekly system (batch one day, drip all week)</h3>
+    ${checklist([['so_batch','Batch day (Sun/Mon): film 7–10 videos, write captions, schedule'],['so_drip','Daily drip: 30 min AM + 30 min PM — reply to every comment within the hour'],['so_engage','5 posts/week (3→5 as you warm up) across TikTok/Reels/Shorts'],['so_pinterest','(Wk 6) Pinterest: repurpose carousels, 15 min/wk']])}
+    <h3>5 content pillars</h3>
+    <div class="box"><div style="font-size:13px;line-height:1.9;">1. <b>Mind Loop Magic</b> (2/wk) — demo the core feature<br>2. <b>Manifestation Mechanics</b> (2/wk) — RAS, why generic affirmations fail<br>3. <b>Build-in-Public-Lite</b> (1/wk) — "I built the app I couldn't find"<br>4. <b>Relatable Melissa</b> (1–2/wk) — quit Headspace, 4 journals 0 finished<br>5. <b>Proof & Rituals</b> (1/wk) — your own daily use, streaks, wins</div></div>
+    <h3>5 viral hooks (first 3 seconds)</h3>
+    ${tmpl('Hook 1 — sleep','An AI voice is going to repeat my goals to me five hundred times tonight — while I\'m asleep.')}
+    ${tmpl('Hook 2 — repetition','You don\'t have a manifestation problem. You have a repetition problem. I can prove it.')}
+    ${tmpl('Hook 3 — demo','I typed "I want to make six figures" into this app — listen to what came back.')}
+    ${tmpl('Hook 4 — opposite','Headspace wants to empty your mind. I spent a year building the exact opposite.')}
+    ${tmpl('Hook 5 — the $10M series','Non-technical guy vibe-coded a manifestation app with AI. Goal: sell it for $10M. Day 1.')}
+    <h3>This week</h3><div class="grid2">${counter('videos','🎬 Videos posted this week')}${counter('followers','👥 Followers')}</div>
+    <p class="hint">Reset the weekly video count each Monday. The 30-day content calendar lives in CI_LAUNCH_KIT.md — want it built in here? Say so.</p>
   </div>`;
 }
 
-function todayView(){
-  const d=S.day, ph=phase(d), dd=dayData(d), t=totals();
-  const tasks = todayTasks(d);
-  const doneCount = tasks.filter(([id])=>dd.tasks[id]).length;
-  const ratioTxt = t.ratio===Infinity ? '∞ (no promo yet — perfect)' : t.ratio.toFixed(1)+' : 1';
-  const ratioOk = t.ratio>=9;
-  return `
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div><span class="pill wait">DAY ${d} / 14</span> <b style="margin-left:6px;">${ph.name}</b></div>
-      <div class="muted">${doneCount}/${tasks.length} today</div>
+// ---------- EMAIL ----------
+const EMAIL_IDS=['em_kit','em_page','em_iam','em_pdf','em_optin','em_manychat','em_welcome','em_launch','em_reset'];
+function emailV(){
+  return `<div class="card"><h2>✉️ Email List <span class="pill ok">THE LAUNCH</span></h2>
+    <p class="lead">Followers are borrowed; emails are owned. Every video's real job is an email address. Target: <b>1,000 by Sept 1.</b></p>
+    <h3>Set up</h3>
+    ${checklist([['em_kit','Create Kit (ConvertKit) free account'],['em_page','Waitlist page live (/early) — headline "Your goals. Your voice. On loop while you sleep."'],['em_iam','Free "I AM Statement Generator" live (/iam) ✅ built — push it in every video'],['em_pdf','"The I AM Blueprint" PDF magnet (Canva)'],['em_optin','Opt-in everywhere: bio link, IG Story sticker 3×/wk, "comment LOOP" videos'],['em_manychat','ManyChat free tier — comment-to-DM auto-sends the link']])}
+    <h3>Sequences (write once, automate)</h3>
+    ${checklist([['em_welcome','5-email WELCOME sequence (magnet → "why affirmations failed" → demo → 200-seat tease → survey)'],['em_launch','5-email LAUNCH sequence (T-3 pricing reveal → open → proof+FAQ → founder letter → final hours)'],['em_reset','(Aug) "5-Night Manifestation Reset" mini-course']])}
+    <h3>Growth tracker</h3>
+    <div class="box"><div style="font-size:12px;margin-bottom:6px;">✉️ Total waitlist emails — target 1,000 by Sept 1</div>
+      <div class="stepper"><button onclick="tr('emails',-10)">–</button><button onclick="tr('emails',-1)">–1</button><span class="n">${S.tr.emails}</span><button onclick="tr('emails',1)">+1</button><button onclick="tr('emails',10)">+10</button></div>
+      <div class="meter" style="margin-top:8px;"><div style="width:${Math.min(100,S.tr.emails/10)}%;background:var(--ok);"></div></div>
+      <div class="hint">${S.tr.emails}/1000 · ${Math.max(0,1000-S.tr.emails)} to go</div>
     </div>
-    <p class="hint" style="margin-top:8px;">${ph.note}</p>
-  </div>
-
-  <div class="card">
-    <h2>🛡 What you're cleared to do</h2>
-    <div class="row"><span class="pill ok">ALWAYS</span><span class="t">Comment value in your subs (this is the whole job)</span></div>
-    <div class="row"><span class="pill ${canValuePost()?'ok':'bad'}">${canValuePost()?'UNLOCKED':'LOCKED · Day 8'}</span><span class="t">Post value posts (method, no link)</span></div>
-    <div class="row"><span class="pill ${canPromo()?'ok':'bad'}">${canPromo()?'CLEARED':'LOCKED'}</span><span class="t">Drop your /iam link (promo thread only)</span></div>
-    ${!canPromo()?`<p class="hint">🔒 Link stays locked until: Day ≥ 11 (you're ${d}), karma ≥ 50 (you're ${S.karma}), and value:promo ratio ≥ 9:1 (you're ${ratioTxt}). Only in a sub's promo thread.</p>`:''}
-  </div>
-
-  <div class="card">
-    <h2>90/10 Ratio — your anti-ban meter</h2>
-    <div class="meter"><div style="width:${Math.min(100, t.ratio===Infinity?100:t.ratio/9*100)}%;background:${ratioOk?'var(--ok)':'var(--brand)'};"></div></div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;">
-      <span class="muted">${t.val} value contributions · ${t.promo} promo</span>
-      <b style="color:${ratioOk?'var(--ok)':'var(--brand)'}">${ratioTxt}</b>
-    </div>
-    <p class="hint">Keep this at 9:1 or higher. Every comment/value-post feeds it; every link/DM-with-link spends it.</p>
-  </div>
-
-  <div class="card">
-    <h2>Today's routine</h2>
-    ${tasks.map(([id,txt])=>`<div class="row ${dd.tasks[id]?'done':''}"><div class="chk ${dd.tasks[id]?'on':''}" onclick="toggleTask('${id}')">${dd.tasks[id]?'✓':''}</div><span class="t">${txt}</span></div>`).join('')}
-  </div>
-
-  <div class="card">
-    <h2>Log today's numbers</h2>
-    <div class="grid2">
-      ${counter('comments','💬 Comments', dd.comments)}
-      ${counter('upvotes','⬆️ Upvotes given', dd.upvotes)}
-      ${counter('valuePosts','✍️ Value posts', dd.valuePosts)}
-      ${counter('promos','📣 Promo/link drops', dd.promos)}
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
-      <span class="muted">Your comment karma:</span>
-      <div class="stepper"><button onclick="karma(-10)">–</button><span class="n">${S.karma}</span><button onclick="karma(10)">+</button></div>
-    </div>
-    <div style="margin-top:14px;display:flex;gap:8px;">
-      <button class="btn" onclick="advance()">✓ Finish Day ${d} → Day ${d+1}</button>
-      ${d>1?`<button class="btn ghost sm" onclick="S.day--;save();render()">← back a day</button>`:''}
-    </div>
-    <p class="hint">Advance only when you've actually done the reps — the day-gates protect you.</p>
-  </div>`;
-}
-function counter(k,label,val){
-  return `<div class="subcard"><div style="font-size:12px;margin-bottom:6px;">${label}</div>
-    <div class="stepper"><button onclick="bump('${k}',-1)">–</button><span class="n">${val}</span><button onclick="bump('${k}',1)">+</button></div></div>`;
-}
-function toggleTask(id){ const dd=dayData(S.day); dd.tasks[id]=!dd.tasks[id]; save(); render(); }
-function bump(k,n){ const dd=dayData(S.day); dd[k]=Math.max(0,(dd[k]||0)+n); save(); render(); }
-function karma(n){ S.karma=Math.max(0,S.karma+n); save(); render(); }
-function advance(){ const dd=dayData(S.day); S.log.push({day:S.day, comments:dd.comments, upvotes:dd.upvotes, posts:dd.valuePosts, promos:dd.promos}); if(S.day<14)S.day++; save(); render(); }
-
-function planView(){
-  const items = [
-    [0,'Setup','Username ✅ · bio · avatar · join 6 subs · read every sub\'s rules · ZERO posts'],
-    [1,'Warm-up','Comment routine — warm-up subs only. Build karma.'],
-    [2,'Warm-up','Same. Feel what gets upvoted.'],
-    [3,'Warm-up','Goal: ~50 comment karma.'],
-    [4,'Core','Add manifestation subs. Answer with methods. No self-mention.'],
-    [5,'Core','Plant the concept: repetition, RAS, own-voice affirmations.'],
-    [6,'Core','Save every comment that pops → future posts.'],
-    [7,'Core','You\'re now a known face in-niche.'],
-    [8,'Value posts','First VALUE post (method, no link). End with a question.'],
-    [9,'Value posts','Comment routine only (space the posts).'],
-    [10,'Value posts','2nd value post. Offer DMs when asked.'],
-    [11,'Compound','Find promo threads. First permitted /iam mention there.'],
-    [12,'Compound','Value post + keep commenting.'],
-    [13,'Compound','DM everyone who asked earlier.'],
-    [14,'Ship','You\'re a helpful regular with traction + a DM list → waitlist.'],
-  ];
-  return `<div class="card"><h2>The 14-Day Ramp</h2>
-    ${items.map(([n,tag,txt])=>{
-      const st = n<S.day?'done':(n===S.day?'now':'lock');
-      const badge = st==='done'?'<span class="badge" style="background:var(--ok);color:#0a0a0a;">DONE</span>':st==='now'?'<span class="badge" style="background:var(--brand);color:#1a1206;">TODAY</span>':'<span class="badge" style="background:var(--line);color:var(--mut);">Day '+n+'</span>';
-      return `<div class="day-item ${st==='lock'?'locked':''}">${badge}<div><b>${tag}</b> — <span class="muted">${txt}</span></div></div>`;
-    }).join('')}
+    <h3>Launch-day post</h3>
+    ${tmpl('Launch announcement','DOORS ARE OPEN. 🌙 Six months ago I started building the app I couldn\'t find: one that takes YOUR goals, turns them into "I AM" statements in a calm AI voice, and loops them to your subconscious while you sleep. Today, Cosmic Intentions is live. 7-day free trial. First 200 only: Founding Member lifetime — one payment, yours forever. Link in bio. In the comments all day. 🚀')}
   </div>`;
 }
 
-function subsView(){
-  return `<div class="card"><h2>Subreddit cheat sheet</h2><p class="hint" style="margin-bottom:12px;">Promo = instant ban risk. Only ever post links where the column says a promo thread exists — and only after Day 11.</p>
-  ${['Warm-up','Core','Devout'].map(tier=>`
-    <h3>${tier}</h3>
-    ${SUBS.filter(s=>s.tier===tier).map(s=>`<div class="subcard" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <div><div class="name">${s.n}</div><div class="muted" style="font-size:12px;">Promo: ${s.promo}</div></div>
-      <a href="${s.url}" target="_blank">open ↗</a></div>`).join('')}
-  `).join('')}
+// ---------- META ADS (with readiness gate) ----------
+const ADS_IDS=['ad_conv','ad_pixel','ad_organic','ad_camp','ad_target','ad_retarget'];
+function adsReady(){ return ck('ad_conv')&&ck('ad_pixel')&&ck('ad_organic'); }
+function adsV(){
+  const ready=adsReady();
+  return `<div class="card"><h2>📣 Meta Ads <span class="pill ${ready?'ok':'bad'}">${ready?'CLEARED TO SPEND':'LOCKED'}</span></h2>
+    <p class="lead">Meta (Instagram) first — Melissa 28–45 is Meta's sweet spot and it's the most beginner-proof. NOT Reddit (that audience hates ads — keep Reddit organic). Start ~week 6.</p>
+    <h3>🛡 Readiness — ALL must be true before you spend a dollar</h3>
+    ${checklist([['ad_conv','Landing page converts ≥25% of visitors to email (test with organic first)'],['ad_pixel','Meta Pixel installed on the site (do this Week 1 — builds audience while you wait)'],['ad_organic','You have ≥1 organic video clearly beating your average (that\'s your ad creative)']])}
+    ${!ready?`<div class="box" style="border-color:var(--bad);"><span class="pill bad">🔒 LOCKED</span> <span class="muted">Don't run ads until all 3 above are checked. July ads = burning money to learn what organic teaches free.</span></div>`:`<div class="box" style="border-color:var(--ok);"><span class="pill ok">✅ GO</span> <span class="muted">You're ready. Launch the first campaign below.</span></div>`}
+    <h3 class="${ready?'':'locked'}">First campaign ${ready?'':'(unlocks when ready)'}</h3>
+    <div class="${ready?'':'locked'}">${checklist([['ad_camp','Objective = Leads (email signups). 1 campaign → 1 ad set → 3 ads (best organic videos, no watermark). $15/day'],['ad_target','Advantage+ audience: Women 28–50, US/CA/UK/AU · interests: manifestation, law of attraction, Mel Robbins, Jay Shetty, Atomic Habits, Headspace · destination = /iam'],['ad_retarget','(Sept 1) Retargeting ad set $5/day → visitors + video-viewers + IG engagers · Founding Member scarcity creative']])}</div>
+    <h3>Benchmarks & the 3 money-wasters</h3>
+    <div class="box"><div style="font-size:13px;line-height:1.8;">✅ Cost per lead <b>$1.50–$3.50</b> = good (under $1.50 → scale to $25/day; over $5 after 300 clicks → swap creative).<br>❌ Don't touch it daily (editing restarts learning — wait 5–7 days).<br>❌ Don't "Boost Post" for vanity — always Ads Manager + Leads objective.<br>❌ Don't run cold ads to a Buy-Now page — cold → generator → email → nurture → launch.</div></div>
+    <h3>Tracker</h3><div class="grid2">
+      <div class="box"><div style="font-size:12px;margin-bottom:6px;">💵 Daily budget ($)</div><div class="stepper"><button onclick="tr('adBudget',-5)">–</button><span class="n">$${S.tr.adBudget||0}</span><button onclick="tr('adBudget',5)">+</button></div></div>
+      <div class="box"><div style="font-size:12px;margin-bottom:6px;">🎯 Cost per lead ($)</div><div class="stepper"><button onclick="tr('cpl',-1)">–</button><span class="n">$${S.tr.cpl||0}</span><button onclick="tr('cpl',1)">+</button></div></div>
+    </div>
   </div>`;
 }
 
-function tmplView(){
-  return `<div class="card"><h2>Value posts <span class="muted" style="font-size:12px;">(Day 8+)</span></h2>
-    ${TEMPLATES.posts.map(([lbl,txt])=>tmpl(lbl,txt)).join('')}
-  </div>
-  <div class="card"><h2>Comment openers</h2><p class="hint" style="margin-bottom:10px;">Adapt — never paste identically twice.</p>
-    ${TEMPLATES.comments.map((c,i)=>tmpl('Opener '+(i+1),c)).join('')}
-  </div>
-  <div class="card"><h2>DM script <span class="muted" style="font-size:12px;">(only when they ask)</span></h2>
-    ${TEMPLATES.dms.map((c,i)=>tmpl('DM',c)).join('')}
+// ---------- COMMUNITY ----------
+const COMM_IDS=['co_fb','co_give','co_coaches','co_dm','co_ph','co_pod'];
+function commV(){
+  return `<div class="card"><h2>🤝 Community & Grassroots</h2>
+    <p class="lead">Give-first everywhere. The selling happens TO you (people asking), never FROM you. (Reddit has its own module — this is FB groups, coaches, Product Hunt, podcasts.)</p>
+    <h3>Facebook groups</h3>
+    ${checklist([['co_fb','Join 5 biggest + 3 mid-size manifestation/LOA/Lucky-Girl/Mel-Robbins groups'],['co_give','Give-first (9:1): value posts sharing the METHOD; use "Promo Friday" threads only']])}
+    <h3>Coach / micro-influencer seeding</h3>
+    ${checklist([['co_coaches','Find 30 manifestation coaches (5k–50k followers)'],['co_dm','DM 10/week — offer a free lifetime Founding account, no strings']])}
+    ${tmpl('Coach outreach DM','Hi [Name]! I\'ve been following your work on [specific thing] and it genuinely shifted how I think about [thing]. I\'m a solo founder launching Cosmic Intentions in September — it turns your clients\' goals into "I AM" audio loops in a calm AI voice (sleep mode + impressions counter). I\'d love to gift you a lifetime Founding account — zero strings, I just think you\'d have sharp feedback. Want me to send access?')}
+    <h3>Product Hunt + PR</h3>
+    ${checklist([['co_ph','Product Hunt: prep 5 gallery images + 60-sec demo + first-comment story → launch Tuesday, email list at 9am'],['co_pod','Pitch 10 small manifestation/self-improvement podcasts (Aug)']])}
   </div>`;
 }
-function tmpl(lbl,txt){ const id='t'+Math.abs(hash(txt)); return `<div class="tmpl"><div class="lbl">${lbl}</div><button class="btn ghost sm copy" onclick="copyT('${id}',this)">Copy</button><pre id="${id}">${esc(txt)}</pre></div>`; }
-function copyT(id,btn){ const t=document.getElementById(id).textContent; navigator.clipboard?.writeText(t); const o=btn.textContent; btn.textContent='Copied ✓'; setTimeout(()=>btn.textContent=o,1300); }
 
-function logView(){
-  const rows = S.log.slice().reverse();
-  return `<div class="card"><h2>Your log</h2>
-    ${rows.length?`<table><tr><th>Day</th><th>Comments</th><th>Upvotes</th><th>Posts</th><th>Promo</th></tr>
-    ${rows.map(r=>`<tr><td>${r.day}</td><td>${r.comments}</td><td>${r.upvotes}</td><td>${r.posts}</td><td>${r.promos}</td></tr>`).join('')}</table>`
-    :'<p class="muted">Finish a day to log it. This is your paper trail — and the "best comment topic" is your future content pipeline.</p>'}
+// ---------- METRICS ----------
+function metricsV(){
+  const rows=S.weekly.slice().reverse();
+  return `<div class="card"><h2>📊 Metrics — the only numbers that matter</h2>
+    <div class="box"><div style="font-size:13px;line-height:1.9;">⭐ <b>Email signups/day</b> (8→15–20) · Landing conversion % (≥25% social) · Follower growth/wk · Best video/wk · Engagement rate (>6%=make more) · Cost per lead (<$3.50) · Email open rate (>40%)</div></div>
+    <h3>Log this week (Friday, 20 min)</h3>
+    <div class="grid2" style="margin-bottom:10px;">
+      <input id="mk_wk" type="number" placeholder="Week #">
+      <input id="mk_em" type="number" placeholder="Emails this week">
+      <input id="mk_fo" type="number" placeholder="Followers gained">
+      <input id="mk_cpl" type="number" placeholder="Cost/lead ($)">
+    </div>
+    <input id="mk_note" placeholder="Best video / what I'll change" style="width:100%;margin-bottom:10px;">
+    <button class="btn sm" onclick="logWeek()">+ Log week</button>
+    ${rows.length?`<table style="margin-top:14px;"><tr><th>Wk</th><th>Emails</th><th>Followers</th><th>CPL</th><th>Note</th></tr>${rows.map(r=>`<tr><td>${r.wk}</td><td>${r.em}</td><td>${r.fo}</td><td>$${r.cpl}</td><td>${esc(r.note||'')}</td></tr>`).join('')}</table>`:'<p class="hint" style="margin-top:12px;">No weeks logged yet. The "what I\'ll change" note is your strategy engine.</p>'}
   </div>
-  <div class="card"><h2>Reset</h2><button class="btn ghost sm" onclick="if(confirm('Wipe all progress and start over?')){localStorage.removeItem(KEY);S=load();go('today');}">Start over</button></div>`;
+  <div class="card"><h2>Reset</h2><button class="btn ghost sm" onclick="if(confirm('Wipe ALL Launch OS progress?')){localStorage.removeItem(KEY);S=load();go('home');}">Start over</button></div>`;
 }
+function logWeek(){ const g=id=>document.getElementById(id).value;
+  S.weekly.push({wk:g('mk_wk'),em:g('mk_em'),fo:g('mk_fo'),cpl:g('mk_cpl'),note:g('mk_note')}); save(); render(); }
 
-function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
-function hash(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h<<5)-h+s.charCodeAt(i); h|=0; } return h; }
+// ═══════════ REDDIT MODULE (rich engine) ═══════════
+let rtab='today';
+const R_SUBS=[
+  ['r/DecidingToBeBetter','Warm-up','Rare — comment only','https://reddit.com/r/DecidingToBeBetter'],
+  ['r/getdisciplined','Warm-up','Sunday progress thread only','https://reddit.com/r/getdisciplined'],
+  ['r/selfimprovement','Warm-up','No self-promo — comment only','https://reddit.com/r/selfimprovement'],
+  ['r/lawofattraction','Core','Check weekly thread; be careful','https://reddit.com/r/lawofattraction'],
+  ['r/Manifestation','Core','Check rules; DM-when-asked','https://reddit.com/r/Manifestation'],
+  ['r/LawOfAssumption','Core','Very strict — read pinned','https://reddit.com/r/LawOfAssumption'],
+  ['r/NevilleGoddard','Devout','NEVER promote. Pure value only.','https://reddit.com/r/NevilleGoddard'],
+];
+function rPhase(d){ if(d<=3)return{n:'Warm-up',note:'Comment in WARM-UP subs only. Build karma. Zero self-mention.'}; if(d<=7)return{n:'Core niche',note:'Add manifestation subs. Answer with METHODS. Still zero self-mention.'}; if(d<=10)return{n:'Value posts',note:'POST value (every other day). Method only, no link. Offer DM when asked.'}; return{n:'Compound',note:'Use promo threads for your /iam link. DM the people who asked.'}; }
+function rTasks(d){ const b=[['m1','☀️ Scan 6 subs (New) — open 5–6 answerable questions'],['m2','☀️ Write 3 substantive comments (no links)'],['m3','☀️ Upvote 10 in-niche'],['e1','🌙 Write 2 more comments (reply-depth)'],['e2','🌙 Reply to anyone who responded'],['e3','🌙 Log the day + best comment topic']]; if(d>=8)b.splice(3,0,['vp','✍️ (every other day) VALUE post — method only, no link']); if(d>=11)b.push(['pr','📣 /iam link in a PROMO THREAD only + DM earlier asks']); return b; }
+function rDay(d){ const R=S.reddit; if(!R.days[d])R.days[d]={tasks:{},comments:0,upvotes:0,valuePosts:0,promos:0}; return R.days[d]; }
+function rTotals(){ let val=0,promo=0; Object.values(S.reddit.days).forEach(x=>{val+=(x.comments||0)+(x.valuePosts||0);promo+=(x.promos||0);}); return{val,promo,ratio:promo===0?Infinity:val/promo}; }
+function rCanPromo(){ const t=rTotals(); return S.reddit.day>=11&&S.reddit.karma>=50&&t.ratio>=9; }
+function redditV(){
+  if(!S.reddit.started) return `<div class="card" style="text-align:center;padding:26px;"><div style="font-size:26px;font-weight:800;color:#FF6b6b;">Reddit — 14-day system</div><p class="muted" style="margin:10px auto 18px;max-width:440px;">For the first 10 days you are NOT launching anything. You're just the most helpful person in the manifestation subs. This enforces it.</p><button class="btn" onclick="S.reddit.started=true;S.reddit.day=1;save();render()">Begin Day 1 →</button></div>`;
+  const RT=[['today','Today'],['plan','14-Day'],['subs','Subs'],['templates','Templates']];
+  const tabsHtml=`<div class="mods" style="margin-top:0;">${RT.map(([k,l])=>`<button class="mod ${k===rtab?'on':''}" style="${k===rtab?'background:#FF6b6b;border-color:#FF6b6b':''}" onclick="rgo('${k}')">${l}</button>`).join('')}</div>`;
+  let body='';
+  if(rtab==='today'){ const d=S.reddit.day,ph=rPhase(d),dd=rDay(d),t=rTotals(),tasks=rTasks(d),rt=t.ratio===Infinity?'∞ (perfect)':t.ratio.toFixed(1)+':1',ok=t.ratio>=9;
+    body=`<div class="card"><div style="display:flex;justify-content:space-between;"><div><span class="pill wait">DAY ${d}/14</span> <b>${ph.n}</b></div></div><p class="hint">${ph.note}</p></div>
+    <div class="card"><h2>🛡 Cleared to do</h2>
+      <div class="row"><span class="pill ok">ALWAYS</span><span class="t">Comment value (the whole job)</span></div>
+      <div class="row"><span class="pill ${d>=8?'ok':'bad'}">${d>=8?'UNLOCKED':'LOCKED · Day 8'}</span><span class="t">Post value posts (no link)</span></div>
+      <div class="row"><span class="pill ${rCanPromo()?'ok':'bad'}">${rCanPromo()?'CLEARED':'LOCKED'}</span><span class="t">Drop /iam link (promo thread only)</span></div>
+      ${!rCanPromo()?`<p class="hint">🔒 Unlocks at Day ≥11 (you're ${d}), karma ≥50 (${S.reddit.karma}), ratio ≥9:1 (${rt}).</p>`:''}</div>
+    <div class="card"><h2>90/10 ratio meter</h2><div class="meter"><div style="width:${Math.min(100,t.ratio===Infinity?100:t.ratio/9*100)}%;background:${ok?'var(--ok)':'var(--brand)'};"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;"><span class="muted">${t.val} value · ${t.promo} promo</span><b style="color:${ok?'var(--ok)':'var(--brand)'}">${rt}</b></div></div>
+    <div class="card"><h2>Today's routine</h2>${tasks.map(([id,txt])=>`<div class="row ${dd.tasks[id]?'done':''}"><div class="chk ${dd.tasks[id]?'on':''}" onclick="rTask('${id}')">${dd.tasks[id]?'✓':''}</div><span class="t">${txt}</span></div>`).join('')}</div>
+    <div class="card"><h2>Log numbers</h2><div class="grid2">
+      ${rCount('comments','💬 Comments')}${rCount('upvotes','⬆️ Upvotes')}${rCount('valuePosts','✍️ Value posts')}${rCount('promos','📣 Promo drops')}</div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;"><span class="muted">Comment karma:</span><div class="stepper"><button onclick="rKarma(-10)">–</button><span class="n">${S.reddit.karma}</span><button onclick="rKarma(10)">+</button></div></div>
+      <div style="margin-top:14px;"><button class="btn" onclick="rAdvance()">✓ Finish Day ${d} → ${d+1}</button></div></div>`;
+  }
+  if(rtab==='plan'){ const items=[[0,'Setup','Username ✅ · bio · avatar · join 6 subs · read rules · ZERO posts'],[1,'Warm-up','Comment routine — warm-up subs only'],[2,'Warm-up','Feel what gets upvoted'],[3,'Warm-up','Goal ~50 karma'],[4,'Core','Add manifestation subs; methods only'],[5,'Core','Plant the concept: repetition, RAS, own-voice'],[6,'Core','Save comments that pop'],[7,'Core','You\'re a known face'],[8,'Value','First value post + offer DMs'],[9,'Value','Comment only (space posts)'],[10,'Value','2nd value post'],[11,'Compound','First /iam mention in promo threads'],[12,'Compound','Value post + comment'],[13,'Compound','DM everyone who asked'],[14,'Ship','Helpful regular + DM list → waitlist']];
+    body=`<div class="card"><h2>The 14-day ramp</h2>${items.map(([n,tag,txt])=>{const st=n<S.reddit.day?'done':(n===S.reddit.day?'now':'lock');const b=st==='done'?'<span class="badge" style="background:var(--ok);color:#0a0a0a;">DONE</span>':st==='now'?'<span class="badge" style="background:#FF6b6b;color:#fff;">TODAY</span>':'<span class="badge" style="background:var(--line);color:var(--mut);">Day '+n+'</span>';return `<div class="day-item ${st==='lock'?'locked':''}">${b}<div><b>${tag}</b> — <span class="muted">${txt}</span></div></div>`;}).join('')}</div>`; }
+  if(rtab==='subs'){ body=`<div class="card"><h2>Subreddit cheat sheet</h2><p class="hint" style="margin-bottom:10px;">Only post links where a promo thread exists — and only after Day 11.</p>${['Warm-up','Core','Devout'].map(tier=>`<h3>${tier}</h3>${R_SUBS.filter(s=>s[1]===tier).map(s=>`<div class="box" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div><b>${s[0]}</b><div class="muted" style="font-size:12px;">Promo: ${s[2]}</div></div><a href="${s[3]}" target="_blank">open ↗</a></div>`).join('')}`).join('')}</div>`; }
+  if(rtab==='templates'){ body=`<div class="card"><h2>Value posts (Day 8+)</h2>
+    ${tmpl('Own-voice affirmations','I stopped writing affirmations and started recording myself saying them out loud — and it finally clicked. The 4 rules that made the difference: 1) present tense, as if already true; 2) first person + positive; 3) include the FEELING; 4) play them in YOUR voice, on repeat, before sleep. Repetition is the whole game. What\'s worked for you?')}
+    ${tmpl('The 3am window','You manifest better right before sleep and after waking — that\'s theta state, when the RAS is quiet and repetition sinks deeper. I replay my goals as "I am" statements as I drift off. Does anyone else time affirmations to sleep on purpose?')}
+    ${tmpl('Atomic Habits × The Secret','The Secret told me WHAT; Atomic Habits told me HOW. I merged them and my consistency fixed itself: pick the identity, attach ONE tiny daily rep, stack it on an existing habit, track the streak not the outcome. What identity are you building?')}
+    <h2>Comment openers</h2>
+    ${tmpl('Opener','The thing that changed it for me was repetition over intensity — small daily reps beat one big session. What does your daily practice look like?')}
+    ${tmpl('Opener','Have you tried saying them out loud instead of writing? Hearing it in your own voice skips the "yeah right" reflex.')}
+    <h2>DM (only when asked)</h2>
+    ${tmpl('DM','Hey! You asked about a tool — I built a free thing that turns any goal into 3 solid "I AM" statements (no signup): cosmicintentions.com/iam. Would love your honest take. 🙏')}
+  </div>`; }
+  return tabsHtml+body;
+}
+function rgo(k){ rtab=k; render(); }
+function rCount(k,l){ const dd=rDay(S.reddit.day); return `<div class="box"><div style="font-size:12px;margin-bottom:6px;">${l}</div><div class="stepper"><button onclick="rBump('${k}',-1)">–</button><span class="n">${dd[k]||0}</span><button onclick="rBump('${k}',1)">+</button></div></div>`; }
+function rTask(id){ const dd=rDay(S.reddit.day); dd.tasks[id]=!dd.tasks[id]; save(); render(); }
+function rBump(k,n){ const dd=rDay(S.reddit.day); dd[k]=Math.max(0,(dd[k]||0)+n); save(); render(); }
+function rKarma(n){ S.reddit.karma=Math.max(0,S.reddit.karma+n); save(); render(); }
+function rAdvance(){ const dd=rDay(S.reddit.day); S.reddit.log.push({day:S.reddit.day,...dd}); if(S.reddit.day<14)S.reddit.day++; save(); render(); }
 
-renderTabs(); render();
+renderMods(); render();
 </script>
 </body>
 </html>
