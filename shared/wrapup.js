@@ -64,7 +64,8 @@ export async function wrapPromoteToGoal(idx, id) {
   let title = (t.text || '').trim().slice(0, 150);
   if (!title) return;
   if (!title.toLowerCase().startsWith('i am')) title = 'I AM ' + title;
-  intentions.push({
+  // unshift → the promoted goal lands at the TOP of the goals list (first position).
+  intentions.unshift({
     id: crypto.randomUUID(), title,
     startDate: '', targetDate: '', category: '',
     words: { mission: '', affirmations: '', beliefs: '', quotes: '', insights: '' },
