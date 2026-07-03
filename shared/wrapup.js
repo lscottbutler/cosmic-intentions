@@ -1,6 +1,6 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { RM_CIRCLE, LOCK_OPEN, LOCK_CLOSED } from './card-builder.js';
-import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -33,6 +33,24 @@ export function wrapDeleteAction(id) {
   _saveWrapActs(_wrapActs().filter(x => x.id !== id)); renderWrapup();
 }
 
+/* Add a custom action to a specific goal FROM the "Today I Will" card.
+   Writes to that goal's roadmapAI.userTasks (same store the Pegboard uses),
+   then re-renders the wrap-up so it shows immediately. */
+export function wrapGoalAddAction(idx) {
+  const input = document.getElementById(`wrapGoalInput-${idx}`);
+  const text = (input?.value || '').trim();
+  if (!text) return;
+  const it = intentions[idx];
+  if (!it) return;
+  if (!it.roadmapAI) it.roadmapAI = { intention: it.title || '', tasks: [], userTasks: [] };
+  const r = it.roadmapAI;
+  if (!Array.isArray(r.userTasks)) r.userTasks = [];
+  if (r.userTasks.length >= 25) { toast('Max 25 of your own actions per goal.', 'error'); return; }
+  r.userTasks.push({ id: Date.now(), text: text.slice(0, 160), done: false });
+  saveIntentions();
+  renderWrapup();
+}
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -46,8 +64,32 @@ function _todayChecklist() {
     const dones = it.roadmapAI.done || {};
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
     const locks = it.roadmapAI.locks || {};
-    // Each goal is a collapsible dropdown: the colored title is the summary,
-    // its AI tasks are hidden until expanded.
+    const uTasks = Array.isArray(it.roadmapAI.userTasks) ? it.roadmapAI.userTasks : [];
+    // Each goal is a collapsible dropdown. When OPENED it reveals, in order:
+    //   1) an "add your own action" box for THIS goal,
+    //   2) the custom actions you've already added, then
+    //   3) the goal's daily tracker (proven / AI) actions.
+
+    // 1) Add-your-own-action box — scoped to this goal.
+    const addBox = `<div style="display:flex;gap:6px;margin:2px 0 10px;">
+      <input id="wrapGoalInput-${idx}" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter')wrapGoalAddAction(${idx})"
+        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);">
+      <button onclick="wrapGoalAddAction(${idx})"
+        style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+    </div>`;
+
+    // 2) Your own custom actions for this goal (survive AI regenerate).
+    let userHtml = '';
+    uTasks.forEach(u => {
+      const d = !!u.done; total++; if (d) done++;
+      userHtml += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+        <button onclick="deleteRoadmapUserTask(${idx},${u.id})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#8a8a8a' : '#ddd'};${d ? 'text-decoration:line-through;' : ''}">${esc(u.text)}</span>
+        <button onclick="toggleRoadmapUserTaskDone(${idx},${u.id})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
+      </div>`;
+    });
+
+    // 3) Daily tracker tasks — the goal's proven / AI actions.
     let tasksHtml = '';
     it.roadmapAI.tasks.forEach((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i]; total++; if (d) done++;
@@ -58,11 +100,12 @@ function _todayChecklist() {
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
       </div>`;
     });
+
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
       <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
-      <div style="padding-top:6px;">${tasksHtml}</div>
+      <div style="padding-top:6px;">${addBox}${userHtml}${tasksHtml}</div>
     </details>`;
   });
   return { rows, total, done };
@@ -170,35 +213,22 @@ export function renderWrapup() {
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
   const chk    = _todayChecklist();
 
-  // Free-standing "add your own action" box, shown directly under the checklist header.
-  const acts = _wrapActs();
-  const actionsBlock = `
-    ${acts.map(t => `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
-      <button onclick="wrapDeleteAction(${t.id})" title="Delete" style="${RM_CIRCLE}font-size:14px;">✕</button>
-      <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${t.done ? '#8a8a8a' : '#ddd'};${t.done ? 'text-decoration:line-through;' : ''}">${esc(t.text)}</span>
-      <button onclick="wrapToggleAction(${t.id})" title="${t.done ? 'Undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${t.done ? '✓' : '○'}</button>
-    </div>`).join('')}
-    <div style="display:flex;gap:6px;margin:6px 0 12px;">
-      <input id="wrapActionInput" type="text" maxlength="160" placeholder="Add your own action…" onkeydown="if(event.key==='Enter')wrapAddAction()"
-        style="flex:1;min-width:0;background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:12px;color:var(--text);">
-      <button onclick="wrapAddAction()"
-        style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
-    </div>`;
-
   // TODAY I WILL — its own card, placed between the Morning & Day run-through cards.
+  // The "add your own action" box now lives INSIDE each goal dropdown (see _todayChecklist),
+  // so it only appears once you open a goal — not floating at the top.
   const todayEl = document.getElementById('todayWillWidget');
   if (todayEl) {
     todayEl.innerHTML = chk ? `
       <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
-            <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL — TICK WHAT YOU DID</span>
+            <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL TAKE THE FOLLOWING ACTIONS</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
               <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${chk.done}/${chk.total} done</span>
               <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
             </span>
           </summary>
-          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${actionsBlock}${chk.rows}</div>
+          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${chk.rows}</div>
         </details>
       </div>` : '';
   }
@@ -223,4 +253,7 @@ export function renderWrapup() {
 }
 
 // Let card-builder re-render the wrap-up after a lock/delete (avoids an import cycle).
-if (typeof window !== 'undefined') window.renderWrapup = renderWrapup;
+if (typeof window !== 'undefined') {
+  window.renderWrapup = renderWrapup;
+  window.wrapGoalAddAction = wrapGoalAddAction;   // inline onclick in the Today-I-Will goal boxes
+}

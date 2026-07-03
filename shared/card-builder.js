@@ -228,6 +228,7 @@ export function toggleRoadmapTaskDone(idx, i) {
   setTaskWin(`task-${idx}-${i}`, `✓ ${r.tasks[i] || ''}`, done, { goal: it?.title || '', category: it?.category || '' });   // log/remove the win + momentum
   const panel = document.getElementById(`panel-roadmap-ai-${idx}`);
   if (panel) panel.innerHTML = renderRoadmapAI(r, idx);
+  if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // Today-I-Will card shows the same rows
 }
 
 /* ── USER-ADDED ROADMAP TASKS (up to 25/goal) ─────────────
@@ -261,6 +262,7 @@ export function toggleRoadmapUserTaskDone(idx, id) {
   saveIntentions();
   setTaskWin(`task-${idx}-u${id}`, `✓ ${t.text}`, t.done, { goal: it?.title || '', category: it?.category || '' });
   _rerenderRoadmap(idx, r);
+  if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // Today-I-Will card shows the same rows
 }
 export function deleteRoadmapUserTask(idx, id) {
   const r = intentions[idx]?.roadmapAI;
@@ -269,6 +271,7 @@ export function deleteRoadmapUserTask(idx, id) {
   r.userTasks = r.userTasks.filter(x => x.id !== id);
   saveIntentions();
   _rerenderRoadmap(idx, r);
+  if (typeof window !== 'undefined' && window.renderWrapup) window.renderWrapup();   // Today-I-Will card shows the same rows
 }
 
 /* Delete an AI/proven task. done & locks are keyed by task index, so we clear
