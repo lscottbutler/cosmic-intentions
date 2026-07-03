@@ -76,7 +76,7 @@ export function pbAddHabit() {
   if (!name) return;
   const sel = document.getElementById('pbNewHabitCat');
   const list = getHabitList();
-  list.push({ id: _newId(), name: name.slice(0, 40), cat: sel ? sel.value : '' });
+  list.push({ id: _newId(), name: name.slice(0, 160), cat: sel ? sel.value : '' });
   _saveList(list);
   if (inp) inp.value = '';
   _refresh();
@@ -85,7 +85,7 @@ export function pbSaveHabitName(id, val) {
   const list = getHabitList();
   const h = list.find(x => x.id === id);
   if (!h) return;
-  h.name = (val || '').trim().slice(0, 40) || h.name;
+  h.name = (val || '').trim().slice(0, 160) || h.name;
   _saveList(list);
   renderHabits();
 }
@@ -199,7 +199,7 @@ export function renderPBHabitList() {
     items.forEach((h, gi) => {
       html += `
       <div style="background:#2E2E2E;padding:11px 12px;border-radius:10px;margin-bottom:8px;">
-        <textarea maxlength="60" rows="2" onchange="pbSaveHabitName('${h.id}',this.value)"
+        <textarea maxlength="160" rows="2" onchange="pbSaveHabitName('${h.id}',this.value)"
           style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:vertical;min-height:62px;margin-bottom:8px;">${esc(h.name)}</textarea>
         <div style="display:flex;gap:8px;align-items:center;">
           <button onclick="pbMoveHabit('${h.id}',-1)" title="Move up"   style="${arrow}${gi === 0 ? 'opacity:.3;pointer-events:none;' : ''}">▲</button>
