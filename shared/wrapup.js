@@ -137,7 +137,7 @@ function _todayChecklist() {
 
     // GOAL BOX (per-goal view): your own actions only.
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
-      <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">
+      <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
       <div style="padding-top:6px;">${userHtml}${addBox}</div>
@@ -145,10 +145,10 @@ function _todayChecklist() {
 
     // MY TASK LIST group: your own actions + proven actions, visually separated.
     fullRows += `<div style="margin:12px 0 6px;">
-      <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;">◎ ${esc(it.title)}</div>
-      ${userHtml ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#888;letter-spacing:1px;margin:9px 2px 4px;">✎ MY OWN ACTIONS</div>${userHtml}` : ''}
+      <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">◎ ${esc(it.title)}</div>
+      ${userHtml ? `<div style="font-family:var(--vault-mono);font-size:10px;color:#aaa;letter-spacing:1px;margin:9px 2px 4px;">✎ MY OWN ACTIONS</div>${userHtml}` : ''}
       ${aiRows ? `<div style="background:rgba(255,255,255,0.05);border:1px solid #2f2f2f;border-radius:8px;padding:7px 9px;margin-top:9px;">
-        <div style="font-family:var(--vault-mono);font-size:8px;color:#9fb0b2;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
+        <div style="font-family:var(--vault-mono);font-size:10px;color:#b8c6c8;letter-spacing:1px;margin:2px 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>${aiRows}</div>` : ''}
     </div>`;
   });
   return { rows, total, done, fullRows };
