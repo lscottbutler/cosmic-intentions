@@ -185,20 +185,26 @@ export function renderWrapup() {
         style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
     </div>`;
 
+  // TODAY I WILL — its own card, placed between the Morning & Day run-through cards.
+  const todayEl = document.getElementById('todayWillWidget');
+  if (todayEl) {
+    todayEl.innerHTML = chk ? `
+      <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+        <details class="rm-drop" open>
+          <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
+            <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL — TICK WHAT YOU DID</span>
+            <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+              <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${chk.done}/${chk.total} done</span>
+              <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
+            </span>
+          </summary>
+          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${actionsBlock}${chk.rows}</div>
+        </details>
+      </div>` : '';
+  }
+
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
-      ${chk ? `
-      <details class="rm-drop" open style="margin-bottom:14px;">
-        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
-          <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL — TICK WHAT YOU DID</span>
-          <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-            <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${chk.done}/${chk.total} done</span>
-            <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
-          </span>
-        </summary>
-        <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">${actionsBlock}${chk.rows}</div>
-      </details>` : ''}
-
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;margin-bottom:12px;">
         <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
         ${aiPara ? `<span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
