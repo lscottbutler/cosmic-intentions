@@ -400,6 +400,7 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 12px 14px 2px;
+  flex-shrink: 0;   /* vault-main is a flex column; without this the greeting collapses to a sliver on desktop */
 }
 .dash-greeting:empty { display: none; }
 .page.active { display: block; }
