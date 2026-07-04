@@ -317,7 +317,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
   <div class="page" id="page-dashboard">
-    <div id="dashGreeting" class="dash-greeting"></div>
     <div class="vault-layout">
 
       <!-- DEPOSITORY INDEX SIDEBAR -->
@@ -325,8 +324,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- DASHBOARD WIDGETS — moved to top of Column B -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
-        <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
-        <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
+        <!-- Welcome greeting + admin note (slug: dashboard-note-2) together in one card -->
+        <div class="dash-note-card">
+          <div id="dashGreeting" class="dash-greeting dash-greeting--inbox"></div>
+          <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;font-size:15px;line-height:1.6;"></div>
+        </div>
         <div id="ringsWidget"></div>
         <!-- MY MORNING RUN THROUGH — the MORNING-category habits -->
         <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">

@@ -1537,9 +1537,24 @@ input, textarea, select {
   border: 0 !important;
   padding: 0 !important;
 }
+/* Card that holds the "Welcome back" greeting + the admin note together */
+.dash-note-card {
+  background: var(--widget-bg);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+}
+/* Greeting when it lives INSIDE the note card — black, tighter, no outer padding */
+.dash-greeting--inbox {
+  color: #000000 !important;
+  padding: 0 0 8px !important;
+  font-size: clamp(22px, 6vw, 32px);
+}
+
 /* Admin note that may hold pasted article HTML (e.g. dashboard-note-2): force
-   WHITE text + full width, defeating pasted grids / columns / floats / widths */
-.dash-note-block, .dash-note-block * { color: #ffffff !important; }
+   BLACK text + full width, defeating pasted grids / columns / floats / widths */
+.dash-note-block, .dash-note-block * { color: #000000 !important; }
 .dash-note-block * {
   background: transparent !important;
   display: block !important;
