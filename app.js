@@ -1051,6 +1051,10 @@ export function renderDashboard() {
   const helloEl = document.getElementById('dashHello');
   if (helloEl) helloEl.innerHTML = `Welcome back, ${esc(name)} ✦<br><span>Your effort today is a testament to your dedication, your discipline, your drive.</span>`;
 
+  // Script-font greeting at the top of the member dashboard (one line)
+  const greetEl = document.getElementById('dashGreeting');
+  if (greetEl) greetEl.textContent = `Welcome back, ${name}`;
+
   // Only render Level 1 cards (tabs are now inside each card)
   const container = document.getElementById('intentionCards');
   if (container) {

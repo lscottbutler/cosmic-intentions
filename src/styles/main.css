@@ -388,6 +388,20 @@ details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
   min-height: calc(100vh - var(--hdr) - var(--topnav));
 }
 .page { display: none; }
+
+/* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
+.dash-greeting {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+  font-size: clamp(24px, 7vw, 38px);
+  line-height: 1.05;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 12px 14px 2px;
+}
+.dash-greeting:empty { display: none; }
 .page.active { display: block; }
 
 #page-home,
