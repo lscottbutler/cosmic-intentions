@@ -1537,6 +1537,26 @@ input, textarea, select {
   border: 0 !important;
   padding: 0 !important;
 }
+/* Admin note that may hold pasted article HTML (e.g. dashboard-note-2): force
+   WHITE text + full width, defeating pasted grids / columns / floats / widths */
+.dash-note-block, .dash-note-block * { color: #ffffff !important; }
+.dash-note-block * {
+  background: transparent !important;
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: none !important;
+  grid-column: auto !important;
+  column-count: 1 !important;
+  float: none !important;
+  outline: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.dash-note-block img { max-width: 100% !important; height: auto !important; }
+.dash-note-block a { text-decoration: underline !important; }
+
 /* Column-A welcome/president block — WHITE text, full-width, symmetric (left=right) padding */
 .vault-main .cb-display,
 .vault-main .cb-display * { color: #ffffff !important; }
