@@ -2335,8 +2335,8 @@ export function renderVaultSidebar() {
 
       let _favs; try { _favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { _favs = []; }
       // Favorites toggle icon — bookmark with a +/- badge (SVG so it recolors to the card via currentColor)
-      const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:block"><path d="M6 2H12A2 2 0 0 1 14 4V21L9 18L4 21V4A2 2 0 0 1 6 2Z"/><path fill-rule="evenodd" d="M17 2A5 5 0 1 1 17 12A5 5 0 1 1 17 2Z M16 4H18V6H20V8H18V10H16V8H14V6H16Z"/></svg>`;
-      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:block"><path d="M6 2H12A2 2 0 0 1 14 4V21L9 18L4 21V4A2 2 0 0 1 6 2Z"/><path fill-rule="evenodd" d="M17 2A5 5 0 1 1 17 12A5 5 0 1 1 17 2Z M14 6H20V8H14Z"/></svg>`;
+      const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" style="display:block"><path d="M6 2H12A2 2 0 0 1 14 4V21L9 18L4 21V4A2 2 0 0 1 6 2Z"/><path fill-rule="evenodd" d="M17 2A5 5 0 1 1 17 12A5 5 0 1 1 17 2Z M16 4H18V6H20V8H18V10H16V8H14V6H16Z"/></svg>`;
+      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" style="display:block"><path d="M6 2H12A2 2 0 0 1 14 4V21L9 18L4 21V4A2 2 0 0 1 6 2Z"/><path fill-rule="evenodd" d="M17 2A5 5 0 1 1 17 12A5 5 0 1 1 17 2Z M14 6H20V8H14Z"/></svg>`;
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const isSelected = selectedVaultIdx === i._idx;
@@ -2353,7 +2353,7 @@ export function renderVaultSidebar() {
           </div>
           <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
             title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
-            style="margin-left:auto;flex:0 0 auto;cursor:pointer;line-height:1;color:${shade.text};opacity:${isFav ? '1' : '.5'};padding:4px 8px;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
+            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:${isFav ? '1' : '.55'};">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
