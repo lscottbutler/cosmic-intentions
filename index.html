@@ -324,6 +324,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- DASHBOARD WIDGETS — moved to top of Column B -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
+        <!-- Admin-editable note (slug: dash-note) — hidden until filled in from the Admin page -->
+        <div data-block="dash-note" style="display:none;background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;color:var(--text);font-size:13px;line-height:1.6;"></div>
         <div id="ringsWidget"></div>
         <!-- MY MORNING RUN THROUGH — the MORNING-category habits -->
         <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
@@ -829,6 +831,22 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <p class="admin-page-sub">Write a paragraph for each block. Changes go live immediately on save. Leave empty to hide the block.</p>
 
       <!-- Block: home-welcome -->
+      <!-- Block: dash-note (Dashboard — Above Pillars) -->
+      <div class="admin-block" id="adminBlock-dash-note">
+        <div class="admin-block-hd">Dashboard — Above Pillars <span class="admin-block-slug">dash-note</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('dash-note','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('dash-note','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('dash-note')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('dash-note','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-dash-note" contenteditable="true" data-slug="dash-note"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-dash-note" onclick="saveContentBlock('dash-note')">Save</button>
+          <span class="admin-save-status" id="admin-status-dash-note"></span>
+        </div>
+      </div>
+
       <div class="admin-block" id="adminBlock-home-welcome">
         <div class="admin-block-hd">Home — Welcome Note <span class="admin-block-slug">home-welcome</span></div>
         <div class="admin-toolbar">
