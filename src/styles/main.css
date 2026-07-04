@@ -1537,6 +1537,16 @@ input, textarea, select {
   border: 0 !important;
   padding: 0 !important;
 }
+/* Column-A welcome/president block — WHITE text, full-width, symmetric (left=right) padding */
+.vault-main .cb-display,
+.vault-main .cb-display * { color: #ffffff !important; }
+.vault-main .cb-display { padding: 16px !important; box-sizing: border-box; }
+.vault-main .cb-display * {
+  width: auto !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
 .cb-display br + br { display: none; }
 .cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: var(--text) !important; text-transform: uppercase; letter-spacing: 0.03em; }
 .cb-display strong { font-weight: 700; }
