@@ -70,6 +70,49 @@ export function wrapPinResource(idx, i) {
   renderWrapup();
 }
 
+/* ↳ BREAK IT DOWN — expand a My-Action into deeper sub-steps (recursive).
+   Sends the goal + breadcrumb path + this action; stores steps as children. */
+export async function wrapDrillDown(idx, pStr, btn) {
+  const it = intentions[idx];
+  const rai = it && it.roadmapAI;
+  if (!rai) return;
+  const path = String(pStr).split('.').map(Number);
+  const node = _taskAtPath(rai, path);
+  if (!node) return;
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    const breadcrumb = [];
+    let list = rai.userTasks || [];
+    for (const p of path) { const n = list[p]; if (!n) break; breadcrumb.push(n.text); list = n.children || []; }
+    const userNotes = (rai.userTasks || []).map(u => u && u.text).filter(Boolean);
+    const data = await window.ciApiJson('roadmap-drilldown', { goal: it.title || '', action: node.text, breadcrumb, userNotes });
+    const steps = (data && data.steps) || [];
+    if (!steps.length) { if (typeof toast === 'function') toast('No sub-steps — try again.', 'error'); if (btn) { btn.disabled = false; btn.textContent = '↳'; } return; }
+    node.children = steps.map(text => ({ id: Date.now() + Math.floor(Math.random() * 1e6), text, done: false }));
+    await saveIntentions();
+    renderWrapup();
+  } catch (e) {
+    if (typeof toast === 'function') toast('Break-down failed.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '↳'; }
+  }
+}
+
+export function wrapSubToggle(idx, pStr) {
+  const rai = intentions[idx]?.roadmapAI; if (!rai) return;
+  const node = _taskAtPath(rai, String(pStr).split('.').map(Number));
+  if (!node) return;
+  node.done = !node.done;
+  saveIntentions(); renderWrapup();
+}
+
+export function wrapSubDelete(idx, pStr) {
+  const rai = intentions[idx]?.roadmapAI; if (!rai) return;
+  const path = String(pStr).split('.').map(Number);
+  const i = path.pop();
+  const parentList = path.length ? (_taskAtPath(rai, path) || {}).children : rai.userTasks;
+  if (parentList && parentList[i]) { parentList.splice(i, 1); saveIntentions(); renderWrapup(); }
+}
+
 /* Rebuild this goal's AI roadmap from its "My Actions", then flip to the
    Roadmap tab so the fresh tasks are visible. */
 export async function wrapRegenRoadmap(idx) {
@@ -144,6 +187,40 @@ export async function wrapPromoteToGoal(idx, id) {
   toast(`Added “${title}” as a goal in your Pegboard ✓`, 'success');
 }
 
+/* Find a My-Action node by its index path (e.g. [0,2] = userTasks[0].children[2]). */
+function _taskAtPath(rai, path) {
+  let list = (rai && rai.userTasks) || [];
+  let node = null;
+  for (const p of path) { node = list[p]; if (!node) return null; list = node.children || []; }
+  return node;
+}
+
+/* Render My Actions as a drillable TREE. "↳" breaks any action into deeper
+   sub-steps (recursive). Top level keeps the win-logging toggle + promote;
+   nested steps use lightweight path-based toggle/delete. */
+function _renderUserTree(tasks, path, idx) {
+  if (!Array.isArray(tasks) || !tasks.length) return '';
+  return tasks.map((u, i) => {
+    const p = [...path, i];
+    const pStr = p.join('.');
+    const depth = p.length - 1;
+    const d = !!u.done;
+    const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
+    const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
+    const promoteBtn = depth === 0
+      ? `<button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>` : '';
+    const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;border-left:2px solid rgba(255,255,255,0.18);padding-left:7px;` : '';
+    const row = `<div style="display:flex;gap:6px;align-items:center;padding:4px 2px;${indent}">
+      <button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
+      <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#ddd'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.22);text-decoration-thickness:1px;' : ''}">${esc(u.text)}</span>
+      <button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button>
+      ${promoteBtn}
+      <button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+    </div>`;
+    return row + _renderUserTree(u.children, p, idx);
+  }).join('');
+}
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -173,17 +250,10 @@ function _todayChecklist() {
         style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
     </div>`;
 
-    // 2) Your own custom actions for this goal (survive AI regenerate).
-    let userHtml = '';
-    uTasks.forEach(u => {
-      const d = !!u.done; total++; if (d) done++;
-      userHtml += `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
-        <button onclick="toggleRoadmapUserTaskDone(${idx},${u.id})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#ddd'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.22);text-decoration-thickness:1px;' : ''}">${esc(u.text)}</span>
-        <button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>
-        <button onclick="deleteRoadmapUserTask(${idx},${u.id})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
-      </div>`;
-    });
+    // 2) Your own custom actions — a drillable TREE ("↳" = break into deeper
+    //    steps). Header count reflects the top-level actions.
+    uTasks.forEach(u => { total++; if (u.done) done++; });
+    const userHtml = _renderUserTree(uTasks, [], idx);
 
     // Proven / AI "tracker" tasks — NOT shown in the goal box (only your own
     // actions are). They appear in MY TASK LIST below, visually separated with
@@ -431,5 +501,8 @@ if (typeof window !== 'undefined') {
   window.wrapRegenRoadmap = wrapRegenRoadmap; // rebuild a goal's roadmap from its My Actions
   window.wrapGenResources = wrapGenResources; // fetch the mixed resource shelf for a goal
   window.wrapPinResource = wrapPinResource;   // pin/unpin a resource (kept on refresh)
+  window.wrapDrillDown = wrapDrillDown;       // break a My-Action into deeper sub-steps
+  window.wrapSubToggle = wrapSubToggle;       // toggle a nested sub-step done
+  window.wrapSubDelete = wrapSubDelete;       // delete a nested sub-step
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
