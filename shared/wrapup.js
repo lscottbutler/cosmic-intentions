@@ -236,6 +236,10 @@ function _todayChecklist() {
   items.forEach(({ it, idx }) => {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
     const rai = it.roadmapAI || {};                         // goal may have no roadmap yet
+    // A roadmap belongs to ONE goal — it records the title it was built for.
+    // If that doesn't match THIS goal, it's a stale/mismatched roadmap (belongs
+    // to another goal): don't show its tasks here. Regenerating rebuilds it correctly.
+    const _raiTasksOK = !rai.intention || String(rai.intention).trim() === String(it.title || '').trim();
     const uTasks = Array.isArray(rai.userTasks) ? rai.userTasks : [];
     // Each goal is a collapsible dropdown. When OPENED it reveals, in order:
     //   1) an "add your own action" box for THIS goal,
@@ -261,7 +265,7 @@ function _todayChecklist() {
     // the header count reflects your own actions only.
     const dones = rai.done || {};
     const locks = rai.locks || {};
-    const _aiRowArr = (rai.tasks || []).map((t, i) => {
+    const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i];
       return `<div style="display:flex;gap:8px;align-items:center;padding:7px 8px;background:#ffffff;border-radius:6px;margin-bottom:5px;">
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
@@ -281,7 +285,7 @@ function _todayChecklist() {
     const roadmapBox = hasAi
       ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;">${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
           <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);"><span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span></summary>${aiTail}</details>` : ''}</div>`
-      : `<div style="font-size:12px;color:#9a9a9a;padding:8px 2px;">No roadmap tasks yet — generate them from the Pegboard.</div>`;
+      : `<div style="font-size:12px;color:#9a9a9a;padding:8px 2px;">No roadmap yet — open the MY ACTIONS tab and tap ✦ Regenerate Roadmap.</div>`;
 
     // ▶ LEARN FROM THE GREATS — a mixed shelf of primary sources (videos,
     // official sites, articles, podcasts). Pin ones you love; refresh swaps the rest.
