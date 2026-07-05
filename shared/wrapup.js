@@ -35,6 +35,18 @@ export function wrapTab(idx, which) {
   });
 }
 
+/* Rebuild this goal's AI roadmap from its "My Actions", then flip to the
+   Roadmap tab so the fresh tasks are visible. */
+export async function wrapRegenRoadmap(idx) {
+  const btn = document.getElementById(`wrapRegenBtn-${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = '✦ BUILDING YOUR ROADMAP…'; }
+  try {
+    if (typeof window.generateRoadmapAI === 'function') await window.generateRoadmapAI(idx);
+  } catch (e) { /* generateRoadmapAI surfaces its own error toast */ }
+  _activeTab.set(idx, 'roadmap');   // reveal the freshly-built roadmap
+  renderWrapup();
+}
+
 // Whether the EVENING WRAP-UP card is expanded (survives re-renders). Default open.
 let _wrapupOpen = true;
 export function wrapupCardToggle(open) { _wrapupOpen = !!open; }
@@ -176,7 +188,7 @@ function _todayChecklist() {
         <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
-        <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}</div>
+        <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}</div>
       </div>
     </details>`;
@@ -361,5 +373,6 @@ if (typeof window !== 'undefined') {
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
   window.wrapTab = wrapTab;   // switch a goal's My Actions / Roadmap Tasks tab
+  window.wrapRegenRoadmap = wrapRegenRoadmap; // rebuild a goal's roadmap from its My Actions
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
