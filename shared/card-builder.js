@@ -356,10 +356,18 @@ export async function generateRoadmapAI(idx) {
   if (btn)   { btn.disabled = true; btn.textContent = 'Generating…'; }
   if (panel) { panel.innerHTML = '<div style="padding:24px 0;text-align:center;color:#505058;font-family:var(--vault-mono);font-size:10px;letter-spacing:2px;">◈ BUILDING YOUR 10 STEPS…</div>'; }
 
-  try {
-    const result = await ciApiJson('roadmap-ai', dz ? { intention, dangerZone: dz } : { intention });
+  // The user's own "My Actions" for this goal — fed to the AI as source material,
+  // and preserved across regenerate (they're id-based, independent of the AI tasks).
+  const keepUserTasks = (intent.roadmapAI && Array.isArray(intent.roadmapAI.userTasks)) ? intent.roadmapAI.userTasks : [];
+  const userActions   = keepUserTasks.map(u => u && u.text).filter(Boolean);
 
-    intent.roadmapAI = result;
+  try {
+    const payload = { intention };
+    if (dz) payload.dangerZone = dz;
+    if (userActions.length) payload.userActions = userActions;
+    const result = await ciApiJson('roadmap-ai', payload);
+
+    intent.roadmapAI = { ...result, userTasks: keepUserTasks };
     await saveIntentions();
     if (panel) panel.innerHTML = renderRoadmapAI(result, idx);
     toast('Roadmap generated ✓', 'success');

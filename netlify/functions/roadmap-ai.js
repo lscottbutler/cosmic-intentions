@@ -33,6 +33,11 @@ exports.handler = async (event) => {
     (dz && typeof dz === 'object') ? (dz.pitfall ? `${dz.title || ''} — ${dz.pitfall}` : dz.title || '') : (dz || '')
   ).trim();
 
+  // The user's OWN actions/notes for this goal (from "My Actions") — raw source material.
+  const userActions = Array.isArray(body.userActions)
+    ? body.userActions.map(a => String(a || '').trim()).filter(Boolean).slice(0, 25)
+    : [];
+
   if (!intention) return { statusCode: 400, headers, body: JSON.stringify({ error: 'intention is required' }) };
 
   const systemPrompt = `You are a behavioral execution architect. You convert a goal into a flat, ruthless list of the 10 things the user can do right now to move closer to it. You output tasks only — no motivation, no preamble, no commentary, no conversational filler.`;
@@ -43,9 +48,17 @@ exports.handler = async (event) => {
     : '';
   const dzClause = dangerZone ? ' while specifically neutralizing the danger zone above' : '';
 
+  // The user's own actions/notes become the SOURCE MATERIAL the roadmap is built around.
+  const uaBlock = userActions.length
+    ? `\nTHE USER'S OWN ACTIONS & NOTES for this goal (their raw thinking — this is your primary source material):\n- ${userActions.join('\n- ')}\n`
+    : '';
+  const uaClause = userActions.length
+    ? ' Build the roadmap AROUND the user\'s own actions/notes above: incorporate, sequence and sharpen the concrete actions they listed, and wherever they wrote a question or uncertainty (e.g. "how do founder subs work"), include a task that directly answers or resolves it.'
+    : '';
+
   const userPrompt = `INTENTION (active goal): "${intention}"
-${dzLine}
-TASK: Return the TOP 10 actionable things the user can do right now to move closer to accomplishing the intention${dzClause}. Each task must be:
+${dzLine}${uaBlock}
+TASK: Return the TOP 10 actionable things the user can do right now to move closer to accomplishing the intention${dzClause}.${uaClause} Each task must be:
 - A direct, concrete action the user can actually execute (start with a verb).
 - Sequenced roughly in the order they should be tackled.
 - Self-contained — no sub-bullets, no preamble, no motivational text, no fluff.
