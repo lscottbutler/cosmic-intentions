@@ -172,8 +172,8 @@ function _todayChecklist() {
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
       <div class="wtabs">
-        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:${shade.bg};color:${shade.text};" onclick="wrapTab(${idx},'my')">✎ MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
-        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${shade.bg};color:${shade.text};" onclick="wrapTab(${idx},'roadmap')">◈ ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">✎ MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">◈ ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}</div>
