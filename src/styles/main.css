@@ -177,6 +177,27 @@ details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
 details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
+
+/* Two tabs hanging off the bottom of a goal box (My Actions / Roadmap Tasks) */
+.wtabs { display: flex; gap: 6px; padding: 0 8px; margin-top: -3px; }
+.wtab {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  padding: 7px 8px 9px;
+  font-family: var(--vault-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity .15s;
+}
+.wtab.wtab-active { opacity: 1; }
 .tnav-btn {
   background: none;
   border: none;

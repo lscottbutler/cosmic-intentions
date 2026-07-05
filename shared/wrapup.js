@@ -23,11 +23,17 @@ export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
 const _aiMoreOpen = new Set();
 export function wrapupAiMoreToggle(idx, open) { if (open) _aiMoreOpen.add(idx); else _aiMoreOpen.delete(idx); }
 
-// Per-goal "My Actions" / "Roadmap Tasks" sub-dropdowns (survive re-renders). Default collapsed.
-const _openMyActions = new Set();
-export function wrapupMyActionsToggle(idx, open) { if (open) _openMyActions.add(idx); else _openMyActions.delete(idx); }
-const _openRoadmap = new Set();
-export function wrapupRoadmapToggle(idx, open) { if (open) _openRoadmap.add(idx); else _openRoadmap.delete(idx); }
+// Per-goal active tab ("my" | "roadmap") for the two tabs hanging off the goal box. Survives re-renders.
+const _activeTab = new Map();
+export function wrapTab(idx, which) {
+  _activeTab.set(idx, which);
+  ['my', 'roadmap'].forEach(t => {
+    const p = document.getElementById(`wtab-panel-${t}-${idx}`);
+    const b = document.getElementById(`wtab-${t}-${idx}`);
+    if (p) p.style.display = (t === which) ? 'block' : 'none';
+    if (b) b.classList.toggle('wtab-active', t === which);
+  });
+}
 
 // Whether the EVENING WRAP-UP card is expanded (survives re-renders). Default open.
 let _wrapupOpen = true;
@@ -153,27 +159,25 @@ function _todayChecklist() {
     const aiTail    = _aiRowArr.slice(5).join('');
     const aiMoreCnt = _aiRowArr.length - 5;
 
-    // GOAL BOX: two collapsible sub-sections — "My Actions" (your own) and
-    // "Roadmap Tasks" (the AI actions). Both default collapsed; open on click.
-    const _subHdr = 'display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.28);border-radius:8px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1px;color:#fff;';
+    // GOAL BOX: two tabs hanging off the bottom — "My Actions" (your own) and
+    // "Roadmap Tasks" (the AI actions). Clicking a tab shows that panel.
     const roadmapBox = hasAi
       ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;">${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
           <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);"><span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span></summary>${aiTail}</details>` : ''}</div>`
       : `<div style="font-size:12px;color:#9a9a9a;padding:8px 2px;">No roadmap tasks yet — generate them from the Pegboard.</div>`;
 
+    const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
       <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
-      <div style="padding-top:6px;">
-        <details class="rm-drop" ${_openMyActions.has(idx) ? 'open' : ''} ontoggle="wrapupMyActionsToggle(${idx},this.open)" style="margin:6px 0;">
-          <summary style="${_subHdr}"><span>✎ MY ACTIONS${uTasks.length ? ` · ${uTasks.length}` : ''}</span><span class="rm-caret">▾</span></summary>
-          <div style="padding-top:6px;">${userHtml}${addBox}</div>
-        </details>
-        <details class="rm-drop" ${_openRoadmap.has(idx) ? 'open' : ''} ontoggle="wrapupRoadmapToggle(${idx},this.open)" style="margin:6px 0;">
-          <summary style="${_subHdr}"><span>◈ ROADMAP TASKS${hasAi ? ` · ${_aiRowArr.length}` : ''}</span><span class="rm-caret">▾</span></summary>
-          <div style="padding-top:6px;">${roadmapBox}</div>
-        </details>
+      <div class="wtabs">
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:${shade.bg};color:${shade.text};" onclick="wrapTab(${idx},'my')">✎ MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${shade.bg};color:${shade.text};" onclick="wrapTab(${idx},'roadmap')">◈ ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+      </div>
+      <div style="padding:10px 2px 4px;">
+        <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}</div>
+        <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}</div>
       </div>
     </details>`;
 
@@ -356,7 +360,6 @@ if (typeof window !== 'undefined') {
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
-  window.wrapupMyActionsToggle = wrapupMyActionsToggle; // inline ontoggle on a goal's "My Actions" sub-dropdown
-  window.wrapupRoadmapToggle = wrapupRoadmapToggle;     // inline ontoggle on a goal's "Roadmap Tasks" sub-dropdown
+  window.wrapTab = wrapTab;   // switch a goal's My Actions / Roadmap Tasks tab
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
