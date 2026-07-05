@@ -18,12 +18,19 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 
 const DEFAULT_PROMPT = `GOAL: "{{intention}}"
 {{userActions}}
-Name 5 famous, genuinely accomplished, REAL people who have actually achieved a goal like this (recognizable names — founders, athletes, experts, public figures). For each, write ONE precise YouTube search query (their name + the specific topic) that would surface a strong talk, interview, or breakdown where THEY explain how they did it. Prefer specific, well-known talks over generic ones.
+STEP 1 (think silently): Infer the REAL skill/domain behind this goal — ignore the "I AM" phrasing and identify what the person is actually trying to DO or BECOME (e.g. launch a software product globally, build an online audience, get lean, become a stand-up comedian, sell a subscription).
+
+STEP 2: Name 5 REAL, well-known, genuinely accomplished people SPECIFICALLY famous for mastering THAT exact domain — the people a smart person would actually study to learn this. Domain-relevant founders, experts, athletes or performers — NOT generic celebrities picked just because they're famous.
+
+STEP 3: For each, write ONE precise YouTube search query that surfaces a specific, high-signal talk / interview / breakdown where THAT person explains how to do this exact thing. Format: their name + the concrete topic/tactic + one of "interview"/"talk"/"how". No vague one-word topics.
 
 Return only valid JSON, no markdown:
-{ "items": [ { "person": "Full Name", "query": "search query" } ] }`;
+{ "items": [ { "person": "Full Name", "query": "precise youtube search query" } ] }`;
 
 const s = (x) => (typeof x === 'string' ? x.trim() : '');
+const decode = (t) => s(t)
+  .replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&#x27;/g, "'")
+  .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
 async function fetchPrompt(slug) {
   try {
@@ -109,8 +116,8 @@ exports.handler = async (event) => {
       const sn = item.snippet || {};
       videos.push({
         person: it.person,
-        title: s(sn.title),
-        channel: s(sn.channelTitle),
+        title: decode(sn.title),
+        channel: decode(sn.channelTitle),
         videoId: vid,
         url: `https://www.youtube.com/watch?v=${vid}`,
         thumbnail: (sn.thumbnails && (sn.thumbnails.medium || sn.thumbnails.default) || {}).url || '',
