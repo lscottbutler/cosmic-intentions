@@ -275,7 +275,7 @@ export async function wrapupPersonalize() {
   if (btn) { btn.disabled = true; btn.textContent = '✦ Personalizing…'; }
   try {
     const { summary, recentWins } = _aiSummary();
-    const context = typeof buildContext === 'function' ? buildContext() : '';
+    const context = typeof buildContext === 'function' ? buildContext(getPB() || {}) : '';
     const name = (typeof getPB === 'function' && getPB()['pb-name']) || 'there';
     const data = await window.ciApiJson('wrapup-ai', { name, summary, context, recentWins });
     if (data && data.paragraph) {
