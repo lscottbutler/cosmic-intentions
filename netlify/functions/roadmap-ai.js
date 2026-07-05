@@ -25,13 +25,20 @@ const DEFAULT_USER = `INTENTION (active goal): "{{intention}}"
 TASK: Return the TOP 10 actions to move toward this intention.
 
 Make them EXPERT-LEVEL and SPECIFIC — what a sharp strategist would give, not generic filler. Rules:
-- UNDERSTANDING FIRST: the opening 2–3 tasks establish what the person must actually KNOW — define the core concept in this goal, explain how it really works, and map the landscape. Name the specific things to learn (e.g. "Define what a founder subscription is and study how comparable offers structure price, perks and scarcity"), never a bare "do research".
-- Every task names a concrete thing: the exact concept to define, the specific decision or number to set, the real asset to build, or the actual channel/tactic. BANNED vague verbs: "research", "create a list", "use social media", "network", "develop a strategy", "explore", "identify", "leverage".
-- If the user provided their own actions/notes above, build the roadmap AROUND them: incorporate, sequence and sharpen the concrete actions they listed, and answer any question they wrote.
-- If a danger zone is provided above, engineer the tasks to specifically neutralize it.
-- Favor non-obvious, high-leverage moves over the obvious steps anyone would list.
-- Sequence: understand → decide → build → execute.
-- One sharp, self-contained sentence each.
+
+1. UNDERSTANDING FIRST: the opening 2–3 tasks establish what the person must actually KNOW — define the core concept in this goal, explain how it really works, and map the landscape. Name the specific things to learn (e.g. "Define what a founder subscription is and study how comparable offers structure price, perks and scarcity"), never a bare "do research".
+
+2. Every task names a concrete thing: the exact concept to define, the specific decision or number to set, the real asset to build, or the actual channel/tactic. BANNED vague verbs: "research", "create a list", "use social media", "network", "develop a strategy", "explore", "identify", "leverage".
+
+3. If the user provided their own actions/notes above, build the roadmap AROUND them: incorporate, sequence and sharpen the concrete actions they listed, and answer any question they wrote.
+
+4. If a danger zone is provided above, engineer the tasks to specifically neutralize it.
+
+5. Favor non-obvious, high-leverage moves over the obvious steps anyone would list.
+
+6. Sequence: understand → decide → build → execute.
+
+7. One sharp, self-contained sentence each.
 
 Return only valid JSON, no markdown:
 { "tasks": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "..."] }`;
