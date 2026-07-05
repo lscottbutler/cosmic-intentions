@@ -193,9 +193,9 @@ function _todayChecklist() {
     const locks = rai.locks || {};
     const _aiRowArr = (rai.tasks || []).map((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i];
-      return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+      return `<div style="display:flex;gap:8px;align-items:center;padding:7px 8px;background:#ffffff;border-radius:6px;margin-bottom:5px;">
         <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#ffffff' : '#1C2230'};${d ? 'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.30);text-decoration-thickness:1px;' : ''}">${esc(t)}</span>
+        <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#1C2230'};${d ? 'text-decoration:line-through;text-decoration-color:#bbbbbb;text-decoration-thickness:1px;' : ''}">${esc(t)}</span>
         <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
         <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
       </div>`;
