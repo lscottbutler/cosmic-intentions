@@ -3223,6 +3223,7 @@ export async function loadAIPrompts() {
     if (!ta) return;
     const override = (saved[slug] || '').trim();
     ta.value = override || (_promptDefaults[_PROMPT_SLUGS[slug]] || '');
+    ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px';   // grow to fit — no scroll box
   });
 }
 
@@ -3242,6 +3243,7 @@ export async function resetPrompt(slug) {
   const ta = document.getElementById(`prompt-editor-${slug}`);
   if (!ta || !_promptDefaults) return;
   ta.value = _promptDefaults[_PROMPT_SLUGS[slug]] || '';
+  ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px';
   await sb.from('content_blocks').upsert({ slug, body: '', updated_at: new Date().toISOString() }, { onConflict: 'slug' });
   const st = document.getElementById(`prompt-status-${slug}`);
   if (st) { st.textContent = '↺ Reset to default'; setTimeout(() => { if (st) st.textContent = ''; }, 3500); }
