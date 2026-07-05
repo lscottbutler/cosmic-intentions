@@ -35,9 +35,10 @@ export function wrapTab(idx, which) {
   });
 }
 
-/* ▶ LEARN FROM THE GREATS — fetch real YouTube videos of people who achieved
-   a goal like this, cache them on the goal, and show them in the Roadmap tab. */
-export async function wrapGenVideos(idx) {
+/* ▶ LEARN FROM THE GREATS — fetch a mixed shelf of real primary sources
+   (videos, official sites, articles, podcasts). Pinned items are kept; a
+   refresh only swaps the unpinned ones. Cached on the goal. */
+export async function wrapGenResources(idx) {
   const it = intentions[idx];
   if (!it) return;
   const btn = document.getElementById(`wrapVidBtn-${idx}`);
@@ -45,17 +46,28 @@ export async function wrapGenVideos(idx) {
   try {
     const userActions = (it.roadmapAI?.userTasks || []).map(u => u && u.text).filter(Boolean);
     const data = await window.ciApiJson('roadmap-videos', { intention: it.title || '', userActions });
-    const videos = (data && data.videos) || [];
+    const fresh = (data && data.resources) || [];
     if (!it.roadmapAI) it.roadmapAI = { intention: it.title || '', tasks: [], userTasks: [] };
-    it.roadmapAI.videos = videos;
+    const pinned = (it.roadmapAI.resources || []).filter(r => r && r.pinned);
+    const pinnedUrls = new Set(pinned.map(r => r.url));
+    it.roadmapAI.resources = [...pinned, ...fresh.filter(r => r && !pinnedUrls.has(r.url))].slice(0, 10);
     await saveIntentions();
     _activeTab.set(idx, 'roadmap');
     renderWrapup();
-    if (!videos.length && typeof toast === 'function') toast('No videos found — try again.', 'error');
+    if (!fresh.length && !pinned.length && typeof toast === 'function') toast('Nothing found — try again.', 'error');
   } catch (e) {
-    if (typeof toast === 'function') toast('Video search failed.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = '▶ FIND VIDEOS'; }
+    if (typeof toast === 'function') toast('Source search failed.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '▶ FIND SOURCES'; }
   }
+}
+
+/* Pin/unpin a resource so a refresh keeps it. */
+export function wrapPinResource(idx, i) {
+  const arr = intentions[idx]?.roadmapAI?.resources;
+  if (!arr || !arr[i]) return;
+  arr[i].pinned = !arr[i].pinned;
+  saveIntentions();
+  renderWrapup();
 }
 
 /* Rebuild this goal's AI roadmap from its "My Actions", then flip to the
@@ -201,21 +213,24 @@ function _todayChecklist() {
           <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);"><span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span></summary>${aiTail}</details>` : ''}</div>`
       : `<div style="font-size:12px;color:#9a9a9a;padding:8px 2px;">No roadmap tasks yet — generate them from the Pegboard.</div>`;
 
-    // ▶ LEARN FROM THE GREATS — real YouTube videos of people who did this goal.
-    const vids = Array.isArray(rai.videos) ? rai.videos : [];
-    const videosBlock = `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
+    // ▶ LEARN FROM THE GREATS — a mixed shelf of primary sources (videos,
+    // official sites, articles, podcasts). Pin ones you love; refresh swaps the rest.
+    const res = Array.isArray(rai.resources) ? rai.resources : [];
+    const _rIcon = { video: '🎬', source: '🌐', article: '📄', podcast: '🎧' };
+    const resourcesBlock = `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 2px 6px;">
         <span style="font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1px;color:#1C2230;">▶ LEARN FROM THE GREATS</span>
-        <button id="wrapVidBtn-${idx}" onclick="wrapGenVideos(${idx})" style="flex-shrink:0;background:#1C2230;border:none;border-radius:6px;padding:6px 10px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">${vids.length ? '↻ REFRESH' : '▶ FIND VIDEOS'}</button>
+        <button id="wrapVidBtn-${idx}" onclick="wrapGenResources(${idx})" style="flex-shrink:0;background:#1C2230;border:none;border-radius:6px;padding:6px 10px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">${res.length ? '↻ REFRESH' : '▶ FIND SOURCES'}</button>
       </div>
-      ${vids.length ? vids.map(v => `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;text-decoration:none;padding:5px 2px;border-top:1px solid rgba(28,34,48,0.14);">
-        ${v.thumbnail ? `<img src="${esc(v.thumbnail)}" alt="" style="width:58px;height:33px;object-fit:cover;border-radius:4px;flex-shrink:0;">` : ''}
-        <span style="flex:1;min-width:0;">
-          <span style="display:block;font-size:11px;line-height:1.3;color:#12251f;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(v.title)}</span>
-          <span style="display:block;font-size:9px;color:#3e4a4c;">${esc(v.person || v.channel)}</span>
-        </span>
-        <span style="flex-shrink:0;color:#e0102b;font-size:16px;">▶</span>
-      </a>`).join('') : `<div style="font-size:11px;color:rgba(28,34,48,0.65);padding:2px;">Find real videos of famous people who've achieved a goal like this.</div>`}
+      ${res.length ? res.map((r, i) => `<div style="display:flex;gap:8px;align-items:center;padding:5px 2px;border-top:1px solid rgba(28,34,48,0.14);">
+        ${r.type === 'video' && r.thumbnail ? `<img src="${esc(r.thumbnail)}" alt="" style="width:52px;height:30px;object-fit:cover;border-radius:4px;flex-shrink:0;">` : `<span style="width:30px;text-align:center;font-size:16px;flex-shrink:0;">${_rIcon[r.type] || '🔗'}</span>`}
+        <a href="${esc(r.url)}" target="_blank" rel="noopener" style="flex:1;min-width:0;text-decoration:none;">
+          <span style="display:block;font-size:11px;line-height:1.3;color:#12251f;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.title)}</span>
+          <span style="display:block;font-size:9px;color:#3e4a4c;">${esc(r.subtitle || '')}</span>
+        </a>
+        <button onclick="wrapPinResource(${idx},${i})" title="${r.pinned ? 'Unpin' : 'Pin — keep this on refresh'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:14px;opacity:${r.pinned ? '1' : '0.35'};padding:2px 4px;">📌</button>
+        <span style="flex-shrink:0;color:#e0102b;font-size:15px;">↗</span>
+      </div>`).join('') : `<div style="font-size:11px;color:rgba(28,34,48,0.65);padding:2px;">Real videos, official sites, articles &amp; podcasts from people who've done this.</div>`}
     </div>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
@@ -229,7 +244,7 @@ function _todayChecklist() {
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
-        <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${videosBlock}</div>
+        <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
       </div>
     </details>`;
 
@@ -414,6 +429,7 @@ if (typeof window !== 'undefined') {
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
   window.wrapTab = wrapTab;   // switch a goal's My Actions / Roadmap Tasks tab
   window.wrapRegenRoadmap = wrapRegenRoadmap; // rebuild a goal's roadmap from its My Actions
-  window.wrapGenVideos = wrapGenVideos;       // fetch role-model videos for a goal
+  window.wrapGenResources = wrapGenResources; // fetch the mixed resource shelf for a goal
+  window.wrapPinResource = wrapPinResource;   // pin/unpin a resource (kept on refresh)
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
