@@ -1784,6 +1784,13 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
+/* Column-A quick-nav boxes. */
+export function openVizLibrary() { window.location.href = 'players/viz-editor.html'; }
+export function openMyRoadmap() {
+  const i = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
+  window.location.href = `players/roadmap.html?idx=${i}`;
+}
+
 /* ── ASS (Audio Slide Show) players: Affirmations / Beliefs / Stoic ───────────
    Each reads the SELECTED-by-idx goal's own mindset list (already AI-generated &
    saved to Supabase), drops it in localStorage, and opens the shared ASS player. */
