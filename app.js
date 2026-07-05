@@ -42,6 +42,18 @@ export const LS = {
   }
 };
 
+/* localStorage has a ~5MB quota. base64 data: image URLs (vision images) can be
+   MBs each — storing them in ci_intentions blows the quota, which then blocks
+   Supabase from writing its auth token → user gets logged out on every refresh.
+   Strip every data: URL (anywhere in the tree) before persisting locally; the
+   real image lives in Supabase Storage under imageUrl, re-fetched on load. */
+function _leanForLS(arr) {
+  try {
+    return JSON.parse(JSON.stringify(arr, (k, v) =>
+      (typeof v === 'string' && v.startsWith('data:')) ? null : v));
+  } catch { return arr; }
+}
+
 /* ─────────────────────────────────────────────────────────
    SUPABASE INIT
 ───────────────────────────────────────────────────────── */
@@ -971,7 +983,7 @@ async function syncIntentionsFromSupabase() {
           return ai - bi;
         });
       }
-      LS.set(`ci_intentions_${currentUser.id}`, intentions);
+      LS.set(`ci_intentions_${currentUser.id}`, _leanForLS(intentions));
       // Re-render build sheet if a goal is open — Map/Backbone now loaded from Supabase
       if (selectedVaultIdx !== null && intentions[selectedVaultIdx]) {
         showVaultBuildSheet(selectedVaultIdx);
@@ -1017,7 +1029,7 @@ async function saveTargetDate(idx, val) {
 }
 
 export async function saveIntentions() {
-  if (currentUser) LS.set(`ci_intentions_${currentUser.id}`, intentions);
+  if (currentUser) LS.set(`ci_intentions_${currentUser.id}`, _leanForLS(intentions));
   try {
     await syncIntentionsToSupabase();
   } catch(e) {
@@ -3412,6 +3424,17 @@ function buildBSPegboardPanel(intent) {
 export async function init() {
   // Load local data first
   loadIntentionsFromLS();
+
+  // One-time self-heal: an older build stored base64 vision images in
+  // ci_intentions_*, blowing the ~5MB quota. A full quota blocks Supabase from
+  // writing its auth token → logout on every refresh. Compact every intentions
+  // store (strip data: URLs) BEFORE the getSession() call below so the token can
+  // persist again. Harmless once stores are already lean.
+  try {
+    Object.keys(localStorage)
+      .filter(k => k === 'ci_intentions' || k.startsWith('ci_intentions_'))
+      .forEach(k => { const v = LS.get(k); if (Array.isArray(v) && v.length) LS.set(k, _leanForLS(v)); });
+  } catch (e) {}
 
   // Inject daily rotating content
   const _dashAff = document.getElementById('dashDailyAffirmation');
