@@ -23,6 +23,12 @@ export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
 const _aiMoreOpen = new Set();
 export function wrapupAiMoreToggle(idx, open) { if (open) _aiMoreOpen.add(idx); else _aiMoreOpen.delete(idx); }
 
+// Per-goal "My Actions" / "Roadmap Tasks" sub-dropdowns (survive re-renders). Default collapsed.
+const _openMyActions = new Set();
+export function wrapupMyActionsToggle(idx, open) { if (open) _openMyActions.add(idx); else _openMyActions.delete(idx); }
+const _openRoadmap = new Set();
+export function wrapupRoadmapToggle(idx, open) { if (open) _openRoadmap.add(idx); else _openRoadmap.delete(idx); }
+
 // Whether the EVENING WRAP-UP card is expanded (survives re-renders). Default open.
 let _wrapupOpen = true;
 export function wrapupCardToggle(open) { _wrapupOpen = !!open; }
@@ -147,12 +153,28 @@ function _todayChecklist() {
     const aiTail    = _aiRowArr.slice(5).join('');
     const aiMoreCnt = _aiRowArr.length - 5;
 
-    // GOAL BOX (per-goal view): your own actions only.
+    // GOAL BOX: two collapsible sub-sections — "My Actions" (your own) and
+    // "Roadmap Tasks" (the AI actions). Both default collapsed; open on click.
+    const _subHdr = 'display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.28);border-radius:8px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1px;color:#fff;';
+    const roadmapBox = hasAi
+      ? `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;">${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
+          <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);"><span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span></summary>${aiTail}</details>` : ''}</div>`
+      : `<div style="font-size:12px;color:#9a9a9a;padding:8px 2px;">No roadmap tasks yet — generate them from the Pegboard.</div>`;
+
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
       <summary style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
-      <div style="padding-top:6px;">${userHtml}${addBox}</div>
+      <div style="padding-top:6px;">
+        <details class="rm-drop" ${_openMyActions.has(idx) ? 'open' : ''} ontoggle="wrapupMyActionsToggle(${idx},this.open)" style="margin:6px 0;">
+          <summary style="${_subHdr}"><span>✎ MY ACTIONS${uTasks.length ? ` · ${uTasks.length}` : ''}</span><span class="rm-caret">▾</span></summary>
+          <div style="padding-top:6px;">${userHtml}${addBox}</div>
+        </details>
+        <details class="rm-drop" ${_openRoadmap.has(idx) ? 'open' : ''} ontoggle="wrapupRoadmapToggle(${idx},this.open)" style="margin:6px 0;">
+          <summary style="${_subHdr}"><span>◈ ROADMAP TASKS${hasAi ? ` · ${_aiRowArr.length}` : ''}</span><span class="rm-caret">▾</span></summary>
+          <div style="padding-top:6px;">${roadmapBox}</div>
+        </details>
+      </div>
     </details>`;
 
     // MY TASK LIST group: PROVEN ACTIONS only. The goal title + your own actions
@@ -334,5 +356,7 @@ if (typeof window !== 'undefined') {
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
+  window.wrapupMyActionsToggle = wrapupMyActionsToggle; // inline ontoggle on a goal's "My Actions" sub-dropdown
+  window.wrapupRoadmapToggle = wrapupRoadmapToggle;     // inline ontoggle on a goal's "Roadmap Tasks" sub-dropdown
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }

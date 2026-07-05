@@ -176,7 +176,7 @@ body {
 details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
-details.rm-drop[open] .rm-caret { transform: rotate(180deg); }
+details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
 .tnav-btn {
   background: none;
   border: none;
