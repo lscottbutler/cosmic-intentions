@@ -1582,7 +1582,7 @@ input, textarea, select {
 
 /* Column-A welcome/president block — WHITE text, full-width, symmetric (left=right) padding */
 .vault-main .cb-display,
-.vault-main .cb-display * { color: #000000 !important; }
+.vault-main .cb-display * { color: #ffffff !important; text-decoration: none !important; }
 .vault-main .cb-display { padding: 16px !important; box-sizing: border-box; }
 .vault-main .cb-display * {
   width: auto !important;
