@@ -178,16 +178,17 @@ details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
 details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
 
-/* Two tabs hanging off the bottom of a goal box (My Actions / Roadmap Tasks) */
-.wtabs { display: flex; gap: 6px; padding: 0 8px; margin-top: -3px; }
+/* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
+.wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
 .wtab {
   flex: 1;
   min-width: 0;
-  border: none;
+  box-sizing: border-box;
+  border: 1px solid #ffffff;      /* thin white outline */
   border-radius: 0 0 10px 10px;
-  padding: 7px 8px 9px;
+  padding: 18px 8px 8px;          /* extra top padding: label sits below the pill overlap */
   font-family: var(--vault-mono);
-  font-size: 9px;
+  font-size: 11px;                /* ~20% bigger */
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
