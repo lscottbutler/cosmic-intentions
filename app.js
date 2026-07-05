@@ -182,6 +182,7 @@ export function showPage(id) {
   if (id === 'dashboard') renderDashboard();
   if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
   if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
+  if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
 
   closeDrawer();
@@ -3199,6 +3200,70 @@ export async function saveContentBlock(slug) {
     if (body) { el.innerHTML = body; el.style.display = ''; }
     else el.style.display = 'none';
   });
+}
+
+/* ── AI CONTROL ROOM — live-editable AI prompts (stored in content_blocks) ──
+   Resolution at call time (in the function): request override > Supabase > default.
+   Defaults come from the function itself (mode:'defaults') so there's ONE source. */
+let _promptDefaults = null;
+const _PROMPT_SLUGS = { 'prompt_roadmap_system': 'system', 'prompt_roadmap_user': 'user' };
+
+export async function loadAIPrompts() {
+  if (!_promptDefaults) {
+    try { _promptDefaults = await window.ciApiJson('roadmap-ai', { mode: 'defaults' }); }
+    catch (e) { _promptDefaults = { system: '', user: '' }; }
+  }
+  let saved = {};
+  try {
+    const { data } = await sb.from('content_blocks').select('slug, body').in('slug', Object.keys(_PROMPT_SLUGS));
+    (data || []).forEach(r => { saved[r.slug] = r.body || ''; });
+  } catch (e) {}
+  Object.keys(_PROMPT_SLUGS).forEach(slug => {
+    const ta = document.getElementById(`prompt-editor-${slug}`);
+    if (!ta) return;
+    const override = (saved[slug] || '').trim();
+    ta.value = override || (_promptDefaults[_PROMPT_SLUGS[slug]] || '');
+  });
+}
+
+export async function savePrompt(slug) {
+  const ta  = document.getElementById(`prompt-editor-${slug}`);
+  const btn = document.getElementById(`prompt-save-${slug}`);
+  const st  = document.getElementById(`prompt-status-${slug}`);
+  if (!ta) return;
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  const { error } = await sb.from('content_blocks')
+    .upsert({ slug, body: ta.value, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+  if (btn) { btn.disabled = false; btn.textContent = 'Save'; }
+  if (st) { st.textContent = error ? ('✗ ' + error.message) : '✓ Saved — live now'; setTimeout(() => { if (st) st.textContent = ''; }, 3500); }
+}
+
+export async function resetPrompt(slug) {
+  const ta = document.getElementById(`prompt-editor-${slug}`);
+  if (!ta || !_promptDefaults) return;
+  ta.value = _promptDefaults[_PROMPT_SLUGS[slug]] || '';
+  await sb.from('content_blocks').upsert({ slug, body: '', updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+  const st = document.getElementById(`prompt-status-${slug}`);
+  if (st) { st.textContent = '↺ Reset to default'; setTimeout(() => { if (st) st.textContent = ''; }, 3500); }
+}
+
+export async function testRoadmapPrompt() {
+  const out  = document.getElementById('prompt-test-out');
+  const goal = (document.getElementById('prompt-test-goal')?.value || '').trim();
+  const userActions = (document.getElementById('prompt-test-notes')?.value || '').split('\n').map(x => x.trim()).filter(Boolean);
+  const systemOverride = document.getElementById('prompt-editor-prompt_roadmap_system')?.value || '';
+  const userOverride   = document.getElementById('prompt-editor-prompt_roadmap_user')?.value || '';
+  if (!goal) { if (out) out.innerHTML = '<span style="color:#FF375F">Enter a sample goal to test.</span>'; return; }
+  if (out) out.innerHTML = '<span style="color:#999">Running your prompts against gpt-4o…</span>';
+  try {
+    const data = await window.ciApiJson('roadmap-ai', { intention: goal, userActions, systemOverride, userOverride });
+    const tasks = (data && data.tasks) || [];
+    if (out) out.innerHTML = tasks.length
+      ? '<ol style="margin:0;padding-left:20px;line-height:1.6;color:#eee;">' + tasks.map(t => `<li>${esc(t)}</li>`).join('') + '</ol>'
+      : '<span style="color:#FF375F">No tasks returned.</span>';
+  } catch (e) {
+    if (out) out.innerHTML = `<span style="color:#FF375F">Test failed: ${esc(e.message)}</span>`;
+  }
 }
 
 export function adminFmt(slug, cmd) {
