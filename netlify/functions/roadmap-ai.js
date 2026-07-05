@@ -40,7 +40,7 @@ exports.handler = async (event) => {
 
   if (!intention) return { statusCode: 400, headers, body: JSON.stringify({ error: 'intention is required' }) };
 
-  const systemPrompt = `You are a behavioral execution architect. You convert a goal into a flat, ruthless list of the 10 things the user can do right now to move closer to it. You output tasks only — no motivation, no preamble, no commentary, no conversational filler.`;
+  const systemPrompt = `You are a world-class strategist and operator — part domain expert, part execution coach. You turn a goal into a roadmap of DEEP, SPECIFIC, expert-level actions — the kind a sharp advisor gives, never generic checklist filler. You output tasks only — no motivation, no preamble, no commentary.`;
 
   // Danger zone is optional — when present, the tasks are engineered to neutralize it.
   const dzLine = dangerZone
@@ -58,22 +58,25 @@ exports.handler = async (event) => {
 
   const userPrompt = `INTENTION (active goal): "${intention}"
 ${dzLine}${uaBlock}
-TASK: Return the TOP 10 actionable things the user can do right now to move closer to accomplishing the intention${dzClause}.${uaClause} Each task must be:
-- A direct, concrete action the user can actually execute (start with a verb).
-- Sequenced roughly in the order they should be tackled.
-- Self-contained — no sub-bullets, no preamble, no motivational text, no fluff.
-- One short sentence each.
+TASK: Return the TOP 10 actions to move toward this intention${dzClause}.${uaClause}
+
+Make them EXPERT-LEVEL and SPECIFIC — what a sharp strategist would give, not generic filler. Rules:
+- UNDERSTANDING FIRST: the opening 2–3 tasks establish what the person must actually KNOW — define the core concept in this goal, explain how it really works, and map the landscape. Name the specific things to learn (e.g. "Define what a founder subscription is and study how [comparable offers] structure price, perks and scarcity"), never a bare "do research".
+- Every task names a concrete thing: the exact concept to define, the specific decision or number to set, the real asset to build, or the actual channel/tactic. BANNED vague verbs: "research", "create a list", "use social media", "network", "develop a strategy", "explore", "identify", "leverage".
+- Favor non-obvious, high-leverage moves over the obvious steps anyone would list.
+- Sequence: understand → decide → build → execute.
+- One sharp, self-contained sentence each.
 
 Return only valid JSON, no markdown:
-{ "tasks": ["task 1", "task 2", "task 3", "task 4", "task 5", "task 6", "task 7", "task 8", "task 9", "task 10"] }`;
+{ "tasks": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "..."] }`;
 
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        max_tokens: 1200,
+        model: 'gpt-4o',
+        max_tokens: 1500,
         temperature: 0.7,
         response_format: { type: 'json_object' },
         messages: [
