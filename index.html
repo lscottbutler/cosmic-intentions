@@ -481,12 +481,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- INTENTION LIST — goal cards beneath the tracker -->
         <div class="vault-list" id="vaultList"></div>
 
-        <!-- CATEGORY FILTER TABS -->
-        <div class="vault-cats" id="vaultCats"></div>
-
-        <!-- + ADD INTENTION — below the category filter pills -->
-        <div class="vault-add-wrap" id="colbAnchor" style="margin-top:8px;margin-bottom:4px;">
-          <button class="vault-add-btn" onclick="vaultShowAddForm()">+ Add Intention</button>
+        <!-- ALL pill + ADD INTENTION — one line -->
+        <div class="vault-add-wrap" id="colbAnchor" style="display:flex;align-items:center;gap:10px;margin-top:8px;margin-bottom:4px;">
+          <div class="vault-cats" id="vaultCats"></div>
+          <button class="vault-add-btn" onclick="vaultShowAddForm()" style="flex:1;">+ Add Intention</button>
         </div>
 
         <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->

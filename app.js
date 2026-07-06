@@ -2324,7 +2324,7 @@ export function renderVaultSidebar() {
       counts[k] = (counts[k] || 0) + 1;
     });
     catsEl.innerHTML = VAULT_CATEGORIES
-      .filter(c => c.key === 'all' || counts[c.key])
+      .filter(c => c.key === 'all')
       .map(c => `<button class="vault-cat-btn${c.key === 'all' ? ' all-btn' : ''}${vaultActiveCategory === c.key ? ' active' : ''}"
         onclick="filterVaultCategory('${c.key}')">${c.label} <span class="vault-cat-count">${counts[c.key]||0}</span></button>`)
       .join('');
