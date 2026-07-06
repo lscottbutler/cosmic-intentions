@@ -835,90 +835,244 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
        ═══════════════════════════════════════════════════════════════ -->
   <div class="page" id="page-landing">
     <style>
-      #page-landing{--lp-bg:#0b0d17;--lp-card:#171b33;--lp-line:#2a2f52;--lp-text:#eef0ff;--lp-muted:#a6acd8;--lp-gold:#f4d47c;--lp-mint:#8fe3c4;
-        background:var(--lp-bg);color:var(--lp-text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;}
-      #page-landing .lp-wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-      #page-landing .lp-editbar{background:#1c2a1c;border-bottom:1px solid #345034;color:#bfe3bf;font-size:12px;text-align:center;padding:8px;letter-spacing:.04em;}
-      #page-landing .lp-btn{display:inline-block;padding:13px 24px;border-radius:999px;font-weight:800;font-size:15px;cursor:pointer;border:1px solid transparent;text-decoration:none;}
-      #page-landing .lp-gold{background:linear-gradient(180deg,#f7dd8f,#e7bd55);color:#2a2205;}
-      #page-landing .lp-ghost{border-color:var(--lp-line);color:var(--lp-text);}
-      #page-landing .lp-eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:12px;color:var(--lp-gold);font-weight:800;}
-      #page-landing .lp-hero{text-align:center;padding:70px 0 56px;}
-      #page-landing .lp-hero h1{font-size:52px;font-weight:900;line-height:1.03;margin:14px auto 14px;max-width:760px;}
-      #page-landing .lp-hero p{font-size:19px;color:var(--lp-muted);max-width:660px;margin:0 auto 26px;}
+      #page-landing{--c-ink:#1a1636;--c-body:#4a4a63;--c-muted:#8a8aa3;--c-line:#e7e7f0;--c-soft:#f6f5fb;
+        --c-brand:#6b4fe0;--c-brand2:#8f7bf0;--c-gold:#e7bd55;--c-mint:#2bb6a0;
+        background:#fff;color:var(--c-ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;}
+      #page-landing *{box-sizing:border-box;}
+      #page-landing .lw{max-width:1080px;margin:0 auto;padding:0 22px;}
+      #page-landing a{text-decoration:none;color:inherit;}
+      #page-landing .lp-btn{display:inline-block;padding:13px 26px;border-radius:999px;font-weight:800;font-size:15px;cursor:pointer;border:2px solid transparent;}
+      #page-landing .lp-primary{background:linear-gradient(180deg,var(--c-brand2),var(--c-brand));color:#fff;box-shadow:0 8px 20px rgba(107,79,224,.28);}
+      #page-landing .lp-ghost{border-color:var(--c-line);color:var(--c-ink);background:#fff;}
+      #page-landing .lp-gold{background:linear-gradient(180deg,#f7dd8f,var(--c-gold));color:#3a2d05;}
+      #page-landing .lp-eyebrow{letter-spacing:.26em;text-transform:uppercase;font-size:12px;color:var(--c-brand);font-weight:800;}
+      #page-landing h2{font-size:33px;font-weight:900;text-align:center;letter-spacing:-.01em;}
+      #page-landing .lp-sub{color:var(--c-muted);text-align:center;max-width:600px;margin:8px auto 40px;font-size:16px;}
+
+      /* promo + header */
+      #page-landing .lp-promo{background:linear-gradient(90deg,#4a3fc0,#6b4fe0);color:#fff;text-align:center;font-size:13px;padding:9px 12px;font-weight:600;}
+      #page-landing .lp-promo a{color:#ffe08a;text-decoration:underline;font-weight:800;}
+      #page-landing .lp-head{display:flex;align-items:center;justify-content:space-between;height:64px;}
+      #page-landing .lp-logo{font-weight:900;letter-spacing:.16em;font-size:15px;}
+      #page-landing .lp-logo b{color:var(--c-brand);}
+
+      /* hero */
+      #page-landing .lp-hero{background:linear-gradient(180deg,#f3f0ff,#fff);text-align:center;padding:56px 0 60px;}
+      #page-landing .lp-hero h1{font-size:52px;font-weight:900;line-height:1.04;margin:14px auto 12px;max-width:760px;letter-spacing:-.02em;}
+      #page-landing .lp-hero h1 span{color:var(--c-brand);}
+      #page-landing .lp-hero p{font-size:19px;color:var(--c-body);max-width:600px;margin:0 auto 24px;}
       #page-landing .lp-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-      #page-landing .lp-sec{padding:56px 0;border-top:1px solid var(--lp-line);}
-      #page-landing .lp-sec h2{font-size:34px;font-weight:900;text-align:center;margin-bottom:8px;}
-      #page-landing .lp-sec .lp-sub{color:var(--lp-muted);text-align:center;max-width:620px;margin:0 auto 40px;font-size:16px;}
-      #page-landing .lp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
-      #page-landing .lp-card{background:var(--lp-card);border:1px solid var(--lp-line);border-radius:16px;padding:24px;}
-      #page-landing .lp-card .lp-ico{font-size:26px;margin-bottom:10px;}
-      #page-landing .lp-card h3{font-size:18px;margin-bottom:6px;}
-      #page-landing .lp-card p{color:var(--lp-muted);font-size:14.5px;}
-      #page-landing .lp-plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:620px;margin:0 auto;}
-      #page-landing .lp-plan{background:var(--lp-card);border:1px solid var(--lp-line);border-radius:18px;padding:28px;text-align:center;}
-      #page-landing .lp-plan.lp-best{border-color:var(--lp-gold);}
-      #page-landing .lp-plan h3{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--lp-muted);}
-      #page-landing .lp-plan .lp-price{font-size:42px;font-weight:900;margin:10px 0 2px;}
-      #page-landing .lp-plan .lp-price span{font-size:15px;color:var(--lp-muted);font-weight:600;}
-      #page-landing .lp-final{text-align:center;padding:72px 0;}
-      #page-landing .lp-final h2{font-size:38px;font-weight:900;margin-bottom:10px;}
-      @media(max-width:820px){#page-landing .lp-hero h1{font-size:36px;}#page-landing .lp-grid{grid-template-columns:1fr;}#page-landing .lp-plans{grid-template-columns:1fr;}}
+      #page-landing .lp-trust{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:center;margin-top:24px;color:var(--c-muted);font-size:13px;font-weight:600;}
+      #page-landing .lp-trust b{color:var(--c-gold);}
+      #page-landing .lp-shot{margin:36px auto 0;max-width:560px;height:250px;border-radius:18px;border:1px solid var(--c-line);
+        background:repeating-linear-gradient(45deg,#f6f5fb,#f6f5fb 12px,#efeef9 12px,#efeef9 24px);
+        display:flex;align-items:center;justify-content:center;color:var(--c-muted);font-size:14px;}
+
+      /* sections */
+      #page-landing section{padding:60px 0;}
+      #page-landing .lp-soft{background:var(--c-soft);}
+
+      /* steps */
+      #page-landing .lp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+      #page-landing .lp-step{text-align:center;}
+      #page-landing .lp-step .n{width:54px;height:54px;margin:0 auto 12px;border-radius:50%;background:#efeafd;color:var(--c-brand);
+        display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;}
+      #page-landing .lp-step h3{font-size:18px;margin-bottom:5px;}
+      #page-landing .lp-step p{color:var(--c-muted);font-size:14px;}
+
+      /* benefit cards */
+      #page-landing .lp-perks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+      #page-landing .lp-perk{border-radius:16px;padding:22px;color:#fff;}
+      #page-landing .lp-perk .i{font-size:26px;}
+      #page-landing .lp-perk h3{font-size:16px;margin:8px 0 4px;}
+      #page-landing .lp-perk p{font-size:13px;opacity:.92;}
+
+      /* alternating feature rows */
+      #page-landing .lp-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:34px 0;}
+      #page-landing .lp-row:nth-child(even) .lp-rowimg{order:2;}
+      #page-landing .lp-rowimg{height:230px;border-radius:16px;border:1px solid var(--c-line);background:var(--c-soft);
+        display:flex;align-items:center;justify-content:center;color:var(--c-muted);font-size:14px;text-align:center;padding:20px;}
+      #page-landing .lp-row h3{font-size:26px;font-weight:900;margin:6px 0 10px;}
+      #page-landing .lp-row p{color:var(--c-body);font-size:16px;}
+      #page-landing .lp-row ul{margin:12px 0 0;padding-left:18px;color:var(--c-body);font-size:15px;}
+      #page-landing .lp-row li{margin:6px 0;}
+
+      /* feature grid */
+      #page-landing .lp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+      #page-landing .lp-fcard{display:flex;gap:14px;background:#fff;border:1px solid var(--c-line);border-radius:12px;padding:18px;}
+      #page-landing .lp-fcard .i{font-size:22px;flex-shrink:0;}
+      #page-landing .lp-fcard h4{font-size:16px;margin-bottom:3px;color:var(--c-brand);}
+      #page-landing .lp-fcard p{font-size:13.5px;color:var(--c-body);}
+
+      /* comparison table */
+      #page-landing .lp-tbl{max-width:820px;margin:0 auto;border:1px solid var(--c-line);border-radius:16px;overflow:hidden;background:#fff;}
+      #page-landing .lp-tbl table{width:100%;border-collapse:collapse;font-size:14px;}
+      #page-landing .lp-tbl th,#page-landing .lp-tbl td{padding:13px 12px;text-align:center;border-bottom:1px solid var(--c-line);}
+      #page-landing .lp-tbl th:first-child,#page-landing .lp-tbl td:first-child{text-align:left;font-weight:600;color:var(--c-ink);}
+      #page-landing .lp-tbl thead th{font-size:13px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;}
+      #page-landing .lp-tbl .us{background:#f3f0ff;font-weight:900;color:var(--c-brand);}
+      #page-landing .lp-yes{color:#2bb6a0;font-weight:900;}
+      #page-landing .lp-no{color:#d05a7a;font-weight:900;}
+
+      /* testimonials */
+      #page-landing .lp-quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+      #page-landing .lp-quote{border-radius:16px;padding:22px;font-size:14px;}
+      #page-landing .lp-quote .who{margin-top:14px;font-weight:800;font-size:13px;}
+      #page-landing .lp-logos{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin-top:34px;color:#b9b9cc;font-weight:800;letter-spacing:.05em;font-size:15px;}
+
+      /* final banner */
+      #page-landing .lp-final{background:linear-gradient(120deg,#2a2350,#4a3fc0);color:#fff;text-align:center;padding:64px 0;}
+      #page-landing .lp-final h2{color:#fff;}
+      #page-landing .lp-final .lp-sub{color:#cfc9f0;}
+      #page-landing .lp-benes{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:6px 0 26px;color:#e7e3ff;font-size:14px;}
+      #page-landing .lp-benes span{padding:0 16px;}
+
+      /* footer */
+      #page-landing .lp-foot{background:#14112b;color:#9a95bd;text-align:center;padding:30px 0;font-size:13px;}
+
+      @media(max-width:820px){
+        #page-landing .lp-hero h1{font-size:36px;}
+        #page-landing .lp-steps,#page-landing .lp-perks,#page-landing .lp-grid,#page-landing .lp-quotes{grid-template-columns:1fr;}
+        #page-landing .lp-row{grid-template-columns:1fr;gap:18px;}#page-landing .lp-row:nth-child(even) .lp-rowimg{order:0;}
+        #page-landing .lp-tbl{overflow-x:auto;}
+      }
     </style>
 
-    <!-- editor-only helper bar; delete this line when you go live -->
-    <div class="lp-editbar">✎ LANDING PAGE TEMPLATE — edit the text between the &lt;!-- EDIT --&gt; markers in index.html · <a href="#" onclick="goMemberDashboard();return false;" style="color:#bfe3bf;text-decoration:underline;">back to dashboard</a></div>
+    <!-- editor-only note; delete this line before going live -->
+    <div style="background:#1c2a1c;color:#bfe3bf;font-size:12px;text-align:center;padding:7px;">✎ LANDING TEMPLATE — edit text at the &lt;!-- EDIT --&gt; markers · <a href="#" onclick="goMemberDashboard();return false;" style="color:#bfe3bf;text-decoration:underline;">back to dashboard</a></div>
 
-    <!-- ── HERO ─────────────────────────────────────────── -->
-    <header class="lp-hero"><div class="lp-wrap">
+    <!-- PROMO BAR -->
+    <div class="lp-promo"><!-- EDIT promo -->✦ Founding Members — the first 200 get lifetime access. <a href="#lp-pricing" onclick="event.preventDefault();document.getElementById('lp-pricing').scrollIntoView({behavior:'smooth'});">Claim your spot →</a></div>
+
+    <!-- HEADER -->
+    <div class="lw"><div class="lp-head">
+      <div class="lp-logo">COSMIC <b>INTENTIONS</b></div>
+      <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-primary" style="padding:9px 18px;font-size:14px;"><!-- EDIT -->Get Started</a>
+    </div></div>
+
+    <!-- HERO -->
+    <header class="lp-hero"><div class="lw">
       <div class="lp-eyebrow"><!-- EDIT eyebrow -->Your personal operating system for life design</div>
-      <h1><!-- EDIT headline -->Become who you intend to be.</h1>
-      <p><!-- EDIT subhead -->Write your goals as “I AM” truths. Get an AI roadmap to reach them. Visualize, meditate, and hear them in your own voice — then track the reps until the identity is simply yours.</p>
+      <h1><!-- EDIT headline -->Become who you <span>intend to be.</span></h1>
+      <p><!-- EDIT subhead -->Write your goals as “I AM” truths, get an AI roadmap to reach them, and hear them in your own voice on loop — until the identity is simply yours.</p>
       <div class="lp-cta">
-        <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT primary CTA -->Start free</a>
-        <a href="#lp-features" class="lp-btn lp-ghost"><!-- EDIT secondary CTA -->See the features</a>
+        <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-primary"><!-- EDIT -->Start 7-day free trial →</a>
+        <a href="#lp-features" class="lp-btn lp-ghost"><!-- EDIT -->See how it works</a>
       </div>
+      <div class="lp-trust"><!-- EDIT trust row -->
+        <span>★★★★★ <b>loved by early members</b></span><span>·</span><span>7-day free trial</span><span>·</span><span>Cancel anytime</span>
+      </div>
+      <div class="lp-shot"><!-- EDIT: replace with a hero screenshot of the app -->[ app screenshot goes here ]</div>
     </div></header>
 
-    <!-- ── FEATURES ─────────────────────────────────────── -->
-    <section class="lp-sec" id="lp-features"><div class="lp-wrap">
-      <h2><!-- EDIT section title -->Everything inside</h2>
-      <div class="lp-sub"><!-- EDIT section subtitle -->One system, from intention to identity.</div>
+    <!-- HOW IT WORKS -->
+    <section><div class="lw">
+      <div class="lp-eyebrow" style="text-align:center;"><!-- EDIT -->How it works</div>
+      <h2><!-- EDIT -->Three steps to a new identity</h2>
+      <div class="lp-sub"><!-- EDIT -->Not a library you scroll — a loop you live.</div>
+      <div class="lp-steps">
+        <div class="lp-step"><div class="n">1</div><h3><!-- EDIT -->Write your “I AM”</h3><p><!-- EDIT -->Turn any goal into a precise identity statement — AI helps in one tap.</p></div>
+        <div class="lp-step"><div class="n">2</div><h3><!-- EDIT -->Get your roadmap</h3><p><!-- EDIT -->Ten concrete steps, drilled down as deep as you need.</p></div>
+        <div class="lp-step"><div class="n">3</div><h3><!-- EDIT -->Live the loop</h3><p><!-- EDIT -->Hear it, see it, meditate on it, and track the daily reps.</p></div>
+      </div>
+    </div></section>
+
+    <!-- BENEFIT CARDS -->
+    <section class="lp-soft"><div class="lw">
+      <h2><!-- EDIT -->Everything you get</h2>
+      <div class="lp-sub"><!-- EDIT -->One membership, the whole system.</div>
+      <div class="lp-perks">
+        <div class="lp-perk" style="background:linear-gradient(135deg,#6b4fe0,#8f7bf0);"><div class="i">✦</div><h3><!-- EDIT -->Mind Loop audio</h3><p>Your “I AM” in a voice, on loop — day &amp; sleep.</p></div>
+        <div class="lp-perk" style="background:linear-gradient(135deg,#2bb6a0,#43cbb0);"><div class="i">🗺</div><h3><!-- EDIT -->AI roadmaps</h3><p>Expert steps + infinite drill-down per goal.</p></div>
+        <div class="lp-perk" style="background:linear-gradient(135deg,#e0a03a,#f0c060);"><div class="i">🎬</div><h3><!-- EDIT -->Visualization</h3><p>3, 10 &amp; open sessions with your art &amp; voice.</p></div>
+        <div class="lp-perk" style="background:linear-gradient(135deg,#4a6fd0,#6b8fe0);"><div class="i">◎</div><h3><!-- EDIT -->Daily rings</h3><p>Review · Visualize · Meditate → a Perfect Day.</p></div>
+        <div class="lp-perk" style="background:linear-gradient(135deg,#c75a8c,#e079a8);"><div class="i">🌙</div><h3><!-- EDIT -->Evening wrap-up</h3><p>Your day, written back as a warm story.</p></div>
+      </div>
+    </div></section>
+
+    <!-- ALTERNATING FEATURE ROWS -->
+    <section id="lp-features"><div class="lw">
+      <div class="lp-row">
+        <div><div class="lp-eyebrow"><!-- EDIT -->The differentiator</div><h3><!-- EDIT -->The Mind Loop</h3>
+          <p><!-- EDIT -->Your own goals, spoken in a calm voice and looped through the day and as you sleep. Belief is built by repetition — and this is the only app that loops <em>your</em> words.</p>
+          <ul><li>Day &amp; sleep modes, 20 min to all night</li><li>Impressions counter — every rep you bank</li></ul>
+        </div>
+        <div class="lp-rowimg"><!-- EDIT: Mind Loop screenshot -->[ Mind Loop player ]</div>
+      </div>
+      <div class="lp-row">
+        <div><div class="lp-eyebrow"><!-- EDIT -->Plan</div><h3><!-- EDIT -->AI roadmap with drill-down</h3>
+          <p><!-- EDIT -->Every goal gets ten concrete steps. Stuck? Break any step down into sharper sub-steps, as far as you need to go.</p>
+          <ul><li>Learn From the Greats — real videos &amp; sources</li><li>Mindset library: affirmations, beliefs, quotes</li></ul>
+        </div>
+        <div class="lp-rowimg"><!-- EDIT: roadmap screenshot -->[ Roadmap + drill-down ]</div>
+      </div>
+      <div class="lp-row">
+        <div><div class="lp-eyebrow"><!-- EDIT -->Practice</div><h3><!-- EDIT -->Live it every day</h3>
+          <p><!-- EDIT -->Small, satisfying daily reps that stack into a streak — and proof you’re becoming the person.</p>
+          <ul><li>Habits &amp; Today-I-Will, by time of day</li><li>Wins Wall — log every micro-win</li></ul>
+        </div>
+        <div class="lp-rowimg"><!-- EDIT: dashboard screenshot -->[ Rings, habits &amp; wins ]</div>
+      </div>
+    </div></section>
+
+    <!-- FEATURE GRID -->
+    <section class="lp-soft"><div class="lw">
+      <h2><!-- EDIT -->Every feature, in one place</h2><div class="lp-sub">&nbsp;</div>
       <div class="lp-grid">
-        <!-- EDIT each card: icon, title, description -->
-        <div class="lp-card"><div class="lp-ico">✍️</div><h3>Write &amp; track your goals</h3><p>Turn any dream into a precise “I AM” intention with a date and category, on a dashboard you own.</p></div>
-        <div class="lp-card"><div class="lp-ico">🗺</div><h3>AI roadmap + drill-down</h3><p>Ten expert steps per goal — break any step down into sharper sub-steps, as deep as you need.</p></div>
-        <div class="lp-card"><div class="lp-ico">✦</div><h3>The Mind Loop</h3><p>Your “I AM” statements spoken in a calm voice, looped through the day and as you sleep.</p></div>
-        <div class="lp-card"><div class="lp-ico">🎬</div><h3>Visualization &amp; meditation</h3><p>Guided 3, 10 &amp; open sessions with your goal, your art, and your voice-over.</p></div>
-        <div class="lp-card"><div class="lp-ico">◎</div><h3>Daily rings &amp; habits</h3><p>Review · Visualize · Meditate → a Perfect Day. Small reps that stack into a streak.</p></div>
-        <div class="lp-card"><div class="lp-ico">🌙</div><h3>Evening wrap-up</h3><p>AI writes your day back to you as a warm short story — proof you moved.</p></div>
+        <div class="lp-fcard"><div class="i">✍️</div><div><h4>Goal writing &amp; tracking</h4><p>“I AM” intentions with dates, categories &amp; vision images.</p></div></div>
+        <div class="lp-fcard"><div class="i">🗺</div><div><h4>AI roadmap + drill-down</h4><p>10 steps per goal, broken down infinitely.</p></div></div>
+        <div class="lp-fcard"><div class="i">✦</div><div><h4>Mind Loop</h4><p>Your affirmations, looped, day and night.</p></div></div>
+        <div class="lp-fcard"><div class="i">🎬</div><div><h4>Visualization &amp; meditation</h4><p>Guided sessions, timers &amp; recitation players.</p></div></div>
+        <div class="lp-fcard"><div class="i">◎</div><div><h4>Rings, habits &amp; wins</h4><p>Daily practice that builds a streak.</p></div></div>
+        <div class="lp-fcard"><div class="i">🌙</div><div><h4>AI evening wrap-up</h4><p>Your day written back to you as a story.</p></div></div>
       </div>
     </div></section>
 
-    <!-- ── PRICING ──────────────────────────────────────── -->
-    <section class="lp-sec"><div class="lp-wrap">
-      <h2><!-- EDIT pricing title -->Simple pricing</h2>
-      <div class="lp-sub"><!-- EDIT pricing subtitle -->The same price as Headspace &amp; Calm.</div>
-      <div class="lp-plans">
-        <div class="lp-plan lp-best">
-          <h3><!-- EDIT -->Annual</h3>
-          <div class="lp-price">$69.99<span>/yr</span></div>
-          <div style="color:var(--lp-muted);font-size:13px;margin:6px 0 4px;"><!-- EDIT -->just $5.83 / month</div>
-        </div>
-        <div class="lp-plan">
-          <h3><!-- EDIT -->Monthly</h3>
-          <div class="lp-price">$12.99<span>/mo</span></div>
-          <div style="color:var(--lp-muted);font-size:13px;margin:6px 0 4px;"><!-- EDIT -->cancel anytime</div>
-        </div>
-      </div>
+    <!-- COMPARISON TABLE -->
+    <section><div class="lw">
+      <h2><!-- EDIT -->Cosmic Intentions vs. the rest</h2>
+      <div class="lp-sub"><!-- EDIT -->A manifestation <em>system</em> — not just a library to relax to.</div>
+      <div class="lp-tbl"><table>
+        <thead><tr><th></th><th class="us">Cosmic Intentions</th><th><!-- EDIT -->Calm</th><th><!-- EDIT -->Headspace</th><th><!-- EDIT -->To Be Magnetic</th></tr></thead>
+        <tbody>
+          <tr><td>Personalized “I AM” voice loop</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
+          <tr><td>AI roadmap with drill-down</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
+          <tr><td>Guided visualization</td><td class="us">✓</td><td class="lp-yes">✓</td><td class="lp-yes">✓</td><td class="lp-yes">✓</td></tr>
+          <tr><td>Meditation &amp; timers</td><td class="us">✓</td><td class="lp-yes">✓</td><td class="lp-yes">✓</td><td class="lp-no">✕</td></tr>
+          <tr><td>Daily rings, habits &amp; wins</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
+          <tr><td>AI evening story recap</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
+          <tr><td>Price / year</td><td class="us">$69.99</td><td>$69.99</td><td>$69.99</td><td>$300+</td></tr>
+        </tbody>
+      </table></div>
+      <div style="text-align:center;margin-top:26px;"><a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-primary"><!-- EDIT -->Get Cosmic Intentions →</a></div>
     </div></section>
 
-    <!-- ── FINAL CTA ────────────────────────────────────── -->
-    <section class="lp-final"><div class="lp-wrap">
-      <h2><!-- EDIT -->Your first intention takes a minute.</h2>
-      <p style="color:var(--lp-muted);font-size:18px;margin-bottom:22px;"><!-- EDIT -->Write it. Get the roadmap. Start the loop.</p>
-      <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT -->Start free</a>
+    <!-- TESTIMONIALS -->
+    <section class="lp-soft"><div class="lw">
+      <h2><!-- EDIT -->Hear from early members</h2>
+      <div class="lp-sub"><!-- EDIT: replace with REAL quotes once you have them -->Real words from real users.</div>
+      <div class="lp-quotes">
+        <div class="lp-quote" style="background:#eef0ff;"><!-- EDIT quote 1 -->“Add a real testimonial here — what changed for them.”<div class="who">— Name, detail</div></div>
+        <div class="lp-quote" style="background:#e6f7f3;"><!-- EDIT quote 2 -->“Add a real testimonial here — the specific result.”<div class="who">— Name, detail</div></div>
+        <div class="lp-quote" style="background:#fdf0e0;"><!-- EDIT quote 3 -->“Add a real testimonial here — the emotional hook.”<div class="who">— Name, detail</div></div>
+      </div>
+      <!-- EDIT: only list press you ACTUALLY have. Placeholder below. -->
+      <div class="lp-logos"><span>As featured in…</span><span>[ your press ]</span></div>
     </div></section>
+
+    <!-- FINAL CTA BANNER -->
+    <section class="lp-final" id="lp-pricing"><div class="lw">
+      <h2><!-- EDIT -->Start becoming who you intend to be</h2>
+      <div class="lp-sub"><!-- EDIT -->Same price as Headspace &amp; Calm — a whole system, not just a library.</div>
+      <div class="lp-benes">
+        <span><!-- EDIT -->✓ 7-day free trial</span><span>✓ Every feature unlocked</span><span>✓ Cancel anytime</span>
+      </div>
+      <div style="font-size:40px;font-weight:900;margin-bottom:4px;"><!-- EDIT -->$69.99<span style="font-size:16px;font-weight:600;opacity:.8;">/yr</span> <span style="opacity:.6;">·</span> $12.99<span style="font-size:16px;font-weight:600;opacity:.8;">/mo</span></div>
+      <div style="margin-top:20px;"><a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT -->Start 7-day free trial →</a></div>
+    </div></section>
+
+    <!-- FOOTER -->
+    <div class="lp-foot"><!-- EDIT -->© 2026 Cosmic Intentions · cosmicintentions.com · Terms · Privacy</div>
 
   </div>
 
