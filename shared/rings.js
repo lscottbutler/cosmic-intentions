@@ -192,29 +192,29 @@ export function renderRings() {
             : `background:#161616;border:2px solid #666;`}">
           ${done ? '✓' : p.icon}</span>
         <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;
-          color:#fff;">${p.label}</span>
+          color:var(--widget-text);">${p.label}</span>
       </button>`;
   }).join('');
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid ${perfect ? DONE : '#2a2a2a'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
+    <div style="background:var(--widget-bg);border:1px solid ${perfect ? DONE : 'var(--widget-border)'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#fff;font-weight:800;letter-spacing:1px;">◈ TODAY'S 3 PILLARS</div>
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#fff;">🔥 ${streak} day${streak === 1 ? '' : 's'}</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);font-weight:800;letter-spacing:1px;">◈ TODAY'S 3 PILLARS</div>
+        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);">🔥 ${streak} day${streak === 1 ? '' : 's'}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
         ${cells}
       </div>
-      ${perfect ? `<div style="text-align:center;font-family:var(--vault-mono);font-size:10px;color:#fff;letter-spacing:0.5px;margin-bottom:10px;">✦ PERFECT DAY — all 3 pillars closed</div>` : ''}
-      <div style="display:flex;justify-content:space-between;font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:1px;margin-bottom:4px;">
+      ${perfect ? `<div style="text-align:center;font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);letter-spacing:0.5px;margin-bottom:10px;">✦ PERFECT DAY — all 3 pillars closed</div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-family:var(--vault-mono);font-size:8px;color:var(--widget-text);letter-spacing:1px;margin-bottom:4px;">
         <span>MOMENTUM</span><span>${score}</span>
       </div>
       <div style="height:6px;background:#1A1A1A;border-radius:3px;overflow:hidden;">
         <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${BRAND},#FF7A1A);border-radius:3px;transition:width .3s;"></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:#fff;">⛨ ${tier.name}</span>
-        <span style="font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
+        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:var(--widget-text);">⛨ ${tier.name}</span>
+        <span style="font-family:var(--vault-mono);font-size:8px;color:var(--widget-text);letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
       </div>
     </div>`;
 }

@@ -119,7 +119,7 @@ export function pbMoveHabit(id, dir) {
 function _habitRow(h, on) {
   return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
     <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
-    <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : '#ddd'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
+    <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
   </div>`;
 }
 
@@ -132,7 +132,7 @@ function _renderRun(cat, elId) {
   const d = _done();
   if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>`; return; }
   const done = list.filter(h => d[h.id]).length;
-  el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:#fff;opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`
+  el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--widget-text);opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`
     + list.map(h => _habitRow(h, !!d[h.id])).join('');
 }
 export function renderMorningRun() { _renderRun('MORNING', 'morningRunBody'); }
@@ -162,7 +162,7 @@ export function renderHabits() {
   const list = shown;
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
       <details class="rm-drop" ${_open ? 'open' : ''} ontoggle="habitsToggleSection(this.open)">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;">◈ DAILY TRACKER</span>

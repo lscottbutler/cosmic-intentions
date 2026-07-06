@@ -40,6 +40,7 @@ body {
   --white:  #1A1A1A;   --bg:      #1A1A1A;
   --off:    #252525;   --card:    #1A1A1A;   --sunken: #111111;   --ink: #0A0A0A;
   --widget-bg: #141414;  --widget-band: #2E2E2E;   /* citadel widget card + section (light theme overrides to brown) */
+  --widget-text:#fff;  --widget-border:#2a2a2a;   /* on-card text + card border; kids theme flips these for white cards */
   /* text */
   --black:  #EFEFEF;   --text:    #FFFFFF;   --on-ink:#FFFFFF;   --mid:  #AAAAAA;  --muted: #888888;  --text-warm:#9A948F;
   /* lines */
@@ -72,6 +73,7 @@ body {
 /* WHITE + primary colors (kids) */
 [data-theme="kids"] {
   --white:#FFFFFF; --bg:#FFFFFF; --off:#FFFFFF; --card:#FFFFFF; --sunken:#FFFFFF; --ink:#1D3557;
+  --widget-bg:#FFFFFF; --widget-band:#EFEFEF; --widget-text:#1D3557; --widget-border:#E2E2E2;
   --black:#1D3557; --text:#1D3557; --mid:#4A6FA5; --muted:#6A8FC0; --text-warm:#7A6A4A;
   --border:#FFCE3A; --border-2:#FFE08A;
   --brand:#FF8C00; --accent:#E63946; --teal-ui:#17A2B8; --danger:#E63946; --success:#2FA94B; --pink:#FF5FA2; --purple:#7B5CD6; --maroon:#E63946;

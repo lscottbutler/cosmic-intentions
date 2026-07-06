@@ -140,7 +140,7 @@ export function renderWins() {
     <div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #1A1A1A;">
       <span style="color:${BRAND};font-size:13px;line-height:1.5;flex-shrink:0;">✦</span>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;color:#ddd;line-height:1.5;">${esc(w.text)}</div>
+        <div style="font-size:13px;color:var(--widget-text);line-height:1.5;">${esc(w.text)}</div>
         <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:2px;">${_label(w.date)}</div>
       </div>
       <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;background:none;border:none;color:#444;font-size:14px;cursor:pointer;line-height:1;padding:0 2px;">×</button>
@@ -153,7 +153,7 @@ export function renderWins() {
     : `<div style="font-size:12px;color:#505058;font-style:italic;padding:6px 0;">No wins yet — log your first one above.</div>`;
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div style="font-family:var(--vault-mono);font-size:10px;color:${BRAND};font-weight:800;letter-spacing:1px;">◈ WINS WALL</div>
         <div style="font-family:var(--vault-mono);font-size:10px;color:${today > 0 ? BRAND : '#505058'};">${today} today · ${wins.length} all-time</div>

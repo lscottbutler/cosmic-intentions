@@ -447,7 +447,7 @@ export function renderWrapup() {
   const todayEl = document.getElementById('todayWillWidget');
   if (todayEl) {
     todayEl.innerHTML = chk ? `
-      <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
             <span style="font-size:18pt;font-weight:800;line-height:1.15;">TODAY I WILL TAKE THE FOLLOWING ACTIONS</span>
@@ -470,7 +470,7 @@ export function renderWrapup() {
   }
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
       <details class="rm-drop" ${_wrapupOpen ? 'open' : ''} ontoggle="wrapupCardToggle(this.open)">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
@@ -481,10 +481,10 @@ export function renderWrapup() {
         </summary>
         <div style="margin-top:12px;">
           <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
-          <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 14px;">${daily}</p>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
 
           <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-          <p style="font-size:13px;line-height:1.6;color:#ddd;margin:0 0 12px;">${weekly}</p>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 12px;">${weekly}</p>
 
           <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
             style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">

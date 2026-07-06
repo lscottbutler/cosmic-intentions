@@ -313,12 +313,12 @@ export function renderSleepLoop() {
   const modeBtn = (m, label) => `<button onclick="sleepLoopSetMode('${m}')"
     style="flex:1;background:${_mode === m ? BRAND : 'transparent'};border:1px solid ${_mode === m ? BRAND : '#333'};border-radius:6px;padding:7px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:${_mode === m ? '#0a0a0a' : '#888'};cursor:pointer;">${label}</button>`;
 
-  const secLbl = 'color:#fff;font-weight:800;font-size:10px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;';
+  const secLbl = 'color:var(--widget-text);font-weight:800;font-size:10px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;';
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid ${_playing ? DONE : '#2a2a2a'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
+    <div style="background:var(--widget-bg);border:1px solid ${_playing ? DONE : 'var(--widget-border)'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 13px;">
         <div style="min-width:0;">
-          <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;text-transform:uppercase;">Mind Loop</div>
+          <div style="font-size:15px;font-weight:800;color:var(--widget-text);letter-spacing:.5px;text-transform:uppercase;">Mind Loop</div>
           <div style="font-size:12px;color:#9a9a9a;margin-top:3px;line-height:1.4;">${day ? 'One goal + one mindset line at :00 &amp; :30 each hour.' : 'Your favorited goals, spoken on a gentle rotation.'}</div>
         </div>
         <div style="flex-shrink:0;margin-left:12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
