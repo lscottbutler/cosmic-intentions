@@ -71,7 +71,7 @@ body {
 }
 /* WHITE + primary colors (kids) */
 [data-theme="kids"] {
-  --white:#FFFFFF; --bg:#FFFFFF; --off:#FFF6E0; --card:#FFFFFF; --sunken:#FFF0CF; --ink:#1D3557;
+  --white:#FFFFFF; --bg:#FFFFFF; --off:#FFFFFF; --card:#FFFFFF; --sunken:#FFFFFF; --ink:#1D3557;
   --black:#1D3557; --text:#1D3557; --mid:#4A6FA5; --muted:#6A8FC0; --text-warm:#7A6A4A;
   --border:#FFCE3A; --border-2:#FFE08A;
   --brand:#FF8C00; --accent:#E63946; --teal-ui:#17A2B8; --danger:#E63946; --success:#2FA94B; --pink:#FF5FA2; --purple:#7B5CD6; --maroon:#E63946;
