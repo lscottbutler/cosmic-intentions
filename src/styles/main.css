@@ -1592,6 +1592,13 @@ input, textarea, select {
 }
 .cb-display br + br { display: none; }
 .cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: var(--text) !important; text-transform: uppercase; letter-spacing: 0.03em; }
+
+/* ===== TEMP TESTING — content-block text RED to spot each block's placement.
+   Delete this whole block to revert to normal colors. ===== */
+.cb-display, .cb-display *,
+.vault-main .cb-display, .vault-main .cb-display *,
+.dash-note-block, .dash-note-block * { color: #ff0000 !important; }
+/* ===== END TEMP TESTING ===== */
 .cb-display strong { font-weight: 700; }
 .cb-display em { font-style: italic; }
 .cb-display a { color: var(--accent) !important; text-decoration: underline; }
