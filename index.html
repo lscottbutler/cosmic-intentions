@@ -49,6 +49,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <button class="tnav-btn" onclick="navTo('setup')">My Goals</button>
       <button class="tnav-btn" onclick="navTo('habits')">My Habits</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
+      <button class="tnav-btn" onclick="navTo('landing')">Landing Page</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
       <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
       <div class="ham-menu-sep"></div>
@@ -825,6 +826,100 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <p style="font-size:13px;color:var(--muted);margin:4px 0 20px;">Everything you've done — grouped by goal, filtered, and counted.</p>
       <div id="winsPageBody"></div>
     </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LANDING PAGE  (public marketing page — navTo('landing'))
+       FILL-IN TEMPLATE. Every editable spot is marked  <!-- EDIT ... -->
+       Styles are scoped under #page-landing so they don't touch the app.
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="page" id="page-landing">
+    <style>
+      #page-landing{--lp-bg:#0b0d17;--lp-card:#171b33;--lp-line:#2a2f52;--lp-text:#eef0ff;--lp-muted:#a6acd8;--lp-gold:#f4d47c;--lp-mint:#8fe3c4;
+        background:var(--lp-bg);color:var(--lp-text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;}
+      #page-landing .lp-wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+      #page-landing .lp-editbar{background:#1c2a1c;border-bottom:1px solid #345034;color:#bfe3bf;font-size:12px;text-align:center;padding:8px;letter-spacing:.04em;}
+      #page-landing .lp-btn{display:inline-block;padding:13px 24px;border-radius:999px;font-weight:800;font-size:15px;cursor:pointer;border:1px solid transparent;text-decoration:none;}
+      #page-landing .lp-gold{background:linear-gradient(180deg,#f7dd8f,#e7bd55);color:#2a2205;}
+      #page-landing .lp-ghost{border-color:var(--lp-line);color:var(--lp-text);}
+      #page-landing .lp-eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:12px;color:var(--lp-gold);font-weight:800;}
+      #page-landing .lp-hero{text-align:center;padding:70px 0 56px;}
+      #page-landing .lp-hero h1{font-size:52px;font-weight:900;line-height:1.03;margin:14px auto 14px;max-width:760px;}
+      #page-landing .lp-hero p{font-size:19px;color:var(--lp-muted);max-width:660px;margin:0 auto 26px;}
+      #page-landing .lp-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+      #page-landing .lp-sec{padding:56px 0;border-top:1px solid var(--lp-line);}
+      #page-landing .lp-sec h2{font-size:34px;font-weight:900;text-align:center;margin-bottom:8px;}
+      #page-landing .lp-sec .lp-sub{color:var(--lp-muted);text-align:center;max-width:620px;margin:0 auto 40px;font-size:16px;}
+      #page-landing .lp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+      #page-landing .lp-card{background:var(--lp-card);border:1px solid var(--lp-line);border-radius:16px;padding:24px;}
+      #page-landing .lp-card .lp-ico{font-size:26px;margin-bottom:10px;}
+      #page-landing .lp-card h3{font-size:18px;margin-bottom:6px;}
+      #page-landing .lp-card p{color:var(--lp-muted);font-size:14.5px;}
+      #page-landing .lp-plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:620px;margin:0 auto;}
+      #page-landing .lp-plan{background:var(--lp-card);border:1px solid var(--lp-line);border-radius:18px;padding:28px;text-align:center;}
+      #page-landing .lp-plan.lp-best{border-color:var(--lp-gold);}
+      #page-landing .lp-plan h3{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--lp-muted);}
+      #page-landing .lp-plan .lp-price{font-size:42px;font-weight:900;margin:10px 0 2px;}
+      #page-landing .lp-plan .lp-price span{font-size:15px;color:var(--lp-muted);font-weight:600;}
+      #page-landing .lp-final{text-align:center;padding:72px 0;}
+      #page-landing .lp-final h2{font-size:38px;font-weight:900;margin-bottom:10px;}
+      @media(max-width:820px){#page-landing .lp-hero h1{font-size:36px;}#page-landing .lp-grid{grid-template-columns:1fr;}#page-landing .lp-plans{grid-template-columns:1fr;}}
+    </style>
+
+    <!-- editor-only helper bar; delete this line when you go live -->
+    <div class="lp-editbar">✎ LANDING PAGE TEMPLATE — edit the text between the &lt;!-- EDIT --&gt; markers in index.html · <a href="#" onclick="goMemberDashboard();return false;" style="color:#bfe3bf;text-decoration:underline;">back to dashboard</a></div>
+
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <header class="lp-hero"><div class="lp-wrap">
+      <div class="lp-eyebrow"><!-- EDIT eyebrow -->Your personal operating system for life design</div>
+      <h1><!-- EDIT headline -->Become who you intend to be.</h1>
+      <p><!-- EDIT subhead -->Write your goals as “I AM” truths. Get an AI roadmap to reach them. Visualize, meditate, and hear them in your own voice — then track the reps until the identity is simply yours.</p>
+      <div class="lp-cta">
+        <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT primary CTA -->Start free</a>
+        <a href="#lp-features" class="lp-btn lp-ghost"><!-- EDIT secondary CTA -->See the features</a>
+      </div>
+    </div></header>
+
+    <!-- ── FEATURES ─────────────────────────────────────── -->
+    <section class="lp-sec" id="lp-features"><div class="lp-wrap">
+      <h2><!-- EDIT section title -->Everything inside</h2>
+      <div class="lp-sub"><!-- EDIT section subtitle -->One system, from intention to identity.</div>
+      <div class="lp-grid">
+        <!-- EDIT each card: icon, title, description -->
+        <div class="lp-card"><div class="lp-ico">✍️</div><h3>Write &amp; track your goals</h3><p>Turn any dream into a precise “I AM” intention with a date and category, on a dashboard you own.</p></div>
+        <div class="lp-card"><div class="lp-ico">🗺</div><h3>AI roadmap + drill-down</h3><p>Ten expert steps per goal — break any step down into sharper sub-steps, as deep as you need.</p></div>
+        <div class="lp-card"><div class="lp-ico">✦</div><h3>The Mind Loop</h3><p>Your “I AM” statements spoken in a calm voice, looped through the day and as you sleep.</p></div>
+        <div class="lp-card"><div class="lp-ico">🎬</div><h3>Visualization &amp; meditation</h3><p>Guided 3, 10 &amp; open sessions with your goal, your art, and your voice-over.</p></div>
+        <div class="lp-card"><div class="lp-ico">◎</div><h3>Daily rings &amp; habits</h3><p>Review · Visualize · Meditate → a Perfect Day. Small reps that stack into a streak.</p></div>
+        <div class="lp-card"><div class="lp-ico">🌙</div><h3>Evening wrap-up</h3><p>AI writes your day back to you as a warm short story — proof you moved.</p></div>
+      </div>
+    </div></section>
+
+    <!-- ── PRICING ──────────────────────────────────────── -->
+    <section class="lp-sec"><div class="lp-wrap">
+      <h2><!-- EDIT pricing title -->Simple pricing</h2>
+      <div class="lp-sub"><!-- EDIT pricing subtitle -->The same price as Headspace &amp; Calm.</div>
+      <div class="lp-plans">
+        <div class="lp-plan lp-best">
+          <h3><!-- EDIT -->Annual</h3>
+          <div class="lp-price">$69.99<span>/yr</span></div>
+          <div style="color:var(--lp-muted);font-size:13px;margin:6px 0 4px;"><!-- EDIT -->just $5.83 / month</div>
+        </div>
+        <div class="lp-plan">
+          <h3><!-- EDIT -->Monthly</h3>
+          <div class="lp-price">$12.99<span>/mo</span></div>
+          <div style="color:var(--lp-muted);font-size:13px;margin:6px 0 4px;"><!-- EDIT -->cancel anytime</div>
+        </div>
+      </div>
+    </div></section>
+
+    <!-- ── FINAL CTA ────────────────────────────────────── -->
+    <section class="lp-final"><div class="lp-wrap">
+      <h2><!-- EDIT -->Your first intention takes a minute.</h2>
+      <p style="color:var(--lp-muted);font-size:18px;margin-bottom:22px;"><!-- EDIT -->Write it. Get the roadmap. Start the loop.</p>
+      <a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT -->Start free</a>
+    </div></section>
+
   </div>
 
   <div class="page" id="page-admin">
