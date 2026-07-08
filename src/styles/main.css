@@ -1582,9 +1582,9 @@ input, textarea, select {
 .dash-note-block img { max-width: 100% !important; height: auto !important; }
 .dash-note-block a { text-decoration: underline !important; }
 
-/* Column-A welcome/president block — WHITE text, full-width, symmetric (left=right) padding */
+/* Column-A welcome/president block — theme-aware text (dark on light themes, white on dark), full-width, symmetric (left=right) padding */
 .vault-main .cb-display,
-.vault-main .cb-display * { color: #ffffff !important; text-decoration: none !important; }
+.vault-main .cb-display * { color: var(--text) !important; text-decoration: none !important; }
 .vault-main .cb-display { padding: 16px !important; box-sizing: border-box; }
 .vault-main .cb-display * {
   width: auto !important;
