@@ -1,5 +1,6 @@
 import { RM_CIRCLE } from './card-builder.js';
 import { LS, esc } from '../app.js';
+import { setTaskWin } from './wins.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
    A customizable daily habit checklist, grouped into time-of-day
    / type banners: MORNING · DAY · EVENING · BEDTIME · HEALTH.
@@ -63,8 +64,16 @@ function _refresh() {
 /* ── Tick a habit for today ───────────────────────────── */
 export function habitToggle(id) {
   const d = _done();
+  const nowOn = !d[id];
   if (d[id]) delete d[id]; else d[id] = true;
   LS.set(_doneKey(), d);
+  // Completing a MORNING RUN THROUGH task lands it on the Wall of Wins
+  // (add on check, remove on uncheck — idempotent via the habit's src key).
+  const h = getHabitList().find(x => x.id === id);
+  if (h && _cat(h) === 'MORNING') {
+    // Date-scoped src key so each day's completion is its own win (and untick removes just today's).
+    setTaskWin('habit_' + id + '_' + _todayKey(), h.name, nowOn, { category: 'growth' });
+  }
   renderHabits();
   renderRunThroughs();
 }
@@ -132,8 +141,31 @@ function _renderRun(cat, elId) {
   const d = _done();
   if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>`; return; }
   const done = list.filter(h => d[h.id]).length;
+  // MORNING: completed tasks move to the Wall of Wins, so hide them here (they
+  // reset and reappear tomorrow via the per-day done state). Other run-throughs
+  // keep the classic struck-through view.
+  const rows = cat === 'MORNING' ? list.filter(h => !d[h.id]) : list;
   el.innerHTML = `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--widget-text);opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`
-    + list.map(h => _habitRow(h, !!d[h.id])).join('');
+    + rows.map(h => _habitRow(h, !!d[h.id])).join('')
+    + (cat === 'MORNING' ? _runThroughTally(done, list.length) : '');
+}
+
+/* Two-box completion tally under the MORNING run-through. Box 1 = count done,
+   Box 2 = how many left + encouragement (or a done message when all are ticked). */
+function _runThroughTally(done, total) {
+  const left = total - done;
+  const msg = left > 0
+    ? `${left} TO GO — GOOD JOB, SCOTT!`
+    : `ALL DONE, SCOTT — CRUSHED IT ✦`;
+  return `<div style="display:flex;gap:8px;margin-top:12px;">
+    <div style="flex:1;background:#2FA94B;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
+      <div style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;opacity:.9;">TASKS COMPLETE</div>
+      <div style="font-size:22px;font-weight:800;line-height:1.15;">${done}</div>
+    </div>
+    <div style="flex:2;background:#48B860;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px;letter-spacing:.4px;line-height:1.3;">
+      ${msg}
+    </div>
+  </div>`;
 }
 export function renderMorningRun() { _renderRun('MORNING', 'morningRunBody'); }
 export function renderDayRun()     { _renderRun('DAY',     'dayRunBody'); }
