@@ -1597,7 +1597,13 @@ input, textarea, select {
 
 .cb-display strong { font-weight: 700; }
 .cb-display em { font-style: italic; }
-.cb-display a { color: var(--accent) !important; text-decoration: underline; }
+.cb-display a { color: var(--accent) !important; }
+
+/* No underlines in dashboard content blocks — CMS text often ships <u>/inline
+   underline or link wrappers; strip them all (overrides the link-underline rules
+   above on order + anchor specificity). */
+.cb-display, .cb-display *, .cb-display a,
+.dash-note-block, .dash-note-block *, .dash-note-block a { text-decoration: none !important; }
 
 /* ── NOTES PAGE ─────────────────────────────────────────── */
 
