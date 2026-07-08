@@ -231,7 +231,7 @@ export function renderHabits() {
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;">◈ DAILY HABITS</span>
           <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-            <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${allDone ? '#4ADE80' : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${done}/${list.length} done</span>
+            <button onclick="event.stopPropagation();navTo('habits')" title="Open My Habits page" aria-label="Open My Habits page" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,0.55);cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
             <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
           </span>
         </summary>
