@@ -147,13 +147,10 @@ function _renderRun(cat, elId) {
   // reset and reappear tomorrow via the per-day done state). Other run-throughs
   // keep the classic struck-through view.
   const rows = cat === 'MORNING' ? list.filter(h => !d[h.id]) : list;
-  // MORNING drops the little "N/M done" line — that count now lives in the green
-  // TASKS COMPLETE box below. Other run-throughs keep the top count line.
-  const countLine = cat === 'MORNING' ? ''
-    : `<div style="font-family:var(--vault-mono);font-size:9px;color:var(--widget-text);opacity:.7;letter-spacing:1px;margin:2px 0 8px;">${done}/${list.length} done</div>`;
-  el.innerHTML = countLine
-    + rows.map(h => _habitRow(h, !!d[h.id])).join('')
-    + (cat === 'MORNING' ? _runThroughTally(done, list.length) : '')
+  // Every run-through shows the green TASKS COMPLETE / N-to-go tally, and the
+  // done/total count lives in that box — so no separate top count line.
+  el.innerHTML = rows.map(h => _habitRow(h, !!d[h.id])).join('')
+    + _runThroughTally(done, list.length)
     + results;
 }
 
@@ -185,7 +182,7 @@ function _dayResults() {
     + `<div style="background:#EAF7EE;border-radius:8px;text-align:center;padding:8px;margin-top:8px;font-weight:800;font-size:12px;color:#2FA94B;letter-spacing:.4px;">✦ ${items.length} DONE TODAY — WELL DONE, SCOTT</div>`;
 }
 
-/* Two-box completion tally under the MORNING run-through. Box 1 = count done,
+/* Two-box completion tally under each run-through. Box 1 = done/total,
    Box 2 = how many left + encouragement (or a done message when all are ticked). */
 function _runThroughTally(done, total) {
   const left = total - done;
