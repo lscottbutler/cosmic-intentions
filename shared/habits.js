@@ -190,11 +190,11 @@ function _runThroughTally(done, total) {
     ? `${left} TO GO — GOOD JOB, SCOTT!`
     : `ALL DONE, SCOTT — CRUSHED IT ✦`;
   return `<div style="display:flex;gap:8px;margin-top:12px;">
-    <div style="flex:1;background:#2FA94B;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
-      <div style="font-family:var(--vault-mono);font-size:8px;letter-spacing:1px;opacity:.9;">TASKS COMPLETE</div>
-      <div style="font-size:22px;font-weight:800;line-height:1.15;">${done}/${total}</div>
+    <div style="flex:1;background:#000;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
+      <div style="font-family:var(--vault-mono);font-size:6px;letter-spacing:1px;opacity:.9;">TASKS COMPLETE</div>
+      <div style="font-size:15px;font-weight:800;line-height:1.15;">${done}/${total}</div>
     </div>
-    <div style="flex:2;background:#48B860;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px;letter-spacing:.4px;line-height:1.3;">
+    <div style="flex:2;background:#000;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
       ${msg}
     </div>
   </div>`;
