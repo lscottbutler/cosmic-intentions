@@ -157,25 +157,32 @@ function _renderRun(cat, elId) {
     + results;
 }
 
-/* End-of-day recap for the EVENING run-through: every win logged TODAY
-   (completed morning tasks + any other wins). Pulls from the Wall of Wins. */
+/* End-of-day recap for the EVENING run-through: everything completed TODAY.
+   Reads today's habit done-state directly (same source as the checkmarks, so it
+   can never drift), plus any non-habit wins logged today (e.g. Today-I-Will). */
 function _dayResults() {
-  const today = _todayKey();
-  const wins = (getWins() || []).filter(w => w.date === today);
+  const d = _done();                       // ci_habits_<today> — what you ticked today
+  const doneHabits = getHabitList().filter(h => d[h.id]).map(h => h.name);
+  // Other wins logged today that aren't habit-sourced, so they aren't double-counted.
+  const otherWins = (getWins() || [])
+    .filter(w => w.date === _todayKey() && !String(w.src || '').startsWith('habit_'))
+    .map(w => w.text);
+  const items = [...doneHabits, ...otherWins].map(t => String(t || '').trim()).filter(Boolean);
+
   const hd = `<div style="display:flex;align-items:center;gap:8px;margin:14px 2px 8px;">
       <div style="flex:1;height:1px;background:var(--widget-border);"></div>
       <span style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1.5px;color:#2FA94B;">TODAY'S RESULTS</span>
       <div style="flex:1;height:1px;background:var(--widget-border);"></div>
     </div>`;
-  if (!wins.length) {
+  if (!items.length) {
     return hd + `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:2px 2px 4px;">Nothing logged yet today — your completed tasks will show here.</div>`;
   }
-  const rows = wins.map(w => `<div style="display:flex;gap:8px;align-items:flex-start;padding:3px 2px;">
+  const rows = items.map(t => `<div style="display:flex;gap:8px;align-items:flex-start;padding:3px 2px;">
       <span style="color:#2FA94B;font-weight:800;flex-shrink:0;font-size:13px;line-height:1.5;">✓</span>
-      <span style="flex:1;font-size:12px;line-height:1.45;color:var(--widget-text);">${esc(w.text)}</span>
+      <span style="flex:1;font-size:12px;line-height:1.45;color:var(--widget-text);">${esc(t)}</span>
     </div>`).join('');
   return hd + rows
-    + `<div style="background:#EAF7EE;border-radius:8px;text-align:center;padding:8px;margin-top:8px;font-weight:800;font-size:12px;color:#2FA94B;letter-spacing:.4px;">✦ ${wins.length} WIN${wins.length === 1 ? '' : 'S'} TODAY — WELL DONE, SCOTT</div>`;
+    + `<div style="background:#EAF7EE;border-radius:8px;text-align:center;padding:8px;margin-top:8px;font-weight:800;font-size:12px;color:#2FA94B;letter-spacing:.4px;">✦ ${items.length} DONE TODAY — WELL DONE, SCOTT</div>`;
 }
 
 /* Two-box completion tally under the MORNING run-through. Box 1 = count done,
