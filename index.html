@@ -426,10 +426,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- Welcome greeting — TOP of Column A, above the welcome box -->
         <div id="dashGreeting" class="dash-greeting">Welcome back</div>
 
-        <!-- ◆ DAILY TRACKER stack — moved to top of Column A -->
-        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
+        <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
+        <!-- Date banner — sits right above the 3 Pillars -->
+        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
         <div id="ringsWidget"></div>
         <!-- MY MORNING RUN THROUGH — the MORNING-category habits -->
         <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
