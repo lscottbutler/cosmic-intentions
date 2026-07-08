@@ -209,13 +209,15 @@ function _renderUserTree(tasks, path, idx) {
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const promoteBtn = depth === 0
       ? `<button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>` : '';
-    const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;border-left:2px solid var(--border);padding-left:7px;` : '';
-    const row = `<div style="display:flex;gap:6px;align-items:center;padding:4px 2px;${indent}">
-      <button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-      <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${d ? 'var(--muted)' : 'var(--text)'};${d ? 'text-decoration:line-through;text-decoration-color:var(--muted);text-decoration-thickness:1px;' : ''}">${esc(u.text)}</span>
-      <button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button>
-      ${promoteBtn}
-      <button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+    const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;` : '';
+    const row = `<div style="background:#fff;border:1px solid var(--border);border-radius:6px;margin-bottom:5px;padding:9px 11px;${indent}">
+      <div style="font-size:12px;line-height:1.45;color:${d ? 'var(--muted)' : 'var(--text)'};${d ? 'text-decoration:line-through;text-decoration-color:var(--muted);text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(u.text)}</div>
+      <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:999px;padding:5px 12px;">
+        <button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
+        <button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button>
+        ${promoteBtn}
+        <button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+      </div>
     </div>`;
     return row + _renderUserTree(u.children, p, idx);
   }).join('');
