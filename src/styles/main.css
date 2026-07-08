@@ -179,9 +179,6 @@ details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
 details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
-/* Morning run-through sits on a solid morning-blue card — force its body text
-   white (task rows are colored per-row in JS, so override with !important). */
-#morningRunBody, #morningRunBody * { color: #fff !important; }
 
 /* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
 .wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }

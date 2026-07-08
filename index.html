@@ -436,14 +436,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- Date banner — sits right above the 3 Pillars -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
         <div id="ringsWidget"></div>
-        <!-- MORNING RUN THROUGH — solid morning-blue card (MORNING-category habits) -->
-        <div style="background:#4A90D9;border:1px solid #4A90D9;border-radius:12px;padding:14px;margin-bottom:8px;">
+        <!-- MY MORNING RUN THROUGH — the MORNING-category habits -->
+        <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
           <details class="rm-drop" open>
-            <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#000;border-radius:10px;cursor:pointer;">
+            <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#4A90D9;border-radius:10px;cursor:pointer;">
               <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;white-space:nowrap;">◈ MORNING RUN THROUGH</span>
               <span class="rm-caret" style="color:#fff;flex-shrink:0;">▾</span>
             </summary>
-            <div id="morningRunBody" style="border:none;border-radius:8px;padding:2px 10px 8px;margin-top:10px;"></div>
+            <div id="morningRunBody" style="border:1px solid #222;border-radius:8px;padding:2px 10px 8px;margin-top:10px;"></div>
           </details>
         </div>
         <!-- MY DAY RUN THROUGH -->
