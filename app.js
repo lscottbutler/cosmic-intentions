@@ -3153,10 +3153,27 @@ export async function generateBBFW(idx, force) {
    Load all blocks from Supabase and inject into [data-block] elements.
    Admin: save individual blocks back.
 ──────────────────────────────────────────────────────── */
+/* Cache of all content blocks (slug -> body) so dynamically re-rendered
+   elements (e.g. the per-goal admin box) can be re-injected without a refetch.
+   window.injectContentBlocks() fills every [data-block] from this cache. */
+const _blockCache = {};
+if (typeof window !== 'undefined') {
+  window.injectContentBlocks = function () {
+    Object.keys(_blockCache).forEach(slug => {
+      const body = _blockCache[slug];
+      document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
+        if (body && body.trim()) { el.innerHTML = body; el.style.display = ''; }
+        else { el.style.display = 'none'; }
+      });
+    });
+  };
+}
+
 async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
   data.forEach(({ slug, body }) => {
+    _blockCache[slug] = body || '';
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
     // Inject into display elements
     document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
@@ -3202,6 +3219,7 @@ export async function saveContentBlock(slug) {
   const st  = document.getElementById(`admin-status-${slug}`);
   if (!ed || !btn) return;
   const body = ed.innerHTML.trim();
+  _blockCache[slug] = body;   // keep cache fresh so re-renders re-inject the new content
   btn.disabled = true; btn.textContent = 'Saving…';
   st.textContent = '';
   const { error } = await sb.from('content_blocks')
