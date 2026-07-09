@@ -189,16 +189,13 @@ function _runThroughTally(done, total, cat) {
   const msg = left > 0
     ? `${left} TO GO — GOOD JOB, SCOTT!`
     : `ALL DONE, SCOTT — CRUSHED IT ✦`;
-  // Morning card wraps the tally in a blue surround to match its blue card.
+  // MORNING: a flush blue band fills the bottom of the white panel to match the
+  // blue card. Other run-throughs: a plain single box on white.
   const wrap = cat === 'MORNING'
-    ? 'display:flex;gap:8px;margin-top:12px;background:#4A90D9;padding:8px;border-radius:10px;'
-    : 'display:flex;gap:8px;margin-top:12px;';
+    ? 'margin:12px -10px -10px;background:#4A90D9;padding:8px 10px 10px;'
+    : 'margin-top:12px;';
   return `<div style="${wrap}">
-    <div style="flex:1;background:#333;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
-      <div style="font-family:var(--vault-mono);font-size:6px;letter-spacing:1px;opacity:.9;">TASKS COMPLETE</div>
-      <div style="font-size:9px;font-weight:800;letter-spacing:.4px;line-height:1.3;">${done}/${total}</div>
-    </div>
-    <div style="flex:2;background:#333;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
+    <div style="background:#333;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
       ${msg}
     </div>
   </div>`;
