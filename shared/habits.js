@@ -214,10 +214,7 @@ export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
 
-  const shown = getHabitList().filter(h => !RUN_CATS.includes(_cat(h)));
   const d = _done();
-  const done = shown.filter(h => d[h.id]).length;
-  const allDone = shown.length && done === shown.length;
   const groups = _grouped(getHabitList());
 
   let body = '';
@@ -227,7 +224,6 @@ export function renderHabits() {
     body += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;padding:7px 11px;border-radius:7px;margin:12px 0 6px;">${CAT_LABEL(cat)}</div>`;
     body += items.map(h => _habitRow(h, !!d[h.id])).join('');
   });
-  const list = shown;
 
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
