@@ -486,16 +486,16 @@ export function renderWrapup() {
   }
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:#E8743B;border:1px solid #E8743B;border-radius:12px;padding:14px;margin-bottom:8px;">
       <details class="rm-drop" ${_wrapupOpen ? 'open' : ''} ontoggle="wrapupCardToggle(this.open)">
-        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;border-radius:10px;cursor:pointer;">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#E8743B;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
           <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
             ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
-            <span class="rm-caret" style="color:#fff;">▾</span>
+            <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
           </span>
         </summary>
-        <div style="margin-top:12px;">
+        <div style="background:#fff;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;">
           <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
           <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
 

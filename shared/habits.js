@@ -189,10 +189,11 @@ function _runThroughTally(done, total, cat) {
   const msg = left > 0
     ? `${left} TO GO — GOOD JOB, SCOTT!`
     : `ALL DONE, SCOTT — CRUSHED IT ✦`;
-  // MORNING: a flush blue band fills the bottom of the white panel to match the
-  // blue card. Other run-throughs: a plain single box on white.
-  const wrap = cat === 'MORNING'
-    ? 'margin:12px -10px -10px;background:#4A90D9;padding:8px 10px 10px;'
+  // Each run-through's colored band fills the bottom of its white panel to match
+  // its card. (Requires overflow:hidden on the *RunBody panel.)
+  const bandColor = { MORNING: '#4A90D9', DAY: '#F5C518', EVENING: '#E8743B' }[cat];
+  const wrap = bandColor
+    ? `margin:12px -10px -10px;background:${bandColor};padding:8px 10px 10px;`
     : 'margin-top:12px;';
   return `<div style="${wrap}">
     <div style="background:#333;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
@@ -223,17 +224,17 @@ export function renderHabits() {
   });
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
+    <div style="background:#AEB6C1;border:1px solid #AEB6C1;border-radius:12px;padding:14px;margin-bottom:8px;">
       <details class="rm-drop" ${_open ? 'open' : ''} ontoggle="habitsToggleSection(this.open)">
-        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#AEB6C1;color:#1a1a1a;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;">◈ DAILY HABITS</span>
           <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-            <button onclick="event.stopPropagation();navTo('habits')" title="Open My Habits page" aria-label="Open My Habits page" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,0.55);cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
-            <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
+            <button onclick="event.stopPropagation();navTo('habits')" title="Open My Habits page" aria-label="Open My Habits page" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#333;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
+            <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
           </span>
         </summary>
-        <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 8px;margin-top:8px;">${body}</div>
-        <div style="font-size:10px;color:#777;line-height:1.4;padding:9px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>
+        <div style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;">${body}</div>
+        <div style="font-size:10px;color:#333;line-height:1.4;padding:9px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>
       </details>
     </div>`;
 }
