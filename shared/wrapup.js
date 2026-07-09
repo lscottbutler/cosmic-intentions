@@ -210,9 +210,9 @@ function _renderUserTree(tasks, path, idx) {
     const promoteBtn = depth === 0
       ? `<button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>` : '';
     const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;` : '';
-    const row = `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:5px;padding:9px 11px;${indent}">
+    const row = `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:5px;padding:9px 11px;overflow:hidden;${indent}">
       <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(u.text)}</div>
-      <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:999px;padding:5px 12px;">
+      <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:0;padding:6px 12px;margin:0 -11px -9px;">
         <button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
         <button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button>
         ${promoteBtn}
@@ -269,9 +269,9 @@ function _todayChecklist() {
     const locks = rai.locks || {};
     const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i) => {
       const d = !!dones[i]; const locked = !!locks[i];
-      return `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:5px;padding:9px 11px;">
+      return `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:5px;padding:9px 11px;overflow:hidden;">
         <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(t)}</div>
-        <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:999px;padding:5px 12px;">
+        <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:0;padding:6px 12px;margin:0 -11px -9px;">
           <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
           <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
           <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
