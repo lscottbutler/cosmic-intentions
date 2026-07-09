@@ -150,7 +150,7 @@ function _renderRun(cat, elId) {
   // Every run-through shows the green TASKS COMPLETE / N-to-go tally, and the
   // done/total count lives in that box — so no separate top count line.
   el.innerHTML = rows.map(h => _habitRow(h, !!d[h.id])).join('')
-    + _runThroughTally(done, list.length)
+    + _runThroughTally(done, list.length, cat)
     + results;
 }
 
@@ -184,17 +184,21 @@ function _dayResults() {
 
 /* Two-box completion tally under each run-through. Box 1 = done/total,
    Box 2 = how many left + encouragement (or a done message when all are ticked). */
-function _runThroughTally(done, total) {
+function _runThroughTally(done, total, cat) {
   const left = total - done;
   const msg = left > 0
     ? `${left} TO GO — GOOD JOB, SCOTT!`
     : `ALL DONE, SCOTT — CRUSHED IT ✦`;
-  return `<div style="display:flex;gap:8px;margin-top:12px;">
-    <div style="flex:1;background:#000;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
+  // Morning card wraps the tally in a blue surround to match its blue card.
+  const wrap = cat === 'MORNING'
+    ? 'display:flex;gap:8px;margin-top:12px;background:#4A90D9;padding:8px;border-radius:10px;'
+    : 'display:flex;gap:8px;margin-top:12px;';
+  return `<div style="${wrap}">
+    <div style="flex:1;background:#333;color:#fff;border-radius:9px;padding:10px 8px;text-align:center;">
       <div style="font-family:var(--vault-mono);font-size:6px;letter-spacing:1px;opacity:.9;">TASKS COMPLETE</div>
-      <div style="font-size:15px;font-weight:800;line-height:1.15;">${done}/${total}</div>
+      <div style="font-size:9px;font-weight:800;letter-spacing:.4px;line-height:1.3;">${done}/${total}</div>
     </div>
-    <div style="flex:2;background:#000;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
+    <div style="flex:2;background:#333;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
       ${msg}
     </div>
   </div>`;
