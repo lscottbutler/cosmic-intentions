@@ -454,9 +454,9 @@ export function renderWrapup() {
       <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
-            <span style="font-size:18pt;font-weight:800;line-height:1.15;">DAILY ACTION PLAN</span>
+            <span style="font-size:18pt;font-weight:800;line-height:1.15;">ACTION PLAN</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-              <span style="font-family:var(--vault-mono);font-size:10px;letter-spacing:1px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};border:1px solid rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;white-space:nowrap;">${chk.done}/${chk.total} done</span>
+              <span style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,0.55);display:inline-flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-weight:800;font-size:14px;letter-spacing:.5px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};white-space:nowrap;">${chk.done}/${chk.total}</span>
               <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
             </span>
           </summary>
