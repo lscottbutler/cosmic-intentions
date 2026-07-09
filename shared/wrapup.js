@@ -400,6 +400,11 @@ function _winCounts() {
 }
 
 function _aiKey() { return `ci_wrapup_ai_${new Date().toISOString().slice(0, 10)}`; }
+/* Guard: a failed AI call can return a raw provider error (e.g. OpenAI
+   "insufficient_quota"). Never store or display that as the story. */
+function _looksLikeAiError(s) {
+  return typeof s === 'string' && /"error"|insufficient_quota|exceeded your current quota|billing details/i.test(s);
+}
 
 /* Build a compact plain-text data summary for the AI passes. */
 function _aiSummary() {
@@ -427,11 +432,11 @@ export async function wrapupPersonalize() {
     const context = typeof buildContext === 'function' ? buildContext(getPB() || {}) : '';
     const name = (typeof getPB === 'function' && getPB()['pb-name']) || 'there';
     const data = await window.ciApiJson('wrapup-ai', { name, summary, context, recentWins });
-    if (data && data.paragraph) {
+    if (data && data.paragraph && !_looksLikeAiError(data.paragraph)) {
       LS.set(_aiKey(), data.paragraph);
       renderWrapup();
     } else {
-      throw new Error('No paragraph returned');
+      throw new Error(_looksLikeAiError(data && data.paragraph) ? 'AI provider error (quota/billing)' : 'No paragraph returned');
     }
   } catch (e) {
     if (typeof toast === 'function') toast('Personalize failed — using the standard recap.', 'error');
@@ -444,7 +449,8 @@ export function renderWrapup() {
   if (!el) return;
 
   const w = _winCounts();
-  const aiPara = LS.get(_aiKey());
+  let aiPara = LS.get(_aiKey());
+  if (_looksLikeAiError(aiPara)) { LS.remove(_aiKey()); aiPara = null; }   // drop a cached API error, fall back to the standard recap
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
   const chk    = _todayChecklist();
