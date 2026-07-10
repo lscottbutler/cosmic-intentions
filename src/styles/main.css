@@ -179,6 +179,15 @@ details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
 details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
+/* Smooth open/close (NYT-style) — animates the content height on Chromium 131+/
+   modern Edge; older browsers fall back to instant open (no harm). */
+:root { interpolate-size: allow-keywords; }
+details.rm-drop::details-content {
+  height: 0;
+  overflow: hidden;
+  transition: height .32s ease, content-visibility .32s allow-discrete;
+}
+details.rm-drop[open]::details-content { height: auto; }
 
 /* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
 .wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
