@@ -821,6 +821,30 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- LIBRARY -->
 
+  <!-- ═══ PILLAR 1: VISUALIZATION LIBRARY (goals list → a goal's activities) ═══ -->
+  <div class="page" id="page-vizlibrary">
+    <div style="max-width:760px;margin:0 auto;padding:18px 16px 90px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+        <button onclick="navTo('dashboard')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
+        <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">Visualization Library</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 16px 52px;">Pick a goal to visualize, review, meditate or give thanks.</p>
+      <div id="vizLibList"></div>
+    </div>
+  </div>
+
+  <!-- VISUALIZE A GOAL — the goal's four activities -->
+  <div class="page" id="page-vizgoal">
+    <div style="max-width:760px;margin:0 auto;padding:18px 16px 90px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <button onclick="navTo('vizlibrary')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
+        <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">Visualize</span>
+      </div>
+      <div id="vizGoalPill"></div>
+      <div id="vizGoalOptions"></div>
+    </div>
+  </div>
+
   <!-- ADMIN PAGE -->
   <!-- MY WINS PAGE -->
   <div class="page" id="page-wins">

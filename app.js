@@ -232,7 +232,7 @@ export function subnavForward() {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','habits','wins'];
+  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -1796,8 +1796,65 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
-/* Column-A quick-nav boxes. */
-export function openVizLibrary() { window.location.href = 'players/viz-editor.html'; }
+/* ── PILLAR 1: VISUALIZATION LIBRARY ──────────────────────────────────────
+   Full-screen goals list → tap a goal → its 4 activities (creative viz,
+   review, meditate, gratitude). Single-column / mobile-first. */
+let _vizGoalIdx = 0;
+
+export function openVizLibrary() { renderVizLibrary(); navTo('vizlibrary'); }
+
+export function renderVizLibrary() {
+  const el = document.getElementById('vizLibList');
+  if (!el) return;
+  if (!intentions.length) {
+    el.innerHTML = `<div style="padding:16px 14px;font-size:13px;color:var(--muted);line-height:1.6;">No goals yet — add an intention first.</div>`;
+    return;
+  }
+  el.innerHTML = intentions.map((it, idx) => {
+    const s = GREY_SHADES[idx % GREY_SHADES.length];
+    return `<button onclick="openVizGoal(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
+      <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${idx + 1}</span>
+      <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(it.title || '')}</span>
+      <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
+    </button>`;
+  }).join('');
+}
+
+export function openVizGoal(idx) {
+  _vizGoalIdx = idx;
+  const it = intentions[idx] || intentions[0];
+  const s = GREY_SHADES[idx % GREY_SHADES.length];
+  const pill = document.getElementById('vizGoalPill');
+  if (pill) pill.innerHTML = `<div style="background:${s.bg};color:${s.text};border-radius:10px;padding:12px 14px;font-weight:800;font-size:14px;line-height:1.25;margin-bottom:16px;">◎ ${esc(it?.title || '')}</div>`;
+  const opts = document.getElementById('vizGoalOptions');
+  if (opts) {
+    const row = (kind, icon, iconBg, title, sub) => `<button onclick="vizAct(${idx},'${kind}')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;">
+      <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:${iconBg};display:inline-flex;align-items:center;justify-content:center;font-size:20px;">${icon}</span>
+      <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">${title}</b><span style="font-size:12px;color:#aab4c2;">${sub}</span></span>
+    </button>`;
+    opts.innerHTML =
+        row('viz', '✦', '#4A90D9', 'CREATIVE VISUALIZATION', "See it like it's already yours")
+      + row('review', '◎', '#F5C518', 'REVIEW YOUR GOAL', 'Read your affirmations &amp; why')
+      + row('meditate', '☾', '#2C3E50', 'MEDITATE', 'Quiet minutes on this goal')
+      + row('gratitude', '♥', '#E8743B', 'GRATITUDE', "Give thanks it's on its way");
+  }
+  navTo('vizgoal');
+}
+
+/* Launch a goal's chosen activity full-page (mobile flow). Sets the goal in
+   localStorage so the standalone player picks it up. */
+export function vizAct(idx, kind) {
+  const it = intentions[idx] || intentions[0];
+  const title = (it?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+  localStorage.setItem('ci_goal_title', title);
+  if (it?.imageUrl) localStorage.setItem('ci_goal_image', it.imageUrl); else localStorage.removeItem('ci_goal_image');
+  const q = `g=${encodeURIComponent(title)}&_=${Date.now()}`;
+  if (kind === 'viz')            window.location.href = `players/3min-viz.html?${q}`;
+  else if (kind === 'review')    window.location.href = `players/recite.html?type=affirmations&${q}`;
+  else if (kind === 'meditate')  window.location.href = `players/meditation.html?${q}`;
+  else if (kind === 'gratitude') { if (typeof toast === 'function') toast('Gratitude player is coming soon.', 'info'); }
+}
+
 export function openMyRoadmap() {
   const i = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
   window.location.href = `players/roadmap.html?idx=${i}`;
