@@ -232,7 +232,7 @@ export function subnavForward() {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal'];
+  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal','myroadmap'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -1855,9 +1855,11 @@ export function vizAct(idx, kind) {
   else if (kind === 'gratitude') { if (typeof toast === 'function') toast('Gratitude player is coming soon.', 'info'); }
 }
 
+/* PILLAR 2: full-screen ACTION PLAN (goals + roadmap tasks). #todayWillWidget
+   now lives on page-myroadmap; renderWrapup fills it wherever it is. */
 export function openMyRoadmap() {
-  const i = (selectedVaultIdx !== null && intentions[selectedVaultIdx]) ? selectedVaultIdx : 0;
-  window.location.href = `players/roadmap.html?idx=${i}`;
+  if (typeof window !== 'undefined' && typeof window.renderWrapup === 'function') window.renderWrapup();
+  navTo('myroadmap');
 }
 
 /* ── ASS (Audio Slide Show) players: Affirmations / Beliefs / Stoic ───────────
