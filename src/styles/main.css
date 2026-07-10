@@ -185,7 +185,7 @@ details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
 details.rm-drop::details-content {
   height: 0;
   overflow: hidden;
-  transition: height .46s ease, content-visibility .46s allow-discrete;
+  transition: height .64s ease, content-visibility .64s allow-discrete;
 }
 details.rm-drop[open]::details-content { height: auto; }
 
