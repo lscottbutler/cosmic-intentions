@@ -334,8 +334,8 @@ function _todayChecklist() {
     // already show in the goal box above, so we DON'T duplicate them here — just
     // the proven-actions set, labelled with the goal name for context.
     fullRows += hasAi ? `<div style="margin:12px 0 6px;">
+      <div style="background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;margin-bottom:6px;">◎ ${esc(it.title)}</div>
       <div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:#1C2230;letter-spacing:0.5px;margin:2px 2px 1px;">◎ ${esc(it.title)}</div>
         <div style="font-family:var(--vault-mono);font-size:8px;color:rgba(28,34,48,0.72);letter-spacing:1px;margin:0 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>
         ${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
           <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);">
