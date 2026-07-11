@@ -3514,6 +3514,53 @@ function buildBSPegboardPanel(intent) {
 /* activity.js */
 
 /* ─────────────────────────────────────────────────────────
+   LOCALHOST-ONLY DASHBOARD PREVIEW
+   Lets us load the auth-gated dashboard WITHOUT logging in — purely to
+   eyeball / screenshot layout changes. HARD-GUARDED two ways so it can NEVER
+   activate on cosmicintentions.com:
+     1) only on localhost / 127.0.0.1  (a live domain never matches)
+     2) only when the URL has ?preview=1
+   Open http://127.0.0.1:5173/?preview=1 to use it.
+───────────────────────────────────────────────────────── */
+function _previewActive() {
+  const host  = location.hostname;
+  const local = host === 'localhost' || host === '127.0.0.1';
+  const flag  = new URLSearchParams(location.search).has('preview');
+  return local && flag;
+}
+
+function _seedPreviewDashboard() {
+  // Fake, logged-out "user" — never touches Supabase.
+  currentUser = { id: 'preview', email: 'preview@localhost',
+    user_metadata: { full_name: 'Preview User' }, created_at: new Date().toISOString() };
+  updateUI(currentUser);
+
+  // Sample goals so the colored goal boxes AND MY TASK LIST both render.
+  const mk = (id, title, cat, tasks, userTasks) => ({
+    id, title, category: cat,
+    roadmapAI: { intention: title, tasks, done: {}, locks: {}, userTasks: userTasks || [] },
+    mindset: { affirmations: [`I embody: ${title}.`], beliefs: [] },
+  });
+  intentions = [
+    mk('pv1', 'I AM LAUNCHING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER', 'Career',
+      ['Analyze the profiles of your first 200 Founder Subscription buyers.',
+       'Ship the public landing page and start collecting emails.',
+       'Record a 90-second launch teaser.'],
+      [{ id: 1, text: 'Draft the launch announcement', done: false }]),
+    mk('pv2', 'I AM PERFECT EYE HEALTH', 'Health',
+      ['Do 5 minutes of eye exercises.', 'Take a screen break every hour.'], []),
+    mk('pv3', 'I AM THE PROUD OWNER OF A XIAOMI SU7', 'Lifestyle',
+      ['Set aside the monthly savings target.', 'Book a test drive this month.'], []),
+  ];
+
+  renderDashboard();
+  if (typeof renderTodayView === 'function') renderTodayView();
+  if (typeof window !== 'undefined' && typeof window.renderWrapup === 'function') window.renderWrapup();
+  navTo('dashboard');
+  if (typeof toast === 'function') toast('👁 PREVIEW MODE — localhost only, not signed in', '');
+}
+
+/* ─────────────────────────────────────────────────────────
    INIT
 ───────────────────────────────────────────────────────── */
 export async function init() {
@@ -3540,8 +3587,11 @@ export async function init() {
   // Pre-select annual plan in upgrade modal
   selectPlan('annual');
 
-  // Auth state listener
-  sb.auth.onAuthStateChange((event, session) => {
+  const _preview = _previewActive();
+  if (_preview) _seedPreviewDashboard();
+
+  // Auth state listener (skipped in localhost preview mode)
+  if (!_preview) sb.auth.onAuthStateChange((event, session) => {
     const user = session?.user || null;
     updateUI(user);
     if (event === 'SIGNED_IN') {
@@ -3559,17 +3609,19 @@ export async function init() {
     }
   });
 
-  // Check existing session
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    updateUI(session.user);
-    await syncFromSupabase();
-    await syncIntentionsFromSupabase();
-    logDailyLogin();
-    injectPersonalContent();
-    renderTodayView();
-  } else {
-    updateUI(null);
+  // Check existing session (skipped in localhost preview mode)
+  if (!_preview) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      updateUI(session.user);
+      await syncFromSupabase();
+      await syncIntentionsFromSupabase();
+      logDailyLogin();
+      injectPersonalContent();
+      renderTodayView();
+    } else {
+      updateUI(null);
+    }
   }
 
   renderDashboard();
