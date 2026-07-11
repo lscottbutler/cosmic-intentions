@@ -472,17 +472,27 @@ export function renderWrapup() {
           </summary>
           <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">
             ${chk.rows}
-            <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)" style="margin-top:14px;">
-              <summary style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;background:#1c1c1c;color:#fff;border:1px solid #333;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;">
-                <span>◈ MY TASK LIST — everything at once</span><span class="rm-caret">▾</span>
-              </summary>
-              <div style="padding-top:8px;">${chk.fullRows}</div>
-            </details>
           </div>
         </details>
       </div>` : '';
     // Fill any [data-block] admin boxes just rendered into the goal cards.
     if (typeof window !== 'undefined' && window.injectContentBlocks) window.injectContentBlocks();
+  }
+
+  // MY TASK LIST — everything at once. Moved OFF the Action Plan (roadmap page)
+  // onto the dashboard, between the 3 Pillars and the Morning Run Through.
+  const taskListEl = document.getElementById('taskListWidget');
+  if (taskListEl) {
+    taskListEl.innerHTML = (chk && chk.fullRows) ? `
+      <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
+          <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1px;">
+            <span>◈ MY TASK LIST — everything at once</span>
+            <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
+          </summary>
+          <div style="padding-top:10px;">${chk.fullRows}</div>
+        </details>
+      </div>` : '';
   }
 
   el.innerHTML = `
