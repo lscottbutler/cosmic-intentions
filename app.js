@@ -216,19 +216,35 @@ function _updateSubnav() {
   if (forward) forward.disabled = _navIndex >= _navHistory.length - 1;
 }
 
-export function subnavBack() {
-  if (_navIndex <= 0) return;
-  _navIndex--;
-  showPage(_navHistory[_navIndex]);
-  _updateSubnav();
+// Seed the browser-history base entry (the initial "home" load) so the very
+// first Back press navigates *within* the app instead of leaving the site.
+if (typeof history !== 'undefined' &&
+    (!history.state || typeof history.state.navIndex !== 'number')) {
+  _navHistory.length = 0;
+  _navHistory.push('home');
+  _navIndex = 0;
+  history.replaceState({ navIndex: 0, page: 'home' }, '');
 }
 
-export function subnavForward() {
-  if (_navIndex >= _navHistory.length - 1) return;
-  _navIndex++;
-  showPage(_navHistory[_navIndex]);
+// The on-screen arrows delegate to the real browser history so they, the
+// browser Back/Forward buttons, and the mouse Back/Forward button all behave
+// identically. The actual page swap happens in the popstate handler below.
+export function subnavBack()    { history.back();    }
+export function subnavForward() { history.forward(); }
+
+// Browser (or mouse) Back/Forward → move within the app, don't leave the site.
+window.addEventListener('popstate', (e) => {
+  const st = e.state;
+  if (st && typeof st.navIndex === 'number' && st.navIndex < _navHistory.length) {
+    _navIndex = st.navIndex;
+    showPage(_navHistory[_navIndex] || 'home');
+  } else {
+    // No app state on this entry (walked back to before the app) → show home.
+    _navIndex = 0;
+    showPage('home');
+  }
   _updateSubnav();
-}
+});
 
 export function navTo(id) {
   // Must be logged in for any non-home page
@@ -238,11 +254,13 @@ export function navTo(id) {
     openAuth('signin');
     return;
   }
-  // Push to history, drop any forward stack
+  // Push to history, drop any forward stack — mirror it into the browser's
+  // real history stack so Back/Forward (incl. the mouse buttons) work.
   if (_navHistory[_navIndex] !== id) {
     _navHistory.splice(_navIndex + 1);
     _navHistory.push(id);
     _navIndex = _navHistory.length - 1;
+    history.pushState({ navIndex: _navIndex, page: id }, '');
   }
   _updateSubnav();
   showPage(id);
