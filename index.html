@@ -323,6 +323,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- Date banner — TOP of Column B; filled by setEl('vaultDateLine') -->
+        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
+
         <!-- ACTION PLAN (#todayWillWidget) moved behind the My Roadmap button -> page-myroadmap -->
         <div id="winsWidget"></div>
         <div id="sleepLoopWidget"></div>
@@ -430,9 +433,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
-        <!-- Date banner — sits right above the 3 Pillars -->
-        <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
-        <!-- WHICH DIRECTION? — the two pillar buttons, up top under the date banner -->
+        <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
+        <!-- WHICH DIRECTION? — the two pillar buttons, up top -->
         <div class="dash-direction" style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--text);margin:4px 0 6px;text-align:center;">Which Direction?</div>
         <div class="vault-stats-row" style="grid-template-columns:repeat(2,minmax(0,150px));justify-content:center;">
           <div class="vault-stat" onclick="openVizLibrary()" style="cursor:pointer;"><div class="vs-num" style="font-size:24px;">✦</div><div class="vs-lbl">Visualization Library</div></div>
