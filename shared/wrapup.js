@@ -487,7 +487,7 @@ export function renderWrapup() {
       <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
           <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1px;">
-            <span>◈ MY TASK LIST — everything at once</span>
+            <span>◈ TASK LIST</span>
             <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
           </summary>
           <div style="padding-top:10px;">${chk.fullRows}</div>
