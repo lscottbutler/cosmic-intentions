@@ -1852,9 +1852,8 @@ export function openVizGoal(idx) {
     </button>`;
     opts.innerHTML =
         row('viz', '✦', '#4A90D9', 'CREATIVE VISUALIZATION', "See it like it's already yours")
-      + row('review', '◎', '#F5C518', 'REVIEW YOUR GOAL', 'Read your affirmations &amp; why')
-      + row('meditate', '☾', '#2C3E50', 'MEDITATE', 'Quiet minutes on this goal')
-      + row('gratitude', '♥', '#E8743B', 'GRATITUDE', "Give thanks it's on its way");
+      + row('review', '◎', '#F5C518', 'REVIEW YOUR GOAL', 'Read your affirmations &amp; why');
+      // MEDITATE + GRATITUDE moved to the bottom of Column A (the citadel dashboard).
   }
   navTo('vizgoal');
 }
