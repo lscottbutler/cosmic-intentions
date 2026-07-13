@@ -1849,6 +1849,21 @@ export function openVizGoal(idx) {
   const opts = document.getElementById('vizGoalOptions');
   if (opts) {
     const acts = [['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']];
+    // The rest of the goals — tap one to jump straight to its card.
+    const others = intentions
+      .map((g, i) => ({ g, i }))
+      .filter(o => o.i !== idx)
+      .map(({ g, i }) => {
+        const cs = GREY_SHADES[i % GREY_SHADES.length];
+        return `<button onclick="openVizGoal(${i})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${cs.bg};color:${cs.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
+          <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${i + 1}</span>
+          <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(g.title || '')}</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
+        </button>`;
+      }).join('');
+    const othersHtml = others
+      ? `<div style="margin-top:22px;"><div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 12px;">More goals</div>${others}</div>`
+      : '';
     opts.innerHTML = `
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:0 0 12px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
@@ -1860,7 +1875,8 @@ export function openVizGoal(idx) {
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;"><span style="font-size:14px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
         ).join('')}
         <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:14px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
-      </div>`;
+      </div>
+      ${othersHtml}`;
   }
   loadGoalVisualization(it);
   navTo('vizgoal');
