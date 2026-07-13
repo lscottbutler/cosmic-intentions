@@ -1840,21 +1840,29 @@ export function renderVizLibrary() {
 
 export function openVizGoal(idx) {
   _vizGoalIdx = idx;
-  const it = intentions[idx] || intentions[0];
+  const it = intentions[idx] ? (intentions[idx] = hydrateIntent(intentions[idx])) : intentions[0];
   const s = GREY_SHADES[idx % GREY_SHADES.length];
+  // Title now lives inside the card (matches the workspace layout) — clear the
+  // standalone pill slot so it isn't shown twice.
   const pill = document.getElementById('vizGoalPill');
-  if (pill) pill.innerHTML = `<div style="background:${s.bg};color:${s.text};border-radius:10px;padding:12px 14px;font-weight:800;font-size:14px;line-height:1.25;margin-bottom:16px;">◎ ${esc(it?.title || '')}</div>`;
+  if (pill) pill.innerHTML = '';
   const opts = document.getElementById('vizGoalOptions');
   if (opts) {
-    const row = (kind, icon, iconBg, title, sub) => `<button onclick="vizAct(${idx},'${kind}')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;">
-      <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:${iconBg};display:inline-flex;align-items:center;justify-content:center;font-size:20px;">${icon}</span>
-      <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">${title}</b><span style="font-size:12px;color:#aab4c2;">${sub}</span></span>
-    </button>`;
-    opts.innerHTML =
-        row('viz', '✦', '#4A90D9', 'CREATIVE VISUALIZATION', "See it like it's already yours")
-      + row('review', '◎', '#F5C518', 'REVIEW YOUR GOAL', 'Read your affirmations &amp; why');
-      // MEDITATE + GRATITUDE moved to the bottom of Column A (the citadel dashboard).
+    const acts = [['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']];
+    opts.innerHTML = `
+      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:0 0 12px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
+        <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
+        <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+      </div>
+      <div style="background:${s.bg};color:${s.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;margin-bottom:12px;">${esc(it?.title || '')}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        ${acts.map(([k,ic,lbl]) =>
+          `<button onclick="playGoalInWorkspace(${idx},'${k}',event)" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;"><span style="font-size:14px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
+        ).join('')}
+        <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:14px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
+      </div>`;
   }
+  loadGoalVisualization(it);
   navTo('vizgoal');
 }
 
@@ -2270,6 +2278,17 @@ export function playGoalInline(idx, kind, ev) {
 }
 export function closeGoalPlayer() { inlineGoalPlayer = null; renderVaultSidebar(); }
 
+/* The visualization slot (id goalVisualizationContainer / Image / Loader) can
+   exist on TWO pages at once — the dashboard workspace AND the Visualization
+   Library goal card. getElementById would grab whichever is first in the DOM
+   (often the hidden one). This returns the copy that's actually visible
+   (a descendant of a display:none .page has offsetParent === null). */
+function activeEl(id) {
+  const list = document.querySelectorAll('#' + id);
+  for (const el of list) { if (el.offsetParent !== null) return el; }
+  return list[0] || null;
+}
+
 /* Play a goal's player inside the OPEN workspace (build sheet), in the 16:9
    visualization slot — used by the 3 MIN / AFF / BELIEFS / STOIC / ATTITUDES
    buttons now living under the goal title in the workspace header. */
@@ -2280,7 +2299,7 @@ export async function playGoalInWorkspace(idx, kind, ev) {
   localStorage.setItem('ci_goal_title', title);
 
   const play = (src) => {
-    const c = document.getElementById('goalVisualizationContainer');
+    const c = activeEl('goalVisualizationContainer');
     if (c) c.innerHTML = `<iframe src="${src}" title="Player" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:transparent;"></iframe>`;
   };
 
@@ -2292,7 +2311,7 @@ export async function playGoalInWorkspace(idx, kind, ev) {
   // empty → this goal's AI Library is missing (or predates this category): generate it, then play
   if (!slides.length) {
     if (intn.aiEnabled === false) { toast('AI is off for this goal — turn it on in My Pegboard.', 'error'); return; }
-    const c = document.getElementById('goalVisualizationContainer');
+    const c = activeEl('goalVisualizationContainer');
     if (c) c.innerHTML = '<div style="padding:30px;text-align:center;color:#9b8fd0;font-size:13px;"><span class="inline-spinner"></span> Generating this goal’s AI Library…</div>';
     try { await generateMindset(idx); } catch (e) {}
     slides = mindsetSlides(intentions[idx]?.mindset, kind, meta ? meta.label : '');
@@ -2935,9 +2954,9 @@ export function toggleRoadmap() {
 /* Fetch a Pexels visualization for the selected goal and slot it into the
    workspace header (keyword extraction + search happen server-side). */
 async function loadGoalVisualization(intent) {
-  const img = document.getElementById('goalVisualizationImage');
-  const loader = document.getElementById('goalVisualizationLoader');
-  const box = document.getElementById('goalVisualizationContainer');
+  const img = activeEl('goalVisualizationImage');
+  const loader = activeEl('goalVisualizationLoader');
+  const box = activeEl('goalVisualizationContainer');
   if (!img || !loader || !intent) return;
 
   const show = (url) => {
