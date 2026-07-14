@@ -346,36 +346,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
         </div>
 
-        <!-- VISUALIZATION — black dropdown banner + time grid (visualizes your selected goal) -->
-        <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
-          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9673;</span>VISUALIZATION</span>
-          <span style="font-size:0.85rem;">▼</span>
-        </div>
-
-        <div id="visualization-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
-          <button onclick="launchViz(3, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">3 MIN</button>
-          <button onclick="launchViz(10, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">10 MIN</button>
-          <button onclick="launchCreativeViz(event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--teal-ui); color: var(--teal-ui); cursor: pointer; letter-spacing: 1px;">CREATIVE VISUALIZATION</button>
-          <button onclick="launchViz(3, event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--maroon); color: var(--pink); cursor: pointer; letter-spacing: 1px;">3 MIN VISUALIZATION</button>
-          <button onclick="openPlayerInColumn('players/art-frame.html', event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid #b7895b; color: #d6b48c; cursor: pointer; letter-spacing: 1px;">ART FRAME &mdash; AUTO BORDER</button>
-          <!-- ✎ EDIT TIMELINE (players/viz-editor.html) removed 2026-07-12 — legacy: the 3-min player no longer reads its ci_viz_scene. File kept on disk. -->
-        </div>
-
-        <!-- RECITATIONS — loop your own affirmations / beliefs / values / pegboard -->
-        <div class="player-banner" onclick="document.getElementById('recite-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
-          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#10077;</span>RECITATIONS</span>
-          <span style="font-size:0.85rem;">▼</span>
-        </div>
-
-        <div id="recite-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
-          <button onclick="launchRecite('affirmations', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">AFFIRMATIONS</button>
-          <button onclick="launchRecite('beliefs', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">BELIEFS</button>
-          <button onclick="launchRecite('values', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">VALUES</button>
-          <button onclick="launchRecite('pegboard', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">MY PEGBOARD</button>
-          <button onclick="launchRecite('stoic', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">STOIC</button>
-          <button onclick="launchRecite('quotes', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">QUOTES</button>
-          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: var(--ink); border: 1px solid var(--border-2); color: var(--muted); cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
-        </div>
+        <!-- VISUALIZATION + RECITATIONS panels moved to Column A (under the TASK LIST button) -->
 
         <!-- LIBRARY MANAGER MODAL (Stoic / Quotes) -->
         <div id="libraryManager" style="display:none; position:fixed; inset:0; z-index:700; background:rgba(0,0,0,0.72); align-items:center; justify-content:center; padding:20px;">
@@ -395,12 +366,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
         </div>
 
-        <!-- FAVORITES — quick-play saved players + auto-play-all -->
-        <div class="player-banner" onclick="toggleFavorites()" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
-          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9829;&#65038;</span>FAVORITES</span>
-          <span style="font-size:0.85rem;">▼</span>
-        </div>
-        <div id="favorites-list" class="hidden player-times-grid" style="margin-bottom:20px;"></div>
+        <!-- FAVORITES panel moved to Column A (under the TASK LIST button) -->
 
         <!-- SHARED PLAYER PANEL — drops below whichever time grid was clicked -->
         <div id="playerColumn" style="display:none;margin-top:4px;margin-bottom:10px;">
@@ -445,6 +411,46 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
+
+        <!-- VISUALIZATION / RECITATIONS / FAVORITES — moved here from Column B, directly under the TASK LIST button -->
+        <!-- VISUALIZATION — black dropdown banner + time grid (visualizes your selected goal) -->
+        <div class="player-banner" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9673;</span>VISUALIZATION</span>
+          <span style="font-size:0.85rem;">▼</span>
+        </div>
+
+        <div id="visualization-times-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
+          <button onclick="launchViz(3, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">3 MIN</button>
+          <button onclick="launchViz(10, event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">10 MIN</button>
+          <button onclick="launchCreativeViz(event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--teal-ui); color: var(--teal-ui); cursor: pointer; letter-spacing: 1px;">CREATIVE VISUALIZATION</button>
+          <button onclick="launchViz(3, event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid var(--maroon); color: var(--pink); cursor: pointer; letter-spacing: 1px;">3 MIN VISUALIZATION</button>
+          <button onclick="openPlayerInColumn('players/art-frame.html', event)" style="grid-column: 1 / -1; padding: 12px; background: var(--card); border: 1px solid #b7895b; color: #d6b48c; cursor: pointer; letter-spacing: 1px;">ART FRAME &mdash; AUTO BORDER</button>
+          <!-- ✎ EDIT TIMELINE (players/viz-editor.html) removed 2026-07-12 — legacy: the 3-min player no longer reads its ci_viz_scene. File kept on disk. -->
+        </div>
+
+        <!-- RECITATIONS — loop your own affirmations / beliefs / values / pegboard -->
+        <div class="player-banner" onclick="document.getElementById('recite-grid').classList.toggle('hidden')" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#10077;</span>RECITATIONS</span>
+          <span style="font-size:0.85rem;">▼</span>
+        </div>
+
+        <div id="recite-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
+          <button onclick="launchRecite('affirmations', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">AFFIRMATIONS</button>
+          <button onclick="launchRecite('beliefs', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">BELIEFS</button>
+          <button onclick="launchRecite('values', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">VALUES</button>
+          <button onclick="launchRecite('pegboard', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">MY PEGBOARD</button>
+          <button onclick="launchRecite('stoic', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">STOIC</button>
+          <button onclick="launchRecite('quotes', event)" style="padding: 12px; background: var(--card); border: 1px solid var(--border); color: white; cursor: pointer;">QUOTES</button>
+          <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: var(--ink); border: 1px solid var(--border-2); color: var(--muted); cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
+        </div>
+
+        <!-- FAVORITES — quick-play saved players + auto-play-all -->
+        <div class="player-banner" onclick="toggleFavorites()" style="background:var(--ink); color:var(--on-ink); padding:14px 16px; border:1px solid var(--border); border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin:14px 0 10px;">
+          <span style="font-weight:700; letter-spacing:1px;"><span style="display:inline-block; width:1.3em; margin-right:9px; text-align:center;">&#9829;&#65038;</span>FAVORITES</span>
+          <span style="font-size:0.85rem;">▼</span>
+        </div>
+        <div id="favorites-list" class="hidden player-times-grid" style="margin-bottom:20px;"></div>
+
         <img src="images/column-divider.png" alt="" style="display:block;width:50%;height:auto;flex-shrink:0;object-fit:contain;margin:14px auto 18px;" aria-hidden="true">
         <!-- TODAY'S 3 PILLARS (#ringsWidget) moved to Column B, just under the date banner -->
         <!-- REVIEW — block-letter heading above the Run Throughs (same style as the HABITS page title) -->
