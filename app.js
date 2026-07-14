@@ -1865,9 +1865,10 @@ export function openVizGoal(idx) {
       ? `<div style="margin-top:22px;"><div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 12px;">More goals</div>${others}</div>`
       : '';
     opts.innerHTML = `
-      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:0 0 12px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
+      <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:0 0 12px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+        <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
       <div style="background:${s.bg};color:${s.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;margin-bottom:12px;">${esc(it?.title || '')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
@@ -3007,6 +3008,18 @@ async function loadGoalVisualization(intent) {
   }
 }
 
+/* ↻ Re-roll the goal's visualization: drop the cached image and fetch a fresh
+   one. Lets you replace an image that doesn't match the goal. */
+export function rerollGoalVisualization(idx) {
+  const it = intentions[idx];
+  if (!it) return;
+  it.imageUrl = '';          // clear the stored URL so loadGoalVisualization re-fetches
+  saveIntentions();
+  const box = activeEl('goalVisualizationContainer');
+  if (box) box.style.display = '';
+  loadGoalVisualization(it);
+}
+
 export function vaultShowAddForm() {
   selectedVaultIdx = null;
   document.getElementById('vaultBuildSheet')?.classList.add('hidden');
@@ -3040,9 +3053,10 @@ function buildWorkspaceHeader(intent, idx) {
   const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same palette as the goal box → title matches its card
   return `
     <div style="padding:12px 16px 0;">
-      <div class="goal-visualization-container" id="goalVisualizationContainer" style="margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
+      <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+        <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
         <div style="flex:1;background:${shade.bg};color:${shade.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>

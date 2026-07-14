@@ -10,11 +10,15 @@ exports.handler = async (event) => {
     if (!statement) return { statusCode: 400, body: 'Missing statement' };
 
     // 1) Extract a single concrete, physical search keyword via OpenAI.
-    //    Deterministic fallback strips the "I AM ..." lead-in so Pexels still
-    //    gets a usable query if the AI call is unavailable (e.g. quota).
-    let keyword = statement
-      .replace(/^(?:\s*i\s*am\s+)?(?:(?:the|a|an|my|proud|owner|of)\s+)+/i, '')
-      .trim() || statement;
+    //    Deterministic fallback: drop the "I am" lead-in, then peel off any run
+    //    of leading filler words, so Pexels gets the goal's core subject even if
+    //    the AI call is unavailable (e.g. quota). The old regex required the
+    //    filler group to match, so goals like "I AM PERFECT EYE HEALTH" fell
+    //    through unchanged and Pexels full-text-matched a random photo.
+    const STOP = /^(?:the|a|an|my|your|our|his|her|their|proud|owner|of|becoming|going|to|be|now|truly|really|so|very|finally|already)\b[\s,]*/i;
+    let keyword = statement.replace(/^\s*i\s*am\s+/i, '');
+    while (STOP.test(keyword)) keyword = keyword.replace(STOP, '');
+    keyword = keyword.trim() || statement;
     try {
       const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -28,9 +32,9 @@ exports.handler = async (event) => {
           temperature: 0.3,
           messages: [{
             role: 'user',
-            content: `Extract a single, concrete, physical search keyword (1-3 words) suitable for a Pexels stock-photo search from this statement. Return ONLY the keyword — no quotes, no punctuation, no preamble.
+            content: `You pick a stock-photo search query for a vision board. From the goal below, return the single most concrete, photographable SUBJECT of the goal (1-3 words) — the tangible thing or scene that represents it being achieved. Prefer specific objects/places/people over abstract words. Examples: "I am the proud owner of a Xiaomi SU7" -> luxury electric car; "I am perfect eye health" -> hiker mountain vista; "I am debt free" -> person celebrating freedom. Return ONLY the query — no quotes, no punctuation, no preamble.
 
-Statement: "${statement}"`
+Goal: "${statement}"`
           }]
         })
       });
