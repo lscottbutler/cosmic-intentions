@@ -520,7 +520,7 @@ export function renderWrapup() {
   const taskListEl = document.getElementById('taskListWidget');
   if (taskListEl) {
     taskListEl.innerHTML = (chk && chk.fullRows) ? `
-      <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
           <summary style="position:relative;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1px;">
             <span>◈ TASK LIST</span>
