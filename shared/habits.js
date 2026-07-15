@@ -139,18 +139,21 @@ function _renderRun(cat, elId) {
   const el = document.getElementById(elId); if (!el) return;
   const list = getHabitList().filter(h => _cat(h) === cat);
   const d = _done();
+  const done = list.filter(h => d[h.id]).length;
+  // Done/total count chip in the card header (e.g. "3/8"): morningRunBody -> morningRunCount.
+  const countEl = document.getElementById(elId.replace('Body', 'Count'));
+  if (countEl) {
+    countEl.textContent = list.length ? `${done}/${list.length}` : '';
+    countEl.style.display = list.length ? 'inline-block' : 'none';
+  }
   // EVENING closes the day with a recap of everything completed today.
   const results = cat === 'EVENING' ? _dayResults() : '';
   if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>` + results; return; }
-  const done = list.filter(h => d[h.id]).length;
   // MORNING: completed tasks move to the Wall of Wins, so hide them here (they
   // reset and reappear tomorrow via the per-day done state). Other run-throughs
   // keep the classic struck-through view.
   const rows = cat === 'MORNING' ? list.filter(h => !d[h.id]) : list;
-  // Every run-through shows the green TASKS COMPLETE / N-to-go tally, and the
-  // done/total count lives in that box — so no separate top count line.
   el.innerHTML = rows.map(h => _habitRow(h, !!d[h.id])).join('')
-    + _runThroughTally(done, list.length, cat)
     + results;
 }
 
@@ -182,25 +185,6 @@ function _dayResults() {
     + `<div style="background:#EAF7EE;border-radius:8px;text-align:center;padding:8px;margin-top:8px;font-weight:800;font-size:12px;color:#2FA94B;letter-spacing:.4px;">✦ ${items.length} DONE TODAY — WELL DONE, SCOTT</div>`;
 }
 
-/* Two-box completion tally under each run-through. Box 1 = done/total,
-   Box 2 = how many left + encouragement (or a done message when all are ticked). */
-function _runThroughTally(done, total, cat) {
-  const left = total - done;
-  const msg = left > 0
-    ? `${left} TO GO — GOOD JOB, SCOTT!`
-    : `ALL DONE, SCOTT — CRUSHED IT ✦`;
-  // Each run-through's colored band fills the bottom of its white panel to match
-  // its card. (Requires overflow:hidden on the *RunBody panel.)
-  const bandColor = { MORNING: '#4A90D9', DAY: '#F5C518', EVENING: '#E8743B' }[cat];
-  const wrap = bandColor
-    ? `margin:12px -10px -10px;background:${bandColor};padding:8px 10px 10px;`
-    : 'margin-top:12px;';
-  return `<div style="${wrap}">
-    <div style="background:#333;color:#fff;border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:9px;letter-spacing:.4px;line-height:1.3;">
-      ${msg}
-    </div>
-  </div>`;
-}
 export function renderMorningRun() { _renderRun('MORNING', 'morningRunBody'); }
 export function renderDayRun()     { _renderRun('DAY',     'dayRunBody'); }
 export function renderEveningRun() { _renderRun('EVENING', 'eveningRunBody'); }

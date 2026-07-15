@@ -884,6 +884,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#4A90D9;border-radius:10px;cursor:pointer;">
             <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;white-space:nowrap;">◈ MORNING RUN THROUGH</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+              <span id="morningRunCount" style="flex-shrink:0;display:none;font-size:12px;font-weight:800;color:#fff;background:rgba(0,0,0,.28);border-radius:999px;padding:3px 9px;letter-spacing:.3px;"></span>
               <button onclick="event.stopPropagation();openHabitsAt('MORNING')" title="Add or edit my morning habits" aria-label="Add or edit my habits" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#333;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
               <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             </span>
@@ -897,6 +898,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#F5C518;border-radius:10px;cursor:pointer;">
             <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#1a1a1a;white-space:nowrap;">◈ DAY RUN THROUGH</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+              <span id="dayRunCount" style="flex-shrink:0;display:none;font-size:12px;font-weight:800;color:#fff;background:rgba(0,0,0,.28);border-radius:999px;padding:3px 9px;letter-spacing:.3px;"></span>
               <button onclick="event.stopPropagation();openHabitsAt('DAY')" title="Add or edit my day habits" aria-label="Add or edit my habits" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#333;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
               <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             </span>
@@ -910,6 +912,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#E8743B;border-radius:10px;cursor:pointer;">
             <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;white-space:nowrap;">◈ EVENING RUN THROUGH</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+              <span id="eveningRunCount" style="flex-shrink:0;display:none;font-size:12px;font-weight:800;color:#fff;background:rgba(0,0,0,.28);border-radius:999px;padding:3px 9px;letter-spacing:.3px;"></span>
               <button onclick="event.stopPropagation();openHabitsAt('EVENING')" title="Add or edit my evening habits" aria-label="Add or edit my habits" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#333;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
               <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             </span>
