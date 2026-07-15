@@ -291,10 +291,19 @@ function _todayChecklist() {
       const d = !!dones[i]; const locked = !!locks[i];
       return `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
         <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(t)}</div>
-        <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:0;padding:6px 12px;margin:0 -11px -9px;">
-          <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-          <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
-          <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
+            <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
+            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">MARK DONE</span>
+          </span>
+          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
+            <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
+            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">LOCK</span>
+          </span>
+          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
+            <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">DELETE</span>
+          </span>
         </div>
       </div>`;
     });
