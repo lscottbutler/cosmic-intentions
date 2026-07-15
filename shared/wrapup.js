@@ -226,16 +226,18 @@ function _renderUserTree(tasks, path, idx) {
     const d = !!u.done;
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
+    const _lbl = 'font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;';
+    const _col = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
     const promoteBtn = depth === 0
-      ? `<button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button>` : '';
+      ? `<span style="${_col}"><button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button><span style="${_lbl}">MAKE GOAL</span></span>` : '';
     const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;` : '';
     const row = `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
       <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(u.text)}</div>
-      <div style="display:flex;gap:16px;align-items:center;justify-content:center;background:#8ba6a9;border-radius:0;padding:6px 12px;margin:0 -11px -9px;">
-        <button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-        <button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button>
+      <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+        <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
+        <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
         ${promoteBtn}
-        <button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
+        <span style="${_col}"><button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl}">DELETE</span></span>
       </div>
     </div>`;
     return row + _renderUserTree(u.children, p, idx);
