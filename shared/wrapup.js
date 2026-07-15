@@ -11,6 +11,11 @@ import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveInten
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
+// Priority-rank badge (10, 20, 30…) shown at the left of each action row.
+// Position-based, so it renumbers on every render and stays in sync with the
+// reorder arrows — 10 is always the top priority.
+const _numBadge = (n) => `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;margin-right:8px;background:rgba(255,255,255,0.16);border-radius:6px;font-family:var(--vault-mono);font-size:10px;font-weight:800;color:#fff;text-decoration:none;vertical-align:middle;">${n}</span>`;
+
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
@@ -277,7 +282,7 @@ function _renderUserTree(tasks, path, idx) {
           <button onclick="wrapMoveUserTask(${idx},'${pStr}',1)" title="Move down" style="${_arrow}${i === tasks.length - 1 ? _dis : ''}">▼</button>
         </div>`;
     const row = `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
-      <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(u.text)}</div>
+      <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10)}${esc(u.text)}</div>
       <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
         <div style="display:flex;gap:16px;align-items:flex-start;">
           <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
@@ -344,7 +349,7 @@ function _todayChecklist() {
       const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
       const _dis = 'opacity:.3;pointer-events:none;';
       return `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
-        <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(t)}</div>
+        <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10)}${esc(t)}</div>
         <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
           <div style="display:flex;gap:16px;align-items:flex-start;">
             <span style="${_col2}"><button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl2}">MARK DONE</span></span>
