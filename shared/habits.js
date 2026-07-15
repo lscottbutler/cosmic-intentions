@@ -255,7 +255,7 @@ export function renderPBHabitList() {
   [...HABIT_CATS, ''].forEach(cat => {
     const items = groups[cat];
     if (cat === '' && !items.length) return;   // hide empty Unsorted; always show the 5 named banners
-    html += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-weight:800;font-size:12px;letter-spacing:1.5px;padding:8px 12px;border-radius:8px;margin:16px 0 8px;">${CAT_LABEL(cat)}</div>`;
+    html += `<div id="pbcat-${CAT_LABEL(cat)}" style="background:${CAT_COLORS[cat]};color:#fff;font-weight:800;font-size:12px;letter-spacing:1.5px;padding:8px 12px;border-radius:8px;margin:16px 0 8px;scroll-margin-top:76px;">${CAT_LABEL(cat)}</div>`;
     if (!items.length) {
       html += `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 2px 6px;">No habits here yet — set a habit's category to "${cat}".</div>`;
       return;
@@ -279,8 +279,22 @@ export function renderPBHabitList() {
   el.innerHTML = html || `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:6px 0;">No habits yet — add one below.</div>`;
 }
 
+/* Open the My Habits editor scrolled to a category's banner. Fired by the
+   run-through cards' edit button (Morning/Day/Evening) so the user lands on the
+   matching section. showPage() force-scrolls to top across two rAFs, so wait for
+   that to settle before scrolling to the anchor. */
+export function openHabitsAt(cat) {
+  const label = HABIT_CATS.includes(cat) ? cat : 'UNSORTED';
+  if (typeof window !== 'undefined' && typeof window.navTo === 'function') window.navTo('habits');
+  setTimeout(() => {
+    const el = document.getElementById('pbcat-' + label);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 170);
+}
+
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
+  window.openHabitsAt = openHabitsAt;
   window.renderMorningRun = renderMorningRun;
   window.renderRunThroughs = renderRunThroughs;
   window.renderPBHabitList = renderPBHabitList;
