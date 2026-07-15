@@ -46,12 +46,41 @@ export function wrapupTaskGoalSelect(sel) {
 const _activeTab = new Map();
 export function wrapTab(idx, which) {
   _activeTab.set(idx, which);
-  ['my', 'roadmap'].forEach(t => {
+  ['my', 'both', 'roadmap'].forEach(t => {
     const p = document.getElementById(`wtab-panel-${t}-${idx}`);
     const b = document.getElementById(`wtab-${t}-${idx}`);
     if (p) p.style.display = (t === which) ? 'block' : 'none';
     if (b) b.classList.toggle('wtab-active', t === which);
   });
+}
+
+/* Reorder a My-Actions task within its sibling list (up/down = prioritize your
+   daily to-dos). Path is dot-joined indices, e.g. "1" or "1.2" for a sub-step. */
+export function wrapMoveUserTask(idx, pStr, dir) {
+  const it = intentions[idx]; if (!it || !it.roadmapAI) return;
+  let list = Array.isArray(it.roadmapAI.userTasks) ? it.roadmapAI.userTasks : [];
+  const path = String(pStr).split('.').map(Number);
+  for (let k = 0; k < path.length - 1; k++) { const n = list[path[k]]; if (!n) return; list = n.children || []; }
+  const i = path[path.length - 1], j = i + dir;
+  if (j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  saveIntentions(); renderWrapup();
+}
+
+/* Reorder a Roadmap task, carrying its done/lock state (both keyed by index)
+   with it so a moved task keeps its checkmark and lock. */
+export function wrapMoveRoadmapTask(idx, i, dir) {
+  const it = intentions[idx]; if (!it || !it.roadmapAI) return;
+  const rai = it.roadmapAI;
+  const tasks = Array.isArray(rai.tasks) ? rai.tasks : [];
+  const j = i + dir;
+  if (j < 0 || j >= tasks.length) return;
+  [tasks[i], tasks[j]] = [tasks[j], tasks[i]];
+  const swap = (o) => { if (!o) return; const a = o[i], b = o[j];
+    if (b === undefined) delete o[i]; else o[i] = b;
+    if (a === undefined) delete o[j]; else o[j] = a; };
+  swap(rai.done); swap(rai.locks);
+  saveIntentions(); renderWrapup();
 }
 
 /* ▶ LEARN FROM THE GREATS — fetch a mixed shelf of real primary sources
@@ -228,16 +257,25 @@ function _renderUserTree(tasks, path, idx) {
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const _lbl = 'font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;';
     const _col = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
+    const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
+    const _dis = 'opacity:.3;pointer-events:none;';
     const promoteBtn = depth === 0
       ? `<span style="${_col}"><button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button><span style="${_lbl}">MAKE GOAL</span></span>` : '';
     const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;` : '';
+    const reorder = `<div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;padding-top:1px;">
+          <button onclick="wrapMoveUserTask(${idx},'${pStr}',-1)" title="Move up — prioritize" style="${_arrow}${i === 0 ? _dis : ''}">▲</button>
+          <button onclick="wrapMoveUserTask(${idx},'${pStr}',1)" title="Move down" style="${_arrow}${i === tasks.length - 1 ? _dis : ''}">▼</button>
+        </div>`;
     const row = `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
       <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(u.text)}</div>
-      <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
-        <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
-        <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
-        ${promoteBtn}
-        <span style="${_col}"><button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl}">DELETE</span></span>
+      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
+          <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
+          ${promoteBtn}
+          <span style="${_col}"><button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl}">DELETE</span></span>
+        </div>
+        ${reorder}
       </div>
     </div>`;
     return row + _renderUserTree(u.children, p, idx);
@@ -289,23 +327,24 @@ function _todayChecklist() {
     // the header count reflects your own actions only.
     const dones = rai.done || {};
     const locks = rai.locks || {};
-    const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i) => {
+    const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
       const d = !!dones[i]; const locked = !!locks[i];
+      const _lbl2 = 'font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;';
+      const _col2 = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
+      const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
+      const _dis = 'opacity:.3;pointer-events:none;';
       return `<div style="background:#333;border:1px solid #444;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
         <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#fff'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${esc(t)}</div>
-        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
-          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
-            <button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button>
-            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">MARK DONE</span>
-          </span>
-          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
-            <button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button>
-            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">LOCK</span>
-          </span>
-          <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
-            <button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button>
-            <span style="font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;">DELETE</span>
-          </span>
+        <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#8ba6a9;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <span style="${_col2}"><button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl2}">MARK DONE</span></span>
+            <span style="${_col2}"><button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button><span style="${_lbl2}">LOCK</span></span>
+            <span style="${_col2}"><button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl2}">DELETE</span></span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;padding-top:1px;">
+            <button onclick="wrapMoveRoadmapTask(${idx},${i},-1)" title="Move up" style="${_arrow}${i === 0 ? _dis : ''}">▲</button>
+            <button onclick="wrapMoveRoadmapTask(${idx},${i},1)" title="Move down" style="${_arrow}${i === _arr.length - 1 ? _dis : ''}">▼</button>
+          </div>
         </div>
       </div>`;
     });
@@ -353,10 +392,19 @@ function _todayChecklist() {
       </summary>
       <div class="wtabs">
         <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-both-${idx}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" style="flex:0 0 auto;align-self:stretch;display:flex;align-items:flex-end;justify-content:center;background:none;border:none;padding:0 0 6px;cursor:pointer;">
+          <span style="width:34px;height:34px;border-radius:50%;background:#000;border:2px solid #fff;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;line-height:1;">+</span>
+        </button>
         <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button>${adminBox}</div>
+        <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
+          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:#8ba6a9;margin:2px 2px 8px;">◈ MY ACTIONS</div>
+          ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
+          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:#8ba6a9;margin:14px 2px 8px;">◈ ROADMAP</div>
+          ${roadmapBox}
+        </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
       </div>
     </details>`;
@@ -575,7 +623,9 @@ if (typeof window !== 'undefined') {
   window.wrapupTaskGoalSelect = wrapupTaskGoalSelect; // inline onchange on the MY TASK LIST goal dropdown
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
-  window.wrapTab = wrapTab;   // switch a goal's My Actions / Roadmap Tasks tab
+  window.wrapTab = wrapTab;   // switch a goal's My Actions / Both / Roadmap Tasks tab
+  window.wrapMoveUserTask = wrapMoveUserTask;       // reorder a My-Action up/down
+  window.wrapMoveRoadmapTask = wrapMoveRoadmapTask; // reorder a Roadmap task up/down
   window.wrapRegenRoadmap = wrapRegenRoadmap; // rebuild a goal's roadmap from its My Actions
   window.wrapGenResources = wrapGenResources; // fetch the mixed resource shelf for a goal
   window.wrapPinResource = wrapPinResource;   // pin/unpin a resource (kept on refresh)
