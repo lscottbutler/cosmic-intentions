@@ -133,7 +133,17 @@ export async function wrapDrillDown(idx, pStr, btn) {
     let list = rai.userTasks || [];
     for (const p of path) { const n = list[p]; if (!n) break; breadcrumb.push(n.text); list = n.children || []; }
     const userNotes = (rai.userTasks || []).map(u => u && u.text).filter(Boolean);
-    const data = await window.ciApiJson('roadmap-drilldown', { goal: it.title || '', action: node.text, breadcrumb, userNotes });
+    // Vite dev / preview mode has no Netlify functions, so the AI endpoint 404s.
+    // Stub it on localhost so break-down is testable; production always calls the real endpoint.
+    const _isLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    const data = _isLocal
+      ? { steps: [
+          `Define exactly what "${node.text}" means in one sentence.`,
+          `List the specific tool, person, or resource it needs.`,
+          `Do the smallest first version and set a deadline.`,
+          `Review the result and note the next step.`,
+        ] }
+      : await window.ciApiJson('roadmap-drilldown', { goal: it.title || '', action: node.text, breadcrumb, userNotes });
     const steps = (data && data.steps) || [];
     if (!steps.length) { if (typeof toast === 'function') toast('No sub-steps — try again.', 'error'); if (btn) { btn.disabled = false; btn.textContent = '↳'; } return; }
     node.children = steps.map(text => ({ id: Date.now() + Math.floor(Math.random() * 1e6), text, done: false }));
