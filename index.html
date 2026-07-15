@@ -46,6 +46,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+      <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
+      <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
+      <button class="tnav-btn" onclick="navTo('runthroughs')">Run-Throughs</button>
       <button class="tnav-btn" onclick="navTo('setup')">My Goals</button>
       <button class="tnav-btn" onclick="navTo('habits')">My Habits</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
@@ -875,6 +878,75 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       </div>
       <!-- TODAY I WILL / ACTION PLAN — rendered by wrapup.js into this container -->
       <div id="todayWillWidget"></div>
+    </div>
+  </div>
+
+  <!-- ═══ PILLAR 3: DAILY RUN-THROUGHS (guided sessions hub) ═══
+       Single-column shell. Each run-through is one card below.
+       To add an extra (meditation / gratitude / stoic / etc.) copy a
+       card block and point its onclick at the player you want. -->
+  <div class="page" id="page-runthroughs">
+    <div style="max-width:760px;margin:0 auto;padding:18px 16px 90px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+        <button onclick="navTo('home')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
+        <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">Daily Run-Throughs</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 16px 52px;">Your guided sessions — pick one and press play.</p>
+
+      <!-- RUN-THROUGH CARDS — add / reorder freely -->
+      <div id="runThroughList">
+
+        <!-- Visualization -->
+        <button onclick="location.href='players/3min-viz.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9673;</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.3px;">Visualization</span>
+            <span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">See your vision — 3 minute guided run</span>
+          </span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+
+        <!-- Recitations -->
+        <button onclick="location.href='players/recite.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10078;</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.3px;">Recitations</span>
+            <span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Speak your affirmations out loud</span>
+          </span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+
+        <!-- Meditation (extra — wire when ready) -->
+        <button onclick="location.href='players/meditation.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9789;</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.3px;">Meditation</span>
+            <span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Quiet the mind before you begin</span>
+          </span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+
+        <!-- Gratitude (extra — coming soon) -->
+        <button onclick="toast('Gratitude run-through is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:.55;">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10084;</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.3px;">Gratitude</span>
+            <span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Coming soon</span>
+          </span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+
+        <!-- Stoic (extra — coming soon) -->
+        <button onclick="toast('Stoic run-through is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:.55;">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.3px;">Stoic</span>
+            <span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Coming soon</span>
+          </span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+
+      </div>
     </div>
   </div>
 

@@ -248,7 +248,7 @@ window.addEventListener('popstate', (e) => {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal','myroadmap'];
+  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
