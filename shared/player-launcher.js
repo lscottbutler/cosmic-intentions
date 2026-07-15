@@ -65,6 +65,46 @@ export function closePlayerColumn() {
 const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
 
+/* ── TYPED FAVORITES ──────────────────────────────────────────
+   Every favorite carries a `type`. PLAYABLE types are audio sessions that
+   loop in the sleep-player; everything else is a jump-to shortcut (open a
+   goal / task / video / page). Legacy items (no `type`, just `player`) are
+   inferred so old ci_favorites entries keep working unchanged. */
+const FAV_PLAYABLE = new Set(['meditation', 'countdown', 'gratitude', 'affirmation', 'stoic', 'visualization', 'mindset']);
+const FAV_ICON = { meditation: '🧘', countdown: '⏳', gratitude: '🙏', affirmation: '✦', stoic: '◈', visualization: '◉', mindset: '✦', goal: '🎯', task: '✓', video: '🎬', page: '🔗' };
+
+export function favType(f) {
+  if (!f) return '';
+  if (f.type) return f.type;
+  if (f.player === 'mindset') return 'mindset';   // legacy goal-mindset shape
+  return f.player || '';                            // legacy audio-session shape
+}
+export function favIsPlayable(f) { return FAV_PLAYABLE.has(favType(f)); }
+
+/* Route a favorite by type: playable → play in the column; jump-to → navigate. */
+export function openFavorite(f) {
+  if (!f) return;
+  const t = favType(f);
+  if (FAV_PLAYABLE.has(t)) { _openFav(f); return; }
+  switch (t) {
+    case 'goal':
+      if (f.goal != null && typeof window.openVizGoal === 'function') window.openVizGoal(f.goal);
+      else if (typeof window.openVizLibrary === 'function') window.openVizLibrary();
+      break;
+    case 'task':
+      if (typeof window.openMyRoadmap === 'function') window.openMyRoadmap();
+      break;
+    case 'video':
+      if (f.target) window.open(f.target, '_blank', 'noopener');
+      break;
+    case 'page':
+      if (f.target && typeof window.navTo === 'function') window.navTo(f.target);
+      break;
+    default: break;
+  }
+}
+if (typeof window !== 'undefined') window.openFavorite = openFavorite;
+
 export function renderFavorites() {
   const list = document.getElementById('favorites-list');
   if (!list) return;
@@ -74,6 +114,24 @@ export function renderFavorites() {
     return;
   }
   list.innerHTML = '';
+
+  const links    = favs.filter(f => !favIsPlayable(f));
+  const playable = favs.filter(favIsPlayable);
+
+  // ── Jump-to favorites (goal / task / video / page) — clickable shortcuts.
+  links.forEach(f => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    const icon = document.createElement('span'); icon.style.cssText = 'font-size:16px;flex-shrink:0;'; icon.textContent = FAV_ICON[favType(f)] || '★';
+    const ttl  = document.createElement('span'); ttl.style.cssText = 'flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'; ttl.textContent = f.title || FAV_LABEL[favType(f)] || favType(f);
+    const chev = document.createElement('span'); chev.style.cssText = 'color:#9a9a9a;font-size:18px;flex-shrink:0;'; chev.textContent = '›';
+    row.append(icon, ttl, chev);
+    row.addEventListener('click', () => openFavorite(f));
+    list.appendChild(row);
+  });
+
+  // The loop playlist below is for audio-session favorites only.
+  if (!playable.length) return;
 
   // Loops control — how many times to play the whole selected list.
   const loops = document.createElement('div');
@@ -92,7 +150,7 @@ export function renderFavorites() {
     play.style.opacity = n ? '1' : '.5';
     play.innerHTML = n ? `&#9654; Play ${n} selected` : '&#9654; Play selected';
   }
-  favs.forEach(f => {
+  playable.forEach(f => {
     const row = document.createElement('div');
     row.className = 'fav-row';
     row.draggable = true;

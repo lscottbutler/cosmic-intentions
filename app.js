@@ -2265,7 +2265,7 @@ export function toggleGoalFavorite(idx, ev) {
   if (!Array.isArray(favs)) favs = [];
   const at = favs.findIndex(f => f && f.player === 'mindset' && f.goal === idx);
   if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'success'); }
-  else { favs.push({ player: 'mindset', goal: idx, title }); toast('Added to favorites loop ♥', 'success'); }
+  else { favs.push({ type: 'mindset', player: 'mindset', goal: idx, title }); toast('Added to favorites loop ♥', 'success'); }
   localStorage.setItem('ci_favorites', JSON.stringify(favs));
   renderVaultSidebar();
   const box = document.getElementById('favorites-list');
