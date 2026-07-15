@@ -142,10 +142,7 @@ function _renderRun(cat, elId) {
   const done = list.filter(h => d[h.id]).length;
   // Done/total count chip in the card header (e.g. "3/8"): morningRunBody -> morningRunCount.
   const countEl = document.getElementById(elId.replace('Body', 'Count'));
-  if (countEl) {
-    countEl.textContent = list.length ? `${done}/${list.length}` : '';
-    countEl.style.display = list.length ? 'inline-block' : 'none';
-  }
+  if (countEl) countEl.textContent = `${done}/${list.length}`;
   // EVENING closes the day with a recap of everything completed today.
   const results = cat === 'EVENING' ? _dayResults() : '';
   if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>` + results; return; }
