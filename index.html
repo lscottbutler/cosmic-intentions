@@ -407,14 +407,31 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
         <!-- WHICH DIRECTION? — the two pillar buttons, up top -->
-        <div class="dash-direction" style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--text);margin:4px 0 6px;text-align:center;">Which Direction?</div>
-        <div class="vault-stats-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:12px;">
-          <div class="vault-stat" onclick="openVizLibrary()" style="cursor:pointer;"><div class="vs-num" style="font-size:24px;">✦</div><div class="vs-lbl">Visualization Library</div></div>
-          <div class="vault-stat" onclick="openMyRoadmap()" style="cursor:pointer;"><div class="vs-num" style="font-size:24px;">🗺</div><div class="vs-lbl">My Roadmap</div></div>
-        </div>
+        <div class="dash-direction" style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--text);margin:4px 0 10px;text-align:center;">Which Direction?</div>
+        <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
+        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
+          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Roadmap</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+        <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10022;</span>
+          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Visualization Library</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+        <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
+          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Run-Throughs</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
 
+        <!-- ═══ PARKED: run-through launchers — MOVE THESE INTO page-runthroughs ═══
+             Hidden from the slimmed home hub. The Visualization / Recitations / Favorites
+             cards + their option grids below still work — lift the buttons you want into
+             the Run-Throughs page (#runThroughList), then delete this wrapper. ═══ -->
+        <div id="dashRunLaunchers" style="display:none;">
         <!-- VISUALIZATION / RECITATIONS / FAVORITES — pillar-style cards matching VIZ LIB / MY ROADMAP, two per row -->
         <div class="vault-stats-row" style="grid-template-columns:repeat(2,1fr);margin:14px 0 12px;">
           <div class="vault-stat" onclick="document.getElementById('visualization-times-grid').classList.toggle('hidden')" style="cursor:pointer;">
@@ -449,6 +466,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
 
         <div id="favorites-list" class="hidden player-times-grid" style="margin-bottom:20px;"></div>
+        </div><!-- /#dashRunLaunchers (parked) -->
 
         <img src="images/column-divider.png" alt="" style="display:block;width:50%;height:auto;flex-shrink:0;object-fit:contain;margin:8px auto 10px;" aria-hidden="true">
         <!-- TODAY'S 3 PILLARS (#ringsWidget) moved to Column B, just under the date banner -->
