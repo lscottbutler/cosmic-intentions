@@ -68,6 +68,19 @@ export function wrapCopyCode(code) {
   catch (_) { toast(code, 'info'); }
 }
 
+/* Turn a raw AI/network error into a calm, human message. Quota/billing/rate
+   or 5xx outages (the OpenAI account running dry, an overloaded model) read as
+   "busy, try again" — not "failed". Returns '' for anything unrecognised so
+   the caller can fall back to its own specific wording. */
+function _aiErrMsg(e) {
+  const m = ((e && e.message) || '').toLowerCase();
+  if (/quota|billing|insufficient|rate.?limit|overloaded|\b429\b|\b50[0-9]\b/.test(m))
+    return 'The AI is busy right now — give it a moment and try again.';
+  if (/network|failed to fetch|load failed|timeout|timed out|offline/.test(m))
+    return 'Connection hiccup — check your internet and try again.';
+  return '';
+}
+
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
@@ -161,7 +174,7 @@ export async function wrapGenResources(idx) {
     renderWrapup();
     if (!fresh.length && !pinned.length && typeof toast === 'function') toast('Nothing found — try again.', 'error');
   } catch (e) {
-    if (typeof toast === 'function') toast('Source search failed.', 'error');
+    if (typeof toast === 'function') toast(_aiErrMsg(e) || 'Couldn’t reach the source finder — try again.', 'error');
     if (btn) { btn.disabled = false; btn.textContent = '▶ FIND SOURCES'; }
   }
 }
@@ -207,7 +220,7 @@ export async function wrapDrillDown(idx, pStr, btn) {
     await saveIntentions();
     renderWrapup();
   } catch (e) {
-    if (typeof toast === 'function') toast('Break-down failed.', 'error');
+    if (typeof toast === 'function') toast(_aiErrMsg(e) || 'Couldn’t break this down — try again.', 'error');
     if (btn) { btn.disabled = false; btn.textContent = '↳'; }
   }
 }
