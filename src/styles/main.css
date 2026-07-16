@@ -210,6 +210,11 @@ details.rm-drop[open]::details-content { height: auto; }
   transition: opacity .15s;
 }
 .wtab.wtab-active { opacity: 1; }
+
+/* Wrap-up code-cards (Phase 1): quiet card + ⋯ overflow menu hover states */
+.wcard-more { transition: background .12s, color .12s; }
+.wcard:hover .wcard-more, .wcard-more:hover { background: #f1f1f3; color: #4a4d54; }
+.wcard-menu button:hover { background: #f4f4f6; }
 .tnav-btn {
   background: none;
   border: none;

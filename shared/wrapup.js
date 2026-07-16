@@ -1,5 +1,5 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
-import { RM_CIRCLE, LOCK_OPEN, LOCK_CLOSED, renderPBIntentionList } from './card-builder.js';
+import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
@@ -11,22 +11,53 @@ import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveInten
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
-// Priority-rank badge (10, 20, 30…) shown at the left of each action row.
-// Position-based, so it renumbers on every render and stays in sync with the
-// reorder arrows — 10 is always the top priority.
-// The badge is filled with the goal's own box color (bg/fg from its palette shade)
-// so every row carries that goal's color as an accent on the white cards.
-const _numBadge = (n, bg, fg) => `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;margin-right:8px;background:${bg};border-radius:6px;font-family:var(--vault-mono);font-size:10px;font-weight:800;color:${fg};text-decoration:none;vertical-align:middle;">${n}</span>`;
+/* ── CODE-CARD SYSTEM (Phase 1) ───────────────────────────────────────────
+   Every action row is a quiet white card: a thin goal-color rail, one visible
+   action (the complete checkbox), a goal-colored CODE chip (e.g. "C2.1"), the
+   text, and a ⋯ overflow menu holding everything else.
 
-// Mix a hex color toward white by `amt` (0..1) → a lighter shade of it. Used for
-// the button strip: a light tint of the goal's own box color under white cards.
-const _tint = (hex, amt) => {
-  const n = parseInt(hex.replace('#', ''), 16);
-  const r = Math.round((n >> 16 & 255) + (255 - (n >> 16 & 255)) * amt);
-  const g = Math.round((n >>  8 & 255) + (255 - (n >>  8 & 255)) * amt);
-  const b = Math.round((n       & 255) + (255 - (n       & 255)) * amt);
-  return `rgb(${r},${g},${b})`;
-};
+   Codes this pass are POSITION-based (goal letter by slot, number by order) —
+   same semantics as the old 10/20/30 badge. Phase 2 freezes them at creation
+   so they're safe to write in a physical journal. */
+const _goalLetter = (idx) => String.fromCharCode(65 + (idx % 26));   // A–Z (25 goals = A–Y)
+
+// One overflow-menu item / separator.
+const _mItem = (onclick, icon, label, danger) =>
+  `<button onclick="${onclick}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:none;background:transparent;border-radius:6px;font-size:12.5px;font-weight:500;color:${danger ? '#d1364b' : '#2a2c31'};cursor:pointer;text-align:left;font-family:inherit;"><span style="width:16px;text-align:center;font-size:13px;">${icon}</span>${label}</button>`;
+const _mSep = () => `<div style="height:1px;background:#eee;margin:4px 6px;"></div>`;
+
+// The shared quiet card. `items` is the pre-built ⋯ menu HTML.
+function _card({ shade, code, text, done, toggleCall, menuId, items, indent = 0, fade = false }) {
+  return `<div class="wcard" style="position:relative;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid #e6e6e9;border-radius:9px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:11px 12px 11px 15px;box-shadow:0 1px 2px rgba(0,0,0,.12);">
+    <span style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:${shade.bg};${fade ? 'opacity:.45;' : ''}"></span>
+    <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
+    <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:19px;padding:0 6px;border-radius:5px;background:${shade.bg};color:${shade.text};font-family:var(--vault-mono);font-size:10.5px;font-weight:700;letter-spacing:.4px;">${esc(code)}</span>
+    <span style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
+    <button class="wcard-more" onclick="wrapCardMenu(event,'${menuId}')" title="More actions" aria-label="More actions" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:#9a9da4;cursor:pointer;font-size:17px;line-height:1;">⋯</button>
+    <div id="${menuId}" class="wcard-menu" style="display:none;position:absolute;right:8px;top:44px;z-index:20;background:#fff;border:1px solid #e2e2e6;border-radius:9px;box-shadow:0 10px 28px rgba(0,0,0,.22);padding:5px;width:186px;">${items}</div>
+  </div>`;
+}
+
+// ── ⋯ overflow menu: one open at a time; closes on outside-click or any action ──
+export function wrapCardMenu(ev, id) {
+  if (ev) ev.stopPropagation();
+  const el = document.getElementById(id);
+  if (!el) return;
+  const open = el.style.display === 'block';
+  document.querySelectorAll('.wcard-menu').forEach(m => { m.style.display = 'none'; });
+  el.style.display = open ? 'none' : 'block';
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.wcard-menu').forEach(m => { if (m.style.display !== 'none') m.style.display = 'none'; });
+  });
+}
+
+// Copy a task's journal code (e.g. "C2.1") — the paper-journal handoff.
+export function wrapCopyCode(code) {
+  try { navigator.clipboard.writeText(code); toast(`Copied ${code}`, 'success'); }
+  catch (_) { toast(code, 'info'); }
+}
 
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
@@ -275,41 +306,27 @@ function _taskAtPath(rai, path) {
    nested steps use lightweight path-based toggle/delete. */
 function _renderUserTree(tasks, path, idx) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
-  // My Actions belong to the goal → tint their cards from the goal's own box color.
-  const shade   = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → the priority badge
-  const stripBg = _tint(shade.bg, 0.64);   // lighter shade of the goal box color for the strip
-  const stripBd = _tint(shade.bg, 0.50);
+  const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
+  const letter = _goalLetter(idx);
   return tasks.map((u, i) => {
     const p = [...path, i];
     const pStr = p.join('.');
     const depth = p.length - 1;
     const d = !!u.done;
+    const code = letter + p.map(x => x + 1).join('.');       // e.g. C2.1  (position-based, Phase 1)
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
-    const _lbl = 'font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;';
-    const _col = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
-    const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
-    const _dis = 'opacity:.3;pointer-events:none;';
-    const promoteBtn = depth === 0
-      ? `<span style="${_col}"><button onclick="wrapPromoteToGoal(${idx},${u.id})" title="Make this a goal → adds it to your Pegboard" style="${RM_CIRCLE}font-size:13px;">◎</button><span style="${_lbl}">MAKE GOAL</span></span>` : '';
-    const indent = depth > 0 ? `margin-left:${Math.min(depth, 4) * 13}px;` : '';
-    const reorder = `<div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;padding-top:1px;">
-          <button onclick="wrapMoveUserTask(${idx},'${pStr}',-1)" title="Move up — prioritize" style="${_arrow}${i === 0 ? _dis : ''}">▲</button>
-          <button onclick="wrapMoveUserTask(${idx},'${pStr}',1)" title="Move down" style="${_arrow}${i === tasks.length - 1 ? _dis : ''}">▼</button>
-        </div>`;
-    const row = `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
-      <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(u.text)}</div>
-      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:${stripBg};border-top:1px solid ${stripBd};border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
-        <div style="display:flex;gap:16px;align-items:flex-start;">
-          <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
-          <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
-          ${promoteBtn}
-          <span style="${_col}"><button onclick="${deleteCall}" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl}">DELETE</span></span>
-        </div>
-        ${reorder}
-      </div>
-    </div>`;
-    return row + _renderUserTree(u.children, p, idx);
+    const items = [
+      i > 0                 ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',-1)`, '▲', 'Move up') : '',
+      i < tasks.length - 1  ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',1)`,  '▼', 'Move down') : '',
+      _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
+      depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
+      _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
+      _mSep(),
+      _mItem(deleteCall, '✕', 'Delete', true),
+    ].join('');
+    return _card({ shade, code, text: u.text, done: d, toggleCall, menuId: `wm-${idx}-${pStr}`, items, indent: depth, fade: depth > 0 })
+         + _renderUserTree(u.children, p, idx);
   }).join('');
 }
 
@@ -347,6 +364,9 @@ function _todayChecklist() {
         style="flex-shrink:0;background:#8ba6a9;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
     </div>`;
 
+    const letter = _goalLetter(idx);
+    const roadmapBase = uTasks.length;   // roadmap codes continue after the My-Action top-level count
+
     // 2) Your own custom actions — a drillable TREE ("↳" = break into deeper
     //    steps). Header count reflects the top-level actions.
     uTasks.forEach(u => { total++; if (u.done) done++; });
@@ -360,26 +380,16 @@ function _todayChecklist() {
     const locks = rai.locks || {};
     const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
       const d = !!dones[i]; const locked = !!locks[i];
-      const _lbl2 = 'font-size:8px;font-weight:800;letter-spacing:.4px;color:#1C2230;line-height:1;white-space:nowrap;';
-      const _col2 = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
-      const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
-      const _dis = 'opacity:.3;pointer-events:none;';
-      const stripBg = _tint(shade.bg, 0.64);   // lighter shade of the goal box color for the strip
-      const stripBd = _tint(shade.bg, 0.50);
-      return `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
-        <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(t)}</div>
-        <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:${stripBg};border-top:1px solid ${stripBd};border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
-          <div style="display:flex;gap:16px;align-items:flex-start;">
-            <span style="${_col2}"><button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl2}">MARK DONE</span></span>
-            <span style="${_col2}"><button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button><span style="${_lbl2}">LOCK</span></span>
-            <span style="${_col2}"><button onclick="deleteRoadmapTask(${idx},${i})" title="Delete this action" style="${RM_CIRCLE}font-size:14px;">✕</button><span style="${_lbl2}">DELETE</span></span>
-          </div>
-          <div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;padding-top:1px;">
-            <button onclick="wrapMoveRoadmapTask(${idx},${i},-1)" title="Move up" style="${_arrow}${i === 0 ? _dis : ''}">▲</button>
-            <button onclick="wrapMoveRoadmapTask(${idx},${i},1)" title="Move down" style="${_arrow}${i === _arr.length - 1 ? _dis : ''}">▼</button>
-          </div>
-        </div>
-      </div>`;
+      const code = letter + (roadmapBase + i + 1);          // e.g. C3  (continues after My Actions)
+      const items = [
+        i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
+        i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
+        _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
+        _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
+        _mSep(),
+        _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
+      ].join('');
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, menuId: `wm-r-${idx}-${i}`, items });
     });
     // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
     const hasAi     = _aiRowArr.length > 0;
@@ -661,5 +671,7 @@ if (typeof window !== 'undefined') {
   window.wrapDrillDown = wrapDrillDown;       // break a My-Action into deeper sub-steps
   window.wrapSubToggle = wrapSubToggle;       // toggle a nested sub-step done
   window.wrapSubDelete = wrapSubDelete;       // delete a nested sub-step
+  window.wrapCardMenu = wrapCardMenu;         // open/close a card's ⋯ overflow menu
+  window.wrapCopyCode = wrapCopyCode;         // copy a task's journal code (e.g. "C2.1")
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
