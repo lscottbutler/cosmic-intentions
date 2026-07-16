@@ -14,17 +14,9 @@ const DONE  = '#4ADE80';
 // Priority-rank badge (10, 20, 30…) shown at the left of each action row.
 // Position-based, so it renumbers on every render and stays in sync with the
 // reorder arrows — 10 is always the top priority.
-const _numBadge = (n) => `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;margin-right:8px;background:rgba(0,0,0,0.12);border-radius:6px;font-family:var(--vault-mono);font-size:10px;font-weight:800;color:#1C2230;text-decoration:none;vertical-align:middle;">${n}</span>`;
-
-// Mix a hex color toward white by `amt` (0..1) → a soft, readable tint. Used to
-// derive a light shade of a goal's own box color for its "My Actions" cards.
-const _tint = (hex, amt) => {
-  const n = parseInt(hex.replace('#', ''), 16);
-  const r = Math.round((n >> 16 & 255) + (255 - (n >> 16 & 255)) * amt);
-  const g = Math.round((n >>  8 & 255) + (255 - (n >>  8 & 255)) * amt);
-  const b = Math.round((n       & 255) + (255 - (n       & 255)) * amt);
-  return `rgb(${r},${g},${b})`;
-};
+// The badge is filled with the goal's own box color (bg/fg from its palette shade)
+// so every row carries that goal's color as an accent on the white cards.
+const _numBadge = (n, bg, fg) => `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;margin-right:8px;background:${bg};border-radius:6px;font-family:var(--vault-mono);font-size:10px;font-weight:800;color:${fg};text-decoration:none;vertical-align:middle;">${n}</span>`;
 
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
@@ -274,10 +266,7 @@ function _taskAtPath(rai, path) {
 function _renderUserTree(tasks, path, idx) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   // My Actions belong to the goal → tint their cards from the goal's own box color.
-  const shade   = GREY_SHADES[idx % GREY_SHADES.length];
-  const cardBg  = _tint(shade.bg, 0.80);   // light shade of the goal color
-  const cardBd  = _tint(shade.bg, 0.52);
-  const stripBg = _tint(shade.bg, 0.64);   // slightly deeper for the button strip
+  const shade = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → the priority badge
   return tasks.map((u, i) => {
     const p = [...path, i];
     const pStr = p.join('.');
@@ -296,9 +285,9 @@ function _renderUserTree(tasks, path, idx) {
           <button onclick="wrapMoveUserTask(${idx},'${pStr}',-1)" title="Move up — prioritize" style="${_arrow}${i === 0 ? _dis : ''}">▲</button>
           <button onclick="wrapMoveUserTask(${idx},'${pStr}',1)" title="Move down" style="${_arrow}${i === tasks.length - 1 ? _dis : ''}">▼</button>
         </div>`;
-    const row = `<div style="background:${cardBg};border:1px solid ${cardBd};border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
-      <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#1C2230'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10)}${esc(u.text)}</div>
-      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:${stripBg};border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+    const row = `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
+      <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(u.text)}</div>
+      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#f2f2f2;border-top:1px solid #e2e2e2;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
         <div style="display:flex;gap:16px;align-items:flex-start;">
           <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
           <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
@@ -364,7 +353,7 @@ function _todayChecklist() {
       const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
       const _dis = 'opacity:.3;pointer-events:none;';
       return `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
-        <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10)}${esc(t)}</div>
+        <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(t)}</div>
         <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#f2f2f2;border-top:1px solid #e2e2e2;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
           <div style="display:flex;gap:16px;align-items:flex-start;">
             <span style="${_col2}"><button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl2}">MARK DONE</span></span>
