@@ -2279,6 +2279,23 @@ export function toggleGoalFavorite(idx, ev) {
   if (box && !box.classList.contains('hidden') && typeof window.renderFavorites === 'function') window.renderFavorites();
 }
 
+/* ☆ Favorite the CURRENT page → a jump-to shortcut in the Favorites panel
+   (type:'page', routed back via navTo). Toggles: fire again to remove. Only the
+   real app pages are favoritable (not home/landing/admin). */
+const _FAV_PAGE_TITLES = { dashboard: 'Dashboard', setup: 'My Goals', habits: 'My Habits', wins: 'My Wins', vizlibrary: 'Visualization Library', myroadmap: 'Roadmap', runthroughs: 'Run-Throughs' };
+export function favThisPage() {
+  const id = _navHistory[_navIndex];
+  if (!id || !_FAV_PAGE_TITLES[id]) { toast('This page can’t be favorited.', 'info'); return; }
+  let favs; try { favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { favs = []; }
+  if (!Array.isArray(favs)) favs = [];
+  const at = favs.findIndex(f => f && f.type === 'page' && f.target === id);
+  if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'success'); }
+  else { favs.push({ type: 'page', target: id, title: _FAV_PAGE_TITLES[id] }); toast(`Added “${_FAV_PAGE_TITLES[id]}” to favorites ♥`, 'success'); }
+  localStorage.setItem('ci_favorites', JSON.stringify(favs));
+  const box = document.getElementById('favorites-list');
+  if (box && !box.classList.contains('hidden') && typeof window.renderFavorites === 'function') window.renderFavorites();
+}
+
 /* Open a player INLINE under its goal box (Column A), surviving list re-renders.
    kind: '3min' (visualization), 'mindset' (unified — all categories), or a single
    mindset key like 'affirmations' / 'beliefs' / 'stoic' / 'attitudes' (ASS player). */
