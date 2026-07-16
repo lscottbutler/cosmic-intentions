@@ -214,6 +214,23 @@ export function wrapPinResource(idx, i) {
   renderWrapup();
 }
 
+/* ★ Favorite a "Learn from the Greats" resource (video/site/article/podcast) →
+   a jump-to shortcut in the Favorites panel. Stored as type:'video' (external
+   URL that opens in a new tab via openFavorite), keyed by its URL so it's one
+   entry. Toggles: fire again to remove. */
+function _isResFav(url) { return !!url && _favsRead().some(f => f && f.type === 'video' && f.target === url); }
+export function wrapFavResource(idx, i) {
+  const r = intentions[idx]?.roadmapAI?.resources?.[i];
+  if (!r || !r.url) return;
+  const favs = _favsRead();
+  const at = favs.findIndex(f => f && f.type === 'video' && f.target === r.url);
+  if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'info'); }
+  else { favs.push({ type: 'video', target: r.url, title: r.title || r.url, subtitle: r.subtitle || '' }); toast('Added to favorites ♥', 'success'); }
+  try { localStorage.setItem('ci_favorites', JSON.stringify(favs)); } catch (_) {}
+  if (typeof window !== 'undefined' && typeof window.renderFavorites === 'function') window.renderFavorites();
+  renderWrapup();
+}
+
 /* ↳ BREAK IT DOWN — expand a My-Action into deeper sub-steps (recursive).
    Sends the goal + breadcrumb path + this action; stores steps as children. */
 export async function wrapDrillDown(idx, pStr, btn) {
@@ -521,6 +538,7 @@ function _todayChecklist() {
           <span style="display:block;font-size:11px;line-height:1.3;color:#12251f;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.title)}</span>
           <span style="display:block;font-size:9px;color:#3e4a4c;">${esc(r.subtitle || '')}</span>
         </a>
+        <button onclick="wrapFavResource(${idx},${i})" title="${_isResFav(r.url) ? 'Unfavorite' : 'Favorite — save to your Favorites panel'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:15px;line-height:1;opacity:${_isResFav(r.url) ? '1' : '0.4'};padding:2px 4px;color:#e0102b;">${_isResFav(r.url) ? '♥' : '♡'}</button>
         <button onclick="wrapPinResource(${idx},${i})" title="${r.pinned ? 'Unpin' : 'Pin — keep this on refresh'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:14px;opacity:${r.pinned ? '1' : '0.35'};padding:2px 4px;">📌</button>
         <span style="flex-shrink:0;color:#e0102b;font-size:15px;">↗</span>
       </div>`).join('') : `<div style="font-size:11px;color:rgba(28,34,48,0.65);padding:2px;">Real videos, official sites, articles &amp; podcasts from people who've done this.</div>`}
@@ -775,6 +793,7 @@ if (typeof window !== 'undefined') {
   window.wrapRegenRoadmap = wrapRegenRoadmap; // rebuild a goal's roadmap from its My Actions
   window.wrapGenResources = wrapGenResources; // fetch the mixed resource shelf for a goal
   window.wrapPinResource = wrapPinResource;   // pin/unpin a resource (kept on refresh)
+  window.wrapFavResource = wrapFavResource;   // ♥ favorite a resource → Favorites panel shortcut
   window.wrapDrillDown = wrapDrillDown;       // break a My-Action into deeper sub-steps
   window.wrapSubToggle = wrapSubToggle;       // toggle a nested sub-step done
   window.wrapSubDelete = wrapSubDelete;       // delete a nested sub-step
