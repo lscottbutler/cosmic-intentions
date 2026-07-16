@@ -13,17 +13,17 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 
 const DEFAULT_PROMPT = `OVERALL GOAL: "{{goal}}"
 PATH SO FAR: {{breadcrumb}}
-THE ACTION TO BREAK DOWN: "{{action}}"
+THE ITEM TO ADDRESS: "{{action}}"
 {{userNotes}}
-Break THE ACTION above into 4–6 concrete, granular sub-steps the person can execute now. Rules:
+First decide what THE ITEM is, then respond accordingly.
 
-1. Each sub-step names a SPECIFIC thing — the exact tool, number, source, decision, or asset. BANNED vague verbs: "research", "explore", "identify", "leverage", "develop a strategy", "use social media".
+A) IF IT IS A QUESTION OR AN INFORMATION REQUEST (asks when / where / what / which / who / how much / is it …): ANSWER IT DIRECTLY. Every entry in "steps" is a concrete FACT that answers it — the real name, date, address, venue, price, number, or specific recommendation you know. Give the actual answer: e.g. the event's official name, the venue + address, the organizer, the month/season and typical dates, ticket info.
+   • NEVER return instructions on how to look it up. BANNED: "open a browser", "go to Google", "type … in the search bar", "click a link", "search for", "visit a website to find out". The user can already use a phone — they want the ANSWER, not a how-to-search lecture.
+   • If you are not certain of the exact current-year date, still give every specific you DO know (the exact venue + address, the organizer's name, what the event is officially called, and the usual month/season it runs), and make the LAST entry name the specific official source that publishes the schedule (the organizer or official site by name) — never a generic "search online".
 
-2. If the action is a question (e.g. "how do founder subs work?"), turn it into concrete steps that ANSWER it.
+B) IF IT IS A TASK TO DO (build, write, buy, contact, decide): break it into 4–6 concrete sub-steps. Each names a SPECIFIC thing — the exact tool, number, source, decision, or asset. BANNED vague verbs: "research", "explore", "identify", "leverage", "develop a strategy". ALSO BANNED: mechanical device hand-holding ("open your browser", "type into the search bar", "click the button").
 
-3. Stay tightly scoped to THIS action only — do NOT restate the whole goal or drift up a level.
-
-4. Sequence them in the order to do them. One sharp, self-contained sentence each.
+Stay tightly scoped to THE ITEM only — do NOT restate the whole goal or drift up a level. One sharp, self-contained sentence each.
 
 Return only valid JSON, no markdown:
 { "steps": ["...", "...", "...", "..."] }`;
