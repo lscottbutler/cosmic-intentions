@@ -39,6 +39,9 @@ MP4/
 # generated standalone build (regenerate with scripts/build-standalone.py) — bundles ~70MB of art
 standalone-3mv/
 
+# marketing department — private strategy/copy working docs (never publish to live site)
+marketing/
+
 # Local Netlify folder
 .netlify
 
