@@ -30,9 +30,16 @@ const _mSep = () => `<div style="height:1px;background:#eee;margin:4px 6px;"></d
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
+  // Rail = the at-a-glance "yours vs AI-suggested" tell: My Actions get a SOLID
+  // goal-color rail; Roadmap gets a DASHED, dimmer one. Same goal color either
+  // way, so the group is obvious but the goal identity is preserved.
+  const railBase = variant === 'roadmap'
+    ? `background:repeating-linear-gradient(to bottom, ${shade.bg} 0 5px, transparent 5px 9px);`
+    : `background:${shade.bg};`;
+  const railOpacity = fade ? 'opacity:.45;' : (variant === 'roadmap' ? 'opacity:.7;' : '');
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:9px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:11px 12px 11px 15px;box-shadow:0 1px 2px rgba(0,0,0,.12);">
-    <span style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:${shade.bg};${fade ? 'opacity:.45;' : ''}"></span>
+    <span style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;${railBase}${railOpacity}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:19px;padding:0 6px;border-radius:5px;background:${shade.bg};color:${shade.text};font-family:var(--vault-mono);font-size:10.5px;font-weight:700;letter-spacing:.4px;">${esc(code)}</span>
@@ -463,7 +470,7 @@ function _todayChecklist() {
         _mSep(),
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items });
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap' });
     });
     // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
     const hasAi     = _aiRowArr.length > 0;
@@ -513,9 +520,9 @@ function _todayChecklist() {
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
-          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:#8ba6a9;margin:2px 2px 8px;">◈ MY ACTIONS</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:#000;border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
           ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
-          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:#8ba6a9;margin:14px 2px 8px;">◈ ROADMAP</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#3a3f47;background:#e9ecef;border:1px solid #cfd3d8;border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
           ${roadmapBox}
         </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
