@@ -30,27 +30,31 @@ const _mSep = () => `<div style="height:1px;background:#eee;margin:4px 6px;"></d
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, menuId, items, indent = 0, fade = false }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false }) {
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:9px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:11px 12px 11px 15px;box-shadow:0 1px 2px rgba(0,0,0,.12);">
     <span style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:${shade.bg};${fade ? 'opacity:.45;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:19px;padding:0 6px;border-radius:5px;background:${shade.bg};color:${shade.text};font-family:var(--vault-mono);font-size:10.5px;font-weight:700;letter-spacing:.4px;">${esc(code)}</span>
       <span style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
-      <button class="wcard-more" onclick="wrapCardMenu(event,'${menuId}')" title="More actions" aria-label="More actions" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:#9a9da4;cursor:pointer;font-size:17px;line-height:1;">⋯</button>
+      <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:#9a9da4;cursor:pointer;font-size:17px;line-height:1;">⋯</button>
     </div>
-    <div id="${menuId}" class="wcard-menu" style="display:none;margin:9px -3px -3px;padding-top:6px;border-top:1px solid #eee;">${items}</div>
+    <div class="wcard-menu" style="display:none;margin:9px -3px -3px;padding-top:6px;border-top:1px solid #eee;">${items}</div>
   </div>`;
 }
 
 // ── ⋯ overflow menu: one open at a time; closes on outside-click or any action ──
-export function wrapCardMenu(ev, id) {
+// Finds the menu RELATIVE to the tapped ⋯ button (this card's .wcard-menu) — the
+// same rows render in several tab panels at once, so an id lookup would hit a
+// duplicate in a hidden panel. closest() always targets the button you tapped.
+export function wrapCardMenu(ev, btn) {
   if (ev) ev.stopPropagation();
-  const el = document.getElementById(id);
+  const card = btn && btn.closest ? btn.closest('.wcard') : null;
+  const el = card ? card.querySelector('.wcard-menu') : null;
   if (!el) return;
   const open = el.style.display === 'block';
   document.querySelectorAll('.wcard-menu').forEach(m => { m.style.display = 'none'; });
-  el.style.display = open ? 'none' : 'block';
+  if (!open) el.style.display = 'block';
 }
 if (typeof document !== 'undefined') {
   document.addEventListener('click', () => {
@@ -330,7 +334,7 @@ function _renderUserTree(tasks, path, idx) {
       _mSep(),
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
-    return _card({ shade, code, text: u.text, done: d, toggleCall, menuId: `wm-${idx}-${pStr}`, items, indent: depth, fade: depth > 0 })
+    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0 })
          + _renderUserTree(u.children, p, idx);
   }).join('');
 }
@@ -394,7 +398,7 @@ function _todayChecklist() {
         _mSep(),
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, menuId: `wm-r-${idx}-${i}`, items });
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items });
     });
     // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
     const hasAi     = _aiRowArr.length > 0;
