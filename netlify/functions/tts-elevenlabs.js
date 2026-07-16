@@ -16,19 +16,16 @@
    the anon role. Falls back to inline audio if the bucket/policy isn't set up.
 ─────────────────────────────────────────────────────────────────────────── */
 const crypto   = require('crypto');
+const { guard } = require('./_guard');
 const SUPA_URL = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
 const BUCKET   = 'goal-audio';
 const ALLOWED_MODELS = ['eleven_multilingual_v2', 'eleven_turbo_v2_5', 'eleven_flash_v2_5'];
 
 exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-  };
-
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
   if (event.httpMethod !== 'POST')   return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
   let body;

@@ -1,6 +1,11 @@
 // Text-to-speech proxy. Tries ElevenLabs first (if ELEVENLABS_API_KEY is set),
 // falls back to OpenAI so it never goes silent. Returns { audio: <base64 mp3>, provider }.
+const { guard } = require('./_guard');
+
 exports.handler = async (event) => {
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }

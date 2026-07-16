@@ -1,13 +1,12 @@
 // Endpoint name kept as "claude" to avoid frontend churn.
 // Under the hood this calls OpenAI gpt-4o-mini for structured JSON generation.
 
+const { guard } = require('./_guard');
+
 exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-  };
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }

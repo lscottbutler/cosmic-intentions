@@ -435,16 +435,13 @@ Return this exact JSON:
 /* ─────────────────────────────────────────────────────────────────────────
    MAIN HANDLER
 ───────────────────────────────────────────────────────────────────────── */
-exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-  };
+const { guard } = require('./_guard');
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
+exports.handler = async (event) => {
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }

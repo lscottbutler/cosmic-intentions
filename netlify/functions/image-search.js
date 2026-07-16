@@ -1,7 +1,12 @@
 // Vision-board image: extract a concrete keyword from an "I AM" statement via
 // OpenAI, then fetch a matching stock photo from Pexels.
 // Env: OPEN_AI_KEY (keyword extraction), PEXELS_API_KEY (image search).
+const { guard } = require('./_guard');
+
 exports.handler = async (event) => {
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }

@@ -1,4 +1,9 @@
+const { guard } = require('./_guard');
+
 exports.handler = async (event) => {
+  const g = await guard(event, { requireAuth: false });
+  if (!g.ok) return g.response;
+  const headers = g.headers;
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
