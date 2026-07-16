@@ -2,7 +2,7 @@ const { getEntCard } = require('./_entrepreneur-library');
 const { guard } = require('./_guard');
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: false });
+  const g = await guard(event, { requireAuth: true });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };

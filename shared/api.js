@@ -21,10 +21,13 @@
       opts.headers || {}
     );
     // ── AUTH HOOK ──────────────────────────────────────────────────────────
-    // When the AI endpoints are locked down, attach the Supabase access token
-    // here (the ONE place), e.g.:
-    //   const t = await window.sb?.auth?.getSession();
-    //   if (t?.data?.session) headers.Authorization = 'Bearer ' + t.data.session.access_token;
+    // Attach the Supabase access token so the server-side guard can require a
+    // logged-in user on paid AI endpoints. window.ciAuthToken is set by app.js;
+    // it returns null when logged out, so public/non-gated calls still work.
+    try {
+      const token = (typeof window !== 'undefined' && window.ciAuthToken) ? await window.ciAuthToken() : null;
+      if (token) headers.Authorization = 'Bearer ' + token;
+    } catch (_) { /* never let auth lookup break the request */ }
     // ────────────────────────────────────────────────────────────────────────
     return fetch('/api/' + name, {
       method: opts.method || 'POST',
