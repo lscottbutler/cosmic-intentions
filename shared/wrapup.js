@@ -310,10 +310,40 @@ function _taskAtPath(rai, path) {
   return node;
 }
 
+/* ── Phase 2: STABLE CODES (My Actions) ─────────────────────────────────────
+   Give every My-Action a permanent code number that never shifts on Move /
+   Delete / Break-down. The number rides on the task object (u.code); once
+   assigned it is never reused or renumbered. Top-level codes come from a
+   per-goal monotonic counter (rai._codeSeq → D1, D2 …); sub-steps from a
+   parent-local counter (D2.1, D2.2 …). Idempotent: only fills in codes that
+   are missing, so it is safe to run on every render. Returns true if it
+   assigned anything (so the caller can persist once). */
+function _ensureCodes(it) {
+  const rai = it && it.roadmapAI;
+  if (!rai || !Array.isArray(rai.userTasks)) return false;
+  let changed = false;
+  if (typeof rai._codeSeq !== 'number') rai._codeSeq = 0;
+  const walk = (node) => {
+    const kids = Array.isArray(node.children) ? node.children : null;
+    if (!kids || !kids.length) return;
+    if (typeof node._childSeq !== 'number') node._childSeq = 0;
+    kids.forEach(c => {
+      if (typeof c.code !== 'number') { c.code = ++node._childSeq; changed = true; }
+      walk(c);
+    });
+  };
+  rai.userTasks.forEach(u => {
+    if (typeof u.code !== 'number') { u.code = ++rai._codeSeq; changed = true; }
+    walk(u);
+  });
+  return changed;
+}
+
 /* Render My Actions as a drillable TREE. "↳" breaks any action into deeper
    sub-steps (recursive). Top level keeps the win-logging toggle + promote;
-   nested steps use lightweight path-based toggle/delete. */
-function _renderUserTree(tasks, path, idx) {
+   nested steps use lightweight path-based toggle/delete. codePrefix carries
+   the parent card's STABLE code down the tree (e.g. "D2" → "D2.1"). */
+function _renderUserTree(tasks, path, idx, codePrefix) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
   const letter = _goalLetter(idx);
@@ -322,7 +352,10 @@ function _renderUserTree(tasks, path, idx) {
     const pStr = p.join('.');
     const depth = p.length - 1;
     const d = !!u.done;
-    const code = letter + p.map(x => x + 1).join('.');       // e.g. C2.1  (position-based, Phase 1)
+    // Phase 2 — STABLE code: the number rides on the task (u.code), so Move/
+    // Delete/Break-down never renumber it. Falls back to position pre-migration.
+    const num  = (typeof u.code === 'number') ? u.code : (i + 1);
+    const code = codePrefix ? `${codePrefix}.${num}` : `${letter}${num}`;
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const items = [
@@ -335,7 +368,7 @@ function _renderUserTree(tasks, path, idx) {
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0 })
-         + _renderUserTree(u.children, p, idx);
+         + _renderUserTree(u.children, p, idx, code);
   }).join('');
 }
 
@@ -374,7 +407,11 @@ function _todayChecklist() {
     </div>`;
 
     const letter = _goalLetter(idx);
-    const roadmapBase = uTasks.length;   // roadmap codes continue after the My-Action top-level count
+    // Roadmap codes continue ABOVE every stable My-Action code (the per-goal
+    // high-water mark), so a deleted My-Action can't free a number the roadmap
+    // then reuses — no collisions. (Roadmap codes themselves are still
+    // position-based for now; full roadmap stability is Phase 2b.)
+    const roadmapBase = Math.max(uTasks.length, rai._codeSeq || 0);
 
     // 2) Your own custom actions — a drillable TREE ("↳" = break into deeper
     //    steps). Header count reflects the top-level actions.
@@ -596,6 +633,11 @@ export function renderWrapup() {
   if (_looksLikeAiError(aiPara)) { LS.remove(_aiKey()); aiPara = null; }   // drop a cached API error, fall back to the standard recap
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
+  // Phase 2 — make sure every My-Action has its stable code before we render;
+  // persist once if we just assigned any (idempotent, so this fires rarely).
+  let _codesAssigned = false;
+  (intentions || []).forEach(it => { if (_ensureCodes(it)) _codesAssigned = true; });
+  if (_codesAssigned) saveIntentions();
   const chk    = _todayChecklist();
 
   // TODAY I WILL — its own card, placed between the Morning & Day run-through cards.
