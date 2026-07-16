@@ -18,6 +18,16 @@ const DONE  = '#4ADE80';
 // so every row carries that goal's color as an accent on the white cards.
 const _numBadge = (n, bg, fg) => `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;margin-right:8px;background:${bg};border-radius:6px;font-family:var(--vault-mono);font-size:10px;font-weight:800;color:${fg};text-decoration:none;vertical-align:middle;">${n}</span>`;
 
+// Mix a hex color toward white by `amt` (0..1) → a lighter shade of it. Used for
+// the button strip: a light tint of the goal's own box color under white cards.
+const _tint = (hex, amt) => {
+  const n = parseInt(hex.replace('#', ''), 16);
+  const r = Math.round((n >> 16 & 255) + (255 - (n >> 16 & 255)) * amt);
+  const g = Math.round((n >>  8 & 255) + (255 - (n >>  8 & 255)) * amt);
+  const b = Math.round((n       & 255) + (255 - (n       & 255)) * amt);
+  return `rgb(${r},${g},${b})`;
+};
+
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
@@ -266,7 +276,9 @@ function _taskAtPath(rai, path) {
 function _renderUserTree(tasks, path, idx) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   // My Actions belong to the goal → tint their cards from the goal's own box color.
-  const shade = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → the priority badge
+  const shade   = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → the priority badge
+  const stripBg = _tint(shade.bg, 0.64);   // lighter shade of the goal box color for the strip
+  const stripBd = _tint(shade.bg, 0.50);
   return tasks.map((u, i) => {
     const p = [...path, i];
     const pStr = p.join('.');
@@ -287,7 +299,7 @@ function _renderUserTree(tasks, path, idx) {
         </div>`;
     const row = `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;${indent}">
       <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(u.text)}</div>
-      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#f2f2f2;border-top:1px solid #e2e2e2;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+      <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:${stripBg};border-top:1px solid ${stripBd};border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
         <div style="display:flex;gap:16px;align-items:flex-start;">
           <span style="${_col}"><button onclick="${toggleCall}" title="${d ? 'Completed — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl}">MARK DONE</span></span>
           <span style="${_col}"><button onclick="wrapDrillDown(${idx},'${pStr}',this)" title="Break this into deeper steps" style="${RM_CIRCLE}font-size:13px;">↳</button><span style="${_lbl}">BREAK DOWN</span></span>
@@ -352,9 +364,11 @@ function _todayChecklist() {
       const _col2 = 'display:inline-flex;flex-direction:column;align-items:center;gap:3px;';
       const _arrow = RM_CIRCLE + 'width:24px;height:24px;font-size:11px;';
       const _dis = 'opacity:.3;pointer-events:none;';
+      const stripBg = _tint(shade.bg, 0.64);   // lighter shade of the goal box color for the strip
+      const stripBd = _tint(shade.bg, 0.50);
       return `<div style="background:#fff;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;padding:9px 11px;overflow:hidden;">
         <div style="font-size:12px;line-height:1.45;color:${d ? '#9aa0a6' : '#000'};${d ? 'text-decoration:line-through;text-decoration-color:#9aa0a6;text-decoration-thickness:1px;' : ''}margin-bottom:8px;">${_numBadge((i + 1) * 10, shade.bg, shade.text)}${esc(t)}</div>
-        <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:#f2f2f2;border-top:1px solid #e2e2e2;border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
+        <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:${stripBg};border-top:1px solid ${stripBd};border-radius:0;padding:8px 12px;margin:0 -11px -9px;">
           <div style="display:flex;gap:16px;align-items:flex-start;">
             <span style="${_col2}"><button onclick="toggleRoadmapTaskDone(${idx},${i})" title="${d ? 'Completed — tap to undo' : 'Mark done → logs a win'}" style="${RM_CIRCLE}font-size:14px;">${d ? '✓' : '○'}</button><span style="${_lbl2}">MARK DONE</span></span>
             <span style="${_col2}"><button onclick="toggleRoadmapLock(${idx},${i})" title="${locked ? 'Unlock' : 'Lock — return to this next visit'}" style="${RM_CIRCLE}">${locked ? LOCK_CLOSED : LOCK_OPEN}</button><span style="${_lbl2}">LOCK</span></span>
