@@ -19,7 +19,41 @@ const DONE  = '#4ADE80';
    Codes this pass are POSITION-based (goal letter by slot, number by order) —
    same semantics as the old 10/20/30 badge. Phase 2 freezes them at creation
    so they're safe to write in a physical journal. */
-const _goalLetter = (idx) => String.fromCharCode(65 + (idx % 26));   // A–Z (25 goals = A–Y)
+/* ── STABLE GOAL LETTERS ─────────────────────────────────────────────────────
+   Each goal owns a permanent letter (A, B … Z, AA …) that never shifts on
+   reorder/delete — the counterpart to the stable NUMBERS. Kept in its own
+   localStorage registry (ci_goal_letters) keyed by the goal's stable id, so it
+   survives intention re-syncs and isn't tied to list position. On first run each
+   goal is LOCKED to its current positional letter (nothing jumps); new goals
+   take the next free letter, and a deleted goal frees its letter for reuse. */
+function _letterAt(n) { let s = ''; n = n + 1; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
+function _letterMapRead() { try { return JSON.parse(localStorage.getItem('ci_goal_letters') || '{}') || {}; } catch (_) { return {}; } }
+let _goalLetterCache = {};
+function _ensureGoalLetters() {
+  const list = intentions || [];
+  const map = _letterMapRead();
+  let changed = false;
+  const liveIds = new Set(list.map(it => it && it.id).filter(Boolean));
+  const used = new Set();
+  Object.keys(map).forEach(id => { if (liveIds.has(id)) used.add(map[id]); else { delete map[id]; changed = true; } });  // free letters of deleted goals
+  // Assign in list order: the LOWEST free letter. On first lock this reproduces
+  // each goal's current positional letter (A,B,C…); later a new goal reuses the
+  // lowest freed letter (compact, predictable) instead of drifting ever upward.
+  list.forEach((it) => {
+    if (!it || !it.id || map[it.id]) return;
+    let k = 0, letter = _letterAt(0);
+    while (used.has(letter)) { k++; letter = _letterAt(k); }
+    map[it.id] = letter; used.add(letter); changed = true;
+  });
+  if (changed) { try { localStorage.setItem('ci_goal_letters', JSON.stringify(map)); } catch (_) {} }
+  _goalLetterCache = map;
+  return map;
+}
+const _goalLetter = (idx) => {
+  const it = (intentions || [])[idx];
+  if (it && it.id && _goalLetterCache[it.id]) return _goalLetterCache[it.id];
+  return _letterAt(idx);   // fallback before assignment / for id-less goals
+};
 
 // One overflow-menu item / separator.
 const _mItem = (onclick, icon, label, danger) =>
@@ -707,6 +741,8 @@ export function renderWrapup() {
   if (_looksLikeAiError(aiPara)) { LS.remove(_aiKey()); aiPara = null; }   // drop a cached API error, fall back to the standard recap
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
+  // Stable goal letters (locked per goal id) — assign before any code renders.
+  _ensureGoalLetters();
   // Phase 2 — make sure every My-Action has its stable code before we render;
   // persist once if we just assigned any (idempotent, so this fires rarely).
   let _codesAssigned = false;
