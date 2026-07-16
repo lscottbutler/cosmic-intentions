@@ -1,47 +1,50 @@
-/* Phase 2 — STABLE CODES harness.
- * Mirrors _ensureCodes() + the code-building rule from shared/wrapup.js and
- * asserts a code, once assigned, never shifts on Move / Delete / Break-down /
- * Add. Run: node standalone/code-stability-test.mjs
- * (Kept in lockstep with shared/wrapup.js — if the algorithm there changes,
- *  update this mirror.) */
+/* STABLE CODES harness (Phase 2 My Actions + Phase 2b Roadmap).
+ * Mirrors _ensureCodes() + the roadmap swap/remap sidecar logic from
+ * shared/wrapup.js & shared/card-builder.js and asserts a code, once assigned,
+ * never shifts on Move / Delete / Break-down / Add / Regenerate.
+ * Run: node standalone/code-stability-test.mjs
+ * (Keep in lockstep with the source — if the algorithm changes, update this.) */
 
-// ── mirror of _ensureCodes(it) ────────────────────────────────────────────
+// ── mirror of _ensureCodes(rai) (self-healing high-water mark) ─────────────
 function ensureCodes(rai) {
   if (!rai || !Array.isArray(rai.userTasks)) return false;
   let changed = false;
-  if (typeof rai._codeSeq !== 'number') rai._codeSeq = 0;
+  let seq = (typeof rai._codeSeq === 'number') ? rai._codeSeq : 0;
+  rai.userTasks.forEach(u => { if (typeof u.code === 'number' && u.code > seq) seq = u.code; });
+  if (rai.codes) Object.keys(rai.codes).forEach(k => { const c = rai.codes[k]; if (typeof c === 'number' && c > seq) seq = c; });
   const walk = (node) => {
     const kids = Array.isArray(node.children) ? node.children : null;
     if (!kids || !kids.length) return;
-    if (typeof node._childSeq !== 'number') node._childSeq = 0;
-    kids.forEach(c => {
-      if (typeof c.code !== 'number') { c.code = ++node._childSeq; changed = true; }
-      walk(c);
-    });
+    let cs = (typeof node._childSeq === 'number') ? node._childSeq : 0;
+    kids.forEach(c => { if (typeof c.code === 'number' && c.code > cs) cs = c.code; });
+    kids.forEach(c => { if (typeof c.code !== 'number') { c.code = ++cs; changed = true; } walk(c); });
+    node._childSeq = cs;
   };
-  rai.userTasks.forEach(u => {
-    if (typeof u.code !== 'number') { u.code = ++rai._codeSeq; changed = true; }
-    walk(u);
-  });
+  rai.userTasks.forEach(u => { if (typeof u.code !== 'number') { u.code = ++seq; changed = true; } walk(u); });
+  if (Array.isArray(rai.tasks) && rai.tasks.length) {
+    if (!rai.codes) rai.codes = {};
+    for (let i = 0; i < rai.tasks.length; i++) { if (typeof rai.codes[i] !== 'number') { rai.codes[i] = ++seq; changed = true; } }
+  }
+  rai._codeSeq = seq;
   return changed;
 }
+// mirror of wrapMoveRoadmapTask's swap + deleteRoadmapTask's remap
+function swapIdx(o, i, j) { if (!o) return; const a = o[i], b = o[j];
+  if (b === undefined) delete o[i]; else o[i] = b; if (a === undefined) delete o[j]; else o[j] = a; }
+function remap(m, i) { const out = {}; Object.keys(m || {}).forEach(key => { const n = Number(key); if (n < i) out[n] = m[key]; else if (n > i) out[n - 1] = m[key]; }); return out; }
 
-// ── mirror of the code string the tree builds (letter + stable nums) ───────
-function codeOf(letter, task, prefix) {
-  const num = (typeof task.code === 'number') ? task.code : '?';
-  return prefix ? `${prefix}.${num}` : `${letter}${num}`;
-}
-// map a top-level task -> its displayed code, plus its children's codes
+// ── code strings ───────────────────────────────────────────────────────────
 function codesFor(letter, rai) {
   const out = {};
   const walk = (list, prefix) => list.forEach(t => {
-    const c = codeOf(letter, t, prefix);
+    const c = prefix ? `${prefix}.${t.code}` : `${letter}${t.code}`;
     out[t.id] = c;
     if (Array.isArray(t.children)) walk(t.children, c);
   });
   walk(rai.userTasks, null);
   return out;
 }
+const roadmapCode = (letter, rai, i) => letter + rai.codes[i];
 
 let pass = 0, fail = 0;
 const eq = (name, got, want) => {
@@ -51,45 +54,48 @@ const eq = (name, got, want) => {
 };
 
 const L = 'D';
-const rai = { userTasks: [ {id:'A',text:'A'}, {id:'B',text:'B'}, {id:'C',text:'C'} ] };
+const rai = {
+  userTasks: [ {id:'A',text:'A'}, {id:'B',text:'B'}, {id:'C',text:'C'} ],
+  tasks: ['R0','R1','R2'], done: {1:true}, locks: {},
+};
 
-// 1) first assignment → D1,D2,D3 in current order
+// ── My Actions (Phase 2) ────────────────────────────────────────────────────
 ensureCodes(rai);
-eq('initial codes A,B,C = D1,D2,D3', codesFor(L, rai), {A:'D1', B:'D2', C:'D3'});
-
-// 2) MOVE B down (swap B & C positions) — codes ride the objects
+eq('My-Actions A,B,C = D1,D2,D3', codesFor(L, rai), {A:'D1', B:'D2', C:'D3'});
 [rai.userTasks[1], rai.userTasks[2]] = [rai.userTasks[2], rai.userTasks[1]];
 ensureCodes(rai);
-eq('after Move B down: B still D2, C still D3', codesFor(L, rai), {A:'D1', C:'D3', B:'D2'});
-
-// 3) DELETE A — remaining keep their codes, counter stays at high-water 3
+eq('Move B down: B stays D2', codesFor(L, rai)['B'], 'D2');
 rai.userTasks = rai.userTasks.filter(t => t.id !== 'A');
 ensureCodes(rai);
-eq('after Delete A: C=D3, B=D2 (no renumber)', codesFor(L, rai), {C:'D3', B:'D2'});
-eq('counter stays at high-water mark 3', rai._codeSeq, 3);
+eq('Delete A: C stays D3', codesFor(L, rai)['C'], 'D3');
+rai.userTasks.push({id:'E'}); ensureCodes(rai);
+eq('Add E after roadmap present: fresh code, no collision', codesFor(L, rai)['E'], 'D7');
 
-// 4) ADD E — gets the NEXT number (D4), never reuses deleted 1
-rai.userTasks.push({id:'E', text:'E'});
+// ── Roadmap (Phase 2b) ───────────────────────────────────────────────────────
+eq('roadmap R0,R1,R2 seeded above My-Actions', [roadmapCode(L,rai,0),roadmapCode(L,rai,1),roadmapCode(L,rai,2)], ['D4','D5','D6']);
+// MOVE roadmap task 0 <-> 1: codes + done ride along
+[rai.tasks[0], rai.tasks[1]] = [rai.tasks[1], rai.tasks[0]];
+swapIdx(rai.done,0,1); swapIdx(rai.locks,0,1); swapIdx(rai.codes,0,1);
 ensureCodes(rai);
-eq('after Add E: E=D4 (fresh, not reused 1)', codesFor(L, rai)['E'], 'D4');
-
-// 5) BREAK DOWN B → two children D2.1, D2.2
-const B = rai.userTasks.find(t => t.id === 'B');
-B.children = [ {id:'B1',text:'s1'}, {id:'B2',text:'s2'} ];
+eq('roadmap move: R1 now at index0 still D5', roadmapCode(L,rai,0), 'D5');
+eq('roadmap move: R0 now at index1 still D4', roadmapCode(L,rai,1), 'D4');
+eq('roadmap move: done rides with R1 (was done)', !!rai.done[0], true);
+// DELETE roadmap index0 (R1/D5): remap shifts, survivors keep codes
+rai.tasks.splice(0,1); rai.done = remap(rai.done,0); rai.locks = remap(rai.locks,0); rai.codes = remap(rai.codes,0);
 ensureCodes(rai);
-eq('break down B: children = D2.1, D2.2', [codesFor(L,rai)['B1'], codesFor(L,rai)['B2']], ['D2.1','D2.2']);
+eq('roadmap delete: R0 still D4, R2 still D6', [roadmapCode(L,rai,0),roadmapCode(L,rai,1)], ['D4','D6']);
 
-// 6) DELETE child B.1, then ADD a child → new child is D2.3 (not reused .1)
-B.children = B.children.filter(c => c.id !== 'B1');
-B.children.push({id:'B3', text:'s3'});
-ensureCodes(rai);
-eq('after child delete+add: B2 still D2.2, new B3 = D2.3', [codesFor(L,rai)['B2'], codesFor(L,rai)['B3']], ['D2.2','D2.3']);
-
-// 7) ROADMAP base never collides with stable My-Action codes
-const roadmapBase = Math.max(rai.userTasks.length, rai._codeSeq || 0);
-const myCodes = Object.values(codesFor(L, rai)).filter(c => !c.includes('.')).map(c => +c.slice(1));
-const firstRoadmap = roadmapBase + 1;
-eq('roadmap first code is above every My-Action code', firstRoadmap > Math.max(...myCodes), true);
+// ── Regenerate self-heal (the latent-collision guard) ────────────────────────
+// regenerate: roadmapAI replaced {...result, userTasks} — _codeSeq & codes DROPPED,
+// coded userTasks kept. Simulate, then add a task → must NOT reuse an owned code.
+const kept = rai.userTasks;                       // still carry .code
+const rai2 = { intention:'g', userTasks: kept, tasks: ['N0','N1'] };  // no _codeSeq, no codes
+ensureCodes(rai2);
+const maxUser = Math.max(...kept.map(u => u.code));
+eq('regenerate: new roadmap codes start above kept-user high-water', rai2.codes[0] > maxUser, true);
+kept.push({id:'Z'}); ensureCodes(rai2);
+const all = [...kept.map(u=>u.code), ...Object.values(rai2.codes)];
+eq('regenerate: no duplicate codes anywhere', all.length, new Set(all).size);
 
 console.log(`\n${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

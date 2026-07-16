@@ -149,7 +149,7 @@ export function wrapMoveRoadmapTask(idx, i, dir) {
   const swap = (o) => { if (!o) return; const a = o[i], b = o[j];
     if (b === undefined) delete o[i]; else o[i] = b;
     if (a === undefined) delete o[j]; else o[j] = a; };
-  swap(rai.done); swap(rai.locks);
+  swap(rai.done); swap(rai.locks); swap(rai.codes);   // codes ride with the task (Phase 2b — stable codes)
   saveIntentions(); renderWrapup();
 }
 
@@ -323,32 +323,49 @@ function _taskAtPath(rai, path) {
   return node;
 }
 
-/* ── Phase 2: STABLE CODES (My Actions) ─────────────────────────────────────
-   Give every My-Action a permanent code number that never shifts on Move /
-   Delete / Break-down. The number rides on the task object (u.code); once
-   assigned it is never reused or renumbered. Top-level codes come from a
-   per-goal monotonic counter (rai._codeSeq → D1, D2 …); sub-steps from a
-   parent-local counter (D2.1, D2.2 …). Idempotent: only fills in codes that
-   are missing, so it is safe to run on every render. Returns true if it
-   assigned anything (so the caller can persist once). */
+/* ── STABLE CODES (Phase 2 = My Actions, Phase 2b = Roadmap) ─────────────────
+   Give every task a permanent code number that never shifts on Move / Delete /
+   Break-down. The number rides WITH the task: on the object (u.code) for My
+   Actions, and in an index-keyed sidecar (rai.codes[i], carried on move/delete
+   like rai.done/rai.locks) for roadmap tasks — since those are plain strings.
+   Top-level My-Actions + roadmap tasks share one per-goal counter (D1, D2 …);
+   sub-steps use a parent-local counter (D2.1, D2.2 …).
+
+   Self-healing: the high-water mark is recomputed from the codes already on the
+   data every run — NOT trusted from a persisted _codeSeq — because regenerate
+   rebuilds roadmapAI ({...result, userTasks}) and drops _codeSeq while keeping
+   coded userTasks. Recomputing prevents a fresh counter from re-issuing a code
+   an existing task already owns. Idempotent; returns true if it assigned any. */
 function _ensureCodes(it) {
   const rai = it && it.roadmapAI;
   if (!rai || !Array.isArray(rai.userTasks)) return false;
   let changed = false;
-  if (typeof rai._codeSeq !== 'number') rai._codeSeq = 0;
+  // High-water mark of the shared per-goal counter: max code already handed out
+  // to a top-level My-Action or a roadmap task.
+  let seq = (typeof rai._codeSeq === 'number') ? rai._codeSeq : 0;
+  rai.userTasks.forEach(u => { if (typeof u.code === 'number' && u.code > seq) seq = u.code; });
+  if (rai.codes) Object.keys(rai.codes).forEach(k => { const c = rai.codes[k]; if (typeof c === 'number' && c > seq) seq = c; });
+  // Sub-steps: parent-local counter, likewise recomputed from existing children.
   const walk = (node) => {
     const kids = Array.isArray(node.children) ? node.children : null;
     if (!kids || !kids.length) return;
-    if (typeof node._childSeq !== 'number') node._childSeq = 0;
-    kids.forEach(c => {
-      if (typeof c.code !== 'number') { c.code = ++node._childSeq; changed = true; }
-      walk(c);
-    });
+    let cs = (typeof node._childSeq === 'number') ? node._childSeq : 0;
+    kids.forEach(c => { if (typeof c.code === 'number' && c.code > cs) cs = c.code; });
+    kids.forEach(c => { if (typeof c.code !== 'number') { c.code = ++cs; changed = true; } walk(c); });
+    node._childSeq = cs;
   };
   rai.userTasks.forEach(u => {
-    if (typeof u.code !== 'number') { u.code = ++rai._codeSeq; changed = true; }
+    if (typeof u.code !== 'number') { u.code = ++seq; changed = true; }
     walk(u);
   });
+  // Phase 2b — roadmap tasks (strings): stable code in a parallel index map.
+  if (Array.isArray(rai.tasks) && rai.tasks.length) {
+    if (!rai.codes) rai.codes = {};
+    for (let i = 0; i < rai.tasks.length; i++) {
+      if (typeof rai.codes[i] !== 'number') { rai.codes[i] = ++seq; changed = true; }
+    }
+  }
+  rai._codeSeq = seq;
   return changed;
 }
 
@@ -420,11 +437,6 @@ function _todayChecklist() {
     </div>`;
 
     const letter = _goalLetter(idx);
-    // Roadmap codes continue ABOVE every stable My-Action code (the per-goal
-    // high-water mark), so a deleted My-Action can't free a number the roadmap
-    // then reuses — no collisions. (Roadmap codes themselves are still
-    // position-based for now; full roadmap stability is Phase 2b.)
-    const roadmapBase = Math.max(uTasks.length, rai._codeSeq || 0);
 
     // 2) Your own custom actions — a drillable TREE ("↳" = break into deeper
     //    steps). Header count reflects the top-level actions.
@@ -439,7 +451,10 @@ function _todayChecklist() {
     const locks = rai.locks || {};
     const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
       const d = !!dones[i]; const locked = !!locks[i];
-      const code = letter + (roadmapBase + i + 1);          // e.g. C3  (continues after My Actions)
+      // Phase 2b — STABLE roadmap code from the sidecar map (rides on move/
+      // delete); falls back to position pre-migration.
+      const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (uTasks.length + i + 1);
+      const code = letter + cnum;
       const items = [
         i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
         i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',

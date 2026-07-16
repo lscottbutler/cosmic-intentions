@@ -286,6 +286,7 @@ export function deleteRoadmapTask(idx, i) {
   const remap = (m) => { const out = {}; Object.keys(m || {}).forEach(key => { const n = Number(key); if (n < i) out[n] = m[key]; else if (n > i) out[n - 1] = m[key]; }); return out; };
   r.done  = remap(r.done);
   r.locks = remap(r.locks);
+  r.codes = remap(r.codes);   // stable codes are index-keyed too — reindex on delete (Phase 2b)
   saveIntentions();
   r.tasks.forEach((t, k) => { if (r.done[k]) setTaskWin(`task-${idx}-${k}`, `✓ ${t}`, true, { goal: it?.title || '', category: it?.category || '' }); });
   _rerenderRoadmap(idx, r);
