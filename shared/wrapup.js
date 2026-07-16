@@ -75,6 +75,25 @@ export function wrapCopyCode(code) {
   catch (_) { toast(code, 'info'); }
 }
 
+/* ── Favorite a code-card (My-Action or Roadmap task) ─────────────────────────
+   Saves the task as a jump-to shortcut in the Favorites panel (type:'task',
+   keyed by goal + stable code). Toggles: fire again to remove. Text is passed
+   URI-encoded (apostrophes → %27) so any punctuation survives the inline
+   onclick. */
+const _qFav = (s) => encodeURIComponent(String(s == null ? '' : s)).replace(/'/g, '%27');
+function _favsRead() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (_) { return []; } }
+function _isTaskFav(idx, code) { return _favsRead().some(f => f && f.type === 'task' && f.goal === idx && f.code === code); }
+export function wrapFavTask(idx, code, encText) {
+  let text = ''; try { text = decodeURIComponent(encText || ''); } catch (_) { text = encText || ''; }
+  const favs = _favsRead();
+  const at = favs.findIndex(f => f && f.type === 'task' && f.goal === idx && f.code === code);
+  if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'info'); }
+  else { favs.push({ type: 'task', goal: idx, code, title: text || code }); toast('Added to favorites ♥', 'success'); }
+  try { localStorage.setItem('ci_favorites', JSON.stringify(favs)); } catch (_) {}
+  if (typeof window !== 'undefined' && typeof window.renderFavorites === 'function') window.renderFavorites();
+  renderWrapup();
+}
+
 /* Turn a raw AI/network error into a calm, human message. Quota/billing/rate
    or 5xx outages (the OpenAI account running dry, an overloaded model) read as
    "busy, try again" — not "failed". Returns '' for anything unrecognised so
@@ -400,6 +419,7 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
       i < tasks.length - 1  ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',1)`,  '▼', 'Move down') : '',
       _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
       depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
+      _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
       _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
       _mSep(),
       _mItem(deleteCall, '✕', 'Delete', true),
@@ -466,6 +486,7 @@ function _todayChecklist() {
         i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
         i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
+        _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
         _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
         _mSep(),
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
@@ -759,5 +780,6 @@ if (typeof window !== 'undefined') {
   window.wrapSubDelete = wrapSubDelete;       // delete a nested sub-step
   window.wrapCardMenu = wrapCardMenu;         // open/close a card's ⋯ overflow menu
   window.wrapCopyCode = wrapCopyCode;         // copy a task's journal code (e.g. "C2.1")
+  window.wrapFavTask = wrapFavTask;           // ★ favorite/unfavorite a task → Favorites panel shortcut
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
 }
