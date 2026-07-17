@@ -189,7 +189,7 @@ export function wrapTab(idx, which) {
     const p = document.getElementById(`wtab-panel-${t}-${idx}`);
     const b = document.getElementById(`wtab-${t}-${idx}`);
     if (p) p.style.display = (t === which) ? 'block' : 'none';
-    if (b) b.classList.toggle('wseg-on', t === which);
+    if (b) b.classList.toggle('wtab-active', t === which);
   });
 }
 
@@ -592,10 +592,12 @@ function _todayChecklist() {
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
-      <div class="wtabs" style="background:${_shade(shade.bg, 0.42)};--seg-bg:${shade.bg};--seg-fg:${shade.text};">
-        <button id="wtab-my-${idx}" class="wseg${activeTab === 'my' ? ' wseg-on' : ''}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
-        <button id="wtab-both-${idx}" class="wseg wseg-mid${activeTab === 'both' ? ' wseg-on' : ''}" title="Show My Actions and Roadmap together" onclick="wrapTab(${idx},'both')">+</button>
-        <button id="wtab-roadmap-${idx}" class="wseg${activeTab === 'roadmap' ? ' wseg-on' : ''}" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+      <div class="wtabs">
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-both-${idx}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" style="flex:0 0 auto;align-self:stretch;display:flex;align-items:flex-end;justify-content:center;background:none;border:none;padding:0 0 6px;cursor:pointer;">
+          <span style="width:34px;height:34px;border-radius:50%;background:#000;border:2px solid #fff;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;line-height:1;">+</span>
+        </button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>

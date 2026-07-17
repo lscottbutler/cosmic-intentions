@@ -190,39 +190,26 @@ details.rm-drop::details-content {
 details.rm-drop[open]::details-content { height: auto; }
 
 /* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
-/* Segmented pill: one rounded track (goal colour, darkened) holding the
-   MY ACTIONS | + | ROADMAP segments. The active segment fills with the bright
-   goal colour (--seg-bg/--seg-fg set inline per goal). */
-.wtabs {
-  display: flex;
-  gap: 3px;
-  margin: 7px 10px 2px;
-  padding: 3px;
-  border-radius: 12px;
-  position: relative;
-  z-index: 1;
-}
-.wseg {
+.wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
+.wtab {
   flex: 1;
   min-width: 0;
   box-sizing: border-box;
-  border: none;
-  border-radius: 9px;
-  padding: 9px 6px;
+  border: 1px solid #ffffff;      /* thin white outline */
+  border-radius: 0 0 10px 10px;
+  padding: 18px 8px 8px;          /* extra top padding: label sits below the pill overlap */
   font-family: var(--vault-mono);
-  font-size: 11px;
+  font-size: 11px;                /* ~20% bigger */
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
+  opacity: 0.5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.72);
-  transition: background .15s, color .15s;
+  transition: opacity .15s;
 }
-.wseg-mid { flex: 0 0 auto; padding: 9px 13px; font-size: 16px; line-height: 1; }   /* the + (both view) */
-.wseg.wseg-on { background: var(--seg-bg, #E88020); color: var(--seg-fg, #fff); }
+.wtab.wtab-active { opacity: 1; }
 
 /* Wrap-up code-cards (Phase 1): quiet card + ⋯ overflow menu hover states */
 .wcard-more { transition: background .12s, color .12s; }
