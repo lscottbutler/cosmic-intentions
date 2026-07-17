@@ -57,8 +57,8 @@ const _goalLetter = (idx) => {
 
 // One overflow-menu item / separator.
 const _mItem = (onclick, icon, label, danger) =>
-  `<button onclick="${onclick}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:none;background:transparent;border-radius:6px;font-size:12.5px;font-weight:600;color:${danger ? '#ffc2cc' : 'rgba(255,255,255,.92)'};cursor:pointer;text-align:left;font-family:inherit;"><span style="width:16px;text-align:center;font-size:13px;">${icon}</span>${label}</button>`;
-const _mSep = () => `<div style="height:1px;background:rgba(255,255,255,.22);margin:4px 6px;"></div>`;
+  `<button onclick="${onclick}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:none;background:transparent;border-radius:6px;font-size:12.5px;font-weight:500;color:${danger ? '#d1364b' : '#2a2c31'};cursor:pointer;text-align:left;font-family:inherit;"><span style="width:16px;text-align:center;font-size:13px;">${icon}</span>${label}</button>`;
+const _mSep = () => `<div style="height:1px;background:#eee;margin:4px 6px;"></div>`;
 
 /* Darken (f<1) or lighten (f>1) a #rrggbb toward black/white by factor f. Used
    to derive the two card shades from the goal's own colour. */
@@ -76,20 +76,18 @@ function _shade(hex, f) {
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
-  // Two shades of the goal's OWN colour tell the groups apart: My Actions =
-  // darker, Roadmap = darker still. A wide, rounded strip of the bright goal
-  // colour rides the left edge. White text throughout; dark code chip.
-  const cardBg = variant === 'roadmap' ? _shade(shade.bg, 0.60) : _shade(shade.bg, 0.80);
-  const rail   = '#ffffff';   // white strip — crisp against the orange card
-  return `<div class="wcard" style="position:relative;background:${cardBg};border:none;border-radius:11px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 23px;box-shadow:0 1px 3px rgba(0,0,0,.22);overflow:hidden;">
+  // White card, black text. A wide, rounded rail in the goal colour rides the
+  // left edge; goal-colour code chip.
+  const rail = shade.bg;
+  return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:11px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 22px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:6px;top:7px;bottom:7px;width:6px;border-radius:6px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
-      <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.8);background:${done ? '#fff' : 'transparent'};color:${cardBg};cursor:pointer;font-size:12px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
-      <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 7px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff;font-family:var(--vault-mono);font-size:10.5px;font-weight:800;letter-spacing:.4px;">${esc(code)}</span>
-      <span style="flex:1;min-width:0;font-size:13px;line-height:1.4;font-weight:600;color:#fff;${done ? 'opacity:.72;text-decoration:line-through;text-decoration-color:rgba(255,255,255,.6);' : ''}">${esc(text)}</span>
-      <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.85);cursor:pointer;font-size:17px;line-height:1;">⋯</button>
+      <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
+      <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 7px;border-radius:6px;background:${shade.bg};color:${shade.text};font-family:var(--vault-mono);font-size:10.5px;font-weight:800;letter-spacing:.4px;">${esc(code)}</span>
+      <span style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
+      <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:#9a9da4;cursor:pointer;font-size:17px;line-height:1;">⋯</button>
     </div>
-    <div class="wcard-menu" style="display:none;margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid rgba(255,255,255,.25);">${items}</div>
+    <div class="wcard-menu" style="display:none;margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div>
   </div>`;
 }
 
