@@ -80,8 +80,8 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
   // (matches the black MY ACTIONS tab), goal-colour for Roadmap — so the two
   // groups read apart at a glance. Goal-colour code chip.
   const rail = variant === 'roadmap' ? shade.bg : '#000';
-  return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:11px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 22px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
-    <span style="position:absolute;left:6px;top:7px;bottom:7px;width:6px;border-radius:6px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
+  return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 28px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
+    <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 7px;border-radius:6px;background:${shade.bg};color:${shade.text};font-family:var(--vault-mono);font-size:10.5px;font-weight:800;letter-spacing:.4px;">${esc(code)}</span>
