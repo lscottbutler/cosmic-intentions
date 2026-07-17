@@ -425,11 +425,24 @@ function _ensureCodes(it) {
   const rai = it && it.roadmapAI;
   if (!rai || !Array.isArray(rai.userTasks)) return false;
   let changed = false;
-  // High-water mark of the shared per-goal counter: max code already handed out
-  // to a top-level My-Action or a roadmap task.
-  let seq = (typeof rai._codeSeq === 'number') ? rai._codeSeq : 0;
+  // ── My Actions: their OWN sequence (D1, D2, D3 …) — Roadmap no longer bumps
+  //    it, so the Nth action is always DN.
+  // One-time re-base to a clean 1..N in current order: older shared-numbering
+  // builds could bake a high code into a new action (the D13 bug). This rewrites
+  // My-Action codes once, then they stay stable.
+  if (!rai._myV2) {
+    let n = 0;
+    rai.userTasks.forEach(u => { u.code = ++n; });
+    const reb = (node) => {
+      const kids = Array.isArray(node.children) ? node.children : null;
+      if (!kids || !kids.length) return;
+      let c = 0; kids.forEach(k => { k.code = ++c; reb(k); }); node._childSeq = c;
+    };
+    rai.userTasks.forEach(reb);
+    rai._codeSeq = n; rai._myV2 = true; changed = true;
+  }
+  let seq = 0;
   rai.userTasks.forEach(u => { if (typeof u.code === 'number' && u.code > seq) seq = u.code; });
-  if (rai.codes) Object.keys(rai.codes).forEach(k => { const c = rai.codes[k]; if (typeof c === 'number' && c > seq) seq = c; });
   // Sub-steps: parent-local counter, likewise recomputed from existing children.
   const walk = (node) => {
     const kids = Array.isArray(node.children) ? node.children : null;
@@ -443,14 +456,20 @@ function _ensureCodes(it) {
     if (typeof u.code !== 'number') { u.code = ++seq; changed = true; }
     walk(u);
   });
-  // Phase 2b — roadmap tasks (strings): stable code in a parallel index map.
-  if (Array.isArray(rai.tasks) && rai.tasks.length) {
-    if (!rai.codes) rai.codes = {};
-    for (let i = 0; i < rai.tasks.length; i++) {
-      if (typeof rai.codes[i] !== 'number') { rai.codes[i] = ++seq; changed = true; }
-    }
-  }
   rai._codeSeq = seq;
+  // ── Roadmap: its OWN independent sequence (D1 … DN). One-time re-base: older
+  //    builds numbered roadmap in the SHARED space (continuing after My Actions
+  //    → D13 etc.); reset it to 1..N once so each list counts from 1.
+  if (Array.isArray(rai.tasks) && rai.tasks.length) {
+    if (!rai._rmV2) { rai.codes = {}; rai._rmSeq = 0; rai._rmV2 = true; changed = true; }
+    if (!rai.codes) rai.codes = {};
+    let rmSeq = (typeof rai._rmSeq === 'number') ? rai._rmSeq : 0;
+    Object.keys(rai.codes).forEach(k => { const c = rai.codes[k]; if (typeof c === 'number' && c > rmSeq) rmSeq = c; });
+    for (let i = 0; i < rai.tasks.length; i++) {
+      if (typeof rai.codes[i] !== 'number') { rai.codes[i] = ++rmSeq; changed = true; }
+    }
+    rai._rmSeq = rmSeq;
+  }
   return changed;
 }
 
@@ -539,7 +558,7 @@ function _todayChecklist() {
       const d = !!dones[i]; const locked = !!locks[i];
       // Phase 2b — STABLE roadmap code from the sidecar map (rides on move/
       // delete); falls back to position pre-migration.
-      const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (uTasks.length + i + 1);
+      const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (i + 1);
       const code = letter + cnum;
       const items = [
         i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
