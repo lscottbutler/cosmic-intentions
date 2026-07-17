@@ -80,7 +80,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
   // darker, Roadmap = darker still. A wide, rounded strip of the bright goal
   // colour rides the left edge. White text throughout; dark code chip.
   const cardBg = variant === 'roadmap' ? _shade(shade.bg, 0.60) : _shade(shade.bg, 0.80);
-  const rail   = shade.bg;   // the original bright goal colour
+  const rail   = '#ffffff';   // white strip — crisp against the orange card
   return `<div class="wcard" style="position:relative;background:${cardBg};border:none;border-radius:11px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 23px;box-shadow:0 1px 3px rgba(0,0,0,.22);overflow:hidden;">
     <span style="position:absolute;left:6px;top:7px;bottom:7px;width:6px;border-radius:6px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
