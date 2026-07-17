@@ -76,9 +76,10 @@ function _shade(hex, f) {
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
-  // White card, black text. A wide, rounded rail in the goal colour rides the
-  // left edge; goal-colour code chip.
-  const rail = shade.bg;
+  // White card, black text. Wide, rounded left rail: BLACK for My Actions
+  // (matches the black MY ACTIONS tab), goal-colour for Roadmap — so the two
+  // groups read apart at a glance. Goal-colour code chip.
+  const rail = variant === 'roadmap' ? shade.bg : '#000';
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:11px;margin:0 0 9px ${indent ? Math.min(indent, 4) * 16 : 0}px;padding:12px 12px 12px 22px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:6px;top:7px;bottom:7px;width:6px;border-radius:6px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
