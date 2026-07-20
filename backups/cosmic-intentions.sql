@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AEnJjIVgdlF6SKNGLPuYeuTCvrpVwd9MRokaS3uXf2iNYUiLWjF6bIJM9gpkuD0
+\restrict eOEFSSbkWCR2hE7G2GKVDZHrPSOU6dOkHgiSVjieLv7nPIzut4rI7WUBxLPb6b0
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10 (Ubuntu 17.10-1.pgdg24.04+1)
@@ -4202,9 +4202,10 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1075	qlgj27wpvyrq	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 08:27:48.857796+00	2026-07-19 09:26:01.224586+00	shqyj24je7c2	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1076	3dnvaypsgoik	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 09:26:01.231176+00	2026-07-19 13:02:06.952028+00	qlgj27wpvyrq	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1090	rmqo3vlgyjeg	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-20 08:49:38.868123+00	2026-07-20 13:32:59.537426+00	7aqhdqjazn5b	de9bfd84-c9dc-4194-9e22-11a792f66730
-00000000-0000-0000-0000-000000000000	1091	2xdhveylm4n3	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-07-20 13:32:59.562519+00	2026-07-20 13:32:59.562519+00	rmqo3vlgyjeg	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1077	v5zh5dsvricf	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 13:02:06.964933+00	2026-07-19 14:09:24.76535+00	3dnvaypsgoik	de9bfd84-c9dc-4194-9e22-11a792f66730
+00000000-0000-0000-0000-000000000000	1091	2xdhveylm4n3	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-20 13:32:59.562519+00	2026-07-20 15:02:03.923304+00	rmqo3vlgyjeg	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1079	zaxegrc4cxej	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 14:09:24.775337+00	2026-07-19 15:07:54.742023+00	v5zh5dsvricf	de9bfd84-c9dc-4194-9e22-11a792f66730
+00000000-0000-0000-0000-000000000000	1092	47g6igdgjevr	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-07-20 15:02:03.930189+00	2026-07-20 15:02:03.930189+00	2xdhveylm4n3	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1080	eifqg3nuqlez	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 15:07:54.747015+00	2026-07-19 23:10:06.430776+00	zaxegrc4cxej	de9bfd84-c9dc-4194-9e22-11a792f66730
 00000000-0000-0000-0000-000000000000	1078	3dsxckwzvamt	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 13:37:35.634643+00	2026-07-19 23:25:13.255094+00	edhkefnnw7os	77bd7187-b16e-473c-9994-04ba7dce5789
 00000000-0000-0000-0000-000000000000	1082	ljzj4aanhkcv	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-19 23:25:13.261443+00	2026-07-20 01:03:48.619633+00	3dsxckwzvamt	77bd7187-b16e-473c-9994-04ba7dce5789
@@ -4325,7 +4326,7 @@ c6fc937f-7f6d-4875-befe-08984018ad05	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-0
 c6964f65-6b8b-41dc-9434-f5170b1088ab	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-15 04:14:25.326229+00	2026-07-15 04:14:25.326229+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.189.209	\N	\N	\N	\N	\N
 4fcd1fe8-eb94-4ce1-baee-36b26ecfbed2	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-15 04:14:54.140159+00	2026-07-15 04:14:54.140159+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.189.209	\N	\N	\N	\N	\N
 77bd7187-b16e-473c-9994-04ba7dce5789	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-15 07:46:14.091231+00	2026-07-20 08:04:08.182261+00	\N	aal1	\N	2026-07-20 08:04:08.182148	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36	58.11.188.143	\N	\N	\N	\N	\N
-de9bfd84-c9dc-4194-9e22-11a792f66730	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-15 04:15:08.618738+00	2026-07-20 13:32:59.591285+00	\N	aal1	\N	2026-07-20 13:32:59.591174	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.143	\N	\N	\N	\N	\N
+de9bfd84-c9dc-4194-9e22-11a792f66730	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-15 04:15:08.618738+00	2026-07-20 15:02:03.944779+00	\N	aal1	\N	2026-07-20 15:02:03.944648	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.143	\N	\N	\N	\N	\N
 \.
 
 
@@ -4351,7 +4352,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-07-16 13:13:45.61868+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-07-20 13:32:59.57699+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-07-16 13:13:45.61868+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-07-20 15:02:03.936+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
 
@@ -4503,7 +4504,7 @@ cffd83c0-d4f7-433c-adcd-69cad920d142	868440e8-823b-4ca9-8e3b-385af4fb8879	I AM H
 
 COPY public.profiles (id, name, mission, lifegol, "values", beliefs, attitudes, stoicism, traits, tone, authors, obstacles, why, context, spirituality, anthropic_key, eleven_key, voice_id, updated_at, bts_authors, is_member, pegboard, bts_context, bts_obstacles, bts_why, bts_tone, pb_stoicism, pb_traits, pb_eleven, pb_voiceid, pb_attitudes, pb_beliefs, pb_values, pb_lifegol, pb_mission, pb_name, openai_api_key, openai_voice, viz_quick_sessions, wins) FROM stdin;
 868440e8-823b-4ca9-8e3b-385af4fb8879	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	humanist	\N	\N	\N	2026-05-28 08:00:48.831+00		t	\N					“When you wake up in the morning, tell yourself: the people I deal with today will be meddling, ungrateful, arrogant… but I cannot be harmed by them, nor can I hate them.”	Persistence, An Eye For Good Design, I AM Smart, I AM A Good Listener, I AM Creative, I AM Disciplined, Trauma Survivor	3f64bf97aa7b42cab16ef6ef80fdff1835d26baf0d69022a	U9VgC8Xinl7nnNsyDd3J	Imperfect action beats perfect planning.  No panic, no ego spirals, no emotional decisions.  You show up daily whether you full like it or not.  I trust my process.  Win or Lose--I stay steady.	I can figure anything out.  I am responsible for my life.  Action Creates Clarity,  I AM One Of The Luckiest People In The World, Discomfort Is Growth, Consistency Beats Intensity, Focus Creates Results, Everything Is Figureoutable,	Integrity, Ownership, Discipline, Growth, Courage, Focus, Excellence, Resilience, Contribution	I AM easing the burden of those less fortunate.	Discover my gifts. Serve humanity.	Scott	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	alloy	0	[]
-0fa88179-af12-4659-ad95-c6ae5fbc23e1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	universe	\N	\N	\N	2026-07-16 05:33:12.79+00		f	\N		FEAR OF FAILURE  ---  STRIVING FOR PERFECTION  ---	SELF EFFACACY ---  EASING THE BURDENS OF THOSE THAT I LOVE  ---  I AM DOING THIS FOR MORE EXOTIC EXPERIENCES  ---	ENCOURAGING  -- SARCASTIC  ---  FIRM  ---  FAIR  ---	Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.	I am the most curious person on earth.  I am creative with a keen eye for style and design.  I live by the Golden Rule.			I am one of the luckiest people in the world.	I am sympothetic toward those less fortunae.  I am not my thoughts.	I do what I say I'm going to do. Honesty,	Experience Joy	Discover My gifts.  Serve Humanity	Scotty		alloy	2	[{"ts": 1784176205568, "src": "task-3-u1783218716235", "date": "2026-07-16", "goal": "I AM THE PROUD OWNER OF A XIAOMI SU 7", "text": "✓ WHEN DO THEY GO ON SALE IN BANGKOK?", "category": ""}, {"ts": 1783819330538, "src": "task-1-0", "date": "2026-07-12", "goal": "I AM PREMEIRING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER.", "text": "✓ Analyze the profiles of your first 200 Founder Subscription buyers to understand their demographics and motivations.", "category": ""}, {"ts": 1783817845207, "src": "task-1-1", "date": "2026-07-12", "goal": "I AM PREMEIRING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER.", "text": "✓ Study successful global premieres of similar digital products to identify key marketing and engagement tactics.", "category": ""}]
+0fa88179-af12-4659-ad95-c6ae5fbc23e1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	universe	\N	\N	\N	2026-07-20 15:02:42.039+00		f	\N		FEAR OF FAILURE  ---  STRIVING FOR PERFECTION  ---	SELF EFFACACY ---  EASING THE BURDENS OF THOSE THAT I LOVE  ---  I AM DOING THIS FOR MORE EXOTIC EXPERIENCES  ---	ENCOURAGING  -- SARCASTIC  ---  FIRM  ---  FAIR  ---	Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.	I am the most curious person on earth.  I am creative with a keen eye for style and design.  I live by the Golden Rule.			I am one of the luckiest people in the world.	I am sympothetic toward those less fortunae.  I am not my thoughts.	I do what I say I'm going to do. Honesty,	Experience Joy	Discover My gifts.  Serve Humanity	Scotty		alloy	2	[{"ts": 1784559762016, "src": "habit_h1782957473420_2_2026-07-20", "date": "2026-07-20", "goal": "", "text": "UP BEFORE SUNRISE", "category": "growth"}, {"ts": 1784176205568, "src": "task-3-u1783218716235", "date": "2026-07-16", "goal": "I AM THE PROUD OWNER OF A XIAOMI SU 7", "text": "✓ WHEN DO THEY GO ON SALE IN BANGKOK?", "category": ""}, {"ts": 1783819330538, "src": "task-1-0", "date": "2026-07-12", "goal": "I AM PREMEIRING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER.", "text": "✓ Analyze the profiles of your first 200 Founder Subscription buyers to understand their demographics and motivations.", "category": ""}, {"ts": 1783817845207, "src": "task-1-1", "date": "2026-07-12", "goal": "I AM PREMEIRING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER.", "text": "✓ Study successful global premieres of similar digital products to identify key marketing and engagement tactics.", "category": ""}]
 \.
 
 
@@ -4831,7 +4832,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1091, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1092, true);
 
 
 --
@@ -6644,5 +6645,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AEnJjIVgdlF6SKNGLPuYeuTCvrpVwd9MRokaS3uXf2iNYUiLWjF6bIJM9gpkuD0
+\unrestrict eOEFSSbkWCR2hE7G2GKVDZHrPSOU6dOkHgiSVjieLv7nPIzut4rI7WUBxLPb6b0
 
