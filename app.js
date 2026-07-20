@@ -199,6 +199,9 @@ export function showPage(id) {
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
   if (id === 'dashboard') renderDashboard();
+  if (id === 'dailyfocus' && typeof window.renderFavorites === 'function') window.renderFavorites();
+  if (id === 'notes' && typeof window.renderNotesPage === 'function') window.renderNotesPage();
+  if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
   if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
   if (id === 'admin') loadAIPrompts();
@@ -255,7 +258,7 @@ window.addEventListener('popstate', (e) => {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs'];
+  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -833,6 +836,22 @@ export async function syncWinsToSupabase() {
   } catch (e) { console.warn('[Supabase] syncWinsToSupabase failed:', e); }
 }
 
+/* Habit list → cloud. Stored as a `habits` JSONB column on profiles.
+   Resilient: if the column hasn't been added yet, this no-ops quietly
+   so the local habit list keeps working. Fire-and-forget from habits.js. */
+export async function syncHabitsToSupabase() {
+  if (!currentUser) return;
+  try {
+    const habits = LS.get('ci_habit_list') || [];
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      habits,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] habits sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncHabitsToSupabase failed:', e); }
+}
+
 async function syncFromSupabase() {
   if (!currentUser) return;
   syncPending = true;
@@ -891,6 +910,17 @@ async function syncFromSupabase() {
     populateForm(pb);
     // Wins Wall — restore the cloud copy if present (column may not exist yet).
     if (Array.isArray(data.wins)) LS.set('ci_wins', data.wins);
+    // Habit list — cross-device sync (mirrors wins). Cloud wins when it holds
+    // data; otherwise seed the cloud once from a device that has a real
+    // (categorized) setup, so an empty phone can't clobber the desktop list.
+    if (Array.isArray(data.habits) && data.habits.length) {
+      LS.set('ci_habit_list', data.habits);
+    } else {
+      const localHabits = LS.get('ci_habit_list') || [];
+      if (localHabits.some(h => h && h.cat)) syncHabitsToSupabase();
+    }
+    if (typeof window !== 'undefined' && window.renderRunThroughs) window.renderRunThroughs();
+    if (typeof window !== 'undefined' && window.renderHabits) window.renderHabits();
     console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);
 
     currentMember = data?.is_member === true;
@@ -3393,6 +3423,43 @@ export async function saveContentBlock(slug) {
     if (body) { el.innerHTML = body; el.style.display = ''; }
     else el.style.display = 'none';
   });
+}
+
+/* ── ADMIN PHOTO UPLOAD ─────────────────────────────────────────
+   Upload a photo for a content block (e.g. the Inspiration champion).
+   Reuses the existing 'vision-images' Storage bucket. Inserts the <img>
+   at the top of the block's editor; the admin then writes the story
+   below and hits Save (saveContentBlock persists the whole HTML). */
+export function adminUploadPhoto(slug) {
+  const input = document.getElementById(`admin-photo-input-${slug}`);
+  if (input) input.click();
+}
+export async function adminPhotoSelected(slug, inputEl) {
+  const file = inputEl && inputEl.files && inputEl.files[0];
+  if (!file) return;
+  const st = document.getElementById(`admin-status-${slug}`);
+  const ed = document.getElementById(`admin-editor-${slug}`);
+  const setSt = m => { if (st) st.textContent = m; };
+  try {
+    if (!currentUser || !sb) return setSt('✗ Not signed in');
+    if (!/^image\//.test(file.type)) return setSt('✗ Pick an image file');
+    if (file.size > 8 * 1024 * 1024) return setSt('✗ Image too big (max 8MB)');
+    setSt('Uploading photo…');
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
+    const path = `${currentUser.id}/${slug}-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('vision-images').upload(path, bytes, { contentType: file.type, upsert: true });
+    if (error) throw error;
+    const { data } = sb.storage.from('vision-images').getPublicUrl(path);
+    const url = data && data.publicUrl;
+    if (!url) throw new Error('no public URL');
+    if (ed) ed.innerHTML = `<img src="${url}" alt="" style="max-width:100%;border-radius:10px;display:block;margin:0 0 10px;">` + ed.innerHTML;
+    setSt('✓ Photo added — write the story below, then Save');
+  } catch (e) {
+    setSt('✗ Upload failed — ' + (e && e.message ? e.message : e));
+  } finally {
+    if (inputEl) inputEl.value = '';
+  }
 }
 
 /* ── AI CONTROL ROOM — live-editable AI prompts (stored in content_blocks) ──

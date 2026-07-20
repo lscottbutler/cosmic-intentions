@@ -1,5 +1,5 @@
 import { RM_CIRCLE } from './card-builder.js';
-import { LS, esc } from '../app.js';
+import { LS, esc, syncHabitsToSupabase } from '../app.js';
 import { setTaskWin, getWins } from './wins.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
    A customizable daily habit checklist, grouped into time-of-day
@@ -45,7 +45,10 @@ export function getHabitList() {
   }
   return list;
 }
-function _saveList(list) { LS.set('ci_habit_list', list); }
+function _saveList(list) {
+  LS.set('ci_habit_list', list);
+  if (typeof syncHabitsToSupabase === 'function') syncHabitsToSupabase();  // fire-and-forget cloud sync
+}
 function _cat(h) { return HABIT_CATS.includes(h.cat) ? h.cat : ''; }
 
 /* Group the list by category, preserving array order within each group. */
