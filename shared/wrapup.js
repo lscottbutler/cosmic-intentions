@@ -163,21 +163,21 @@ export function wrapupAiMoreToggle(idx, open) { if (open) _aiMoreOpen.add(idx); 
 
 // Which goal is picked in the MY TASK LIST dropdown (survives re-renders).
 let _taskGoalSel = null;
-export function wrapupTaskGoalSelect(sel) {
-  const idx = Number(sel.value);
-  _taskGoalSel = idx;
-  // Recolor the dropdown bar to match the chosen goal (its shade rides on the <option>).
-  const opt = sel.options[sel.selectedIndex];
-  if (opt) {
-    if (opt.dataset.bg)   sel.style.background = opt.dataset.bg;
-    if (opt.dataset.text) sel.style.color = opt.dataset.text;
-    const car = document.getElementById('taskGoalCaret');
-    if (car && opt.dataset.text) car.style.color = opt.dataset.text;
+export function wrapupTaskGoalToggle(idx) {
+  const panel = document.getElementById(`taskGoalPanel-${idx}`);
+  if (!panel) return;
+  const willOpen = panel.style.display === 'none';
+  // Single-open accordion: close every goal, then open the tapped one.
+  document.querySelectorAll('[id^="taskGoalPanel-"]').forEach(p => { p.style.display = 'none'; });
+  document.querySelectorAll('[id^="taskGoalArr-"]').forEach(a => { a.style.transform = 'rotate(-90deg)'; });
+  if (willOpen) {
+    panel.style.display = 'block';
+    const arr = document.getElementById(`taskGoalArr-${idx}`);
+    if (arr) arr.style.transform = 'rotate(0deg)';
+    _taskGoalSel = idx;
+  } else {
+    _taskGoalSel = null;
   }
-  // Show only the chosen goal's proven-actions panel.
-  document.querySelectorAll('[id^="taskGoalPanel-"]').forEach(p => {
-    p.style.display = (p.id === `taskGoalPanel-${idx}`) ? 'block' : 'none';
-  });
 }
 
 // Per-goal active tab ("my" | "roadmap") for the two tabs hanging off the goal box. Survives re-renders.
@@ -519,7 +519,7 @@ function _todayChecklist() {
     .filter(o => o.it && (o.it.title || '').trim());
   if (!items.length) return null;
   let total = 0, done = 0, rows = '', fullRows = '';
-  const taskGoals = [];   // MY TASK LIST: one entry per goal that has proven actions → dropdown + panels
+  let allTaskCards = '';   // MY TASK LIST: every proven action across all goals, flattened into one list
   items.forEach(({ it, idx }) => {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
     const rai = it.roadmapAI || {};                         // goal may have no roadmap yet
@@ -629,36 +629,15 @@ function _todayChecklist() {
       </div>
     </details>`;
 
-    // MY TASK LIST entry: PROVEN ACTIONS only (the goal title becomes a dropdown
-    // option below; your own actions already show in the goal box above).
-    if (hasAi) taskGoals.push({ idx, title: it.title || '', shade, html: `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;">
-        <div style="font-family:var(--vault-mono);font-size:8px;color:rgba(28,34,48,0.72);letter-spacing:1px;margin:0 2px 6px;">◈ PROVEN ACTIONS = RESULTS</div>
-        ${aiHead}${aiTail ? `<details class="rm-drop" ${_aiMoreOpen.has(idx) ? 'open' : ''} ontoggle="wrapupAiMoreToggle(${idx},this.open)" style="margin-top:2px;">
-          <summary style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;cursor:pointer;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#1C2230;border-top:1px solid rgba(28,34,48,0.18);">
-            <span>Show ${aiMoreCnt} more</span><span class="rm-caret">▾</span>
-          </summary>${aiTail}</details>` : ''}
-      </div>` });
+    // MY TASK LIST: flatten every proven action into one big list (no per-goal
+    // grouping). Each card already carries its goal-colour rail + code chip, so
+    // you can still tell which goal a task belongs to.
+    if (hasAi) allTaskCards += _aiRowArr.join('');
   });
 
-  // MY TASK LIST — a single dropdown of ALL goals (styled like the colored goal
-  // box) + one proven-actions panel per goal; only the picked goal's panel shows.
-  if (taskGoals.length) {
-    let sel = _taskGoalSel;
-    if (sel == null || !taskGoals.some(g => g.idx === sel)) sel = taskGoals[0].idx;
-    const selG    = taskGoals.find(g => g.idx === sel);
-    const options = taskGoals.map(g =>
-      `<option value="${g.idx}" data-bg="${g.shade.bg}" data-text="${g.shade.text}" ${g.idx === sel ? 'selected' : ''}>◎ ${esc(g.title)}</option>`).join('');
-    const panels  = taskGoals.map(g =>
-      `<div id="taskGoalPanel-${g.idx}" style="display:${g.idx === sel ? 'block' : 'none'};">${g.html}</div>`).join('');
-    fullRows = `<div style="position:relative;margin:12px 0 10px;">
-        <select id="taskGoalSelect" onchange="wrapupTaskGoalSelect(this)"
-          style="width:100%;-webkit-appearance:none;-moz-appearance:none;appearance:none;background:${selG.shade.bg};color:${selG.shade.text};border:none;border-radius:10px;padding:11px 42px 11px 14px;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;line-height:1.3;cursor:pointer;">
-          ${options}
-        </select>
-        <span id="taskGoalCaret" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none;color:${selG.shade.text};font-size:12px;">▾</span>
-      </div>
-      ${panels}`;
-  }
+  // MY TASK LIST — one big flat list of every proven action across all goals
+  // (no per-goal bars); each card still shows its goal-colour rail + code.
+  fullRows = allTaskCards;
   return { rows, total, done, fullRows };
 }
 
@@ -808,9 +787,9 @@ export function renderWrapup() {
     taskListEl.innerHTML = (chk && chk.fullRows) ? `
       <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
-          <summary style="position:relative;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1px;">
-            <span>◈ TASK LIST</span>
-            <span class="rm-caret" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
+          <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
+            <span style="font-size:18pt;font-weight:800;line-height:1.15;">TASK LIST</span>
+            <span class="rm-caret" style="flex-shrink:0;display:inline-block;color:#fff;">▾</span>
           </summary>
           <div style="padding-top:10px;">${chk.fullRows}</div>
         </details>
@@ -847,7 +826,7 @@ if (typeof window !== 'undefined') {
   window.renderWrapup = renderWrapup;
   window.wrapGoalAddAction = wrapGoalAddAction;      // inline onclick in the Today-I-Will goal boxes
   window.wrapupTaskListToggle = wrapupTaskListToggle; // inline ontoggle on the MY TASK LIST panel
-  window.wrapupTaskGoalSelect = wrapupTaskGoalSelect; // inline onchange on the MY TASK LIST goal dropdown
+  window.wrapupTaskGoalToggle = wrapupTaskGoalToggle; // inline onclick on each MY TASK LIST goal bar
   window.wrapPromoteToGoal = wrapPromoteToGoal;      // inline onclick: promote an action to a Pegboard goal
   window.wrapupAiMoreToggle = wrapupAiMoreToggle;    // inline ontoggle on the proven-actions "Show N more"
   window.wrapTab = wrapTab;   // switch a goal's My Actions / Both / Roadmap Tasks tab

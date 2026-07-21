@@ -46,6 +46,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+      <button class="tnav-btn" onclick="navTo('dailyfocus')">Daily Focus</button>
+      <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
       <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
       <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">Run-Throughs</button>
@@ -98,6 +100,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </button>
     <button class="drawer-nav-item" id="nav-dashboard" onclick="navTo('dashboard')">
       <span class="nav-icon">✦</span> Dashboard
+    </button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-nav-item" id="nav-dailyfocus" onclick="navTo('dailyfocus')">
+      <span class="nav-icon">&#9829;</span> Daily Focus
+    </button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-nav-item" id="nav-notes" onclick="navTo('notes')">
+      <span class="nav-icon">&#9998;</span> My Thoughts
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('setup')">
@@ -320,6 +330,26 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </div>
   </div>
 
+  <!-- DAILY FOCUS — the user's pinned day: sessions to Play, plus jump-to shortcuts. Fed by ♥ favorites. -->
+  <div class="page" id="page-dailyfocus">
+    <div style="max-width:640px;margin:0 auto;padding:22px 16px 70px;">
+      <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0 0 4px;">Daily Focus</h1>
+      <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 16px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Play My Day</strong>.</p>
+      <div data-random-note="" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;"></div>
+      <div id="favorites-list" class="player-times-grid"></div>
+    </div>
+  </div>
+
+  <!-- MY NOTES — Pegboard-style personal library: affirmations / beliefs / reminders / inspirations / quotes the user types. Surfaces around the site + pinnable to Daily Focus. -->
+  <div class="page" id="page-notes">
+    <div style="max-width:640px;margin:0 auto;padding:22px 16px 70px;">
+      <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0 0 4px;">My Thoughts</h1>
+      <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 6px;line-height:1.5;">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface around the site — and ♥ pins one to your <strong>Daily Focus</strong>.</p>
+      <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
+      <div id="notesSections"></div>
+    </div>
+  </div>
+
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
   <div class="page" id="page-dashboard">
     <div class="vault-layout">
@@ -406,13 +436,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
+        <!-- 🏆 INSPIRATION — admin-curated champion (photo + story) who uses meditation/visualization. Hidden until filled from the Admin page (slug: dashboard-inspiration). -->
+        <div class="dash-note-block" data-block="dashboard-inspiration" style="display:none;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:15px;line-height:1.6;"></div>
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
         <!-- WHICH DIRECTION? — the two pillar buttons, up top -->
         <div class="dash-direction" style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--text);margin:4px 0 10px;text-align:center;">Which Direction?</div>
         <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
-        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
-          <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
-          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Roadmap</span>
+        <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
+          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Run-Throughs</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
@@ -420,13 +452,26 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Visualization Library</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
-          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
-          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Run-Throughs</span>
+        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
+          <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">Roadmap</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
+        <!-- MEDITATE + GRATITUDE — open as their own full page (not an inline dropdown) -->
+        <button onclick="location.href='players/meditation.html?t=10'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;">
+          <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:#2C3E50;display:inline-flex;align-items:center;justify-content:center;font-size:20px;">☾</span>
+          <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">MEDITATE</b><span style="font-size:12px;color:#aab4c2;">Quiet minutes to reset</span></span>
+        </button>
+        <button onclick="toast('Gratitude player is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:16px;">
+          <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:#E8743B;display:inline-flex;align-items:center;justify-content:center;font-size:20px;">♥</span>
+          <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">GRATITUDE</b><span style="font-size:12px;color:#aab4c2;">Give thanks it's on its way</span></span>
+        </button>
+
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
+
+        <!-- A random one of the user's own notes surfaces here (filled by sprinkleNotes). -->
+        <div data-random-note="" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:4px 0 14px;"></div>
 
         <!-- ═══ PARKED: run-through launchers — MOVE THESE INTO page-runthroughs ═══
              Hidden from the slimmed home hub. The Visualization / Recitations / Favorites
@@ -440,9 +485,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
           <div class="vault-stat" onclick="document.getElementById('recite-grid').classList.toggle('hidden')" style="cursor:pointer;">
             <div class="vs-num" style="font-size:24px;">&#10077;</div><div class="vs-lbl">Recitations</div>
-          </div>
-          <div class="vault-stat" onclick="toggleFavorites()" style="cursor:pointer;">
-            <div class="vs-num" style="font-size:24px;">&#9829;&#65038;</div><div class="vs-lbl">Favorites</div>
           </div>
         </div>
 
@@ -466,7 +508,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="openLibraryManager()" style="grid-column: 1 / -1; padding: 10px; background: var(--ink); border: 1px solid var(--border-2); color: var(--muted); cursor: pointer; font-size: 12px; letter-spacing: 1px;">✎ MANAGE STOIC LIBRARY</button>
         </div>
 
-        <div id="favorites-list" class="hidden player-times-grid" style="margin-bottom:20px;"></div>
         </div><!-- /#dashRunLaunchers (parked) -->
 
         <img src="images/column-divider.png" alt="" style="display:block;width:50%;height:auto;flex-shrink:0;object-fit:contain;margin:8px auto 10px;" aria-hidden="true">
@@ -638,16 +679,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </div>
           </div>
         </div>
-
-        <!-- MEDITATE + GRATITUDE — moved here from the vizgoal page to the bottom of Column A -->
-        <button onclick="openPlayerInColumn('players/meditation.html?t=10', event)" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;">
-          <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:#2C3E50;display:inline-flex;align-items:center;justify-content:center;font-size:20px;">☾</span>
-          <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">MEDITATE</b><span style="font-size:12px;color:#aab4c2;">Quiet minutes to reset</span></span>
-        </button>
-        <button onclick="toast('Gratitude player is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:#111;color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:16px;">
-          <span style="flex-shrink:0;width:44px;height:44px;border-radius:50%;background:#E8743B;display:inline-flex;align-items:center;justify-content:center;font-size:20px;">♥</span>
-          <span style="min-width:0;"><b style="display:block;font-size:15px;font-weight:800;letter-spacing:.3px;">GRATITUDE</b><span style="font-size:12px;color:#aab4c2;">Give thanks it's on its way</span></span>
-        </button>
 
         <!-- Alchemy Modal -->
         <div id="alchemyModal" class="ai-output-modal" style="display:none;opacity:0;pointer-events:none;">
@@ -1432,6 +1463,24 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="admin-block-foot">
           <button class="admin-save-btn" id="admin-save-dashboard-note-2" onclick="saveContentBlock('dashboard-note-2')">Save</button>
           <span class="admin-save-status" id="admin-status-dashboard-note-2"></span>
+        </div>
+      </div>
+
+      <!-- Block: dashboard-inspiration — champion photo + story -->
+      <div class="admin-block" id="adminBlock-dashboard-inspiration">
+        <div class="admin-block-hd">🏆 DASHBOARD · Inspiration — champion photo + story <span class="admin-block-slug">dashboard-inspiration</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-inspiration','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-inspiration','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('dashboard-inspiration')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('dashboard-inspiration','removeFormat')">✕</button>
+          <button class="admin-tb-btn" onclick="adminUploadPhoto('dashboard-inspiration')" title="Upload a champion photo">📷 Photo</button>
+          <input type="file" id="admin-photo-input-dashboard-inspiration" accept="image/*" style="display:none" onchange="adminPhotoSelected('dashboard-inspiration', this)">
+        </div>
+        <div class="admin-editor" id="admin-editor-dashboard-inspiration" contenteditable="true" data-slug="dashboard-inspiration"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-dashboard-inspiration" onclick="saveContentBlock('dashboard-inspiration')">Save</button>
+          <span class="admin-save-status" id="admin-status-dashboard-inspiration"></span>
         </div>
       </div>
 
