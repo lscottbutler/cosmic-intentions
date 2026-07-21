@@ -91,7 +91,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
         <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;border-top:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:16px;line-height:1;padding:3px 0 5px;">⋯</button>
       </div>
     </div>
-    <div class="wcard-menu" style="display:none;margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div>
+    <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
   </div>`;
 }
 
@@ -104,13 +104,13 @@ export function wrapCardMenu(ev, btn) {
   const card = btn && btn.closest ? btn.closest('.wcard') : null;
   const el = card ? card.querySelector('.wcard-menu') : null;
   if (!el) return;
-  const open = el.style.display === 'block';
-  document.querySelectorAll('.wcard-menu').forEach(m => { m.style.display = 'none'; });
-  if (!open) el.style.display = 'block';
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.wcard-menu.open').forEach(m => m.classList.remove('open'));
+  if (!open) el.classList.add('open');
 }
 if (typeof document !== 'undefined') {
   document.addEventListener('click', () => {
-    document.querySelectorAll('.wcard-menu').forEach(m => { if (m.style.display !== 'none') m.style.display = 'none'; });
+    document.querySelectorAll('.wcard-menu.open').forEach(m => m.classList.remove('open'));
   });
 }
 

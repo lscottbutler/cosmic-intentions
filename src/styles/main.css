@@ -189,6 +189,10 @@ details.rm-drop::details-content {
 }
 details.rm-drop[open]::details-content { height: auto; }
 
+/* Card overflow (⋯) menu — same slow open/close as .rm-drop above. */
+.wcard-menu { height: 0; overflow: hidden; transition: height .92s ease, content-visibility .92s allow-discrete; content-visibility: hidden; }
+.wcard-menu.open { height: auto; content-visibility: visible; }
+
 /* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
 .wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
 .wtab {
