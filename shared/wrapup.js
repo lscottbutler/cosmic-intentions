@@ -790,9 +790,10 @@ export function renderWrapup() {
     taskListEl.innerHTML = (chk && chk.fullRows) ? `
       <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
-          <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
-            <span style="font-size:18pt;font-weight:800;line-height:1.15;">TASK LIST</span>
-            <span class="rm-caret" style="flex-shrink:0;display:inline-block;color:#fff;">▾</span>
+          <summary style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--ink,#111);color:#fff;border-radius:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+            <span style="flex-shrink:0;font-size:22px;line-height:1;">◈</span>
+            <span style="flex:1;min-width:0;font-weight:800;font-size:16px;letter-spacing:.3px;">TASK LIST</span>
+            <span class="rm-caret" style="flex-shrink:0;font-size:20px;opacity:.8;">▾</span>
           </summary>
           <div style="padding-top:10px;">${chk.fullRows}</div>
         </details>
