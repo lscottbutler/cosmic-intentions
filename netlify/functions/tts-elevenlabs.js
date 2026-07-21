@@ -23,7 +23,7 @@ const BUCKET   = 'goal-audio';
 const ALLOWED_MODELS = ['eleven_multilingual_v2', 'eleven_turbo_v2_5', 'eleven_flash_v2_5'];
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: false });
+  const g = await guard(event, { requireAuth: true });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST')   return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
