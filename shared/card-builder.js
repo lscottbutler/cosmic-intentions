@@ -252,6 +252,9 @@ export function addRoadmapUserTask(idx) {
   r.userTasks.push({ id: Date.now(), text: text.slice(0, 160), done: false });
   saveIntentions();
   _rerenderRoadmap(idx, r);
+  // Re-focus the add box so you can keep typing actions in quick succession.
+  const box = document.getElementById(`roadmapUserInput-${idx}`);
+  if (box) box.focus();
 }
 export function toggleRoadmapUserTaskDone(idx, id) {
   const r = intentions[idx]?.roadmapAI;

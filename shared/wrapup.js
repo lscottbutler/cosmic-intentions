@@ -379,6 +379,9 @@ export function wrapGoalAddAction(idx) {
   r.userTasks.push({ id: Date.now(), text: text.slice(0, 160), done: false });
   saveIntentions();
   renderWrapup();
+  // Re-focus the add box so you can keep typing actions in quick succession.
+  const box = document.getElementById(`wrapGoalInput-${idx}`);
+  if (box) box.focus();
 }
 
 /* Promote a custom action into a full GOAL on the Pegboard. Non-destructive:
