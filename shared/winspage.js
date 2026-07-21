@@ -1,4 +1,4 @@
-import { getWins, winStats, winsByGoal, catMeta, winDelete, winPageAdd } from './wins.js';
+import { getWins, winStats, catMeta, winDelete, winPageAdd } from './wins.js';
 import { esc, intentions } from '../app.js';
 /* ── FULL WINS PAGE ──────────────────────────────────────
    A dedicated "everything I've done" page: stats + streaks,
@@ -22,7 +22,6 @@ export function renderWinsPage() {
   if (!el) return;
 
   const s      = winStats();
-  const groups = winsByGoal();
   const wins   = getWins();
 
   const stat = (label, val) => `<div style="flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;">
@@ -56,24 +55,41 @@ export function renderWinsPage() {
 
   const matches = (w) => _filter === '' ? true : (_filter === '__uncat' ? !w.category : (w.category || '') === _filter);
 
-  const goalNames = Object.keys(groups).sort((a, b) => (a === 'Uncategorized') - (b === 'Uncategorized'));
+  // Split wins into recency buckets — each win lands in its MOST-recent bucket
+  // only (a today win shows under TODAY, not also THIS WEEK). "EARLIER" is a
+  // catch-all for anything older than this year so nothing is hidden.
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const wa = new Date(); wa.setDate(wa.getDate() - 6);
+  const weekKey = wa.toISOString().slice(0, 10);   // 7-day window incl. today
+  const ymKey = todayKey.slice(0, 7);              // this month  (YYYY-MM)
+  const yKey  = todayKey.slice(0, 4);              // this year   (YYYY)
+  const buckets = { today: [], week: [], month: [], year: [], earlier: [] };
+  wins.filter(matches).forEach(w => {
+    const d = w.date || '';
+    if (d === todayKey)               buckets.today.push(w);
+    else if (d >= weekKey)            buckets.week.push(w);
+    else if (d.slice(0, 7) === ymKey) buckets.month.push(w);
+    else if (d.slice(0, 4) === yKey)  buckets.year.push(w);
+    else                              buckets.earlier.push(w);
+  });
+
+  const SECTIONS = [['today','TODAY'],['week','THIS WEEK'],['month','THIS MONTH'],['year','THIS YEAR'],['earlier','EARLIER']];
   let body = '';
-  goalNames.forEach(g => {
-    const items = groups[g].filter(matches);
+  SECTIONS.forEach(([key, label]) => {
+    const items = buckets[key];
     if (!items.length) return;
-    const m = catMeta(items[0].category || '');
+    items.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.ts || 0) - (a.ts || 0));
     body += `<div style="margin-bottom:22px;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="width:10px;height:10px;border-radius:50%;background:${m.color};flex-shrink:0;"></span>
-        <span style="font-weight:800;color:var(--text);font-size:15px;">${esc(g)}</span>
+        <span style="font-weight:800;color:var(--text);font-size:15px;">${label}</span>
         <span style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);">${items.length}</span>
       </div>
-      ${items.map(w => `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-2);">
-        <span style="color:${m.color};font-size:13px;flex-shrink:0;line-height:1.5;">✦</span>
-        <div style="flex:1;min-width:0;"><div style="font-size:14px;color:var(--text);line-height:1.5;">${esc(w.text)}</div>
-          <div style="font-family:var(--vault-mono);font-size:8px;color:var(--muted);margin-top:2px;">${_label(w.date)}</div></div>
-        <button onclick="winDelete(${w.ts})" title="Remove" style="background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;">×</button>
-      </div>`).join('')}
+      ${items.map(w => { const m = catMeta(w.category || ''); return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-2);">
+        <span style="color:${m.color};font-size:13px;flex-shrink:0;line-height:1.6;">✦</span>
+        <div style="flex:1;min-width:0;font-size:14px;color:var(--text);line-height:1.6;">${esc(w.text)}</div>
+        <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:var(--muted);line-height:1.9;white-space:nowrap;">${_label(w.date)}</span>
+        <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1.4;">×</button>
+      </div>`; }).join('')}
     </div>`;
   });
   if (!body) body = `<div style="color:var(--muted);font-style:italic;padding:24px 0;text-align:center;">No wins${_filter ? ' in this filter' : ' yet'} — log one above.</div>`;
