@@ -57,7 +57,7 @@ const _goalLetter = (idx) => {
 
 // One overflow-menu item / separator.
 const _mItem = (onclick, icon, label, danger) =>
-  `<button onclick="${onclick}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:none;background:transparent;border-radius:6px;font-size:12.5px;font-weight:500;color:${danger ? '#d1364b' : '#2a2c31'};cursor:pointer;text-align:left;font-family:inherit;"><span style="width:16px;text-align:center;font-size:13px;">${icon}</span>${label}</button>`;
+  `<button onclick="${onclick}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:none;background:transparent;border-radius:6px;font-size:12pt;font-weight:500;color:${danger ? '#d1364b' : '#2a2c31'};cursor:pointer;text-align:left;font-family:inherit;"><span style="width:16px;text-align:center;font-size:13px;">${icon}</span>${label}</button>`;
 const _mSep = () => `<div style="height:1px;background:#eee;margin:4px 6px;"></div>`;
 
 /* Darken (f<1) or lighten (f>1) a #rrggbb toward black/white by factor f. Used
