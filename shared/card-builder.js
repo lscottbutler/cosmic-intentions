@@ -1,4 +1,4 @@
-import { buildContext, callClaude, currentUser, esc, getPB, GREY_SHADES, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
+import { buildContext, callClaude, currentUser, esc, getPB, goalLetter, GREY_SHADES, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
 import { setTaskWin } from './wins.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
@@ -20,7 +20,7 @@ export function buildCardHTML(intention, idx, color) {
     <!-- CARD HEADER -->
     <div class="card-header-v2" style="background:${color}" onclick="toggleCardV2(${idx})">
       <button class="card-play-btn" onclick="launchVisualization(${idx},3);event.stopPropagation()">▶</button>
-      <div class="card-num-circle">${idx+1}</div>
+      <div class="card-num-circle">${goalLetter(intention, idx)}</div>
       <div class="card-title-v2">${esc(intention.title)}</div>
       <div class="card-views">👁 ${views}</div>
       <span class="card-chevron-v2" id="chev-${idx}">▾</span>
@@ -804,7 +804,7 @@ export function renderPBIntentionList() {
     return `
     <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
       <div style="position:relative;padding:12px 14px;background:${shade.bg};">
-        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${idx + 1}</div>
+        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${goalLetter(i, idx)}</div>
         <div style="font-size:12px;color:${shade.text};opacity:.75;margin-top:4px;">Set this goal's details below.</div>
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
           style="position:absolute;top:14px;right:14px;background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;">✕</button>

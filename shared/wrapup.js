@@ -614,7 +614,7 @@ function _todayChecklist() {
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:14px 0 8px;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
-        <span>◎ ${esc(it.title)}</span><span class="rm-caret" style="flex-shrink:0;">▾</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:5px;background:rgba(0,0,0,.28);color:#fff;font-weight:800;font-size:11px;letter-spacing:0;">${letter}</span><span style="min-width:0;">${esc(it.title)}</span></span><span class="rm-caret" style="flex-shrink:0;">▾</span>
       </summary>
       <div class="wtabs">
         <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>

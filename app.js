@@ -54,6 +54,20 @@ function _leanForLS(arr) {
   } catch { return arr; }
 }
 
+/* A goal's stable alpha letter (A, B, C … AA …), locked per goal id in the
+   ci_goal_letters map that wrapup.js maintains — so a goal reads the SAME letter
+   on its card, in the viz library, and on its roadmap (matching its action codes
+   like L1, L2). Positional fallback before the map is assigned. */
+export function goalLetter(intention, idx) {
+  try {
+    const id = intention && intention.id;
+    if (id) { const m = JSON.parse(localStorage.getItem('ci_goal_letters') || '{}') || {}; if (m[id]) return m[id]; }
+  } catch (_) {}
+  let s = '', n = (idx || 0) + 1;
+  while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+
 /* ─────────────────────────────────────────────────────────
    SUPABASE INIT
 ───────────────────────────────────────────────────────── */
@@ -1868,7 +1882,7 @@ export function renderVizLibrary() {
   el.innerHTML = intentions.map((it, idx) => {
     const s = GREY_SHADES[idx % GREY_SHADES.length];
     return `<button onclick="openVizGoal(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
-      <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${idx + 1}</span>
+      <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(it, idx)}</span>
       <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(it.title || '')}</span>
       <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
     </button>`;
@@ -1893,7 +1907,7 @@ export function openVizGoal(idx) {
       .map(({ g, i }) => {
         const cs = GREY_SHADES[i % GREY_SHADES.length];
         return `<button onclick="openVizGoal(${i})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${cs.bg};color:${cs.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
-          <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${i + 1}</span>
+          <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(g, i)}</span>
           <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(g.title || '')}</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
         </button>`;
