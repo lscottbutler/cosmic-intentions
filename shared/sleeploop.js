@@ -1,4 +1,5 @@
 import { intentions, esc, toast } from '../app.js';
+import { awardMindLoopPoint } from './rings.js';
 /* ── SLEEP LOOP ──────────────────────────────────────────
    Plays the user's FAVORITED goals on a gentle rotation as
    they fall asleep. Uses ElevenLabs premium audio (via the
@@ -21,6 +22,8 @@ const DONE  = '#4ADE80';
 const TTS_VER = 'v3';            // bump to invalidate cached audio (e.g. voice/model change / format)
 let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = null;
 let _lastVoAt = 0, _uiTimer = null, _lastLine = '';   // timer + current-line state
+let _mindPtTimer = null;                              // fires the ONE daily Big-3 point after 10 min
+const MIND_PT_MS = 10 * 60000;                        // 10 continuous minutes → +1 (capped once/day)
 let _mode = (() => { try { return localStorage.getItem('ci_loop_mode') || 'sleep'; } catch (e) { return 'sleep'; } })();
 // Sleep-session length in minutes; 0 = continuous (all day/night, no auto-stop).
 let _sessionMin = (() => { try { const v = parseInt(localStorage.getItem('ci_loop_minutes'), 10); return isNaN(v) ? 20 : v; } catch (e) { return 20; } })();
@@ -148,13 +151,12 @@ function _purgeOldCache() {
   try { Object.keys(localStorage).filter(k => k.startsWith('ci_tts_')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
 }
 
-/* The loop set = favorited goals ("I AM…" statements). */
+/* The loop set = ALL of the user's goals ("I AM…" statements) from the
+   database. Decoupled from the Favorites / Daily-Focus list on purpose: the
+   Mind Loop is audio-only and goal-only; Daily Focus owns ci_favorites. */
 function _favGoalTexts() {
-  let favs = [];
-  try { favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) {}
-  return favs
-    .filter(f => f && f.player === 'mindset' && f.goal != null)
-    .map(f => intentions[f.goal] && intentions[f.goal].title)
+  return (intentions || [])
+    .map(it => it && it.title)
     .filter(Boolean);
 }
 
@@ -257,6 +259,10 @@ export function sleepLoopToggle() {
   _purgeOldCache();   // free the old localStorage audio blobs
   if (_timer) { clearTimeout(_timer); _timer = null; }   // kill any stale scheduler before starting
   _playing = true; _idx = 0; _lastVoAt = Date.now(); _startedAt = Date.now();
+  // Award the single daily Big-3 point after 10 CONTINUOUS minutes of play.
+  // Stopping before then clears it (see sleepLoopStop) → no farming by opening.
+  if (_mindPtTimer) clearTimeout(_mindPtTimer);
+  _mindPtTimer = setTimeout(() => { if (_playing) { try { awardMindLoopPoint(); } catch (e) {} } }, MIND_PT_MS);
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
   if (_mode === 'daytime') {
@@ -279,6 +285,7 @@ export function sleepLoopSetDuration(min) {
 export function sleepLoopStop() {
   _playing = false;
   if (_timer) { clearTimeout(_timer); _timer = null; }
+  if (_mindPtTimer) { clearTimeout(_mindPtTimer); _mindPtTimer = null; }   // stopped early → no point
   if (_uiTimer) { clearInterval(_uiTimer); _uiTimer = null; }
   if (_audio) { try { _audio.pause(); } catch (e) {} _audio = null; }
   if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }

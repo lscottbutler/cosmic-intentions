@@ -4,7 +4,7 @@ import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
-import { renderRings } from './shared/rings.js';
+import { renderRings, _wireRingsSync } from './shared/rings.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
@@ -898,6 +898,28 @@ export async function syncHabitDoneToSupabase() {
   } catch (e) { console.warn('[Supabase] syncHabitDoneToSupabase failed:', e); }
 }
 
+/* Big-3 rings history → cloud. Stored as a `rings_log` JSONB column on
+   profiles: { 'YYYY-MM-DD': { review, visualize, meditate, gratitude }, … }.
+   The whole log syncs (streak/momentum/tier need history), but each day is a
+   tiny 4-bool object so it stays small. Resilient: no-ops if the column isn't
+   there yet. Wired into rings.js via _wireRingsSync so every tap/finish syncs. */
+export async function syncRingsToSupabase() {
+  if (!currentUser) return;
+  try {
+    const log = {};
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith('ci_rings_')) { const v = LS.get(k); if (v) log[k.slice(9)] = v; }
+    }
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      rings_log: log,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] rings sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncRingsToSupabase failed:', e); }
+}
+_wireRingsSync(syncRingsToSupabase);   // rings.js fires this on every ring change
+
 async function syncFromSupabase() {
   if (!currentUser) return;
   syncPending = true;
@@ -972,6 +994,23 @@ async function syncFromSupabase() {
       const today = dayKey();
       if (hd && hd.date === today && hd.done && typeof hd.done === 'object') {
         LS.set('ci_habits_' + today, hd.done);
+      }
+    } catch (e) {}
+    // Big-3 rings history — union-merge each day so a ring closed on ANY device
+    // stays closed (closing is monotonic within a day; never lose a completion).
+    try {
+      const log = data.rings_log;
+      if (log && typeof log === 'object') {
+        Object.keys(log).forEach(day => {
+          const c = log[day] || {}, l = LS.get('ci_rings_' + day) || {};
+          LS.set('ci_rings_' + day, {
+            review:    !!(l.review    || c.review),
+            visualize: !!(l.visualize || c.visualize),
+            meditate:  !!(l.meditate  || c.meditate),
+            gratitude: !!(l.gratitude || c.gratitude),
+          });
+        });
+        if (typeof renderRings === 'function') renderRings();
       }
     } catch (e) {}
     if (typeof window !== 'undefined' && window.renderRunThroughs) window.renderRunThroughs();

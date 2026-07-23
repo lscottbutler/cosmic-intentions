@@ -81,9 +81,20 @@ function _doneHabitCount(dateKey) {
   const d = LS.get(`ci_habits_${dateKey}`) || {};
   return Object.values(d).filter(Boolean).length;
 }
-// Mind Loop earns its single daily point once step-3 sets this flag.
+// Mind Loop earns its single daily point once awardMindLoopPoint() fires.
 function _mindLoopEarned(dateKey) {
   return !!LS.get(`ci_mindloop_pt_${dateKey}`);
+}
+/* Mind Loop earns ONE point per day after a genuine listen (sleeploop calls
+   this once it's played ~10 continuous minutes). Hard-capped: a loop left
+   running all day still earns exactly +1, so it can't farm points. */
+export function awardMindLoopPoint() {
+  const key = _todayKey();
+  if (_mindLoopEarned(key)) return false;   // already earned today
+  LS.set(`ci_mindloop_pt_${key}`, true);
+  renderRings();
+  try { renderWrapup(); } catch (e) {}
+  return true;
 }
 export function dailyPoints(dateKey) {
   const key = dateKey || _todayKey();
