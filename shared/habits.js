@@ -1,5 +1,5 @@
 import { RM_CIRCLE } from './card-builder.js';
-import { LS, esc, syncHabitsToSupabase } from '../app.js';
+import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase } from '../app.js';
 import { setTaskWin, getWins } from './wins.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
    A customizable daily habit checklist, grouped into time-of-day
@@ -70,6 +70,7 @@ export function habitToggle(id) {
   const nowOn = !d[id];
   if (d[id]) delete d[id]; else d[id] = true;
   LS.set(_doneKey(), d);
+  if (typeof syncHabitDoneToSupabase === 'function') syncHabitDoneToSupabase();  // fire-and-forget cloud sync (cross-device)
   // Completing a MORNING RUN THROUGH task lands it on the Wall of Wins
   // (add on check, remove on uncheck — idempotent via the habit's src key).
   const h = getHabitList().find(x => x.id === id);

@@ -866,6 +866,26 @@ export async function syncHabitsToSupabase() {
   } catch (e) { console.warn('[Supabase] syncHabitsToSupabase failed:', e); }
 }
 
+/* Habit DONE-state (today's ticks) → cloud, so completions in the daily
+   run-throughs follow the login across devices. Stored as a `habits_done`
+   JSONB column on profiles: { date:'YYYY-MM-DD', done:{ habitId:true, … } }.
+   Only today is kept (the checklist auto-resets each morning), so the column
+   never grows. Resilient: no-ops quietly if the column doesn't exist yet.
+   Fire-and-forget from habits.js on every tick. */
+export async function syncHabitDoneToSupabase() {
+  if (!currentUser) return;
+  try {
+    const date = new Date().toISOString().slice(0, 10);
+    const done = LS.get('ci_habits_' + date) || {};
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      habits_done: { date, done },
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] habits-done sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncHabitDoneToSupabase failed:', e); }
+}
+
 async function syncFromSupabase() {
   if (!currentUser) return;
   syncPending = true;
@@ -933,6 +953,15 @@ async function syncFromSupabase() {
       const localHabits = LS.get('ci_habit_list') || [];
       if (localHabits.some(h => h && h.cat)) syncHabitsToSupabase();
     }
+    // Habit DONE-state — restore today's ticks so completions follow the login
+    // across devices. Ignore stale days (the checklist resets each morning).
+    try {
+      const hd = data.habits_done;
+      const today = new Date().toISOString().slice(0, 10);
+      if (hd && hd.date === today && hd.done && typeof hd.done === 'object') {
+        LS.set('ci_habits_' + today, hd.done);
+      }
+    } catch (e) {}
     if (typeof window !== 'undefined' && window.renderRunThroughs) window.renderRunThroughs();
     if (typeof window !== 'undefined' && window.renderHabits) window.renderHabits();
     console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);
