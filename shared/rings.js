@@ -1,16 +1,23 @@
 import { LS, toast, dayKey } from '../app.js';
 import { renderWrapup } from './wrapup.js';
-/* ── DAILY PILLARS (RINGS) ───────────────────────────────
-   Phase 1 of the Evening Wrap-Up / tracking system.
-   Three daily disciplines — Review · Visualize · Meditate.
-   Close all 3 = a Perfect Day. Momentum dims & recovers
-   (kind, never hard-resets). See project_wrapup_tracking_vision.
+/* ── THE BIG 3 (daily reward tracker) ────────────────────
+   Three anchor disciplines — Review · Visualize · Meditate.
+   Close all 3 = a Perfect Day. GRATITUDE is a 4th BONUS ring:
+   it earns points but is NOT required for a Perfect Day.
 
-   v1: rings are TAP-to-close (manual). Auto-closing from real
-   viz/meditation session completion is the next slice — those
-   counters (ci_viz_plays/ci_med_plays) aren't wired yet.
+   POINTS (derived, never stored — recomputed from the day's
+   ring record + the habit checkmarks, so cross-device sync
+   is automatic once those two are synced):
+     • each ticked habit / task ............ +1
+     • each closed anchor (R/V/M) .......... +5
+     • Gratitude (bonus) ................... +5
+     • Mind Loop (capped, once/day) ........ +1
+     • Perfect Day (all 3 anchors) ......... +15
 
-   Depends on globals (from app.js): LS, toast.
+   Momentum dims & recovers over a rolling window (kind, never
+   hard-resets). Anchors close by TAP or from a completed
+   session (markPillar via playerFinished). Grayscale by design.
+   Depends on globals (from app.js): LS, toast, dayKey.
 ───────────────────────────────────────────────────────── */
 
 export const PILLARS = [
@@ -18,10 +25,22 @@ export const PILLARS = [
   { key: 'visualize', label: 'Visualize', icon: '✦', hint: 'Creative visualization' },
   { key: 'meditate',  label: 'Meditate',  icon: '☾', hint: 'Meditation session' },
 ];
+// Bonus 4th anchor — points only, never counts toward a Perfect Day.
+export const GRATITUDE = { key: 'gratitude', label: 'Gratitude', icon: '♥', hint: 'Log a gratitude' };
+
+// Point values — single source of truth.
+const PTS = { habit: 1, anchor: 5, gratitude: 5, mindloop: 1, perfect: 15 };
 
 const MOMENTUM_WINDOW = 30;   // days scanned to derive momentum
-const DONE  = '#4ADE80';
-const BRAND = '#F5A623';
+
+// Grayscale ramp — hierarchy from shade, not color.
+const G = {
+  track:  '#333438',
+  dim:    '#6d6e73',
+  mid:    '#9a9ba0',
+  lite:   '#cdced2',
+  bright: '#f0f0f2',
+};
 
 /* Identity tiers — earned by cumulative Perfect Days (consistency,
    not points). Citadel-themed. */
@@ -34,20 +53,46 @@ export const TIERS = [
   { min: 100, name: 'Warden of the Citadel' },
 ];
 
+// Cloud sync — late-bound by app.js once currentUser exists, so rings.js has
+// no hard dependency on it and still works logged-out. Set via _wireRingsSync.
+let syncRingsToSupabase = null;
+
 function _dayKey(d) { return dayKey(d); }
 function _todayKey() { return _dayKey(new Date()); }
 
 function _getRings(dateKey) {
-  return LS.get(`ci_rings_${dateKey}`) || { review: false, visualize: false, meditate: false };
+  return LS.get(`ci_rings_${dateKey}`) || { review: false, visualize: false, meditate: false, gratitude: false };
 }
 function _setRings(dateKey, rings) {
   LS.set(`ci_rings_${dateKey}`, rings);
+  if (typeof syncRingsToSupabase === 'function') { try { syncRingsToSupabase(dateKey, rings); } catch (e) {} }
 }
+// Only the 3 ANCHORS count toward "closed" / Perfect Day — gratitude is bonus.
 function _closedCount(r) {
   return (r.review ? 1 : 0) + (r.visualize ? 1 : 0) + (r.meditate ? 1 : 0);
 }
 function _isPerfect(r) {
-  return r.review && r.visualize && r.meditate;
+  return !!(r.review && r.visualize && r.meditate);
+}
+
+/* ── Points ───────────────────────────────────────────── */
+// Ticked habits for a day = every true entry in ci_habits_<date>.
+function _doneHabitCount(dateKey) {
+  const d = LS.get(`ci_habits_${dateKey}`) || {};
+  return Object.values(d).filter(Boolean).length;
+}
+// Mind Loop earns its single daily point once step-3 sets this flag.
+function _mindLoopEarned(dateKey) {
+  return !!LS.get(`ci_mindloop_pt_${dateKey}`);
+}
+export function dailyPoints(dateKey) {
+  const key = dateKey || _todayKey();
+  const r = _getRings(key);
+  let pts = _doneHabitCount(key) * PTS.habit + _closedCount(r) * PTS.anchor;
+  if (r.gratitude) pts += PTS.gratitude;
+  if (_mindLoopEarned(key)) pts += PTS.mindloop;
+  if (_isPerfect(r)) pts += PTS.perfect;
+  return pts;
 }
 
 /* Derived momentum — recomputed each render over a rolling window.
@@ -56,7 +101,6 @@ function _isPerfect(r) {
 function _computeMomentum() {
   let score = 0;
   const today = new Date();
-  // Days the user logged at least one mini-win — discretionary bonus layer.
   const winDays = new Set((LS.get('ci_wins') || []).map(w => w.date));
   for (let i = MOMENTUM_WINDOW - 1; i >= 0; i--) {
     const d = new Date(today); d.setDate(today.getDate() - i);
@@ -65,17 +109,19 @@ function _computeMomentum() {
     if (c === 3) score += 12;
     else if (c > 0) score += 4;
     else score -= 8;
-    if (winDays.has(key)) score += 3;   // wins nudge momentum up
+    if (winDays.has(key)) score += 3;
     score = Math.max(0, Math.min(100, score));
   }
-  // Current streak of Perfect Days. Today-in-progress doesn't break it.
-  let streak = 0;
+  // Current streak of Perfect Days, with ONE freeze: a single missed day in
+  // the run doesn't break the streak (Duolingo-style grace). Two misses do.
+  let streak = 0, freezeUsed = false;
   for (let i = 0; i < MOMENTUM_WINDOW + 1; i++) {
     const d = new Date(today); d.setDate(today.getDate() - i);
     const perfect = _isPerfect(_getRings(_dayKey(d)));
-    if (perfect) streak++;
-    else if (i === 0) continue;   // today not yet perfect — keep counting prior days
-    else break;
+    if (perfect) { streak++; continue; }
+    if (i === 0) continue;              // today not yet perfect — keep counting prior days
+    if (!freezeUsed) { freezeUsed = true; continue; }   // spend the freeze on the first miss
+    break;                             // second miss ends the streak
   }
   return { score, streak };
 }
@@ -89,6 +135,8 @@ export function ringsSummary() {
     open:    PILLARS.filter(p => !r[p.key]).map(p => p.label),
     perfect: _isPerfect(r),
     count:   _closedCount(r),
+    gratitude: !!r.gratitude,
+    points:  dailyPoints(_todayKey()),
     score, streak,
   };
 }
@@ -105,7 +153,7 @@ export function ringsWeekSummary() {
   return { perfectDays, pillarsClosed };
 }
 
-/* ── Toggle one pillar for today ─────────────────────── */
+/* ── Toggle one ring for today (tap) ─────────────────── */
 export function toggleRing(key) {
   const today = _todayKey();
   const rings = _getRings(today);
@@ -113,9 +161,7 @@ export function toggleRing(key) {
   const wasPerfect = _isPerfect(rings);
   rings[key] = !rings[key];
   _setRings(today, rings);
-  if (!wasPerfect && _isPerfect(rings)) {
-    toast('✦ Perfect Day — all 3 pillars closed', 'success');
-  }
+  if (!wasPerfect && _isPerfect(rings)) _celebratePerfect();
   renderRings();
   renderWrapup();
 }
@@ -142,32 +188,91 @@ export function currentTier() {
   return { tier, next, total };
 }
 
-/* Map a player URL to the pillar a completed session should close.
-   null = that player doesn't count toward a pillar (e.g. countdown). */
+/* Map a player URL to the ring a completed session should close.
+   null = that player doesn't count toward a ring (e.g. countdown). */
 export function pillarForSrc(src) {
   const s = (src || '').toLowerCase();
+  if (/gratitude/.test(s)) return 'gratitude';
   if (/meditation/.test(s)) return 'meditate';
   if (/creative-viz|3min-viz|viz-player|visualization|manifest|art-frame/.test(s)) return 'visualize';
   if (/affirmation|recite|ass-template/.test(s)) return 'review';
   return null;
 }
 
-/* Close a pillar from a COMPLETED session (idempotent for the day) and
+/* Close a ring from a COMPLETED session (idempotent for the day) and
    bump its lifetime counter. Called by playerFinished(). */
 export function markPillar(key) {
-  if (!PILLARS.some(p => p.key === key)) return;
+  const valid = PILLARS.some(p => p.key === key) || key === GRATITUDE.key;
+  if (!valid) return;
   const today = _todayKey();
   const rings = _getRings(today);
   const wasPerfect = _isPerfect(rings);
   if (!rings[key]) { rings[key] = true; _setRings(today, rings); }
 
-  // Lifetime play counters (finally wired — feed the stats row too).
   if (key === 'visualize') LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
   if (key === 'meditate')  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
 
-  if (!wasPerfect && _isPerfect(rings)) toast('✦ Perfect Day — all 3 pillars closed', 'success');
+  if (!wasPerfect && _isPerfect(rings)) _celebratePerfect();
   renderRings();
   renderWrapup();
+}
+
+/* ── Perfect-Day celebration (grayscale confetti + soft chime) ── */
+function _celebratePerfect() {
+  toast('✦ Perfect Day — all 3 anchors closed', 'success');
+  try { _confetti(); } catch (e) {}
+  try { _chime(); } catch (e) {}
+}
+function _confetti() {
+  if (typeof document === 'undefined') return;
+  const cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
+  document.body.appendChild(cv);
+  const ctx = cv.getContext('2d');
+  const W = cv.width = window.innerWidth, H = cv.height = window.innerHeight;
+  const grays = ['#f0f0f2', '#cdced2', '#9a9ba0', '#6d6e73'];
+  const N = 90, bits = [];
+  for (let i = 0; i < N; i++) bits.push({
+    x: W / 2 + (i - N / 2) * 3, y: H * 0.28,
+    vx: (i / N - 0.5) * 9, vy: -6 - (i % 7),
+    s: 4 + (i % 4) * 2, c: grays[i % grays.length], r: i * 0.3,
+  });
+  let t = 0;
+  (function frame() {
+    t++; ctx.clearRect(0, 0, W, H);
+    bits.forEach(b => {
+      b.vy += 0.32; b.x += b.vx; b.y += b.vy; b.r += 0.2;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r);
+      ctx.globalAlpha = Math.max(0, 1 - t / 90);
+      ctx.fillStyle = b.c; ctx.fillRect(-b.s / 2, -b.s / 2, b.s, b.s * 0.6);
+      ctx.restore();
+    });
+    if (t < 90) requestAnimationFrame(frame); else cv.remove();
+  })();
+}
+function _chime() {
+  if (typeof window === 'undefined' || !(window.AudioContext || window.webkitAudioContext)) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ac = new AC();
+  [523.25, 659.25, 783.99].forEach((f, i) => {   // C-E-G, a soft ascending triad
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    const t0 = ac.currentTime + i * 0.11;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.18, t0 + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
+    o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0 + 0.65);
+  });
+}
+
+/* ── Render helpers ──────────────────────────────────── */
+const _mono = 'font-family:var(--vault-mono),ui-monospace,Menlo,Consolas,monospace;';
+function _ringSVG(sz, r, sw, closed, strokeCol) {
+  const c = sz / 2, circ = Math.round(2 * Math.PI * r);
+  return `<svg width="${sz}" height="${sz}" style="transform:rotate(-90deg);display:block;">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${G.track}" stroke-width="${sw}"/>
+    ${closed ? `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${strokeCol}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="0"/>` : ''}
+  </svg>`;
 }
 
 /* ── Render the widget ───────────────────────────────── */
@@ -175,46 +280,92 @@ export function renderRings() {
   const el = document.getElementById('ringsWidget');
   if (!el) return;
 
-  const rings = _getRings(_todayKey());
+  const today = _todayKey();
+  const rings = _getRings(today);
   const { score, streak } = _computeMomentum();
   const perfect = _isPerfect(rings);
   const { tier, next, total } = currentTier();
+  const points = dailyPoints(today);
 
+  // 3 anchor rings
   const cells = PILLARS.map(p => {
     const done = !!rings[p.key];
+    const stroke = perfect ? G.bright : G.lite;
     return `
       <button onclick="toggleRing('${p.key}')" title="${p.hint}"
-        style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:0;">
-        <span style="width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-          font-size:20px;line-height:1;transition:all .15s;color:#fff;
-          ${done
-            ? `background:${DONE};border:2px solid ${DONE};box-shadow:0 0 12px rgba(74,222,128,0.35);`
-            : `background:#161616;border:2px solid #666;`}">
-          ${done ? '✓' : p.icon}</span>
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;
-          color:var(--widget-text);">${p.label}</span>
+        style="display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;padding:2px 0;">
+        <span style="position:relative;width:62px;height:62px;">
+          ${_ringSVG(62, 26, 5, done, stroke)}
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:${done ? G.bright : G.dim};">${done ? '✓' : p.icon}</span>
+        </span>
+        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${G.lite};">${p.label.toUpperCase()}</span>
+        <span style="${_mono}font-size:8.5px;color:${done ? G.mid : G.dim};">+${PTS.anchor}</span>
       </button>`;
   }).join('');
 
+  // Gratitude bonus row
+  const gOn = !!rings.gratitude;
+  const bonus = `
+    <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};display:flex;align-items:center;gap:12px;">
+      <button onclick="toggleRing('gratitude')" title="${GRATITUDE.hint}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">
+        ${_ringSVG(44, 18, 4, gOn, G.mid)}
+        <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${gOn ? G.lite : G.dim};">♥</span>
+      </button>
+      <span style="flex:1;min-width:0;">
+        <div style="font-weight:800;font-size:13px;color:${G.bright};">Gratitude${gOn ? ' ✓' : ''}</div>
+        <div style="font-size:11px;color:${G.dim};margin-top:2px;">Bonus ring — not required for a Perfect Day</div>
+      </span>
+      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${G.mid};border:1px solid ${G.track};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${PTS.gratitude} BONUS</span>
+    </div>`;
+
+  // Week strip — last 7 days ending today
+  const wd = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  let weekCells = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const c = _closedCount(_getRings(_dayKey(d)));
+    const isToday = i === 0;
+    let box;
+    if (c === 3)      box = `background:${G.lite};color:#161718;`;
+    else if (c > 0)   box = `background:#242528;color:${G.mid};border:1px solid ${G.dim};`;
+    else              box = `background:#161718;color:#4a4b4f;border:1px solid ${G.track};`;
+    const face = c === 3 ? '✓' : c > 0 ? String(c) : '·';
+    weekCells += `<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;${_mono}font-size:11px;font-weight:800;${box}${isToday ? `outline:2px solid ${G.bright};outline-offset:2px;` : ''}">${face}</span>
+      <span style="${_mono}font-size:8px;color:${G.dim};">${wd[d.getDay()]}</span>
+    </div>`;
+  }
+
   el.innerHTML = `
-    <div style="background:var(--widget-bg);border:1px solid ${perfect ? DONE : 'var(--widget-border)'};border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .3s;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);font-weight:800;letter-spacing:1px;">◈ TODAY'S 3 PILLARS</div>
-        <div style="font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);">🔥 ${streak} day${streak === 1 ? '' : 's'}</div>
+    <div style="background:var(--widget-bg,#161718);border:1px solid ${perfect ? G.lite : 'var(--widget-border,#2b2c2f)'};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:${G.bright};">◈ THE BIG 3</span>
+        <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.bright};">${points}</b> pts today</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-        ${cells}
-      </div>
-      ${perfect ? `<div style="text-align:center;font-family:var(--vault-mono);font-size:10px;color:var(--widget-text);letter-spacing:0.5px;margin-bottom:10px;">✦ PERFECT DAY — all 3 pillars closed</div>` : ''}
-      <div style="display:flex;justify-content:space-between;font-family:var(--vault-mono);font-size:8px;color:var(--widget-text);letter-spacing:1px;margin-bottom:4px;">
+      <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">▲ ${streak} DAY STREAK</span></div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;">${cells}</div>
+      ${bonus}
+      ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.bright};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
+
+      <div style="display:flex;justify-content:space-between;${_mono}font-size:9px;letter-spacing:1px;color:${G.dim};margin:16px 0 5px;">
         <span>MOMENTUM</span><span>${score}</span>
       </div>
-      <div style="height:6px;background:#1A1A1A;border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${BRAND},#FF7A1A);border-radius:3px;transition:width .3s;"></div>
+      <div style="height:7px;background:#0f0f11;border:1px solid var(--widget-border,#2b2c2f);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,#4c4d52,${G.lite});border-radius:4px;transition:width .3s;"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:var(--widget-text);">⛨ ${tier.name}</span>
-        <span style="font-family:var(--vault-mono);font-size:8px;color:var(--widget-text);letter-spacing:0.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+        <span style="${_mono}font-size:11px;font-weight:800;letter-spacing:.5px;color:${G.lite};">⛨ ${tier.name.toUpperCase()}</span>
+        <span style="${_mono}font-size:9px;color:${G.dim};letter-spacing:.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--widget-border,#2b2c2f);">
+        <div style="${_mono}font-size:9px;letter-spacing:1px;color:${G.dim};margin-bottom:9px;">THIS WEEK</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">${weekCells}</div>
       </div>
     </div>`;
 }
+
+/* app.js calls this once, passing its Supabase upsert fn (see cross-device sync). */
+export function _wireRingsSync(fn) { syncRingsToSupabase = fn; }
