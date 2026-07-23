@@ -140,25 +140,6 @@ function _habitRow(h, on) {
    Each renders its own category's habits into its container. */
 const RUN_CATS = ['MORNING', 'DAY', 'EVENING'];   // these get their own banner cards
 
-/* Slice 1 of the master list: each time-block card also offers a few sessions to
-   run at that time. Sensible defaults for now — Slice 4 makes them user-taggable. */
-const RUN_SESSIONS = {
-  MORNING: [['◉', 'Visualization', 'players/3min-viz.html'], ['✦', 'Affirmations', 'players/recite.html?type=affirmations']],
-  DAY:     [['◉', 'Visualization', 'players/3min-viz.html'], ['❞', 'Recitations', 'players/recite.html']],
-  EVENING: [['☾', 'Meditation', 'players/meditation.html'],  ['◉', 'Visualization', 'players/3min-viz.html']],
-};
-function _runSessions(cat) {
-  const items = RUN_SESSIONS[cat] || [];
-  if (!items.length) return '';
-  const pills = items.map(([ic, lbl, href]) =>
-    `<button onclick="location.href='${href}'" style="display:inline-flex;align-items:center;gap:6px;background:var(--ink,#111);color:#fff;border:none;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;"><span style="font-size:13px;line-height:1;">${ic}</span>${lbl}</button>`
-  ).join('');
-  return `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #e5e5e5;">
-    <div style="font-family:var(--vault-mono);font-size:8px;font-weight:800;letter-spacing:1px;color:#888;margin:0 0 8px;">SESSIONS FOR THIS TIME</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;">${pills}</div>
-  </div>`;
-}
-
 function _renderRun(cat, elId) {
   const el = document.getElementById(elId); if (!el) return;
   const list = getHabitList().filter(h => _cat(h) === cat);
@@ -169,13 +150,12 @@ function _renderRun(cat, elId) {
   if (countEl) countEl.textContent = `${done}/${list.length}`;
   // EVENING closes the day with a recap of everything completed today.
   const results = cat === 'EVENING' ? _dayResults() : '';
-  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>` + _runSessions(cat) + results; return; }
+  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>` + results; return; }
   // MORNING: completed tasks move to the Wall of Wins, so hide them here (they
   // reset and reappear tomorrow via the per-day done state). Other run-throughs
   // keep the classic struck-through view.
   const rows = cat === 'MORNING' ? list.filter(h => !d[h.id]) : list;
   el.innerHTML = rows.map(h => _habitRow(h, !!d[h.id])).join('')
-    + _runSessions(cat)
     + results;
 }
 
