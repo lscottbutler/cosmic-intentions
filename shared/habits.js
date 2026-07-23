@@ -1,6 +1,7 @@
 import { RM_CIRCLE } from './card-builder.js';
 import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey } from '../app.js';
 import { setTaskWin, getWins } from './wins.js';
+import { renderRings } from './rings.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
    A customizable daily habit checklist, grouped into time-of-day
    / type banners: MORNING · DAY · EVENING · BEDTIME · HEALTH.
@@ -80,6 +81,7 @@ export function habitToggle(id) {
   }
   renderHabits();
   renderRunThroughs();
+  if (typeof renderRings === 'function') renderRings();   // habit = +1 pt → refresh The Big 3 live
 }
 
 /* ── Pegboard editing: add / rename / recategorize / delete / reorder ── */
