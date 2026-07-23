@@ -194,8 +194,9 @@ export function renderDayRun()     { _renderRun('DAY',     'dayRunBody'); }
 export function renderEveningRun() { _renderRun('EVENING', 'eveningRunBody'); }
 export function renderRunThroughs() { renderMorningRun(); renderDayRun(); renderEveningRun(); }
 
-/* ── Daily Tracker widget — categories WITHOUT their own run-through card
-   (Bedtime, Health, Unsorted). Morning/Day/Evening live in their cards. ── */
+/* ── Daily Tracker widget — a master list of EVERY habit, grouped by category
+   (Morning/Day/Evening/Bedtime/Health/Unsorted). Ticks share the same per-day
+   done state as the run-through cards, so checking here or there stays in sync. ── */
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
@@ -204,7 +205,7 @@ export function renderHabits() {
   const groups = _grouped(getHabitList());
 
   let body = '';
-  [...HABIT_CATS.filter(c => !RUN_CATS.includes(c)), ''].forEach(cat => {
+  [...HABIT_CATS, ''].forEach(cat => {
     // Alphabetical within each category (case-insensitive) — don't mutate the stored order.
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
     if (!items.length) return;
