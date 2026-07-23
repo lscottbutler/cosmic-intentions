@@ -308,20 +308,22 @@ export function renderRings() {
   const { tier, next, total } = currentTier();
   const points = dailyPoints(today);
 
-  // 3 anchor rings
+  // 3 anchor rings — DISPLAY ONLY. They close only when a real session finishes
+  // (playerFinished → markPillar), never by tapping, so the score can't be faked.
   const cells = PILLARS.map(p => {
     const done = !!rings[p.key];
     const stroke = perfect ? G.bright : G.lite;
+    const tip = done ? `${p.label} done today` : `Closes when you finish a ${p.label.toLowerCase()} session`;
     return `
-      <button onclick="toggleRing('${p.key}')" title="${p.hint}"
-        style="display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;padding:2px 0;">
+      <div title="${tip}"
+        style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:2px 0;">
         <span style="position:relative;width:62px;height:62px;">
           ${_ringSVG(62, 26, 5, done, stroke)}
           <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:${done ? G.bright : G.dim};">${done ? '✓' : p.icon}</span>
         </span>
         <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${G.lite};">${p.label.toUpperCase()}</span>
         <span style="${_mono}font-size:8.5px;color:${done ? G.mid : G.dim};">+${PTS.anchor}</span>
-      </button>`;
+      </div>`;
   }).join('');
 
   // Gratitude bonus row
