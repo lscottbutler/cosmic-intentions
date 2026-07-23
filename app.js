@@ -2595,7 +2595,7 @@ export function renderVaultSidebar() {
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:var(--ink);color:var(--on-ink)">${i._idx + 1}</div>
+          <div class="vault-item-num" style="background:var(--ink);color:var(--on-ink)">${goalLetter(i, i._idx)}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
