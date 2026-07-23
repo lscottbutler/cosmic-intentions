@@ -33,13 +33,20 @@ const PTS = { habit: 1, anchor: 5, gratitude: 5, mindloop: 1, perfect: 15 };
 
 const MOMENTUM_WINDOW = 30;   // days scanned to derive momentum
 
-// Grayscale ramp — hierarchy from shade, not color.
+// Grayscale ramp DERIVED FROM THE THEME so it reads on dark, light-olive AND
+// kids-white. --widget-text always contrasts its --widget-bg (by theme design);
+// every shade is that text token at a lower opacity, so hierarchy = shade, and
+// it auto-flips dark-on-light. No fixed grays (those vanished on light themes).
+const TX = 'var(--widget-text,#fff)';
 const G = {
-  track:  '#333438',
-  dim:    '#6d6e73',
-  mid:    '#9a9ba0',
-  lite:   '#cdced2',
-  bright: '#f0f0f2',
+  bg:     'var(--widget-bg,#141414)',
+  border: 'var(--widget-border,#2a2a2a)',
+  bright: TX,                                                 // headings, checks, done ring
+  lite:   `color-mix(in srgb, ${TX} 78%, transparent)`,      // primary labels
+  mid:    `color-mix(in srgb, ${TX} 60%, transparent)`,      // secondary text
+  dim:    `color-mix(in srgb, ${TX} 42%, transparent)`,      // muted captions
+  track:  `color-mix(in srgb, ${TX} 22%, transparent)`,      // ring track / dashes
+  faint:  `color-mix(in srgb, ${TX} 10%, transparent)`,      // subtle fills
 };
 
 /* Identity tiers — earned by cumulative Perfect Days (consistency,
@@ -241,7 +248,10 @@ function _confetti() {
   document.body.appendChild(cv);
   const ctx = cv.getContext('2d');
   const W = cv.width = window.innerWidth, H = cv.height = window.innerHeight;
-  const grays = ['#f0f0f2', '#cdced2', '#9a9ba0', '#6d6e73'];
+  // Pull the theme's ink so confetti shows on dark AND light backgrounds.
+  let ink = '#888';
+  try { ink = getComputedStyle(document.body).getPropertyValue('--widget-text').trim() || '#888'; } catch (e) {}
+  const grays = [ink, ink, '#9a9ba0', '#6d6e73'];
   const N = 90, bits = [];
   for (let i = 0; i < N; i++) bits.push({
     x: W / 2 + (i - N / 2) * 3, y: H * 0.28,
@@ -337,9 +347,9 @@ export function renderRings() {
     const c = _closedCount(_getRings(_dayKey(d)));
     const isToday = i === 0;
     let box;
-    if (c === 3)      box = `background:${G.lite};color:#161718;`;
-    else if (c > 0)   box = `background:#242528;color:${G.mid};border:1px solid ${G.dim};`;
-    else              box = `background:#161718;color:#4a4b4f;border:1px solid ${G.track};`;
+    if (c === 3)      box = `background:${G.bright};color:${G.bg};`;               // filled, inverted face
+    else if (c > 0)   box = `background:${G.faint};color:${G.mid};border:1px solid ${G.track};`;
+    else              box = `background:transparent;color:${G.dim};border:1px solid ${G.track};`;
     const face = c === 3 ? '✓' : c > 0 ? String(c) : '·';
     weekCells += `<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
       <span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;${_mono}font-size:11px;font-weight:800;${box}${isToday ? `outline:2px solid ${G.bright};outline-offset:2px;` : ''}">${face}</span>
@@ -348,7 +358,7 @@ export function renderRings() {
   }
 
   el.innerHTML = `
-    <div style="background:var(--widget-bg,#161718);border:1px solid ${perfect ? G.lite : 'var(--widget-border,#2b2c2f)'};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
+    <div style="background:${G.bg};border:1px solid ${perfect ? G.bright : G.border};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
         <span style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:${G.bright};">◈ THE BIG 3</span>
         <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.bright};">${points}</b> pts today</span>
@@ -362,8 +372,8 @@ export function renderRings() {
       <div style="display:flex;justify-content:space-between;${_mono}font-size:9px;letter-spacing:1px;color:${G.dim};margin:16px 0 5px;">
         <span>MOMENTUM</span><span>${score}</span>
       </div>
-      <div style="height:7px;background:#0f0f11;border:1px solid var(--widget-border,#2b2c2f);border-radius:4px;overflow:hidden;">
-        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,#4c4d52,${G.lite});border-radius:4px;transition:width .3s;"></div>
+      <div style="height:7px;background:${G.faint};border:1px solid ${G.track};border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${G.mid},${G.bright});border-radius:4px;transition:width .3s;"></div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
@@ -371,7 +381,7 @@ export function renderRings() {
         <span style="${_mono}font-size:9px;color:${G.dim};letter-spacing:.5px;">${total} Perfect Day${total === 1 ? '' : 's'}${next ? ` · ${next.min - total} to ${next.name}` : ''}</span>
       </div>
 
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--widget-border,#2b2c2f);">
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid ${G.border};">
         <div style="${_mono}font-size:9px;letter-spacing:1px;color:${G.dim};margin-bottom:9px;">THIS WEEK</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">${weekCells}</div>
       </div>
