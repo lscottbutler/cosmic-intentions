@@ -151,11 +151,11 @@ function _renderRun(cat, elId) {
   // EVENING closes the day with a recap of everything completed today.
   const results = cat === 'EVENING' ? _dayResults() : '';
   if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:4px 2px;">No ${cat.toLowerCase()} habits yet — set a habit's category to ${cat} on your Pegboard.</div>` + results; return; }
-  // MORNING: completed tasks move to the Wall of Wins, so hide them here (they
-  // reset and reappear tomorrow via the per-day done state). Other run-throughs
-  // keep the classic struck-through view.
-  const rows = cat === 'MORNING' ? list.filter(h => !d[h.id]) : list;
-  el.innerHTML = rows.map(h => _habitRow(h, !!d[h.id])).join('')
+  // All run-throughs keep completed habits visible with a strikethrough (so the
+  // card never goes blank when everything's done). Morning also mirrors each
+  // completion to the Wall of Wins — that happens in habitToggle, independent
+  // of this view.
+  el.innerHTML = list.map(h => _habitRow(h, !!d[h.id])).join('')
     + results;
 }
 
