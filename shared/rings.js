@@ -41,12 +41,17 @@ const TX = 'var(--widget-text,#fff)';
 const G = {
   bg:     'var(--widget-bg,#141414)',
   border: 'var(--widget-border,#2a2a2a)',
-  bright: TX,                                                 // headings, checks, done ring
+  bright: TX,                                                 // headings
   lite:   `color-mix(in srgb, ${TX} 78%, transparent)`,      // primary labels
   mid:    `color-mix(in srgb, ${TX} 60%, transparent)`,      // secondary text
   dim:    `color-mix(in srgb, ${TX} 42%, transparent)`,      // muted captions
   track:  `color-mix(in srgb, ${TX} 22%, transparent)`,      // ring track / dashes
   faint:  `color-mix(in srgb, ${TX} 10%, transparent)`,      // subtle fills
+  // Status colors — pulled from theme tokens so they stay legible on dark AND
+  // light/white themes (green=done, orange=momentum, pink=gratitude bonus).
+  done:   'var(--success,#4ade80)',
+  brand:  'var(--brand,#f5a623)',
+  grat:   'var(--pink,#ff8ab8)',
 };
 
 /* Identity tiers — earned by cumulative Perfect Days (consistency,
@@ -248,10 +253,12 @@ function _confetti() {
   document.body.appendChild(cv);
   const ctx = cv.getContext('2d');
   const W = cv.width = window.innerWidth, H = cv.height = window.innerHeight;
-  // Pull the theme's ink so confetti shows on dark AND light backgrounds.
-  let ink = '#888';
-  try { ink = getComputedStyle(document.body).getPropertyValue('--widget-text').trim() || '#888'; } catch (e) {}
-  const grays = [ink, ink, '#9a9ba0', '#6d6e73'];
+  // Celebratory confetti — pull theme color tokens so it pops on any theme.
+  let grays = ['#4ade80', '#f5a623', '#ff8ab8', '#3d7fd4'];
+  try {
+    const cs = getComputedStyle(document.body), pk = (v, f) => (cs.getPropertyValue(v).trim() || f);
+    grays = [pk('--success', '#4ade80'), pk('--brand', '#f5a623'), pk('--pink', '#ff8ab8'), pk('--accent', '#3d7fd4')];
+  } catch (e) {}
   const N = 90, bits = [];
   for (let i = 0; i < N; i++) bits.push({
     x: W / 2 + (i - N / 2) * 3, y: H * 0.28,
@@ -312,16 +319,15 @@ export function renderRings() {
   // (playerFinished → markPillar), never by tapping, so the score can't be faked.
   const cells = PILLARS.map(p => {
     const done = !!rings[p.key];
-    const stroke = perfect ? G.bright : G.lite;
     const tip = done ? `${p.label} done today` : `Closes when you finish a ${p.label.toLowerCase()} session`;
     return `
       <div title="${tip}"
         style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:2px 0;">
         <span style="position:relative;width:62px;height:62px;">
-          ${_ringSVG(62, 26, 5, done, stroke)}
-          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:${done ? G.bright : G.dim};">${done ? '✓' : p.icon}</span>
+          ${_ringSVG(62, 26, 5, done, G.done)}
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:${done ? G.done : G.dim};">${done ? '✓' : p.icon}</span>
         </span>
-        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${G.lite};">${p.label.toUpperCase()}</span>
+        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.label.toUpperCase()}</span>
         <span style="${_mono}font-size:8.5px;color:${done ? G.mid : G.dim};">+${PTS.anchor}</span>
       </div>`;
   }).join('');
@@ -331,14 +337,14 @@ export function renderRings() {
   const bonus = `
     <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};display:flex;align-items:center;gap:12px;">
       <button onclick="toggleRing('gratitude')" title="${GRATITUDE.hint}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">
-        ${_ringSVG(44, 18, 4, gOn, G.mid)}
-        <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${gOn ? G.lite : G.dim};">♥</span>
+        ${_ringSVG(44, 18, 4, gOn, G.grat)}
+        <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${gOn ? G.grat : G.dim};">♥</span>
       </button>
       <span style="flex:1;min-width:0;">
         <div style="font-weight:800;font-size:13px;color:${G.bright};">Gratitude${gOn ? ' ✓' : ''}</div>
         <div style="font-size:11px;color:${G.dim};margin-top:2px;">Bonus ring — not required for a Perfect Day</div>
       </span>
-      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${G.mid};border:1px solid ${G.track};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${PTS.gratitude} BONUS</span>
+      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${G.grat};border:1px solid ${G.grat};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${PTS.gratitude} BONUS</span>
     </div>`;
 
   // Week strip — last 7 days ending today
@@ -349,7 +355,7 @@ export function renderRings() {
     const c = _closedCount(_getRings(_dayKey(d)));
     const isToday = i === 0;
     let box;
-    if (c === 3)      box = `background:${G.bright};color:${G.bg};`;               // filled, inverted face
+    if (c === 3)      box = `background:${G.done};color:#0b3d1a;`;                 // green = perfect day
     else if (c > 0)   box = `background:${G.faint};color:${G.mid};border:1px solid ${G.track};`;
     else              box = `background:transparent;color:${G.dim};border:1px solid ${G.track};`;
     const face = c === 3 ? '✓' : c > 0 ? String(c) : '·';
@@ -360,22 +366,22 @@ export function renderRings() {
   }
 
   el.innerHTML = `
-    <div style="background:${G.bg};border:1px solid ${perfect ? G.bright : G.border};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
+    <div style="background:${G.bg};border:1px solid ${perfect ? G.done : G.border};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
         <span style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:${G.bright};">◈ THE BIG 3</span>
-        <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.bright};">${points}</b> pts today</span>
+        <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.brand};">${points}</b> pts today</span>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">▲ ${streak} DAY STREAK</span></div>
+      <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">🔥 ${streak} DAY STREAK</span></div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;">${cells}</div>
       ${bonus}
-      ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.bright};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
+      ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.done};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
 
       <div style="display:flex;justify-content:space-between;${_mono}font-size:9px;letter-spacing:1px;color:${G.dim};margin:16px 0 5px;">
         <span>MOMENTUM</span><span>${score}</span>
       </div>
       <div style="height:7px;background:${G.faint};border:1px solid ${G.track};border-radius:4px;overflow:hidden;">
-        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${G.mid},${G.bright});border-radius:4px;transition:width .3s;"></div>
+        <div style="height:100%;width:${score}%;background:linear-gradient(90deg,${G.brand},color-mix(in srgb,${G.brand} 55%,#ff5e1a));border-radius:4px;transition:width .3s;"></div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
