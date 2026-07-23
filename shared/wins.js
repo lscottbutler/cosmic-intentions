@@ -1,4 +1,4 @@
-import { LS, toast, esc, syncWinsToSupabase, intentions } from '../app.js';
+import { LS, toast, esc, syncWinsToSupabase, intentions, dayKey } from '../app.js';
 import { renderRings } from './rings.js';
 import { renderWrapup } from './wrapup.js';
 /* ── WINS WALL ───────────────────────────────────────────
@@ -13,7 +13,7 @@ import { renderWrapup } from './wrapup.js';
 const BRAND = '#F5A623';
 const MAX_SHOWN = 30;
 
-function _todayKey() { return new Date().toISOString().slice(0, 10); }
+function _todayKey() { return dayKey(); }
 
 export function getWins() { return LS.get('ci_wins') || []; }
 function _save(w) { LS.set('ci_wins', w); }
@@ -92,13 +92,13 @@ export function winStats() {
   const byDay = {};
   wins.forEach(w => { byDay[w.date] = (byDay[w.date] || 0) + 1; });
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-  const weekKey = weekAgo.toISOString().slice(0, 10);
+  const weekKey = dayKey(weekAgo);
   const week = wins.filter(w => w.date >= weekKey).length;
   let bestDay = '', bestCount = 0;
   Object.entries(byDay).forEach(([d, c]) => { if (c > bestCount) { bestCount = c; bestDay = d; } });
   let streak = 0; const d = new Date();
   for (let i = 0; i < 3660; i++) {
-    const key = d.toISOString().slice(0, 10);
+    const key = dayKey(d);
     if (byDay[key]) streak++;
     else if (i > 0) break;   // a past day with no win ends the streak (today-empty is ok)
     d.setDate(d.getDate() - 1);

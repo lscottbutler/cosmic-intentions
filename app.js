@@ -42,6 +42,18 @@ export const LS = {
   }
 };
 
+/* Calendar date as YYYY-MM-DD in the DEVICE's own local time — NOT UTC.
+   Every daily reset / "today" boundary (habits, wins, commitments, rings,
+   sessions) flows through this, so each user's day flips at their own local
+   midnight instead of a shared 00:00 UTC. getFullYear/getMonth/getDate are
+   all local-time. Pass a Date to format it; omit for right now. */
+export function dayKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 /* localStorage has a ~5MB quota. base64 data: image URLs (vision images) can be
    MBs each — storing them in ci_intentions blows the quota, which then blocks
    Supabase from writing its auth token → user gets logged out on every refresh.
@@ -875,7 +887,7 @@ export async function syncHabitsToSupabase() {
 export async function syncHabitDoneToSupabase() {
   if (!currentUser) return;
   try {
-    const date = new Date().toISOString().slice(0, 10);
+    const date = dayKey();
     const done = LS.get('ci_habits_' + date) || {};
     const { error } = await sb.from('profiles').upsert({
       id: currentUser.id,
@@ -957,7 +969,7 @@ async function syncFromSupabase() {
     // across devices. Ignore stale days (the checklist resets each morning).
     try {
       const hd = data.habits_done;
-      const today = new Date().toISOString().slice(0, 10);
+      const today = dayKey();
       if (hd && hd.date === today && hd.done && typeof hd.done === 'object') {
         LS.set('ci_habits_' + today, hd.done);
       }
@@ -2494,7 +2506,7 @@ function detectCategory(title) {
 }
 
 function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return dayKey();
 }
 export function renderVaultSidebar() {
   const pb   = getPB();
@@ -2656,7 +2668,7 @@ async function renderEmbeddedProgress() {
   const sessionsWeek  = activityRows.filter(r =>
     ['viz','meditation','countdown','gratitude'].includes(r.event_type) && r.created_at >= weekStart).length;
   const commitsToday  = (intentions||[]).reduce((n,i) =>
-    n + (i.achievers?.commitments||[]).filter(c => !!c.checks?.[new Date().toISOString().slice(0,10)]).length, 0);
+    n + (i.achievers?.commitments||[]).filter(c => !!c.checks?.[dayKey()]).length, 0);
   const wfDone        = typeof _wfLoadChecks === 'function' ? Object.values(_wfLoadChecks()).filter(Boolean).length : 0;
   const goalsSet      = (intentions||[]).length;
   const roadmapsGen   = (intentions||[]).filter(i => i.bbfw).length;

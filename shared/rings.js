@@ -1,4 +1,4 @@
-import { LS, toast } from '../app.js';
+import { LS, toast, dayKey } from '../app.js';
 import { renderWrapup } from './wrapup.js';
 /* ── DAILY PILLARS (RINGS) ───────────────────────────────
    Phase 1 of the Evening Wrap-Up / tracking system.
@@ -34,7 +34,7 @@ export const TIERS = [
   { min: 100, name: 'Warden of the Citadel' },
 ];
 
-function _dayKey(d) { return d.toISOString().slice(0, 10); }
+function _dayKey(d) { return dayKey(d); }
 function _todayKey() { return _dayKey(new Date()); }
 
 function _getRings(dateKey) {

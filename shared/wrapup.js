@@ -1,6 +1,6 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
-import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions, dayKey } from '../app.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -690,16 +690,16 @@ function _weeklyStory(w, winsWeek) {
 /* Win counts straight from the store (no import cycle with wins.js). */
 function _winCounts() {
   const wins = LS.get('ci_wins') || [];
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dayKey();
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-  const weekKey = weekAgo.toISOString().slice(0, 10);
+  const weekKey = dayKey(weekAgo);
   return {
     today: wins.filter(w => w.date === today).length,
     week:  wins.filter(w => w.date >= weekKey).length,
   };
 }
 
-function _aiKey() { return `ci_wrapup_ai_${new Date().toISOString().slice(0, 10)}`; }
+function _aiKey() { return `ci_wrapup_ai_${dayKey()}`; }
 /* Guard: a failed AI call can return a raw provider error (e.g. OpenAI
    "insufficient_quota"). Never store or display that as the story. */
 function _looksLikeAiError(s) {

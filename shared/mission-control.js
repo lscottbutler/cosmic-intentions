@@ -1,4 +1,4 @@
-import { esc, intentions, selectedVaultIdx, syncIntentionsToSupabase, toast } from '../app.js';
+import { esc, intentions, selectedVaultIdx, syncIntentionsToSupabase, toast, dayKey } from '../app.js';
 /* ── MISSION CONTROL MODULE ─────────────────────────────
    Depends on globals: intentions, esc, syncIntentionsToSupabase,
    selectedVaultIdx, toast
@@ -250,7 +250,7 @@ export function loadDailyCommitsPanel() {
   if (!commits || commits.length === 0) {
     inner.innerHTML = '<div class="acc-desc">No commitments yet. Go to ⚡ Mission, flag YES items, then hit "Lock In."</div>'; return;
   }
-  const today = new Date().toISOString().slice(0,10);
+  const today = dayKey();
   inner.innerHTML = commits.map((c, i) => {
     const done      = !!c.checks?.[today];
     const streak    = c.streak || 0;
@@ -272,7 +272,7 @@ function renderCommitmentsPanel(idx) {
   const intent  = intentions[idx];
   const commits = intent?.achievers?.commitments;
   if (!commits || commits.length === 0) return '';
-  const today = new Date().toISOString().slice(0,10);
+  const today = dayKey();
   const rows  = commits.map((c, i) => {
     const done        = !!c.checks?.[today];
     const streak      = c.streak || 0;
@@ -301,14 +301,14 @@ export function toggleCommitmentCheck(idx, commitIdx) {
   const intent = intentions[idx];
   const commit = intent?.achievers?.commitments?.[commitIdx];
   if (!commit) return;
-  const today   = new Date().toISOString().slice(0,10);
+  const today   = dayKey();
   if (!commit.checks) commit.checks = {};
   const wasDone       = !!commit.checks[today];
   commit.checks[today] = !wasDone;
   let streak = 0;
   const d = new Date();
   while (true) {
-    const key = d.toISOString().slice(0,10);
+    const key = dayKey(d);
     if (commit.checks[key]) { streak++; d.setDate(d.getDate() - 1); }
     else break;
   }

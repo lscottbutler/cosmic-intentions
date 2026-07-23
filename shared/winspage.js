@@ -1,5 +1,5 @@
 import { getWins, winStats, catMeta, winDelete, winPageAdd } from './wins.js';
-import { esc, intentions } from '../app.js';
+import { esc, intentions, dayKey } from '../app.js';
 /* ── FULL WINS PAGE ──────────────────────────────────────
    A dedicated "everything I've done" page: stats + streaks,
    grouped by goal, filterable by category. Reuses the wins
@@ -9,7 +9,7 @@ import { esc, intentions } from '../app.js';
 let _filter = '';   // '' = all · '__uncat' = uncategorized · else a category key
 
 function _label(dateKey) {
-  if (dateKey === new Date().toISOString().slice(0, 10)) return 'Today';
+  if (dateKey === dayKey()) return 'Today';
   const [y, m, d] = dateKey.split('-').map(Number);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${months[m - 1]} ${d}`;
@@ -58,9 +58,9 @@ export function renderWinsPage() {
   // Split wins into recency buckets — each win lands in its MOST-recent bucket
   // only (a today win shows under TODAY, not also THIS WEEK). "EARLIER" is a
   // catch-all for anything older than this year so nothing is hidden.
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = dayKey();
   const wa = new Date(); wa.setDate(wa.getDate() - 6);
-  const weekKey = wa.toISOString().slice(0, 10);   // 7-day window incl. today
+  const weekKey = dayKey(wa);   // 7-day window incl. today
   const ymKey = todayKey.slice(0, 7);              // this month  (YYYY-MM)
   const yKey  = todayKey.slice(0, 4);              // this year   (YYYY)
   const buckets = { today: [], week: [], month: [], year: [], earlier: [] };

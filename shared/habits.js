@@ -1,5 +1,5 @@
 import { RM_CIRCLE } from './card-builder.js';
-import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase } from '../app.js';
+import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey } from '../app.js';
 import { setTaskWin, getWins } from './wins.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
    A customizable daily habit checklist, grouped into time-of-day
@@ -30,7 +30,7 @@ const CAT_LABEL = (c) => c || 'UNSORTED';
 let _open = true;   // dashboard dropdown expanded? (survives re-renders)
 export function habitsToggleSection(open) { _open = !!open; }
 
-function _todayKey() { return new Date().toISOString().slice(0, 10); }
+function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }
 function _done()     { return LS.get(_doneKey()) || {}; }
 

@@ -1,4 +1,4 @@
-import { LS, esc, intentions, syncIntentionsToSupabase } from '../app.js';
+import { LS, esc, intentions, syncIntentionsToSupabase, dayKey } from '../app.js';
 import { logActivity } from './activity.js';
 import { WF_CYCLE_COMPS, WF_CYCLE_LABELS, _wfBuildPool, _wfCycleNum, _wfLoadChecks, _wfPickTen, _wfWeekKey } from './weekly-focus.js';
 /* ── TODAY MODULE ────────────────────────────────────────
@@ -13,7 +13,7 @@ const TODAY_SESSIONS = [
 
 /* ── Helpers ─────────────────────────────────────────── */
 function _todayKey() {
-  return new Date().toISOString().slice(0,10);
+  return dayKey();
 }
 
 function _todayDayOfYear() {
@@ -67,7 +67,7 @@ export function todayToggleCommit(intentIdx, commitIdx) {
   let streak = 0;
   const d = new Date();
   while (true) {
-    const key = d.toISOString().slice(0,10);
+    const key = dayKey(d);
     if (commit.checks[key]) { streak++; d.setDate(d.getDate()-1); }
     else break;
   }
