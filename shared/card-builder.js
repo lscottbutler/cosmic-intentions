@@ -802,7 +802,7 @@ export function renderPBIntentionList() {
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     return `
-    <div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
+    <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
       <div style="position:relative;padding:12px 14px;background:${shade.bg};">
         <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${goalLetter(i, idx)}</div>
         <div style="font-size:12px;color:${shade.text};opacity:.75;margin-top:4px;">Set this goal's details below.</div>
