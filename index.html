@@ -932,7 +932,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#4A90D9;border-radius:10px;cursor:pointer;">
             <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             <span style="flex:1;min-width:0;font-size:12.5pt;font-weight:800;line-height:1.15;color:#fff;">◈ MORNING RUN THROUGH</span>
-            <span style="flex-shrink:0;display:inline-flex;align-items:flex-end;gap:9px;background:rgba(0,0,0,.28);border-radius:16px;padding:6px 11px;">
+          </summary>
+          <div id="morningRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          <div style="display:flex;justify-content:center;margin-top:10px;">
+            <span style="display:inline-flex;align-items:flex-end;gap:16px;background:rgba(0,0,0,.28);border-radius:16px;padding:8px 16px;">
               <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
                 <span style="height:28px;display:inline-flex;align-items:center;justify-content:center;"><span id="morningRunCount" style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.3px;line-height:1;">0/0</span></span>
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">TASKS</span>
@@ -946,8 +949,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">MY GOALS</span>
               </span>
             </span>
-          </summary>
-          <div id="morningRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          </div>
         </details>
       </div>
       <!-- DAY RUN THROUGH — golden card, white inner panel -->
@@ -956,7 +958,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#F5C518;border-radius:10px;cursor:pointer;">
             <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             <span style="flex:1;min-width:0;font-size:12.5pt;font-weight:800;line-height:1.15;color:#1a1a1a;">◈ DAY RUN THROUGH</span>
-            <span style="flex-shrink:0;display:inline-flex;align-items:flex-end;gap:9px;background:rgba(0,0,0,.28);border-radius:16px;padding:6px 11px;">
+          </summary>
+          <div id="dayRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          <div style="display:flex;justify-content:center;margin-top:10px;">
+            <span style="display:inline-flex;align-items:flex-end;gap:16px;background:rgba(0,0,0,.28);border-radius:16px;padding:8px 16px;">
               <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
                 <span style="height:28px;display:inline-flex;align-items:center;justify-content:center;"><span id="dayRunCount" style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.3px;line-height:1;">0/0</span></span>
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">TASKS</span>
@@ -970,8 +975,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">MY GOALS</span>
               </span>
             </span>
-          </summary>
-          <div id="dayRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          </div>
         </details>
       </div>
       <!-- EVENING RUN THROUGH — burnt-orange card, white inner panel -->
@@ -980,7 +984,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <summary style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#E8743B;border-radius:10px;cursor:pointer;">
             <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
             <span style="flex:1;min-width:0;font-size:12.5pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING RUN THROUGH</span>
-            <span style="flex-shrink:0;display:inline-flex;align-items:flex-end;gap:9px;background:rgba(0,0,0,.28);border-radius:16px;padding:6px 11px;">
+          </summary>
+          <div id="eveningRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          <div style="display:flex;justify-content:center;margin-top:10px;">
+            <span style="display:inline-flex;align-items:flex-end;gap:16px;background:rgba(0,0,0,.28);border-radius:16px;padding:8px 16px;">
               <span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
                 <span style="height:28px;display:inline-flex;align-items:center;justify-content:center;"><span id="eveningRunCount" style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.3px;line-height:1;">0/0</span></span>
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">TASKS</span>
@@ -994,8 +1001,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <span style="font-size:7.5px;font-weight:800;letter-spacing:.4px;color:#fff;opacity:.85;line-height:1;white-space:nowrap;">MY GOALS</span>
               </span>
             </span>
-          </summary>
-          <div id="eveningRunBody" style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;"></div>
+          </div>
         </details>
       </div>
       </div>
