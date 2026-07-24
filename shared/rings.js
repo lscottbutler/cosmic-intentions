@@ -303,6 +303,61 @@ function _ringSVG(sz, r, sw, closed, strokeCol) {
   </svg>`;
 }
 
+/* ── Nested Big-3 rings (Daily / Weekly / Monthly / Yearly) ──
+   Four concentric progress rings per anchor, outer→inner. Each ring =
+   % of that horizon's days the anchor was closed. Horizon hues are FIXED
+   (not theme grays) — the whole point is four distinguishable colors — but
+   they're saturated mid-tones so they stay legible on dark AND light themes. */
+const RING_SZ = 96, RING_SW = 6;
+const RING_R  = [42, 32, 22, 12];   // Daily, Weekly, Monthly, Yearly
+const HORIZONS = [
+  { key: 'daily',   label: 'DAILY',   col: '#ff5a5a' },
+  { key: 'weekly',  label: 'WEEKLY',  col: '#f5b301' },
+  { key: 'monthly', label: 'MONTHLY', col: '#28c7b7' },
+  { key: 'yearly',  label: 'YEARLY',  col: '#8b7bf7' },
+];
+
+function _nestedRingSVG(fracs) {
+  const c = RING_SZ / 2;
+  const arcs = RING_R.map((r, i) => {
+    const circ = 2 * Math.PI * r;
+    const frac = Math.max(0, Math.min(1, fracs[i]));
+    const track = `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${G.track}" stroke-width="${RING_SW}"/>`;
+    if (frac <= 0) return track;
+    const off = circ * (1 - frac);
+    return track + `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${HORIZONS[i].col}" stroke-width="${RING_SW}" stroke-linecap="round" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>`;
+  }).join('');
+  return `<svg width="${RING_SZ}" height="${RING_SZ}" style="transform:rotate(-90deg);display:block;">${arcs}</svg>`;
+}
+
+/* One pass over the last 365 days → per-anchor horizon fractions + current
+   streak. Daily is binary (done today?); weekly/monthly/yearly = done-days ÷
+   7/30/365. Streak = consecutive closed days ending today (0 once today lapses,
+   so the center reads "keep it alive today"). One LS.get per day, not per anchor. */
+function _allAnchorStats() {
+  const keys = PILLARS.map(p => p.key);
+  const today = new Date();
+  const acc = {};
+  keys.forEach(k => acc[k] = { w: 0, m: 0, y: 0, streak: 0, live: true, daily: 0 });
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const r = _getRings(_dayKey(d));
+    keys.forEach(k => {
+      const done = !!r[k];
+      const a = acc[k];
+      if (done) { a.y++; if (i < 30) a.m++; if (i < 7) a.w++; if (i === 0) a.daily = 1; }
+      // streak: count while the run of closed days is unbroken from today
+      if (a.live) { if (done) a.streak++; else a.live = false; }
+    });
+  }
+  const out = {};
+  keys.forEach(k => {
+    const a = acc[k];
+    out[k] = { daily: a.daily, weekly: a.w / 7, monthly: a.m / 30, yearly: a.y / 365, streak: a.streak };
+  });
+  return out;
+}
+
 /* ── Render the widget ───────────────────────────────── */
 export function renderRings() {
   const el = document.getElementById('ringsWidget');
@@ -317,20 +372,37 @@ export function renderRings() {
 
   // 3 anchor rings — DISPLAY ONLY. They close only when a real session finishes
   // (playerFinished → markPillar), never by tapping, so the score can't be faked.
+  // Each anchor is now 4 nested horizon rings; the center shows today's streak.
+  const stats = _allAnchorStats();
   const cells = PILLARS.map(p => {
     const done = !!rings[p.key];
+    const s = stats[p.key];
     const tip = done ? `${p.label} done today` : `Closes when you finish a ${p.label.toLowerCase()} session`;
+    const center = s.streak > 0
+      ? `<span style="display:flex;flex-direction:column;align-items:center;line-height:1;">
+           <span style="${_mono}font-size:16px;font-weight:800;color:${G.bright};">${s.streak}</span>
+           <span style="font-size:10px;margin-top:1px;">🔥</span></span>`
+      : `<span style="${_mono}font-size:15px;font-weight:800;color:${G.dim};">–</span>`;
     return `
       <div title="${tip}"
         style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:2px 0;">
-        <span style="position:relative;width:62px;height:62px;">
-          ${_ringSVG(62, 26, 5, done, G.done)}
-          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:${done ? G.done : G.dim};">${done ? '✓' : p.icon}</span>
+        <span style="position:relative;width:${RING_SZ}px;height:${RING_SZ}px;">
+          ${_nestedRingSVG([s.daily, s.weekly, s.monthly, s.yearly])}
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">${center}</span>
         </span>
-        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.label.toUpperCase()}</span>
+        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.icon} ${p.label.toUpperCase()}</span>
         <span style="${_mono}font-size:8.5px;color:${done ? G.mid : G.dim};">+${PTS.anchor}</span>
       </div>`;
   }).join('');
+
+  // Horizon color legend — four rings are cryptic without it.
+  const legend = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2px 0 6px;padding-top:10px;border-top:1px solid ${G.track};">
+      ${HORIZONS.map(h => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <span style="width:12px;height:12px;border-radius:50%;background:${h.col};"></span>
+        <span style="${_mono}font-size:8px;font-weight:800;letter-spacing:.3px;color:${G.mid};">${h.label}</span>
+      </div>`).join('')}
+    </div>`;
 
   // Gratitude bonus row
   const gOn = !!rings.gratitude;
@@ -374,6 +446,7 @@ export function renderRings() {
       <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">🔥 ${streak} DAY STREAK</span></div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;">${cells}</div>
+      ${legend}
       ${bonus}
       ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.done};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
 
