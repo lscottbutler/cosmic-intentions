@@ -67,7 +67,7 @@ export function renderNotesPage() {
   const notes = readNotes();
   const total = notes.length;
 
-  host.innerHTML = NOTE_CATS.map(c => {
+  host.innerHTML = `<div class="two-col">` + NOTE_CATS.map(c => {
     const mine = notes.filter(n => n.cat === c.key);
     const singular = esc(c.label.replace(/s$/, ''));   // "Reminders" → "Reminder"
     const rows = mine.map(n => {
@@ -89,7 +89,7 @@ export function renderNotesPage() {
         style="display:none;width:100%;box-sizing:border-box;padding:11px 13px;border:1px dashed #5E5E5E;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#f4f4f4;min-height:44px;overflow:hidden;resize:none;"></textarea>` : '';
 
     return `
-      <button onclick="notesToggleSection('notesec-${c.key}')"
+      <div><button onclick="notesToggleSection('notesec-${c.key}')"
         style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border,#333);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
         <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:#fff;text-transform:uppercase;">${c.icon} ${esc(c.label)}</span>
         <span style="display:flex;align-items:center;gap:12px;">
@@ -100,8 +100,8 @@ export function renderNotesPage() {
       </button>
       <div id="notesec-${c.key}-body" style="display:none;margin-bottom:16px;">
         ${rows}${addBox}
-      </div>`;
-  }).join('');
+      </div></div>`;
+  }).join('') + `</div>`;
 
   const cap = document.getElementById('notesCapLine');
   if (cap) cap.textContent = `${total} / ${NOTES_CAP} thoughts`;
