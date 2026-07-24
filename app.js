@@ -2008,6 +2008,16 @@ export function openVizGoal(idx) {
         ).join('')}
         <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:14px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
       </div>
+      ${(() => {
+        // Notes the user linked to THIS goal (from My Thoughts → Notes).
+        let all = []; try { all = JSON.parse(localStorage.getItem('ci_notes') || '[]'); } catch (e) {}
+        const mine = (Array.isArray(all) ? all : []).filter(n => n && n.cat === 'note' && n.goal === it.id && (n.text || '').trim());
+        if (!mine.length) return '';
+        return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 10px;">📝 Notes for this goal</div>
+          ${mine.map(n => `<div style="background:var(--sunken,#1a1a1a);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:8px;font-size:14px;line-height:1.5;color:var(--text);">${esc(n.text)}</div>`).join('')}
+        </div>`;
+      })()}
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
         <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 10px;">Go back</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">

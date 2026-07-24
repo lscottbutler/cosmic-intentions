@@ -1,4 +1,4 @@
-import { esc, toast } from '../app.js';
+import { esc, toast, intentions, goalLetter } from '../app.js';
 
 /* ── MY NOTES ──────────────────────────────────────────────────
    A Pegboard-style personal library: the user types their own
@@ -15,6 +15,7 @@ export const NOTE_CATS = [
   { key: 'reminder',    label: 'Reminders',    icon: '⏰', ph: 'Remember to…' },
   { key: 'inspiration', label: 'Inspirations', icon: '✧', ph: 'What inspires me…' },
   { key: 'quote',       label: 'Quotes',       icon: '❝', ph: 'A quote I love…' },
+  { key: 'note',        label: 'Notes',        icon: '📝', ph: 'A note…' },
 ];
 const CAT_LABEL = Object.fromEntries(NOTE_CATS.map(c => [c.key, c.label]));
 
@@ -70,16 +71,28 @@ export function renderNotesPage() {
   host.innerHTML = `<div class="two-col">` + NOTE_CATS.map(c => {
     const mine = notes.filter(n => n.cat === c.key);
     const singular = esc(c.label.replace(/s$/, ''));   // "Reminders" → "Reminder"
+    // NOTES entries can be linked to one of the user's goals; that note then
+    // surfaces on the goal's Visualize page. Other thought types are unchanged.
+    const isNoteCat = c.key === 'note';
     const rows = mine.map(n => {
       const pinned = _noteIsPinned(n.id);
+      const goalSel = isNoteCat ? `
+        <select onchange="notesSaveGoal('${n.id}',this.value)" title="Associate this note with a goal"
+          style="width:100%;box-sizing:border-box;margin-top:6px;padding:9px 11px;border:none;border-radius:9px;font-size:13px;color:#1a1a1a;background:#fff;cursor:pointer;">
+          <option value="">— Link to a goal —</option>
+          ${intentions.map((g, i) => `<option value="${g.id}"${n.goal === g.id ? ' selected' : ''}>${esc(goalLetter(g, i) + ' · ' + (g.title || '').replace(/^i am\s+/i, ''))}</option>`).join('')}
+        </select>` : '';
       return `
-      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">
-        <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
-          style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
-        <button id="notefav-${n.id}" onclick="notesToggleFav('${n.id}')" title="${pinned ? 'Unpin from Daily Focus' : 'Pin to Daily Focus'}"
-          style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #000;cursor:pointer;font-size:24px;line-height:1;padding:0;color:#e0102b;opacity:${pinned ? '1' : '0.4'};">${pinned ? '♥' : '♡'}</button>
-        <button onclick="notesDelete('${n.id}')" title="Delete"
-          style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
+      <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
+            style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
+          <button id="notefav-${n.id}" onclick="notesToggleFav('${n.id}')" title="${pinned ? 'Unpin from Daily Focus' : 'Pin to Daily Focus'}"
+            style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #000;cursor:pointer;font-size:24px;line-height:1;padding:0;color:#e0102b;opacity:${pinned ? '1' : '0.4'};">${pinned ? '♥' : '♡'}</button>
+          <button onclick="notesDelete('${n.id}')" title="Delete"
+            style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
+        </div>
+        ${goalSel}
       </div>`;
     }).join('');
 
@@ -165,6 +178,17 @@ export function notesSaveField(el) {
     renderNotesPage();
     if (wasOpen) { const b = document.getElementById(`notesec-${addCat}-body`), a = document.getElementById(`notesec-${addCat}-arr`); if (b) { b.style.display = ''; b.querySelectorAll('textarea').forEach(notesAutoGrow); } if (a) a.style.transform = 'rotate(0deg)'; }
   }
+}
+
+/* Link (or unlink) a note to a goal. Stored on the note; the goal's Visualize
+   page reads it back to show "Notes for this goal". No re-render needed —
+   the <select> already reflects the new value. */
+export function notesSaveGoal(id, goalId) {
+  const notes = readNotes();
+  const n = notes.find(x => x.id === id);
+  if (!n) return;
+  if (goalId) n.goal = goalId; else delete n.goal;
+  _saveNotes(notes);
 }
 
 export function notesDelete(id) {
