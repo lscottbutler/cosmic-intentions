@@ -873,6 +873,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">Visualization Library</span>
       </div>
       <p style="font-size:12px;color:var(--muted);margin:0 0 16px 52px;">Pick a goal to visualize, review, meditate or give thanks.</p>
+      <style>
+        #vizLibList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
+        @media(max-width:640px){#vizLibList{grid-template-columns:1fr;}}
+      </style>
       <div id="vizLibList"></div>
     </div>
   </div>

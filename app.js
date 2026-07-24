@@ -1961,7 +1961,7 @@ export function renderVizLibrary() {
   }
   el.innerHTML = intentions.map((it, idx) => {
     const s = GREY_SHADES[idx % GREY_SHADES.length];
-    return `<button onclick="openVizGoal(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
+    return `<button onclick="openVizGoal(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
       <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--ink,#1D3557);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(it, idx)}</span>
       <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(it.title || '')}</span>
       <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
