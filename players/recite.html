@@ -36,6 +36,12 @@
     }
     .line.fade { opacity: 0; }
 
+    /* slide-progress scrubber under the card — tap/drag to jump */
+    .scrubtrack { position: relative; width: min(95vw, 92vh * 5 / 4, 600px); height: 8px;
+      background: rgba(255,255,255,0.20); border-radius: 5px; overflow: hidden; cursor: pointer; touch-action: none; }
+    .scrubfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #ffdd00;
+      box-shadow: 0 0 8px rgba(255,221,0,0.85); transition: width .3s ease; pointer-events: none; }
+
     /* minimal controls below the frame */
     .controls { display: flex; align-items: center; gap: 28px; }
     .cbtn { background: none; border: none; color: #cfcfcf; font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 6px; }
@@ -62,6 +68,8 @@
       <p class="line" id="line">…</p>
     </div>
   </div>
+
+  <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
 
   <div class="menu hidden" id="menu">
     <button id="mHome">Home page</button>
@@ -103,9 +111,16 @@
       }
     }
 
+    const track = document.getElementById('track');
+    const fill  = document.getElementById('fill');
+    function renderScrub() {
+      fill.style.width = (items.length ? ((idx + 1) / items.length) * 100 : 0) + '%';
+    }
+
     let idx = 0;
     function paint() {
       const it = items[idx];
+      renderScrub();
       lineEl.classList.add('fade');
       setTimeout(() => {
         tagEl.textContent  = it.tag || payload.label || type.toUpperCase();
@@ -114,6 +129,19 @@
         lineEl.classList.remove('fade');
       }, 200);
     }
+
+    /* tap / drag the bar to jump to a statement */
+    let scrubbing = false;
+    function seekTo(clientX) {
+      const r = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(0.999, (clientX - r.left) / r.width));
+      idx = Math.floor(pct * items.length);
+      paint();
+    }
+    track.addEventListener('pointerdown', (e) => { e.stopPropagation(); scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
+    track.addEventListener('pointerup',   () => { scrubbing = false; });
+    track.addEventListener('pointercancel', () => { scrubbing = false; });
 
     /* soft chime on advance */
     function chime() {

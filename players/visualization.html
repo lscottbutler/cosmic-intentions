@@ -71,6 +71,10 @@
       box-shadow: none;
     }
     .row   { display: flex; align-items: center; justify-content: space-between; }
+    /* scrubber track — a real seek bar riding the image/panel seam */
+    .scrubtrack { position:absolute; top:56%; left:0; right:0; height:8px; transform:translateY(-50%); background:rgba(0,0,0,0.35); box-shadow:0 1px 3px rgba(0,0,0,0.4); z-index:3; cursor:pointer; touch-action:none; }
+    .scrubtrack::before { content:''; position:absolute; left:0; right:0; top:-11px; bottom:-11px; }
+    .scrubfill { position:absolute; left:0; top:0; bottom:0; width:0%; background:#ffdd00; box-shadow:0 0 8px rgba(255,221,0,0.85); transition:width 1s linear; pointer-events:none; }
     /* progress dot — straddles the image/panel seam, travels left→right with time */
     .scrubdot {
       position: absolute;
@@ -112,6 +116,7 @@
       <div class="fade-cover" id="fadeCover"></div>
       <div class="cap" id="cap"></div>
     </div>
+    <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
     <div class="scrubdot" id="dot"></div>
     <div class="panel">
       <p class="label" id="label">visualization</p>
@@ -157,14 +162,37 @@
     })();
 
     const dot = document.getElementById('dot');
+    const track = document.getElementById('track');
+    const fill = document.getElementById('fill');
     const playBtn = document.getElementById('play');
     const cap = document.getElementById('cap');
 
     function render() {
       const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
       dot.style.left = pct + '%';
+      fill.style.width = pct + '%';
     }
     render();
+
+    /* ── tap / drag the track to seek ── */
+    let scrubbing = false;
+    function seekTo(clientX) {
+      const r = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      timeRemaining = Math.round(total * (1 - pct));
+      dot.style.transition = fill.style.transition = 'none';
+      render();
+    }
+    track.addEventListener('pointerdown', (e) => { scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
+    function endScrub() {
+      if (!scrubbing) return;
+      scrubbing = false;
+      dot.style.transition = fill.style.transition = '';
+      if (timeRemaining <= 0) endSession();
+    }
+    track.addEventListener('pointerup', endScrub);
+    track.addEventListener('pointercancel', endScrub);
 
     /* ── close / parent navigation (identical to Meditation) ── */
     function closePlayer() {

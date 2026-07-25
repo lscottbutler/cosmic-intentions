@@ -100,11 +100,18 @@
     .nav  { width: 54px; height: 54px; font-size: 1.2rem; }
     .home { width: 40px; height: 40px; font-size: 0.95rem; font-weight: 700; }
     .nav:active, .home:active { transform: scale(0.94); }
+    /* scrubber track — a real seek bar riding the image/panel seam */
+    .scrubtrack { position:absolute; top:56%; left:0; right:0; height:8px; transform:translateY(-50%); background:rgba(0,0,0,0.35); box-shadow:0 1px 3px rgba(0,0,0,0.4); z-index:3; cursor:pointer; touch-action:none; }
+    .scrubtrack::before { content:''; position:absolute; left:0; right:0; top:-11px; bottom:-11px; }
+    .scrubfill { position:absolute; left:0; top:0; bottom:0; width:0%; background:#ffdd00; box-shadow:0 0 8px rgba(255,221,0,0.85); transition:width 1s linear; pointer-events:none; }
+    .scrubdot { position:absolute; top:56%; left:0; width:16px; height:16px; background:radial-gradient(circle at center,#fff 0 3px,#000 3px 100%); border:none; border-radius:50%; transform:translate(-50%,-50%); box-shadow:0 1px 4px rgba(0,0,0,0.55); z-index:4; pointer-events:none; transition:left 1s linear; }
   </style>
 </head>
 <body>
   <div class="frame">
     <div class="photo" id="photo"></div>
+    <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
+    <div class="scrubdot" id="dot"></div>
     <div class="panel">
       <p class="label" id="label">countdown</p>
       <div class="controls">
@@ -143,13 +150,49 @@
 
     /* TIMER */
     const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
-    let timeRemaining = minutes * 60;
+    const total = minutes * 60;
+    let timeRemaining = total;
     document.getElementById('label').textContent = `${minutes} minute countdown`;
 
     const big = document.getElementById('badgeBig');
     const sm  = document.getElementById('badgeSm');
     big.textContent = String(minutes);
     sm.textContent = 'MIN';
+
+    /* ── scrubber: seam progress bar + tap/drag to seek ── */
+    const track = document.getElementById('track');
+    const fill  = document.getElementById('fill');
+    const dot   = document.getElementById('dot');
+    function renderScrub() {
+      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
+      dot.style.left = pct + '%';
+      fill.style.width = pct + '%';
+    }
+    function paintBadge() {
+      const m = Math.floor(timeRemaining / 60), s = timeRemaining % 60;
+      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+      sm.textContent = 'LEFT';
+    }
+    renderScrub();
+    let scrubbing = false;
+    function seekTo(clientX) {
+      const r = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      timeRemaining = Math.round(total * (1 - pct));
+      dot.style.transition = fill.style.transition = 'none';
+      paintBadge();
+      renderScrub();
+    }
+    track.addEventListener('pointerdown', (e) => { scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
+    function endScrub() {
+      if (!scrubbing) return;
+      scrubbing = false;
+      dot.style.transition = fill.style.transition = '';
+      if (timeRemaining <= 0) { clearInterval(timer); big.textContent = '0:00'; sm.textContent = 'DONE'; playBell(); setTimeout(closePlayer, 4000); }
+    }
+    track.addEventListener('pointerup', endScrub);
+    track.addEventListener('pointercancel', endScrub);
 
     function playBell() {
       try {
@@ -181,10 +224,8 @@
         setTimeout(closePlayer, 4000);
         return;
       }
-      const m = Math.floor(timeRemaining / 60);
-      const s = timeRemaining % 60;
-      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-      sm.textContent = 'LEFT';
+      paintBadge();
+      renderScrub();
     }
 
     // ◀ rewind = add time, ▶ forward = skip ahead (60s per press).
@@ -193,9 +234,8 @@
     function adjust(delta) {
       timeRemaining = Math.max(0, Math.min(minutes * 60, timeRemaining + delta));
       if (timeRemaining <= 0) { clearInterval(timer); big.textContent = '0:00'; sm.textContent = 'DONE'; playBell(); setTimeout(closePlayer, 4000); return; }
-      const m = Math.floor(timeRemaining / 60), s = timeRemaining % 60;
-      big.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-      sm.textContent = 'LEFT';
+      paintBadge();
+      renderScrub();
     }
     document.getElementById('prev').onclick = () => adjust(+STEP);
     document.getElementById('next').onclick = () => adjust(-STEP);

@@ -48,6 +48,7 @@ export function openPlayerInColumn(src, ev) {
 export function closePlayerColumn() {
   _autoLooping = false;                    // a manual/real close stops auto-play
   _currentPillar = null;                   // dropped before finishing → no ring credit
+  _clearNowPlaying();                      // drop the "now playing" row highlight
   const panel = document.getElementById('playerColumn');
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
@@ -70,8 +71,8 @@ function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites
    loop in the sleep-player; everything else is a jump-to shortcut (open a
    goal / task / video / page). Legacy items (no `type`, just `player`) are
    inferred so old ci_favorites entries keep working unchanged. */
-const FAV_PLAYABLE = new Set(['meditation', 'countdown', 'gratitude', 'affirmation', 'stoic', 'visualization', 'mindset']);
-const FAV_ICON = { meditation: '🧘', countdown: '⏳', gratitude: '🙏', affirmation: '✦', stoic: '◈', visualization: '◉', mindset: '✦', goal: '🎯', task: '✓', video: '🎬', page: '🔗' };
+const FAV_PLAYABLE = new Set(['meditation', 'countdown', 'gratitude', 'affirmation', 'stoic', 'visualization', 'mindset', 'note']);
+const FAV_ICON = { meditation: '🧘', countdown: '⏳', gratitude: '🙏', affirmation: '✦', stoic: '◈', visualization: '◉', mindset: '✦', goal: '🎯', task: '✓', video: '🎬', page: '🔗', note: '📝' };
 
 export function favType(f) {
   if (!f) return '';
@@ -99,6 +100,10 @@ export function openFavorite(f) {
       break;
     case 'page':
       if (f.target && typeof window.navTo === 'function') window.navTo(f.target);
+      break;
+    case 'note':
+      // Stage 2 will show this as an on-screen card; for now jump to My Notes.
+      if (typeof window.navTo === 'function') window.navTo('notes');
       break;
     default: break;
   }
@@ -148,7 +153,7 @@ export function renderFavorites() {
     const n = list.querySelectorAll('.fav-row input:checked').length;
     play.disabled = n === 0;
     play.style.opacity = n ? '1' : '.5';
-    play.innerHTML = n ? `&#9654; Play ${n} selected` : '&#9654; Play selected';
+    play.innerHTML = n ? `&#9654; Play My Day (${n})` : '&#9654; Play My Day';
   }
   playable.forEach(f => {
     const row = document.createElement('div');
@@ -156,12 +161,21 @@ export function renderFavorites() {
     row.draggable = true;
     row._fav = f;
     row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const _t = favType(f);
+    const _label = _t === 'note' ? (f.text || f.title || 'Note')
+                 : f.player === 'mindset' ? (f.title || 'Goal mindset')
+                 : (FAV_LABEL[f.player] || f.player);
+    const _meta = _t === 'note' ? 'card' : (f.player === 'mindset' ? 'Mindset' : f.minutes + ' min');
     row.innerHTML =
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
-      `<span style="font-size:15px;font-weight:700;color:#fff;">${f.player === 'mindset' ? (f.title || 'Goal mindset') : (FAV_LABEL[f.player] || f.player)}</span>` +
-      `<span style="margin-left:auto;color:#9a9a9a;font-size:14px;">${f.player === 'mindset' ? 'Mindset' : f.minutes + ' min'}</span>`;
+      `<span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
+      `<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${_meta}</span>`;
     const cb = row.querySelector('input');
+    cb.checked = true;                    // default: the whole day is queued, ready to Play
+    row.style.borderColor = '#e02020';
+    row.style.background  = '#261515';
     cb.addEventListener('change', () => {
       row.style.borderColor = cb.checked ? '#e02020' : '#333';
       row.style.background  = cb.checked ? '#261515' : '#1A1A1A';
@@ -185,11 +199,11 @@ export function renderFavorites() {
   // Play button.
   const play = document.createElement('button');
   play.id = 'fav-play';
-  play.disabled = true;
-  play.style.cssText = 'display:block;width:100%;text-align:center;padding:13px;margin-top:4px;background:#e02020;border:none;color:#fff;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:6px;cursor:pointer;opacity:.5;';
-  play.innerHTML = '&#9654; Play selected';
+  play.style.cssText = 'display:block;width:100%;text-align:center;padding:15px;margin:0 0 14px;background:#e02020;border:none;color:#fff;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:8px;cursor:pointer;font-size:16px;';
+  play.innerHTML = '&#9654; Play My Day';
   play.addEventListener('click', playAllFavorites);
-  list.appendChild(play);
+  list.insertBefore(play, list.firstChild);   // Play My Day sits at the very top
+  syncPlay();
 }
 
 export function toggleFavorites() {
@@ -208,10 +222,42 @@ function _selectedFavs() {
 
 let _favQueue = [];
 let _autoLooping = false;
+
+/* Highlight the playlist row whose session is playing right now. Distinct from
+   the red "queued/checked" style so you can see where you are in the day. */
+let _playingRow = null;
+function _clearNowPlaying() {
+  if (!_playingRow) return;
+  const cb = _playingRow.querySelector('input');
+  const on = cb && cb.checked;
+  _playingRow.style.borderColor = on ? '#e02020' : '#333';
+  _playingRow.style.background  = on ? '#261515' : '#1A1A1A';
+  _playingRow.style.boxShadow   = '';
+  _playingRow = null;
+}
+function _markNowPlaying(f) {
+  _clearNowPlaying();
+  const list = document.getElementById('favorites-list');
+  if (!list) return;
+  const row = [...list.querySelectorAll('.fav-row')].find(r => r._fav === f);
+  if (!row) return;
+  _playingRow = row;
+  row.style.borderColor = '#ffd24a';                                   // gold = now playing
+  row.style.background  = '#2e2410';
+  row.style.boxShadow   = '0 0 0 2px rgba(255,210,74,.55), 0 0 14px rgba(255,210,74,.35)';
+}
+
 function _openFav(f) {
   const panel = document.getElementById('playerColumn');
   const anchor = document.getElementById('favorites-list');
   if (panel && anchor) anchor.insertAdjacentElement('afterend', panel);
+  _markNowPlaying(f);
+  // Note favorite → show it as an on-screen card (auto-advances the loop).
+  if (favType(f) === 'note') {
+    try { localStorage.setItem('ci_note_card', JSON.stringify({ text: f.text || f.title || '', cat: f.cat || '' })); } catch (e) {}
+    openPlayerInColumn(`players/note-card.html?_=${Date.now()}`);
+    return;
+  }
   // Goal favorite → play that goal's full mindset once (so the loop advances).
   if (f.player === 'mindset' && f.goal != null && typeof window.__ciGoalSlides === 'function') {
     const slides = window.__ciGoalSlides(f.goal) || [];
