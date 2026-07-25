@@ -374,34 +374,34 @@ export function renderRings() {
   // (playerFinished → markPillar), never by tapping, so the score can't be faked.
   // Each anchor is now 4 nested horizon rings; the center shows today's streak.
   const stats = _allAnchorStats();
-  const cells = PILLARS.map(p => {
+
+  // Horizontal grid: rows = horizons (Daily→Yearly), columns = the 3 pillars.
+  // Each cell is a horizontal progress bar in that horizon's colour. Row labels
+  // carry the colour dot, so no separate legend is needed.
+  const pillarHead = PILLARS.map(p => {
     const done = !!rings[p.key];
     const s = stats[p.key];
     const tip = done ? `${p.label} done today` : `Closes when you finish a ${p.label.toLowerCase()} session`;
-    const center = s.streak > 0
-      ? `<span style="display:flex;flex-direction:column;align-items:center;line-height:1;">
-           <span style="${_mono}font-size:16px;font-weight:800;color:${G.bright};">${s.streak}</span>
-           <span style="font-size:10px;margin-top:1px;">🔥</span></span>`
-      : `<span style="${_mono}font-size:15px;font-weight:800;color:${G.dim};">–</span>`;
-    return `
-      <div title="${tip}"
-        style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:2px 0;">
-        <span style="position:relative;width:${RING_SZ}px;height:${RING_SZ}px;">
-          ${_nestedRingSVG([s.daily, s.weekly, s.monthly, s.yearly])}
-          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">${center}</span>
-        </span>
-        <span style="${_mono}font-size:10px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.icon} ${p.label.toUpperCase()}</span>
-        <span style="${_mono}font-size:8.5px;color:${done ? G.mid : G.dim};">+${PTS.anchor}</span>
+    return `<div title="${tip}" style="text-align:center;${_mono}font-size:10px;font-weight:800;letter-spacing:.4px;color:${done ? G.done : G.lite};">
+        <span style="display:block;font-size:15px;margin-bottom:2px;color:${done ? G.done : G.mid};">${p.icon}</span>${p.label.toUpperCase()}
+        <span style="display:block;font-size:8.5px;font-weight:800;color:${done ? G.done : G.dim};margin-top:2px;">${done ? '✓ ' : ''}+${PTS.anchor}</span>
+        ${s.streak > 0 ? `<span style="display:block;font-size:9px;color:${G.brand};margin-top:1px;">🔥${s.streak}</span>` : ''}
       </div>`;
   }).join('');
-
-  // Horizon color legend — four rings are cryptic without it.
-  const legend = `
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2px 0 6px;padding-top:10px;border-top:1px solid ${G.track};">
-      ${HORIZONS.map(h => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <span style="width:12px;height:12px;border-radius:50%;background:${h.col};"></span>
-        <span style="${_mono}font-size:8px;font-weight:800;letter-spacing:.3px;color:${G.mid};">${h.label}</span>
-      </div>`).join('')}
+  const barRows = HORIZONS.map(h => {
+    const label = `<div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;letter-spacing:.3px;color:${G.mid};">
+        <span style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:${h.col};"></span>${h.label}</div>`;
+    const bars = PILLARS.map(p => {
+      const frac = Math.max(0, Math.min(1, stats[p.key][h.key]));
+      return `<div title="${h.label} · ${p.label}: ${Math.round(frac * 100)}%" style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${(frac * 100).toFixed(0)}%;background:${h.col};border-radius:6px;transition:width .3s;"></div>
+        </div>`;
+    }).join('');
+    return label + bars;
+  }).join('');
+  const bigGrid = `
+    <div style="display:grid;grid-template-columns:64px 1fr 1fr 1fr;gap:9px 10px;align-items:center;margin-bottom:6px;">
+      <div></div>${pillarHead}${barRows}
     </div>`;
 
   // Gratitude bonus row
@@ -445,8 +445,7 @@ export function renderRings() {
       </div>
       <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">🔥 ${streak} DAY STREAK</span></div>
 
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;">${cells}</div>
-      ${legend}
+      ${bigGrid}
       ${bonus}
       ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.done};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
 
