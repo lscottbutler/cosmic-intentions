@@ -723,10 +723,11 @@ function _aiSummary() {
   };
 }
 
-/* Multi-pass AI personalization — cached per day to control cost. */
+/* AI personalization — runs automatically ONCE per day, cached to control cost.
+   No user-facing refresh: the recap is written for them, not regenerated on demand.
+   If the AI is unavailable it silently leaves the standard recap in place. */
+let _aiAutoKey = null;               // the _aiKey() we've already auto-attempted this session
 export async function wrapupPersonalize() {
-  const btn = document.getElementById('wrapupAiBtn');
-  if (btn) { btn.disabled = true; btn.textContent = '✦ Personalizing…'; }
   try {
     const { summary, recentWins } = _aiSummary();
     const context = typeof buildContext === 'function' ? buildContext(getPB() || {}) : '';
@@ -735,12 +736,10 @@ export async function wrapupPersonalize() {
     if (data && data.paragraph && !_looksLikeAiError(data.paragraph)) {
       LS.set(_aiKey(), data.paragraph);
       renderWrapup();
-    } else {
-      throw new Error(_looksLikeAiError(data && data.paragraph) ? 'AI provider error (quota/billing)' : 'No paragraph returned');
     }
+    // otherwise: keep the standard recap, no nagging
   } catch (e) {
-    if (typeof toast === 'function') toast('Personalize failed — using the standard recap.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = '✦ Personalize'; }
+    console.warn('wrap-up personalize failed — using standard recap:', e && e.message);
   }
 }
 
@@ -751,6 +750,9 @@ export function renderWrapup() {
   const w = _winCounts();
   let aiPara = LS.get(_aiKey());
   if (_looksLikeAiError(aiPara)) { LS.remove(_aiKey()); aiPara = null; }   // drop a cached API error, fall back to the standard recap
+  // No cached recap yet for today → generate it for them automatically (once per
+  // day per session). Fires and re-renders when it lands; falls back silently.
+  if (!aiPara && _aiAutoKey !== _aiKey()) { _aiAutoKey = _aiKey(); wrapupPersonalize(); }
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
   // Stable goal letters (locked per goal id) — assign before any code renders.
@@ -778,7 +780,7 @@ export function renderWrapup() {
             </span>
           </summary>
           <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">
-            <div class="two-col">${chk.rows}</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">${chk.rows}</div>
           </div>
         </details>
       </div>` : '';
@@ -818,11 +820,7 @@ export function renderWrapup() {
           <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
 
           <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 12px;">${weekly}</p>
-
-          <button id="wrapupAiBtn" onclick="wrapupPersonalize()"
-            style="background:none;border:1px solid #383838;border-radius:6px;padding:7px 12px;font-family:var(--vault-mono);font-size:9px;color:#999;cursor:pointer;letter-spacing:0.5px;">
-            ${aiPara ? '↺ Regenerate' : '✦ Personalize'}</button>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 4px;">${weekly}</p>
         </div>
       </details>
     </div>`;
