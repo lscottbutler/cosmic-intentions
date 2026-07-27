@@ -45,18 +45,27 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <span></span><span></span><span></span>
     </button>
     <div class="ham-menu" id="hamMenu">
-      <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
-      <button class="tnav-btn" onclick="navTo('dailyfocus')">Daily Focus</button>
-      <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
-      <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
-      <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
-      <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
-      <button class="tnav-btn" onclick="navTo('setup')">My Goals</button>
-      <button class="tnav-btn" onclick="navTo('habits')">My Habits</button>
-      <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
-      <button class="tnav-btn" onclick="navTo('landing')">Landing Page</button>
+      <button class="tnav-btn" onclick="goMemberDashboard()">&#9672; Dashboard</button>
+
+      <div class="ham-grp" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:9px;letter-spacing:2px;color:#6b7480;font-weight:800;padding:12px 16px 4px;">TODAY</div>
+      <button class="tnav-btn" onclick="navTo('dailyfocus')">&#9670; Daily Focus</button>
+      <button class="tnav-btn" onclick="navTo('runthroughs')">&#9672; Daily Habits</button>
+      <button class="tnav-btn" onclick="location.href='players/meditation.html?t=10'">&#9790; Meditate</button>
+
+      <div class="ham-grp" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:9px;letter-spacing:2px;color:#6b7480;font-weight:800;padding:12px 16px 4px;">BUILD</div>
+      <button class="tnav-btn" onclick="openVizLibrary()">&#10022; Visualization Library</button>
+      <button class="tnav-btn" onclick="navTo('setup')">&#127919; My Goals</button>
+      <button class="tnav-btn" onclick="openMyRoadmap()">&#128506; Roadmap</button>
+      <button class="tnav-btn" onclick="navTo('habits')">&#9881; My Habits</button>
+
+      <div class="ham-grp" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:9px;letter-spacing:2px;color:#6b7480;font-weight:800;padding:12px 16px 4px;">REVIEW</div>
+      <button class="tnav-btn" onclick="navTo('wins')">&#127942; My Wins</button>
+      <button class="tnav-btn" onclick="navTo('notes')">&#9998; My Thoughts</button>
+
+      <div class="ham-menu-sep"></div>
+      <button class="tnav-btn" onclick="favThisPage()">&#9734; Favorite This Page</button>
+      <button class="tnav-btn" disabled style="opacity:.4;cursor:default;">&#9829; Gratitude &middot; Soon</button>
       <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
-      <button class="tnav-btn" onclick="favThisPage()">☆ Favorite This Page</button>
       <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
       <div class="ham-menu-sep"></div>
       <div class="theme-picker ham-theme" role="group" aria-label="Theme">
@@ -438,7 +447,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
         <!-- WHICH DIRECTION? — the two pillar buttons, up top -->
         <div class="dash-direction" style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--text);margin:4px 0 10px;text-align:center;">Which Direction?</div>
-        <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
+        <!-- HOME HUB — daily quick-launch; every item also lives in the hamburger menu (same icon + label) -->
+        <button onclick="navTo('dailyfocus')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9670;</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Daily Focus</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
         <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Daily Habits</span>
@@ -449,20 +463,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Visualization Library</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Roadmap</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <!-- MEDITATE + GRATITUDE — open as their own full page (not an inline dropdown) -->
-        <button onclick="location.href='players/meditation.html?t=10'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="location.href='players/meditation.html?t=10'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
-          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
-        </button>
-        <button onclick="toast('Gratitude player is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
-          <span style="flex-shrink:0;font-size:22px;line-height:1;">♥</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Gratitude</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
 
