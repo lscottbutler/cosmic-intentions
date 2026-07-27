@@ -50,7 +50,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="ham-grp" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:9px;letter-spacing:2px;color:#6b7480;font-weight:800;padding:12px 16px 4px;">TODAY</div>
       <button class="tnav-btn" onclick="navTo('dailyfocus')">&#9670; Daily Focus</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">&#9672; Daily Habits</button>
-      <button class="tnav-btn" onclick="location.href='players/meditation.html?t=10'">&#9790; Meditate</button>
+      <button class="tnav-btn" onclick="navTo('dashboard'); openPlayerInColumn('players/meditation.html?t=10')">&#9790; Meditate</button>
 
       <div class="ham-grp" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:9px;letter-spacing:2px;color:#6b7480;font-weight:800;padding:12px 16px 4px;">BUILD</div>
       <button class="tnav-btn" onclick="openVizLibrary()">&#10022; Visualization Library</button>
@@ -468,7 +468,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Roadmap</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <button onclick="location.href='players/meditation.html?t=10'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="openPlayerInColumn('players/meditation.html?t=10', event)" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
