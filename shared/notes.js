@@ -87,7 +87,7 @@ export function renderNotesPage() {
         <div style="display:flex;align-items:flex-start;gap:8px;">
           <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
             style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
-          <button id="notefav-${n.id}" onclick="notesToggleFav('${n.id}')" title="${pinned ? 'Unpin from Mind Loop' : 'Pin to Mind Loop'}"
+          <button id="notefav-${n.id}" onclick="notesToggleFav('${n.id}')" title="${pinned ? 'Unpin from Daily Focus' : 'Pin to Daily Focus'}"
             style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #000;cursor:pointer;font-size:24px;line-height:1;padding:0;color:#e0102b;opacity:${pinned ? '1' : '0.4'};">${pinned ? '♥' : '♡'}</button>
           <button onclick="notesDelete('${n.id}')" title="Delete"
             style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
@@ -206,15 +206,15 @@ export function notesToggleFav(id) {
   const favs = _readFavs();
   const at = favs.findIndex(f => f && f.type === 'note' && f.id === id);
   let pinned;
-  if (at >= 0) { favs.splice(at, 1); pinned = false; if (typeof toast === 'function') toast('Removed from Mind Loop', 'info'); }
-  else { favs.push({ type: 'note', id, cat: note.cat, title: note.text, text: note.text }); pinned = true; if (typeof toast === 'function') toast('Pinned to Mind Loop ♥', 'success'); }
+  if (at >= 0) { favs.splice(at, 1); pinned = false; if (typeof toast === 'function') toast('Removed from Daily Focus', 'info'); }
+  else { favs.push({ type: 'note', id, cat: note.cat, title: note.text, text: note.text }); pinned = true; if (typeof toast === 'function') toast('Pinned to Daily Focus ♥', 'success'); }
   _saveFavs(favs);
   // Update JUST this heart in place — re-rendering would collapse the open section.
   const btn = document.getElementById(`notefav-${id}`);
   if (btn) {
     btn.textContent = pinned ? '♥' : '♡';
     btn.style.opacity = pinned ? '1' : '0.4';
-    btn.title = pinned ? 'Unpin from Mind Loop' : 'Pin to Mind Loop';
+    btn.title = pinned ? 'Unpin from Daily Focus' : 'Pin to Daily Focus';
   }
   if (typeof window !== 'undefined' && typeof window.renderFavorites === 'function') window.renderFavorites();
 }
