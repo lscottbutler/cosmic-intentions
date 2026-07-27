@@ -2416,7 +2416,7 @@ export function toggleGoalFavorite(idx, ev) {
 /* ☆ Favorite the CURRENT page → a jump-to shortcut in the Favorites panel
    (type:'page', routed back via navTo). Toggles: fire again to remove. Only the
    real app pages are favoritable (not home/landing/admin). */
-const _FAV_PAGE_TITLES = { dashboard: 'Dashboard', setup: 'My Goals', habits: 'My Habits', wins: 'My Wins', vizlibrary: 'Visualization Library', myroadmap: 'Roadmap', runthroughs: 'Run-Throughs' };
+const _FAV_PAGE_TITLES = { dashboard: 'Dashboard', setup: 'My Goals', habits: 'My Habits', wins: 'My Wins', vizlibrary: 'Visualization Library', myroadmap: 'Roadmap', runthroughs: 'Daily Habits' };
 export function favThisPage() {
   const id = _navHistory[_navIndex];
   if (!id || !_FAV_PAGE_TITLES[id]) { toast('This page can’t be favorited.', 'info'); return; }
