@@ -224,6 +224,11 @@ export function showPage(id) {
 
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
+  // "You are here" — highlight the matching item in the hamburger menu.
+  document.querySelectorAll('.tnav-btn.active').forEach(b => b.classList.remove('active'));
+  const _activeNav = document.querySelector(`.tnav-btn[data-page="${id}"]`);
+  if (_activeNav) _activeNav.classList.add('active');
+
   if (id === 'dashboard') renderDashboard();
   if (id === 'dailyfocus' && typeof window.renderFavorites === 'function') window.renderFavorites();
   if (id === 'notes' && typeof window.renderNotesPage === 'function') window.renderNotesPage();
