@@ -1979,7 +1979,7 @@ export function openVizGoal(idx) {
   if (pill) pill.innerHTML = '';
   const opts = document.getElementById('vizGoalOptions');
   if (opts) {
-    const acts = [['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']];
+    const acts = [['3min','&#9673;','3 MIN']];
     // The rest of the goals — tap one to jump straight to its card.
     const others = intentions
       .map((g, i) => ({ g, i }))
@@ -3228,7 +3228,7 @@ function buildWorkspaceHeader(intent, idx) {
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
-        ${[['3min','&#9673;','3 MIN'],['affirmations','&#10022;','AFF'],['beliefs','&#9670;','BELIEFS'],['stoic','&#9672;','STOIC'],['attitudes','&#9733;','ATTITUDES']].map(([k,ic,lbl]) =>
+        ${[['3min','&#9673;','3 MIN']].map(([k,ic,lbl]) =>
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)"
             style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;">
             <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
