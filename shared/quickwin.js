@@ -1,4 +1,4 @@
-import { LS, esc, dayKey, intentions } from '../app.js';
+import { LS, esc, dayKey, intentions, GREY_SHADES, goalLetter } from '../app.js';
 import { getHabitList, habitToggle } from './habits.js';
 import { wrapToggleAction } from './wrapup.js';
 import { toggleRoadmapTaskDone, toggleRoadmapUserTaskDone } from './card-builder.js';
@@ -52,15 +52,22 @@ function _roadmapItems() {
 function _empty(msg) {
   return `<div style="font-size:12px;color:var(--muted);font-style:italic;padding:12px 2px;">${msg}</div>`;
 }
-function _row(onclick, text, done, sub) {
-  return `<div style="display:flex;gap:9px;align-items:flex-start;padding:7px 2px;border-bottom:1px solid var(--widget-border);">
+function _row(onclick, text, done, trailing) {
+  return `<div style="display:flex;gap:9px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--widget-border);">
     <button onclick="${onclick}" title="${done ? 'Done — tap to undo' : 'Mark done'}"
       style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid ${done ? '#2FA94B' : 'var(--muted)'};background:${done ? '#2FA94B' : 'transparent'};color:#fff;font-size:12px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${done ? '✓' : ''}</button>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:13px;line-height:1.4;color:var(--widget-text);${done ? 'text-decoration:line-through;font-weight:600;' : ''}">${esc(text)}</div>
-      ${sub ? `<div style="font-size:10px;color:var(--muted);margin-top:1px;">${esc(sub)}</div>` : ''}
-    </div>
+    <div style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--widget-text);${done ? 'text-decoration:line-through;font-weight:600;' : ''}">${esc(text)}</div>
+    ${trailing || ''}
   </div>`;
+}
+
+/* The goal's own colour + letter marker (same palette as its Citadel card),
+   clickable to open that goal. Replaces the old blue goal-title subtitle. */
+function _goalBadge(idx) {
+  const shade  = GREY_SHADES[idx % GREY_SHADES.length];
+  const letter = goalLetter(intentions[idx], idx);
+  return `<button onclick="event.stopPropagation();selectVaultIntention(${idx})" title="Open goal ${letter}"
+    style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:${shade.bg};color:${shade.text};font-size:12px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${letter}</button>`;
 }
 const _undoneFirst = (a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0);
 
@@ -84,7 +91,7 @@ function _roadmapList() {
     const oc = it.kind === 'rtask'
       ? `qwToggle('rtask',${it.idx},${it.i})`
       : `qwToggle('rutask',${it.idx},${it.id})`;
-    return _row(oc, it.text, it.done, it.goal);
+    return _row(oc, it.text, it.done, _goalBadge(it.idx));
   }).join('');
 }
 
