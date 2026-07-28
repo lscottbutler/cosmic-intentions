@@ -1,6 +1,7 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, saveIntentions, dayKey } from '../app.js';
+import { setTaskWin } from './wins.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -357,7 +358,11 @@ export function wrapAddAction() {
 }
 export function wrapToggleAction(id) {
   const a = _wrapActs(); const t = a.find(x => x.id === id); if (!t) return;
-  t.done = !t.done; _saveWrapActs(a); renderWrapup();
+  t.done = !t.done; _saveWrapActs(a);
+  // A completed action lands on the Wins Wall (→ momentum); unchecking removes it.
+  // Idempotent via the 'wrapact-<id>' src key, so it stays consistent everywhere.
+  setTaskWin('wrapact-' + id, `✓ ${t.text}`, t.done, {});
+  renderWrapup();
 }
 export function wrapDeleteAction(id) {
   _saveWrapActs(_wrapActs().filter(x => x.id !== id)); renderWrapup();
