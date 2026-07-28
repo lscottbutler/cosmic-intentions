@@ -1,4 +1,4 @@
-import { LS, esc, dayKey, intentions, GREY_SHADES, goalLetter } from '../app.js';
+import { LS, esc, dayKey, intentions, GREY_SHADES, goalLetter, selectedVaultIdx } from '../app.js';
 import { getHabitList, habitToggle } from './habits.js';
 import { wrapToggleAction } from './wrapup.js';
 import { toggleRoadmapTaskDone, toggleRoadmapUserTaskDone } from './card-builder.js';
@@ -66,8 +66,20 @@ function _row(onclick, text, done, trailing) {
 function _goalBadge(idx) {
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];
   const letter = goalLetter(intentions[idx], idx);
-  return `<button onclick="event.stopPropagation();selectVaultIntention(${idx})" title="Open goal ${letter}"
+  return `<button onclick="event.stopPropagation();qwOpenGoal(${idx})" title="Open goal ${letter}"
     style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:${shade.bg};color:${shade.text};font-size:12px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${letter}</button>`;
+}
+
+/* Open a goal's workspace and actually bring it into view. selectVaultIntention
+   TOGGLES selection (so a second call would close it) and its target lives lower
+   in Column B — from the Quick Win dropdown that reads as "nothing happened".
+   So: only select when it isn't already open, then scroll the workspace up. */
+export function qwOpenGoal(idx) {
+  if (selectedVaultIdx !== idx && typeof window.selectVaultIntention === 'function') {
+    window.selectVaultIntention(idx);
+  }
+  const el = document.getElementById('vaultWorkspaceHeader') || document.getElementById('colb-active-state');
+  if (el && el.scrollIntoView) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
 }
 const _undoneFirst = (a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0);
 
