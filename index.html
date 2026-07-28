@@ -464,7 +464,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE + GRATITUDE — open as their own full page (not an inline dropdown) -->
-        <button onclick="location.href='players/meditation.html?t=10'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="var b=document.getElementById('medBox'),p=document.getElementById('medPanel'),n=document.getElementById('medNav');if(p)p.classList.add('open');if(n)n.classList.add('open');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
@@ -621,7 +621,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease; }
           .med-panel-collapse.open { max-height:360px; opacity:1; margin-top:9px; }
         </style>
-        <div data-player-box style="background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
+        <div data-player-box id="medBox" style="background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
           <div class="med-banner-wrap">
             <img src="images/meditation-banner.png" alt="Meditations" />
             <button class="med-navcircle" id="medNav" title="Show / hide timers"
