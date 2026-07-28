@@ -18,8 +18,15 @@ const TABS = [
   { key: 'roadmap', label: 'Roadmap' },
 ];
 let _tab = 'habit';   // survives re-renders while the panel is open
+const _openGoals = new Set();   // which goals are expanded in the Roadmap tab
 
 export function qwTab(t) { _tab = t; renderQuickWin(); }
+
+/* Expand / collapse a goal's task group in the Roadmap tab. */
+export function qwGoalToggle(idx) {
+  if (_openGoals.has(idx)) _openGoals.delete(idx); else _openGoals.add(idx);
+  renderQuickWin();
+}
 
 /* One dispatcher for every row — calls the real toggle, then repaints. */
 export function qwToggle(kind, a, b) {
@@ -99,12 +106,29 @@ function _actionList() {
 function _roadmapList() {
   const items = _roadmapItems();
   if (!items.length) return _empty('No roadmap steps yet — generate a roadmap on a goal.');
-  return [...items].sort(_undoneFirst).map(it => {
-    const oc = it.kind === 'rtask'
-      ? `qwToggle('rtask',${it.idx},${it.i})`
-      : `qwToggle('rutask',${it.idx},${it.id})`;
-    return _row(oc, it.text, it.done, _goalBadge(it.idx));
-  }).join('');
+  // Group tasks under their goal; each goal is its own collapsible dropdown.
+  const byGoal = new Map();
+  items.forEach(it => { if (!byGoal.has(it.idx)) byGoal.set(it.idx, []); byGoal.get(it.idx).push(it); });
+  let html = '';
+  byGoal.forEach((list, idx) => {
+    const open  = _openGoals.has(idx);
+    const done  = list.filter(t => t.done).length;
+    const title = ((intentions[idx] && intentions[idx].title) || '').replace(/^i am\s+/i, '');
+    const rows  = [...list].sort(_undoneFirst).map(it => {
+      const oc = it.kind === 'rtask' ? `qwToggle('rtask',${it.idx},${it.i})` : `qwToggle('rutask',${it.idx},${it.id})`;
+      return _row(oc, it.text, it.done);
+    }).join('');
+    html += `<div style="border-bottom:1px solid var(--widget-border);">
+      <div onclick="qwGoalToggle(${idx})" style="display:flex;align-items:center;gap:9px;padding:9px 2px;cursor:pointer;">
+        ${_goalBadge(idx)}
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--widget-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(title)}</span>
+        <span style="flex-shrink:0;font-size:11px;color:var(--muted);">${done}/${list.length}</span>
+        <span style="flex-shrink:0;color:var(--muted);font-size:12px;width:12px;text-align:center;">${open ? '▾' : '▸'}</span>
+      </div>
+      ${open ? `<div style="padding:0 0 6px 8px;">${rows}</div>` : ''}
+    </div>`;
+  });
+  return html;
 }
 
 export function renderQuickWin() {
