@@ -13,9 +13,8 @@ import { toggleRoadmapTaskDone, toggleRoadmapUserTaskDone } from './card-builder
 ───────────────────────────────────────────────────────── */
 
 const TABS = [
-  { key: 'habit',   label: 'Habits'  },
-  { key: 'action',  label: 'Actions' },
-  { key: 'roadmap', label: 'Roadmap' },
+  { key: 'habit', label: 'Habits' },
+  { key: 'todo',  label: 'Actions & Roadmap' },
 ];
 let _tab = 'habit';   // survives re-renders while the panel is open
 const _openGoals = new Set();   // which goals are expanded in the Roadmap tab
@@ -97,38 +96,44 @@ function _habitList() {
   return [...list].sort(_undoneFirst)
     .map(h => _row(`qwToggle('habit','${h.id}')`, h.name, h.done)).join('');
 }
-function _actionList() {
-  const a = _acts();
-  if (!a.length) return _empty('No actions yet — add them under “Today I Will”.');
-  return [...a].sort(_undoneFirst)
-    .map(x => _row(`qwToggle('action',${x.id})`, x.text, !!x.done)).join('');
+/* One collapsible group. `key` is a goal idx (number) or the string 'actions';
+   open/closed state lives in _openGoals. */
+function _group(key, badge, title, done, total, rows) {
+  const open = _openGoals.has(key);
+  const arg  = typeof key === 'number' ? key : `'${key}'`;
+  return `<div style="border-bottom:1px solid var(--widget-border);">
+    <div onclick="qwGoalToggle(${arg})" style="display:flex;align-items:center;gap:9px;padding:9px 2px;cursor:pointer;">
+      ${badge}
+      <span style="flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--widget-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(title)}</span>
+      <span style="flex-shrink:0;font-size:11px;color:var(--muted);">${done}/${total}</span>
+      <span style="flex-shrink:0;color:var(--muted);font-size:12px;width:12px;text-align:center;">${open ? '▾' : '▸'}</span>
+    </div>
+    ${open ? `<div style="padding:0 0 6px 8px;">${rows}</div>` : ''}
+  </div>`;
 }
-function _roadmapList() {
-  const items = _roadmapItems();
-  if (!items.length) return _empty('No roadmap steps yet — generate a roadmap on a goal.');
-  // Group tasks under their goal; each goal is its own collapsible dropdown.
-  const byGoal = new Map();
-  items.forEach(it => { if (!byGoal.has(it.idx)) byGoal.set(it.idx, []); byGoal.get(it.idx).push(it); });
+const _ACT_BADGE = `<span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">◆</span>`;
+
+/* Combined Actions + Roadmap: "My Actions" group first, then one group per goal. */
+function _todoList() {
   let html = '';
+  const acts = _acts();
+  if (acts.length) {
+    const done = acts.filter(a => a.done).length;
+    const rows = [...acts].sort(_undoneFirst).map(a => _row(`qwToggle('action',${a.id})`, a.text, !!a.done)).join('');
+    html += _group('actions', _ACT_BADGE, 'My Actions', done, acts.length, rows);
+  }
+  const byGoal = new Map();
+  _roadmapItems().forEach(it => { if (!byGoal.has(it.idx)) byGoal.set(it.idx, []); byGoal.get(it.idx).push(it); });
   byGoal.forEach((list, idx) => {
-    const open  = _openGoals.has(idx);
     const done  = list.filter(t => t.done).length;
     const title = ((intentions[idx] && intentions[idx].title) || '').replace(/^i am\s+/i, '');
     const rows  = [...list].sort(_undoneFirst).map(it => {
       const oc = it.kind === 'rtask' ? `qwToggle('rtask',${it.idx},${it.i})` : `qwToggle('rutask',${it.idx},${it.id})`;
       return _row(oc, it.text, it.done);
     }).join('');
-    html += `<div style="border-bottom:1px solid var(--widget-border);">
-      <div onclick="qwGoalToggle(${idx})" style="display:flex;align-items:center;gap:9px;padding:9px 2px;cursor:pointer;">
-        ${_goalBadge(idx)}
-        <span style="flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--widget-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(title)}</span>
-        <span style="flex-shrink:0;font-size:11px;color:var(--muted);">${done}/${list.length}</span>
-        <span style="flex-shrink:0;color:var(--muted);font-size:12px;width:12px;text-align:center;">${open ? '▾' : '▸'}</span>
-      </div>
-      ${open ? `<div style="padding:0 0 6px 8px;">${rows}</div>` : ''}
-    </div>`;
+    html += _group(idx, _goalBadge(idx), title, done, list.length, rows);
   });
-  return html;
+  return html || _empty('No actions or roadmap steps yet.');
 }
 
 export function renderQuickWin() {
@@ -137,9 +142,7 @@ export function renderQuickWin() {
   const tabBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">` + TABS.map(t =>
     `<button onclick="qwTab('${t.key}')" style="flex:1;background:${_tab === t.key ? 'var(--ink)' : 'var(--widget-band)'};color:${_tab === t.key ? '#fff' : 'var(--widget-text)'};border:none;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:700;cursor:pointer;">${t.label}</button>`
   ).join('') + `</div>`;
-  const body = _tab === 'action' ? _actionList()
-             : _tab === 'roadmap' ? _roadmapList()
-             : _habitList();
+  const body = _tab === 'todo' ? _todoList() : _habitList();
   el.innerHTML = tabBar + `<div style="max-height:240px;overflow-y:auto;">${body}</div>`;
 }
 
