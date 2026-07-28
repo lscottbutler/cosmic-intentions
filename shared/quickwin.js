@@ -55,7 +55,7 @@ function _empty(msg) {
 function _row(onclick, text, done, sub) {
   return `<div style="display:flex;gap:9px;align-items:flex-start;padding:7px 2px;border-bottom:1px solid #262626;">
     <button onclick="${onclick}" title="${done ? 'Done — tap to undo' : 'Mark done'}"
-      style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid ${done ? '#4ADE80' : '#666'};background:${done ? '#4ADE80' : 'transparent'};color:#0a0a0a;font-size:12px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${done ? '✓' : ''}</button>
+      style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid ${done ? '#4ADE80' : '#666'};background:${done ? '#4ADE80' : 'transparent'};color:#fff;font-size:12px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${done ? '✓' : ''}</button>
     <div style="flex:1;min-width:0;">
       <div style="font-size:13px;line-height:1.4;color:${done ? '#777' : '#eee'};${done ? 'text-decoration:line-through;' : ''}">${esc(text)}</div>
       ${sub ? `<div style="font-size:10px;color:#8a7fc0;margin-top:1px;">${esc(sub)}</div>` : ''}
@@ -92,7 +92,7 @@ export function renderQuickWin() {
   const el = document.getElementById('quickWinBody');
   if (!el) return;
   const tabBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">` + TABS.map(t =>
-    `<button onclick="qwTab('${t.key}')" style="flex:1;background:${_tab === t.key ? '#F5A623' : '#2a2a2a'};color:${_tab === t.key ? '#0a0a0a' : '#ccc'};border:none;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:700;cursor:pointer;">${t.label}</button>`
+    `<button onclick="qwTab('${t.key}')" style="flex:1;background:${_tab === t.key ? '#F5A623' : '#2a2a2a'};color:#fff;border:none;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:700;cursor:pointer;">${t.label}</button>`
   ).join('') + `</div>`;
   const body = _tab === 'action' ? _actionList()
              : _tab === 'roadmap' ? _roadmapList()
