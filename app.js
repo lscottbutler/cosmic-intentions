@@ -3237,6 +3237,17 @@ function buildWorkspaceHeader(intent, idx) {
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
           <span style="font-size:13px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
       </div>
+      <!-- QUICK-VIZ TIMERS — one tap drops an experienced user straight into a visualization of a set length -->
+      <div style="display:flex;gap:10px;align-items:stretch;background:#1AA5BA;border:3px solid #F2911E;border-radius:12px;padding:12px;margin:4px 4px 12px;">
+        <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+          ${[['15s',15],['30s',30],['60s',60],['2m',120],['3m',180],['5m',300],['10m',600],['15m',900]].map(([lbl,secs]) =>
+            `<button onclick="launchCountdown(${idx},${secs});event.stopPropagation()" title="${lbl} visualization"
+              style="aspect-ratio:1;min-width:0;border-radius:50%;background:#fff;border:3px solid #F2911E;color:#1D3557;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">${lbl}</button>`
+          ).join('')}
+        </div>
+        <button onclick="openVizLibrary();event.stopPropagation()" title="More visualization options"
+          style="flex-shrink:0;width:54px;background:#7C5CC4;border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#9776;</button>
+      </div>
       <div class="dashboard-note-container">
         <div class="dashboard-note-box">
           <span class="note-pin-icon">📍</span>
