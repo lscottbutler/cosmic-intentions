@@ -102,9 +102,9 @@ function _group(key, badge, title, done, total, rows) {
   const open = _openGoals.has(key);
   const arg  = typeof key === 'number' ? key : `'${key}'`;
   return `<div style="border-bottom:1px solid var(--widget-border);">
-    <div onclick="qwGoalToggle(${arg})" style="display:flex;align-items:center;gap:9px;padding:9px 2px;cursor:pointer;">
+    <div onclick="qwGoalToggle(${arg})" style="display:flex;align-items:flex-start;gap:9px;padding:9px 2px;cursor:pointer;">
       ${badge}
-      <span style="flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--widget-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(title)}</span>
+      <span style="flex:1;min-width:0;font-size:11px;font-weight:700;line-height:1.35;color:var(--widget-text);">${esc(title)}</span>
       <span style="flex-shrink:0;font-size:11px;color:var(--muted);">${done}/${total}</span>
       <span style="flex-shrink:0;color:var(--muted);font-size:12px;width:12px;text-align:center;">${open ? '▾' : '▸'}</span>
     </div>
