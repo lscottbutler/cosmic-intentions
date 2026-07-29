@@ -1,20 +1,24 @@
 import { LS, toast, dayKey } from '../app.js';
 import { renderWrapup } from './wrapup.js';
 /* ── THE BIG 3 (daily reward tracker) ────────────────────
-   Three anchor disciplines — Completed Tasks · Visualize · Meditate.
-   Close all 3 = a Perfect Day. GRATITUDE is a 4th BONUS ring:
-   it earns points but is NOT required for a Perfect Day.
+   Three pillars — Completed Tasks · Visualize · Habits.
+   Close all 3 = a Perfect Day. MEDITATE and GRATITUDE are BONUS
+   rings: they earn points but are NOT required for a Perfect Day.
 
-   The "Completed Tasks" ring (internal key 'review', kept for storage/sync
-   compatibility) closes for any day with ≥1 finished task — derived from
-   task-wins, not sessions. Visualize/Meditate still close from their players.
+   Two pillars are DERIVED (not stored), so they self-sync and past days
+   reflect real history:
+     • Completed Tasks (internal key 'review') — ≥1 task finished that day
+     • Habits — ≥1 daily habit ticked that day
+   Visualize (pillar) + Meditate/Gratitude (bonus) close from their players
+   (Meditate/Gratitude are also tappable).
 
    POINTS (derived, never stored — recomputed from the day's
    ring record + habit checkmarks + tasks completed today, so
    cross-device sync is automatic once those are synced):
      • each completed TASK (action/roadmap)  +10   ← rewarded most
-     • Perfect Day (all 3 anchors) ......... +15
-     • each closed anchor (R/V/M) .......... +5
+     • Perfect Day (Tasks+Visualize+Habits)  +15
+     • each closed pillar .................. +5
+     • Meditate (bonus) ................... +5
      • Gratitude (bonus) ................... +5
      • each ticked habit ................... +1
      • Mind Loop (capped, once/day) ........ +1
@@ -28,10 +32,13 @@ import { renderWrapup } from './wrapup.js';
 export const PILLARS = [
   { key: 'review',    label: 'Completed Tasks', icon: '✓', hint: 'Finish a task (Action or Roadmap step)' },
   { key: 'visualize', label: 'Visualize', icon: '✦', hint: 'Creative visualization' },
-  { key: 'meditate',  label: 'Meditate',  icon: '☾', hint: 'Meditation session' },
+  { key: 'habits',    label: 'Habits',    icon: '☑', hint: 'Tick a daily habit' },
 ];
-// Bonus 4th anchor — points only, never counts toward a Perfect Day.
+// Bonus rings — earn points but NEVER count toward a Perfect Day.
 export const GRATITUDE = { key: 'gratitude', label: 'Gratitude', icon: '♥', hint: 'Log a gratitude' };
+export const MEDITATE  = { key: 'meditate',  label: 'Meditate',  icon: '☾', hint: 'Meditation session' };
+// Bonus rings rendered under the grid, in order (Gratitude, then Meditate).
+const BONUS = [GRATITUDE, MEDITATE];
 
 // Point values — single source of truth.
 // Point values — single source of truth. Completed TASKS are worth the most:
@@ -83,25 +90,27 @@ function _todayKey() { return _dayKey(new Date()); }
 function _rawRings(dateKey) {
   return LS.get(`ci_rings_${dateKey}`) || { review: false, visualize: false, meditate: false, gratitude: false };
 }
-// The first pillar is "Completed Tasks": its ring closes for any day you finished
-// at least one task (Action / Roadmap step). That's DERIVED from task-wins, not
-// stored — so it stays in sync automatically (untick a task → ring re-opens) and
-// past days reflect real history. Visualize/Meditate/Gratitude are still stored.
-// Write paths use _rawRings so they never persist the derived value.
+// Two of the three pillars are DERIVED, not stored, so they stay in sync
+// automatically and past days reflect real history:
+//   • review  → "Completed Tasks": ≥1 task (Action/Roadmap step) finished that day
+//   • habits  → ≥1 daily habit ticked that day
+// Visualize (pillar) and the Meditate/Gratitude bonus rings are still stored.
+// Write paths use _rawRings so they never persist the derived values.
 function _getRings(dateKey) {
   const r = _rawRings(dateKey);
-  return { ...r, review: _hasTaskWin(dateKey) };
+  return { ...r, review: _hasTaskWin(dateKey), habits: _doneHabitCount(dateKey) > 0 };
 }
 function _setRings(dateKey, rings) {
   LS.set(`ci_rings_${dateKey}`, rings);
   if (typeof syncRingsToSupabase === 'function') { try { syncRingsToSupabase(dateKey, rings); } catch (e) {} }
 }
-// Only the 3 ANCHORS count toward "closed" / Perfect Day — gratitude is bonus.
+// Only the 3 PILLARS count toward "closed" / Perfect Day — Meditate & Gratitude
+// are bonus rings.
 function _closedCount(r) {
-  return (r.review ? 1 : 0) + (r.visualize ? 1 : 0) + (r.meditate ? 1 : 0);
+  return (r.review ? 1 : 0) + (r.visualize ? 1 : 0) + (r.habits ? 1 : 0);
 }
 function _isPerfect(r) {
-  return !!(r.review && r.visualize && r.meditate);
+  return !!(r.review && r.visualize && r.habits);
 }
 
 /* ── Points ───────────────────────────────────────────── */
@@ -157,6 +166,7 @@ export function dailyPoints(dateKey) {
   const r = _getRings(key);
   let pts = _taskWinCount(key) * PTS.task + _doneHabitCount(key) * PTS.habit + _closedCount(r) * PTS.anchor;
   if (r.gratitude) pts += PTS.gratitude;
+  if (r.meditate)  pts += PTS.anchor;     // Meditate is now a bonus ring (+5), like Gratitude
   if (_mindLoopEarned(key)) pts += PTS.mindloop;
   if (_isPerfect(r)) pts += PTS.perfect;
   return pts;
@@ -222,7 +232,7 @@ export function ringsWeekSummary() {
 
 /* ── Toggle one ring for today (tap) ─────────────────── */
 export function toggleRing(key) {
-  if (key === 'review') return;   // Completed-Tasks ring is derived from tasks, not tappable
+  if (key === 'review' || key === 'habits') return;   // derived rings — not tappable
   const today = _todayKey();
   const rings = _rawRings(today);
   if (!(key in rings)) return;
@@ -273,9 +283,9 @@ export function pillarForSrc(src) {
 /* Close a ring from a COMPLETED session (idempotent for the day) and
    bump its lifetime counter. Called by playerFinished(). */
 export function markPillar(key) {
-  const valid = PILLARS.some(p => p.key === key) || key === GRATITUDE.key;
+  const valid = PILLARS.some(p => p.key === key) || key === GRATITUDE.key || key === MEDITATE.key;
   if (!valid) return;
-  if (key === 'review') return;   // Completed-Tasks ring is derived from tasks, not sessions
+  if (key === 'review' || key === 'habits') return;   // derived rings — not session-closed
   const today = _todayKey();
   const rings = _rawRings(today);
   const wasPerfect = _isPerfect(_getRings(today));
@@ -453,20 +463,27 @@ export function renderRings() {
       <div></div>${pillarHead}${barRows}
     </div>`;
 
-  // Gratitude bonus row
-  const gOn = !!rings.gratitude;
-  const bonus = `
+  // Bonus rings (Gratitude, then Meditate) — earn points, not required for a
+  // Perfect Day. Both tappable; Meditate also closes from a meditation session.
+  const _bonusCol = { gratitude: G.grat, meditate: '#8b7bf7' };
+  const _bonusPts = { gratitude: PTS.gratitude, meditate: PTS.anchor };
+  const bonus = BONUS.map(b => {
+    const on  = !!rings[b.key];
+    const col = _bonusCol[b.key] || G.grat;
+    const val = _bonusPts[b.key] || PTS.gratitude;
+    return `
     <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};display:flex;align-items:center;gap:12px;">
-      <button onclick="toggleRing('gratitude')" title="${GRATITUDE.hint}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">
-        ${_ringSVG(44, 18, 4, gOn, G.grat)}
-        <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${gOn ? G.grat : G.dim};">♥</span>
+      <button onclick="toggleRing('${b.key}')" title="${b.hint}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">
+        ${_ringSVG(44, 18, 4, on, col)}
+        <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${on ? col : G.dim};">${b.icon}</span>
       </button>
       <span style="flex:1;min-width:0;">
-        <div style="font-weight:800;font-size:13px;color:${G.bright};">Gratitude${gOn ? ' ✓' : ''}</div>
+        <div style="font-weight:800;font-size:13px;color:${G.bright};">${b.label}${on ? ' ✓' : ''}</div>
         <div style="font-size:11px;color:${G.dim};margin-top:2px;">Bonus ring — not required for a Perfect Day</div>
       </span>
-      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${G.grat};border:1px solid ${G.grat};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${PTS.gratitude} BONUS</span>
+      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${col};border:1px solid ${col};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${val} BONUS</span>
     </div>`;
+  }).join('');
 
   // Week strip — last 7 days ending today
   const wd = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
