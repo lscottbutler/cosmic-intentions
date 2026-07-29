@@ -6,13 +6,14 @@ import { renderWrapup } from './wrapup.js';
    it earns points but is NOT required for a Perfect Day.
 
    POINTS (derived, never stored — recomputed from the day's
-   ring record + the habit checkmarks, so cross-device sync
-   is automatic once those two are synced):
-     • each ticked habit / task ............ +1
+   ring record + habit checkmarks + tasks completed today, so
+   cross-device sync is automatic once those are synced):
+     • each completed TASK (action/roadmap)  +10   ← rewarded most
+     • Perfect Day (all 3 anchors) ......... +15
      • each closed anchor (R/V/M) .......... +5
      • Gratitude (bonus) ................... +5
+     • each ticked habit ................... +1
      • Mind Loop (capped, once/day) ........ +1
-     • Perfect Day (all 3 anchors) ......... +15
 
    Momentum dims & recovers over a rolling window (kind, never
    hard-resets). Anchors close by TAP or from a completed
@@ -29,7 +30,10 @@ export const PILLARS = [
 export const GRATITUDE = { key: 'gratitude', label: 'Gratitude', icon: '♥', hint: 'Log a gratitude' };
 
 // Point values — single source of truth.
-const PTS = { habit: 1, anchor: 5, gratitude: 5, mindloop: 1, perfect: 15 };
+// Point values — single source of truth. Completed TASKS are worth the most:
+// finishing real work (a free-standing Action or a goal's Roadmap step) is the
+// point of the app, so it out-rewards the daily disciplines. Tune `task` here.
+const PTS = { task: 10, habit: 1, anchor: 5, gratitude: 5, mindloop: 1, perfect: 15 };
 
 const MOMENTUM_WINDOW = 30;   // days scanned to derive momentum
 
@@ -113,10 +117,18 @@ export function awardMindLoopPoint() {
   try { renderWrapup(); } catch (e) {}
   return true;
 }
+// Tasks completed today. Every Action / Roadmap-step tick logs a dated win via
+// setTaskWin with a 'wrapact-' or 'task-' src, so counting today's task-wins is
+// inherently per-day and undo-safe (unticking removes the win). Manual mini-wins
+// (no src) and habit wins ('habit_' src) are excluded so nothing double-counts.
+function _taskWinCount(dateKey) {
+  const wins = LS.get('ci_wins') || [];
+  return wins.filter(w => w.date === dateKey && /^(wrapact-|task-)/.test(String(w.src || ''))).length;
+}
 export function dailyPoints(dateKey) {
   const key = dateKey || _todayKey();
   const r = _getRings(key);
-  let pts = _doneHabitCount(key) * PTS.habit + _closedCount(r) * PTS.anchor;
+  let pts = _taskWinCount(key) * PTS.task + _doneHabitCount(key) * PTS.habit + _closedCount(r) * PTS.anchor;
   if (r.gratitude) pts += PTS.gratitude;
   if (_mindLoopEarned(key)) pts += PTS.mindloop;
   if (_isPerfect(r)) pts += PTS.perfect;
