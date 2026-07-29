@@ -116,11 +116,12 @@ const _ACT_BADGE = `<span style="flex-shrink:0;width:24px;height:24px;border-rad
 /* Combined Actions + Roadmap: "My Actions" group first, then one group per goal. */
 function _todoList() {
   let html = '';
-  const acts = _acts();
+  // Quick Win = what's still left to do. Only show undone actions here;
+  // completed ones stay visible in the full Roadmap view.
+  const acts = _acts().filter(a => !a.done);
   if (acts.length) {
-    const done = acts.filter(a => a.done).length;
-    const rows = [...acts].sort(_undoneFirst).map(a => _row(`qwToggle('action',${a.id})`, a.text, !!a.done)).join('');
-    html += _group('actions', _ACT_BADGE, 'My Actions', done, acts.length, rows);
+    const rows = [...acts].map(a => _row(`qwToggle('action',${a.id})`, a.text, false)).join('');
+    html += _group('actions', _ACT_BADGE, 'My Actions', 0, acts.length, rows);
   }
   const byGoal = new Map();
   _roadmapItems().forEach(it => { if (!byGoal.has(it.idx)) byGoal.set(it.idx, []); byGoal.get(it.idx).push(it); });
