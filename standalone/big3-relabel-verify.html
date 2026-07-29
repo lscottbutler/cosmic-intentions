@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+  :root{--widget-bg:#fff;--widget-border:#e6e6e6;--widget-text:#1D3557;--success:#2FA94B;--brand:#F5A623;--pink:#ff8ab8;--vault-mono:ui-monospace,monospace;}
+  body{background:#fff;font-family:system-ui,Arial,sans-serif;margin:0;padding:20px;}
+  #ringsWidget{max-width:470px;}
+</style></head><body>
+<div id="ringsWidget"></div>
+<script type="module">
+  // Minimal stubs so rings.js can import from app.js siblings
+  window.localStorage.setItem('ci_rings_'+new Date().toISOString().slice(0,10), JSON.stringify({visualize:true,meditate:false,gratitude:false}));
+</script>
+<script>
+  // Hand-render just the pillar header row exactly as rings.js builds it, to
+  // confirm the label reads "COMPLETED TASKS". (Full module needs app.js graph.)
+  const PILLARS=[
+    {key:'review',label:'Completed Tasks',icon:'✓'},
+    {key:'visualize',label:'Visualize',icon:'✦'},
+    {key:'meditate',label:'Meditate',icon:'☾'},
+  ];
+  const G={done:'#2FA94B',lite:'#1D3557',mid:'#5b6b82',dim:'#9aa6b6',track:'#e3e6ea',brand:'#F5A623'};
+  const rings={review:true,visualize:true,meditate:false};
+  const _mono='font-family:ui-monospace,monospace;';
+  const pillarHead=PILLARS.map(p=>{const done=!!rings[p.key];return `<div style="text-align:center;${_mono}font-size:10px;font-weight:800;letter-spacing:.4px;color:${done?G.done:G.lite};">
+      <span style="display:block;font-size:15px;margin-bottom:2px;color:${done?G.done:G.mid};">${p.icon}</span>${p.label.toUpperCase()}
+      <span style="display:block;font-size:8.5px;font-weight:800;color:${done?G.done:G.dim};margin-top:2px;">${done?'✓ ':''}+5</span></div>`;}).join('');
+  const HZ=[{k:'daily',l:'DAILY',c:'#ff5a5a'},{k:'weekly',l:'WEEKLY',c:'#f5b301'},{k:'monthly',l:'MONTHLY',c:'#28c7b7'},{k:'yearly',l:'YEARLY',c:'#8b7bf7'}];
+  const fr={review:{daily:1,weekly:.6,monthly:.3,yearly:.1},visualize:{daily:1,weekly:.4,monthly:.2,yearly:.05},meditate:{daily:0,weekly:.5,monthly:.25,yearly:.08}};
+  const barRows=HZ.map(h=>{const label=`<div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;color:${G.mid};"><span style="width:9px;height:9px;border-radius:50%;background:${h.c};"></span>${h.l}</div>`;
+    const bars=PILLARS.map(p=>{const f=fr[p.key][h.k];return `<div style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;"><div style="position:absolute;left:0;top:0;bottom:0;width:${(f*100)|0}%;background:${h.c};border-radius:6px;"></div></div>`;}).join('');
+    return label+bars;}).join('');
+  document.getElementById('ringsWidget').innerHTML=`
+    <div style="background:#fff;border:1px solid #e6e6e6;border-radius:16px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:#1D3557;">◈ THE BIG 3</span>
+        <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.brand};">73</b> pts today</span>
+      </div>
+      <div style="display:grid;grid-template-columns:64px 1fr 1fr 1fr;gap:9px 10px;align-items:center;"><div></div>${pillarHead}${barRows}</div>
+    </div>`;
+</script>
+</body></html>

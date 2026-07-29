@@ -1,9 +1,13 @@
 import { LS, toast, dayKey } from '../app.js';
 import { renderWrapup } from './wrapup.js';
 /* ── THE BIG 3 (daily reward tracker) ────────────────────
-   Three anchor disciplines — Review · Visualize · Meditate.
+   Three anchor disciplines — Completed Tasks · Visualize · Meditate.
    Close all 3 = a Perfect Day. GRATITUDE is a 4th BONUS ring:
    it earns points but is NOT required for a Perfect Day.
+
+   The "Completed Tasks" ring (internal key 'review', kept for storage/sync
+   compatibility) closes for any day with ≥1 finished task — derived from
+   task-wins, not sessions. Visualize/Meditate still close from their players.
 
    POINTS (derived, never stored — recomputed from the day's
    ring record + habit checkmarks + tasks completed today, so
@@ -22,7 +26,7 @@ import { renderWrapup } from './wrapup.js';
 ───────────────────────────────────────────────────────── */
 
 export const PILLARS = [
-  { key: 'review',    label: 'Review',    icon: '◎', hint: 'Review your goals' },
+  { key: 'review',    label: 'Completed Tasks', icon: '✓', hint: 'Finish a task (Action or Roadmap step)' },
   { key: 'visualize', label: 'Visualize', icon: '✦', hint: 'Creative visualization' },
   { key: 'meditate',  label: 'Meditate',  icon: '☾', hint: 'Meditation session' },
 ];
@@ -76,8 +80,17 @@ let syncRingsToSupabase = null;
 function _dayKey(d) { return dayKey(d); }
 function _todayKey() { return _dayKey(new Date()); }
 
-function _getRings(dateKey) {
+function _rawRings(dateKey) {
   return LS.get(`ci_rings_${dateKey}`) || { review: false, visualize: false, meditate: false, gratitude: false };
+}
+// The first pillar is "Completed Tasks": its ring closes for any day you finished
+// at least one task (Action / Roadmap step). That's DERIVED from task-wins, not
+// stored — so it stays in sync automatically (untick a task → ring re-opens) and
+// past days reflect real history. Visualize/Meditate/Gratitude are still stored.
+// Write paths use _rawRings so they never persist the derived value.
+function _getRings(dateKey) {
+  const r = _rawRings(dateKey);
+  return { ...r, review: _hasTaskWin(dateKey) };
 }
 function _setRings(dateKey, rings) {
   LS.set(`ci_rings_${dateKey}`, rings);
@@ -125,6 +138,20 @@ function _taskWinCount(dateKey) {
   const wins = LS.get('ci_wins') || [];
   return wins.filter(w => w.date === dateKey && /^(wrapact-|task-)/.test(String(w.src || ''))).length;
 }
+// Set of days with ≥1 completed task — memoized so the 365-day ring scan doesn't
+// re-filter every win on every _getRings call. Cache key = win count + newest ts,
+// which changes on any add/remove (unshift/delete), so it self-invalidates.
+let _twCache = { key: null, set: null };
+function _taskWinDates() {
+  const wins = LS.get('ci_wins') || [];
+  const cacheKey = wins.length + ':' + (wins[0] ? wins[0].ts : 0);
+  if (_twCache.key === cacheKey) return _twCache.set;
+  const set = new Set();
+  for (const w of wins) if (/^(wrapact-|task-)/.test(String(w.src || ''))) set.add(w.date);
+  _twCache = { key: cacheKey, set };
+  return set;
+}
+function _hasTaskWin(dateKey) { return _taskWinDates().has(dateKey); }
 export function dailyPoints(dateKey) {
   const key = dateKey || _todayKey();
   const r = _getRings(key);
@@ -195,13 +222,14 @@ export function ringsWeekSummary() {
 
 /* ── Toggle one ring for today (tap) ─────────────────── */
 export function toggleRing(key) {
+  if (key === 'review') return;   // Completed-Tasks ring is derived from tasks, not tappable
   const today = _todayKey();
-  const rings = _getRings(today);
+  const rings = _rawRings(today);
   if (!(key in rings)) return;
-  const wasPerfect = _isPerfect(rings);
+  const wasPerfect = _isPerfect(_getRings(today));
   rings[key] = !rings[key];
   _setRings(today, rings);
-  if (!wasPerfect && _isPerfect(rings)) _celebratePerfect();
+  if (!wasPerfect && _isPerfect(_getRings(today))) _celebratePerfect();
   renderRings();
   renderWrapup();
 }
@@ -211,7 +239,10 @@ export function totalPerfectDays() {
   let n = 0;
   try {
     for (const k of Object.keys(localStorage)) {
-      if (k.startsWith('ci_rings_') && _isPerfect(LS.get(k) || {})) n++;
+      if (!k.startsWith('ci_rings_')) continue;
+      // Use the derived reader so a Perfect Day reflects Completed-Tasks, not the
+      // stale stored 'review' flag from the old affirmation-based pillar.
+      if (_isPerfect(_getRings(k.slice('ci_rings_'.length)))) n++;
     }
   } catch (e) {}
   return n;
@@ -235,7 +266,7 @@ export function pillarForSrc(src) {
   if (/gratitude/.test(s)) return 'gratitude';
   if (/meditation/.test(s)) return 'meditate';
   if (/creative-viz|3min-viz|viz-player|visualization|manifest|art-frame/.test(s)) return 'visualize';
-  if (/affirmation|recite|ass-template/.test(s)) return 'review';
+  // 'review' is no longer session-closed — it's the derived Completed-Tasks ring.
   return null;
 }
 
@@ -244,15 +275,16 @@ export function pillarForSrc(src) {
 export function markPillar(key) {
   const valid = PILLARS.some(p => p.key === key) || key === GRATITUDE.key;
   if (!valid) return;
+  if (key === 'review') return;   // Completed-Tasks ring is derived from tasks, not sessions
   const today = _todayKey();
-  const rings = _getRings(today);
-  const wasPerfect = _isPerfect(rings);
+  const rings = _rawRings(today);
+  const wasPerfect = _isPerfect(_getRings(today));
   if (!rings[key]) { rings[key] = true; _setRings(today, rings); }
 
   if (key === 'visualize') LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
   if (key === 'meditate')  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
 
-  if (!wasPerfect && _isPerfect(rings)) _celebratePerfect();
+  if (!wasPerfect && _isPerfect(_getRings(today))) _celebratePerfect();
   renderRings();
   renderWrapup();
 }
@@ -387,9 +419,9 @@ export function renderRings() {
   const { tier, next, total } = currentTier();
   const points = dailyPoints(today);
 
-  // 3 anchor rings — DISPLAY ONLY. They close only when a real session finishes
-  // (playerFinished → markPillar), never by tapping, so the score can't be faked.
-  // Each anchor is now 4 nested horizon rings; the center shows today's streak.
+  // 3 anchor rings — DISPLAY ONLY, never faked by tapping. Completed Tasks closes
+  // from finishing a task; Visualize/Meditate close from a real session
+  // (playerFinished → markPillar). Each is 4 nested horizons; center = streak.
   const stats = _allAnchorStats();
 
   // Horizontal grid: rows = horizons (Daily→Yearly), columns = the 3 pillars.
@@ -398,7 +430,7 @@ export function renderRings() {
   const pillarHead = PILLARS.map(p => {
     const done = !!rings[p.key];
     const s = stats[p.key];
-    const tip = done ? `${p.label} done today` : `Closes when you finish a ${p.label.toLowerCase()} session`;
+    const tip = done ? `${p.label} done today` : p.hint;
     return `<div title="${tip}" style="text-align:center;${_mono}font-size:10px;font-weight:800;letter-spacing:.4px;color:${done ? G.done : G.lite};">
         <span style="display:block;font-size:15px;margin-bottom:2px;color:${done ? G.done : G.mid};">${p.icon}</span>${p.label.toUpperCase()}
         <span style="display:block;font-size:8.5px;font-weight:800;color:${done ? G.done : G.dim};margin-top:2px;">${done ? '✓ ' : ''}+${PTS.anchor}</span>
