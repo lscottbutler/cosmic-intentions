@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Note</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(circle at 50% 35%, #1c1c22 0%, #0b0b0d 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    min-height: 100%; padding: 28px; text-align: center; overflow: hidden;
+  }
+  .wrap { max-width: 620px; width: 100%; }
+  .cat {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: #e0102b; font-weight: 800; margin-bottom: 22px; opacity: .9;
+  }
+  .note {
+    font-size: clamp(22px, 4.4vw, 34px); font-weight: 700; line-height: 1.5;
+    letter-spacing: .2px; color: #fff;
+    animation: rise .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .controls { margin-top: 34px; display: flex; gap: 12px; justify-content: center; }
+  .btn {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+    color: #fff; border-radius: 999px; padding: 10px 22px; font-size: 14px;
+    font-weight: 700; cursor: pointer; letter-spacing: .5px;
+  }
+  .btn.next { background: #e0102b; border-color: #e0102b; }
+  .bar { position: fixed; top: 0; left: 0; height: 3px; background: #e0102b; width: 0; }
+  .hint { margin-top: 16px; font-size: 12px; color: #666; letter-spacing: .5px; }
+</style>
+</head>
+<body>
+  <div class="bar" id="bar"></div>
+  <div class="wrap" id="wrap" title="Tap to continue">
+    <div class="cat" id="cat"></div>
+    <div class="note" id="note">…</div>
+    <div class="controls">
+      <button class="btn" id="closeBtn">✕ Close</button>
+      <button class="btn next" id="nextBtn">Next ›</button>
+    </div>
+    <div class="hint">Tap anywhere to continue</div>
+  </div>
+
+<script>
+  var HOLD_MS = 8000;   // how long a note card stays up before auto-advancing
+  var CAT_LABEL = { affirmation:'Affirmation', belief:'Belief', reminder:'Reminder', inspiration:'Inspiration', quote:'Quote' };
+
+  var data = { text: '', cat: '' };
+  try { data = JSON.parse(localStorage.getItem('ci_note_card') || '{}') || {}; } catch (e) {}
+  document.getElementById('note').textContent = data.text || 'Your note';
+  document.getElementById('cat').textContent  = CAT_LABEL[data.cat] || 'Note';
+
+  function advance() {
+    try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
+    closeMe();
+  }
+  function closeMe() {
+    try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
+    if (history.length > 1) history.back(); else window.close();
+  }
+
+  var done = false;
+  function finishOnce() { if (done) return; done = true; advance(); }
+
+  document.getElementById('nextBtn').addEventListener('click', function (e) { e.stopPropagation(); finishOnce(); });
+  document.getElementById('closeBtn').addEventListener('click', function (e) { e.stopPropagation(); done = true; closeMe(); });
+  document.body.addEventListener('click', function () { finishOnce(); });
+
+  // Progress bar + auto-advance.
+  var bar = document.getElementById('bar');
+  var start = null;
+  function tick(ts) {
+    if (start === null) start = ts;
+    var p = Math.min(1, (ts - start) / HOLD_MS);
+    bar.style.width = (p * 100) + '%';
+    if (p >= 1) { finishOnce(); return; }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>
