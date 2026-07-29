@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+  :root{--ink:#1D3557;--brand:#F2911E;--teal-ui:#1AA5BA;--purple:#7C5CC4;}
+  body{background:#0f1216;font-family:system-ui,Arial;margin:0;padding:20px;max-width:460px;}
+  .med-dot{width:52px;height:52px;border-radius:50%;background:#fff;border:4px solid var(--brand);color:var(--ink);font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 2px 5px rgba(0,0,0,.25);}
+</style></head><body>
+  <button style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;">
+    <span style="font-size:22px;">♥</span><span style="flex:1;font-size:16px;">Gratitude</span><span style="font-size:20px;opacity:.8;">⌄</span>
+  </button>
+  <div style="background:var(--brand);padding:9px;border-radius:12px;">
+    <div style="background:var(--teal-ui);border-radius:9px;padding:18px 14px 16px;display:flex;align-items:center;gap:14px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:13px 10px;flex:1;">
+        <button class="med-dot">1</button><button class="med-dot">3</button><button class="med-dot">5</button><button class="med-dot">10</button>
+        <button class="med-dot">15</button><button class="med-dot">20</button><button class="med-dot">30</button><button class="med-dot">45</button>
+      </div>
+      <button style="flex:0 0 auto;align-self:stretch;background:var(--purple);border:none;border-radius:8px;padding:0 16px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:5px;">
+        <span style="width:26px;height:3px;background:#fff;border-radius:2px;"></span><span style="width:26px;height:3px;background:#fff;border-radius:2px;"></span><span style="width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+      </button>
+    </div>
+  </div>
+</body></html>

@@ -516,11 +516,33 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </div>
           </div>
         </div>
-        <button onclick="toast('Gratitude player is coming soon.','info')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <!-- GRATITUDE — inline dropdown (like Meditate): reveals the gratitude timer picker below -->
+        <button onclick="var b=document.getElementById('gratBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.grat-chev').textContent=open?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">♥</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Gratitude</span>
-          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span class="grat-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
+        <!-- GRATITUDE picker — teal timer grid; hidden until Gratitude is tapped. Each dot plays the gratitude session, which closes the Big 3 Gratitude ring on finish. -->
+        <div data-player-box id="gratBox" style="display:none; background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
+          <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=1', event)">1</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=3', event)">3</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=5', event)">5</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=10', event)">10</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=15', event)">15</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=20', event)">20</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=30', event)">30</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=45', event)">45</button>
+            </div>
+            <button title="Close" onclick="document.getElementById('gratBox').style.display='none';"
+              style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+              <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
+            </button>
+          </div>
+        </div>
 
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
