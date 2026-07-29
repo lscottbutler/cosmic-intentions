@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>body{background:#0f1216;font-family:system-ui,Arial;margin:0;padding:20px;max-width:460px;}</style>
+</head><body><div id="list"></div>
+<script>
+  const rows=[['Meditation','1 min',true],['Meditation','5 min',false],['I AM ONE OF THE FUNNIEST PEOPLE EVER.','Mindset',true]];
+  document.getElementById('list').innerHTML = rows.map(([label,meta,on])=>`
+    <div style="display:flex;align-items:center;gap:12px;background:${on?'#261515':'#1A1A1A'};border:1px solid ${on?'#e02020':'#333'};border-radius:6px;padding:11px 14px;margin-bottom:6px;">
+      <span style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>
+      <input type="checkbox" ${on?'checked':''} style="width:20px;height:20px;accent-color:#e02020;">
+      <span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</span>
+      <span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${meta}</span>
+      <button style="flex-shrink:0;background:none;border:none;color:#c76;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:4px;">&times;</button>
+    </div>`).join('');
+</script>
+</body></html>

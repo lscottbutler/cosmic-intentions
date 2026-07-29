@@ -66,6 +66,22 @@ export function closePlayerColumn() {
 const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
 
+/* Stable identity for a favorite, so a row's × can drop the right one. */
+function favKey(f) {
+  const t = favType(f);
+  if (t === 'note') return 'note:' + f.id;
+  if (f.player === 'mindset') return 'mindset:' + (f.id || f.goal || f.title || '');
+  return 'p:' + (f.player || t) + ':' + (f.minutes != null ? f.minutes : '') + ':' + (f.id || f.title || '');
+}
+/* Remove one favorite from the autoplay list (unpins it — same as the ♥). */
+function removeFavorite(f) {
+  const key = favKey(f);
+  const next = readFavs().filter(x => favKey(x) !== key);
+  try { localStorage.setItem('ci_favorites', JSON.stringify(next)); } catch (e) {}
+  if (typeof window !== 'undefined' && typeof window.toast === 'function') window.toast('Removed from My Favorites Autoplay', 'info');
+  renderFavorites();
+}
+
 /* ── TYPED FAVORITES ──────────────────────────────────────────
    Every favorite carries a `type`. PLAYABLE types are audio sessions that
    loop in the sleep-player; everything else is a jump-to shortcut (open a
@@ -157,8 +173,10 @@ export function renderFavorites() {
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
       `<span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
-      `<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${_meta}</span>`;
+      `<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${_meta}</span>` +
+      `<button class="fav-remove" title="Remove from favorites" style="flex-shrink:0;background:none;border:none;color:#c76;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:4px;">&times;</button>`;
     const cb = row.querySelector('input');
+    row.querySelector('.fav-remove').addEventListener('click', (e) => { e.stopPropagation(); removeFavorite(f); });
     cb.checked = true;                    // default: the whole day is queued, ready to Play
     row.style.borderColor = '#e02020';
     row.style.background  = '#261515';
