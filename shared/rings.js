@@ -91,7 +91,12 @@ function _isPerfect(r) {
 // Ticked habits for a day = every true entry in ci_habits_<date>.
 function _doneHabitCount(dateKey) {
   const d = LS.get(`ci_habits_${dateKey}`) || {};
-  return Object.values(d).filter(Boolean).length;
+  // Count only ticks that map to a habit still on the list. Orphaned entries —
+  // from a deleted/renamed habit, or an id mismatch after a Supabase resync —
+  // must NOT award phantom points, or "pts today" drifts above what's actually
+  // checked (the "19 pts / zero visible tracking" bug).
+  const ids = new Set((LS.get('ci_habit_list') || []).map(h => h && h.id));
+  return Object.keys(d).filter(id => d[id] && ids.has(id)).length;
 }
 // Mind Loop earns its single daily point once awardMindLoopPoint() fires.
 function _mindLoopEarned(dateKey) {
