@@ -262,10 +262,12 @@ function _openFav(f) {
     openPlayerInColumn(`players/note-card.html?_=${Date.now()}`);
     return;
   }
-  // Goal favorite → play that goal's full mindset once (so the loop advances).
-  if (f.player === 'mindset' && f.goal != null && typeof window.__ciGoalSlides === 'function') {
-    const slides = window.__ciGoalSlides(f.goal) || [];
-    if (slides.length) { try { localStorage.setItem('ci_ass_slides', JSON.stringify(slides)); localStorage.setItem('ci_goal_title', f.title || ''); } catch (e) {} }
+  // Goal favorite → play THAT goal's full mindset once (so the loop advances).
+  // Resolve by id/title (not the drifting stored index) and ALWAYS overwrite
+  // ci_ass_slides, so it can never fall back to a previous goal's slides.
+  if (f.player === 'mindset') {
+    const slides = (typeof window.__ciGoalSlidesForFav === 'function' ? window.__ciGoalSlidesForFav(f) : []) || [];
+    try { localStorage.setItem('ci_ass_slides', JSON.stringify(slides)); localStorage.setItem('ci_goal_title', f.title || ''); } catch (e) {}
     openPlayerInColumn(`players/ass-template.html?type=mindset&once=1&_=${Date.now()}`);
     return;
   }

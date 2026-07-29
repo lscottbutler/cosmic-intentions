@@ -2409,6 +2409,22 @@ function goalMindsetSlides(idx) {
    slides without importing app internals. */
 if (typeof window !== 'undefined') window.__ciGoalSlides = goalMindsetSlides;
 
+/* Resolve a MINDSET favorite to the RIGHT goal's slides. Favorites saved the
+   goal by array INDEX, which drifts when goals are added/removed/reordered — so
+   a Tesla favorite could end up playing another goal's affirmations. Match by
+   the stable goal id first, then the saved title, and only fall back to the
+   stored index. */
+function _normTitle(t) { return String(t || '').replace(/^\s*i am\s+/i, '').trim().toLowerCase(); }
+if (typeof window !== 'undefined') window.__ciGoalSlidesForFav = function (fav) {
+  if (!fav) return [];
+  let idx = -1;
+  if (fav.goalId != null) idx = intentions.findIndex(g => g && g.id === fav.goalId);
+  if (idx < 0) { const key = _normTitle(fav.title); if (key) idx = intentions.findIndex(g => g && _normTitle(g.title) === key); }
+  if (idx < 0 && Number.isInteger(fav.goal) && intentions[fav.goal]) idx = fav.goal;
+  if (idx < 0) return [];
+  return goalMindsetSlides(idx) || [];
+};
+
 /* ♥ on a goal box — toggle the goal in the FAVORITES loop (plays its full
    mindset). Stored in ci_favorites as { player:'mindset', goal:idx, title }. */
 export function toggleGoalFavorite(idx, ev) {
@@ -2417,9 +2433,9 @@ export function toggleGoalFavorite(idx, ev) {
   const title = (intn.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
   let favs; try { favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { favs = []; }
   if (!Array.isArray(favs)) favs = [];
-  const at = favs.findIndex(f => f && f.player === 'mindset' && f.goal === idx);
+  const at = favs.findIndex(f => f && f.player === 'mindset' && ((intn.id != null && f.goalId === intn.id) || f.goal === idx));
   if (at >= 0) { favs.splice(at, 1); toast('Removed from favorites', 'success'); }
-  else { favs.push({ type: 'mindset', player: 'mindset', goal: idx, title }); toast('Added to favorites loop ♥', 'success'); }
+  else { favs.push({ type: 'mindset', player: 'mindset', goal: idx, goalId: intn.id, title }); toast('Added to favorites loop ♥', 'success'); }
   localStorage.setItem('ci_favorites', JSON.stringify(favs));
   renderVaultSidebar();
   const box = document.getElementById('favorites-list');
