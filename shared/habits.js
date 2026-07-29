@@ -22,6 +22,21 @@ const DEFAULT_HABITS = [
 
 // Banner categories, in display order. '' = Unsorted (shown last).
 export const HABIT_CATS = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
+
+// Second tag: life-DOMAIN (what a habit is ABOUT) — independent of the
+// time-of-day banner above. Grouped so the editor dropdown renders as scannable
+// <optgroup>s. Each habit stores its choice in `domain` ('' = none).
+export const HABIT_DOMAINS = [
+  { group: 'Health & Body',       items: ['Fitness', 'Nutrition', 'Hydration', 'Sleep', 'Fasting', 'Supplements', 'Biometrics', 'Mobility', 'Recovery', 'Grooming'] },
+  { group: 'Mind & Emotion',      items: ['Meditation', 'Gratitude', 'Journaling', 'Visualization', 'Affirmations', 'Breathwork', 'Mood', 'Stress', 'Digital Detox', 'Stoicism'] },
+  { group: 'Growth & Learning',   items: ['Reading', 'Language', 'Skill', 'Study', 'Writing', 'Creativity', 'Music', 'Notes'] },
+  { group: 'Work & Productivity', items: ['Deep Work', 'Planning', 'Review', 'Goals', 'Email', 'Admin', 'Networking'] },
+  { group: 'Wealth & Finance',    items: ['Budgeting', 'Investing', 'Expenses', 'Business', 'Bookkeeping'] },
+  { group: 'Relationships',       items: ['Family', 'Partner', 'Friends', 'Kindness', 'Communication'] },
+  { group: 'Spirit & Purpose',    items: ['Prayer', 'Spiritual Reading', 'Nature', 'Service', 'Purpose'] },
+];
+const HABIT_DOMAIN_SET = new Set(HABIT_DOMAINS.flatMap(g => g.items));
+function _domain(h) { return HABIT_DOMAIN_SET.has(h && h.domain) ? h.domain : ''; }
 const CAT_COLORS = {
   MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4',
   BEDTIME: '#3B4A6B', HEALTH: '#48B860', '': '#5E5E5E',
@@ -112,6 +127,15 @@ export function pbSetHabitCat(id, cat) {
   _saveList(list);
   _refresh();
 }
+/* Set a habit's life-domain tag (the second axis, independent of cat/time). */
+export function pbSetHabitDomain(id, domain) {
+  const list = getHabitList();
+  const h = list.find(x => x.id === id);
+  if (!h) return;
+  h.domain = HABIT_DOMAIN_SET.has(domain) ? domain : '';
+  _saveList(list);
+  _refresh();
+}
 export function pbDeleteHabit(id) {
   _saveList(getHabitList().filter(x => x.id !== id));
   _refresh();
@@ -132,9 +156,11 @@ export function pbMoveHabit(id, dir) {
 
 /* One tickable habit row. */
 function _habitRow(h, on) {
+  const dom = _domain(h);
   return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
     <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
     <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
+    ${dom ? `<span title="${esc(dom)}" style="flex-shrink:0;font-size:8px;font-weight:800;letter-spacing:.3px;color:var(--muted);border:1px solid var(--widget-border);border-radius:5px;padding:1px 4px;white-space:nowrap;">${esc(dom)}</span>` : ''}
   </div>`;
 }
 
@@ -239,6 +265,10 @@ export function renderPBHabitList() {
   const arrow = 'width:30px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#454545;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:10px;line-height:1;';
   const catOpts = (cur) => ['<option value=""' + (cur === '' ? ' selected' : '') + '>— Unsorted —</option>']
     .concat(HABIT_CATS.map(c => `<option value="${c}"${cur === c ? ' selected' : ''}>${c}</option>`)).join('');
+  const domainOpts = (cur) => '<option value=""' + (cur === '' ? ' selected' : '') + '>— No category —</option>'
+    + HABIT_DOMAINS.map(g => `<optgroup label="${g.group}">`
+        + g.items.map(d => `<option value="${d}"${cur === d ? ' selected' : ''}>${d}</option>`).join('')
+        + '</optgroup>').join('');
 
   let html = '';
   [...HABIT_CATS, ''].forEach(cat => {
@@ -262,6 +292,11 @@ export function renderPBHabitList() {
             style="flex:1;min-width:0;box-sizing:border-box;padding:9px 8px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:12px;">${catOpts(_cat(h))}</select>
           <button onclick="pbDeleteHabit('${h.id}')" title="Delete habit"
             style="flex-shrink:0;width:34px;height:34px;background:#3a1010;border:1px solid #5a1a1a;color:#ff8a8a;border-radius:8px;cursor:pointer;font-size:15px;">✕</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+          <span style="flex-shrink:0;font-size:9px;font-weight:800;letter-spacing:1px;color:#9a9a9a;">CATEGORY</span>
+          <select onchange="pbSetHabitDomain('${h.id}',this.value)" title="What this habit is about"
+            style="flex:1;min-width:0;box-sizing:border-box;padding:9px 8px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:12px;">${domainOpts(_domain(h))}</select>
         </div>
       </div>`;
     });
