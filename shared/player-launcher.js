@@ -114,29 +114,15 @@ export function renderFavorites() {
   const list = document.getElementById('favorites-list');
   if (!list) return;
   const favs = readFavs();
-  if (!favs.length) {
-    list.innerHTML = '<div style="color:#777;font-size:13px;padding:8px 2px;">No favorites yet — tap ♥ in any player.</div>';
+  // Daily Focus = the "Play My Day" playlist: playable audio sessions only.
+  // Pinned jump-to shortcuts (tasks / pages / goals) are intentionally not
+  // listed here — this page is the play queue, not a bookmark list.
+  const playable = favs.filter(favIsPlayable);
+  if (!playable.length) {
+    list.innerHTML = '<div style="color:#777;font-size:13px;padding:8px 2px;">No sessions pinned yet — tap ♥ in any player.</div>';
     return;
   }
   list.innerHTML = '';
-
-  const links    = favs.filter(f => !favIsPlayable(f));
-  const playable = favs.filter(favIsPlayable);
-
-  // ── Jump-to favorites (goal / task / video / page) — clickable shortcuts.
-  links.forEach(f => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
-    const icon = document.createElement('span'); icon.style.cssText = 'font-size:16px;flex-shrink:0;'; icon.textContent = FAV_ICON[favType(f)] || '★';
-    const ttl  = document.createElement('span'); ttl.style.cssText = 'flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'; ttl.textContent = f.title || FAV_LABEL[favType(f)] || favType(f);
-    const chev = document.createElement('span'); chev.style.cssText = 'color:#9a9a9a;font-size:18px;flex-shrink:0;'; chev.textContent = '›';
-    row.append(icon, ttl, chev);
-    row.addEventListener('click', () => openFavorite(f));
-    list.appendChild(row);
-  });
-
-  // The loop playlist below is for audio-session favorites only.
-  if (!playable.length) return;
 
   // Loops control — how many times to play the whole selected list.
   const loops = document.createElement('div');
