@@ -300,7 +300,13 @@ export function markPillar(key) {
   const today = _todayKey();
   const rings = _rawRings(today);
   const wasPerfect = _isPerfect(_getRings(today));
-  if (!rings[key]) { rings[key] = true; _setRings(today, rings); }
+  if (!rings[key]) {
+    rings[key] = true; _setRings(today, rings);
+    // Confirm the credit so a completed session visibly "registers" on the board.
+    const meta = PILLARS.find(p => p.key === key) || (key === GRATITUDE.key ? GRATITUDE : MEDITATE);
+    const val  = key === GRATITUDE.key ? PTS.gratitude : PTS.anchor;
+    try { toast(`✦ ${meta.label} complete · +${val}`, 'success'); } catch (e) {}
+  }
 
   if (key === 'visualize') LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
   if (key === 'meditate')  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
