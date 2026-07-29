@@ -464,7 +464,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
-        <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';if(open){var p=document.getElementById('medPanel'),n=document.getElementById('medNav');if(p)p.classList.add('open');if(n)n.classList.add('open');}" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
           <span class="med-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
@@ -488,31 +488,17 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           .med-panel-collapse.open { max-height:360px; opacity:1; margin-top:9px; }
         </style>
         <div data-player-box id="medBox" style="display:none; background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
-          <div class="med-banner-wrap">
-            <img src="images/meditation-banner.png" alt="Meditations" />
-            <button class="med-navcircle" id="medNav" title="Show / hide timers"
-              onclick="document.getElementById('medPanel').classList.toggle('open'); this.classList.toggle('open');">
-              <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="med-panel-collapse" id="medPanel">
-            <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
-              <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
-                <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
-              </div>
-              <button title="Close" onclick="document.getElementById('medPanel').classList.remove('open'); document.getElementById('medNav').classList.remove('open');"
-                style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-                <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
-              </button>
+          <!-- Meditation timer grid only — banner + collapse chrome removed. -->
+          <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px;">
+            <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px;">
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
+              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
             </div>
           </div>
         </div>
