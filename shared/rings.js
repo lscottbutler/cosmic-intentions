@@ -9,8 +9,9 @@ import { renderWrapup } from './wrapup.js';
    reflect real history:
      • Completed Tasks (internal key 'review') — ≥1 task finished that day
      • Habits — ≥1 daily habit ticked that day
-   Visualize + Meditate close from their players (Meditate is session-only /
-   un-fakeable); Gratitude is a tappable bonus.
+   Visualize/Meditate/Gratitude all close ONLY from completing their player
+   session (un-fakeable — no tap grants credit). Gratitude's heart launches
+   its player; Meditate is launched from its own grid.
 
    POINTS (derived, never stored — recomputed from the day's
    ring record + habit checkmarks + tasks completed today, so
@@ -231,9 +232,18 @@ export function ringsWeekSummary() {
 }
 
 /* ── Toggle one ring for today (tap) ─────────────────── */
+/* Launch the gratitude session in the dashboard's player column. Credit is
+   granted only when it finishes (playerFinished → markPillar('gratitude')). */
+export function launchGratitude(ev) {
+  const src = `players/gratitude.html?_=${_todayKey()}`;
+  if (typeof window !== 'undefined' && typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(src, ev);
+  else if (typeof window !== 'undefined') window.location.href = src;
+}
+
 export function toggleRing(key) {
-  // review/habits are derived; meditate is un-fakeable (session-only) — none tap.
-  if (key === 'review' || key === 'habits' || key === 'meditate') return;
+  // All non-tappable: review/habits are derived; meditate & gratitude are
+  // session-only (un-fakeable) — no tap ever grants credit.
+  if (key === 'review' || key === 'habits' || key === 'meditate' || key === 'gratitude') return;
   const today = _todayKey();
   const rings = _rawRings(today);
   if (!(key in rings)) return;
@@ -466,20 +476,23 @@ export function renderRings() {
 
   // Bonus rings (Gratitude, then Meditate) — earn points, not required for a
   // Perfect Day. Gratitude is tappable; Meditate closes only from a session.
-  const _bonusCol = { gratitude: G.grat, meditate: '#8b7bf7' };
-  const _bonusPts = { gratitude: PTS.gratitude, meditate: PTS.anchor };
+  // Both bonus rings are un-fakeable — earned only by completing their session,
+  // never a tap-to-credit. Gratitude's heart LAUNCHES its player (finish → ring
+  // closes via markPillar); Meditate is a static indicator (launched from its
+  // own grid). onclick null = static.
+  const _bonusCfg = {
+    gratitude: { col: G.grat,     pts: PTS.gratitude, onclick: 'launchGratitude(event)', sub: 'Bonus ring — play to earn (not required for a Perfect Day)', title: 'Play a gratitude session' },
+    meditate:  { col: '#8b7bf7',  pts: PTS.anchor,    onclick: null,                     sub: 'Bonus ring — closes from a meditation session',              title: 'Closes when you finish a meditation session' },
+  };
   const bonus = BONUS.map(b => {
     const on  = !!rings[b.key];
-    const col = _bonusCol[b.key] || G.grat;
-    const val = _bonusPts[b.key] || PTS.gratitude;
-    // Meditate is un-fakeable: it closes ONLY when a real meditation session
-    // finishes (markPillar), so its ring is a static indicator, not a tap toggle.
-    const tappable = b.key !== 'meditate';
+    const cfg = _bonusCfg[b.key] || _bonusCfg.gratitude;
+    const col = cfg.col, val = cfg.pts;
     const icon = `${_ringSVG(44, 18, 4, on, col)}<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${on ? col : G.dim};">${b.icon}</span>`;
-    const knob = tappable
-      ? `<button onclick="toggleRing('${b.key}')" title="${b.hint}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">${icon}</button>`
-      : `<span title="Closes when you finish a meditation session" style="position:relative;width:44px;height:44px;flex:0 0 auto;display:inline-block;">${icon}</span>`;
-    const sub = tappable ? 'Bonus ring — not required for a Perfect Day' : 'Bonus ring — closes from a meditation session';
+    const knob = cfg.onclick
+      ? `<button onclick="${cfg.onclick}" title="${cfg.title}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">${icon}</button>`
+      : `<span title="${cfg.title}" style="position:relative;width:44px;height:44px;flex:0 0 auto;display:inline-block;">${icon}</span>`;
+    const sub = cfg.sub;
     return `
     <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};display:flex;align-items:center;gap:12px;">
       ${knob}

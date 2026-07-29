@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gratitude | Cosmic Intentions</title>
+  <script>(function(){var t;try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark';}catch(e){t='dark';}document.documentElement.setAttribute('data-theme',t);})();</script>
+  <style>
+    :root {
+      --frame-gray:  #8b8b8b;
+      --frame-width: 12px;
+      --frame-ratio: 5 / 6;
+      --accent:      #E0608A;     /* gratitude pink (frame + control pill) */
+      --bar:         #1c1c1c;
+      --bg:          #1a1a1a;
+    }
+    [data-theme="light"] { --bg:#EEF0F2; }
+    [data-theme="kids"]  { --bg:#FFF6E0; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
+    }
+    .frame {
+      position: relative;
+      width: min(95vw, 95vh * 5 / 6, 560px);
+      aspect-ratio: var(--frame-ratio);
+      border: var(--frame-width) solid var(--accent);
+      box-sizing: border-box;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    /* slideshow area — two crossfading layers */
+    .photo { position: relative; flex: 0 0 56%; background: #ffffff; overflow: hidden; }
+    .slide {
+      position: absolute; inset: 0;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: #ffffff;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .slide.on { opacity: 1; }
+    .panel {
+      flex: 1 1 auto;
+      position: relative;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+    .label {
+      margin: 0;
+      padding: 16px 16px 10px;
+      text-align: center;
+      font-size: clamp(13px, 3.2vw, 17px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #222;
+    }
+    .bar { background: var(--accent); border-radius: 0; padding: 14px 18px; box-shadow: none; }
+    .row { display: flex; align-items: center; justify-content: space-between; }
+    .scrubtrack {
+      position: absolute; top: 56%; left: 0; right: 0; height: 8px;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.35);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      z-index: 3; cursor: pointer; touch-action: none;
+    }
+    .scrubtrack::before { content: ''; position: absolute; left: 0; right: 0; top: -11px; bottom: -11px; }
+    .scrubfill {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+      background: #ffdd00; box-shadow: 0 0 8px rgba(255,221,0,0.85);
+      transition: width 1s linear; pointer-events: none;
+    }
+    .scrubdot {
+      position: absolute; top: 56%; left: 0; width: 16px; height: 16px;
+      background: radial-gradient(circle at center, #fff 0 3px, #000 3px 100%);
+      border: none; border-radius: 50%; transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.55); z-index: 4; pointer-events: none;
+      transition: left 1s linear;
+    }
+    .cbtn { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
+    .cbtn:active { transform: scale(0.92); }
+    .play { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .fav.on { color: #ff5a7a; }
+    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
+    .menu.hidden { display: none; }
+    .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .menu button:hover { background: #222; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="photo" id="photo">
+      <div class="slide" id="slideA"></div>
+      <div class="slide" id="slideB"></div>
+    </div>
+    <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
+    <div class="scrubdot" id="dot"></div>
+    <div class="panel">
+      <p class="label" id="label">gratitude</p>
+
+      <div class="menu hidden" id="menu">
+        <button id="mHome">Home page</button>
+        <button id="mPeg">My Pegboard</button>
+      </div>
+
+      <div class="bar">
+        <div class="row">
+          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
+          <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
+          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
+          <button class="cbtn" id="fwd" aria-label="Forward">&#9197;</button>
+          <button class="cbtn fav" id="fav" aria-label="Favorite">&#9825;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const PLAYER = 'gratitude';
+    const LABEL  = (m) => `${m} minute gratitude practice`;
+
+    /* ── Image slideshow ──────────────────────────────────────
+       Drop gratitude images in images/gratitude/ as gratitude.jpg,
+       gratitude-1.jpg … gratitude-8.jpg (any subset works — each is
+       probed, only ones that load are used). If NONE load yet, we fall
+       back to the meditation images so the player is never blank. */
+    const GRAT_IMAGES = ['gratitude.jpg', 'gratitude-1.jpg', 'gratitude-2.jpg', 'gratitude-3.jpg',
+                         'gratitude-4.jpg', 'gratitude-5.jpg', 'gratitude-6.jpg', 'gratitude-7.jpg', 'gratitude-8.jpg'];
+    const FALLBACK    = ['../images/meditation/meditation.jpg', '../images/meditation/meditation-1.jpg',
+                         '../images/meditation/meditation-2.jpg', '../images/meditation/meditation-3.jpg'];
+    const slideA = document.getElementById('slideA');
+    const slideB = document.getElementById('slideB');
+    let slides = [];          // urls that actually loaded
+    let slideIdx = 0;
+    let frontIsA = true;
+
+    function probe(url) {
+      return new Promise(res => { const im = new Image(); im.onload = () => res(url); im.onerror = () => res(null); im.src = url; });
+    }
+    (async function buildSlides() {
+      const found = (await Promise.all(GRAT_IMAGES.map(n => probe(`../images/gratitude/${n}`)))).filter(Boolean);
+      slides = found.length ? found : (await Promise.all(FALLBACK.map(probe))).filter(Boolean);
+      if (!slides.length) return;
+      slideA.style.backgroundImage = `url('${slides[0]}')`;
+      slideA.classList.add('on');
+      slideIdx = 0; frontIsA = true;
+    })();
+
+    function nextSlide() {
+      if (slides.length < 2) return;
+      slideIdx = (slideIdx + 1) % slides.length;
+      const incoming = frontIsA ? slideB : slideA;
+      const outgoing = frontIsA ? slideA : slideB;
+      incoming.style.backgroundImage = `url('${slides[slideIdx]}')`;
+      incoming.classList.add('on');
+      outgoing.classList.remove('on');
+      frontIsA = !frontIsA;
+    }
+
+    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 3;
+    const total = minutes * 60;
+    let timeRemaining = total;
+    document.getElementById('label').textContent = LABEL(minutes);
+    // Advance the slideshow evenly across the session (min 6s per image).
+    const SLIDE_MS = Math.max(6000, Math.round((total * 1000) / 8));
+
+    const dot = document.getElementById('dot');
+    const track = document.getElementById('track');
+    const fill = document.getElementById('fill');
+    const playBtn = document.getElementById('play');
+
+    function render() {
+      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
+      dot.style.left = pct + '%';
+      fill.style.width = pct + '%';
+    }
+    render();
+
+    /* ── tap / drag the track to seek ── */
+    let scrubbing = false;
+    function seekTo(clientX) {
+      const r = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      timeRemaining = Math.round(total * (1 - pct));
+      dot.style.transition = fill.style.transition = 'none';
+      render();
+    }
+    track.addEventListener('pointerdown', (e) => { scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
+    function endScrub() {
+      if (!scrubbing) return;
+      scrubbing = false;
+      dot.style.transition = fill.style.transition = '';
+      if (timeRemaining <= 0) endSession();
+    }
+    track.addEventListener('pointerup', endScrub);
+    track.addEventListener('pointercancel', endScrub);
+
+    /* ── close / parent navigation ── */
+    function closePlayer() {
+      try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
+      if (history.length > 1) history.back(); else window.close();
+    }
+    function nav(target) {
+      try {
+        if (window.parent && window.parent !== window) {
+          if (window.parent.closePlayerColumn) window.parent.closePlayerColumn();
+          if (window.parent.navTo) { window.parent.navTo(target); return; }
+        }
+      } catch (e) {}
+      window.location.href = '/';
+    }
+    /* Natural end → tell the parent so it can close the ring / advance a queue. */
+    function finishPlayer() {
+      try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
+      closePlayer();
+    }
+
+    /* ── ≡ menu ── */
+    const menu = document.getElementById('menu');
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
+    document.addEventListener('click', (e) => {
+      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== menuBtn) menu.classList.add('hidden');
+    });
+    document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
+    document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
+
+    /* ── ♥ favorite ── */
+    const favBtn = document.getElementById('fav');
+    const FAVS_KEY = 'ci_favorites';
+    const readFavs = () => { try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch (e) { return []; } };
+    const isFav = (a) => a.some(f => f.player === PLAYER && f.minutes === minutes);
+    function renderFav() { const on = isFav(readFavs()); favBtn.innerHTML = on ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', on); }
+    favBtn.onclick = () => {
+      let a = readFavs();
+      if (isFav(a)) a = a.filter(f => !(f.player === PLAYER && f.minutes === minutes));
+      else a.push({ player: PLAYER, minutes });
+      localStorage.setItem(FAVS_KEY, JSON.stringify(a));
+      renderFav();
+    };
+    renderFav();
+
+    /* ── bell ── */
+    function playBell() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        [660, 990].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = now + i * 0.18;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 2.3);
+        });
+      } catch (e) { console.log('Audio blocked:', e); }
+    }
+
+    /* ── voice-over cues (drop MP3s in images/gratitude/vo/) ──
+       Optional — if the files aren't there yet, playback silently no-ops
+       and the bell still closes the session. */
+    const VO = {
+      start: new Audio('../images/gratitude/vo/cue-start.mp3'),
+      half:  new Audio('../images/gratitude/vo/cue-half.mp3'),
+      near:  new Audio('../images/gratitude/vo/cue-near.mp3'),
+      end:   new Audio('../images/gratitude/vo/cue-end.mp3'),
+    };
+    Object.values(VO).forEach(a => { a.preload = 'auto'; });
+    const halfAt = Math.floor(total / 2);
+    const nearAt = (total - 60) > halfAt ? total - 60 : 0;
+    const fired  = new Set();
+    function playVO(a) { try { a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {} }
+    let unlocked = false;
+    function unlockAudio() {
+      if (unlocked) return; unlocked = true;
+      Object.values(VO).forEach(a => {
+        a.muted = true;
+        const p = a.play();
+        if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+      });
+    }
+    document.addEventListener('pointerdown', unlockAudio, { once: true });
+
+    /* ── timer + play/pause ── */
+    let timer = null;
+    let slideTimer = null;
+    let playing = false;
+    let ended = false;
+    function endSession() {
+      if (ended) return;
+      ended = true;
+      timeRemaining = 0;
+      setPlaying(false);
+      render();
+      playVO(VO.end);
+      setTimeout(() => { playBell(); setTimeout(finishPlayer, 4000); }, 6000);
+    }
+    function tick() {
+      timeRemaining--;
+      if (timeRemaining <= 0) { endSession(); return; }
+      render();
+      const elapsed = total - timeRemaining;
+      if (!fired.has('half') && elapsed >= halfAt) { fired.add('half'); playVO(VO.half); }
+      if (nearAt && !fired.has('near') && elapsed >= nearAt) { fired.add('near'); playVO(VO.near); }
+    }
+    function setPlaying(p) {
+      playing = p;
+      playBtn.innerHTML = p ? '&#9208;' : '&#9654;';
+      if (p && !timer) timer = setInterval(tick, 1000);
+      if (!p && timer) { clearInterval(timer); timer = null; }
+      // slideshow advances only while playing
+      if (p && !slideTimer) slideTimer = setInterval(nextSlide, SLIDE_MS);
+      if (!p && slideTimer) { clearInterval(slideTimer); slideTimer = null; }
+    }
+    playBtn.onclick = () => setPlaying(!playing);
+
+    const STEP = 10;
+    function adjust(delta) {
+      timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
+      render();
+      if (timeRemaining === 0) { endSession(); }
+    }
+    document.getElementById('rew').onclick = () => adjust(+STEP);
+    document.getElementById('fwd').onclick = () => adjust(-STEP);
+
+    // Auto-start after a brief beat; the opening cue plays as it begins.
+    setTimeout(() => {
+      setPlaying(true);
+      if (!fired.has('start')) { fired.add('start'); playVO(VO.start); }
+    }, 800);
+  </script>
+</body>
+</html>
