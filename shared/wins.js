@@ -40,6 +40,22 @@ export function winAdd() {
   _refresh();
 }
 
+/* Log a win from the Quick Win panel's inline input (id="qwWinInput").
+   Same store + refresh as winAdd — just a second entry point so the two
+   inputs don't share an element id. */
+export function qwWinAdd() {
+  const input = document.getElementById('qwWinInput');
+  if (!input) return;
+  const text = (input.value || '').trim();
+  if (!text) return;
+  const wins = getWins();
+  wins.unshift({ text: text.slice(0, 120), date: _todayKey(), ts: Date.now() });
+  _save(wins);
+  input.value = '';
+  toast('✦ Win logged', 'success');
+  _refresh();
+}
+
 export function winDelete(ts) {
   _save(getWins().filter(w => w.ts !== ts));
   _refresh();

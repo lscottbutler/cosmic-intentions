@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+  :root{--ink:#1D3557;--widget-band:#eef0f3;--widget-text:#1D3557;--widget-border:#e6e6e6;--vault-mono:ui-monospace,monospace;--muted:#8a8a8a;}
+  body{background:#fff;font-family:system-ui,Arial,sans-serif;margin:0;padding:20px;}
+  .panel{max-width:340px;border:1px solid #e6e6e6;border-radius:14px;padding:14px;}
+  .hdr{background:var(--ink);color:#fff;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700;}
+</style></head><body>
+<div class="panel">
+  <div class="hdr"><span style="color:#F5A623;">✦</span> Quick Win <span style="margin-left:auto;">⌄</span></div>
+  <div id="quickWinBody"></div>
+</div>
+<script>
+  const _tab='habit';
+  const TABS=[{key:'habit',label:'Habits'},{key:'todo',label:'Actions & Roadmap'}];
+  const winBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">
+      <input id="qwWinInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
+        style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
+      <button style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+    </div>`;
+  const tabBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">`+TABS.map(t=>
+    `<button style="flex:1;background:${_tab===t.key?'var(--ink)':'var(--widget-band)'};color:${_tab===t.key?'#fff':'var(--widget-text)'};border:none;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:700;cursor:pointer;">${t.label}</button>`
+  ).join('')+`</div>`;
+  const body = `<div style="padding:9px 2px;font-size:13px;color:var(--widget-text);">◯ MEDITATE FOR 15 MINUTES</div><div style="padding:9px 2px;font-size:13px;color:var(--widget-text);">◯ CI VIZ</div>`;
+  document.getElementById('quickWinBody').innerHTML = winBar + tabBar + `<div style="max-height:240px;overflow-y:auto;">${body}</div>`;
+</script>
+</body></html>
