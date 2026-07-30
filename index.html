@@ -447,6 +447,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="quickWinPanel" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px;margin:-4px 0 12px;">
           <div id="quickWinBody"></div>
         </div>
+        <!-- MY FAVORITES AUTOPLAY — jump to the ♥-pinned "Play My Day" page -->
+        <button onclick="navTo('dailyfocus')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;color:var(--pink,#ff8ab8);">&#9829;</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Favorites Autoplay</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
         <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
         <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
