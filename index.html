@@ -548,6 +548,75 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div id="sleepLoopWidget"></div>
         </div>
 
+        <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
+        <button onclick="var b=document.getElementById('goalsBox');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('.goals-chev').textContent=o?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+          <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9678;</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Goals</span>
+          <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+        </button>
+        <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
+             (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
+             #colb-selection-state), so it functions identically to its old location. -->
+        <div id="goalsBox" style="display:none; margin-bottom:16px;">
+
+        <!-- SELECTION STATE — visible until an intention is selected -->
+        <div id="colb-selection-state">
+
+        <!-- INTENTION LIST — goal cards -->
+        <div class="vault-list" id="vaultList"></div>
+
+        <!-- ALL pill + ADD INTENTION — one line -->
+        <div class="vault-add-wrap" id="colbAnchor" style="display:flex;align-items:center;gap:10px;margin-top:8px;margin-bottom:4px;">
+          <div class="vault-cats" id="vaultCats"></div>
+          <button class="vault-add-btn" onclick="vaultShowAddForm()" style="flex:1;">+ Add Intention</button>
+        </div>
+
+        <!-- ADD INTENTION FORM -->
+        <div class="vault-add-form hidden" id="addIntentionForm">
+          <div class="vault-add-form-inner">
+            <div class="vaf-label">New I AM Statement</div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:700;color:var(--text-warm);white-space:nowrap;flex-shrink:0;">I AM</span>
+              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
+                placeholder="proud owner of"
+                maxlength="60"
+                oninput="updateIamPreview()"
+                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
+            </div>
+
+            <input type="text" id="iam-field2" class="vaf-input"
+              placeholder="a Porsche 911"
+              maxlength="80"
+              oninput="updateIamPreview()"
+              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
+
+            <div id="iam-preview" style="
+              font-size:14px;font-weight:700;color:var(--text);
+              background:var(--card);border:1px solid var(--border);border-radius:8px;
+              padding:10px 14px;margin-bottom:12px;line-height:1.4;
+              min-height:42px;transition:opacity 0.2s;opacity:0.3;
+            ">I AM …</div>
+
+            <div class="vaf-btns">
+              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
+              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- end colb-selection-state -->
+
+        <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected. Inside the
+             "My Goals" dropdown so the selected goal's roadmap opens right here. -->
+        <div id="colb-active-state" style="display:none;">
+          <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
+          <div id="vaultWorkspaceHeader"></div>
+          <!-- WORKSPACE CONTENT — the single 10-step AI roadmap -->
+          <div id="layer-content-roadmap"></div>
+        </div><!-- end colb-active-state -->
+        </div><!-- end goalsBox -->
+
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
 
@@ -611,66 +680,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- "Which Direction?" + pillar buttons moved up (now below the date banner) -->
 
-        <!-- SELECTION STATE — visible until an intention is selected -->
-        <div id="colb-selection-state">
+        <!-- SELECTION STATE + ACTIVE WORKSPACE both moved UP into the "My Goals"
+             dropdown in the Which Direction list. -->
 
-        <!-- INTENTION LIST — goal cards beneath the tracker -->
-        <div class="vault-list" id="vaultList"></div>
-
-        <!-- ALL pill + ADD INTENTION — one line -->
-        <div class="vault-add-wrap" id="colbAnchor" style="display:flex;align-items:center;gap:10px;margin-top:8px;margin-bottom:4px;">
-          <div class="vault-cats" id="vaultCats"></div>
-          <button class="vault-add-btn" onclick="vaultShowAddForm()" style="flex:1;">+ Add Intention</button>
-        </div>
-
-        <!-- EMBEDDED PROGRESS WORKSPACE — inline below category filters -->
-
-        <!-- ADD INTENTION FORM -->
-        <div class="vault-add-form hidden" id="addIntentionForm">
-          <div class="vault-add-form-inner">
-            <div class="vaf-label">New I AM Statement</div>
-
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-              <span style="font-size:13px;font-weight:700;color:var(--text-warm);white-space:nowrap;flex-shrink:0;">I AM</span>
-              <input type="text" id="iam-field1" class="vaf-input" style="margin-bottom:0;flex:1;"
-                placeholder="proud owner of"
-                maxlength="60"
-                oninput="updateIamPreview()"
-                onkeydown="if(event.key==='Enter')document.getElementById('iam-field2').focus()" />
-            </div>
-
-            <input type="text" id="iam-field2" class="vaf-input"
-              placeholder="a Porsche 911"
-              maxlength="80"
-              oninput="updateIamPreview()"
-              onkeydown="if(event.key==='Enter')confirmAddIntention()" />
-
-            <div id="iam-preview" style="
-              font-size:14px;font-weight:700;color:var(--text);
-              background:var(--card);border:1px solid var(--border);border-radius:8px;
-              padding:10px 14px;margin-bottom:12px;line-height:1.4;
-              min-height:42px;transition:opacity 0.2s;opacity:0.3;
-            ">I AM …</div>
-
-            <div class="vaf-btns">
-              <button class="vaf-cancel" onclick="hideAddForm()">Cancel</button>
-              <button class="vaf-confirm" onclick="confirmAddIntention()">Add Intention</button>
-            </div>
-          </div>
-        </div>
-
-        </div><!-- end colb-selection-state -->
-
-        <!-- ACTIVE WORKSPACE STATE — shown when an intention is selected -->
-        <div id="colb-active-state" style="display:none;">
-
-        <!-- WORKSPACE HEADER — goal card + brand banner, filled by showVaultBuildSheet() -->
-        <div id="vaultWorkspaceHeader"></div>
-
-        <!-- WORKSPACE CONTENT — the single 10-step AI roadmap (start simple) -->
-        <div id="layer-content-roadmap"></div>
-
-        </div><!-- end colb-active-state -->
 
         <!-- Meditations picker moved up under the Meditate button (inline dropdown). -->
         <!-- COUNTDOWN player follows below. -->
