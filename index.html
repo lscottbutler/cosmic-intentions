@@ -366,10 +366,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
 
         <!-- TODAY'S 3 PILLARS — moved to Column B, just under the date banner; filled by renderRings() -->
+        <!-- (The Evening Wrap-Up story now renders INSIDE this card, above the pillars — see rings.js.) -->
         <div id="ringsWidget"></div>
-
-        <!-- EVENING WRAP-UP — the day's story, sits right under The Big 3; filled by renderWrapup() -->
-        <div id="wrapupWidget"></div>
 
         <!-- ACTION PLAN (#todayWillWidget) moved behind the My Roadmap button -> page-myroadmap -->
         <div id="winsWidget"></div>

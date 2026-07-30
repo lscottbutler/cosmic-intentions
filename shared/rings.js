@@ -536,6 +536,9 @@ export function renderRings() {
       </div>
       <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">🔥 ${streak} DAY STREAK</span></div>
 
+      <!-- Evening Wrap-Up story slot — filled by renderWrapup() (see call at end of renderRings). -->
+      <div id="wrapupWidget"></div>
+
       ${bigGrid}
       ${bonus}
       ${perfect ? `<div style="text-align:center;${_mono}font-size:10px;letter-spacing:1px;color:${G.done};margin:14px 0 4px;font-weight:800;">✦ PERFECT DAY — all 3 closed · +${PTS.perfect} bonus</div>` : ''}
@@ -557,6 +560,11 @@ export function renderRings() {
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">${weekCells}</div>
       </div>
     </div>`;
+
+  // Fill the Evening Wrap-Up story slot we just rendered above the pillars.
+  // Runtime call (NOT an import) → no circular-load risk; wrapup.js never calls
+  // back into renderRings, so there's no render loop.
+  if (typeof window !== 'undefined' && typeof window.renderWrapup === 'function') window.renderWrapup();
 }
 
 /* app.js calls this once, passing its Supabase upsert fn (see cross-device sync). */
