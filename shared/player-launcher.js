@@ -82,6 +82,39 @@ function removeFavorite(f) {
   renderFavorites();
 }
 
+/* ── TIME-DOT FAVORITING ──────────────────────────────────────
+   Toggle a session favorite ({player,minutes}) straight from a dashboard time-dot,
+   so you don't have to open the player and hunt for its ♥. Writes the SAME shape
+   the in-player heart does, so it autoplays in Play My Day
+   (players/<player>.html?t=<minutes>, see _openFav). */
+export function favSession(player, minutes, ev) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  minutes = Number(minutes);
+  const favs = readFavs();
+  const at = favs.findIndex(f => f && !f.type && f.player === player && Number(f.minutes) === minutes);
+  const on = at < 0;
+  if (on) favs.push({ player, minutes }); else favs.splice(at, 1);
+  try { localStorage.setItem('ci_favorites', JSON.stringify(favs)); } catch (e) {}
+  syncSessionHearts();
+  renderFavorites();   // no-op if the Favorites page isn't mounted; updates it if it is
+  if (typeof window !== 'undefined' && typeof window.toast === 'function') {
+    const label = FAV_LABEL[player] || player;
+    window.toast(on ? `${minutes}-min ${label} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+  }
+}
+/* Paint every dashboard time-dot heart (.dot-fav) filled/hollow from ci_favorites. */
+export function syncSessionHearts() {
+  const favs = readFavs();
+  document.querySelectorAll('.dot-fav').forEach(b => {
+    const p = b.getAttribute('data-player');
+    const m = Number(b.getAttribute('data-min'));
+    const on = favs.some(f => f && !f.type && f.player === p && Number(f.minutes) === m);
+    b.innerHTML = on ? '&#9829;' : '&#9825;';   // ♥ filled / ♡ hollow
+    b.classList.toggle('on', on);
+  });
+}
+if (typeof window !== 'undefined') { window.favSession = favSession; window.syncSessionHearts = syncSessionHearts; }
+
 /* ── TYPED FAVORITES ──────────────────────────────────────────
    Every favorite carries a `type`. PLAYABLE types are audio sessions that
    loop in the sleep-player; everything else is a jump-to shortcut (open a

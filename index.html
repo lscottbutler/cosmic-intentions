@@ -471,7 +471,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
-        <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
           <span class="med-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
@@ -482,6 +482,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             color:var(--ink); font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
             margin:0 auto; box-shadow:0 2px 5px rgba(0,0,0,.25); }
           .med-dot:hover { background:#fffceb; }
+          /* time-dot + its favorite heart, stacked. Tap number = play; tap heart = save to Autoplay. */
+          .dot-cell { display:flex; flex-direction:column; align-items:center; gap:3px; }
+          .dot-fav { background:none; border:none; cursor:pointer; font-size:18px; line-height:1; color:#e0102b; opacity:.5; padding:2px 4px; transition:opacity .15s, transform .1s; }
+          .dot-fav:hover { opacity:.85; }
+          .dot-fav:active { transform:scale(.85); }
+          .dot-fav.on { opacity:1; }
           .med-banner-wrap { position:relative; line-height:0; }
           .med-banner-wrap img { width:100%; display:block; border-radius:9px; }
           .med-navcircle { position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
@@ -498,19 +504,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <!-- Meditation timer grid only — banner + collapse chrome removed. -->
           <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px;">
             <div id="meditation-times-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px;">
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1</button><button class="dot-fav" data-player="meditation" data-min="1" onclick="favSession('meditation',1,event)" title="Favorite the 1-min meditation" aria-label="Favorite the 1-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3</button><button class="dot-fav" data-player="meditation" data-min="3" onclick="favSession('meditation',3,event)" title="Favorite the 3-min meditation" aria-label="Favorite the 3-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5</button><button class="dot-fav" data-player="meditation" data-min="5" onclick="favSession('meditation',5,event)" title="Favorite the 5-min meditation" aria-label="Favorite the 5-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10</button><button class="dot-fav" data-player="meditation" data-min="10" onclick="favSession('meditation',10,event)" title="Favorite the 10-min meditation" aria-label="Favorite the 10-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15</button><button class="dot-fav" data-player="meditation" data-min="15" onclick="favSession('meditation',15,event)" title="Favorite the 15-min meditation" aria-label="Favorite the 15-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20</button><button class="dot-fav" data-player="meditation" data-min="20" onclick="favSession('meditation',20,event)" title="Favorite the 20-min meditation" aria-label="Favorite the 20-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30</button><button class="dot-fav" data-player="meditation" data-min="30" onclick="favSession('meditation',30,event)" title="Favorite the 30-min meditation" aria-label="Favorite the 30-minute meditation">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45</button><button class="dot-fav" data-player="meditation" data-min="45" onclick="favSession('meditation',45,event)" title="Favorite the 45-min meditation" aria-label="Favorite the 45-minute meditation">&#9825;</button></div>
             </div>
           </div>
         </div>
         <!-- GRATITUDE — inline dropdown (like Meditate): reveals the gratitude timer picker below -->
-        <button onclick="var b=document.getElementById('gratBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.grat-chev').textContent=open?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="var b=document.getElementById('gratBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.grat-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">♥</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Gratitude</span>
           <span class="grat-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
@@ -519,14 +525,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div data-player-box id="gratBox" style="display:none; background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
           <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
             <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:13px 10px; flex:1;">
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=1', event)">1</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=3', event)">3</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=5', event)">5</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=10', event)">10</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=15', event)">15</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=20', event)">20</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=30', event)">30</button>
-              <button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=45', event)">45</button>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=1', event)">1</button><button class="dot-fav" data-player="gratitude" data-min="1" onclick="favSession('gratitude',1,event)" title="Favorite the 1-min gratitude" aria-label="Favorite the 1-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=3', event)">3</button><button class="dot-fav" data-player="gratitude" data-min="3" onclick="favSession('gratitude',3,event)" title="Favorite the 3-min gratitude" aria-label="Favorite the 3-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=5', event)">5</button><button class="dot-fav" data-player="gratitude" data-min="5" onclick="favSession('gratitude',5,event)" title="Favorite the 5-min gratitude" aria-label="Favorite the 5-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=10', event)">10</button><button class="dot-fav" data-player="gratitude" data-min="10" onclick="favSession('gratitude',10,event)" title="Favorite the 10-min gratitude" aria-label="Favorite the 10-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=15', event)">15</button><button class="dot-fav" data-player="gratitude" data-min="15" onclick="favSession('gratitude',15,event)" title="Favorite the 15-min gratitude" aria-label="Favorite the 15-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=20', event)">20</button><button class="dot-fav" data-player="gratitude" data-min="20" onclick="favSession('gratitude',20,event)" title="Favorite the 20-min gratitude" aria-label="Favorite the 20-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=30', event)">30</button><button class="dot-fav" data-player="gratitude" data-min="30" onclick="favSession('gratitude',30,event)" title="Favorite the 30-min gratitude" aria-label="Favorite the 30-minute gratitude">&#9825;</button></div>
+              <div class="dot-cell"><button class="med-dot" onclick="openPlayerInColumn('players/gratitude.html?t=45', event)">45</button><button class="dot-fav" data-player="gratitude" data-min="45" onclick="favSession('gratitude',45,event)" title="Favorite the 45-min gratitude" aria-label="Favorite the 45-minute gratitude">&#9825;</button></div>
             </div>
             <button title="Close" onclick="document.getElementById('gratBox').style.display='none';"
               style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
