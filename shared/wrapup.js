@@ -346,15 +346,6 @@ export async function wrapRegenRoadmap(idx) {
 let _wrapupOpen = true;
 export function wrapupCardToggle(open) { _wrapupOpen = !!open; }
 
-// Dashboard "Today's story" visibility — the toggle switch under The Big 3.
-// Persisted, default shown (undefined !== false → true on first run).
-let _storyOpen = (LS.get('ci_wrapup_story_open') !== false);
-export function wrapupStoryToggle() {
-  _storyOpen = !_storyOpen;
-  LS.set('ci_wrapup_story_open', _storyOpen);
-  renderWrapup();
-}
-
 // Free-standing "my actions" the user adds directly under the checklist header
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
@@ -763,7 +754,7 @@ export async function wrapupPersonalize() {
    press, overwriting today's cached paragraph. */
 export async function wrapupRegenerate(btn) {
   const b0 = btn || document.getElementById('wrapupRegenBtn');
-  if (b0) { b0.disabled = true; b0.textContent = '↻ WRITING…'; }
+  if (b0) { b0.disabled = true; b0.textContent = '✦ WRITING YOUR STORY…'; }
   try {
     const { summary, recentWins } = _aiSummary();
     const context = typeof buildContext === 'function' ? buildContext(getPB() || {}) : '';
@@ -779,7 +770,7 @@ export async function wrapupRegenerate(btn) {
     toast(_aiErrMsg(e) || 'Couldn’t write your recap — try again.', 'error');
   }
   const b = document.getElementById('wrapupRegenBtn');
-  if (b) { b.disabled = false; b.textContent = '↻ REWRITE'; }
+  if (b) { b.disabled = false; b.textContent = '✦ WRITE MY STORY'; }
 }
 
 export function renderWrapup() {
@@ -792,9 +783,19 @@ export function renderWrapup() {
   // No cached recap yet for today → generate it for them automatically (once per
   // day per session). Fires and re-renders when it lands; falls back silently.
   if (!aiPara && _aiAutoKey !== _aiKey()) { _aiAutoKey = _aiKey(); wrapupPersonalize(); }
-  // The day's story (AI-personalized once written; templated fallback before then).
-  // The AI version already weaves the week in, so no separate weekly line here.
-  const daily = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
+  const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
+  const weekly = _weeklyStory(ringsWeekSummary(), w.week);
+  // Personalized recap = ONE flowing story (day + week woven together, no stat
+  // readout). Fallback (before the AI has run) keeps the two templated sections
+  // so the card is never empty. The ✦ marker lives in the body now — it used to
+  // sit in the header and crowd the "EVENING WRAP-UP" title onto two lines.
+  const storyBody = aiPara
+    ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#E8743B;letter-spacing:1px;margin-bottom:6px;">&#10022; YOUR STORY</div>
+          <p style="font-size:13.5px;line-height:1.65;color:var(--widget-text);margin:0 0 2px;">${daily}</p>`
+    : `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
+          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 4px;">${weekly}</p>`;
   // Stable goal letters (locked per goal id) — assign before any code renders.
   _ensureGoalLetters();
   // Phase 2 — make sure every My-Action has its stable code before we render;
@@ -845,22 +846,20 @@ export function renderWrapup() {
       </div>` : '';
   }
 
-  // Minimal dashboard treatment (sits under The Big 3): the day's story as
-  // indented text with a visibility toggle switch — no card chrome, just the words.
-  // ↻ REWRITE keeps the on-demand regenerate without a big button.
   el.innerHTML = `
-    <div style="margin:0 0 12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 6px;">
-        <span style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted,#9a9a9a);">&#10022; TODAY'S STORY</span>
-        <button onclick="wrapupStoryToggle()" role="switch" aria-checked="${_storyOpen ? 'true' : 'false'}" title="Show or hide today's story"
-          style="flex-shrink:0;width:38px;height:22px;border-radius:11px;border:none;cursor:pointer;padding:2px;background:${_storyOpen ? '#E8743B' : '#c9ccd1'};display:inline-flex;align-items:center;transition:background .2s;">
-          <span style="display:block;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transform:translateX(${_storyOpen ? '16px' : '0'});transition:transform .2s;"></span>
-        </button>
-      </div>
-      ${_storyOpen ? `<div style="padding-left:14px;border-left:2px solid var(--widget-border,#e6e6e9);margin-left:2px;">
-        <p style="font-size:13px;line-height:1.65;font-style:italic;color:var(--widget-text);margin:0;">${daily}</p>
-        <button id="wrapupRegenBtn" onclick="wrapupRegenerate(this)" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;color:#E8743B;">&#8635; REWRITE</button>
-      </div>` : ''}
+    <div style="background:#E8743B;border:1px solid #E8743B;border-radius:12px;padding:14px;margin-bottom:8px;">
+      <details class="rm-drop" ${_wrapupOpen ? 'open' : ''} ontoggle="wrapupCardToggle(this.open)">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#E8743B;border-radius:10px;cursor:pointer;">
+          <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
+          <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
+        </summary>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px 12px;margin-top:10px;overflow:hidden;">
+          ${storyBody}
+
+          <!-- Manual trigger: turn today's Big-3 data into a fresh, uplifting AI paragraph on demand. -->
+          <button id="wrapupRegenBtn" onclick="wrapupRegenerate(this)" style="width:100%;margin-top:12px;background:#E8743B;border:none;border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">&#10022; WRITE MY STORY</button>
+        </div>
+      </details>
     </div>`;
 }
 
@@ -886,6 +885,5 @@ if (typeof window !== 'undefined') {
   window.wrapCopyCode = wrapCopyCode;         // copy a task's journal code (e.g. "C2.1")
   window.wrapFavTask = wrapFavTask;           // ★ favorite/unfavorite a task → Favorites panel shortcut
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
-  window.wrapupRegenerate = wrapupRegenerate;        // ↻ REWRITE — on-demand AI recap
-  window.wrapupStoryToggle = wrapupStoryToggle;      // show/hide the dashboard "Today's story" text
+  window.wrapupRegenerate = wrapupRegenerate;        // ✦ WRITE MY STORY button — on-demand AI recap
 }
