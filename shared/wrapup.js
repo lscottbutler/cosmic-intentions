@@ -748,6 +748,31 @@ export async function wrapupPersonalize() {
   }
 }
 
+/* ✦ WRITE MY STORY — manual, on-demand version of wrapupPersonalize().
+   Same data + multi-pass AI, but user-triggered with a loading state and a
+   real error toast (the auto version fails silently). Re-rolls the recap each
+   press, overwriting today's cached paragraph. */
+export async function wrapupRegenerate(btn) {
+  const b0 = btn || document.getElementById('wrapupRegenBtn');
+  if (b0) { b0.disabled = true; b0.textContent = '✦ WRITING YOUR STORY…'; }
+  try {
+    const { summary, recentWins } = _aiSummary();
+    const context = typeof buildContext === 'function' ? buildContext(getPB() || {}) : '';
+    const name = (typeof getPB === 'function' && getPB()['pb-name']) || 'there';
+    const data = await window.ciApiJson('wrapup-ai', { name, summary, context, recentWins });
+    if (data && data.paragraph && !_looksLikeAiError(data.paragraph)) {
+      LS.set(_aiKey(), data.paragraph);
+      renderWrapup();   // rebuilds the card with the fresh paragraph (and a fresh button)
+      return;
+    }
+    toast('The AI is busy right now — give it a moment and try again.', 'error');
+  } catch (e) {
+    toast(_aiErrMsg(e) || 'Couldn’t write your recap — try again.', 'error');
+  }
+  const b = document.getElementById('wrapupRegenBtn');
+  if (b) { b.disabled = false; b.textContent = '✦ WRITE MY STORY'; }
+}
+
 export function renderWrapup() {
   const el = document.getElementById('wrapupWidget');
   if (!el) return;
@@ -826,6 +851,9 @@ export function renderWrapup() {
 
           <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
           <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 4px;">${weekly}</p>
+
+          <!-- Manual trigger: turn today's Big-3 data into a fresh, uplifting AI paragraph on demand. -->
+          <button id="wrapupRegenBtn" onclick="wrapupRegenerate(this)" style="width:100%;margin-top:12px;background:#E8743B;border:none;border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">&#10022; WRITE MY STORY</button>
         </div>
       </details>
     </div>`;
@@ -853,4 +881,5 @@ if (typeof window !== 'undefined') {
   window.wrapCopyCode = wrapCopyCode;         // copy a task's journal code (e.g. "C2.1")
   window.wrapFavTask = wrapFavTask;           // ★ favorite/unfavorite a task → Favorites panel shortcut
   window.wrapupCardToggle = wrapupCardToggle;        // inline ontoggle on the EVENING WRAP-UP card
+  window.wrapupRegenerate = wrapupRegenerate;        // ✦ WRITE MY STORY button — on-demand AI recap
 }
