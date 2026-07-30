@@ -48,15 +48,15 @@ exports.handler = async (event) => {
   try {
     // ── Pass 1: draft ──────────────────────────────────────────────────────
     const draft = await call([
-      { role: 'system', content: 'You are a warm, perceptive personal coach writing a short end-of-day recap. Second person ("you"). 2–3 sentences. Specific and progress-framed. No clichés, no preamble, no emojis, no bullet points.' },
-      { role: 'user', content: `${who}${winsBlock}WHAT THEY DID TODAY (the data):\n${summary}\n\nWrite their end-of-day recap.` },
+      { role: 'system', content: 'You are a warm, perceptive personal coach writing a short end-of-day reflection. Second person ("you"). 2–3 sentences. Capture the SPIRIT of their day — paraphrase how it went; do NOT list or recite the stats. Reference at most one concrete detail if it genuinely adds meaning. Encouraging in tone, and END with a gentle nudge toward the one thing still left or the momentum worth protecting. No clichés, no preamble, no emojis, no bullet points, no numbers-dump.' },
+      { role: 'user', content: `${who}${winsBlock}WHAT THEY DID TODAY (the data — translate it into meaning, don't read it back):\n${summary}\n\nWrite their end-of-day reflection.` },
     ], 0.7, 220);
 
     // ── Pass 2: critical refine (critique criteria folded in — 2 passes total
     //    keeps us safely under Netlify's 10s function limit) ──────────────────
     const finalPara = await call([
-      { role: 'system', content: 'You are a warm, perceptive personal coach AND a ruthless editor. Rewrite the draft recap so it is SPECIFIC to this person and this data: cut anything generic that could apply to anyone, lean on the concrete numbers/wins/goals. Second person, 2–3 sentences, warm, progress-framed. No clichés, no preamble, no emojis, no quotes. Output ONLY the final paragraph.' },
-      { role: 'user', content: `${who}${winsBlock}DATA:\n${summary}\n\nDRAFT TO SHARPEN:\n"${draft}"\n\nFinal recap for ${name}:` },
+      { role: 'system', content: 'You are a warm, perceptive personal coach AND a ruthless editor. Rewrite the draft so it PARAPHRASES how their day and week went in an encouraging voice — do NOT enumerate the data or read the numbers back; translate them into meaning (consistency, momentum, becoming who they intend to be). Name at most one concrete detail. Keep it personal to them, never generic. END on a gentle prod — the next ring to close, the streak to protect, the small push that finishes the day. Second person, 2–3 sentences, warm. No clichés, no preamble, no emojis, no quotes, no lists of stats. Output ONLY the final paragraph.' },
+      { role: 'user', content: `${who}${winsBlock}DATA (translate to meaning, don't recite):\n${summary}\n\nDRAFT TO SHARPEN:\n"${draft}"\n\nFinal reflection for ${name}:` },
     ], 0.6, 240);
 
     const paragraph = finalPara.replace(/^["']|["']$/g, '').trim();
