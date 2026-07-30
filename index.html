@@ -368,6 +368,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- TODAY'S 3 PILLARS — moved to Column B, just under the date banner; filled by renderRings() -->
         <div id="ringsWidget"></div>
 
+        <!-- EVENING WRAP-UP — the day's story, sits right under The Big 3; filled by renderWrapup() -->
+        <div id="wrapupWidget"></div>
+
         <!-- ACTION PLAN (#todayWillWidget) moved behind the My Roadmap button -> page-myroadmap -->
         <div id="winsWidget"></div>
         <!-- MIND LOOP (#sleepLoopWidget) moved to Column A, under the Task List -->
@@ -952,7 +955,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- DAILY REVIEW RUN-THROUGHS — moved from the dashboard. Bodies are filled by
            the existing renderers via their element IDs (morningRunBody / dayRunBody /
-           eveningRunBody / habitsWidget / wrapupWidget) — do not duplicate these IDs. -->
+           eveningRunBody / habitsWidget) — do not duplicate these IDs.
+           (wrapupWidget moved to the dashboard, under The Big 3.) -->
       <div class="two-col">
       <!-- MORNING RUN THROUGH — blue card, white inner panel -->
       <div style="background:#4A90D9;border:1px solid #4A90D9;border-radius:12px;padding:14px;margin-bottom:8px;">
@@ -1034,7 +1038,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       </div>
       </div>
       <div id="habitsWidget"></div>
-      <div id="wrapupWidget"></div>
 
       <!-- RUN-THROUGH CARDS — add / reorder freely -->
       <div id="runThroughList">
