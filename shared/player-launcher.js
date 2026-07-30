@@ -199,9 +199,9 @@ export function renderFavorites() {
     const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const _t = favType(f);
     const _label = _t === 'note' ? (f.text || f.title || 'Note')
-                 : f.player === 'mindset' ? (f.title || 'Goal mindset')
+                 : f.player === 'mindset' ? (f.title || 'Goal visualization')
                  : (FAV_LABEL[f.player] || f.player);
-    const _meta = _t === 'note' ? 'card' : (f.player === 'mindset' ? 'Mindset' : f.minutes + ' min');
+    const _meta = _t === 'note' ? 'card' : (f.player === 'mindset' ? 'Visualization' : f.minutes + ' min');
     row.innerHTML =
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
@@ -295,13 +295,13 @@ function _openFav(f) {
     openPlayerInColumn(`players/note-card.html?_=${Date.now()}`);
     return;
   }
-  // Goal favorite → play THAT goal's full mindset once (so the loop advances).
-  // Resolve by id/title (not the drifting stored index) and ALWAYS overwrite
-  // ci_ass_slides, so it can never fall back to a previous goal's slides.
+  // Goal favorite → play THAT goal's 3-minute VISUALIZATION (the manifestation
+  // experience — the goal's images/vision), NOT the affirmations session. The viz
+  // is self-contained via ?g=<goal title>; it signals playerFinished() so the loop
+  // advances and it closes the Visualize pillar on finish.
   if (f.player === 'mindset') {
-    const slides = (typeof window.__ciGoalSlidesForFav === 'function' ? window.__ciGoalSlidesForFav(f) : []) || [];
-    try { localStorage.setItem('ci_ass_slides', JSON.stringify(slides)); localStorage.setItem('ci_goal_title', f.title || ''); } catch (e) {}
-    openPlayerInColumn(`players/ass-template.html?type=mindset&once=1&_=${Date.now()}`);
+    try { localStorage.setItem('ci_goal_title', f.title || ''); } catch (e) {}
+    openPlayerInColumn(`players/3min-viz.html?g=${encodeURIComponent(f.title || '')}&_=${Date.now()}`);
     return;
   }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
