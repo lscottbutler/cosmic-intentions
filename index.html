@@ -552,12 +552,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <button onclick="var b=document.getElementById('goalsBox');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('.goals-chev').textContent=o?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9678;</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Goals</span>
-          <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">⌄</span>
         </button>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
              #colb-selection-state), so it functions identically to its old location. -->
-        <div id="goalsBox" style="display:none; margin-bottom:16px;">
+        <div id="goalsBox" style="display:block; margin-bottom:16px;">
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
