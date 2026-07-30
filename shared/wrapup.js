@@ -785,6 +785,17 @@ export function renderWrapup() {
   if (!aiPara && _aiAutoKey !== _aiKey()) { _aiAutoKey = _aiKey(); wrapupPersonalize(); }
   const daily  = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);
   const weekly = _weeklyStory(ringsWeekSummary(), w.week);
+  // Personalized recap = ONE flowing story (day + week woven together, no stat
+  // readout). Fallback (before the AI has run) keeps the two templated sections
+  // so the card is never empty. The ✦ marker lives in the body now — it used to
+  // sit in the header and crowd the "EVENING WRAP-UP" title onto two lines.
+  const storyBody = aiPara
+    ? `<div style="font-family:var(--vault-mono);font-size:8px;color:#E8743B;letter-spacing:1px;margin-bottom:6px;">&#10022; YOUR STORY</div>
+          <p style="font-size:13.5px;line-height:1.65;color:var(--widget-text);margin:0 0 2px;">${daily}</p>`
+    : `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
+          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
+          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 4px;">${weekly}</p>`;
   // Stable goal letters (locked per goal id) — assign before any code renders.
   _ensureGoalLetters();
   // Phase 2 — make sure every My-Action has its stable code before we render;
@@ -840,17 +851,10 @@ export function renderWrapup() {
       <details class="rm-drop" ${_wrapupOpen ? 'open' : ''} ontoggle="wrapupCardToggle(this.open)">
         <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#E8743B;border-radius:10px;cursor:pointer;">
           <span style="font-size:18pt;font-weight:800;line-height:1.15;color:#fff;">◈ EVENING WRAP-UP</span>
-          <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-            ${aiPara ? `<span style="font-family:var(--vault-mono);font-size:8px;color:#fff;letter-spacing:0.5px;">✦ PERSONALIZED</span>` : ''}
-            <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
-          </span>
+          <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
         </summary>
-        <div style="background:#fff;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;">
-          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">TODAY</div>
-          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 14px;">${daily}</p>
-
-          <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:1px;margin-bottom:5px;">THIS WEEK</div>
-          <p style="font-size:13px;line-height:1.6;color:var(--widget-text);margin:0 0 4px;">${weekly}</p>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px 12px;margin-top:10px;overflow:hidden;">
+          ${storyBody}
 
           <!-- Manual trigger: turn today's Big-3 data into a fresh, uplifting AI paragraph on demand. -->
           <button id="wrapupRegenBtn" onclick="wrapupRegenerate(this)" style="width:100%;margin-top:12px;background:#E8743B;border:none;border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">&#10022; WRITE MY STORY</button>

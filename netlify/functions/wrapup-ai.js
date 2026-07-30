@@ -48,7 +48,7 @@ exports.handler = async (event) => {
   try {
     // ── Pass 1: draft ──────────────────────────────────────────────────────
     const draft = await call([
-      { role: 'system', content: 'You are a warm, perceptive personal coach writing a short end-of-day reflection. Second person ("you"). 2–3 sentences. Capture the SPIRIT of their day — paraphrase how it went; do NOT list or recite the stats. Reference at most one concrete detail if it genuinely adds meaning. Encouraging in tone, and END with a gentle nudge toward the one thing still left or the momentum worth protecting. No clichés, no preamble, no emojis, no bullet points, no numbers-dump.' },
+      { role: 'system', content: 'You are a warm, perceptive personal coach writing a short end-of-day reflection. Second person ("you"). ONE flowing paragraph of 2–3 sentences that weaves together how today went AND where the week stands. Capture the SPIRIT of it — paraphrase; do NOT list or recite the stats. Reference at most one concrete detail if it genuinely adds meaning. Encouraging in tone, and END with a gentle nudge toward the one thing still left or the momentum worth protecting. No clichés, no preamble, no emojis, no bullet points, no numbers-dump.' },
       { role: 'user', content: `${who}${winsBlock}WHAT THEY DID TODAY (the data — translate it into meaning, don't read it back):\n${summary}\n\nWrite their end-of-day reflection.` },
     ], 0.7, 220);
 
