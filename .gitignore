@@ -4,6 +4,16 @@ images/VIDEOS/
 # session-log hook state
 .claude/hooks/.session-base-sha
 
+# secrets / credentials — NEVER commit. Server keys (OPEN_AI_KEY, ElevenLabs,
+# Pexels, Supabase service_role) live ONLY in the Netlify dashboard env vars.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets.json
+service-account*.json
+
 # dependencies (regenerable — never commit)
 node_modules/
 
