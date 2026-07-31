@@ -46,6 +46,11 @@ MP4/
 # PSD source masters — keep local, never commit (avoid repo bloat); JPGs are the web assets
 *.psd
 
+# gratitude SOURCE pool — 658MB of full-size originals (curated in "gratitude-Episode N/").
+# Keep local as the archive; ONLY the compressed episode-<N>/ outputs + manifest.json ship.
+# Rebuild outputs with: node scripts/build-gratitude-episodes.js
+images/gratitude/gratitude-Episode*/
+
 # generated standalone build (regenerate with scripts/build-standalone.py) — bundles ~70MB of art
 standalone-3mv/
 
