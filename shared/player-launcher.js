@@ -66,7 +66,7 @@ export function closePlayerColumn() {
    iframe (doze-off / fall-asleep mode). */
 const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
 /* Gratitude ships as 5 themed episodes (own images + spoken lines), NOT minutes. */
-const GRAT_EP_TITLES = { 1: 'Love & Friendship', 2: 'Home & Family', 3: 'Food & Treats', 4: 'Health & Nature', 5: 'Everyday Joys' };
+const GRAT_EP_TITLES = { 1: 'Episode 1', 2: 'Episode 2', 3: 'Episode 3', 4: 'Episode 4', 5: 'Episode 5' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
 
 /* Stable identity for a favorite, so a row's × can drop the right one. */
