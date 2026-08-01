@@ -527,11 +527,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div data-player-box id="gratBox" style="display:none; background:var(--brand); padding:9px; border-radius:12px; margin-bottom:16px;">
           <div style="background:var(--teal-ui); border-radius:9px; padding:18px 14px 16px; display:flex; align-items:center; gap:14px;">
             <div style="display:grid; grid-template-columns:1fr; gap:9px; flex:1;">
-              <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/gratitude-guided.html?ep=1', event)">Episode 1</button><button class="dot-fav" data-player="gratitude" data-ep="1" onclick="favGratEp(1,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 1">&#9825;</button></div>
-              <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/gratitude-guided.html?ep=2', event)">Episode 2</button><button class="dot-fav" data-player="gratitude" data-ep="2" onclick="favGratEp(2,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 2">&#9825;</button></div>
-              <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/gratitude-guided.html?ep=3', event)">Episode 3</button><button class="dot-fav" data-player="gratitude" data-ep="3" onclick="favGratEp(3,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 3">&#9825;</button></div>
-              <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/gratitude-guided.html?ep=4', event)">Episode 4</button><button class="dot-fav" data-player="gratitude" data-ep="4" onclick="favGratEp(4,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 4">&#9825;</button></div>
-              <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/gratitude-guided.html?ep=5', event)">Episode 5</button><button class="dot-fav" data-player="gratitude" data-ep="5" onclick="favGratEp(5,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 5">&#9825;</button></div>
+              <div class="time-row"><button class="time-play" onclick="playGratEp(1, event)">Episode 1</button><button class="dot-fav" data-player="gratitude" data-ep="1" onclick="favGratEp(1,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 1">&#9825;</button></div>
+              <div class="time-row"><button class="time-play" onclick="playGratEp(2, event)">Episode 2</button><button class="dot-fav" data-player="gratitude" data-ep="2" onclick="favGratEp(2,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 2">&#9825;</button></div>
+              <div class="time-row"><button class="time-play" onclick="playGratEp(3, event)">Episode 3</button><button class="dot-fav" data-player="gratitude" data-ep="3" onclick="favGratEp(3,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 3">&#9825;</button></div>
+              <div class="time-row"><button class="time-play" onclick="playGratEp(4, event)">Episode 4</button><button class="dot-fav" data-player="gratitude" data-ep="4" onclick="favGratEp(4,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 4">&#9825;</button></div>
+              <div class="time-row"><button class="time-play" onclick="playGratEp(5, event)">Episode 5</button><button class="dot-fav" data-player="gratitude" data-ep="5" onclick="favGratEp(5,event)" title="Favorite this episode" aria-label="Favorite gratitude episode 5">&#9825;</button></div>
             </div>
             <button title="Close" onclick="document.getElementById('gratBox').style.display='none';"
               style="flex:0 0 auto; align-self:stretch; background:var(--purple); border:none; border-radius:8px; padding:0 16px; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:5px;">
@@ -540,11 +540,21 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
             </button>
           </div>
-          <!-- Write your own gratitude lines (synced to your account). -->
-          <button onclick="openPlayerInColumn('players/gratitude-editor.html', event)"
-            style="display:block;width:100%;margin-top:9px;padding:11px;background:transparent;border:1px dashed rgba(255,255,255,.6);color:#fff;font-weight:700;letter-spacing:.4px;border-radius:8px;cursor:pointer;font-size:14px;">
-            &#9998; Write my own gratitude text
-          </button>
+          <!-- Sit & reflect: how long the silent countdown runs after the episode slideshow. -->
+          <div style="margin-top:9px; display:flex; align-items:center; gap:10px; background:var(--teal-ui); border-radius:9px; padding:12px 14px;">
+            <span style="color:#fff; font-size:14px; font-weight:700;">Sit &amp; reflect for</span>
+            <select id="gratReflect" onchange="try{localStorage.setItem('ci_grat_reflect',this.value)}catch(e){}"
+              style="flex:1; min-width:0; background:#0e0b12; color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:8px; padding:9px 10px; font-size:15px; font-weight:700; cursor:pointer;">
+              <option value="1">1 minute</option>
+              <option value="3">3 minutes</option>
+              <option value="5" selected>5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="20">20 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+            </select>
+          </div>
         </div>
 
         <!-- MIND LOOP — inline dropdown (like Meditate): reveals the Mind Loop audio player below -->

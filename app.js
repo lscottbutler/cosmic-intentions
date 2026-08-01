@@ -996,11 +996,6 @@ async function syncFromSupabase() {
         LS.set('ci_habits_' + today, hd.done);
       }
     } catch (e) {}
-    // Custom gratitude text — restore your edited "I am grateful for…" lines so
-    // they follow the login across devices (column may not exist yet → skipped).
-    if (data.gratitude_custom && typeof data.gratitude_custom === 'object') {
-      LS.set('ci_gratitude_custom', data.gratitude_custom);
-    }
     // Big-3 rings history — union-merge each day so a ring closed on ANY device
     // stays closed (closing is monotonic within a day; never lose a completion).
     try {

@@ -57,7 +57,8 @@
   const params = new URLSearchParams(location.search);
   const ep = params.get('ep') || '1';
   const SLIDE_MS = 7000;     // per image
-  const SILENCE_S = 60;      // silent reflection seconds
+  const reflectMin = Math.max(0, parseInt(params.get('reflect') || '1', 10) || 0);  // "sit & reflect" minutes
+  const SILENCE_S = reflectMin * 60;   // silent reflection seconds (user-chosen)
   const imgUrl = it => `../images/gratitude/episode-${it.ep}/${it.file}`;
 
   const slideA = document.getElementById('slideA'), slideB = document.getElementById('slideB');
@@ -133,13 +134,15 @@
     stopSpeak();
   }
 
+  const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;   // 305 → "5:05"
   async function runSilence(){
+    if (SILENCE_S <= 0) return;                 // reflection turned off
     lineEl.textContent = '';
     phaseEl.textContent = 'Reflect';
     silence.classList.add('on');
     const CIRC = 276.5;
     for (let s = SILENCE_S; s > 0; s--){
-      silenceLeft.textContent = `${s}s`;
+      silenceLeft.textContent = fmt(s);
       ringFill.style.strokeDashoffset = (CIRC * (1 - s / SILENCE_S)).toFixed(1);
       await wait(1000);
     }
@@ -148,16 +151,8 @@
 
   async function main(){
     try {
-      // Prefer the user's own edited lines (synced via localStorage), else the shipped defaults.
-      let manifest = null;
-      try {
-        const custom = JSON.parse(localStorage.getItem('ci_gratitude_custom') || 'null');
-        if (custom && typeof custom === 'object' && Object.keys(custom).length) manifest = custom;
-      } catch(e){}
-      if (!manifest) {
-        const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
-        manifest = await res.json();
-      }
+      const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
+      const manifest = await res.json();
       items = (manifest[ep] || []).map(x => ({ ...x, ep }));
       items = items.filter(x => x && x.file);
     } catch(e){ items = []; }
