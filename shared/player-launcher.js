@@ -259,7 +259,7 @@ export function renderFavorites() {
   const addPause = document.createElement('button');
   addPause.type = 'button';
   addPause.style.cssText = 'display:block;width:100%;text-align:center;padding:11px;margin:2px 0 14px;background:transparent;border:1px dashed #555;color:#9a9a9a;font-weight:700;letter-spacing:.5px;border-radius:6px;cursor:pointer;font-size:14px;';
-  addPause.innerHTML = '&#43; Add 15-sec pause';
+  addPause.innerHTML = '&#43; Add a 15 Second Pause';
   addPause.addEventListener('click', () => list.insertBefore(makePauseRow(15), addPause));
   list.appendChild(addPause);
 
