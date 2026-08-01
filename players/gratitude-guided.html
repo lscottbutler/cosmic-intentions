@@ -56,8 +56,11 @@
 <script type="module">
   const params = new URLSearchParams(location.search);
   const ep = params.get('ep') || '1';
+  const tRaw = params.get('t');
+  const timedMin = tRaw ? Math.max(1, parseInt(tRaw, 10) || 1) : 0;  // minute-grid mode
   const SLIDE_MS = 7000;     // per image
   const SILENCE_S = 60;      // silent reflection seconds
+  const imgUrl = it => `../images/gratitude/episode-${it.ep}/${it.file}`;
 
   const slideA = document.getElementById('slideA'), slideB = document.getElementById('slideB');
   const lineEl = document.getElementById('line'), phaseEl = document.getElementById('phase');
@@ -123,12 +126,30 @@
     phaseEl.textContent = `Episode ${ep}`;
     for (idx = 0; idx < items.length; idx++){
       const it = items[idx];
-      showImage(`../images/gratitude/episode-${ep}/${it.file}`);
+      showImage(imgUrl(it));
       lineEl.textContent = it.line;
       if (!paused) speak(it.line);
       progfill.style.width = Math.round(((idx+1)/items.length)*100) + '%';
       await wait(SLIDE_MS);
     }
+    stopSpeak();
+  }
+
+  /* Minute-grid mode: play grateful images (with spoken lines) drawn from ALL
+     episodes, looping if needed, until the chosen minutes are up. */
+  async function runTimed(budgetMs){
+    phaseEl.textContent = `${timedMin} min`;
+    let elapsed = 0, i = 0;
+    while (elapsed < budgetMs){
+      const it = items[i % items.length];
+      showImage(imgUrl(it));
+      lineEl.textContent = it.line;
+      if (!paused) speak(it.line);
+      progfill.style.width = Math.min(100, Math.round((elapsed / budgetMs) * 100)) + '%';
+      await wait(SLIDE_MS);
+      elapsed += SLIDE_MS; i++;
+    }
+    progfill.style.width = '100%';
     stopSpeak();
   }
 
@@ -149,14 +170,25 @@
     try {
       const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
       const manifest = await res.json();
-      items = (manifest[ep] || []).filter(x => x && x.file);
+      if (timedMin){
+        // Flatten every episode into one grateful stream (each item tagged with its episode).
+        items = Object.keys(manifest).sort()
+          .flatMap(k => (manifest[k] || []).map(x => ({ ...x, ep: k })));
+      } else {
+        items = (manifest[ep] || []).map(x => ({ ...x, ep }));
+      }
+      items = items.filter(x => x && x.file);
     } catch(e){ items = []; }
-    if (!items.length){ lineEl.textContent = `No images in Episode ${ep} yet.`; return; }
+    if (!items.length){ lineEl.textContent = 'No gratitude images yet.'; return; }
     // preload
-    items.forEach(it => { const im = new Image(); im.src = `../images/gratitude/episode-${ep}/${it.file}`; });
+    items.forEach(it => { const im = new Image(); im.src = imgUrl(it); });
     await wait(600);            // brief beat before it begins
-    await runSlideshow();
-    await runSilence();
+    if (timedMin){
+      await runTimed(timedMin * 60 * 1000);
+    } else {
+      await runSlideshow();
+      await runSilence();
+    }
     playBell();
     setTimeout(finishPlayer, 3500);
   }

@@ -354,6 +354,11 @@ function _openFav(f) {
     openPlayerInColumn(`players/3min-viz.html?g=${encodeURIComponent(f.title || '')}&_=${Date.now()}`);
     return;
   }
+  // Gratitude favorite → the guided slideshow+VO player (minute mode), not the old card.
+  if (f.player === 'gratitude') {
+    openPlayerInColumn(`players/gratitude-guided.html?t=${f.minutes}`);
+    return;
+  }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
 }
 

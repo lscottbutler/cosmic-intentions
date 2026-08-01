@@ -2055,7 +2055,7 @@ export function vizAct(idx, kind) {
   if (kind === 'viz')            window.location.href = `players/3min-viz.html?${q}`;
   else if (kind === 'review')    window.location.href = `players/recite.html?type=affirmations&${q}`;
   else if (kind === 'meditate')  window.location.href = `players/meditation.html?${q}`;
-  else if (kind === 'gratitude') window.location.href = `players/gratitude.html?${q}`;
+  else if (kind === 'gratitude') window.location.href = `players/gratitude-guided.html?${q}`;
 }
 
 /* PILLAR 2: full-screen ACTION PLAN (goals + roadmap tasks). #todayWillWidget
