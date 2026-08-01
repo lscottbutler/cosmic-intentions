@@ -47,6 +47,7 @@ export function openPlayerInColumn(src, ev) {
 /* Close the inline player (unload the iframe to stop its audio/timer). */
 export function closePlayerColumn() {
   _autoLooping = false;                    // a manual/real close stops auto-play
+  if (_pauseTimer) { clearTimeout(_pauseTimer); _pauseTimer = null; }  // cancel any pending pause
   _currentPillar = null;                   // dropped before finishing → no ring credit
   _clearNowPlaying();                      // drop the "now playing" row highlight
   const panel = document.getElementById('playerColumn');
@@ -190,6 +191,34 @@ export function renderFavorites() {
     play.style.opacity = n ? '1' : '.5';
     play.innerHTML = n ? `&#9654; Play My Day (${n})` : '&#9654; Play My Day';
   }
+  // Shared drag-to-reorder wiring for any row (favorites AND pause spacers).
+  function attachDrag(row) {
+    row.addEventListener('dragstart', () => { dragEl = row; row.style.opacity = '.4'; });
+    row.addEventListener('dragend',   () => { row.style.opacity = '1'; dragEl = null; });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!dragEl || dragEl === row) return;
+      const r = row.getBoundingClientRect();
+      list.insertBefore(dragEl, (e.clientY - r.top) < r.height / 2 ? row : row.nextSibling);
+    });
+  }
+  // A blank 15-second gap you can drop between sessions (silent breather).
+  // It's transient UI only — not saved to ci_favorites — so × just removes the row.
+  function makePauseRow(seconds) {
+    const row = document.createElement('div');
+    row.className = 'fav-row';
+    row.draggable = true;
+    row._fav = { __pause: true, seconds: seconds };
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#141414;border:1px dashed #444;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    row.innerHTML =
+      '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
+      `<span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#9a9a9a;font-style:italic;">&#9208; Pause &mdash; blank ${seconds} sec</span>` +
+      '<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">silence</span>' +
+      '<button class="fav-remove" title="Remove pause" style="flex-shrink:0;background:none;border:none;color:#c76;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:4px;">&times;</button>';
+    row.querySelector('.fav-remove').addEventListener('click', e => { e.stopPropagation(); row.remove(); });
+    attachDrag(row);
+    return row;
+  }
   playable.forEach(f => {
     const row = document.createElement('div');
     row.className = 'fav-row';
@@ -222,16 +251,17 @@ export function renderFavorites() {
       if (e.target === cb || e.target.classList.contains('fav-grip')) return;
       cb.checked = !cb.checked; cb.dispatchEvent(new Event('change'));
     });
-    row.addEventListener('dragstart', () => { dragEl = row; row.style.opacity = '.4'; });
-    row.addEventListener('dragend',   () => { row.style.opacity = '1'; dragEl = null; });
-    row.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (!dragEl || dragEl === row) return;
-      const r = row.getBoundingClientRect();
-      list.insertBefore(dragEl, (e.clientY - r.top) < r.height / 2 ? row : row.nextSibling);
-    });
+    attachDrag(row);
     list.appendChild(row);
   });
+
+  // "+ Add 15-sec pause" — inserts a blank silent gap you can drag between sessions.
+  const addPause = document.createElement('button');
+  addPause.type = 'button';
+  addPause.style.cssText = 'display:block;width:100%;text-align:center;padding:11px;margin:2px 0 14px;background:transparent;border:1px dashed #555;color:#9a9a9a;font-weight:700;letter-spacing:.5px;border-radius:6px;cursor:pointer;font-size:14px;';
+  addPause.innerHTML = '&#43; Add 15-sec pause';
+  addPause.addEventListener('click', () => list.insertBefore(makePauseRow(15), addPause));
+  list.appendChild(addPause);
 
   // Play button.
   const play = document.createElement('button');
@@ -254,11 +284,16 @@ export function toggleFavorites() {
 function _selectedFavs() {
   const list = document.getElementById('favorites-list');
   if (!list) return [];
-  return [...list.querySelectorAll('.fav-row')].filter(r => r.querySelector('input').checked).map(r => r._fav);
+  return [...list.querySelectorAll('.fav-row')].filter(r => {
+    if (r._fav && r._fav.__pause) return true;      // pauses have no checkbox — always kept
+    const cb = r.querySelector('input');
+    return cb && cb.checked;
+  }).map(r => r._fav);
 }
 
 let _favQueue = [];
 let _autoLooping = false;
+let _pauseTimer = null;   // countdown handle for an in-progress blank pause
 
 /* Highlight the playlist row whose session is playing right now. Distinct from
    the red "queued/checked" style so you can see where you are in the day. */
@@ -289,6 +324,21 @@ function _openFav(f) {
   const anchor = document.getElementById('favorites-list');
   if (panel && anchor) anchor.insertAdjacentElement('afterend', panel);
   _markNowPlaying(f);
+  // Blank pause → hold on a silent screen for f.seconds, then advance the queue.
+  if (f && f.__pause) {
+    const frame = document.getElementById('playerColumnFrame');
+    if (frame) frame.src = 'about:blank';
+    if (panel) { panel.style.display = ''; panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    _currentPillar = null;                        // a pause earns no ring credit
+    if (_pauseTimer) clearTimeout(_pauseTimer);
+    _pauseTimer = setTimeout(() => {
+      _pauseTimer = null;
+      if (_autoLooping && _favQueue.length) { _openFav(_favQueue.shift()); return; }
+      _autoLooping = false;
+      closePlayerColumn();
+    }, (f.seconds || 15) * 1000);
+    return;
+  }
   // Note favorite → show it as an on-screen card (auto-advances the loop).
   if (favType(f) === 'note') {
     try { localStorage.setItem('ci_note_card', JSON.stringify({ text: f.text || f.title || '', cat: f.cat || '' })); } catch (e) {}
