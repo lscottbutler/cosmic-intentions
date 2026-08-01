@@ -65,6 +65,8 @@ export function closePlayerColumn() {
    how many loops, then Play — the selected set chains in the column
    iframe (doze-off / fall-asleep mode). */
 const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
+/* Gratitude ships as 5 themed episodes (own images + spoken lines), NOT minutes. */
+const GRAT_EP_TITLES = { 1: 'Love & Friendship', 2: 'Home & Family', 3: 'Food & Treats', 4: 'Health & Nature', 5: 'Everyday Joys' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
 
 /* Stable identity for a favorite, so a row's × can drop the right one. */
@@ -72,7 +74,8 @@ function favKey(f) {
   const t = favType(f);
   if (t === 'note') return 'note:' + f.id;
   if (f.player === 'mindset') return 'mindset:' + (f.id || f.goal || f.title || '');
-  return 'p:' + (f.player || t) + ':' + (f.minutes != null ? f.minutes : '') + ':' + (f.id || f.title || '');
+  const slot = f.minutes != null ? f.minutes : (f.ep != null ? 'ep' + f.ep : '');
+  return 'p:' + (f.player || t) + ':' + slot + ':' + (f.id || f.title || '');
 }
 /* Remove one favorite from the autoplay list (unpins it — same as the ♥). */
 function removeFavorite(f) {
@@ -103,18 +106,38 @@ export function favSession(player, minutes, ev) {
     window.toast(on ? `${minutes}-min ${label} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
   }
 }
+/* Toggle a gratitude EPISODE favorite ({player:'gratitude', ep}) from its heart,
+   so the episode's slideshow+VO autoplays in Play My Day (?ep=<n>, see _openFav). */
+export function favGratEp(ep, ev) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  ep = Number(ep);
+  const favs = readFavs();
+  const at = favs.findIndex(f => f && !f.type && f.player === 'gratitude' && Number(f.ep) === ep);
+  const on = at < 0;
+  if (on) favs.push({ player: 'gratitude', ep }); else favs.splice(at, 1);
+  try { localStorage.setItem('ci_favorites', JSON.stringify(favs)); } catch (e) {}
+  syncSessionHearts();
+  renderFavorites();
+  if (typeof window !== 'undefined' && typeof window.toast === 'function') {
+    const title = GRAT_EP_TITLES[ep] || ('Episode ' + ep);
+    window.toast(on ? `Gratitude · ${title} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+  }
+}
+
 /* Paint every dashboard time-dot heart (.dot-fav) filled/hollow from ci_favorites. */
 export function syncSessionHearts() {
   const favs = readFavs();
   document.querySelectorAll('.dot-fav').forEach(b => {
     const p = b.getAttribute('data-player');
-    const m = Number(b.getAttribute('data-min'));
-    const on = favs.some(f => f && !f.type && f.player === p && Number(f.minutes) === m);
+    const epA = b.getAttribute('data-ep');
+    const on = epA != null
+      ? favs.some(f => f && !f.type && f.player === 'gratitude' && Number(f.ep) === Number(epA))
+      : favs.some(f => f && !f.type && f.player === p && Number(f.minutes) === Number(b.getAttribute('data-min')));
     b.innerHTML = on ? '&#9829;' : '&#9825;';   // ♥ filled / ♡ hollow
     b.classList.toggle('on', on);
   });
 }
-if (typeof window !== 'undefined') { window.favSession = favSession; window.syncSessionHearts = syncSessionHearts; }
+if (typeof window !== 'undefined') { window.favSession = favSession; window.favGratEp = favGratEp; window.syncSessionHearts = syncSessionHearts; }
 
 /* ── TYPED FAVORITES ──────────────────────────────────────────
    Every favorite carries a `type`. PLAYABLE types are audio sessions that
@@ -229,8 +252,12 @@ export function renderFavorites() {
     const _t = favType(f);
     const _label = _t === 'note' ? (f.text || f.title || 'Note')
                  : f.player === 'mindset' ? (f.title || 'Goal visualization')
+                 : (f.player === 'gratitude' && f.ep != null) ? (GRAT_EP_TITLES[f.ep] || ('Episode ' + f.ep))
                  : (FAV_LABEL[f.player] || f.player);
-    const _meta = _t === 'note' ? 'card' : (f.player === 'mindset' ? 'Visualization' : f.minutes + ' min');
+    const _meta = _t === 'note' ? 'card'
+                : f.player === 'mindset' ? 'Visualization'
+                : (f.player === 'gratitude' && f.ep != null) ? 'Gratitude'
+                : f.minutes + ' min';
     row.innerHTML =
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
@@ -354,9 +381,9 @@ function _openFav(f) {
     openPlayerInColumn(`players/3min-viz.html?g=${encodeURIComponent(f.title || '')}&_=${Date.now()}`);
     return;
   }
-  // Gratitude favorite → the guided slideshow+VO player (minute mode), not the old card.
+  // Gratitude favorite → the guided slideshow+VO player for that episode.
   if (f.player === 'gratitude') {
-    openPlayerInColumn(`players/gratitude-guided.html?t=${f.minutes}`);
+    openPlayerInColumn(`players/gratitude-guided.html?ep=${f.ep || 1}`);
     return;
   }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
