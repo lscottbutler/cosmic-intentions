@@ -168,8 +168,16 @@
 
   async function main(){
     try {
-      const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
-      const manifest = await res.json();
+      // Prefer the user's own edited lines (synced via localStorage), else the shipped defaults.
+      let manifest = null;
+      try {
+        const custom = JSON.parse(localStorage.getItem('ci_gratitude_custom') || 'null');
+        if (custom && typeof custom === 'object' && Object.keys(custom).length) manifest = custom;
+      } catch(e){}
+      if (!manifest) {
+        const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
+        manifest = await res.json();
+      }
       if (timedMin){
         // Flatten every episode into one grateful stream (each item tagged with its episode).
         items = Object.keys(manifest).sort()

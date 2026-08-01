@@ -543,6 +543,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               <span style="display:block;width:26px;height:3px;background:#fff;border-radius:2px;"></span>
             </button>
           </div>
+          <!-- Write your own gratitude lines (synced to your account). -->
+          <button onclick="openPlayerInColumn('players/gratitude-editor.html', event)"
+            style="display:block;width:100%;margin-top:9px;padding:11px;background:transparent;border:1px dashed rgba(255,255,255,.6);color:#fff;font-weight:700;letter-spacing:.4px;border-radius:8px;cursor:pointer;font-size:14px;">
+            &#9998; Write my own gratitude text
+          </button>
         </div>
 
         <!-- MIND LOOP — inline dropdown (like Meditate): reveals the Mind Loop audio player below -->
