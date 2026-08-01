@@ -189,7 +189,7 @@ export function renderFavorites() {
     const n = list.querySelectorAll('.fav-row input:checked').length;
     play.disabled = n === 0;
     play.style.opacity = n ? '1' : '.5';
-    play.innerHTML = n ? `&#9654; Play My Day (${n})` : '&#9654; Play My Day';
+    play.innerHTML = n ? `&#9654; Automatically Play My Daily Runthrough (${n})` : '&#9654; Automatically Play My Daily Runthrough';
   }
   // Shared drag-to-reorder wiring for any row (favorites AND pause spacers).
   function attachDrag(row) {
@@ -267,7 +267,7 @@ export function renderFavorites() {
   const play = document.createElement('button');
   play.id = 'fav-play';
   play.style.cssText = 'display:block;width:100%;text-align:center;padding:15px;margin:0 0 14px;background:#e02020;border:none;color:#fff;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:8px;cursor:pointer;font-size:16px;';
-  play.innerHTML = '&#9654; Play My Day';
+  play.innerHTML = '&#9654; Automatically Play My Daily Runthrough';
   play.addEventListener('click', playAllFavorites);
   list.insertBefore(play, list.firstChild);   // Play My Day sits at the very top
   syncPlay();
