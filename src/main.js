@@ -39,4 +39,9 @@ if (_missing.length) {
 
 // Boot — run AFTER every module has fully evaluated (fixes the circular-import
 // init-order bug where init() used to fire before sibling module data existed).
-_app_js.init();
+_app_js.init().catch(e => {
+  console.error('[boot] init() failed:', e);
+  // Never leave the user stuck on the loading spinner if boot throws.
+  const loader = document.getElementById('loadingScreen');
+  if (loader) { loader.classList.add('fade'); setTimeout(() => loader.remove(), 500); }
+});

@@ -3902,19 +3902,46 @@ export async function init() {
     }
   });
 
+  // Failsafe: a slow or unreachable Supabase must NEVER trap the user on the
+  // loading spinner. hideLoader() is idempotent; the timer below guarantees the
+  // dashboard (rendered from local data) becomes usable even on a total network
+  // stall. See "stuck loading" bug — the boot used to await Supabase with no
+  // timeout or error handling, so any hang left the spinner up forever.
+  let _loaderHidden = false;
+  const hideLoader = () => {
+    if (_loaderHidden) return;
+    _loaderHidden = true;
+    const loader = document.getElementById('loadingScreen');
+    if (!loader) return;
+    loader.classList.add('fade');
+    setTimeout(() => loader.remove(), 500);
+  };
+  const _loaderFailsafe = setTimeout(hideLoader, 8000);
+  const withTimeout = (p, ms, label) => Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() => rej(new Error((label || 'op') + ' timed out after ' + ms + 'ms')), ms)),
+  ]);
+
   // Check existing session (skipped in localhost preview mode)
-  if (!_preview) {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-      updateUI(session.user);
-      await syncFromSupabase();
-      await syncIntentionsFromSupabase();
-      logDailyLogin();
-      injectPersonalContent();
-      renderTodayView();
-    } else {
-      updateUI(null);
+  try {
+    if (!_preview) {
+      const { data: { session } } = await withTimeout(sb.auth.getSession(), 6000, 'getSession');
+      if (session?.user) {
+        updateUI(session.user);
+        await withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase');
+        await withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase');
+        logDailyLogin();
+        injectPersonalContent();
+        renderTodayView();
+      } else {
+        updateUI(null);
+      }
     }
+  } catch (e) {
+    // Network/auth failure — fall through and show the dashboard from local data
+    // rather than hanging. The auth listener will re-sync if the session recovers.
+    console.error('[init] session/sync failed — rendering from local data:', e);
+    updateUI(null);
   }
 
   renderDashboard();
@@ -3922,10 +3949,9 @@ export async function init() {
   // Backfill vision images for any goals that don't have one yet.
   if (typeof backfillGoalImages === 'function') backfillGoalImages();
 
-  // Hide loading
-  const loader = document.getElementById('loadingScreen');
-  loader.classList.add('fade');
-  setTimeout(() => loader.remove(), 500);
+  // Hide loading (whatever happened above, clear the failsafe and drop the spinner)
+  clearTimeout(_loaderFailsafe);
+  hideLoader();
 
   // Populate Setup/BTS forms
   loadPegboard();
