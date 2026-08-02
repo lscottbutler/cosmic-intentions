@@ -41,6 +41,8 @@ export function openPlayerInColumn(src, ev) {
   _currentPillar = pillarForSrc(src);   // remember which ring a natural finish should close
   frame.src = src;
   panel.style.display = '';
+  const pb = document.getElementById('colPauseBtn');   // reset Pause label for the fresh player
+  if (pb) pb.innerHTML = '&#9208;&nbsp;Pause';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 

@@ -116,6 +116,8 @@
     playBtn.innerHTML = paused ? '&#9654;' : '&#9208;';
     if (paused) stopSpeak();
   };
+  // Let the dashboard column's Pause/Resume button drive this player. Returns paused state.
+  window.__ciTogglePlay = () => { playBtn.click(); return paused; };
 
   const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;   // 305 → "5:05"
 

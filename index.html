@@ -411,11 +411,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- SHARED PLAYER PANEL — drops below whichever time grid was clicked -->
         <div id="playerColumn" style="display:none;margin-top:4px;margin-bottom:10px;">
-          <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <button class="player-col-back" onclick="closePlayerColumn()"
-              style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">← Back</button>
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+            <button onclick="closePlayerColumn()"
+              style="background:#e02020;border:none;color:#fff;border-radius:6px;padding:10px 18px;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;">&#9209; Stop</button>
+            <button id="colPauseBtn"
+              onclick="var f=document.getElementById('playerColumnFrame');try{if(f&&f.contentWindow&&f.contentWindow.__ciTogglePlay){var p=f.contentWindow.__ciTogglePlay();this.innerHTML=p?'&#9654;&nbsp;Resume':'&#9208;&nbsp;Pause';}}catch(e){}"
+              style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:10px 18px;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;">&#9208;&nbsp;Pause</button>
             <button onclick="(function(f){f&&f.requestFullscreen&&f.requestFullscreen();})(document.getElementById('playerColumnFrame'))"
-              style="background:var(--card);border:1px solid var(--maroon);color:var(--pink);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">&#9974; Full screen</button>
+              style="background:var(--card);border:1px solid var(--maroon);color:var(--pink);border-radius:6px;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">&#9974; Full screen</button>
           </div>
           <iframe id="playerColumnFrame" title="Player" allow="autoplay; fullscreen" allowfullscreen
             style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:8px;background:transparent;"></iframe>
