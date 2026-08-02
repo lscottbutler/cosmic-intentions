@@ -54,13 +54,14 @@ function _timerSVG(sessionFrac, voRem, voSec, sessTxt) {
   }
   const col = _playing ? DONE : '#fff';
   return `<svg viewBox="0 0 120 120" style="display:block;width:100%;max-width:116px;height:auto;margin-left:auto;">
-    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#262626" stroke-width="6"/>
+    <circle cx="60" cy="60" r="59" fill="#15151c"/>
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#3a3a44" stroke-width="6"/>
     <circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round"
       stroke-dasharray="${(C * showSess).toFixed(1)} ${C.toFixed(1)}"
       transform="rotate(-90 60 60) scale(-1,1) translate(-120,0)"/>
     <g>${ticks}</g>
     <text x="60" y="57" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="26" font-weight="800" fill="#fff">${voSec}</text>
-    <text x="60" y="73" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8" letter-spacing="0.5" fill="#888">${sessTxt}</text>
+    <text x="60" y="73" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8" letter-spacing="0.5" fill="#c8c8d2">${sessTxt}</text>
   </svg>`;
 }
 
@@ -151,13 +152,38 @@ function _purgeOldCache() {
   try { Object.keys(localStorage).filter(k => k.startsWith('ci_tts_')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
 }
 
-/* The loop set = ALL of the user's goals ("I AM…" statements) from the
-   database. Decoupled from the Favorites / Daily-Focus list on purpose: the
-   Mind Loop is audio-only and goal-only; Daily Focus owns ci_favorites. */
+/* Goals the user has switched OFF for the loop, stored by goal id (ci_loop_off).
+   Everything NOT in this set plays. */
+function _offIds() {
+  try { const a = JSON.parse(localStorage.getItem('ci_loop_off') || '[]'); return Array.isArray(a) ? a : []; }
+  catch (e) { return []; }
+}
+function _saveOff(a) { try { localStorage.setItem('ci_loop_off', JSON.stringify(a)); } catch (e) {} }
+function _isOff(id) { return _offIds().includes(id); }
+
+/* The loop set = the user's goals ("I AM…" statements), minus any switched off
+   via the SHOW GOALS list. Decoupled from Favorites / Daily-Focus on purpose:
+   the Mind Loop is audio-only and goal-only; Daily Focus owns ci_favorites. */
+function _loopGoals() {
+  return (intentions || []).filter(it => it && it.title && !_isOff(it.id));
+}
 function _favGoalTexts() {
-  return (intentions || [])
-    .map(it => it && it.title)
-    .filter(Boolean);
+  return _loopGoals().map(it => it.title);
+}
+
+/* Show/hide the goals checklist inside the panel. */
+let _listOpen = false;
+export function sleepLoopToggleList() { _listOpen = !_listOpen; renderSleepLoop(); }
+
+/* Toggle one goal in/out of the loop from the checklist. Applies live if the
+   loop is already playing. */
+export function sleepLoopToggleGoal(id) {
+  const off = _offIds();
+  const at = off.indexOf(id);
+  if (at >= 0) off.splice(at, 1); else off.push(id);
+  _saveOff(off);
+  if (_playing) _list = _favGoalTexts();
+  renderSleepLoop();
 }
 
 function _speak(text) {
@@ -300,6 +326,24 @@ export function renderSleepLoop() {
   const count = list.length;
   const day   = _mode === 'daytime';
 
+  // Collapsible checklist of every goal — uncheck to drop one from the loop.
+  const allGoals = (intentions || []).filter(g => g && g.title);
+  const listRows = allGoals.map(g => {
+    const on = !_isOff(g.id);
+    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 2px;cursor:pointer;border-bottom:1px solid var(--widget-border);">
+      <input type="checkbox" ${on ? 'checked' : ''} onchange="sleepLoopToggleGoal('${g.id}')" style="width:18px;height:18px;flex-shrink:0;accent-color:#E0102B;cursor:pointer;">
+      <span style="font-size:13px;line-height:1.4;color:var(--widget-text);${on ? '' : 'opacity:.4;text-decoration:line-through;'}">${esc(g.title)}</span>
+    </label>`;
+  }).join('');
+  const listUI = allGoals.length ? `
+    <div style="padding:0 16px 4px;">
+      <button onclick="sleepLoopToggleList()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:transparent;border:1px solid var(--widget-border);border-radius:8px;padding:9px 12px;cursor:pointer;color:var(--widget-text);font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:.5px;">
+        <span>${_listOpen ? 'HIDE' : 'SHOW'} GOALS IN THIS LOOP · ${count} ON</span>
+        <span style="display:inline-block;transition:transform .2s;transform:rotate(${_listOpen ? '0' : '-90'}deg);">▾</span>
+      </button>
+      ${_listOpen ? `<div style="margin-top:8px;background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:8px;padding:2px 12px;max-height:280px;overflow:auto;">${listRows}</div>` : ''}
+    </div>` : '';
+
   let status;
   if (_playing) {
     let sub;
@@ -344,6 +388,7 @@ export function renderSleepLoop() {
           ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
         </div>
       </div>
+      ${listUI}
       ${!count ? `<div style="padding:14px 16px;"><button onclick="sleepLoopToggle()" style="width:100%;background:${BRAND};border:1px solid ${BRAND};border-radius:8px;padding:11px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;color:#0a0a0a;cursor:pointer;">▶ START</button></div>` : ''}
       <div style="padding:12px 16px 0;">${status}</div>
       <div style="text-align:center;font-family:var(--vault-mono);font-size:8px;color:#555;letter-spacing:1.5px;margin-top:12px;border-top:1px solid #222;padding:10px 16px 14px;">◎ ${_impressions().toLocaleString()} TOTAL IMPRESSIONS</div>
