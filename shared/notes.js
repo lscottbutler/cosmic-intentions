@@ -75,7 +75,6 @@ export function renderNotesPage() {
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
     const isNoteCat = c.key === 'note';
     const rows = mine.map(n => {
-      const pinned = _noteIsPinned(n.id);
       const goalSel = isNoteCat ? `
         <select onchange="notesSaveGoal('${n.id}',this.value)" title="Associate this note with a goal"
           style="width:100%;box-sizing:border-box;margin-top:6px;padding:9px 11px;border:none;border-radius:9px;font-size:13px;color:#1a1a1a;background:#fff;cursor:pointer;">
@@ -87,8 +86,6 @@ export function renderNotesPage() {
         <div style="display:flex;align-items:flex-start;gap:8px;">
           <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
             style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
-          <button id="notefav-${n.id}" onclick="notesToggleFav('${n.id}')" title="${pinned ? 'Unpin from My Favorites Autoplay' : 'Pin to My Favorites Autoplay'}"
-            style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #000;cursor:pointer;font-size:24px;line-height:1;padding:0;color:#e0102b;opacity:${pinned ? '1' : '0.4'};">${pinned ? '♥' : '♡'}</button>
           <button onclick="notesDelete('${n.id}')" title="Delete"
             style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         </div>
