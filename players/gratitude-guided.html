@@ -55,8 +55,7 @@
   const params = new URLSearchParams(location.search);
   const ep = params.get('ep') || '1';
   const SLIDE_MS = 7000;     // per image
-  const reflectMin = Math.max(1, parseInt(params.get('reflect') || '5', 10) || 5);  // session length (minutes)
-  const SESSION_S = reflectMin * 60;   // total session seconds (user-chosen)
+  const timerMin = Math.max(0, parseInt(params.get('timer') || '0', 10) || 0);  // silent-reflect timer minutes (separate mode)
   const imgUrl = it => `../images/gratitude/episode-${it.ep}/${it.file}`;
 
   const slideA = document.getElementById('slideA'), slideB = document.getElementById('slideB');
@@ -120,34 +119,47 @@
 
   const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;   // 305 → "5:05"
 
-  /* ONE timed session: the visible countdown runs the whole time while the
-     episode's photos + spoken lines cycle (looping if the episode is shorter
-     than the chosen minutes), ending with a bell at 0:00. */
-  async function runSession(totalS){
+  /* EPISODE MODE — play the episode's photos + spoken lines once (slideshow). */
+  async function runEpisode(){
     phaseEl.textContent = `Episode ${ep}`;
-    let i = -1;
-    function nextImage(){
-      i = (i + 1) % items.length;
-      const it = items[i];
+    timerEl.style.display = 'none';         // no countdown here — this is the slideshow
+    for (let idx = 0; idx < items.length; idx++){
+      const it = items[idx];
       showImage(imgUrl(it));
       lineEl.textContent = it.line;
       if (!paused) speak(it.line);
+      progfill.style.width = Math.round(((idx + 1) / items.length) * 100) + '%';
+      await wait(SLIDE_MS);
     }
-    nextImage();                     // first photo right away
-    let sinceSlide = 0;
-    for (let remaining = totalS; remaining > 0; remaining--){
-      timerEl.textContent = fmt(remaining);
-      progfill.style.width = Math.min(100, Math.round((1 - remaining / totalS) * 100)) + '%';
-      await wait(1000);
-      sinceSlide += 1000;
-      if (sinceSlide >= SLIDE_MS && remaining > 1){ sinceSlide = 0; nextImage(); }
-    }
-    timerEl.textContent = '0:00';
-    progfill.style.width = '100%';
     stopSpeak();
   }
 
+  /* TIMER MODE — a plain silent reflection countdown. No images, no voice. */
+  async function runTimer(totalS){
+    phaseEl.textContent = 'Reflect';
+    timerEl.style.display = 'none';
+    lineEl.style.fontSize = '46px';
+    lineEl.style.fontVariantNumeric = 'tabular-nums';
+    for (let s = totalS; s > 0; s--){
+      lineEl.textContent = fmt(s);
+      progfill.style.width = Math.round((1 - s / totalS) * 100) + '%';
+      await wait(1000);
+    }
+    lineEl.textContent = '0:00';
+    progfill.style.width = '100%';
+  }
+
   async function main(){
+    // Silent reflect timer — its own mode, no episode content.
+    if (timerMin > 0){
+      lineEl.textContent = fmt(timerMin * 60);
+      await wait(400);
+      await runTimer(timerMin * 60);
+      playBell();
+      setTimeout(finishPlayer, 3500);
+      return;
+    }
+    // Episode slideshow (photos + voice-overs).
     try {
       const res = await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`);
       const manifest = await res.json();
@@ -155,11 +167,9 @@
       items = items.filter(x => x && x.file);
     } catch(e){ items = []; }
     if (!items.length){ lineEl.textContent = 'No gratitude images yet.'; return; }
-    // preload
-    items.forEach(it => { const im = new Image(); im.src = imgUrl(it); });
-    timerEl.textContent = fmt(SESSION_S);
+    items.forEach(it => { const im = new Image(); im.src = imgUrl(it); });   // preload
     await wait(600);            // brief beat before it begins
-    await runSession(SESSION_S);
+    await runEpisode();
     playBell();
     setTimeout(finishPlayer, 3500);
   }

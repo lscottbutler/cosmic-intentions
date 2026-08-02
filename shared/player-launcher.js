@@ -106,13 +106,17 @@ export function favSession(player, minutes, ev) {
     window.toast(on ? `${minutes}-min ${label} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
   }
 }
-/* Play a gratitude episode, passing the chosen "sit & reflect" length (minutes)
-   from the dashboard dropdown so the player's silent countdown runs that long. */
+/* Play a gratitude EPISODE — its photos + spoken lines (slideshow). */
 export function playGratEp(ep, ev) {
+  openPlayerInColumn(`players/gratitude-guided.html?ep=${ep}`, ev);
+}
+
+/* Play the standalone "sit & reflect" SILENT TIMER for the chosen minutes
+   (no images, no voice) — separate from the episodes. */
+export function playGratReflect(ev) {
   const sel = typeof document !== 'undefined' ? document.getElementById('gratReflect') : null;
-  const mins = sel ? (parseInt(sel.value, 10) || 0) : 0;
-  try { localStorage.setItem('ci_grat_reflect', String(mins)); } catch (e) {}
-  openPlayerInColumn(`players/gratitude-guided.html?ep=${ep}&reflect=${mins}`, ev);
+  const mins = sel ? (parseInt(sel.value, 10) || 5) : 5;
+  openPlayerInColumn(`players/gratitude-guided.html?timer=${mins}`, ev);
 }
 
 /* Toggle a gratitude EPISODE favorite ({player:'gratitude', ep}) from its heart,
@@ -152,7 +156,7 @@ export function syncSessionHearts() {
     if (rSel && saved) rSel.value = saved;
   } catch (e) {}
 }
-if (typeof window !== 'undefined') { window.favSession = favSession; window.favGratEp = favGratEp; window.playGratEp = playGratEp; window.syncSessionHearts = syncSessionHearts; }
+if (typeof window !== 'undefined') { window.favSession = favSession; window.favGratEp = favGratEp; window.playGratEp = playGratEp; window.playGratReflect = playGratReflect; window.syncSessionHearts = syncSessionHearts; }
 
 /* ── TYPED FAVORITES ──────────────────────────────────────────
    Every favorite carries a `type`. PLAYABLE types are audio sessions that
@@ -396,11 +400,9 @@ function _openFav(f) {
     openPlayerInColumn(`players/3min-viz.html?g=${encodeURIComponent(f.title || '')}&_=${Date.now()}`);
     return;
   }
-  // Gratitude favorite → the guided slideshow+VO player for that episode,
-  // reusing the last chosen "sit & reflect" length.
+  // Gratitude favorite → play that episode's photos + voice slideshow.
   if (f.player === 'gratitude') {
-    let r = 1; try { r = parseInt(localStorage.getItem('ci_grat_reflect') || '1', 10) || 1; } catch (e) {}
-    openPlayerInColumn(`players/gratitude-guided.html?ep=${f.ep || 1}&reflect=${r}`);
+    openPlayerInColumn(`players/gratitude-guided.html?ep=${f.ep || 1}`);
     return;
   }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
