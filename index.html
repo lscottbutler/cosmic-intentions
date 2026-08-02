@@ -335,7 +335,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div style="max-width:640px;margin:0 auto;padding:22px 16px 70px;">
       <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0 0 4px;">My Favorites Autoplay</h1>
       <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 16px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
-      <div data-random-note="" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;"></div>
+      <div data-random-note="" data-note-key="favorites" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;"></div>
       <div id="favorites-list" class="player-times-grid"></div>
     </div>
   </div>
@@ -659,8 +659,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="launchMindset(event)" style="width:100%; padding:12px; background:var(--purple); border:none; border-radius:8px; color:var(--text); font-weight:800; letter-spacing:1px; cursor:pointer;">&#9654; PLAY FULL MINDSET</button>
         </div>
 
-        <!-- A random one of the user's own notes surfaces here (filled by sprinkleNotes). -->
-        <div data-random-note="" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:4px 0 14px;"></div>
+        <!-- One of the user's own QUOTES surfaces here, fixed for the day (filled by sprinkleNotes). -->
+        <div data-random-note="quote" data-note-key="dashboard" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:4px 0 14px;"></div>
 
         <!-- ═══ PARKED: run-through launchers — MOVE THESE INTO page-runthroughs ═══
              Hidden from the slimmed home hub. The Visualization / Recitations / Favorites
@@ -971,6 +971,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <button onclick="navTo('vizlibrary')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
         <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">Visualize</span>
       </div>
+      <!-- One of the user's own AFFIRMATIONS surfaces here, fixed for the day (filled by sprinkleNotes). -->
+      <div data-random-note="affirmation" data-note-key="vizgoal" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;"></div>
       <div id="vizGoalPill"></div>
       <div id="vizGoalOptions"></div>
     </div>
@@ -983,6 +985,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <button onclick="navTo('dashboard')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
         <span style="font-family:'Dancing Script',cursive;font-size:30px;color:var(--text);line-height:1;">My Roadmap</span>
       </div>
+      <!-- One of the user's own REMINDERS surfaces here, fixed for the day (filled by sprinkleNotes). -->
+      <div data-random-note="reminder" data-note-key="myroadmap" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;"></div>
       <!-- TODAY I WILL / ACTION PLAN — rendered by wrapup.js into this container -->
       <div id="todayWillWidget"></div>
     </div>

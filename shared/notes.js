@@ -37,22 +37,43 @@ function _saveFavs(a) {
 function _noteIsPinned(id) { return _readFavs().some(f => f && f.type === 'note' && f.id === id); }
 function _id() { return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
-/* Pick a random note (optionally within a category) — used for the
-   random surfacing around the site. Returns a note object or null. */
+/* Pick a random note (optionally within a category) — returns a note
+   object or null. Kept for ad-hoc callers; the on-page surfacing uses the
+   daily-stable dailyNote() below instead. */
 export function randomNote(cat) {
   const pool = readNotes().filter(n => n && n.text && (!cat || n.cat === cat));
   if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/* Fill every [data-random-note] slot on the page with a random note.
-   The attribute value optionally restricts to a category (''=any).
-   Empty slots (no matching notes) hide themselves. Call on each page nav
-   so the surfaced notes rotate as the user moves around the site. */
+/* Cheap deterministic string hash + a per-day key. Together they let a slot
+   show the SAME thought all day and a DIFFERENT one tomorrow (or when the
+   pool changes), without any storage. */
+function _hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+function _todayKey() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+
+/* Daily-stable pick: the same (cat, slotKey) resolves to one thought for the
+   whole day, rotating tomorrow. Different slots get different thoughts because
+   slotKey feeds the seed. Returns a note object or null. */
+export function dailyNote(cat, slotKey) {
+  const pool = readNotes().filter(n => n && n.text && (!cat || n.cat === cat));
+  if (!pool.length) return null;
+  const idx = _hash(_todayKey() + '|' + (cat || '') + '|' + (slotKey || '')) % pool.length;
+  return pool[idx];
+}
+
+/* Fill every [data-random-note] slot on the page with a thought that stays
+   fixed for the day (see dailyNote). The attribute value optionally restricts
+   to a category (''=any); data-note-key gives the slot a stable identity so
+   two slots don't show the same thought. Empty slots (no matching thoughts)
+   hide themselves. Called on each page nav so the right thoughts appear as the
+   user moves around the site. */
 export function sprinkleNotes() {
   const slots = document.querySelectorAll('[data-random-note]');
-  slots.forEach(el => {
-    const n = randomNote(el.getAttribute('data-random-note') || '');
+  slots.forEach((el, i) => {
+    const cat = el.getAttribute('data-random-note') || '';
+    const key = el.getAttribute('data-note-key') || String(i);
+    const n = dailyNote(cat, key);
     if (!n) { el.style.display = 'none'; return; }
     el.style.display = '';
     el.innerHTML =
