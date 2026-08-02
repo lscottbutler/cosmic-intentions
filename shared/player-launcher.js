@@ -250,13 +250,16 @@ export function renderFavorites() {
   }
   list.innerHTML = '';
 
-  // Loops control — how many times to play the whole selected list.
+  // Loops control — a plain-English sentence with two entry boxes:
+  // play the list N times per hour, for H hours (total plays = N × H).
   const loops = document.createElement('div');
-  loops.style.cssText = 'display:flex;align-items:center;gap:10px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:10px 14px;margin-bottom:10px;';
+  loops.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:12px 14px;margin-bottom:10px;color:#ccc;font-size:15px;line-height:1.9;';
+  const _numStyle = 'width:56px;text-align:center;font-size:18px;font-weight:700;background:#0d0d0d;color:#fff;border:1px solid #444;border-radius:6px;padding:6px;';
   loops.innerHTML =
-    '<span style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#ccc;">Loops</span>' +
-    '<input id="fav-loops" type="number" min="1" max="99" value="1" style="width:60px;text-align:center;font-size:18px;font-weight:700;background:#0d0d0d;color:#fff;border:1px solid #444;border-radius:6px;padding:6px;">' +
-    '<span style="margin-left:auto;color:#777;font-size:12px;">how many times to play the list</span>';
+    '<span>How many times per hour would you like to play this loop?</span>' +
+    `<input id="fav-per-hour" type="number" min="1" max="60" value="1" style="${_numStyle}">` +
+    '<span>&nbsp;&mdash; and for how many hours?</span>' +
+    `<input id="fav-hours" type="number" min="1" max="24" value="1" style="${_numStyle}">`;
   list.appendChild(loops);
 
   // Checkbox rows with drag-to-reorder grips.
@@ -447,12 +450,15 @@ function _openFav(f) {
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
 }
 
-/* Play the checked favorites for the chosen number of loops (finite queue). */
+/* Play the checked favorites. Total plays = (times per hour) × (hours). */
 export function playAllFavorites() {
   const sel = _selectedFavs();
   if (!sel.length) return;
-  const box = document.getElementById('fav-loops');
-  const loops = Math.max(1, Math.min(99, parseInt(box && box.value, 10) || 1));
+  const perHourEl = document.getElementById('fav-per-hour');
+  const hoursEl = document.getElementById('fav-hours');
+  const perHour = Math.max(1, Math.min(60, parseInt(perHourEl && perHourEl.value, 10) || 1));
+  const hours   = Math.max(1, Math.min(24, parseInt(hoursEl && hoursEl.value, 10) || 1));
+  const loops = perHour * hours;
   _favQueue = [];
   for (let l = 0; l < loops; l++) _favQueue.push(...sel);
   _autoLooping = true;
