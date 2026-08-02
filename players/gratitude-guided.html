@@ -134,12 +134,14 @@
     stopSpeak();
   }
 
-  /* TIMER MODE — a plain silent reflection countdown. No images, no voice. */
+  /* TIMER MODE — a spoken gratitude prompt, then a silent reflection countdown. */
   async function runTimer(totalS){
     phaseEl.textContent = 'Reflect';
     timerEl.style.display = 'none';
     lineEl.style.fontSize = '46px';
     lineEl.style.fontVariantNumeric = 'tabular-nums';
+    // Spoken intro so it makes sense on its own (e.g. inside Play My Day), then silence.
+    if (!paused) speak("Silently reflect on some of the things you're grateful for.");
     for (let s = totalS; s > 0; s--){
       lineEl.textContent = fmt(s);
       progfill.style.width = Math.round((1 - s / totalS) * 100) + '%';

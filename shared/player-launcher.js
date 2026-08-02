@@ -64,7 +64,7 @@ export function closePlayerColumn() {
    the ones to include, drag the 6-dot grip to set the order, choose
    how many loops, then Play — the selected set chains in the column
    iframe (doze-off / fall-asleep mode). */
-const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization', reflect: 'Silent reflection' };
+const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization', reflect: "Silently reflect on what you're grateful for" };
 /* Gratitude ships as 5 themed episodes (own images + spoken lines), NOT minutes. */
 const GRAT_EP_TITLES = { 1: 'Episode 1', 2: 'Episode 2', 3: 'Episode 3', 4: 'Episode 4', 5: 'Episode 5' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
