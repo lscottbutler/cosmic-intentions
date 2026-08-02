@@ -8,14 +8,12 @@ import { awardMindLoopPoint } from './rings.js';
    browser's built-in speech if the function/audio is unavailable.
 
    Loop technique (decided): audible, first-person present
-   (goals are already "I AM…"), ROTATE don't hammer (~30s
-   cadence), bounded pre-sleep session.
+   (goals are already "I AM…"), ROTATE through the goals at a
+   user-set cadence — N new goals per hour, for X hours.
 
    Depends on globals (from app.js): intentions, esc, toast.
 ───────────────────────────────────────────────────────── */
 
-const GAP_MS     = 30000;        // ~30s between goals (spacing, not hammering)
-const SESSION_MS = 20 * 60000;   // bounded 20-min wind-down
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
 
@@ -24,14 +22,15 @@ let _playing = false, _timer = null, _idx = 0, _endAt = 0, _list = [], _audio = 
 let _lastVoAt = 0, _uiTimer = null, _lastLine = '';   // timer + current-line state
 let _mindPtTimer = null;                              // fires the ONE daily Big-3 point after 10 min
 const MIND_PT_MS = 10 * 60000;                        // 10 continuous minutes → +1 (capped once/day)
-let _mode = (() => { try { return localStorage.getItem('ci_loop_mode') || 'sleep'; } catch (e) { return 'sleep'; } })();
-// Sleep-session length in minutes; 0 = continuous (all day/night, no auto-stop).
-let _sessionMin = (() => { try { const v = parseInt(localStorage.getItem('ci_loop_minutes'), 10); return isNaN(v) ? 20 : v; } catch (e) { return 20; } })();
 let _startedAt = 0;
-const SLOT_MS  = 30 * 60000;   // daytime: a play at :00 and :30
-const SLOT_GAP = 14000;        // gap between the goal and the mindset line within a slot
-const DURATIONS = [20, 60, 240, 480, 0];   // minutes; 0 = ∞
-function _durLabel(m) { return m === 0 ? '∞' : m < 60 ? `${m}m` : `${m / 60}h`; }
+
+// The whole loop is two numbers the user sets in a plain sentence:
+//   "Play a new goal [perHour] time(s) per hour, for [hours] continuous hours."
+// Interval between goals = one hour / perHour; the session ends after `hours`.
+const _clamp = (v, lo, hi, dflt) => { const n = parseInt(v, 10); return isNaN(n) ? dflt : Math.max(lo, Math.min(hi, n)); };
+let _perHour = (() => { try { return _clamp(localStorage.getItem('ci_loop_perhour'), 1, 60, 1); } catch (e) { return 1; } })();
+let _hours   = (() => { try { return _clamp(localStorage.getItem('ci_loop_hours'), 1, 24, 8); } catch (e) { return 8; } })();
+function _intervalMs() { return Math.round(3600000 / _perHour); }
 
 /* Total impressions — every line the loop speaks (goal or mindset). Accumulates
    forever in ci_impressions. (Supabase sync is a later upgrade.) */
@@ -68,44 +67,33 @@ function _timerSVG(sessionFrac, voRem, voSec, sessTxt) {
 function _renderTimer() {
   const el = document.getElementById('sleepTimer');
   if (!el) return;
-  let sessionFrac = 1, voRem = 1, voSec = Math.round(GAP_MS / 1000), sessTxt = '';
-  if (_mode === 'daytime') {
-    if (_playing) {
-      const toSlot = _msToNextSlot();
-      sessionFrac = Math.max(0, Math.min(1, toSlot / SLOT_MS));
-      voRem = sessionFrac;
-      const mm = Math.floor(toSlot / 60000), ss = Math.floor((toSlot % 60000) / 1000);
-      voSec = mm; sessTxt = `${mm}:${ss.toString().padStart(2, '0')} TO NEXT`;
-    } else {
-      voSec = '▶'; sessTxt = 'EVERY :00 & :30';   // idle → play affordance
-    }
-  } else if (_playing) {
-    const now  = Date.now();
+  let sessionFrac = 1, voRem = 1, voSec = '▶', sessTxt = `${_hours}H · ${_perHour}/HR`;
+  if (_playing) {
+    const now = Date.now();
+    const interval = _intervalMs();
     const into = now - _lastVoAt;
-    voRem = 1 - (into / GAP_MS);
-    voSec = Math.max(0, Math.ceil((GAP_MS - into) / 1000));
-    if (_sessionMin > 0) {
-      const remMs = Math.max(0, _endAt - now);
-      sessionFrac = remMs / (_sessionMin * 60000);
-      const mm = Math.floor(remMs / 60000), ss = Math.floor((remMs % 60000) / 1000);
-      sessTxt = `${mm}:${ss.toString().padStart(2, '0')} LEFT`;
-    } else {
-      sessionFrac = 1;   // continuous — ring stays full
-      const e = now - _startedAt, h = Math.floor(e / 3600000), m = Math.floor((e % 3600000) / 60000);
-      sessTxt = h > 0 ? `∞  ${h}h ${m}m` : `∞  ${m}m`;
-    }
-  } else {
-    voSec = '▶';   // idle → play affordance
-    sessTxt = _sessionMin > 0 ? `${_sessionMin} MIN` : 'ALL NIGHT';
+    voRem = 1 - (into / interval);
+    const toNext = Math.max(0, interval - into);   // countdown to the next goal
+    voSec = toNext >= 60000 ? Math.ceil(toNext / 60000) + 'm' : Math.max(0, Math.ceil(toNext / 1000));
+    const remMs = Math.max(0, _endAt - now);
+    sessionFrac = remMs / (_hours * 3600000);
+    const h = Math.floor(remMs / 3600000), m = Math.floor((remMs % 3600000) / 60000);
+    sessTxt = h > 0 ? `${h}h ${m}m LEFT` : `${m}m LEFT`;
   }
   el.innerHTML = _timerSVG(sessionFrac, voRem, voSec, sessTxt);
 }
 
-export function sleepLoopSetMode(mode) {
-  if (mode !== 'sleep' && mode !== 'daytime') return;
-  if (_playing) sleepLoopStop();
-  _mode = mode;
-  try { localStorage.setItem('ci_loop_mode', mode); } catch (e) {}
+/* The two number inputs in the sentence. Persist + apply live if playing. */
+export function sleepLoopSetPerHour(v) {
+  _perHour = _clamp(v, 1, 60, 1);
+  try { localStorage.setItem('ci_loop_perhour', String(_perHour)); } catch (e) {}
+  if (_playing) _reschedule();
+  renderSleepLoop();
+}
+export function sleepLoopSetHours(v) {
+  _hours = _clamp(v, 1, 24, 8);
+  try { localStorage.setItem('ci_loop_hours', String(_hours)); } catch (e) {}
+  if (_playing) { _endAt = _startedAt + _hours * 3600000; if (Date.now() >= _endAt) { sleepLoopStop(); return; } }
   renderSleepLoop();
 }
 
@@ -217,7 +205,7 @@ async function _playPremium(text) {
   } catch (e) { return false; }
 }
 
-/* Speak one line (goal or mindset) — premium voice if available, else browser. */
+/* Speak one goal line — premium voice if available, else browser. */
 async function _playGoal(text) {
   _lastLine = text;
   _bumpImpressions();   // every spoken line is one impression
@@ -225,86 +213,39 @@ async function _playGoal(text) {
   if (!ok && _playing) _speak(text);
 }
 
-/* ── DAYTIME MODE ───────────────────────────────────────
-   At :00 and :30 of each hour, play 1 favorited goal + 1 random
-   mindset line (affirmation/belief/stoic/quote). Runs while the
-   tab is open. */
-function _randomMindset() {
-  const pool = [];
-  (intentions || []).forEach(it => {
-    const m = it && it.mindset;
-    if (!m) return;
-    (m.affirmations || []).forEach(x => pool.push(x));
-    (m.beliefs      || []).forEach(x => pool.push(x));
-    (m.stoic        || []).forEach(x => pool.push(x));
-    (m.quotes       || []).forEach(x => pool.push(x));
-    (m.attitudes    || []).forEach(a => pool.push(a && (a.body || a.title)));
-  });
-  const clean = pool.map(s => String(s || '').trim()).filter(Boolean);
-  return clean.length ? clean[Math.floor(Math.random() * clean.length)] : '';
-}
-
-function _msToNextSlot() {
-  const now = new Date();
-  const minsToNext = now.getMinutes() < 30 ? 30 - now.getMinutes() : 60 - now.getMinutes();
-  return Math.max(1000, (minsToNext * 60 - now.getSeconds()) * 1000 - now.getMilliseconds());
-}
-
-async function _playDaytimeSlot() {
-  if (!_playing || !_list.length) return;
-  _lastVoAt = Date.now();
-  await _playGoal(_list[_idx % _list.length]); _idx++;
-  renderSleepLoop();
-  const mind = _randomMindset();   // +1 mindset line, after a short gap
-  if (mind) setTimeout(() => { if (_playing) { _lastVoAt = Date.now(); _playGoal(mind); renderSleepLoop(); } }, SLOT_GAP);
-}
-
-function _scheduleDaytime() {
-  if (!_playing || _mode !== 'daytime') return;
-  _timer = setTimeout(() => {
-    if (!_playing || _mode !== 'daytime') return;
-    _playDaytimeSlot();
-    _scheduleDaytime();
-  }, _msToNextSlot());
-}
-
+/* One rotation step: play the next goal, then schedule the next at the chosen
+   cadence (one hour / perHour). Stops when the session hours are up. */
 function _tick() {
-  if (!_playing || _mode !== 'sleep') return;   // sleep-only; never run in daytime
+  if (!_playing) return;
   if (Date.now() >= _endAt) { sleepLoopStop(); return; }
   if (_list.length) { _lastVoAt = Date.now(); _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
-  _timer = setTimeout(_tick, GAP_MS);
+  _timer = setTimeout(_tick, _intervalMs());
+}
+
+/* Restart the interval timer after perHour changes mid-session. */
+function _reschedule() {
+  if (_timer) { clearTimeout(_timer); _timer = null; }
+  if (_playing) _timer = setTimeout(_tick, _intervalMs());
 }
 
 export function sleepLoopToggle() {
   if (_playing) { sleepLoopStop(); return; }
   _list = _favGoalTexts();
   if (!_list.length) {
-    if (typeof toast === 'function') toast('Favorite some goals first — they become your loop.', 'error');
+    if (typeof toast === 'function') toast('Add or switch on some goals first — they become your loop.', 'error');
     return;
   }
   _purgeOldCache();   // free the old localStorage audio blobs
   if (_timer) { clearTimeout(_timer); _timer = null; }   // kill any stale scheduler before starting
   _playing = true; _idx = 0; _lastVoAt = Date.now(); _startedAt = Date.now();
+  _endAt = _startedAt + _hours * 3600000;
   // Award the single daily Big-3 point after 10 CONTINUOUS minutes of play.
   // Stopping before then clears it (see sleepLoopStop) → no farming by opening.
   if (_mindPtTimer) clearTimeout(_mindPtTimer);
   _mindPtTimer = setTimeout(() => { if (_playing) { try { awardMindLoopPoint(); } catch (e) {} } }, MIND_PT_MS);
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
-  if (_mode === 'daytime') {
-    _playDaytimeSlot();      // play one now, then align to :00 / :30
-    _scheduleDaytime();
-  } else {
-    _endAt = _sessionMin > 0 ? _startedAt + _sessionMin * 60000 : Infinity;   // 0 = run until stopped
-    _tick();                 // sleep: continuous rotation
-  }
-  renderSleepLoop();
-}
-
-export function sleepLoopSetDuration(min) {
-  _sessionMin = min;
-  try { localStorage.setItem('ci_loop_minutes', String(min)); } catch (e) {}
-  if (_playing && _mode === 'sleep') _endAt = min > 0 ? _startedAt + min * 60000 : Infinity;
+  _tick();   // play one now, then rotate at the chosen cadence
   renderSleepLoop();
 }
 
@@ -324,7 +265,6 @@ export function renderSleepLoop() {
 
   const list  = _playing ? _list : _favGoalTexts();
   const count = list.length;
-  const day   = _mode === 'daytime';
 
   // Collapsible checklist of every goal — uncheck to drop one from the loop.
   const allGoals = (intentions || []).filter(g => g && g.title);
@@ -346,45 +286,33 @@ export function renderSleepLoop() {
 
   let status;
   if (_playing) {
-    let sub;
-    if (day) {
-      const nextStr = new Date(Date.now() + _msToNextSlot()).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-      sub = `next play at ${nextStr}`;
-    } else {
-      sub = `rotating every 30s · ~${Math.max(0, Math.ceil((_endAt - Date.now()) / 60000))} min left`;
-    }
+    const remMs = Math.max(0, _endAt - Date.now());
+    const h = Math.floor(remMs / 3600000), m = Math.floor((remMs % 3600000) / 60000);
+    const left = h > 0 ? `${h}h ${m}m left` : `${m}m left`;
     status = `<div style="margin-top:10px;font-size:12px;color:${DONE};line-height:1.5;">▸ “${esc(_lastLine)}”</div>
-       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">${sub}</div>`;
+       <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">${_perHour}/hr · ${left}</div>`;
   } else if (count) {
-    status = `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">${day ? 'Plays on the hour &amp; half-hour · keep this tab open' : 'ElevenLabs voice · falls back to your device'}</div>`;
+    status = `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">ElevenLabs voice · falls back to your device</div>`;
   } else {
-    status = `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Favorite goals (♥) to build your loop.</div>`;
+    status = `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Add or switch on some goals to build your loop.</div>`;
   }
 
-  const modeBtn = (m, label) => `<button onclick="sleepLoopSetMode('${m}')"
-    style="flex:1;background:${_mode === m ? BRAND : 'transparent'};border:1px solid ${_mode === m ? BRAND : '#333'};border-radius:6px;padding:7px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:${_mode === m ? '#0a0a0a' : '#888'};cursor:pointer;">${label}</button>`;
+  // The whole control: one plain-English sentence with two number inputs.
+  const numStyle = 'width:52px;text-align:center;font-size:17px;font-weight:800;background:var(--widget-bg);color:var(--widget-text);border:1px solid var(--widget-border);border-radius:8px;padding:6px;margin:0 2px;';
+  const sentence = `<div style="font-size:14px;line-height:2.3;color:var(--widget-text);">Play a new goal <input type="number" min="1" max="60" value="${_perHour}" onchange="sleepLoopSetPerHour(this.value)" style="${numStyle}"> time${_perHour === 1 ? '' : 's'} per hour, for <input type="number" min="1" max="24" value="${_hours}" onchange="sleepLoopSetHours(this.value)" style="${numStyle}"> continuous hour${_hours === 1 ? '' : 's'}.</div>`;
 
-  const secLbl = 'color:var(--widget-text);font-weight:800;font-size:10px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;';
   el.innerHTML = `
     <div style="background:var(--widget-bg);border:1px solid ${_playing ? DONE : 'var(--widget-border)'};border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .3s;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 13px;">
         <div style="min-width:0;">
           <div style="font-size:15px;font-weight:800;color:var(--widget-text);letter-spacing:.5px;text-transform:uppercase;">Mind Loop</div>
-          <div style="font-size:12px;color:#9a9a9a;margin-top:3px;line-height:1.4;">${day ? 'One goal + one mindset line at :00 &amp; :30 each hour.' : 'Your favorited goals, spoken on a gentle rotation.'}</div>
+          <div style="font-size:12px;color:#9a9a9a;margin-top:3px;line-height:1.4;">Your goals, spoken back to you on a gentle rotation.</div>
         </div>
         <div style="flex-shrink:0;margin-left:12px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:3px 10px;${count ? 'background:#E0102B;color:#fff;' : 'background:transparent;color:#505058;border:1px solid #333;'}">${count} goal${count === 1 ? '' : 's'}</div>
       </div>
       <div style="background:var(--widget-band);padding:16px;border-top:1px solid #3a3a3a;">
         <div style="display:flex;gap:14px;align-items:center;">
-          <div style="flex:2 1 0;min-width:0;">
-            <div style="${secLbl}">Mode</div>
-            <div style="display:flex;gap:6px;${(!day && !_playing && count) ? 'margin-bottom:14px;' : ''}">${modeBtn('sleep', '🌙 SLEEP')}${modeBtn('daytime', '☀ DAYTIME')}</div>
-            ${(!day && !_playing && count) ? `<div style="${secLbl}">Length</div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;">
-              ${DURATIONS.map(m => `<button onclick="sleepLoopSetDuration(${m})"
-                style="flex:1;min-width:40px;background:${_sessionMin === m ? '#a7cecb' : '#8ba6a9'};border:1px solid ${_sessionMin === m ? '#a7cecb' : '#8ba6a9'};border-radius:999px;padding:6px 4px;font-family:var(--vault-mono);font-size:9px;font-weight:700;letter-spacing:0.5px;color:${_sessionMin === m ? '#1a1a1a' : '#fff'};cursor:pointer;" title="${m === 0 ? 'Run until you stop it' : 'Run for ' + _durLabel(m)}">${_durLabel(m)}</button>`).join('')}
-            </div>` : ''}
-          </div>
+          <div style="flex:2 1 0;min-width:0;">${sentence}</div>
           ${count ? `<div style="flex:1 1 0;display:flex;justify-content:flex-end;"><div id="sleepTimer" onclick="sleepLoopToggle()" title="${_playing ? 'Tap to stop' : 'Tap to start'}" style="width:100%;cursor:pointer;"></div></div>` : ''}
         </div>
       </div>
