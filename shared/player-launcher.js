@@ -64,7 +64,7 @@ export function closePlayerColumn() {
    the ones to include, drag the 6-dot grip to set the order, choose
    how many loops, then Play — the selected set chains in the column
    iframe (doze-off / fall-asleep mode). */
-const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization' };
+const FAV_LABEL = { meditation: 'Meditation', countdown: 'Countdown', gratitude: 'Gratitude', affirmation: 'Affirmations', stoic: 'Stoic', visualization: 'Visualization', reflect: 'Silent reflection' };
 /* Gratitude ships as 5 themed episodes (own images + spoken lines), NOT minutes. */
 const GRAT_EP_TITLES = { 1: 'Episode 1', 2: 'Episode 2', 3: 'Episode 3', 4: 'Episode 4', 5: 'Episode 5' };
 function readFavs() { try { return JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) { return []; } }
@@ -114,9 +114,40 @@ export function playGratEp(ep, ev) {
 /* Play the standalone "sit & reflect" SILENT TIMER for the chosen minutes
    (no images, no voice) — separate from the episodes. */
 export function playGratReflect(ev) {
+  openPlayerInColumn(`players/gratitude-guided.html?timer=${_reflectMins()}`, ev);
+}
+
+/* Minutes currently chosen in the Silent timer dropdown (fallback 5). */
+function _reflectMins() {
   const sel = typeof document !== 'undefined' ? document.getElementById('gratReflect') : null;
-  const mins = sel ? (parseInt(sel.value, 10) || 5) : 5;
-  openPlayerInColumn(`players/gratitude-guided.html?timer=${mins}`, ev);
+  return sel ? (parseInt(sel.value, 10) || 5) : 5;
+}
+
+/* Favorite/unfavorite the Silent timer at the CURRENTLY selected length,
+   so it plays (as a silent countdown) in Play My Day. */
+export function favGratTimer(ev) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  const mins = _reflectMins();
+  const favs = readFavs();
+  const at = favs.findIndex(f => f && !f.type && f.player === 'reflect' && Number(f.minutes) === mins);
+  const on = at < 0;
+  if (on) favs.push({ player: 'reflect', minutes: mins }); else favs.splice(at, 1);
+  try { localStorage.setItem('ci_favorites', JSON.stringify(favs)); } catch (e) {}
+  paintGratTimerFav();
+  renderFavorites();
+  if (typeof window !== 'undefined' && typeof window.toast === 'function') {
+    window.toast(on ? `Silent timer · ${mins} min added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+  }
+}
+
+/* Paint the Silent timer heart filled/hollow for the currently selected length. */
+export function paintGratTimerFav() {
+  const btn = typeof document !== 'undefined' ? document.getElementById('gratTimerFav') : null;
+  if (!btn) return;
+  const mins = _reflectMins();
+  const on = readFavs().some(f => f && !f.type && f.player === 'reflect' && Number(f.minutes) === mins);
+  btn.innerHTML = on ? '&#9829;' : '&#9825;';
+  btn.classList.toggle('on', on);
 }
 
 /* Toggle a gratitude EPISODE favorite ({player:'gratitude', ep}) from its heart,
@@ -155,16 +186,17 @@ export function syncSessionHearts() {
     const saved = localStorage.getItem('ci_grat_reflect');
     if (rSel && saved) rSel.value = saved;
   } catch (e) {}
+  paintGratTimerFav();   // reflect the Silent timer heart for the current length
 }
-if (typeof window !== 'undefined') { window.favSession = favSession; window.favGratEp = favGratEp; window.playGratEp = playGratEp; window.playGratReflect = playGratReflect; window.syncSessionHearts = syncSessionHearts; }
+if (typeof window !== 'undefined') { window.favSession = favSession; window.favGratEp = favGratEp; window.playGratEp = playGratEp; window.playGratReflect = playGratReflect; window.favGratTimer = favGratTimer; window.paintGratTimerFav = paintGratTimerFav; window.syncSessionHearts = syncSessionHearts; }
 
 /* ── TYPED FAVORITES ──────────────────────────────────────────
    Every favorite carries a `type`. PLAYABLE types are audio sessions that
    loop in the sleep-player; everything else is a jump-to shortcut (open a
    goal / task / video / page). Legacy items (no `type`, just `player`) are
    inferred so old ci_favorites entries keep working unchanged. */
-const FAV_PLAYABLE = new Set(['meditation', 'countdown', 'gratitude', 'affirmation', 'stoic', 'visualization', 'mindset', 'note']);
-const FAV_ICON = { meditation: '🧘', countdown: '⏳', gratitude: '🙏', affirmation: '✦', stoic: '◈', visualization: '◉', mindset: '✦', goal: '🎯', task: '✓', video: '🎬', page: '🔗', note: '📝' };
+const FAV_PLAYABLE = new Set(['meditation', 'countdown', 'gratitude', 'affirmation', 'stoic', 'visualization', 'mindset', 'note', 'reflect']);
+const FAV_ICON = { meditation: '🧘', countdown: '⏳', gratitude: '🙏', affirmation: '✦', stoic: '◈', visualization: '◉', mindset: '✦', goal: '🎯', task: '✓', video: '🎬', page: '🔗', note: '📝', reflect: '⏳' };
 
 export function favType(f) {
   if (!f) return '';
@@ -403,6 +435,11 @@ function _openFav(f) {
   // Gratitude favorite → play that episode's photos + voice slideshow.
   if (f.player === 'gratitude') {
     openPlayerInColumn(`players/gratitude-guided.html?ep=${f.ep || 1}`);
+    return;
+  }
+  // Silent reflection timer favorite → the plain countdown (no images/voice).
+  if (f.player === 'reflect') {
+    openPlayerInColumn(`players/gratitude-guided.html?timer=${f.minutes || 5}`);
     return;
   }
   openPlayerInColumn(`players/${f.player}.html?t=${f.minutes}`);
