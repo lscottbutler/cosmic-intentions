@@ -44,7 +44,7 @@ async function fetchPrompt(slug) {
 const { guard } = require('./_guard');
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: true });
+  const g = await guard(event, { requireAuth: true, monthlyLimit: 100, action: 'drilldown' });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST')   return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
@@ -81,7 +81,7 @@ exports.handler = async (event) => {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o', temperature: 0.7, max_tokens: 700,
+        model: 'gpt-4o-mini', temperature: 0.7, max_tokens: 700,
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: 'You are a surgical execution coach. You break ONE action into concrete, specific sub-steps. Output JSON only — no preamble.' },

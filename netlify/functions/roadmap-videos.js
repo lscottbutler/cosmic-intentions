@@ -90,7 +90,7 @@ exports.handler = async (event) => {
       method: 'POST',
       headers: { Authorization: `Bearer ${openKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o', temperature: 0.6, max_tokens: 700,
+        model: 'gpt-4o-mini', temperature: 0.6, max_tokens: 700,
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: 'You curate real, famous experts and precise search terms, and real official homepages. Output JSON only.' },

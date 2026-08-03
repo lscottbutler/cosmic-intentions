@@ -94,6 +94,23 @@ async function bumpQuota(userId, limit) {
   } catch { return { allowed: true }; }
 }
 
+/* Same, but a per-CALENDAR-MONTH cap keyed by an action name (e.g. 'drilldown'),
+   so different features get independent monthly pools. Backed by the
+   bump_ai_usage_monthly RPC. Fails OPEN on any infra error — a missing RPC or a
+   Supabase blip never locks a real user out. */
+async function bumpMonthly(userId, action, limit) {
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/rpc/bump_ai_usage_monthly`, {
+      method: 'POST',
+      headers: { apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_user: userId, p_action: action, p_limit: limit }),
+    });
+    if (!r.ok) return { allowed: true };
+    const allowed = await r.json();
+    return { allowed: allowed !== false };
+  } catch { return { allowed: true }; }
+}
+
 async function guard(event, opts = {}) {
   const origin  = _hdr(event, 'origin');
   const headers = corsHeaders(origin);
@@ -114,6 +131,13 @@ async function guard(event, opts = {}) {
       if (!allowed) {
         console.warn('[guard] daily limit hit:', user.id);
         return { ok: false, response: { statusCode: 429, headers, body: JSON.stringify({ error: `You've hit today's AI limit (${opts.dailyLimit}). It resets tomorrow.` }) } };
+      }
+    }
+    if (opts.monthlyLimit) {
+      const { allowed } = await bumpMonthly(user.id, opts.action || 'ai', opts.monthlyLimit);
+      if (!allowed) {
+        console.warn('[guard] monthly limit hit:', user.id, opts.action || 'ai');
+        return { ok: false, response: { statusCode: 429, headers, body: JSON.stringify({ error: `You've reached this month's limit (${opts.monthlyLimit}). It resets on the 1st.` }) } };
       }
     }
   }
