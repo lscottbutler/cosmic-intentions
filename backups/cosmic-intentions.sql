@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict zeOP5hTzfjZ146MvpYzF7KFGGmiwis2fWy3If1AnsB7bn222TjStpZeBlbr6gxK
+\restrict 7i8T7hPBNt9gq1mWSeCHIm7wqbxLFxBhZnEMeYV7wmHhI0gsqRv53TglhceJWqd
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10 (Ubuntu 17.10-1.pgdg24.04+1)
@@ -172,6 +172,7 @@ ALTER TABLE IF EXISTS ONLY public.intentions DROP CONSTRAINT IF EXISTS intention
 ALTER TABLE IF EXISTS ONLY public.daily_log DROP CONSTRAINT IF EXISTS daily_log_pkey;
 ALTER TABLE IF EXISTS ONLY public.content_blocks DROP CONSTRAINT IF EXISTS content_blocks_pkey;
 ALTER TABLE IF EXISTS ONLY public.bts_context DROP CONSTRAINT IF EXISTS bts_context_pkey;
+ALTER TABLE IF EXISTS ONLY public.ai_usage_monthly DROP CONSTRAINT IF EXISTS ai_usage_monthly_pkey;
 ALTER TABLE IF EXISTS ONLY public.activity_log DROP CONSTRAINT IF EXISTS activity_log_pkey;
 ALTER TABLE IF EXISTS ONLY auth.webauthn_credentials DROP CONSTRAINT IF EXISTS webauthn_credentials_pkey;
 ALTER TABLE IF EXISTS ONLY auth.webauthn_challenges DROP CONSTRAINT IF EXISTS webauthn_challenges_pkey;
@@ -234,6 +235,7 @@ DROP TABLE IF EXISTS public.intentions;
 DROP TABLE IF EXISTS public.daily_log;
 DROP TABLE IF EXISTS public.content_blocks;
 DROP TABLE IF EXISTS public.bts_context;
+DROP TABLE IF EXISTS public.ai_usage_monthly;
 DROP TABLE IF EXISTS public.activity_log;
 DROP TABLE IF EXISTS auth.webauthn_credentials;
 DROP TABLE IF EXISTS auth.webauthn_challenges;
@@ -292,6 +294,7 @@ DROP FUNCTION IF EXISTS realtime.broadcast_changes(topic_name text, event_name t
 DROP FUNCTION IF EXISTS realtime.apply_rls(wal jsonb, max_record_bytes integer);
 DROP FUNCTION IF EXISTS public.rls_auto_enable();
 DROP FUNCTION IF EXISTS public.increment_user_score(uid uuid, pts integer);
+DROP FUNCTION IF EXISTS public.bump_ai_usage_monthly(p_user uuid, p_action text, p_limit integer);
 DROP FUNCTION IF EXISTS pgbouncer.get_auth(p_usename text);
 DROP FUNCTION IF EXISTS graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb);
 DROP FUNCTION IF EXISTS extensions.set_graphql_placeholder();
@@ -1053,6 +1056,30 @@ CREATE FUNCTION pgbouncer.get_auth(p_usename text) RETURNS TABLE(username text, 
       WHERE rolname=$1 and rolcanlogin;
   END;
   $_$;
+
+
+--
+-- Name: bump_ai_usage_monthly(uuid, text, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.bump_ai_usage_monthly(p_user uuid, p_action text, p_limit integer) RETURNS boolean
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+declare
+  v_period text := to_char(now() at time zone 'utc', 'YYYY-MM');
+  v_count  int;
+begin
+  insert into public.ai_usage_monthly (user_id, action, period, count, updated_at)
+    values (p_user, p_action, v_period, 1, now())
+  on conflict (user_id, action, period)
+    do update set count = public.ai_usage_monthly.count + 1,
+                  updated_at = now()
+  returning count into v_count;
+
+  return v_count <= p_limit;
+end;
+$$;
 
 
 --
@@ -3450,6 +3477,19 @@ CREATE TABLE public.activity_log (
 
 
 --
+-- Name: ai_usage_monthly; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ai_usage_monthly (
+    user_id uuid NOT NULL,
+    action text NOT NULL,
+    period text NOT NULL,
+    count integer DEFAULT 0 NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: bts_context; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4190,6 +4230,7 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1157	smh5rs3flxmy	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-29 10:42:27.986607+00	2026-07-29 11:40:39.558429+00	xfnubfolddv2	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1191	dc5uz5eodbgb	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-02 12:54:25.541685+00	2026-08-02 13:52:31.170825+00	qighy5upqvjd	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1193	orov3kfh2fz6	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-03 00:52:47.633095+00	2026-08-03 01:57:41.280188+00	jzajbjh5kxlz	a121744a-1c8c-470f-aaf3-03fa2d6f5531
+00000000-0000-0000-0000-000000000000	1194	cwj3lgzpj5tp	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-03 01:57:41.287449+00	2026-08-03 05:01:30.707181+00	orov3kfh2fz6	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1094	hbf77fq4jzen	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-20 22:09:37.574664+00	2026-07-20 23:11:59.722159+00	\N	e6220dd2-2fa2-4402-b5d6-5d5e4c77336f
 00000000-0000-0000-0000-000000000000	1158	lbxwrhlv6mbx	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-29 11:40:39.56911+00	2026-07-29 12:38:40.693811+00	smh5rs3flxmy	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1096	owt7jqhll4oe	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-07-20 23:11:59.727984+00	2026-07-21 00:15:04.973538+00	hbf77fq4jzen	e6220dd2-2fa2-4402-b5d6-5d5e4c77336f
@@ -4240,7 +4281,8 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1188	kbgv7idqnka6	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-02 09:43:51.338068+00	2026-08-02 10:41:57.288917+00	4atu3xb7cq53	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1190	qighy5upqvjd	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-02 11:40:20.973968+00	2026-08-02 12:54:25.535195+00	j5okdfcpcqbx	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 00000000-0000-0000-0000-000000000000	1192	jzajbjh5kxlz	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-02 13:52:31.179472+00	2026-08-03 00:52:47.607682+00	dc5uz5eodbgb	a121744a-1c8c-470f-aaf3-03fa2d6f5531
-00000000-0000-0000-0000-000000000000	1194	cwj3lgzpj5tp	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-03 01:57:41.287449+00	2026-08-03 01:57:41.287449+00	orov3kfh2fz6	a121744a-1c8c-470f-aaf3-03fa2d6f5531
+00000000-0000-0000-0000-000000000000	1195	75yvlwvcazjz	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-03 05:01:30.716013+00	2026-08-03 06:23:19.961033+00	cwj3lgzpj5tp	a121744a-1c8c-470f-aaf3-03fa2d6f5531
+00000000-0000-0000-0000-000000000000	1196	hx6pziuwcyz7	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-03 06:23:19.971305+00	2026-08-03 06:23:19.971305+00	75yvlwvcazjz	a121744a-1c8c-470f-aaf3-03fa2d6f5531
 \.
 
 
@@ -4350,7 +4392,7 @@ COPY auth.schema_migrations (version) FROM stdin;
 --
 
 COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_after, refreshed_at, user_agent, ip, tag, oauth_client_id, refresh_token_hmac_key, refresh_token_counter, scopes) FROM stdin;
-a121744a-1c8c-470f-aaf3-03fa2d6f5531	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-27 00:40:17.711244+00	2026-08-03 01:57:41.300695+00	\N	aal1	\N	2026-08-03 01:57:41.300606	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	115.87.153.53	\N	\N	\N	\N	\N
+a121744a-1c8c-470f-aaf3-03fa2d6f5531	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-27 00:40:17.711244+00	2026-08-03 06:23:19.98451+00	\N	aal1	\N	2026-08-03 06:23:19.984405	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
 a495445c-d4d8-4c53-8e42-e65059f89a50	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-20 22:25:25.525263+00	2026-07-27 00:29:45.408242+00	\N	aal1	\N	2026-07-27 00:29:45.408151	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.143	\N	\N	\N	\N	\N
 06d1ef0d-4a29-4036-b524-b2595ee5de23	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-21 00:08:02.731001+00	2026-07-23 14:38:01.128865+00	\N	aal1	\N	2026-07-23 14:38:01.128767	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.143	\N	\N	\N	\N	\N
 e6220dd2-2fa2-4402-b5d6-5d5e4c77336f	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-20 22:09:37.560715+00	2026-08-01 12:44:29.530583+00	\N	aal1	\N	2026-08-01 12:44:29.53048	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36	49.229.172.153	\N	\N	\N	\N	\N
@@ -4378,7 +4420,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-07-27 00:40:17.709741+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-08-03 01:57:41.290304+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-07-27 00:40:17.709741+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-08-03 06:23:19.972894+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
@@ -4460,6 +4502,14 @@ f8b699c9-c92c-40c1-8873-552f25159b87	0fa88179-af12-4659-ad95-c6ae5fbc23e1	login	
 34216a27-3c58-42df-afc1-8aed9ad78644	0fa88179-af12-4659-ad95-c6ae5fbc23e1	login	{}	2	2026-06-17 06:05:45.735+00
 43dbe885-f805-4d2d-ba7c-fd4bab24be4f	0fa88179-af12-4659-ad95-c6ae5fbc23e1	login	{}	2	2026-06-18 00:24:44.727+00
 15f0d558-2a90-49d0-abe9-047c15d8835e	0fa88179-af12-4659-ad95-c6ae5fbc23e1	login	{}	2	2026-06-18 03:02:34.403+00
+\.
+
+
+--
+-- Data for Name: ai_usage_monthly; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ai_usage_monthly (user_id, action, period, count, updated_at) FROM stdin;
 \.
 
 
@@ -4860,7 +4910,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1194, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1196, true);
 
 
 --
@@ -5147,6 +5197,14 @@ ALTER TABLE ONLY auth.webauthn_credentials
 
 ALTER TABLE ONLY public.activity_log
     ADD CONSTRAINT activity_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ai_usage_monthly ai_usage_monthly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_usage_monthly
+    ADD CONSTRAINT ai_usage_monthly_pkey PRIMARY KEY (user_id, action, period);
 
 
 --
@@ -6403,6 +6461,12 @@ CREATE POLICY "Users can update own intentions" ON public.intentions FOR UPDATE 
 ALTER TABLE public.activity_log ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: ai_usage_monthly; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ai_usage_monthly ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: waitlist anon can join waitlist; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -6673,5 +6737,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict zeOP5hTzfjZ146MvpYzF7KFGGmiwis2fWy3If1AnsB7bn222TjStpZeBlbr6gxK
+\unrestrict 7i8T7hPBNt9gq1mWSeCHIm7wqbxLFxBhZnEMeYV7wmHhI0gsqRv53TglhceJWqd
 
