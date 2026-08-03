@@ -71,6 +71,62 @@ jobs:
           fi
           echo "Dumped $(wc -l < "$DUMP") lines, $(du -h "$DUMP" | cut -f1)"
 
+      - name: Backup vision-images storage bucket
+        # pg_dump only captures the DATABASE, not the files users upload to
+        # Supabase Storage. This mirrors the whole `vision-images` bucket to
+        # /tmp so the commit step can snapshot it next to the SQL dump.
+        #
+        # SETUP (one time): add repo secret SUPABASE_SERVICE_ROLE_KEY =
+        #   Supabase dashboard → Settings → API → "service_role" secret key.
+        #   Missing secret → this step warns and skips; the DB backup is untouched.
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -uo pipefail
+          REF=wbqzwbubbeorcknevips
+          BUCKET=vision-images
+          KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+          if [ -z "$KEY" ]; then
+            echo "::warning::SUPABASE_SERVICE_ROLE_KEY not set — skipping storage backup (DB backup still runs)."
+            exit 0
+          fi
+          BASE="https://$REF.supabase.co/storage/v1"
+          OUT=/tmp/vision-images
+          rm -rf "$OUT"; mkdir -p "$OUT"
+
+          # List one bucket "folder" level (empty prefix = bucket root).
+          list() {
+            curl -s -X POST "$BASE/object/list/$BUCKET" \
+              -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"prefix\":\"$1\",\"limit\":1000,\"offset\":0,\"sortBy\":{\"column\":\"name\",\"order\":\"asc\"}}"
+          }
+
+          # Recurse: items with a null id are folders (prefixes); others are files.
+          walk() {
+            local prefix="$1" json n i name id full
+            json=$(list "$prefix")
+            n=$(echo "$json" | jq 'length' 2>/dev/null || echo 0)
+            i=0
+            while [ "$i" -lt "$n" ]; do
+              name=$(echo "$json" | jq -r ".[$i].name")
+              id=$(echo "$json" | jq -r ".[$i].id")
+              full="${prefix}${name}"
+              if [ "$id" = "null" ]; then
+                walk "${full}/"
+              else
+                mkdir -p "$OUT/$(dirname "$full")"
+                # bucket is public → download via public URL (no auth needed)
+                curl -s -f "$BASE/object/public/$BUCKET/$full" -o "$OUT/$full" \
+                  && echo "  ↓ $full" || echo "  ✗ failed: $full"
+              fi
+              i=$((i+1))
+            done
+          }
+
+          walk ""
+          echo "Storage: $(find "$OUT" -type f | wc -l) file(s), $(du -sh "$OUT" 2>/dev/null | cut -f1)"
+
       - name: Commit to db-backups branch (isolated from main / Netlify)
         run: |
           [ -f /tmp/cosmic-intentions.sql ] || { echo "no dump produced — nothing to do"; exit 0; }
@@ -84,7 +140,13 @@ jobs:
           fi
           mkdir -p backups
           cp /tmp/cosmic-intentions.sql backups/cosmic-intentions.sql
-          git add backups/cosmic-intentions.sql
+          # Mirror the storage snapshot (only if the storage step produced files).
+          if [ -d /tmp/vision-images ]; then
+            rm -rf backups/vision-images
+            mkdir -p backups/vision-images
+            cp -r /tmp/vision-images/. backups/vision-images/ 2>/dev/null || true
+          fi
+          git add backups/
           if git diff --cached --quiet; then
             echo "no changes since last backup"; exit 0
           fi
