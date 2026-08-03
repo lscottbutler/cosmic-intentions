@@ -65,3 +65,9 @@
   from = "/how-it-works"
   to = "/standalone/how-it-works.html"
   status = 200
+
+# Landing library — dark navy variant at /landing-dark (white variant is /landing)
+[[redirects]]
+  from = "/landing-dark"
+  to = "/standalone/landing-dark.html"
+  status = 200
