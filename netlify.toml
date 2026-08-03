@@ -59,3 +59,9 @@
   from = "/landing"
   to = "/standalone/landing-draft.html"
   status = 200
+
+# How-it-works — animated vignette hub at /how-it-works
+[[redirects]]
+  from = "/how-it-works"
+  to = "/standalone/how-it-works.html"
+  status = 200
