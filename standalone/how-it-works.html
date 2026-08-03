@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Cosmic Intentions works</title>
+<style>
+  :root{
+    --mono:'Courier New','IBM Plex Mono',monospace;
+    --ink:#1C2230; --paper:#F4F5F7; --muted:#8A8F98; --brand:#F5A623; --blue:#577590;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    padding:40px 20px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .lede{text-align:center;margin-bottom:40px}
+  .lede h1{font-size:34px;font-weight:800;letter-spacing:.3px;margin-bottom:10px}
+  .lede p{color:var(--muted);font-size:16px}
+  .lede .kicker{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--brand);
+    font-weight:800;margin-bottom:14px}
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+  @media(max-width:900px){.row{grid-template-columns:1fr}}
+  .panel{display:flex;flex-direction:column}
+  .panel .cap{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:1px;
+    color:var(--blue);margin:0 0 10px;text-align:center}
+  .panel .cap b{color:var(--ink)}
+  .frame{background:#fff;border:1px solid #E4E6EB;border-radius:16px;overflow:hidden;
+    box-shadow:0 8px 30px rgba(28,34,48,.06);height:760px}
+  .frame iframe{width:100%;height:100%;border:0;display:block}
+  .foot{text-align:center;margin-top:40px;font-family:var(--mono);font-size:11px;
+    letter-spacing:2px;color:var(--muted)}
+  .foot b{color:var(--brand)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="lede">
+      <div class="kicker">HOW IT WORKS</div>
+      <h1>Every goal gets a concrete plan.</h1>
+      <p>Type your goal. Get an expert roadmap. Break any step down as far as you need — and learn from people who did it.</p>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <div class="cap">① <b>Your AI Roadmap</b></div>
+        <div class="frame"><iframe src="demo-roadmap.html?embed=1" loading="lazy" title="AI Roadmap"></iframe></div>
+      </div>
+      <div class="panel">
+        <div class="cap">② <b>Break It Down</b></div>
+        <div class="frame"><iframe src="demo-breakdown.html?embed=1" loading="lazy" title="Break It Down"></iframe></div>
+      </div>
+      <div class="panel">
+        <div class="cap">③ <b>Learn From the Greats</b></div>
+        <div class="frame"><iframe src="demo-greats.html?embed=1" loading="lazy" title="Learn From the Greats"></iframe></div>
+      </div>
+    </div>
+
+    <div class="foot">POWERED BY <b>COSMIC INTENTIONS</b></div>
+  </div>
+</body>
+</html>

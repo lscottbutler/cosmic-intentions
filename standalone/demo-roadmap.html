@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Intentions — How the Roadmap works</title>
+<style>
+  /* ── Brand tokens (mirrored from the live app) ───────────────────── */
+  :root{
+    --mono:'Courier New','IBM Plex Mono',monospace;
+    --ink:#1C2230; --paper:#F4F5F7; --card:#FFFFFF; --border:#E4E6EB;
+    --muted:#8A8F98; --goalB:#E86030; --blue:#577590; --brand:#F5A623;
+    --done:#4ADE80;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--paper);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    padding:28px;
+  }
+  body.embed{align-items:flex-start;padding:22px}
+
+  /* ── The demo frame ──────────────────────────────────────────────── */
+  .demo{width:100%;max-width:520px}
+
+  .hdr{
+    background:#0A0A0A;color:#fff;border-radius:16px;
+    padding:18px 22px;display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .hdr h1{font-size:22px;font-weight:800;letter-spacing:.5px}
+  .hdr .count{
+    width:52px;height:52px;border:2px solid #333;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:800;font-size:15px;
+  }
+
+  .goalbar{
+    background:var(--goalB);color:#fff;border-radius:12px;
+    padding:15px 18px;font-size:17px;font-weight:800;letter-spacing:.3px;
+    display:flex;align-items:center;gap:12px;margin-bottom:14px;
+    box-shadow:0 0 0 3px rgba(232,96,48,.18);
+  }
+  .goalbar .tag{
+    background:rgba(0,0,0,.28);width:26px;height:26px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  }
+
+  /* ── Steps 1-2-3 caption strip ───────────────────────────────────── */
+  .steps{display:flex;gap:8px;margin-bottom:16px}
+  .steps .s{
+    flex:1;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.5px;
+    color:var(--muted);background:var(--card);border:1px solid var(--border);
+    border-radius:8px;padding:9px 8px;text-align:center;transition:.25s;
+  }
+  .steps .s.on{color:#fff;background:var(--blue);border-color:var(--blue)}
+
+  /* ── The input + button ──────────────────────────────────────────── */
+  .row{display:flex;gap:10px;margin-bottom:16px}
+  .field{
+    flex:1;background:var(--card);border:2px solid var(--goalB);border-radius:10px;
+    padding:14px 16px;font-size:15px;min-height:52px;display:flex;align-items:center;
+    color:var(--ink);
+  }
+  .field .ph{color:#B7BCC4}
+  .caret{
+    display:inline-block;width:2px;height:20px;background:var(--goalB);
+    margin-left:1px;vertical-align:middle;animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+  .btn{
+    background:var(--blue);color:#fff;border:none;border-radius:10px;
+    padding:0 22px;font-weight:800;letter-spacing:.5px;font-size:14px;
+    display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;
+    transition:transform .1s, background .2s;
+  }
+  .btn.press{transform:scale(.94);background:#46617a}
+
+  /* ── Results ─────────────────────────────────────────────────────── */
+  .building{
+    font-family:var(--mono);font-size:11px;letter-spacing:2px;color:#505058;
+    text-align:center;padding:22px 0;
+  }
+  .building.hide{display:none}
+  .plan{list-style:none}
+  .plan li{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:12px 14px;margin-bottom:8px;font-size:14px;line-height:1.5;
+    opacity:0;transform:translateY(8px);transition:opacity .35s, transform .35s;
+  }
+  .plan li.show{opacity:1;transform:none}
+  .plan li .n{
+    flex-shrink:0;width:26px;height:26px;border-radius:50%;
+    background:var(--goalB);color:#fff;font-family:var(--mono);font-weight:800;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .brandline{
+    text-align:center;margin-top:18px;font-family:var(--mono);
+    font-size:10px;letter-spacing:2px;color:var(--muted);
+  }
+  .brandline b{color:var(--brand)}
+</style>
+</head>
+<body>
+  <div class="demo">
+    <div class="hdr"><h1>ACTION PLAN</h1><div class="count" id="count">0/10</div></div>
+
+    <div class="goalbar"><span class="tag">B</span><span>Turn a goal into an expert plan</span></div>
+
+    <div class="steps">
+      <div class="s" id="s1">① TYPE YOUR GOAL</div>
+      <div class="s" id="s2">② TAP ROADMAP</div>
+      <div class="s" id="s3">③ GET YOUR PLAN</div>
+    </div>
+
+    <div class="row">
+      <div class="field" id="field"><span id="typed"></span><span class="caret" id="caret"></span></div>
+      <button class="btn" id="btn">✦ ROADMAP</button>
+    </div>
+
+    <div class="building hide" id="building">◈ BUILDING YOUR 10 STEPS…</div>
+    <ul class="plan" id="plan"></ul>
+
+    <div class="brandline">POWERED BY <b>COSMIC INTENTIONS</b></div>
+  </div>
+
+<script>
+const GOAL = 'I HAVE sold 200 Founder Subscriptions before launch.';
+const PLAN = [
+  'Define exactly what a "Founder Subscription" includes — price, perks, and the scarcity cap.',
+  'Study 3 comparable pre-launch offers and copy how they structure price and urgency.',
+  'Set the math: 200 subs × price = your revenue target and per-sub margin.',
+  'Write the one-sentence promise that makes 200 people say "I’m in."',
+  'Build a single landing page with the offer, proof, and a live countdown.',
+  'Line up 5 founding believers to buy first and vouch publicly.',
+  'Draft a 4-email sequence: tease → reveal → proof → last call.',
+  'Open a private waitlist and turn it into launch-day scarcity.',
+  'Go live to your warmest 100 contacts before any cold outreach.',
+  'Track daily: subs sold, conversion rate, and the one bottleneck to fix.',
+];
+
+const $ = id => document.getElementById(id);
+const typed = $('typed'), caret = $('caret'), plan = $('plan'), building = $('building'),
+      btn = $('btn'), count = $('count'), s1 = $('s1'), s2 = $('s2'), s3 = $('s3');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+if (location.search.includes('embed')) document.body.classList.add('embed');
+
+function buildRows(){
+  plan.innerHTML = '';
+  PLAN.forEach((t,i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="n">${i+1}</span><span>${t}</span>`;
+    plan.appendChild(li);
+  });
+}
+
+// Static end-state for headless verification: ?still=1
+if (location.search.includes('still')){
+  buildRows();
+  typed.textContent = GOAL; caret.style.display = 'none';
+  building.classList.add('hide');
+  [...plan.children].forEach(li => li.classList.add('show'));
+  s1.classList.add('on'); s2.classList.add('on'); s3.classList.add('on');
+  count.textContent = '10/10';
+} else {
+  loop();
+}
+
+async function loop(){
+  while(true){
+    // reset
+    typed.textContent=''; caret.style.display='inline-block';
+    plan.innerHTML=''; building.classList.add('hide'); count.textContent='0/10';
+    s1.classList.remove('on'); s2.classList.remove('on'); s3.classList.remove('on');
+    await sleep(700);
+
+    // ① type the goal
+    s1.classList.add('on');
+    for(let i=0;i<GOAL.length;i++){ typed.textContent = GOAL.slice(0,i+1); await sleep(38); }
+    await sleep(650);
+
+    // ② tap roadmap
+    s2.classList.add('on');
+    btn.classList.add('press'); await sleep(160); btn.classList.remove('press');
+    caret.style.display='none';
+    building.classList.remove('hide');
+    await sleep(1300);
+
+    // ③ reveal the plan
+    building.classList.add('hide');
+    s3.classList.add('on');
+    buildRows();
+    for(let i=0;i<PLAN.length;i++){
+      plan.children[i].classList.add('show');
+      count.textContent = `${i+1}/10`;
+      await sleep(230);
+    }
+    await sleep(3200);   // hold on the finished plan
+  }
+}
+</script>
+</body>
+</html>

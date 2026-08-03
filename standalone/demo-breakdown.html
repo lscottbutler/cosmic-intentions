@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Intentions — Break It Down</title>
+<style>
+  :root{
+    --mono:'Courier New','IBM Plex Mono',monospace;
+    --ink:#1C2230; --paper:#F4F5F7; --card:#FFFFFF; --border:#E4E6EB;
+    --muted:#8A8F98; --goalB:#E86030; --blue:#577590; --brand:#F5A623;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--paper);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);display:flex;align-items:center;justify-content:center;padding:28px;
+  }
+  body.embed{align-items:flex-start;padding:22px}
+  .demo{width:100%;max-width:520px}
+  .hdr{background:#0A0A0A;color:#fff;border-radius:16px;padding:18px 22px;
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .hdr h1{font-size:20px;font-weight:800;letter-spacing:.5px}
+  .hdr .glyph{font-family:var(--mono);font-size:22px;color:var(--brand);font-weight:800}
+
+  .steps{display:flex;gap:8px;margin-bottom:16px}
+  .steps .s{flex:1;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.5px;
+    color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:8px;
+    padding:9px 8px;text-align:center;transition:.25s}
+  .steps .s.on{color:#fff;background:var(--blue);border-color:var(--blue)}
+
+  /* action + sub-step cards */
+  .node{
+    display:flex;gap:12px;align-items:flex-start;background:var(--card);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;
+    font-size:14px;line-height:1.5;transition:opacity .35s, transform .35s;
+  }
+  .node .n{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--goalB);
+    color:#fff;font-family:var(--mono);font-weight:800;font-size:13px;
+    display:flex;align-items:center;justify-content:center}
+  .node .txt{flex:1}
+  .node .drill{
+    flex-shrink:0;width:30px;height:30px;border-radius:8px;border:1px solid var(--border);
+    background:#fff;color:var(--blue);font-size:16px;font-weight:800;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:transform .1s, background .2s;
+  }
+  .node .drill.press{transform:scale(.9);background:var(--blue);color:#fff}
+  .sub{opacity:0;transform:translateY(8px)}
+  .sub.show{opacity:1;transform:none}
+  .depth1{margin-left:26px}
+  .depth2{margin-left:52px}
+  .depth1 .n,.depth2 .n{background:#8AA0AE;width:22px;height:22px;font-size:11px}
+  .depth1 .node,.depth2 .node{background:#FBFCFD}
+
+  .rail{position:relative}
+  .building{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:#505058;
+    padding:8px 0 8px 40px}
+  .building.hide{display:none}
+  .brandline{text-align:center;margin-top:18px;font-family:var(--mono);font-size:10px;
+    letter-spacing:2px;color:var(--muted)}
+  .brandline b{color:var(--brand)}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--blue);text-align:center;
+    letter-spacing:1px;margin:2px 0 16px;font-weight:800}
+</style>
+</head>
+<body>
+  <div class="demo">
+    <div class="hdr"><h1>BREAK IT DOWN</h1><span class="glyph">↳</span></div>
+    <div class="tagline">STUCK ON A STEP? SPLIT IT — AS DEEP AS YOU NEED</div>
+
+    <div class="steps">
+      <div class="s" id="s1">① PICK ANY STEP</div>
+      <div class="s" id="s2">② TAP ↳</div>
+      <div class="s" id="s3">③ IT SPLITS — INFINITELY</div>
+    </div>
+
+    <div id="stage"></div>
+
+    <div class="brandline">POWERED BY <b>COSMIC INTENTIONS</b></div>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+const stage = $('stage'), s1=$('s1'), s2=$('s2'), s3=$('s3');
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+if (location.search.includes('embed')) document.body.classList.add('embed');
+
+const ROOT = 'Build a single landing page with the offer, proof, and a live countdown.';
+const SUBS = [
+  'Pick the tool: a one-page site on Carrd or Framer, live today.',
+  'Write the headline = your one-sentence promise.',
+  'Add the offer block: price, 3 perks, and the 200-cap.',
+  'Drop in a countdown timer and one real testimonial.',
+  'Wire the checkout / waitlist button to Stripe.',
+];
+const SUB2 = [
+  'Name the exact price and everything included.',
+  'List 3 perks in order of desire.',
+  'State the scarcity: "Only 200 — 143 left."',
+];
+
+function nodeHTML(n, txt, drill, depthClass){
+  return `<div class="node ${depthClass||''}"><span class="n">${n}</span>`+
+         `<span class="txt">${txt}</span>`+
+         (drill?`<button class="drill">↳</button>`:'')+`</div>`;
+}
+
+function renderRoot(){
+  stage.innerHTML =
+    `<div id="root">${nodeHTML(5, ROOT, true)}</div>`+
+    `<div class="building hide" id="b1">◈ BREAKING IT DOWN…</div>`+
+    `<div id="subs"></div>`;
+}
+
+function fillStill(){
+  renderRoot();
+  const subs = $('subs');
+  SUBS.forEach((t,i)=>{
+    let inner = nodeHTML(i+1, t, i===2, 'depth1');
+    subs.insertAdjacentHTML('beforeend', `<div class="sub show" data-i="${i}">${inner}</div>`);
+    if(i===2){
+      SUB2.forEach((t2,j)=>{
+        subs.insertAdjacentHTML('beforeend',
+          `<div class="sub show">${nodeHTML(j+1, t2, false, 'depth2')}</div>`);
+      });
+    }
+  });
+  s1.classList.add('on'); s2.classList.add('on'); s3.classList.add('on');
+}
+
+if(location.search.includes('still')) fillStill(); else loop();
+
+async function loop(){
+  while(true){
+    renderRoot();
+    s1.classList.remove('on'); s2.classList.remove('on'); s3.classList.remove('on');
+    await sleep(800);
+
+    // ① highlight the step
+    s1.classList.add('on');
+    await sleep(700);
+
+    // ② tap drill
+    s2.classList.add('on');
+    const drill = stage.querySelector('#root .drill');
+    drill.classList.add('press'); await sleep(180); drill.classList.remove('press');
+    $('b1').classList.remove('hide');
+    await sleep(1100);
+    $('b1').classList.add('hide');
+
+    // ③ sub-steps unfold
+    s3.classList.add('on');
+    const subs = $('subs');
+    for(let i=0;i<SUBS.length;i++){
+      const drillable = (i===2);
+      subs.insertAdjacentHTML('beforeend',
+        `<div class="sub" data-i="${i}">${nodeHTML(i+1, SUBS[i], drillable, 'depth1')}</div>`);
+      const el = subs.lastElementChild;
+      void el.offsetWidth; el.classList.add('show');
+      await sleep(240);
+    }
+    await sleep(900);
+
+    // recursion: break sub-step #3 again → deeper
+    const d3 = subs.querySelector('[data-i="2"] .drill');
+    d3.classList.add('press'); await sleep(180); d3.classList.remove('press');
+    await sleep(500);
+    // insert SUB2 right after sub #3 (index 2)
+    const anchor = subs.querySelector('[data-i="2"]');
+    let after = anchor;
+    for(let j=0;j<SUB2.length;j++){
+      const html = `<div class="sub">${nodeHTML(j+1, SUB2[j], false, 'depth2')}</div>`;
+      after.insertAdjacentHTML('afterend', html);
+      after = after.nextElementSibling;
+      void after.offsetWidth; after.classList.add('show');
+      await sleep(240);
+    }
+    await sleep(3400);
+  }
+}
+</script>
+</body>
+</html>

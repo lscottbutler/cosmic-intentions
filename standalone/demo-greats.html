@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Intentions — Learn from the Greats</title>
+<style>
+  :root{
+    --mono:'Courier New','IBM Plex Mono',monospace;
+    --ink:#1C2230; --paper:#F4F5F7; --card:#FFFFFF; --border:#E4E6EB;
+    --muted:#8A8F98; --goalB:#E86030; --blue:#577590; --brand:#F5A623;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--paper);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);display:flex;align-items:center;justify-content:center;padding:28px}
+  body.embed{align-items:flex-start;padding:22px}
+  .demo{width:100%;max-width:520px}
+  .hdr{background:#0A0A0A;color:#fff;border-radius:16px;padding:18px 22px;
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .hdr h1{font-size:20px;font-weight:800;letter-spacing:.5px}
+  .hdr .glyph{font-family:var(--mono);font-size:22px;color:var(--brand);font-weight:800}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--blue);text-align:center;
+    letter-spacing:1px;margin:2px 0 16px;font-weight:800}
+
+  .goalbar{background:var(--goalB);color:#fff;border-radius:12px;padding:13px 16px;
+    font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .goalbar .tag{background:rgba(0,0,0,.28);width:24px;height:24px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+
+  .btnrow{margin-bottom:16px}
+  .btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;
+    padding:14px;font-weight:800;letter-spacing:.5px;font-size:14px;cursor:pointer;
+    transition:transform .1s,background .2s}
+  .btn.press{transform:scale(.98);background:#46617a}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    opacity:0;transform:translateY(10px) scale(.98);transition:.4s}
+  .rc.show{opacity:1;transform:none}
+  .rc.full{grid-column:1 / -1}
+  .thumb{height:88px;background:linear-gradient(135deg,#2b3542,#455160);position:relative;
+    display:flex;align-items:center;justify-content:center}
+  .thumb .play{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);
+    display:flex;align-items:center;justify-content:center;color:#1C2230;font-size:16px;padding-left:3px}
+  .thumb .badge{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:9px;
+    font-weight:800;letter-spacing:1px;background:rgba(0,0,0,.55);color:#fff;padding:3px 7px;border-radius:5px}
+  .rc .body{padding:11px 13px}
+  .rc .ttl{font-size:13px;font-weight:700;line-height:1.35;margin-bottom:4px}
+  .rc .sub{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.5px}
+  .rc.mini{display:flex;align-items:center;gap:10px;padding:12px 13px}
+  .rc.mini .ico{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:16px;background:#EEF1F4}
+
+  .brandline{text-align:center;margin-top:18px;font-family:var(--mono);font-size:10px;
+    letter-spacing:2px;color:var(--muted)}
+  .brandline b{color:var(--brand)}
+</style>
+</head>
+<body>
+  <div class="demo">
+    <div class="hdr"><h1>LEARN FROM THE GREATS</h1><span class="glyph">▶</span></div>
+    <div class="tagline">REAL VIDEOS &amp; SOURCES FROM PEOPLE WHO DID IT</div>
+
+    <div class="goalbar"><span class="tag">B</span><span>I HAVE sold 200 Founder Subscriptions</span></div>
+    <div class="btnrow"><button class="btn" id="btn">▶ FIND SOURCES</button></div>
+
+    <div class="grid" id="grid"></div>
+    <div class="brandline">POWERED BY <b>COSMIC INTENTIONS</b></div>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+const grid = $('grid'), btn = $('btn');
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+if (location.search.includes('embed')) document.body.classList.add('embed');
+
+const CARDS = [
+  {kind:'video', badge:'🎬 VIDEO', ttl:'Selling before you build: the pre-launch playbook', sub:'ARVID KAHL'},
+  {kind:'video', badge:'🎬 VIDEO', ttl:'How to launch with a small, loyal audience', sub:'JASON FRIED · BASECAMP'},
+  {kind:'mini', ico:'🌐', ttl:'Gumroad', sub:'OFFICIAL SOURCE'},
+  {kind:'mini', ico:'📄', ttl:'How Nathan Barry pre-sold his first product', sub:'ARTICLE'},
+  {kind:'mini', ico:'🎧', ttl:'The pre-launch that hit 200 sales in a week', sub:'PODCAST'},
+];
+
+function cardHTML(c){
+  if(c.kind==='video'){
+    return `<div class="rc"><div class="thumb"><span class="badge">${c.badge}</span>`+
+           `<span class="play">▶</span></div><div class="body">`+
+           `<div class="ttl">${c.ttl}</div><div class="sub">${c.sub}</div></div></div>`;
+  }
+  return `<div class="rc mini full"><div class="ico">${c.ico}</div>`+
+         `<div><div class="ttl">${c.ttl}</div><div class="sub">${c.sub}</div></div></div>`;
+}
+
+function fillStill(){
+  grid.innerHTML = CARDS.map(cardHTML).join('');
+  [...grid.children].forEach(el=>el.classList.add('show'));
+}
+
+if(location.search.includes('still')) fillStill(); else loop();
+
+async function loop(){
+  while(true){
+    grid.innerHTML=''; btn.textContent='▶ FIND SOURCES';
+    await sleep(900);
+
+    btn.classList.add('press'); await sleep(180); btn.classList.remove('press');
+    btn.textContent='▶ FINDING…';
+    await sleep(1200);
+    btn.textContent='▶ FIND SOURCES';
+
+    for(const c of CARDS){
+      grid.insertAdjacentHTML('beforeend', cardHTML(c));
+      const el = grid.lastElementChild;
+      void el.offsetWidth; el.classList.add('show');
+      await sleep(300);
+    }
+    await sleep(3800);
+  }
+}
+</script>
+</body>
+</html>
