@@ -53,4 +53,9 @@
   from = "/privacy"
   to = "/standalone/privacy.html"
   status = 200
-  
+
+# Landing page draft — preview at /landing
+[[redirects]]
+  from = "/landing"
+  to = "/standalone/landing-draft.html"
+  status = 200
