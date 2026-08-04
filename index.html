@@ -143,11 +143,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 <script>
 (function () {
   var LANDINGS = [
-    { icon: '🟣', label: 'Purple (in-app)', page: 'landing' },
-    { icon: '⚪', label: 'White',            url: '/landing' },
-    { icon: '⚫', label: 'Dark',             url: '/landing-dark' },
-    // Add new landing pages here, one per line:
-    // { icon:'🔵', label:'My Variant', url:'/landing-xyz' },
+    { icon: '1️⃣', label: 'Version 1', url: '/landing' },       // white
+    { icon: '2️⃣', label: 'Version 2', url: '/landing-dark' },  // dark navy
+    { icon: '3️⃣', label: 'Version 3', page: 'landing' },        // purple in-app
+    // Add landing pages here, one per line:
+    // { icon:'4️⃣', label:'Version 4', url:'/landing-xyz' },
   ];
   var box = document.getElementById('drawerLandings');
   if (!box) return;
