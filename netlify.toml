@@ -72,6 +72,16 @@
   to = "/standalone/landing-dark.html"
   status = 200
 
+# Landing versions — three DIFFERENT designs (V1 = /landing white 6-pillar)
+[[redirects]]
+  from = "/landing-v2"
+  to = "/standalone/landing-v2.html"
+  status = 200
+[[redirects]]
+  from = "/landing-v3"
+  to = "/standalone/landing-v3.html"
+  status = 200
+
 # App shell must always revalidate so menu/UI changes appear WITHOUT a hard
 # refresh. Vite's hashed /assets/* stay immutable & cached; only the HTML is no-cache.
 [[headers]]
