@@ -188,18 +188,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="upgrade-plans">
 
       <div class="upgrade-plan" id="planAnnual" onclick="selectPlan('annual')">
-        <div class="plan-badge">BEST VALUE</div>
-        <div class="plan-name">Annual</div>
-        <div class="plan-price">$149<span>/year</span></div>
-        <div class="plan-saving">Save $79 vs monthly</div>
+        <div class="plan-badge">FIRST 200</div>
+        <div class="plan-name">Founding Member</div>
+        <div class="plan-price">$79<span>/year</span></div>
+        <div class="plan-saving">Rate locked for life · reg. $149</div>
         <div class="plan-check" id="checkAnnual">✓</div>
-      </div>
-
-      <div class="upgrade-plan" id="planMonthly" onclick="selectPlan('monthly')">
-        <div class="plan-name">Monthly</div>
-        <div class="plan-price">$19<span>/month</span></div>
-        <div class="plan-saving">Cancel anytime</div>
-        <div class="plan-check" id="checkMonthly"></div>
       </div>
 
     </div>
@@ -253,20 +246,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- PRICING — shown to logged-out visitors -->
       <div class="home-pricing" id="homePricing">
-        <h2>Simple pricing</h2>
-        <p class="home-pricing-sub">One membership. Everything included.</p>
+        <h2>Founder pricing</h2>
+        <p class="home-pricing-sub">Lock in your rate for life — first 200 only.</p>
         <div class="home-price-cards">
           <div class="home-price-card featured">
-            <div class="hpc-badge">BEST VALUE</div>
-            <div class="hpc-name">Annual</div>
-            <div class="hpc-price">$149<span>/year</span></div>
-            <div class="hpc-saving">Just $12.42/month · Save $79</div>
+            <div class="hpc-badge">FIRST 200</div>
+            <div class="hpc-name">Founding Member</div>
+            <div class="hpc-price">$79<span>/year</span></div>
+            <div class="hpc-saving">Rate locked for life</div>
             <button class="btn-primary" onclick="openAuth('signup')">Get Started</button>
           </div>
           <div class="home-price-card">
-            <div class="hpc-name">Monthly</div>
-            <div class="hpc-price">$19<span>/mo</span></div>
-            <div class="hpc-saving">Cancel anytime</div>
+            <div class="hpc-name">Regular</div>
+            <div class="hpc-price">$149<span>/year</span></div>
+            <div class="hpc-saving">after the first 200</div>
             <button class="btn-secondary" onclick="openAuth('signup')">Get Started</button>
           </div>
         </div>
@@ -1404,7 +1397,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <tr><td>Meditation &amp; timers</td><td class="us">✓</td><td class="lp-yes">✓</td><td class="lp-yes">✓</td><td class="lp-no">✕</td></tr>
           <tr><td>Daily rings, habits &amp; wins</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
           <tr><td>AI evening story recap</td><td class="us">✓</td><td class="lp-no">✕</td><td class="lp-no">✕</td><td class="lp-no">✕</td></tr>
-          <tr><td>Price / year</td><td class="us">$69.99</td><td>$69.99</td><td>$69.99</td><td>$300+</td></tr>
+          <tr><td>Price / year</td><td class="us">$79 <span style="opacity:.6;font-weight:600;">founding</span></td><td>$69.99</td><td>$69.99</td><td>$300+</td></tr>
         </tbody>
       </table></div>
       <div style="text-align:center;margin-top:26px;"><a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-primary"><!-- EDIT -->Get Cosmic Intentions →</a></div>
@@ -1426,11 +1419,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <!-- FINAL CTA BANNER -->
     <section class="lp-final" id="lp-pricing"><div class="lw">
       <h2><!-- EDIT -->Start becoming who you intend to be</h2>
-      <div class="lp-sub"><!-- EDIT -->Same price as Headspace &amp; Calm — a whole system, not just a library.</div>
+      <div class="lp-sub"><!-- EDIT -->A whole system — not just a library. Founding rate locked for life.</div>
       <div class="lp-benes">
         <span><!-- EDIT -->✓ 7-day free trial</span><span>✓ Every feature unlocked</span><span>✓ Cancel anytime</span>
       </div>
-      <div style="font-size:40px;font-weight:900;margin-bottom:4px;"><!-- EDIT -->$69.99<span style="font-size:16px;font-weight:600;opacity:.8;">/yr</span> <span style="opacity:.6;">·</span> $12.99<span style="font-size:16px;font-weight:600;opacity:.8;">/mo</span></div>
+      <div style="font-size:40px;font-weight:900;margin-bottom:4px;"><!-- EDIT -->$79<span style="font-size:16px;font-weight:600;opacity:.8;">/yr</span> <span style="opacity:.5;font-size:24px;text-decoration:line-through;font-weight:700;">$149</span> <span style="font-size:15px;font-weight:600;opacity:.7;">· founding rate, locked for life</span></div>
       <div style="margin-top:20px;"><a href="#" onclick="openAuth('signup');return false;" class="lp-btn lp-gold"><!-- EDIT -->Start 7-day free trial →</a></div>
     </div></section>
 
