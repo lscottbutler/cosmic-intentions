@@ -71,3 +71,15 @@
   from = "/landing-dark"
   to = "/standalone/landing-dark.html"
   status = 200
+
+# App shell must always revalidate so menu/UI changes appear WITHOUT a hard
+# refresh. Vite's hashed /assets/* stay immutable & cached; only the HTML is no-cache.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

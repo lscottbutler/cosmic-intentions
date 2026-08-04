@@ -102,6 +102,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <span class="nav-icon">✦</span> Dashboard
     </button>
     <div class="drawer-divider"></div>
+    <div style="padding:10px 16px 3px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.55;">Landing Pages</div>
+    <div id="drawerLandings"></div>
+    <div class="drawer-divider"></div>
     <button class="drawer-nav-item" id="nav-dailyfocus" onclick="navTo('dailyfocus')">
       <span class="nav-icon">&#9829;</span> My Favorites Autoplay
     </button>
@@ -119,16 +122,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <span class="nav-icon">✅</span> My Habits
     </button>
     <div class="drawer-divider"></div>
-    <button class="drawer-nav-item" onclick="navTo('landing')">
-      <span class="nav-icon">🟣</span> Landing · Purple (in-app)
-    </button>
-    <button class="drawer-nav-item" onclick="window.open('/landing?v=2','_blank');closeDrawer()">
-      <span class="nav-icon">⚪</span> Landing · White
-    </button>
-    <button class="drawer-nav-item" onclick="window.open('/landing-dark?v=2','_blank');closeDrawer()">
-      <span class="nav-icon">⚫</span> Landing · Dark
-    </button>
-    <div class="drawer-divider"></div>
     <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
       <span class="nav-icon">⚙</span> Admin
     </button>
@@ -141,6 +134,35 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <button class="btn-signout" onclick="signOut()">Step Away</button>
   </div>
 </nav>
+
+<!-- ── LANDING-PAGES MENU ──────────────────────────────────────────────────
+     To add a landing page to the hamburger, add ONE line to LANDINGS below:
+       { icon:'🔵', label:'My Variant', url:'/landing-xyz' }   ← standalone page
+       { icon:'🟣', label:'In-app',     page:'landing' }        ← an in-app #page-*
+     Scales to as many as you want. -->
+<script>
+(function () {
+  var LANDINGS = [
+    { icon: '🟣', label: 'Purple (in-app)', page: 'landing' },
+    { icon: '⚪', label: 'White',            url: '/landing' },
+    { icon: '⚫', label: 'Dark',             url: '/landing-dark' },
+    // Add new landing pages here, one per line:
+    // { icon:'🔵', label:'My Variant', url:'/landing-xyz' },
+  ];
+  var box = document.getElementById('drawerLandings');
+  if (!box) return;
+  LANDINGS.forEach(function (l) {
+    var b = document.createElement('button');
+    b.className = 'drawer-nav-item';
+    b.innerHTML = '<span class="nav-icon">' + l.icon + '</span> ' + l.label;
+    b.addEventListener('click', function () {
+      if (l.page) { if (window.navTo) window.navTo(l.page); }
+      else { window.open(l.url + '?v=' + Date.now(), '_blank'); if (window.closeDrawer) window.closeDrawer(); }
+    });
+    box.appendChild(b);
+  });
+})();
+</script>
 
 <!-- ── UPGRADE MODAL ──────────────────────────────────── -->
 <div class="modal-bg" id="upgradeModal">
