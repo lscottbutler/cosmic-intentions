@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict ntIoupEO6DWDMyE3qS1kPe4jmaCFZh3hNwLBzKrq0GTbV3AGvLoRvuPfUxGGcYF
+\restrict HsOM54bOxdmQJ5MiCTU49SLLUK4GES5UGQ0e5whe1muVbXLQVOxrLldtRQobxwS
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10 (Ubuntu 17.10-1.pgdg24.04+1)
@@ -4304,9 +4304,10 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1211	7x3lkf75lfhc	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-04 12:09:58.263271+00	2026-08-04 13:08:16.923349+00	\N	afd42027-5f18-411b-b050-aaace187348d
 00000000-0000-0000-0000-000000000000	1212	4exwf2ibvm4y	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-04 13:08:16.928276+00	2026-08-04 14:06:37.098879+00	7x3lkf75lfhc	afd42027-5f18-411b-b050-aaace187348d
 00000000-0000-0000-0000-000000000000	1213	5y2gwwie33jz	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-04 14:06:37.105773+00	2026-08-04 15:04:45.241475+00	4exwf2ibvm4y	afd42027-5f18-411b-b050-aaace187348d
-00000000-0000-0000-0000-000000000000	1214	3n4burowdgnu	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-04 15:04:45.246535+00	2026-08-04 15:04:45.246535+00	5y2gwwie33jz	afd42027-5f18-411b-b050-aaace187348d
 00000000-0000-0000-0000-000000000000	1215	ujtdycnovqxi	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-04 15:30:00.405856+00	2026-08-04 15:30:00.405856+00	bta6li3tr3x7	e6220dd2-2fa2-4402-b5d6-5d5e4c77336f
 00000000-0000-0000-0000-000000000000	1216	7be33d4iuexq	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-04 15:30:16.392345+00	2026-08-04 15:30:16.392345+00	\N	54458cb8-942f-4be6-bcb8-65c3276afbe6
+00000000-0000-0000-0000-000000000000	1214	3n4burowdgnu	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-08-04 15:04:45.246535+00	2026-08-05 00:35:04.370734+00	5y2gwwie33jz	afd42027-5f18-411b-b050-aaace187348d
+00000000-0000-0000-0000-000000000000	1217	vd32i7mpzic2	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-08-05 00:35:04.398015+00	2026-08-05 00:35:04.398015+00	3n4burowdgnu	afd42027-5f18-411b-b050-aaace187348d
 \.
 
 
@@ -4421,9 +4422,9 @@ a495445c-d4d8-4c53-8e42-e65059f89a50	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-0
 a121744a-1c8c-470f-aaf3-03fa2d6f5531	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-27 00:40:17.711244+00	2026-08-04 12:05:02.974542+00	\N	aal1	\N	2026-08-04 12:05:02.974389	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
 1468fdbf-e90f-4574-8012-77566ecacf45	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-08-04 12:05:55.91097+00	2026-08-04 12:05:55.91097+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
 677ffa87-3c99-4ce3-9cca-d2e14ef8556b	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-08-04 12:08:17.30529+00	2026-08-04 12:08:17.30529+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
-afd42027-5f18-411b-b050-aaace187348d	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-08-04 12:09:58.260938+00	2026-08-04 15:04:45.26068+00	\N	aal1	\N	2026-08-04 15:04:45.26058	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
 e6220dd2-2fa2-4402-b5d6-5d5e4c77336f	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-07-20 22:09:37.560715+00	2026-08-04 15:30:00.419646+00	\N	aal1	\N	2026-08-04 15:30:00.419546	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36	49.229.221.250	\N	\N	\N	\N	\N
 54458cb8-942f-4be6-bcb8-65c3276afbe6	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-08-04 15:30:16.38371+00	2026-08-04 15:30:16.38371+00	\N	aal1	\N	\N	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36	49.229.221.250	\N	\N	\N	\N	\N
+afd42027-5f18-411b-b050-aaace187348d	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-08-04 12:09:58.260938+00	2026-08-05 00:35:04.427036+00	\N	aal1	\N	2026-08-05 00:35:04.426926	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	58.11.188.247	\N	\N	\N	\N	\N
 \.
 
 
@@ -4449,7 +4450,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-08-04 15:30:16.383622+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-08-04 15:30:16.393305+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-08-04 15:30:16.383622+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-08-05 00:35:04.411594+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
 
@@ -4938,7 +4939,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1216, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1217, true);
 
 
 --
@@ -6765,5 +6766,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ntIoupEO6DWDMyE3qS1kPe4jmaCFZh3hNwLBzKrq0GTbV3AGvLoRvuPfUxGGcYF
+\unrestrict HsOM54bOxdmQJ5MiCTU49SLLUK4GES5UGQ0e5whe1muVbXLQVOxrLldtRQobxwS
 
