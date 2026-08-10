@@ -472,7 +472,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- QUICK WIN — tick a real habit / My Action / roadmap step right here; each tap logs the actual win -->
         <button onclick="var p=document.getElementById('quickWinPanel');var open=p.style.display==='none';p.style.display=open?'block':'none';this.querySelector('.qw-chev').textContent=open?'⌄':'›';if(open&&window.renderQuickWin)renderQuickWin();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:#F5A623;">&#10022;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Quick Win</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Quickly Log A Win</span>
           <span class="qw-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <div id="quickWinPanel" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px;margin:-4px 0 12px;">
