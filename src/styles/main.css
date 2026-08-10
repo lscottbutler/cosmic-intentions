@@ -1516,7 +1516,7 @@ input, textarea, select {
 }
 .home-member-cols {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* Hard 50% / 50% symmetric split */
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr); /* 70% / 30% split */
   gap: 32px;
   padding: 32px 40px 48px;
   align-items: start;
