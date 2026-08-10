@@ -126,10 +126,10 @@ export function renderNotesPage() {
         <span style="display:flex;align-items:center;gap:12px;">
           ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="color:#fff;font-size:12px;font-weight:700;letter-spacing:.3px;cursor:pointer;white-space:nowrap;">＋ Add ${singular.toLowerCase()}</span>` : ''}
           <span style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);">${mine.length}</span>
-          <span id="notesec-${c.key}-arr" style="color:var(--mid,#9a9a9a);font-size:13px;transition:transform .2s ease;transform:rotate(-90deg);">▼</span>
+          <span id="notesec-${c.key}-arr" style="color:var(--mid,#9a9a9a);font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">▼</span>
         </span>
       </button>
-      <div id="notesec-${c.key}-body" style="display:none;margin-bottom:16px;">
+      <div id="notesec-${c.key}-body" style="display:block;margin-bottom:16px;">
         ${rows}${addBox}
       </div></div>`;
   }).join('') + `</div>`;
