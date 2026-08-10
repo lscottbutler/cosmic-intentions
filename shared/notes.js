@@ -70,6 +70,10 @@ export function dailyNote(cat, slotKey) {
    user moves around the site. */
 export function sprinkleNotes() {
   const slots = document.querySelectorAll('[data-random-note]');
+  // TEMP: surfaced affirmations/beliefs turned OFF site-wide (will tweak later).
+  // To restore the random daily thoughts, delete the next two lines.
+  slots.forEach(el => { el.style.display = 'none'; });
+  return;
   slots.forEach((el, i) => {
     const cat = el.getAttribute('data-random-note') || '';
     const key = el.getAttribute('data-note-key') || String(i);
