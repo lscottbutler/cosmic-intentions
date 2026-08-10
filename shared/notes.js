@@ -70,11 +70,10 @@ export function dailyNote(cat, slotKey) {
    user moves around the site. */
 export function sprinkleNotes() {
   const slots = document.querySelectorAll('[data-random-note]');
-  // TEMP: surfaced affirmations/beliefs turned OFF site-wide (will tweak later).
-  // To restore the random daily thoughts, delete the next two lines.
-  slots.forEach(el => { el.style.display = 'none'; });
-  return;
+  // Scattered surfacing stays OFF; only explicitly-placed home blocks
+  // (data-home-thought) show a rotating thought.
   slots.forEach((el, i) => {
+    if (!el.hasAttribute('data-home-thought')) { el.style.display = 'none'; return; }
     const cat = el.getAttribute('data-random-note') || '';
     const key = el.getAttribute('data-note-key') || String(i);
     const n = dailyNote(cat, key);
