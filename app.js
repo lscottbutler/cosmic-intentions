@@ -2016,7 +2016,7 @@ export function openVizGoal(idx) {
       <div data-player-box style="display:flex;gap:10px;align-items:stretch;background:var(--teal-ui);border-radius:12px;padding:12px;margin:12px 0 4px;">
         <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px;">
           ${[1,3,5,10,15,20,30,45,60].map(m =>
-            `<button onclick="launchVisualization(${idx}, ${m}, event)" title="${m} minute visualization" style="aspect-ratio:1;min-width:0;border-radius:50%;background:#fff;border:4px solid var(--brand);color:var(--ink);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">${m}</button>`
+            `<button onclick="launchVisualization(${idx}, ${m}, event)" title="${m} minute visualization" style="width:52px;height:52px;justify-self:center;border-radius:50%;background:#fff;border:4px solid var(--brand);color:var(--ink);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">${m}</button>`
           ).join('')}
         </div>
         <button onclick="openVizLibrary()" title="Back to my goals" style="flex-shrink:0;width:54px;background:var(--purple);border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#9776;</button>
