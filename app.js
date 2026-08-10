@@ -3935,7 +3935,18 @@ export async function init() {
         injectPersonalContent();
         renderTodayView();
       } else {
+        // Landing Page 1 (/landing) is the logged-out front door. Its "Member Log
+        // In" / "Get Started" links come back as /?auth=signin|signup — open that
+        // modal on the app; otherwise send logged-out visitors to the landing.
+        // No redirect loop: /landing is a separate static file, not this app.
+        const _authParam = new URLSearchParams(location.search).get('auth');
+        const _onRoot = location.pathname === '/' || location.pathname.endsWith('/index.html');
+        if (_authParam !== 'signin' && _authParam !== 'signup' && _onRoot) {
+          location.replace('/landing');
+          return;
+        }
         updateUI(null);
+        if (_authParam === 'signin' || _authParam === 'signup') openAuth(_authParam);
       }
     }
   } catch (e) {
