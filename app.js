@@ -482,14 +482,15 @@ export async function goMemberDashboard() {
     openAuth('signin');
     return;
   }
-  const { data: { user }, error: userErr } = await sb.auth.getUser();
-  if (userErr || !user) {
-    await sb.auth.signOut();
-    currentUser = null;
-    updateUI(null);
-    openAuth('signin');
-    return;
-  }
+  // getUser() re-validates the token against the server. On a flaky connection it
+  // can fail transiently — do NOT sign the user out over that (this was the
+  // "logged out on every refresh" bug). Trust the persisted session's user; if
+  // getUser succeeds use its fresher copy, otherwise keep the session user.
+  let user = session.user;
+  try {
+    const { data, error } = await sb.auth.getUser();
+    if (!error && data?.user) user = data.user;
+  } catch (e) { /* network blip — keep the session user, stay logged in */ }
   currentUser = user;
   updateUI(user);
   await syncFromSupabase();
