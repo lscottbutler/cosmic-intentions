@@ -386,8 +386,8 @@ function _markNowPlaying(f) {
   if (!row) return;
   _playingRow = row;
   row.style.borderColor = '#ffd24a';                                   // gold = now playing
-  row.style.background  = '#2e2410';
-  row.style.boxShadow   = '0 0 0 2px rgba(255,210,74,.55), 0 0 14px rgba(255,210,74,.35)';
+  row.style.background  = '#332913';
+  row.style.boxShadow   = '0 0 0 3px rgba(255,210,74,.95), 0 0 28px rgba(255,210,74,.6)';
 }
 
 function _openFav(f) {
