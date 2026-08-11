@@ -2015,7 +2015,9 @@ export function launchVisualization(idx, minutes, ev) {
   const intn  = intentions[idx] || intentions[0];
   const title = (intn?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('ci_goal_title', title);
-  if (intn?.imageUrl) localStorage.setItem('ci_goal_image', intn.imageUrl);
+  // Never cache a base64 data: URL (they're 1-4MB each and blow the ~5MB quota,
+  // which breaks the auth-token write → logout). Only a lightweight Storage URL.
+  if (intn?.imageUrl && !intn.imageUrl.startsWith('data:')) localStorage.setItem('ci_goal_image', intn.imageUrl);
   else localStorage.removeItem('ci_goal_image');
   // Pass the goal in the URL (+ cache-buster) so the iframe RELOADS with this goal every time —
   // reusing the same src keeps the first goal that loaded (that was the "everything plays the same goal" bug).
@@ -2143,7 +2145,7 @@ export function vizAct(idx, kind) {
   const it = intentions[idx] || intentions[0];
   const title = (it?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
   localStorage.setItem('ci_goal_title', title);
-  if (it?.imageUrl) localStorage.setItem('ci_goal_image', it.imageUrl); else localStorage.removeItem('ci_goal_image');
+  if (it?.imageUrl && !it.imageUrl.startsWith('data:')) localStorage.setItem('ci_goal_image', it.imageUrl); else localStorage.removeItem('ci_goal_image');
   const q = `g=${encodeURIComponent(title)}&_=${Date.now()}`;
   if (kind === 'viz')            window.location.href = `players/3min-viz.html?${q}`;
   else if (kind === 'review')    window.location.href = `players/recite.html?type=affirmations&${q}`;
