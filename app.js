@@ -119,8 +119,8 @@ function _authDbg() {
     for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); bytes += (localStorage.getItem(k) || '').length + (k ? k.length : 0); }
     const el = document.createElement('div');
     el.id = 'authDbg';
-    el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:11px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:6px 9px;border-radius:6px;max-width:280px;opacity:.92;box-shadow:0 2px 8px rgba(0,0,0,.4);';
-    el.textContent = `🔎 saved login: ${tok ? 'FOUND ✓' : 'MISSING ✗'}${oldKey ? ' (old-key present)' : ''} · ${localStorage.length} keys · ${(bytes / 1024).toFixed(0)}KB used`;
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:' + (tok ? '#0a7a2f' : '#c81e1e') + ';color:#fff;font:700 15px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px 16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.5);';
+    el.textContent = `AUTH CHECK — saved login: ${tok ? 'FOUND ✓' : 'MISSING ✗'}${oldKey ? ' (old-key present)' : ''}  ·  ${localStorage.length} keys  ·  ${(bytes / 1024).toFixed(0)}KB used`;
     document.body.appendChild(el);
   } catch (e) { /* diagnostic must never break the app */ }
 }
