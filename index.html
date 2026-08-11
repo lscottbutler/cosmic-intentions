@@ -722,23 +722,23 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
         <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Rituals</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Daily Habits</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10022;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">See It Real</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Creative Visualization Library</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Path</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Roadmap</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
         <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Go Quiet</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditation Session</span>
           <span class="med-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATIONS picker — banner + teal timer grid; hidden until Meditate is tapped -->
@@ -785,7 +785,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- GRATITUDE — inline dropdown (like Meditate): reveals the gratitude timer picker below -->
         <button onclick="var b=document.getElementById('gratBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.grat-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">♥</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Give Thanks</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Practice Gratitude</span>
           <span class="grat-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- GRATITUDE picker — teal timer grid; hidden until Gratitude is tapped. Each dot plays the gratitude session, which closes the Big 3 Gratitude ring on finish. -->
@@ -841,7 +841,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
         <button onclick="var b=document.getElementById('goalsBox');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('.goals-chev').textContent=o?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9678;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Becoming</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Goals</span>
           <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">⌄</span>
         </button>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
