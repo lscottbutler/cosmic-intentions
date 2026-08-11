@@ -85,24 +85,39 @@ export function goalLetter(intention, idx) {
 ───────────────────────────────────────────────────────── */
 const SUPA_URL  = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
-// Quota-safe storage for the auth token. The #1 cause of "logged out on every
-// refresh" here was a FULL localStorage silently rejecting Supabase's token
-// write. This adapter guarantees the token always persists: if a write throws
-// QuotaExceededError, it evicts the regenerable app caches (ci_* keys — all
-// re-synced from Supabase) and retries, so the login is never the thing dropped.
-const authStorage = {
-  getItem: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-  removeItem: (k) => { try { localStorage.removeItem(k); } catch (e) {} },
-  setItem: (k, v) => {
-    try { localStorage.setItem(k, v); return; } catch (e) {}
-    try {
-      Object.keys(localStorage)
-        .filter(x => x.startsWith('ci_') && x !== k)   // drop regenerable caches, keep the token
-        .forEach(x => localStorage.removeItem(x));
-      localStorage.setItem(k, v);                       // retry with room freed
-    } catch (e2) { console.error('[auth] could not persist session even after eviction:', e2); }
-  },
-};
+// Auth session is stored in IndexedDB — NOT localStorage. localStorage's ~5MB
+// ceiling kept filling with app caches and squeezing/corrupting the token, which
+// logged the user out on every refresh. IndexedDB is isolated and effectively
+// unlimited, so the login can never be crowded out. Falls back to localStorage
+// only if IndexedDB is unavailable (e.g. hardened private mode).
+const authStorage = (() => {
+  const DB = 'ci-auth-db', STORE = 'kv';
+  let _dbP = null;
+  const open = () => {
+    if (_dbP) return _dbP;
+    _dbP = new Promise((res, rej) => {
+      let req;
+      try { req = indexedDB.open(DB, 1); } catch (e) { return rej(e); }
+      req.onupgradeneeded = () => { try { req.result.createObjectStore(STORE); } catch (e) {} };
+      req.onsuccess = () => res(req.result);
+      req.onerror = () => rej(req.error);
+    });
+    return _dbP;
+  };
+  const tx = (mode, run) => open().then(db => new Promise((res, rej) => {
+    const r = run(db.transaction(STORE, mode).objectStore(STORE));
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  }));
+  return {
+    getItem: (k) => tx('readonly', s => s.get(k)).then(v => (v == null ? null : v))
+      .catch(() => { try { return localStorage.getItem(k); } catch (e) { return null; } }),
+    setItem: (k, v) => tx('readwrite', s => s.put(v, k))
+      .catch(() => { try { localStorage.setItem(k, v); } catch (e) {} }),
+    removeItem: (k) => tx('readwrite', s => s.delete(k))
+      .catch(() => { try { localStorage.removeItem(k); } catch (e) {} }),
+  };
+})();
 // persistSession + autoRefreshToken keep the login on this device across
 // refreshes/restarts so testing doesn't require a fresh sign-in each visit.
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
@@ -116,11 +131,13 @@ const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
 // token ('ci-auth') or core user data. Everything removed re-syncs from Supabase.
 function _reclaimStorage() {
   try {
-    const KEEP = new Set(['ci-auth']);
+    const KEEP = new Set();
     const ESSENTIAL = /^(ci_intentions|ci_favorites|ci_pegboard|ci_spirituality|ci_wins|ci_habit_list|openai_voice)/;
     const usage = () => { let b = 0; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); b += (localStorage.getItem(k) || '').length + (k ? k.length : 0); } return b; };
 
-    // 1. Stale duplicate auth key from before we pinned storageKey:'ci-auth'.
+    // 1. Stale auth tokens now living in IndexedDB instead (old sb-* key + the
+    //    prior localStorage 'ci-auth'); remove so they can't crowd storage.
+    localStorage.removeItem('ci-auth');
     Object.keys(localStorage).filter(k => /^sb-.*-auth-token$/.test(k)).forEach(k => localStorage.removeItem(k));
     // 2. Transient player hand-off blobs — rebuilt the next time a player opens.
     ['ci_ass_slides', 'ci_goal_image'].forEach(k => localStorage.removeItem(k));
