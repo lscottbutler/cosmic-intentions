@@ -437,10 +437,14 @@ let selectedPlan = 'annual';
 
 export function selectPlan(plan) {
   selectedPlan = plan;
-  document.getElementById('planAnnual').classList.toggle('selected', plan === 'annual');
-  document.getElementById('planMonthly').classList.toggle('selected', plan === 'monthly');
-  document.getElementById('checkAnnual').textContent  = plan === 'annual'  ? '✓' : '';
-  document.getElementById('checkMonthly').textContent = plan === 'monthly' ? '✓' : '';
+  // Null-guarded: some of these plan/check elements may not exist in the DOM
+  // (e.g. the monthly plan was removed). A missing element must NEVER throw here
+  // — selectPlan runs during init(), and an uncaught error aborts the WHOLE boot
+  // (including session restore → "logged out on every load"). See git history.
+  const _pa = document.getElementById('planAnnual');   if (_pa) _pa.classList.toggle('selected', plan === 'annual');
+  const _pm = document.getElementById('planMonthly');  if (_pm) _pm.classList.toggle('selected', plan === 'monthly');
+  const _ca = document.getElementById('checkAnnual');  if (_ca) _ca.textContent = plan === 'annual'  ? '✓' : '';
+  const _cm = document.getElementById('checkMonthly'); if (_cm) _cm.textContent = plan === 'monthly' ? '✓' : '';
 }
 
 // DEV shortcut — set yourself as member without Stripe
@@ -3989,7 +3993,10 @@ function injectPlaceholderCards() {
 export async function init() {
   // Load local data first
   loadIntentionsFromLS();
-  injectPlaceholderCards();
+  // Non-critical UI setup must NOT abort boot — an uncaught throw here skips the
+  // session restore below and logs the user out on every load (root cause of the
+  // "have to sign in every time" bug: selectPlan crashed on a missing element).
+  try { injectPlaceholderCards(); } catch (e) { console.error('[init] injectPlaceholderCards:', e); }
 
   // One-time self-heal: an older build stored base64 vision images in
   // ci_intentions_*, blowing the ~5MB quota. A full quota blocks Supabase from
@@ -4009,7 +4016,7 @@ export async function init() {
   if (_homeBanner) _homeBanner.innerHTML = getDailyLine('home-banner');
 
   // Pre-select annual plan in upgrade modal
-  selectPlan('annual');
+  try { selectPlan('annual'); } catch (e) { console.error('[init] selectPlan:', e); }
 
   const _preview = _previewActive();
   if (_preview) _seedPreviewDashboard();
