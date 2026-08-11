@@ -56,8 +56,9 @@ export function closePlayerColumn() {
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
   if (panel) panel.style.display = 'none';
-  // Roll every time grid back up when the player closes.
-  document.querySelectorAll('.player-times-grid').forEach(g => g.classList.add('hidden'));
+  // Roll every time grid back up when the player closes — but NOT the favorites
+  // playlist (it shares this class yet must stay visible so you can replay it).
+  document.querySelectorAll('.player-times-grid:not(#favorites-list)').forEach(g => g.classList.add('hidden'));
 }
 
 /* ── FAVORITES ───────────────────────────────────────────────
