@@ -1,6 +1,6 @@
 COSMIC INTENTIONS — Gemini Master Brief
 Paste this at the top of every new Google Gemini session for this project.
-Last updated: 2026-06-19
+Last updated: 2026-08-11
 
 This is the Gemini-facing twin of CLAUDE_MASTER_BRIEF.txt. Same facts, written for
 a fresh Gemini session that has NO memory of this codebase. If the two briefs ever
@@ -15,6 +15,54 @@ Cosmic Intentions — a personal goals and visualization web app.
   and an AI-generated execution roadmap (Mission Control).
 - Front end is vanilla HTML/CSS/JS — no React, no framework.
 - IMPORTANT: there IS now a build step (Vite). The old "no build step" note is dead.
+
+================================================================================
+CORE THESIS — THE IDENTITY LIBRARY PATTERN  (this is the heart of the product)
+================================================================================
+
+Cosmic Intentions is built on curated "IDENTITY LIBRARIES" — collections of
+pre-built "I AM… / I HAVE…" identity cards. This has always been the core thesis.
+
+THE LOOP:
+  Browse a Library -> adopt an identity ("I AM a successful negotiator")
+  -> work its SHARED, pre-built roadmap -> practice it (visualize / Mind Loop)
+  -> discuss it with everyone else working the SAME identity (Cosmic Community).
+  The shared curriculum is what makes real community possible — you can't have a
+  conversation if everyone is on a different AI-generated path.
+
+IT IS A SCALABLE PATTERN, NOT A ONE-OFF:
+- ENTREPRENEUR LIBRARY is the FIRST: 32 (and growing) designed image cards —
+  traits/skills/character an entrepreneur needs (I AM A Successful Negotiator,
+  I AM Disciplined, I HAVE A Strong Work Ethic, I AM A Great Sales Person, ...).
+  Assets: images/ (ENT *.PNG); shown via `ent-slideshow`; backend
+  netlify/functions/_entrepreneur-library.js.
+- FUTURE libraries: Athlete, Artist, Parent, etc. Adding a card OR a whole
+  library = adding a data entry + an image. BUILD FOR TRIVIAL EXTENSION.
+
+LIBRARY ITEMS ARE FIXED, CURATED ASSETS — NOT AI, NOT DRILLABLE:
+- Each card = image + fixed "I AM" identity + ONE shared roadmap the team authors.
+- Read-only and IDENTICAL for every user. NO per-user AI drill-down (that stays
+  only for the user's OWN personal goals — two clearly different modes). Reuse the
+  roadmap LOOK, but locked.
+- ADOPTABLE: a user can adopt a Library card as one of their intentions (to
+  visualize/loop) while keeping the SHARED roadmap. Ties the Library to the core
+  app without breaking "everyone is on the same page."
+- Store as plain data the owner controls, so it is a true fixed asset.
+
+COSMIC COMMUNITY (forum) — the payoff of shared content. It must NOT become a
+spam/negativity temple. Design positivity IN, do not just moderate:
+- Members-only (paywalled) = biggest spam/troll filter.
+- Structured prompts, not an open wall ("share a win", "where are you stuck?",
+  "how did you apply step 3?"). Structure kills ranting.
+- Positive-only reactions (encourage/heart, no downvotes).
+- AI positivity filter — OpenAI screens every post for negativity/spam/attacks
+  BEFORE it publishes (on-brand automated bouncer).
+- One discussion thread per trait so talk converges on the shared roadmap.
+
+BUILD SEQUENCE (agreed): Library FIRST (stands alone, immediately valuable),
+community layered on later once there is something to talk about.
+OPEN QUESTIONS: content behind each card (written roadmap vs video vs both);
+community in-house on Supabase vs bolt-on (Circle/Discord); paid-only (leaning yes).
 
 ================================================================================
 STACK
