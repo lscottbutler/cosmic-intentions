@@ -85,11 +85,28 @@ export function goalLetter(intention, idx) {
 ───────────────────────────────────────────────────────── */
 const SUPA_URL  = 'https://wbqzwbubbeorcknevips.supabase.co';
 const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
+// Quota-safe storage for the auth token. The #1 cause of "logged out on every
+// refresh" here was a FULL localStorage silently rejecting Supabase's token
+// write. This adapter guarantees the token always persists: if a write throws
+// QuotaExceededError, it evicts the regenerable app caches (ci_* keys — all
+// re-synced from Supabase) and retries, so the login is never the thing dropped.
+const authStorage = {
+  getItem: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  removeItem: (k) => { try { localStorage.removeItem(k); } catch (e) {} },
+  setItem: (k, v) => {
+    try { localStorage.setItem(k, v); return; } catch (e) {}
+    try {
+      Object.keys(localStorage)
+        .filter(x => x.startsWith('ci_') && x !== k)   // drop regenerable caches, keep the token
+        .forEach(x => localStorage.removeItem(x));
+      localStorage.setItem(k, v);                       // retry with room freed
+    } catch (e2) { console.error('[auth] could not persist session even after eviction:', e2); }
+  },
+};
 // persistSession + autoRefreshToken keep the login on this device across
 // refreshes/restarts so testing doesn't require a fresh sign-in each visit.
-// storageKey is pinned so the token can't collide with any other Supabase app.
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth' },
+  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
 });
 // Expose the current Supabase access token to shared/api.js so every paid AI
 // call carries the user's login — the server-side guard requires it (Stage B).
