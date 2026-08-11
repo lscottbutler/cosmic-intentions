@@ -36,6 +36,11 @@ IT IS A SCALABLE PATTERN, NOT A ONE-OFF:
   I AM Disciplined, I HAVE A Strong Work Ethic, I AM A Great Sales Person, ...).
   Assets: images/ (ENT *.PNG); shown via `ent-slideshow`; backend
   netlify/functions/_entrepreneur-library.js.
+- "50 THINGS PEOPLE WANT THE MOST" — CONFIRMED library (owner has done the
+  research). 50 cards of UNIVERSAL desires, broader than entrepreneurship (I AM A
+  Straight A Student, I AM In My Dream Relationship, ...). Role: mass-market front
+  door / wide top-of-funnel, while Entrepreneur is the premium niche.
+- CELEBRITY ROADMAPS — parallel library (real sourced clips only, rule below).
 - FUTURE libraries: Athlete, Artist, Parent, etc. Adding a card OR a whole
   library = adding a data entry + an image. BUILD FOR TRIVIAL EXTENSION.
 
