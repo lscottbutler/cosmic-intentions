@@ -100,6 +100,52 @@ OPEN QUESTIONS: content behind each card (written roadmap vs video vs both);
 community in-house on Supabase vs bolt-on (Circle/Discord); paid-only (leaning yes).
 
 ================================================================================
+CURRENT STATE — 2026-08-11  ("FINAL STRETCH" checkpoint; git tag: final-stretch)
+================================================================================
+
+SHIPPED & LIVE this session (cosmicintentions.com, head 34c3618):
+- LOGGED-OUT HOME IS LANDING PAGE 1 now: embedded in #homeLoggedOut, CSS scoped
+  under #lp1, section ids lp1-*. App header (header.hdr) + hamburger (#topNav) are
+  display:none by default, shown ONLY for members via updateUI(). Nav links +
+  hero "Explore every feature" scroll via scrollIntoView. Get Started / Member Log
+  In -> openAuth('signup'/'signin'); /?auth=signin|signup opens the modal. The
+  standalone /landing page (Landing Page 1 in hamburger) still exists too.
+- AUTH fixes: doSignIn now updateUI(user)+renders IMMEDIATELY (don't wait on the
+  flaky onAuthStateChange) so sign-in actually "takes you inside"; goMemberDashboard
+  no longer signs out on a transient getUser() network error.
+- MEMBER HOME (#homeLoggedIn): 70/30 columns; 8 "info blocks" (4 LEFT each with a
+  rotating My-Thoughts affirmation via data-home-thought; 4 RIGHT without) =
+  TITLE + paragraph + 5 bullets, MOSTLY LOREM + "INSERT TITLE HERE" placeholders.
+  Left col has the first real synced copy: "Welcome to the Cosmic Intentions
+  Community" + Entrepreneur Library intro.
+- DASHBOARD: "Which Direction?" text -> forking-arrows SVG. Nav labels
+  Sutherland-flavored (Bank a Win / Play My Day / My Rituals / See It Real / My
+  Path / Go Quiet / Give Thanks / Mind Loop / Becoming). NOTE: only the dashboard
+  buttons renamed — hamburger/drawer/page-titles still use the OLD names.
+- MY THOUGHTS: sections open by default; category icons removed; scattered surfaced
+  affirmations/beliefs turned OFF site-wide (sprinkleNotes only fills the home
+  data-home-thought slots now).
+- Viz-goal quick-viz time circles shrunk to 52px. My Favorites Autoplay: bolder
+  gold now-playing highlight + roomier header.
+- BACKUP: Supabase Action also snapshots the vision-images storage bucket (needs
+  repo secret SUPABASE_SERVICE_ROLE_KEY for the storage step to run).
+
+OPEN LOOSE ENDS:
+- Member home is mostly PLACEHOLDER copy. Real copy lives in Google Doc
+  "CI — MEMBER HOME COPY EDITABLE"; sync into #homeLoggedIn on request. The Drive
+  connector's read tools were BLOCKED; user enabled them but needs a NEW chat to
+  pick them up.
+- NOT BUILT (thesis/docs only, see CORE THESIS): Entrepreneur Library feature
+  (assets exist: images/ENT*.PNG, ent-slideshow, netlify/functions/
+  _entrepreneur-library.js), "50 Things" library, Celebrity Roadmaps, Cosmic
+  Community forum, and the analytics-style dashboard restyle (mockup only).
+- VERIFY after login (user testing): sign-in reaches the app; header/hamburger
+  return for members.
+- Google Drive 780GB = mostly a duplicated old-PC backup; dedup hit-list at
+  Desktop\DRIVE-DEDUP-PLAN.txt (~99GB reclaimable) NOT executed (env blocks
+  deleting from the Drive mount; user runs dupeGuru or deletes manually).
+
+================================================================================
 STACK
 ================================================================================
 
