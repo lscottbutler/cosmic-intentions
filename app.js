@@ -422,6 +422,21 @@ export async function doSignIn() {
     if (error) throw error;
     closeAuth();
     toast('Welcome back!', 'success');
+    // Switch to the logged-in UI RIGHT NOW instead of waiting on the
+    // onAuthStateChange event (flaky on a slow connection — that's why sign-in
+    // "sat there" without taking you inside). Data syncs in the background so
+    // the UI is never blocked on the network.
+    if (data?.user) {
+      currentUser = data.user;
+      updateUI(data.user);
+      (async () => {
+        try {
+          await syncFromSupabase();
+          await syncIntentionsFromSupabase();
+          renderDashboard(); injectPersonalContent(); renderTodayView();
+        } catch (err) { console.error('[signin] post-login sync failed:', err); }
+      })();
+    }
   } catch(e) {
     showAuthError(e.message || 'Sign in failed. Try again.');
   } finally {
