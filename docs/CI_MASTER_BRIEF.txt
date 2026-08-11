@@ -49,6 +49,30 @@ LIBRARY ITEMS ARE FIXED, CURATED ASSETS — NOT AI, NOT DRILLABLE:
   app without breaking "everyone is on the same page."
 - Store as plain data the owner controls, so it is a true fixed asset.
 
+EACH CARD = A CURATED "MINI DIGITAL EBOOK", ONE PAGE. This curation is the MOAT
+(generic AI can't cheaply copy it). Template per card:
+  1) Identity ("I AM a Successful Negotiator") + art card.
+  2) Owner-curated ROADMAP bullets (he chooses all the text — the spine).
+  3) SYNERGY-PARTNER content — links to podcasts, YouTube channels, audio clips,
+     interviews with real successful entrepreneurs.
+  4) GENERATED from the above: the beliefs, affirmations, winning attitudes, traits
+     to internalize.
+Content behind each card = BOTH written roadmap AND partner media AND generated
+affirmations — not one or the other.
+
+*** SYNERGY PARTNERS — DEEP PIN (first-class business + content lever). Two kinds:
+  (a) CONTENT partners (podcasts/creators/channels): send them traffic, they lend
+      credibility + content (affiliate / cross-promo).
+  (b) BRAND partners: supply product IMAGERY/products for cards + sponsorship
+      (free assets + revenue).
+Design cards so partner links + imagery are structured data, easy to attach/swap.
+
+CELEBRITY ROADMAPS = a parallel library type ("Joe Rogan's advice to entrepreneurs
+who want to…", a whole library, partner-backed). NON-NEGOTIABLE RULE (owner fears
+frivolous lawsuits): must be REAL, SOURCED, ATTRIBUTED clips/quotes with links
+("in his own words -> watch"), NEVER fabricated advice or implied endorsement.
+The sourcing IS the synergy link. Wrong = right-of-publicity / defamation risk.
+
 COSMIC COMMUNITY (forum) — the payoff of shared content. It must NOT become a
 spam/negativity temple. Design positivity IN, do not just moderate:
 - Members-only (paywalled) = biggest spam/troll filter.
