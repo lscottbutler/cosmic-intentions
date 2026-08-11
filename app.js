@@ -547,6 +547,8 @@ function updateUI(user) {
   // Hide the app header + hamburger on the logged-out landing (it has its own nav).
   const _appHdr = document.querySelector('header.hdr');
   if (_appHdr) _appHdr.style.display = loggedIn ? '' : 'none';
+  const _topNav = document.getElementById('topNav');
+  if (_topNav) _topNav.style.display = loggedIn ? '' : 'none';
 
   const topnavSignOut = document.getElementById('topnav-signout');
   if (topnavSignOut) topnavSignOut.style.display = loggedIn ? 'inline-block' : 'none';
