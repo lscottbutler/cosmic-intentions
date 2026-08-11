@@ -290,10 +290,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <nav><div class="wrap nav-in">
           <div class="logo">COSMIC <b>INTENTIONS</b></div>
           <div class="nav-links">
-            <a href="#lp1-principle">Why it works</a>
-            <a href="#lp1-journey">How it works</a>
-            <a href="#lp1-features">Features</a>
-            <a href="#lp1-pricing">Pricing</a>
+            <a href="#lp1-principle" onclick="document.getElementById('lp1-principle').scrollIntoView({behavior:'smooth',block:'start'});return false;">Why it works</a>
+            <a href="#lp1-journey" onclick="document.getElementById('lp1-journey').scrollIntoView({behavior:'smooth',block:'start'});return false;">How it works</a>
+            <a href="#lp1-features" onclick="document.getElementById('lp1-features').scrollIntoView({behavior:'smooth',block:'start'});return false;">Features</a>
+            <a href="#lp1-pricing" onclick="document.getElementById('lp1-pricing').scrollIntoView({behavior:'smooth',block:'start'});return false;">Pricing</a>
             <a href="#" onclick="openAuth('signin');return false;" class="btn btn-ghost" style="padding:9px 16px;">Member Log In</a>
             <a href="#" onclick="openAuth('signup');return false;" class="btn btn-gold" style="padding:9px 16px;">Get Started Free</a>
           </div>
@@ -305,7 +305,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <p class="sub">Write your goals as “I AM” truths. Get an AI roadmap to reach them. Visualize, Meditate, and hear them in your own voice — then track the reps until the identity is simply yours.</p>
           <div class="cta">
             <a href="#" onclick="openAuth('signup');return false;" class="btn btn-gold">Get Started Free →</a>
-            <a href="#lp1-features" class="btn btn-ghost">Explore every feature</a>
+            <a href="#lp1-features" onclick="document.getElementById('lp1-features').scrollIntoView({behavior:'smooth',block:'start'});return false;" class="btn btn-ghost">Explore every feature</a>
           </div>
           <div class="pills">
             <span>✍️ Goal Setting &amp; Tracking</span>
