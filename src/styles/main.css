@@ -179,6 +179,9 @@ details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
 details.rm-drop .rm-caret { transition: transform .18s ease; display: inline-block; }
 details.rm-drop[open] > summary .rm-caret { transform: rotate(180deg); }
+/* rm-caret2: right-pointing (3 o'clock) when closed, rotates to point DOWN when open */
+details.rm-drop .rm-caret2 { transition: transform .18s ease; display: inline-flex; }
+details.rm-drop[open] > summary .rm-caret2 { transform: rotate(90deg); }
 /* Smooth open/close (NYT-style) — animates the content height on Chromium 131+/
    modern Edge; older browsers fall back to instant open (no harm). */
 :root { interpolate-size: allow-keywords; }
@@ -194,9 +197,10 @@ details.rm-drop[open]::details-content { height: auto; }
 .wcard-menu.open { height: auto; content-visibility: visible; }
 
 /* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
-.wtabs { display: flex; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
+.wtabs { display: flex; justify-content: space-between; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
 .wtab {
-  flex: 1;
+  flex: 0 1 auto;      /* content-sized so the two tabs sit at the outer edges */
+  max-width: 44%;
   min-width: 0;
   box-sizing: border-box;
   border: 1px solid #ffffff;      /* thin white outline */
