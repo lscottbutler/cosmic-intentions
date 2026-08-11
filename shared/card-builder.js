@@ -805,7 +805,6 @@ export function renderPBIntentionList() {
     <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
       <div style="position:relative;padding:12px 14px;background:${shade.bg};">
         <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${goalLetter(i, idx)}</div>
-        <div style="font-size:12px;color:${shade.text};opacity:.75;margin-top:4px;">Set this goal's details below.</div>
         <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
           style="position:absolute;top:14px;right:14px;background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;">✕</button>
       </div>
