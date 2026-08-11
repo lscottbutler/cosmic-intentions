@@ -3899,22 +3899,6 @@ export async function init() {
   const _preview = _previewActive();
   if (_preview) _seedPreviewDashboard();
 
-  // FRONT DOOR: logged-out visitors go straight to Landing Page 1 (/landing).
-  // Decided SYNCHRONOUSLY from the stored Supabase token so it never waits on a
-  // slow/failing getSession() (that was why the old redirect never fired). Skip
-  // if a token exists (maybe logged in), if arriving via a /?auth link, or in
-  // localhost preview. /landing is a separate file, so there's no redirect loop.
-  {
-    const _ap   = new URLSearchParams(location.search).get('auth');
-    const _root = location.pathname === '/' || location.pathname.endsWith('/index.html');
-    let _hasToken = false;
-    try { _hasToken = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('auth-token') && localStorage.getItem(k)); } catch (e) {}
-    if (!_preview && _root && !_hasToken && _ap !== 'signin' && _ap !== 'signup') {
-      location.replace('/landing');
-      return;
-    }
-  }
-
   // Auth state listener (skipped in localhost preview mode)
   if (!_preview) sb.auth.onAuthStateChange((event, session) => {
     const user = session?.user || null;
@@ -3966,17 +3950,9 @@ export async function init() {
         injectPersonalContent();
         renderTodayView();
       } else {
-        // Landing Page 1 (/landing) is the logged-out front door. Its "Member Log
-        // In" / "Get Started" links come back as /?auth=signin|signup — open that
-        // modal on the app; otherwise send logged-out visitors to the landing.
-        // No redirect loop: /landing is a separate static file, not this app.
-        const _authParam = new URLSearchParams(location.search).get('auth');
-        const _onRoot = location.pathname === '/' || location.pathname.endsWith('/index.html');
-        if (_authParam !== 'signin' && _authParam !== 'signup' && _onRoot) {
-          location.replace('/landing');
-          return;
-        }
         updateUI(null);
+        // If someone arrives via a /?auth=signin|signup link, open that modal.
+        const _authParam = new URLSearchParams(location.search).get('auth');
         if (_authParam === 'signin' || _authParam === 'signup') openAuth(_authParam);
       }
     }
