@@ -109,10 +109,40 @@ const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
 });
 
+// ── STORAGE RECLAIM — runs at load, BEFORE Supabase refreshes the token.
+// localStorage was hitting the ~5MB browser ceiling, so the refreshed auth
+// token couldn't be written → logout on every load even though a token existed.
+// Free space by dropping stale/transient/regenerable caches; NEVER the login
+// token ('ci-auth') or core user data. Everything removed re-syncs from Supabase.
+function _reclaimStorage() {
+  try {
+    const KEEP = new Set(['ci-auth']);
+    const ESSENTIAL = /^(ci_intentions|ci_favorites|ci_pegboard|ci_spirituality|ci_wins|ci_habit_list|openai_voice)/;
+    const usage = () => { let b = 0; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); b += (localStorage.getItem(k) || '').length + (k ? k.length : 0); } return b; };
+
+    // 1. Stale duplicate auth key from before we pinned storageKey:'ci-auth'.
+    Object.keys(localStorage).filter(k => /^sb-.*-auth-token$/.test(k)).forEach(k => localStorage.removeItem(k));
+    // 2. Transient player hand-off blobs — rebuilt the next time a player opens.
+    ['ci_ass_slides', 'ci_goal_image'].forEach(k => localStorage.removeItem(k));
+    // 3. Old dated history keys (rings/habits/activity: *_YYYY-MM-DD) older than 21 days.
+    const cutoff = new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10);
+    Object.keys(localStorage).forEach(k => { const m = k.match(/_(\d{4}-\d{2}-\d{2})$/); if (m && m[1] < cutoff) localStorage.removeItem(k); });
+    // 4. Still near the ceiling? Evict the biggest non-essential caches until safe.
+    if (usage() > 3_500_000) {
+      const sizes = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (KEEP.has(k) || ESSENTIAL.test(k)) continue; sizes.push([k, (localStorage.getItem(k) || '').length]); }
+      sizes.sort((a, b) => b[1] - a[1]);
+      for (const [k] of sizes) { localStorage.removeItem(k); if (usage() < 3_000_000) break; }
+    }
+  } catch (e) { /* reclaim must never break the app */ }
+}
+_reclaimStorage();
+
 // ── TEMP AUTH DIAGNOSTIC — remove once the login-persistence cause is confirmed.
 // Renders a tiny readout so a screenshot reveals whether the saved token exists.
 function _authDbg() {
   try {
+    if (currentUser) return;   // only show in the logged-out (problem) state
     const tok = localStorage.getItem('ci-auth');
     const oldKey = Object.keys(localStorage).find(k => /^sb-.*-auth-token$/.test(k));
     let bytes = 0;
