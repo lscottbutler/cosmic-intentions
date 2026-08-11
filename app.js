@@ -108,6 +108,23 @@ const authStorage = {
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
 });
+
+// ── TEMP AUTH DIAGNOSTIC — remove once the login-persistence cause is confirmed.
+// Renders a tiny readout so a screenshot reveals whether the saved token exists.
+function _authDbg() {
+  try {
+    const tok = localStorage.getItem('ci-auth');
+    const oldKey = Object.keys(localStorage).find(k => /^sb-.*-auth-token$/.test(k));
+    let bytes = 0;
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); bytes += (localStorage.getItem(k) || '').length + (k ? k.length : 0); }
+    const el = document.createElement('div');
+    el.id = 'authDbg';
+    el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:11px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:6px 9px;border-radius:6px;max-width:280px;opacity:.92;box-shadow:0 2px 8px rgba(0,0,0,.4);';
+    el.textContent = `🔎 saved login: ${tok ? 'FOUND ✓' : 'MISSING ✗'}${oldKey ? ' (old-key present)' : ''} · ${localStorage.length} keys · ${(bytes / 1024).toFixed(0)}KB used`;
+    document.body.appendChild(el);
+  } catch (e) { /* diagnostic must never break the app */ }
+}
+if (typeof window !== 'undefined') window.addEventListener('load', _authDbg);
 // Expose the current Supabase access token to shared/api.js so every paid AI
 // call carries the user's login — the server-side guard requires it (Stage B).
 // Returns null when logged out (public pages), so non-gated calls still work.
@@ -554,6 +571,9 @@ export async function signOut() {
 function updateUI(user) {
   currentUser = user;
   const loggedIn = !!user;
+
+  // TEMP: drop the auth diagnostic chip once a real session is active.
+  if (loggedIn) { const _dbg = document.getElementById('authDbg'); if (_dbg) _dbg.remove(); }
 
   const hdrUser = document.getElementById('hdrUser');
   hdrUser.textContent = loggedIn ? (user.user_metadata?.full_name || user.email.split('@')[0]) : '';
