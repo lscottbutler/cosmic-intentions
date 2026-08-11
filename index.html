@@ -1242,34 +1242,37 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- ═══ PILLAR 2: MY ROADMAP (the ACTION PLAN — goals + roadmap tasks) ═══ -->
   <div class="page" id="page-myroadmap">
-    <div style="max-width:1140px;margin:0 auto;padding:18px 16px 90px;">
+    <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
         <button onclick="navTo('dashboard')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
         <span style="font-weight:800;font-size:26px;letter-spacing:.3px;color:var(--text);line-height:1.1;">My Roadmap</span>
       </div>
 
-      <!-- Intro copy (where the yellow scribble was) -->
-      <p style="margin:0 0 16px;color:var(--text);font-size:15px;line-height:1.6;opacity:.85;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <!-- Intro copy + focus bullets, grouped in a soft section card (Option C).
+           Paragraph capped to a readable measure; bullets stay 50/50. -->
+      <div style="background:var(--off,#F5F5F5);border:1px solid var(--border,#E6E8EB);border-radius:14px;padding:22px 24px;margin:0 0 18px;">
+        <p style="margin:0 0 14px;max-width:680px;color:var(--text);font-size:15px;line-height:1.6;opacity:.9;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 
-      <!-- 50/50 split — 5 bullets in each column -->
-      <div style="display:flex;gap:20px;flex-wrap:wrap;margin:0 0 20px;">
-        <div style="flex:1;min-width:240px;">
-          <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.8;">
-            <li>Lorem ipsum dolor sit amet</li>
-            <li>Consectetur adipiscing elit</li>
-            <li>Sed do eiusmod tempor incididunt</li>
-            <li>Ut labore et dolore magna aliqua</li>
-            <li>Ut enim ad minim veniam</li>
-          </ul>
-        </div>
-        <div style="flex:1;min-width:240px;">
-          <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.8;">
-            <li>Quis nostrud exercitation ullamco</li>
-            <li>Laboris nisi ut aliquip ex ea</li>
-            <li>Duis aute irure dolor in reprehenderit</li>
-            <li>Voluptate velit esse cillum dolore</li>
-            <li>Excepteur sint occaecat cupidatat</li>
-          </ul>
+        <!-- 50/50 split — 5 bullets in each column -->
+        <div style="display:flex;gap:24px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;">
+            <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;">
+              <li>Lorem ipsum dolor sit amet</li>
+              <li>Consectetur adipiscing elit</li>
+              <li>Sed do eiusmod tempor incididunt</li>
+              <li>Ut labore et dolore magna aliqua</li>
+              <li>Ut enim ad minim veniam</li>
+            </ul>
+          </div>
+          <div style="flex:1;min-width:240px;">
+            <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;">
+              <li>Quis nostrud exercitation ullamco</li>
+              <li>Laboris nisi ut aliquip ex ea</li>
+              <li>Duis aute irure dolor in reprehenderit</li>
+              <li>Voluptate velit esse cillum dolore</li>
+              <li>Excepteur sint occaecat cupidatat</li>
+            </ul>
+          </div>
         </div>
       </div>
       <!-- One of the user's own REMINDERS surfaces here, fixed for the day (filled by sprinkleNotes). -->
