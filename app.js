@@ -3931,9 +3931,48 @@ function _seedPreviewDashboard() {
 /* ─────────────────────────────────────────────────────────
    INIT
 ───────────────────────────────────────────────────────── */
+/* Placeholder intro/outro copy card — added at the TOP (under the title) and
+   BOTTOM of the listed member pages. Same soft-card style as My Roadmap. The
+   copy lives here in one place; injected additively so no page markup changes. */
+function _makePhCard() {
+  const card = document.createElement('div');
+  card.className = 'ci-ph-card';
+  card.style.cssText = 'background:var(--off,#F5F5F5);border:1px solid var(--border,#E6E8EB);border-radius:14px;padding:22px 24px;margin:18px 0;';
+  card.innerHTML =
+    '<p style="margin:0 0 14px;max-width:680px;color:var(--text);font-size:15px;line-height:1.6;opacity:.9;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>' +
+    '<div style="display:flex;gap:24px;flex-wrap:wrap;">' +
+      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li><li>Ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam</li></ul></div>' +
+      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Quis nostrud exercitation ullamco</li><li>Laboris nisi ut aliquip ex ea</li><li>Duis aute irure dolor in reprehenderit</li><li>Voluptate velit esse cillum dolore</li><li>Excepteur sint occaecat cupidatat</li></ul></div>' +
+    '</div>';
+  return card;
+}
+function injectPlaceholderCards() {
+  if (document.querySelector('.ci-ph-card')) return;   // inject once
+  // Per-page anchor: the top card goes right AFTER this element (the title/header).
+  const cfg = {
+    dailyfocus:  '#page-dailyfocus > div > p',
+    notes:       '#page-notes > div > p',
+    setup:       '#page-setup .setup-page-header',
+    habits:      '#page-habits .setup-page-header',
+    vizlibrary:  '#page-vizlibrary > div > div',
+    runthroughs: '#page-runthroughs > div > div',
+    wins:        '#page-wins > div > div',
+  };
+  Object.keys(cfg).forEach(id => {
+    const page = document.getElementById('page-' + id);
+    if (!page) return;
+    const wrap = page.firstElementChild || page;
+    const anchor = page.querySelector(cfg[id]);
+    if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // top: under the title
+    else wrap.insertBefore(_makePhCard(), wrap.firstChild);
+    wrap.appendChild(_makePhCard());                                        // bottom: end of page
+  });
+}
+
 export async function init() {
   // Load local data first
   loadIntentionsFromLS();
+  injectPlaceholderCards();
 
   // One-time self-heal: an older build stored base64 vision images in
   // ci_intentions_*, blowing the ~5MB quota. A full quota blocks Supabase from
