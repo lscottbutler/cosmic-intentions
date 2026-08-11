@@ -28,7 +28,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 </div>
 
 <!-- ── HEADER ─────────────────────────────────────────── -->
-<header class="hdr">
+<!-- Hidden by default (logged-out landing has its own nav); updateUI() shows it for members. -->
+<header class="hdr" style="display:none">
   <div class="hdr-logo" onclick="showPage('home')" style="cursor:pointer;">
     <span>COSMIC INTENTIONS</span>
   </div>
@@ -38,8 +39,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   </div>
 </header>
 
-<!-- TOP NAV BAR -->
-<nav id="topNav">
+<!-- TOP NAV BAR — hidden by default (logged-out landing); updateUI() shows it for members -->
+<nav id="topNav" style="display:none">
   <div class="ham-wrap">
     <button id="hamBtn" class="ham-btn" aria-label="Menu" aria-expanded="false" aria-controls="hamMenu" onclick="toggleHamMenu()">
       <span></span><span></span><span></span>
