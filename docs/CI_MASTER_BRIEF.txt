@@ -66,6 +66,12 @@ affirmations — not one or the other.
   (b) BRAND partners: supply product IMAGERY/products for cards + sponsorship
       (free assets + revenue).
 Design cards so partner links + imagery are structured data, easy to attach/swap.
+BRAND-PARTNER REVENUE -> CHARITY (owner intent). Business funded by MEMBERSHIPS;
+brand-sponsorship money goes to charity (partner magnet + user feel-good). LEGAL:
+"all/100% to charity" is a regulated, provable claim (US commercial co-venture /
+FTC). Never say "all" unless a lawyer confirms it literally true; state the precise
+figure ("100% of NET" or "X%"), publish a transparent tally + named charities, use
+neutral causes or community vote, keep membership vs charity buckets separate.
 
 CELEBRITY ROADMAPS = a parallel library type ("Joe Rogan's advice to entrepreneurs
 who want to…", a whole library, partner-backed). NON-NEGOTIABLE RULE (owner fears
