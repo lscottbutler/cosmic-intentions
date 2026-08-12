@@ -318,6 +318,7 @@ export function showPage(id) {
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
+  if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
@@ -375,7 +376,7 @@ window.addEventListener('popstate', (e) => {
 
 export function navTo(id) {
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs'];
+  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs','entcard'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');

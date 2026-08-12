@@ -1,0 +1,93 @@
+/* ── ENTREPRENEUR LIBRARY — in-app card page ─────────────────────────────────
+   Renders the fixed, community-shared identity cards using the "monitor" card
+   design (see standalone/ent-monitor-proto.html). Content is frozen + identical
+   for every member (see shared/ent-library-content.js). */
+
+import { toast } from '../app.js';
+import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent } from './ent-library-content.js';
+
+let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
+if (_entIdx < 0) _entIdx = 0;
+const _open = { ab: false, rm: false };   // which content panels are expanded
+
+const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const _pad2 = n => String(n).padStart(2, '0');
+/* Split "I AM SELF-CONFIDENT" onto two lines after the leading verb phrase. */
+function _affLines(title) {
+  const t = _esc(title);
+  const m = t.match(/^(I AM|I HAVE|I LEAD WITH|I EXECUTE|I MANAGE|I ATTRACT|I THINK|I PROMOTE)\s+(.*)$/);
+  return m ? `${m[1]}<br>${m[2]}` : t;
+}
+
+export function renderEntLibrary() {
+  const host = document.getElementById('entLibHost');
+  if (!host) return;
+  const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
+  const has = entCardHasContent(c);
+
+  const monitor = `
+    <div style="background:#8FA977;padding:22px 20px 14px;">
+      <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
+        <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:8px;font-size:15px;">${_esc(ENT_CARD_TYPE)}</div>
+        <div style="background:#fff;min-height:200px;display:flex;align-items:center;justify-content:center;padding:26px 22px;">
+          <div style="font-weight:900;letter-spacing:1px;font-size:28px;line-height:1.15;color:#1c1c1c;text-align:center;text-transform:uppercase;">${_affLines(c.title)}</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          ${[['CARD', _pad2(c.n)], ['TYPE', 'ATTITUDE'], ['LIBRARY', 'ENTREP'], ['DECK', c.n + ' · ' + ENT_CARDS.length]]
+            .map(([k, v]) => `<div style="flex:1;text-align:center;"><div style="background:#7d827b;border-radius:12px 12px 0 0;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:11px;padding:8px 4px;">${k}</div><div style="background:#20241f;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:14px;padding:8px 4px;">${_esc(v)}</div></div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;">
+        <button onclick="entNav(-1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">‹ PREV</button>
+        <span style="align-self:center;color:#20241f;font-weight:800;font-size:12px;font-family:var(--vault-mono,monospace);">${c.n} / ${ENT_CARDS.length}</span>
+        <button onclick="entNav(1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">NEXT ›</button>
+      </div>
+    </div>`;
+
+  if (!has) {
+    host.innerHTML = monitor +
+      `<div style="background:#1c1c1c;color:#fff;padding:20px 18px;text-align:center;font-size:15px;line-height:1.5;">This card's affirmations, beliefs and roadmap are coming soon.</div>`;
+    return;
+  }
+
+  const btn = (t, s, on, extra = '') => `<button ${on ? `onclick="${on}"` : ''} style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;cursor:pointer;${extra}"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t}</span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
+  const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
+
+  const list = (items, ordered) => `<${ordered ? 'ol' : 'ul'} style="margin:0;padding-left:20px;color:#2b2f45;font-size:14px;line-height:1.7;">${items.map(i => `<li>${_esc(i)}</li>`).join('')}</${ordered ? 'ol' : 'ul'}>`;
+  const panel = (open, inner) => `<div style="background:#fff;border:1px solid #cfcfcf;border-top:none;padding:${open ? '16px 18px' : '0'};max-height:${open ? '2000px' : '0'};overflow:hidden;transition:max-height .25s;">${open ? inner : ''}</div>`;
+
+  host.innerHTML = monitor +
+    `<div style="background:#1c1c1c;color:#fff;padding:18px;">
+       <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
+       <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
+     </div>
+     <div style="padding:14px 0;">
+       ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
+       ${soon('Visualize', '3 min')}
+       ${btn('Affirmations &amp; Beliefs', _open.ab ? 'hide' : 'show', `entTogglePanel('ab')`)}
+       ${panel(_open.ab, `<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin-bottom:8px;">AFFIRMATIONS</div>${list(c.affirmations)}<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin:14px 0 8px;">BELIEFS</div>${list(c.beliefs)}`)}
+       ${btn('Roadmap', _open.rm ? 'hide' : `${c.roadmap.length} steps`, `entTogglePanel('rm')`)}
+       ${panel(_open.rm, list(c.roadmap, true))}
+       ${soon('Meditate', '10 min')}
+       ${soon('Gratitude', '5 items')}
+       ${soon('Mind loop', 'ambient')}
+     </div>`;
+}
+
+export function entNav(dir) {
+  _entIdx = (_entIdx + dir + ENT_CARDS.length) % ENT_CARDS.length;
+  _open.ab = false; _open.rm = false;
+  renderEntLibrary();
+}
+export function entTogglePanel(which) { _open[which] = !_open[which]; renderEntLibrary(); }
+export function entTakeAction() {
+  const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
+  try {
+    const d = new Date();
+    const key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    const w = JSON.parse(localStorage.getItem('ci_wins') || '[]');
+    w.unshift({ text: 'Took action: ' + c.title, date: key, ts: Date.now() });
+    localStorage.setItem('ci_wins', JSON.stringify(w));
+  } catch (e) {}
+  if (typeof toast === 'function') toast('✦ Win logged', 'success');
+}

@@ -52,6 +52,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
       <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
+      <button class="tnav-btn" onclick="navTo('entcard')">Entrepreneur Library</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
       <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
@@ -588,6 +589,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     .two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
     @media(max-width:640px){.two-col{grid-template-columns:1fr;}}
   </style>
+  <!-- ENTREPRENEUR LIBRARY — fixed identity cards (monitor design) -->
+  <div class="page" id="page-entcard">
+    <div style="max-width:520px;margin:0 auto;padding:16px 12px 80px;">
+      <div id="entLibHost"></div>
+    </div>
+  </div>
+
   <div class="page" id="page-notes">
     <div style="max-width:900px;margin:0 auto;padding:22px 16px 70px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 4px;">
