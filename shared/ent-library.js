@@ -19,13 +19,14 @@ function _affLines(title) {
   return m ? `${m[1]}<br>${m[2]}` : t;
 }
 
-/* Roadmap rendered in the green "monitor" theme — dark header bar + white step
-   screens each with a dark numbered tab. */
-function _roadmapGreen(steps) {
+/* A content block in the green "monitor" theme — dark header bar + white item
+   "screens", each with a dark tab (number for roadmap, ✦/◈ for affirmations/beliefs). */
+function _greenSection(title, items, mode) {
+  const tab = i => mode === 'num' ? _pad2(i + 1) : (mode === 'belief' ? '◈' : '✦');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
-    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">ROADMAP</div>
-    ${steps.map((s, i) => `<div style="display:flex;align-items:stretch;margin-bottom:10px;">
-      <div style="flex-shrink:0;width:48px;background:#20241f;color:#e9ebe6;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:var(--vault-mono,monospace);">${_pad2(i + 1)}</div>
+    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">${title}</div>
+    ${items.map((s, i) => `<div style="display:flex;align-items:stretch;margin-bottom:10px;">
+      <div style="flex-shrink:0;width:48px;background:#20241f;color:#e9ebe6;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:var(--vault-mono,monospace);">${tab(i)}</div>
       <div style="flex:1;background:#fff;padding:13px 15px;color:#1c1c1c;font-size:14px;line-height:1.5;">${_esc(s)}</div>
     </div>`).join('')}
   </div>`;
@@ -65,22 +66,18 @@ export function renderEntLibrary() {
   const btn = (t, s, on, extra = '') => `<button ${on ? `onclick="${on}"` : ''} style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;cursor:pointer;${extra}"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t}</span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
   const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
 
-  const list = (items, ordered) => `<${ordered ? 'ol' : 'ul'} style="margin:0;padding-left:20px;color:#2b2f45;font-size:14px;line-height:1.7;">${items.map(i => `<li>${_esc(i)}</li>`).join('')}</${ordered ? 'ol' : 'ul'}>`;
-  const panel = (open, inner) => `<div style="background:#fff;border:1px solid #cfcfcf;border-top:none;padding:${open ? '16px 18px' : '0'};max-height:${open ? '2000px' : '0'};overflow:hidden;transition:max-height .25s;">${open ? inner : ''}</div>`;
-
   host.innerHTML = monitor +
     `<div style="background:#1c1c1c;color:#fff;padding:18px;">
        <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
        <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
      </div>
-     ${_open.rm ? _roadmapGreen(c.roadmap) : ''}
+     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
+     ${_greenSection('BELIEFS', c.beliefs, 'belief')}
+     ${_greenSection('ROADMAP', c.roadmap, 'num')}
      <div id="entPlayer" style="display:none;"></div>
      <div style="padding:14px 0;">
        ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
        ${btn('Visualize', '3 min', `entVisualize()`)}
-       ${btn('Affirmations &amp; Beliefs', _open.ab ? 'hide' : 'show', `entTogglePanel('ab')`)}
-       ${panel(_open.ab, `<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin-bottom:8px;">AFFIRMATIONS</div>${list(c.affirmations)}<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin:14px 0 8px;">BELIEFS</div>${list(c.beliefs)}`)}
-       ${btn('Roadmap', _open.rm ? 'hide' : `${c.roadmap.length} steps`, `entTogglePanel('rm')`)}
        ${soon('Meditate', '10 min')}
        ${soon('Gratitude', '5 items')}
        ${soon('Mind loop', 'ambient')}
