@@ -35,15 +35,16 @@ function _greenSection(title, items, mode) {
    successful entrepreneur, the 31 skills grouped into four forces. Same on every card. */
 const _ENT_FORCES = [
   ['LEG WORK', 'Show up and do the unglamorous work, every single day.',
-    ['Disciplined', 'Strong Work Ethic', 'Self-Starter', 'Executing Strategy', 'Executing Concept', 'Managing Time Wisely', 'Organizational Skills', 'Meticulous Planner']],
+    [['Disciplined', 'DISCIPLINED'], ['Strong Work Ethic', 'STRONG WORK ETHIC'], ['Self-Starter', 'SELF STARTER'], ['Executing Strategy', 'EXECUTING STRATEGY'], ['Executing Concept', 'EXECUTING CONCEPT'], ['Managing Time Wisely', 'MANAGING TIME WISELY'], ['Organizational Skills', 'ORGANIZATIONAL SKILLS'], ['Meticulous Planner', 'METICULOUS PLANNER']]],
   ['SMART THINKING', 'See clearly, decide well, and out-think the field.',
-    ['Strategic Thinker', 'Outside the Box', 'Skillful Communicator', 'Good Listener', 'Successful Negotiator', 'Profitable', 'Facilitator', 'Aware of Limitations']],
+    [['Strategic Thinker', 'STRATEGIC THINKER'], ['Outside the Box', 'OUTSIDE BOX'], ['Skillful Communicator', 'SKILLFUL COMMUNICATOR'], ['Good Listener', 'GOOD LISTENER'], ['Successful Negotiator', 'SUCCESSFUL NEGOTIATOR'], ['Profitable', 'PROFITABLE'], ['Facilitator', 'FACILITATOR'], ['Aware of Limitations', 'AWARE OF LIMITATIONS']]],
   ['DRIVE', 'The fire that pulls you forward and draws people in.',
-    ['Passionate', 'Self-Confident', 'Competitive', 'Risk Taker', 'Self Promoter', 'Great Salesperson', 'Charming', 'Quality People']],
+    [['Passionate', 'PASSIONATE'], ['Self-Confident', 'SELF CONFIDENT'], ['Competitive', 'COMPETITIVE'], ['Risk Taker', 'RISK TAKER'], ['Self Promoter', 'SELF PROMOTER'], ['Great Salesperson', 'GREAT SALES PERSON'], ['Charming', 'CHARMING'], ['Quality People', 'QUALITY PEOPLE']]],
   ['GRIT & DETERMINATION', 'The character and staying power to outlast the hard days.',
-    ['Determined to Succeed', 'Living the Brand', 'Empathetic', 'Respected Manager', 'Comfortable Delegating', 'Fairness', 'Balance in Life']],
+    [['Determined to Succeed', 'DETERMINED TO SUCCEED'], ['Living the Brand', 'LIVING THE BRAND'], ['Empathetic', 'EMPATHETIC'], ['Respected Manager', 'RESPECTED MANAGER'], ['Comfortable Delegating', 'COMFORTABLE DELEGATING'], ['Fairness', 'FAIRNESS'], ['Balance in Life', 'BALANCE IN LIFE']]],
 ];
 function _entOverview() {
+  const link = ([label, key]) => `<span onclick="entGoToCard('${key}')" style="cursor:pointer;text-decoration:none;">${label}</span>`;
   return `<div style="background:#1c1c1c;color:#fff;padding:20px 22px;">
     <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">THE SUCCESSFUL ENTREPRENEUR</div>
     <p style="margin:0 0 16px;font-size:16px;line-height:1.55;">A successful entrepreneur isn't one trait — it's a stack of them. These 31 identity skills resolve into four forces. Master the balance and the business follows.</p>
@@ -51,10 +52,19 @@ function _entOverview() {
       ${_ENT_FORCES.map(([name, desc, skills]) => `<div>
         <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:15px;margin-bottom:3px;">${name}</div>
         <div style="font-size:14px;line-height:1.5;opacity:.85;margin-bottom:6px;">${desc}</div>
-        <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.join(' &middot; ')}</div>
+        <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.map(link).join(' &middot; ')}</div>
       </div>`).join('')}
     </div>
   </div>`;
+}
+/* Jump straight to a card by its key (from the overview skill links). */
+export function entGoToCard(key) {
+  const idx = ENT_CARDS.findIndex(c => c.key === key);
+  if (idx < 0) return;
+  _entIdx = idx;
+  _open.ab = false; _open.rm = false;
+  renderEntLibrary();
+  window.scrollTo(0, 0);
 }
 
 export function renderEntLibrary() {
