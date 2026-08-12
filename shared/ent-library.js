@@ -31,6 +31,32 @@ function _greenSection(title, items, mode) {
   </div>`;
 }
 
+/* Shared overview shown where the per-card directive used to be: the make-up of a
+   successful entrepreneur, the 31 skills grouped into four forces. Same on every card. */
+const _ENT_FORCES = [
+  ['LEG WORK', 'Show up and do the unglamorous work, every single day.',
+    ['Disciplined', 'Strong Work Ethic', 'Self-Starter', 'Executing Strategy', 'Executing Concept', 'Managing Time Wisely', 'Organizational Skills', 'Meticulous Planner']],
+  ['SMART THINKING', 'See clearly, decide well, and out-think the field.',
+    ['Strategic Thinker', 'Outside the Box', 'Skillful Communicator', 'Good Listener', 'Successful Negotiator', 'Profitable', 'Facilitator', 'Aware of Limitations']],
+  ['DRIVE', 'The fire that pulls you forward and draws people in.',
+    ['Passionate', 'Self-Confident', 'Competitive', 'Risk Taker', 'Self Promoter', 'Great Salesperson', 'Charming', 'Quality People']],
+  ['GRIT & DETERMINATION', 'The character and staying power to outlast the hard days.',
+    ['Determined to Succeed', 'Living the Brand', 'Empathetic', 'Respected Manager', 'Comfortable Delegating', 'Fairness', 'Balance in Life']],
+];
+function _entOverview() {
+  return `<div style="background:#1c1c1c;color:#fff;padding:20px 22px;">
+    <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">THE SUCCESSFUL ENTREPRENEUR</div>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.55;">A successful entrepreneur isn't one trait — it's a stack of them. These 31 identity skills resolve into four forces. Master the balance and the business follows.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px 26px;">
+      ${_ENT_FORCES.map(([name, desc, skills]) => `<div>
+        <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:15px;margin-bottom:3px;">${name}</div>
+        <div style="font-size:14px;line-height:1.5;opacity:.85;margin-bottom:6px;">${desc}</div>
+        <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.join(' &middot; ')}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
 export function renderEntLibrary() {
   const host = document.getElementById('entLibHost');
   if (!host) return;
@@ -67,10 +93,7 @@ export function renderEntLibrary() {
   const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
 
   host.innerHTML = monitor +
-    `<div style="background:#1c1c1c;color:#fff;padding:18px;">
-       <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
-       <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
-     </div>
+    `${_entOverview()}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_entNotesSection(c)}
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
