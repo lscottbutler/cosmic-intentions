@@ -2633,4 +2633,16 @@ input, textarea, select {
 #lp1 *, #lp1 *::before, #page-landing *, #page-landing *::before { border-radius: 0 !important; }
 #lp1 .pillar-txt li::before, #page-landing .lp-step .n,
 #lp1 [style*="border-radius:50%"], #page-landing [style*="border-radius:50%"] { border-radius: 50% !important; }
-[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
+[style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
+
+/* ── REUSABLE QUOTE FRAME (see standalone/quote-frame-proto.html) ─────────────
+   Use: quoteFrameHTML(text, author, imgUrl)  — or write the markup directly.
+   Set backdrop with inline  style="--qf-img:url('...')" (falls back to a
+   colourful gradient). Everything scales with the text. */
+.quote-frame{position:relative;overflow:hidden;padding:6%;isolation:isolate;--qf-teal:#1E7E96;--qf-green:#8FA977;--qf-ink:#1c1c1c;}
+.quote-frame__bg{position:absolute;inset:0;z-index:-1;background:var(--qf-img,none),radial-gradient(circle at 15% 25%,#e0102b 0 8%,transparent 9%),radial-gradient(circle at 80% 20%,#2f6fd0 0 7%,transparent 8%),radial-gradient(circle at 30% 80%,#f5c518 0 8%,transparent 9%),radial-gradient(circle at 70% 75%,#6a4fb0 0 7%,transparent 8%),repeating-conic-gradient(from 0deg,#6a8fc0 0 25%,#c9b26a 0 50%) 0 0/90px 90px;background-size:cover;background-position:center;filter:blur(6px) saturate(1.1);transform:scale(1.1);}
+.quote-frame__screen{position:relative;background:#fff;border:12px solid var(--qf-teal);border-radius:26px/74px;padding:7% 8%;box-shadow:0 10px 30px rgba(0,0,0,.35);}
+.quote-frame__mark{color:var(--qf-green);font-weight:900;font-size:clamp(44px,9vw,80px);line-height:.2;display:inline-block;}
+.quote-frame__mark--close{margin-left:6px;transform:translateY(.15em);}
+.quote-frame__text{font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:clamp(20px,4.2vw,38px);line-height:1.28;color:var(--qf-ink);margin:6px 0 0;}
+.quote-frame__by{color:var(--qf-green);text-align:right;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:clamp(14px,2.4vw,22px);margin-top:14px;}
