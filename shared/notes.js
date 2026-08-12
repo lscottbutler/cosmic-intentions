@@ -202,6 +202,40 @@ export function notesSaveField(el) {
   }
 }
 
+/* Quick-add panel at the top of My Thoughts: one input per category (A-Z),
+   toggled by the "＋ ADD A THOUGHT" button, so you can add to any bucket fast. */
+export function notesToggleQuickAdd() {
+  const box = document.getElementById('notesQuickAdd');
+  if (!box) return;
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }   // hide if open
+  if (box.dataset.built !== '1') {
+    const cats = [...NOTE_CATS].sort((a, b) => a.label.localeCompare(b.label));   // A–Z
+    box.innerHTML =
+      `<div style="background:#1f1f1f;border:1px solid var(--border,#333);border-radius:10px;padding:14px 16px;margin:0 0 18px;">` +
+        `<div style="font-weight:800;font-size:13px;letter-spacing:.5px;color:#fff;text-transform:uppercase;margin-bottom:12px;">Quick add a thought</div>` +
+        cats.map(c => `
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="width:118px;flex-shrink:0;font-weight:800;font-size:12px;text-transform:uppercase;color:#fff;letter-spacing:.5px;">${esc(c.label)}</span>
+            <input type="text" data-add="${c.key}" placeholder="${esc(c.ph)}" onkeydown="if(event.key==='Enter'){event.preventDefault();notesQuickAddSave(this);}"
+              style="flex:1;min-width:0;box-sizing:border-box;padding:9px 11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;">
+            <button onclick="notesQuickAddSave(this.parentElement.querySelector('input'))" style="flex-shrink:0;background:#e0102b;border:none;border-radius:7px;color:#fff;font-weight:800;font-size:12px;padding:9px 16px;cursor:pointer;">Add</button>
+          </div>`).join('') +
+      `</div>`;
+    box.dataset.built = '1';
+  }
+  box.style.display = '';
+  const first = box.querySelector('input'); if (first) first.focus();
+}
+
+/* Add from a quick-add input (its data-add carries the category), then clear +
+   refocus so you can rattle off several in a row. */
+export function notesQuickAddSave(el) {
+  if (!el || !(el.value || '').trim()) return;
+  notesSaveField(el);   // data-add present → pushes the note + re-renders #notesSections
+  el.value = '';
+  el.focus();
+}
+
 /* Link (or unlink) a note to a goal. Stored on the note; the goal's Visualize
    page reads it back to show "Notes for this goal". No re-render needed —
    the <select> already reflects the new value. */

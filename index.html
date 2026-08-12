@@ -590,8 +590,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   </style>
   <div class="page" id="page-notes">
     <div style="max-width:900px;margin:0 auto;padding:22px 16px 70px;">
-      <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0 0 4px;">My Thoughts</h1>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 4px;">
+        <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0;">My Thoughts</h1>
+        <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
+      </div>
       <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 6px;line-height:1.5;">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface randomly around the site.</p>
+      <div id="notesQuickAdd" style="display:none;"></div>
       <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
       <div id="notesSections"></div>
     </div>
