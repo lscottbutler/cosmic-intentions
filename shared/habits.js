@@ -236,8 +236,8 @@ export function renderHabits() {
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
     if (!items.length) return;
     body += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;padding:7px 11px;border-radius:7px;margin:12px 0 6px;">${CAT_LABEL(cat)}</div>`;
-    // Single-column list of habit rows.
-    body += `<div style="display:grid;grid-template-columns:1fr;gap:0 12px;">` + items.map(h => _habitRow(h, !!d[h.id])).join('') + `</div>`;
+    // Two-column grid of habit rows.
+    body += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">` + items.map(h => _habitRow(h, !!d[h.id])).join('') + `</div>`;
   });
 
   el.innerHTML = `
@@ -279,7 +279,7 @@ export function renderPBHabitList() {
       html += `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 2px 6px;">No habits here yet — set a habit's category to "${cat}".</div>`;
       return;
     }
-    html += `<div class="two-col" style="gap:8px;">`;
+    html += `<div style="display:grid;grid-template-columns:1fr;gap:8px;">`;
     items.forEach((h, gi) => {
       html += `
       <div style="background:#2E2E2E;padding:11px 12px;border-radius:10px;">
