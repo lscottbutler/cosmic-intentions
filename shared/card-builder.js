@@ -806,13 +806,13 @@ export function renderPBIntentionList() {
       <div style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;min-width:0;">Goal ${goalLetter(i, idx)}</div>
         <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
-          <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:11px;font-weight:800;letter-spacing:.5px;color:${shade.text};opacity:.9;">AI</span>
+          <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
           <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
-            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#34C759' : 'rgba(0,0,0,.35)'};transition:background .2s;">
+            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#111' : '#bbb'};transition:background .2s;">
             <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
           </button>
           <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
-            style="background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;padding:0;">✕</button>
+            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;line-height:1;padding:0;">✕</button>
         </div>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;">
