@@ -2645,4 +2645,16 @@ input, textarea, select {
 .quote-frame__mark{color:var(--qf-green);font-weight:900;font-size:clamp(44px,9vw,80px);line-height:.2;display:inline-block;}
 .quote-frame__mark--close{margin-left:6px;transform:translateY(.15em);}
 .quote-frame__text{font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:clamp(20px,4.2vw,38px);line-height:1.28;color:var(--qf-ink);margin:6px 0 0;}
-.quote-frame__by{color:var(--qf-green);text-align:right;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:clamp(14px,2.4vw,22px);margin-top:14px;}
+.quote-frame__by{color:var(--qf-green);text-align:right;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:clamp(14px,2.4vw,22px);margin-top:14px;}
+
+/* ── AFFIRMATION SPLIT CARD (My Thoughts) — "I AM" + text on the left, an image
+   on the right, maroon frame. Image set = images/50-50/. ── */
+.aff-card{position:relative;display:flex;background:#fff;border:14px solid #6e1533;min-height:200px;margin-bottom:16px;}
+.aff-card__text{flex:1 1 55%;min-width:0;padding:26px 28px;display:flex;flex-direction:column;justify-content:center;}
+.aff-card__iam{color:#c0246a;font-style:italic;font-weight:900;font-size:30px;letter-spacing:2px;margin:0 0 14px;line-height:1;}
+.aff-card__body{font-weight:800;text-transform:uppercase;font-size:clamp(16px,2.4vw,24px);line-height:1.45;color:#1c1c1c;letter-spacing:1px;margin:0;
+  border:none;resize:none;width:100%;background:transparent;font-family:inherit;overflow:hidden;padding:0;box-sizing:border-box;}
+.aff-card__body:focus{outline:2px solid #c0246a;outline-offset:4px;}
+.aff-card__img{flex:1 1 45%;background-size:cover;background-position:center;background-color:#eee;}
+.aff-card__x{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;z-index:2;}
+@media(max-width:560px){.aff-card{flex-direction:column;}.aff-card__img{min-height:160px;}}

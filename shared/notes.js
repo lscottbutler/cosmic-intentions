@@ -19,6 +19,23 @@ export const NOTE_CATS = [
 ];
 const CAT_LABEL = Object.fromEntries(NOTE_CATS.map(c => [c.key, c.label]));
 
+/* Photo set for the affirmation split-cards (images/50-50/). Cycled by index. */
+const AFF_IMAGES = ["[000] 1010.jpg","[000] 1020.jpg","[000] 1030.jpg","[000] 1040.jpg","[000] 1060.jpg","[000] 1070.jpg","[000] 1080.jpg","[000] 1090.jpg","[000] 1100.jpg","[000] 1160.jpg","[000] 1170.jpg","[000] 1180.jpg","[000] 1200.jpg","[000] 1210.jpg","[000] 1230.jpg","[000] 1270.jpg","[000] 1280.jpg","[000] 1290.jpg","[000] 1300.jpg","[000] 1330.jpg","[000] 1340.jpg","[000] 1350.jpg","[000] 1370.jpg","[000] 1380.jpg","[000] 1390.jpg","[000] 1410.jpg","[000] 1420.jpg","[000] 1450.jpg","[000] 1460.jpg","[000] 1500.jpg","[000] 1510.jpg","[000] 1550.jpg","[000] 1560.jpg","[000] 1570.jpg","[000] 1660.jpg","[000] 1670.jpg","[000] 1690.jpg","[000] 1710.jpg","[000] 1720.jpg","[000] 1730.jpg","[000] 1740.jpg","[000] 1750.jpg","[000] 1760.jpg","[000] 1770.jpg","[000] 1880.jpg","[000] 1940.jpg","[000] 1950.jpg","[000] 1980.jpg","[000] 1990.jpg","[000] 2000.jpg","[000] 2010.jpg","[000] 2040.jpg","[000] 2170.jpg","[000] 2230.jpg","[000] 2260.jpg","[000] 2300.jpg","[000] 2330.jpg","[000] 2340.jpg","[000] 2490.jpg","[000] 2500.jpg","[000] 2510.jpg","[000] 2560.jpg","[000] 2580.jpg","[000] 480.jpg","[000] 570.jpg","[000] 580.jpg","[000] 670.jpg","[000] 690.jpg","[000] 700.jpg","[000] 710.jpg","[000] 720.jpg","[000] 740.jpg","[000] 810.jpg","[000] 830.jpg","[000] 840.jpg","[000] 940.jpg","[000] 950.jpg","[000] 970.jpg","[000] 990.jpg"];
+
+/* Affirmation split-card: "I AM" + editable text on the left, a 50-50 image on
+   the right, maroon frame. Text stays editable (same save/delete as other notes). */
+function _affCard(n, i, ph) {
+  const img = 'images/50-50/' + encodeURIComponent(AFF_IMAGES[i % AFF_IMAGES.length]);
+  return `<div class="aff-card">
+    <button class="aff-card__x" onclick="notesDelete('${n.id}')" title="Delete">&times;</button>
+    <div class="aff-card__text">
+      <div class="aff-card__iam">I AM</div>
+      <textarea class="aff-card__body" data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(ph)}">${esc(n.text || '')}</textarea>
+    </div>
+    <div class="aff-card__img" style="background-image:url('${img}')"></div>
+  </div>`;
+}
+
 /* ── storage ─────────────────────────────────────────────────── */
 export function readNotes() {
   try { const a = JSON.parse(localStorage.getItem('ci_notes') || '[]'); return Array.isArray(a) ? a : []; }
@@ -99,7 +116,9 @@ export function renderNotesPage() {
     // NOTES entries can be linked to one of the user's goals; that note then
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
     const isNoteCat = c.key === 'note';
-    const rows = mine.map(n => {
+    const rows = c.key === 'affirmation'
+      ? mine.map((n, i) => _affCard(n, i, c.ph)).join('')
+      : mine.map(n => {
       const goalSel = isNoteCat ? `
         <select onchange="notesSaveGoal('${n.id}',this.value)" title="Associate this note with a goal"
           style="width:100%;box-sizing:border-box;margin-top:6px;padding:9px 11px;border:none;border-radius:9px;font-size:13px;color:#1a1a1a;background:#fff;cursor:pointer;">
