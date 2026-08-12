@@ -822,11 +822,11 @@ export function renderPBIntentionList() {
       <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
           <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">START</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">STARTED</div>
             <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
           </div>
           <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">END</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">COMPLETED</div>
             <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
           </div>
           <div style="flex:1;min-width:130px;">
