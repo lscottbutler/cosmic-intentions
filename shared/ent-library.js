@@ -19,6 +19,18 @@ function _affLines(title) {
   return m ? `${m[1]}<br>${m[2]}` : t;
 }
 
+/* Roadmap rendered in the green "monitor" theme — dark header bar + white step
+   screens each with a dark numbered tab. */
+function _roadmapGreen(steps) {
+  return `<div style="background:#8FA977;padding:16px 18px 20px;">
+    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">ROADMAP</div>
+    ${steps.map((s, i) => `<div style="display:flex;align-items:stretch;margin-bottom:10px;">
+      <div style="flex-shrink:0;width:48px;background:#20241f;color:#e9ebe6;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:var(--vault-mono,monospace);">${_pad2(i + 1)}</div>
+      <div style="flex:1;background:#fff;padding:13px 15px;color:#1c1c1c;font-size:14px;line-height:1.5;">${_esc(s)}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
 export function renderEntLibrary() {
   const host = document.getElementById('entLibHost');
   if (!host) return;
@@ -68,7 +80,9 @@ export function renderEntLibrary() {
        ${btn('Affirmations &amp; Beliefs', _open.ab ? 'hide' : 'show', `entTogglePanel('ab')`)}
        ${panel(_open.ab, `<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin-bottom:8px;">AFFIRMATIONS</div>${list(c.affirmations)}<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin:14px 0 8px;">BELIEFS</div>${list(c.beliefs)}`)}
        ${btn('Roadmap', _open.rm ? 'hide' : `${c.roadmap.length} steps`, `entTogglePanel('rm')`)}
-       ${panel(_open.rm, list(c.roadmap, true))}
+     </div>
+     ${_open.rm ? _roadmapGreen(c.roadmap) : ''}
+     <div style="padding:0 0 14px;">
        ${soon('Meditate', '10 min')}
        ${soon('Gratitude', '5 items')}
        ${soon('Mind loop', 'ambient')}
