@@ -71,10 +71,10 @@ export function renderEntLibrary() {
        <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
        <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
      </div>
-     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
-     ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_entNotesSection(c)}
+     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
+     ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      <div id="entPlayer" style="display:none;"></div>`;
 }
 
