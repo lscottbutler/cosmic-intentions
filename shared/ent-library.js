@@ -73,6 +73,7 @@ export function renderEntLibrary() {
        <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
        <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
      </div>
+     ${_open.rm ? _roadmapGreen(c.roadmap) : ''}
      <div id="entPlayer" style="display:none;"></div>
      <div style="padding:14px 0;">
        ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
@@ -80,9 +81,6 @@ export function renderEntLibrary() {
        ${btn('Affirmations &amp; Beliefs', _open.ab ? 'hide' : 'show', `entTogglePanel('ab')`)}
        ${panel(_open.ab, `<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin-bottom:8px;">AFFIRMATIONS</div>${list(c.affirmations)}<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin:14px 0 8px;">BELIEFS</div>${list(c.beliefs)}`)}
        ${btn('Roadmap', _open.rm ? 'hide' : `${c.roadmap.length} steps`, `entTogglePanel('rm')`)}
-     </div>
-     ${_open.rm ? _roadmapGreen(c.roadmap) : ''}
-     <div style="padding:0 0 14px;">
        ${soon('Meditate', '10 min')}
        ${soon('Gratitude', '5 items')}
        ${soon('Mind loop', 'ambient')}
