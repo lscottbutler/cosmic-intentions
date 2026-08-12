@@ -92,8 +92,9 @@ export function renderNotesPage() {
   const notes = readNotes();
   const total = notes.length;
 
-  host.innerHTML = `<div class="two-col">` + NOTE_CATS.map(c => {
-    const mine = notes.filter(n => n.cat === c.key);
+  host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + NOTE_CATS.map(c => {
+    const mine = notes.filter(n => n.cat === c.key)
+      .sort((a, b) => (a.text || '').localeCompare(b.text || '', undefined, { sensitivity: 'base' }));
     const singular = esc(c.label.replace(/s$/, ''));   // "Reminders" → "Reminder"
     // NOTES entries can be linked to one of the user's goals; that note then
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
