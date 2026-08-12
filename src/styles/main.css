@@ -1238,6 +1238,7 @@ textarea.field-input.tall { min-height: 110px; }
   .page-wrap { max-width: 640px; margin-left: auto; margin-right: auto; }
   /* Two-column pages must NOT be crushed to the 640px reading width */
   .page-wrap:has(#page-home.active),
+  .page-wrap:has(#page-entcard.active),
   .page-wrap:has(#page-dashboard.active) { max-width: 1280px; }
 }
 
