@@ -75,11 +75,7 @@ export function renderEntLibrary() {
      ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_entNotesSection(c)}
-     <div id="entPlayer" style="display:none;"></div>
-     <div style="padding:14px 0;">
-       ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
-       ${btn('Visualize', '3 min', `entVisualize()`)}
-     </div>`;
+     <div id="entPlayer" style="display:none;"></div>`;
 }
 
 export function entNav(dir) {
