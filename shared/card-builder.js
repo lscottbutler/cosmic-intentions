@@ -822,15 +822,15 @@ export function renderPBIntentionList() {
       <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
           <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">START</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">START</div>
             <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
           </div>
           <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">END</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">END</div>
             <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
           </div>
           <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">CATEGORY</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">CATEGORY</div>
             <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
           </div>
         </div>
