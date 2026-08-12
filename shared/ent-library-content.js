@@ -6,7 +6,7 @@
 
    Card order + labels mirror netlify/functions/_entrepreneur-library.js. */
 
-export const ENT_CARD_TYPE = 'WINNING ATTITUDE';
+export const ENT_CARD_TYPE = 'ENTREPRENEUR LIBRARY';
 
 export const ENT_CARDS = [
   { n: 1, key: 'DISCIPLINED', title: 'I AM DISCIPLINED',
