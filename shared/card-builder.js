@@ -820,21 +820,20 @@ export function renderPBIntentionList() {
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
-        <div style="${lbl}">START &amp; END DATES</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="min-width:0;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
+          <div style="flex:1;min-width:130px;">
+            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">START</div>
             <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
-            <div style="color:#fff;font-size:11px;margin-top:4px;opacity:.9;">Start</div>
           </div>
-          <div style="min-width:0;">
+          <div style="flex:1;min-width:130px;">
+            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">END</div>
             <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
-            <div style="color:#fff;font-size:11px;margin-top:4px;opacity:.9;">End</div>
+          </div>
+          <div style="flex:1;min-width:130px;">
+            <div style="color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-bottom:5px;opacity:.9;">CATEGORY</div>
+            <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
           </div>
         </div>
-      </div>
-      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
-        <div style="${lbl}">CATEGORY</div>
-        <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
       </div>
     </div>`;
   }).join('');
