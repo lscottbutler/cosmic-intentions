@@ -74,6 +74,7 @@ export function renderEntLibrary() {
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
      ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
+     ${_entNotesSection(c)}
      <div id="entPlayer" style="display:none;"></div>
      <div style="padding:14px 0;">
        ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
@@ -90,6 +91,26 @@ export function entNav(dir) {
   renderEntLibrary();
 }
 export function entTogglePanel(which) { _open[which] = !_open[which]; renderEntLibrary(); }
+
+/* ── MY NOTES — the user's OWN note per card (per-user, saved locally). The fixed
+   content above is shared/identical for the community; this is personal. ── */
+function _entNotes() { try { return JSON.parse(localStorage.getItem('ci_ent_notes') || '{}'); } catch (e) { return {}; } }
+function _entNotesSection(c) {
+  const note = _esc(_entNotes()[c.key] || '');
+  return `<div style="background:#8FA977;padding:16px 18px 20px;">
+    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">MY NOTES</div>
+    <textarea onchange="entSaveNote(this)" placeholder="Add your own note on this card — this one is just for you." style="width:100%;box-sizing:border-box;min-height:110px;resize:vertical;background:#fff;border:none;padding:14px 15px;font-size:14px;line-height:1.6;color:#1c1c1c;font-family:inherit;">${note}</textarea>
+  </div>`;
+}
+export function entSaveNote(el) {
+  if (!el) return;
+  const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
+  const all = _entNotes();
+  const v = (el.value || '').slice(0, 2000);
+  if (v) all[c.key] = v; else delete all[c.key];
+  try { localStorage.setItem('ci_ent_notes', JSON.stringify(all)); } catch (e) {}
+  if (typeof toast === 'function') toast('✦ Note saved', 'success');
+}
 
 /* Visualize this card: feed the fixed card into the existing 3-min viz player and
    embed it inline. Reuses players/3min-viz.html (reads the ?g= title). */
