@@ -20,13 +20,12 @@ function _affLines(title) {
 }
 
 /* A content block in the green "monitor" theme — dark header bar + white item
-   "screens", each with a dark tab (number for roadmap, ✦/◈ for affirmations/beliefs). */
+   "screens", each with a dark tab holding a large white number. */
 function _greenSection(title, items, mode) {
-  const tab = i => mode === 'num' ? _pad2(i + 1) : (mode === 'belief' ? '◈' : '✦');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
     <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">${title}</div>
     ${items.map((s, i) => `<div style="display:flex;align-items:stretch;margin-bottom:10px;">
-      <div style="flex-shrink:0;width:48px;background:#20241f;color:#e9ebe6;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:var(--vault-mono,monospace);">${tab(i)}</div>
+      <div style="flex-shrink:0;width:56px;background:#20241f;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;font-family:var(--vault-mono,monospace);">${i + 1}</div>
       <div style="flex:1;background:#fff;padding:13px 15px;color:#1c1c1c;font-size:14px;line-height:1.5;">${_esc(s)}</div>
     </div>`).join('')}
   </div>`;
