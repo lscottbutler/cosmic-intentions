@@ -791,10 +791,10 @@ export function renderPBIntentionList() {
     { value: 'creative',     label: 'Create'       },
     { value: 'growth',       label: 'Growth'       },
   ];
-  const fld = 'width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
+  const fld = 'width:100%;box-sizing:border-box;padding:8px 12px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
   const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
-  // Roomier, multi-line goal box (10pt, ~3 lines of space) so long "I AM…" goals show in full.
-  const goalFld = 'width:100%;box-sizing:border-box;padding:14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:78px;';
+  // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
+  const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
   el.innerHTML = intentions.map((i, idx) => {
     const optHtml = catOptions.map(o =>
       `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
@@ -816,7 +816,7 @@ export function renderPBIntentionList() {
         </div>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;">
-        <textarea maxlength="150" rows="3"
+        <textarea maxlength="150" rows="2"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
