@@ -61,9 +61,10 @@ export function renderEntLibrary() {
        <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">DIRECTIVE</div>
        <p style="margin:0;font-size:18px;line-height:1.5;">${_esc(c.directive)}</p>
      </div>
+     <div id="entPlayer" style="display:none;"></div>
      <div style="padding:14px 0;">
        ${btn('Take action now', 'logs a win', `entTakeAction()`, 'background:#D8402E;border:none;').replace('color:#2b2f45','color:#fff').replace('color:#8a8a8a','color:#ffe')}
-       ${soon('Visualize', '3 min')}
+       ${btn('Visualize', '3 min', `entVisualize()`)}
        ${btn('Affirmations &amp; Beliefs', _open.ab ? 'hide' : 'show', `entTogglePanel('ab')`)}
        ${panel(_open.ab, `<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin-bottom:8px;">AFFIRMATIONS</div>${list(c.affirmations)}<div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:1px;font-size:11px;color:#2b2f45;margin:14px 0 8px;">BELIEFS</div>${list(c.beliefs)}`)}
        ${btn('Roadmap', _open.rm ? 'hide' : `${c.roadmap.length} steps`, `entTogglePanel('rm')`)}
@@ -80,6 +81,29 @@ export function entNav(dir) {
   renderEntLibrary();
 }
 export function entTogglePanel(which) { _open[which] = !_open[which]; renderEntLibrary(); }
+
+/* Visualize this card: feed the fixed card into the existing 3-min viz player and
+   embed it inline. Reuses players/3min-viz.html (reads the ?g= title). */
+export function entVisualize() {
+  const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
+  try {
+    localStorage.setItem('ci_goal_title', c.title);
+    localStorage.setItem('ci_ass_slides', JSON.stringify(c.affirmations || []));
+    localStorage.removeItem('ci_goal_image');
+  } catch (e) {}
+  const host = document.getElementById('entPlayer');
+  if (!host) return;
+  const src = `players/3min-viz.html?g=${encodeURIComponent(c.title)}&_=${Date.now()}`;
+  host.innerHTML =
+    `<iframe src="${src}" title="Visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:560px;border:0;display:block;background:#000;"></iframe>` +
+    `<button onclick="entClosePlayer()" style="width:100%;background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;padding:12px;cursor:pointer;">CLOSE PLAYER</button>`;
+  host.style.display = '';
+  host.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+export function entClosePlayer() {
+  const h = document.getElementById('entPlayer');
+  if (h) { h.innerHTML = ''; h.style.display = 'none'; }
+}
 export function entTakeAction() {
   const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
   try {
