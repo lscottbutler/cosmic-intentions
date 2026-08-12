@@ -2628,4 +2628,9 @@ input, textarea, select {
    delete this block. */
 :root { --radius: 0px; }
 [style*="border-radius"]:not([style*="border-radius:50%"]):not([style*="border-radius: 50%"]) { border-radius: 0 !important; }
+/* Landing pages (#lp1 embedded logged-out home + standalone #page-landing) use
+   their own scoped classes — square those too, then restore their circles. */
+#lp1 *, #lp1 *::before, #page-landing *, #page-landing *::before { border-radius: 0 !important; }
+#lp1 .pillar-txt li::before, #page-landing .lp-step .n,
+#lp1 [style*="border-radius:50%"], #page-landing [style*="border-radius:50%"] { border-radius: 50% !important; }
 [style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
