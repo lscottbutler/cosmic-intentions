@@ -118,25 +118,77 @@ export function entNav(dir) {
 }
 export function entTogglePanel(which) { _open[which] = !_open[which]; renderEntLibrary(); }
 
-/* ── MY NOTES — the user's OWN note per card (per-user, saved locally). The fixed
-   content above is shared/identical for the community; this is personal. ── */
+/* ── MY NOTES — the user's OWN notes per card (per-user, saved locally). Multiple
+   notes, two-column, each with a ⋯ menu to reorder (prioritize) or delete. The
+   fixed content above is shared/identical for the community; this is personal. ── */
+let _noteMenuOpen = null;
 function _entNotes() { try { return JSON.parse(localStorage.getItem('ci_ent_notes') || '{}'); } catch (e) { return {}; } }
+function _cardNotes(key) {
+  const raw = _entNotes()[key];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string' && raw.trim()) return [{ id: 'legacy', text: raw }];   // migrate old single note
+  return [];
+}
+function _saveCardNotes(key, arr) {
+  const all = _entNotes();
+  if (arr.length) all[key] = arr; else delete all[key];
+  try { localStorage.setItem('ci_ent_notes', JSON.stringify(all)); } catch (e) {}
+}
+function _noteId() { return 'n' + Date.now().toString(36) + Math.floor(Math.random() * 1e5).toString(36); }
+
 function _entNotesSection(c) {
-  const note = _esc(_entNotes()[c.key] || '');
+  const notes = _cardNotes(c.key);
+  const mBtn = 'display:block;width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;';
+  const grow = "this.style.height='auto';this.style.height=this.scrollHeight+'px';";
+  const cards = notes.map((n, i) => `
+    <div style="position:relative;background:#fff;padding:14px 42px 12px 15px;">
+      <button onclick="entNoteMenu('${n.id}')" title="Organize / prioritize" style="position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:#555;padding:2px 4px;">&#8942;</button>
+      <textarea onchange="entNoteSave('${n.id}',this)" oninput="${grow}" placeholder="Type a note…" style="width:100%;box-sizing:border-box;border:none;resize:none;overflow:hidden;font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;background:transparent;min-height:64px;outline:none;">${_esc(n.text || '')}</textarea>
+      ${_noteMenuOpen === n.id ? `<div style="position:absolute;top:34px;right:8px;background:#20241f;z-index:6;box-shadow:0 6px 18px rgba(0,0,0,.45);min-width:160px;">
+        ${i > 0 ? `<button onclick="entNoteMove('${n.id}',-1)" style="${mBtn}">&#9650;&nbsp; Prioritize</button>` : ''}
+        ${i < notes.length - 1 ? `<button onclick="entNoteMove('${n.id}',1)" style="${mBtn}">&#9660;&nbsp; Move down</button>` : ''}
+        <button onclick="entNoteDelete('${n.id}')" style="${mBtn}color:#ff8a8a;">&times;&nbsp; Delete</button>
+      </div>` : ''}
+    </div>`).join('');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
     <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">MY NOTES</div>
-    <textarea onchange="entSaveNote(this)" placeholder="Add your own note on this card — this one is just for you." style="width:100%;box-sizing:border-box;min-height:110px;resize:vertical;background:#fff;border:none;padding:14px 15px;font-size:14px;line-height:1.6;color:#1c1c1c;font-family:inherit;">${note}</textarea>
+    ${notes.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:12px;align-items:start;">${cards}</div>` : ''}
+    <button onclick="entAddNote()" style="display:block;width:100%;text-align:center;background:transparent;border:2px dashed #5c6158;color:#3a3f34;font-weight:800;letter-spacing:1px;padding:13px;cursor:pointer;font-size:13px;">&#43; ADD A NOTE</button>
   </div>`;
 }
-export function entSaveNote(el) {
-  if (!el) return;
-  const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
-  const all = _entNotes();
-  const v = (el.value || '').slice(0, 2000);
-  if (v) all[c.key] = v; else delete all[c.key];
-  try { localStorage.setItem('ci_ent_notes', JSON.stringify(all)); } catch (e) {}
-  if (typeof toast === 'function') toast('✦ Note saved', 'success');
+export function entAddNote() {
+  const c = ENT_CARDS[_entIdx]; if (!c) return;
+  const arr = _cardNotes(c.key);
+  arr.push({ id: _noteId(), text: '' });
+  _saveCardNotes(c.key, arr);
+  _noteMenuOpen = null;
+  renderEntLibrary();
+  const ts = document.querySelectorAll('#entLibHost textarea');
+  if (ts.length) ts[ts.length - 1].focus();
 }
+export function entNoteSave(id, el) {
+  const c = ENT_CARDS[_entIdx]; if (!c || !el) return;
+  const arr = _cardNotes(c.key);
+  const n = arr.find(x => x.id === id);
+  if (n) { n.text = (el.value || '').slice(0, 2000); _saveCardNotes(c.key, arr); }
+}
+export function entNoteMove(id, dir) {
+  const c = ENT_CARDS[_entIdx]; if (!c) return;
+  const arr = _cardNotes(c.key);
+  const i = arr.findIndex(x => x.id === id); if (i < 0) return;
+  const j = i + dir; if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  _saveCardNotes(c.key, arr);
+  _noteMenuOpen = null;
+  renderEntLibrary();
+}
+export function entNoteDelete(id) {
+  const c = ENT_CARDS[_entIdx]; if (!c) return;
+  _saveCardNotes(c.key, _cardNotes(c.key).filter(x => x.id !== id));
+  _noteMenuOpen = null;
+  renderEntLibrary();
+}
+export function entNoteMenu(id) { _noteMenuOpen = (_noteMenuOpen === id) ? null : id; renderEntLibrary(); }
 
 /* Visualize this card: feed the fixed card into the existing 3-min viz player and
    embed it inline. Reuses players/3min-viz.html (reads the ?g= title). */
