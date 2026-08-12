@@ -1,5 +1,6 @@
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
+import { ENT_CARDS } from './shared/ent-library-content.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
@@ -2088,6 +2089,44 @@ export function renderVizLibrary() {
   }).join('');
 }
 
+/* ── GOAL → ENTREPRENEUR-SKILL MATCHING ──────────────────────────────────────
+   On demand, run a goal through the 31-skill library and tag it with the 3-5
+   skills it most depends on. Shown on the goal's visualization page. Stored per
+   goal id in ci_goal_skills (local for now; Supabase sync is a follow-up). */
+function _goalSkills(goalId) { try { return (JSON.parse(localStorage.getItem('ci_goal_skills') || '{}')[goalId]) || []; } catch (e) { return []; } }
+function _saveGoalSkills(goalId, arr) {
+  let all = {}; try { all = JSON.parse(localStorage.getItem('ci_goal_skills') || '{}'); } catch (e) {}
+  if (arr && arr.length) all[goalId] = arr; else delete all[goalId];
+  try { localStorage.setItem('ci_goal_skills', JSON.stringify(all)); } catch (e) {}
+}
+function _skillLabel(key) { return String(key).toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase()); }
+function _skillsChips(keys) {
+  if (!keys.length) return '';
+  return keys.map(k => `<span onclick="navTo('entcard');entGoToCard('${k}')" title="Open this skill in the Entrepreneur Library" style="display:inline-block;cursor:pointer;background:#8FA977;color:#1c1c1c;font-weight:800;font-size:12px;letter-spacing:.3px;padding:6px 11px;margin:0 6px 6px 0;">${_skillLabel(k)}</span>`).join('');
+}
+/* Match this goal to its top 3-5 skills via the AI, then refresh the viz page. */
+export async function pbSharpenSkills(idx) {
+  const intn = intentions[idx]; if (!intn) return;
+  const btn = document.getElementById(`pbSharpenBtn-${idx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '&#8942; MATCHING…'; }
+  try {
+    const keys = ENT_CARDS.map(c => c.key);
+    const system = 'You map a personal goal to the entrepreneur skills it most depends on. Given the GOAL and the SKILLS list, reply with ONLY the 3 to 5 most relevant skill names from the list, comma-separated, copied EXACTLY as written in the list. No numbers, no extra words.';
+    const user = `GOAL: ${intn.title}\n\nSKILLS: ${keys.join(', ')}`;
+    const text = await callClaude(system, user, 80);
+    const found = [];
+    String(text || '').split(/[,\n]/).map(x => x.trim().toUpperCase()).forEach(x => {
+      if (!x) return;
+      const m = keys.find(k => k === x) || keys.find(k => x.includes(k) || k.includes(x));
+      if (m && !found.includes(m)) found.push(m);
+    });
+    const skills = found.slice(0, 5);
+    if (skills.length) { _saveGoalSkills(intn.id, skills); if (typeof toast === 'function') toast(`✦ Matched ${skills.length} skills`, 'success'); }
+    else if (typeof toast === 'function') toast('Could not match skills — try again.', 'error');
+  } catch (e) { if (typeof toast === 'function') toast('Skill match failed. Try again.', 'error'); }
+  openVizGoal(idx);
+}
+
 export function openVizGoal(idx) {
   _vizGoalIdx = idx;
   const it = intentions[idx] ? (intentions[idx] = hydrateIntent(intentions[idx])) : intentions[0];
@@ -2126,7 +2165,9 @@ export function openVizGoal(idx) {
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;"><span style="font-size:14px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
         ).join('')}
         <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:14px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
+        <button id="pbSharpenBtn-${idx}" onclick="pbSharpenSkills(${idx})" title="Match this goal to its top entrepreneur skills" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:#8FA977;border:none;color:#1c1c1c;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">&#10022; ${_goalSkills(it?.id).length ? 'RE-MATCH SKILLS' : 'SHARPEN WITH SKILLS'}</button>
       </div>
+      ${_goalSkills(it?.id).length ? `<div style="margin:12px 0 4px;"><div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 8px;">Skills this goal needs</div>${_skillsChips(_goalSkills(it?.id))}</div>` : ''}
       <!-- QUICK-VIZ — tap a length to PLAY a visualization of this goal.
            data-player-box makes openPlayerInColumn drop the (visible) player
            panel right below this grid on THIS page — without it the shared

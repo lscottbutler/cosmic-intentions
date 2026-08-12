@@ -1,46 +1,6 @@
 import { buildContext, callClaude, currentUser, esc, getPB, goalLetter, GREY_SHADES, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
 import { setTaskWin } from './wins.js';
-import { ENT_CARDS } from './ent-library-content.js';
-
-/* ── GOAL → ENTREPRENEUR-SKILL MATCHING (Phase 1) ────────────────────────────
-   On demand, run a goal through the 31-skill library and tag it with the 3-5
-   skills it most depends on — the "tie everything together" link. Stored per
-   goal id in ci_goal_skills (local for now; Supabase sync is a follow-up). */
-function _goalSkills(goalId) { try { return (JSON.parse(localStorage.getItem('ci_goal_skills') || '{}')[goalId]) || []; } catch (e) { return []; } }
-function _saveGoalSkills(goalId, arr) {
-  let all = {}; try { all = JSON.parse(localStorage.getItem('ci_goal_skills') || '{}'); } catch (e) {}
-  if (arr && arr.length) all[goalId] = arr; else delete all[goalId];
-  try { localStorage.setItem('ci_goal_skills', JSON.stringify(all)); } catch (e) {}
-}
-function _skillLabel(key) { return String(key).toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase()); }
-function _skillsChips(keys) {
-  if (!keys.length) return '<div style="color:#9a9a9a;font-size:12px;font-style:italic;">Not matched yet — tap "Sharpen with skills".</div>';
-  return keys.map(k => `<span onclick="navTo('entcard');entGoToCard('${k}')" title="Open this skill in the Entrepreneur Library" style="display:inline-block;cursor:pointer;background:#8FA977;color:#1c1c1c;font-weight:800;font-size:12px;letter-spacing:.3px;padding:6px 11px;margin:0 6px 6px 0;">${_skillLabel(k)}</span>`).join('');
-}
-
-/* Match a goal to its top 3-5 skills via the AI, then re-render. */
-export async function pbSharpenSkills(idx) {
-  const intn = intentions[idx]; if (!intn) return;
-  const btn = document.getElementById(`pbSharpenBtn-${idx}`);
-  if (btn) { btn.disabled = true; btn.textContent = '✦ Matching…'; }
-  try {
-    const keys = ENT_CARDS.map(c => c.key);
-    const system = 'You map a personal goal to the entrepreneur skills it most depends on. Given the GOAL and the SKILLS list, reply with ONLY the 3 to 5 most relevant skill names from the list, comma-separated, copied EXACTLY as written in the list. No numbers, no extra words.';
-    const user = `GOAL: ${intn.title}\n\nSKILLS: ${keys.join(', ')}`;
-    const text = await callClaude(system, user, 80);
-    const found = [];
-    String(text || '').split(/[,\n]/).map(s => s.trim().toUpperCase()).forEach(s => {
-      if (!s) return;
-      const m = keys.find(k => k === s) || keys.find(k => s.includes(k) || k.includes(s));
-      if (m && !found.includes(m)) found.push(m);
-    });
-    const skills = found.slice(0, 5);
-    if (skills.length) { _saveGoalSkills(intn.id, skills); if (typeof toast === 'function') toast(`✦ Matched ${skills.length} skills`, 'success'); }
-    else if (typeof toast === 'function') toast('Could not match skills — try again.', 'error');
-  } catch (e) { if (typeof toast === 'function') toast('Skill match failed. Try again.', 'error'); }
-  renderPBIntentionList();
-}
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
    Depends on globals: intentions, esc, getPB, buildContext,
    callClaude, saveIntentions, syncIntentionsToSupabase,
@@ -874,11 +834,6 @@ export function renderPBIntentionList() {
             <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
           </div>
         </div>
-      </div>
-      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
-        <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Skills This Goal Needs</div>
-        <div style="margin-bottom:10px;">${_skillsChips(_goalSkills(i.id))}</div>
-        <button id="pbSharpenBtn-${idx}" onclick="pbSharpenSkills(${idx})" style="background:#8FA977;border:none;color:#1c1c1c;font-weight:800;letter-spacing:.5px;font-size:13px;padding:11px 16px;cursor:pointer;width:100%;">&#10022; ${_goalSkills(i.id).length ? 'Re-match skills' : 'Sharpen with skills'}</button>
       </div>
     </div>`;
   }).join('');
