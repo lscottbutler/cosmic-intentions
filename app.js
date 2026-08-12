@@ -286,28 +286,45 @@ export function toast(msg, type = '', duration = 3000) {
 /* ─────────────────────────────────────────────────────────
    PAGE NAVIGATION
 ───────────────────────────────────────────────────────── */
+// My Thoughts + My Goals + My Habits are merged into ONE scrolling page. They sit
+// contiguously in the DOM in exactly this order (notes → setup → habits), so we
+// activate all three together whenever any of them is requested. Navigating to a
+// specific one scrolls to that section.
+const INPUT_PAGES = ['notes', 'setup', 'habits'];
 export function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('page-' + id);
-  if (target) target.classList.add('active');
+  const isInputs = INPUT_PAGES.includes(id);
+  if (isInputs) {
+    INPUT_PAGES.forEach(pid => { const el = document.getElementById('page-' + pid); if (el) el.classList.add('active'); });
+  } else {
+    const target = document.getElementById('page-' + id);
+    if (target) target.classList.add('active');
+  }
 
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
   if (id === 'dashboard') renderDashboard();
   if (id === 'dailyfocus' && typeof window.renderFavorites === 'function') window.renderFavorites();
-  if (id === 'notes' && typeof window.renderNotesPage === 'function') window.renderNotesPage();
+  if (isInputs) {   // render all three merged sections
+    if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
+    renderPBIntentionList();
+    if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
+  }
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
-  if (id === 'setup')   { renderPBIntentionList(); if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList(); }
-  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
   if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
   // (images, deferred sidebar/build-sheet render) can't leave the page
-  // scrolled down when a page first loads.
+  // scrolled down when a page first loads. For a merged sub-section (Goals /
+  // Habits) scroll to that section instead of the very top.
   window.scrollTo(0, 0);
-  requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, 0)));
+  const _section = (isInputs && id !== 'notes') ? document.getElementById('page-' + id) : null;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (_section) _section.scrollIntoView({ block: 'start' });
+    else window.scrollTo(0, 0);
+  }));
 }
 
 /* ── PAGE HISTORY (back / forward) ─────────────────────── */
