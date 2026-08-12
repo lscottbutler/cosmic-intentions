@@ -155,6 +155,11 @@ function _reclaimStorage() {
 }
 _reclaimStorage();
 
+// Always load at the TOP on refresh. Browsers default to restoring the previous
+// scroll position on reload, which re-showed the page scrolled to the bottom.
+if (typeof history !== 'undefined' && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (typeof window !== 'undefined') window.addEventListener('load', () => window.scrollTo(0, 0));
+
 // Expose the current Supabase access token to shared/api.js so every paid AI
 // call carries the user's login — the server-side guard requires it (Stage B).
 // Returns null when logged out (public pages), so non-gated calls still work.
