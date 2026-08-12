@@ -803,10 +803,17 @@ export function renderPBIntentionList() {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     return `
     <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="position:relative;padding:12px 14px;background:${shade.bg};">
-        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${goalLetter(i, idx)}</div>
-        <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
-          style="position:absolute;top:14px;right:14px;background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;">✕</button>
+      <div style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;min-width:0;">Goal ${goalLetter(i, idx)}</div>
+        <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
+          <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:11px;font-weight:800;letter-spacing:.5px;color:${shade.text};opacity:.9;">AI</span>
+          <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
+            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#34C759' : 'rgba(0,0,0,.35)'};transition:background .2s;">
+            <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
+          </button>
+          <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
+            style="background:none;border:none;color:${shade.text};opacity:.7;font-size:18px;cursor:pointer;line-height:1;padding:0;">✕</button>
+        </div>
       </div>
       <div style="background:#2E2E2E;padding:12px 14px;">
         <textarea maxlength="150" rows="3"
@@ -828,16 +835,6 @@ export function renderPBIntentionList() {
       <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
         <div style="${lbl}">CATEGORY</div>
         <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
-      </div>
-      <div style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);">
-        <div>
-          <div style="font-weight:800;color:var(--text);font-size:14px;letter-spacing:.5px;">AI FOR THIS GOAL</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px;">Auto-generate affirmations, beliefs, roadmap &amp; more.</div>
-        </div>
-        <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on' : 'AI off'}"
-          style="flex:0 0 auto;width:52px;height:30px;border-radius:15px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#34C759' : '#999'};transition:background .2s;">
-          <span style="position:absolute;top:3px;left:${aiOn ? '25px' : '3px'};width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
-        </button>
       </div>
     </div>`;
   }).join('');
