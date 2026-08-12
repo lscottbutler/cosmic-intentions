@@ -48,12 +48,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="ham-menu" id="hamMenu">
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
       <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
-      <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
+      <button class="tnav-btn" onclick="navTo('notes')">My Thinking</button>
       <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
       <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
-      <button class="tnav-btn" onclick="navTo('setup')">My Goals</button>
-      <button class="tnav-btn" onclick="navTo('habits')">My Habits</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
       <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
@@ -112,17 +110,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <span class="nav-icon">&#9829;</span> My Favorites Autoplay
     </button>
     <div class="drawer-divider"></div>
-    <button class="drawer-nav-item" id="nav-notes" onclick="navTo('notes')">
-      <span class="nav-icon">&#9998;</span> My Thoughts
-    </button>
-    <div class="drawer-divider"></div>
-    <button class="drawer-nav-item" onclick="navTo('setup')">
-      <span class="nav-icon">📋</span> My Goals
+    <button class="drawer-nav-item" onclick="navTo('notes')">
+      <span class="nav-icon">&#129504;</span> My Thinking
       <span class="nav-count-dot" id="vaultIntentionCount">0</span>
-    </button>
-    <div class="drawer-divider"></div>
-    <button class="drawer-nav-item" onclick="navTo('habits')">
-      <span class="nav-icon">✅</span> My Habits
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" id="nav-admin" style="display:none" onclick="navTo('admin')">
