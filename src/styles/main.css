@@ -747,7 +747,7 @@ details.rm-drop[open]::details-content { height: auto; }
 /* ── SETUP / BTS PAGES ────────────────────────────────────── */
 .setup-page {
   padding: 24px 20px 60px;
-  max-width: 1120px;      /* double-wide, but bounded */
+  max-width: 900px;      /* double-wide, but bounded */
   margin: 0 auto;         /* centered — top rows + columns share this width */
 }
 /* Pegboard 50/50 columns: Goals | Daily Tracker.
