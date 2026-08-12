@@ -196,6 +196,20 @@ export const ENT_CARDS = [
     roadmap: ['Choose one system to capture every task and idea.', 'Do a full brain-dump into that system today.', 'Give every project one clear next action.', 'Set a weekly review to keep the system clean.', 'Label and organize one messy area of your work.', 'Trust the system, then act from it — not from memory.'] },
 ];
 
+/* Card art path for a key. Files live in images/entrepreneur-library/ and mostly
+   follow "ENT <KEY>.PNG", with a few naming quirks handled here. */
+const _IMG_OVERRIDE = {
+  'FAIRNESS': 'ENT - FAIRNESS.PNG',
+  'GOOD LISTENER': 'ENT - GOOD LISTENER.PNG',
+  'METICULOUS PLANNER': 'ENT - METICULOUS PLANNER.PNG',
+  'CHARMING': 'ENT CHARMING copy.PNG',
+  'ORGANIZATIONAL SKILLS': 'ORGANIZATIONAL SKILLS.JPG',
+};
+export function entCardImg(key) {
+  const file = _IMG_OVERRIDE[key] || ('ENT ' + key + '.PNG');
+  return 'images/entrepreneur-library/' + encodeURIComponent(file);
+}
+
 /* Look up a card by key (case-insensitive) or by number. */
 export function getEntCard(idOrKey) {
   if (idOrKey == null) return null;
