@@ -2646,4 +2646,7 @@ input, textarea, select {
 .aff-card__body:focus{outline:2px solid #c0246a;outline-offset:4px;}
 .aff-card__img{flex:1 1 45%;background-size:cover;background-position:center;background-color:#eee;}
 .aff-card__x{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;z-index:2;}
-@media(max-width:560px){.aff-card{flex-direction:column;}.aff-card__img{min-height:160px;}}
+@media(max-width:560px){.aff-card{flex-direction:column;}.aff-card__img{min-height:160px;}}
+
+/* White placeholder for the Log-A-Win inputs (dark #0d0d0d background). */
+#winInput::placeholder, #qwWinInput::placeholder { color: rgba(255,255,255,.85); }
