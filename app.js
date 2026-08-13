@@ -2200,8 +2200,7 @@ export function openVizGoal(idx) {
           <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 8px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:15px;line-height:1;color:var(--brand);flex-shrink:0;">&#8592;</span>VISUALIZATION LIBRARY</button>
           <button onclick="navTo('dashboard')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 8px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:15px;line-height:1;color:var(--brand);flex-shrink:0;">&#8962;</span>THE INNER CITADEL</button>
         </div>
-      </div>
-      ${othersHtml}`;
+      </div>`;
   }
   loadGoalVisualization(it);
   navTo('vizgoal');
