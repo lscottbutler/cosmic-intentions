@@ -832,6 +832,12 @@ export function renderWrapup() {
           </div>
         </details>
       </div>` : '';
+    // Feed the My Roadmap monitor chips with the real Action Plan counts.
+    if (chk) {
+      const _rs = document.getElementById('rmStepCount'); if (_rs) _rs.textContent = chk.total;
+      const _rd = document.getElementById('rmDoneCount'); if (_rd) _rd.textContent = chk.done;
+      const _rl = document.getElementById('rmLeftCount'); if (_rl) _rl.textContent = Math.max(0, chk.total - chk.done);
+    }
     // Fill any [data-block] admin boxes just rendered into the goal cards.
     if (typeof window !== 'undefined' && window.injectContentBlocks) window.injectContentBlocks();
   }

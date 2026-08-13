@@ -1260,6 +1260,23 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   </div>
 
   <!-- ═══ PILLAR 2: MY ROADMAP (the ACTION PLAN — goals + roadmap tasks) ═══ -->
+  <!-- Reusable MONITOR FRAME (retro console chrome, from the player/ENT look).
+       Palette variations: add class .navy / .amber / .rose to .ci-mon.
+       Screen is always white, so text inside .mon-screen must be dark (theme-independent). -->
+  <style>
+    .ci-mon{--frame:#8FA977;--bezel:#6f7570;--bezelDk:#5c6158;--chip:#7d827b;--chipVal:#20241f;
+      background:var(--frame);padding:20px 18px 13px;border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,.14);margin:0 0 18px;}
+    .ci-mon .mon-bezel{background:var(--bezel);border-radius:10px 10px 4px 4px;padding:0 14px 11px;}
+    .ci-mon .mon-hdr{background:var(--bezelDk);border-radius:12px 12px 0 0;margin:0 -14px 12px;padding:14px 8px;text-align:center;color:#eef0ea;font-weight:800;letter-spacing:6px;font-size:15px;text-transform:uppercase;}
+    .ci-mon .mon-screen{background:#fff;padding:24px 22px;color:#1c1c1c;}
+    .ci-mon .mon-chips{display:flex;gap:8px;margin-top:11px;}
+    .ci-mon .mon-chip{flex:1;text-align:center;}
+    .ci-mon .mon-chip .k{background:var(--chip);border-radius:10px 10px 0 0;color:#eef0ea;font-weight:800;letter-spacing:1px;font-size:11px;padding:7px 4px;}
+    .ci-mon .mon-chip .v{background:var(--chipVal);color:#eef0ea;font-weight:800;letter-spacing:1px;font-size:14px;padding:7px 4px;}
+    .ci-mon.navy {--frame:#2b2f45;--bezel:#3b4162;--bezelDk:#2b2f45;--chip:#464d70;--chipVal:#171a28;}
+    .ci-mon.amber{--frame:#D9B94A;--bezel:#7c6a30;--bezelDk:#5f5124;--chip:#8b7833;--chipVal:#3a3115;}
+    .ci-mon.rose {--frame:#C97C74;--bezel:#8a4f49;--bezelDk:#6f3f3a;--chip:#9c5a53;--chipVal:#3f221f;}
+  </style>
   <div class="page" id="page-myroadmap">
     <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
@@ -1267,30 +1284,37 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <span style="font-weight:800;font-size:26px;letter-spacing:.3px;color:var(--text);line-height:1.1;">My Roadmap</span>
       </div>
 
-      <!-- Intro copy + focus bullets, grouped in a soft section card (Option C).
-           Paragraph capped to a readable measure; bullets stay 50/50. -->
-      <div style="background:var(--off,#F5F5F5);border:1px solid var(--border,#E6E8EB);border-radius:14px;padding:22px 24px;margin:0 0 18px;">
-        <p style="margin:0 0 14px;max-width:680px;color:var(--text);font-size:15px;line-height:1.6;opacity:.9;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
-        <!-- 50/50 split — 5 bullets in each column -->
-        <div style="display:flex;gap:24px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:240px;">
-            <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;">
-              <li>Lorem ipsum dolor sit amet</li>
-              <li>Consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt</li>
-              <li>Ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam</li>
-            </ul>
+      <!-- Intro copy + focus bullets, wrapped in the MONITOR frame (sage green). -->
+      <div class="ci-mon">
+        <div class="mon-bezel">
+          <div class="mon-hdr">MY ROADMAP</div>
+          <div class="mon-screen">
+            <p style="margin:0 0 14px;max-width:680px;color:#26364b;font-size:15px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:240px;">
+                <ul style="margin:0;padding-left:20px;color:#333;font-size:14px;line-height:1.9;">
+                  <li>Lorem ipsum dolor sit amet</li>
+                  <li>Consectetur adipiscing elit</li>
+                  <li>Sed do eiusmod tempor incididunt</li>
+                  <li>Ut labore et dolore magna aliqua</li>
+                  <li>Ut enim ad minim veniam</li>
+                </ul>
+              </div>
+              <div style="flex:1;min-width:240px;">
+                <ul style="margin:0;padding-left:20px;color:#333;font-size:14px;line-height:1.9;">
+                  <li>Quis nostrud exercitation ullamco</li>
+                  <li>Laboris nisi ut aliquip ex ea</li>
+                  <li>Duis aute irure dolor in reprehenderit</li>
+                  <li>Voluptate velit esse cillum dolore</li>
+                  <li>Excepteur sint occaecat cupidatat</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div style="flex:1;min-width:240px;">
-            <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;">
-              <li>Quis nostrud exercitation ullamco</li>
-              <li>Laboris nisi ut aliquip ex ea</li>
-              <li>Duis aute irure dolor in reprehenderit</li>
-              <li>Voluptate velit esse cillum dolore</li>
-              <li>Excepteur sint occaecat cupidatat</li>
-            </ul>
+          <div class="mon-chips">
+            <div class="mon-chip"><div class="k">STEPS</div><div class="v" id="rmStepCount">—</div></div>
+            <div class="mon-chip"><div class="k">DONE</div><div class="v" id="rmDoneCount">—</div></div>
+            <div class="mon-chip"><div class="k">LEFT</div><div class="v" id="rmLeftCount">—</div></div>
           </div>
         </div>
       </div>
