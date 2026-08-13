@@ -2111,11 +2111,14 @@ export async function pbSharpenSkills(idx) {
   if (btn) { btn.disabled = true; btn.innerHTML = '&#8942; MATCHING…'; }
   try {
     const keys = ENT_CARDS.map(c => c.key);
-    const system = 'You map a personal goal to the entrepreneur skills it most depends on. Given the GOAL and the SKILLS list, reply with ONLY the 3 to 5 most relevant skill names from the list, comma-separated, copied EXACTLY as written in the list. No numbers, no extra words.';
+    // The 'claude' endpoint is locked to JSON-object output, so ask for JSON.
+    const system = 'You map a personal goal to the entrepreneur skills it most depends on. Given the GOAL and the SKILLS list, respond with ONLY a JSON object of the form {"skills":["SKILL","SKILL",...]} listing the 3 to 5 most relevant skill names, each copied EXACTLY as written in the SKILLS list.';
     const user = `GOAL: ${intn.title}\n\nSKILLS: ${keys.join(', ')}`;
-    const text = await callClaude(system, user, 80);
+    const text = await callClaude(system, user, 200);
+    let arr = [];
+    try { const obj = JSON.parse(text); arr = Array.isArray(obj?.skills) ? obj.skills : (Array.isArray(obj) ? obj : []); } catch (e) {}
     const found = [];
-    String(text || '').split(/[,\n]/).map(x => x.trim().toUpperCase()).forEach(x => {
+    arr.map(x => String(x).trim().toUpperCase()).forEach(x => {
       if (!x) return;
       const m = keys.find(k => k === x) || keys.find(k => x.includes(k) || k.includes(x));
       if (m && !found.includes(m)) found.push(m);
