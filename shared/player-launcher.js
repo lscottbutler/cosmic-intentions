@@ -306,7 +306,7 @@ export function renderFavorites() {
     row.innerHTML =
       '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
       '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
-      `<span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
+      `<span style="flex:1;min-width:0;font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
       `<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${_meta}</span>` +
       `<button class="fav-remove" title="Remove from favorites" style="flex-shrink:0;background:none;border:none;color:#c76;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:4px;">&times;</button>`;
     const cb = row.querySelector('input');
