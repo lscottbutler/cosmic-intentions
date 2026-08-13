@@ -310,7 +310,10 @@ export function showPage(id) {
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
   if (id === 'dashboard') renderDashboard();
-  if (id === 'dailyfocus' && typeof window.renderFavorites === 'function') window.renderFavorites();
+  if (id === 'dailyfocus') {
+    if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
+    if (typeof window.renderFavorites === 'function') window.renderFavorites();
+  }
   if (isInputs) {   // render all three merged sections
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
     renderPBIntentionList();
@@ -4037,7 +4040,6 @@ function injectPlaceholderCards() {
   if (document.querySelector('.ci-ph-card')) return;   // inject once
   // Per-page anchor: the top card goes right AFTER this element (the title/header).
   const cfg = {
-    dailyfocus:  '#page-dailyfocus > div > p',
     notes:       '#page-notes > div > p',
     setup:       '#page-setup .setup-page-header',
     habits:      '#page-habits .setup-page-header',
