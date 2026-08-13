@@ -54,6 +54,12 @@
   to = "/standalone/privacy.html"
   status = 200
 
+# About Us — company story / personal-development lineage
+[[redirects]]
+  from = "/about"
+  to = "/standalone/about.html"
+  status = 200
+
 # Landing page draft — preview at /landing
 [[redirects]]
   from = "/landing"
