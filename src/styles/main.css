@@ -2622,18 +2622,6 @@ input, textarea, select {
 [style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 18px !important; }
 [style*="font-size:14px"], [style*="font-size: 14px"] { font-size: 20px !important; }
 [style*="font-size:15px"], [style*="font-size: 15px"] { font-size: 21px !important; }
-
-/* Square-edge theme — flatten all card/panel/button/input corners site-wide,
-   including JS-rendered inline styles. TRUE circles (border-radius:50%) are kept
-   round so toggles, round icon buttons, and number balls don't break. Reversible:
-   delete this block. */
-:root { --radius: 0px; }
-[style*="border-radius"]:not([style*="border-radius:50%"]):not([style*="border-radius: 50%"]) { border-radius: 0 !important; }
-/* Landing pages (#lp1 embedded logged-out home + standalone #page-landing) use
-   their own scoped classes — square those too, then restore their circles. */
-#lp1 *, #lp1 *::before, #page-landing *, #page-landing *::before { border-radius: 0 !important; }
-#lp1 .pillar-txt li::before, #page-landing .lp-step .n,
-#lp1 [style*="border-radius:50%"], #page-landing [style*="border-radius:50%"] { border-radius: 50% !important; }
 [style*="font-size:16px"], [style*="font-size: 16px"] { font-size: 22px !important; }
 
 /* ── REUSABLE QUOTE FRAME (see standalone/quote-frame-proto.html) ─────────────
