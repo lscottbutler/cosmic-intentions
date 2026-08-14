@@ -533,6 +533,18 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
   }).join('');
 }
 
+/* Count every node in a My-Actions tree — recursively, so AI drill-down
+   sub-steps count toward the completed tally too. */
+function _countTree(nodes) {
+  let total = 0, done = 0;
+  (nodes || []).forEach(n => {
+    total++; if (n.done) done++;
+    const c = _countTree(n.children);
+    total += c.total; done += c.done;
+  });
+  return { total, done };
+}
+
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
@@ -571,14 +583,16 @@ function _todayChecklist() {
 
     // 2) Your own custom actions — a drillable TREE ("↳" = break into deeper
     //    steps). Header count reflects the top-level actions.
-    uTasks.forEach(u => { total++; if (u.done) done++; });
+    // Count EVERY checkable item: your actions recursively (incl. AI drill-down
+    // sub-steps). The flat AI roadmap tasks are added below, where `dones` is known.
+    const _uc = _countTree(uTasks); total += _uc.total; done += _uc.done;
     const userHtml = _renderUserTree(uTasks, [], idx);
 
-    // Proven / AI "tracker" tasks — NOT shown in the goal box (only your own
-    // actions are). They appear in MY TASK LIST below, visually separated with
-    // their own tint + header. Building them here does NOT touch total/done —
-    // the header count reflects your own actions only.
+    // Proven / AI "tracker" tasks — shown in the Roadmap tab / MY TASK LIST.
+    // Their checkmarks NOW count toward the tally too (1a): every checkable
+    // roadmap task increments total/done, same as your own actions.
     const dones = rai.done || {};
+    if (_raiTasksOK) (rai.tasks || []).forEach((t, i) => { total++; if (dones[i]) done++; });
     const locks = rai.locks || {};
     const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
       const d = !!dones[i]; const locked = !!locks[i];
