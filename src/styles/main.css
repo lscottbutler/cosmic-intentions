@@ -1240,6 +1240,20 @@ textarea.field-input.tall { min-height: 110px; }
   .page-wrap:has(#page-home.active),
   .page-wrap:has(#page-entcard.active),
   .page-wrap:has(#page-dashboard.active) { max-width: 1280px; }
+  /* Roadmap is single-column — widen it to its own 900px max (was crushed to 640px) */
+  .page-wrap:has(#page-myroadmap.active) { max-width: 900px; }
+}
+
+/* ── ROADMAP ON MOBILE ─────────────────────────────────────
+   The nested frame paddings (page 16 + green frame 18 + gray bezel 14 +
+   white screen 16 = ~64px/side) crush the cards on a narrow phone.
+   Slim every layer so the cards use the real screen width. */
+@media (max-width: 560px) {
+  #page-myroadmap > div { padding-left: 8px !important; padding-right: 8px !important; }
+  #page-myroadmap .ci-mon { padding: 12px 8px 10px; }
+  #page-myroadmap .ci-mon .mon-bezel { padding: 0 7px 9px; }
+  #page-myroadmap .ci-mon .mon-hdr { margin: 0 -7px 12px; }
+  #page-myroadmap .ci-mon .mon-screen { padding: 14px 8px !important; }
 }
 
 /* ── COSMIC LIBRARY PAGE ──────────────────────────────────── */

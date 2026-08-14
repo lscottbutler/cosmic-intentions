@@ -1308,7 +1308,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="ci-mon">
         <div class="mon-bezel">
           <div class="mon-hdr">MY ROADMAP</div>
-          <div class="mon-screen" style="padding:16px 9px;">
+          <div class="mon-screen" style="padding:16px 16px;">
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <details style="margin:0 0 14px;">
               <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#2b6cb0;">How your roadmap works</summary>
@@ -1333,7 +1333,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 </div>
               </div>
             </details>
-            <!-- ACTION PLAN — wrapup.js renders into this container; moved INSIDE the monitor screen. -->
+            <!-- ACTION PLAN — wrapup.js renders into this container; moved INSIDE the monitor screen.
+                 No side margin, so the box + cards line up exactly with the intro paragraph above
+                 (both sit inside the mon-screen's 16px side padding). -->
             <div id="todayWillWidget"></div>
           </div>
           <div class="mon-chips">

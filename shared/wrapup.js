@@ -832,7 +832,7 @@ export function renderWrapup() {
   const todayEl = document.getElementById('todayWillWidget');
   if (todayEl) {
     todayEl.innerHTML = chk ? `
-      <div style="background:var(--widget-bg);border:1px solid var(--widget-border);border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="padding:0;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#000;color:#fff;border-radius:10px;cursor:pointer;">
             <span style="font-size:18pt;font-weight:800;line-height:1.15;">ACTION PLAN</span>
@@ -841,7 +841,7 @@ export function renderWrapup() {
               <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>
             </span>
           </summary>
-          <div style="border:1px solid #222;border-radius:8px;padding:2px 10px 6px;margin-top:8px;">
+          <div style="padding:6px 0 0;margin-top:8px;">
             <div style="display:flex;flex-direction:column;gap:12px;">${chk.rows}</div>
           </div>
         </details>
