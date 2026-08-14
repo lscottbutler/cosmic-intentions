@@ -117,7 +117,7 @@ export function renderNotesPage() {
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
     const isNoteCat = c.key === 'note';
     const rows = c.key === 'affirmation'
-      ? mine.map((n, i) => _affCard(n, i, c.ph)).join('')
+      ? `<div class="aff-grid">${mine.map((n, i) => _affCard(n, i, c.ph)).join('')}</div>`
       : mine.map(n => {
       const goalSel = isNoteCat ? `
         <select onchange="notesSaveGoal('${n.id}',this.value)" title="Associate this note with a goal"
