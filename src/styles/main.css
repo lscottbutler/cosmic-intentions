@@ -1648,9 +1648,20 @@ input, textarea, select {
 .admin-block { background: var(--off); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
 .admin-block-hd { background: var(--off); padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .admin-block-slug { font-size: 10px; color: var(--muted); font-family: monospace; }
-.admin-toolbar { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
+.admin-toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
 .admin-tb-btn { background: var(--border); border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .admin-tb-btn:hover { background: var(--border-2); }
+/* Sequential block number (white on a black circle) in each block's toolbar,
+   so you can tell at a glance which block is which. Auto-counts every .admin-block. */
+.admin-page { counter-reset: cblock; }
+.admin-block { counter-increment: cblock; }
+.admin-toolbar::before {
+  content: counter(cblock);
+  flex-shrink: 0; width: 24px; height: 24px; margin-right: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #000; color: #fff; border-radius: 50%;
+  font-size: 12px; font-weight: 800; font-family: inherit;
+}
 .admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; width: 100%; max-width: 100%; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word; }
 .admin-editor *, .admin-editor p, .admin-editor div, .admin-editor span {
   max-width: 100% !important;
