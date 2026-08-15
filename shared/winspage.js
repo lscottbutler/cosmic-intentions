@@ -87,8 +87,8 @@ export function renderWinsPage() {
       ${items.map(w => { const m = catMeta(w.category || ''); return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-2);">
         <span style="color:${m.color};font-size:13px;flex-shrink:0;line-height:1.6;">✦</span>
         <div style="flex:1;min-width:0;font-size:14px;color:var(--text);line-height:1.6;">${esc(w.text)}</div>
-        <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:8px;color:var(--muted);line-height:1.9;white-space:nowrap;">${_label(w.date)}</span>
-        <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1.4;">×</button>
+        <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:14px;color:var(--muted);line-height:1.6;white-space:nowrap;">${_label(w.date)}</span>
+        <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;padding:0;">×</button>
       </div>`; }).join('')}
     </div>`;
   });
