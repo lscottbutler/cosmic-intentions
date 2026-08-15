@@ -435,6 +435,20 @@ details.rm-drop[open]::details-content { height: auto; }
 }
 .page { display: none; }
 
+/* ── MY WINS · full-bleed mustard frame (scoped to this page only) ──
+   Breaks out of the centered .page-wrap to reach the viewport edges L/R,
+   and fills the height so the mustard border hugs all four edges. */
+#page-wins .wins-frame {
+  margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
+  background: #D9B94A; padding: 20px;
+  min-height: calc(100vh - var(--hdr, 64px) - var(--topnav, 0px));
+  display: flex; flex-direction: column;
+}
+#page-wins .wins-bezel { background:#7c6a30; border-radius:10px 10px 4px 4px; padding:0 16px 14px; flex:1; display:flex; flex-direction:column; }
+#page-wins .wins-hdr { background:#5f5124; border-radius:12px 12px 0 0; margin:0 -16px 14px; padding:15px 8px; text-align:center; color:#eef0ea; font-weight:800; letter-spacing:6px; font-size:15px; text-transform:uppercase; }
+#page-wins .wins-screen { background:#fff; border-radius:6px; flex:1; padding:22px 20px 40px; color:#1c1c1c; }
+#page-wins .wins-intro { text-align:center; color:#26364b; font-size:15px; line-height:1.6; margin:0 0 18px; }
+
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {
   font-family: 'Dancing Script', cursive;

@@ -1430,15 +1430,17 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <!-- ADMIN PAGE -->
   <!-- MY WINS PAGE -->
   <div class="page" id="page-wins">
-    <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
-      <button onclick="goMemberDashboard()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:0.8px;padding:8px 14px;cursor:pointer;margin-bottom:16px;">← BACK</button>
-      <div class="ci-mon amber">
-        <div class="mon-bezel">
-          <div class="mon-hdr">MY WINS</div>
-          <div class="mon-screen" style="text-align:center;color:#26364b;font-size:15px;line-height:1.6;">Everything you've done — grouped by goal, filtered, and counted.</div>
+    <!-- FULL-BLEED mustard frame (scoped to #page-wins). Frame + bezel + white
+         screen hug all four page edges; everything lives inside the white area. -->
+    <div class="wins-frame">
+      <div class="wins-bezel">
+        <div class="wins-hdr">MY WINS</div>
+        <div class="wins-screen">
+          <button onclick="goMemberDashboard()" style="background:#fff;border:1px solid #e2c86a;border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:0.8px;padding:8px 14px;cursor:pointer;margin-bottom:14px;">← BACK</button>
+          <p class="wins-intro">Everything you've done — grouped by goal, filtered, and counted.</p>
+          <div id="winsPageBody"></div>
         </div>
       </div>
-      <div id="winsPageBody"></div>
     </div>
   </div>
 
