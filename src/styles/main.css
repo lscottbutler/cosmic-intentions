@@ -1624,6 +1624,26 @@ input, textarea, select {
 .cb-display.cb-blob-2,
 .cb-display.cb-blob-3 { background-image: none !important; }
 .cb-display:empty { display: none; }
+/* Home "welcome" quote block — professional card: soft background, room to
+   breathe, left-aligned, and NORMAL (non-uppercase) text. */
+.cb-display[data-block="home-welcome"] {
+  background: #f4f6f8 !important;
+  border: 1px solid #e3e7ec !important;
+  border-radius: 12px !important;
+  padding: 24px 26px !important;
+  text-align: left;
+}
+.cb-display[data-block="home-welcome"],
+.cb-display[data-block="home-welcome"] *,
+.cb-display[data-block="home-welcome"] p,
+.cb-display[data-block="home-welcome"] div,
+.cb-display[data-block="home-welcome"] span,
+.cb-display[data-block="home-welcome"] strong {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.85 !important;
+  font-size: 15px !important;
+}
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
 .cb-display p,
