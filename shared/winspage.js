@@ -79,6 +79,8 @@ export function renderWinsPage() {
     const items = buckets[key];
     if (!items.length) return;
     items.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.ts || 0) - (a.ts || 0));
+    // Brown divider bar just above the THIS YEAR group (matches the MY WINS header bar).
+    if (key === 'year' && body) body += `<div style="height:8px;background:#5f5124;border-radius:4px;margin:4px 0 20px;"></div>`;
     body += `<div style="margin-bottom:22px;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
         <span style="font-weight:800;color:var(--text);font-size:15px;">${label}</span>
