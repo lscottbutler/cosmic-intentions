@@ -634,7 +634,9 @@ function updateUI(user) {
   const loggedIn = !!user;
 
   const hdrUser = document.getElementById('hdrUser');
-  hdrUser.textContent = loggedIn ? (user.user_metadata?.full_name || user.email.split('@')[0]) : '';
+  // Prefer the user's own "YOUR NAME" field (pb-name); fall back to Supabase full_name / email.
+  const pbName = (loggedIn && typeof getPB === 'function') ? ((getPB()['pb-name'] || '').trim()) : '';
+  hdrUser.textContent = loggedIn ? (pbName || user.user_metadata?.full_name || user.email.split('@')[0]) : '';
 
   const drawerEmail = document.getElementById('drawerEmail');
   drawerEmail.textContent = loggedIn ? user.email : '';
