@@ -109,6 +109,16 @@ export function renderNotesPage() {
   const notes = readNotes();
   const total = notes.length;
 
+  // Section-header colors, borrowed from the goal-card palette.
+  const NOTE_HDR = {
+    affirmation:{ bg:'#E8B923', fg:'#1a1a1a' },  // yellow
+    belief:     { bg:'#2B6CB0', fg:'#ffffff' },  // blue
+    reminder:   { bg:'#4C9A2A', fg:'#ffffff' },  // green (unspecified — pick)
+    inspiration:{ bg:'#E8743B', fg:'#ffffff' },  // orange
+    quote:      { bg:'#E0102B', fg:'#ffffff' },  // red
+    note:       { bg:'#141414', fg:'#ffffff' },  // dark dark grey
+  };
+
   host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + NOTE_CATS.map(c => {
     const mine = notes.filter(n => n.cat === c.key)
       .sort((a, b) => (a.text || '').localeCompare(b.text || '', undefined, { sensitivity: 'base' }));
@@ -116,6 +126,7 @@ export function renderNotesPage() {
     // NOTES entries can be linked to one of the user's goals; that note then
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
     const isNoteCat = c.key === 'note';
+    const hd = NOTE_HDR[c.key] || { bg:'#1f1f1f', fg:'#ffffff' };
     const rows = c.key === 'affirmation'
       ? `<div class="aff-grid">${mine.map((n, i) => _affCard(n, i, c.ph)).join('')}</div>`
       : mine.map(n => {
@@ -144,12 +155,12 @@ export function renderNotesPage() {
 
     return `
       <div><button onclick="notesToggleSection('notesec-${c.key}')"
-        style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#1f1f1f;border:1px solid var(--border,#333);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
-        <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:#fff;text-transform:uppercase;">${esc(c.label)}</span>
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;background:${hd.bg};border:1px solid rgba(0,0,0,.25);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
+        <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:${hd.fg};text-transform:uppercase;">${esc(c.label)}</span>
         <span style="display:flex;align-items:center;gap:12px;">
-          ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="color:#fff;font-size:12px;font-weight:700;letter-spacing:.3px;cursor:pointer;white-space:nowrap;">＋ Add ${singular.toLowerCase()}</span>` : ''}
-          <span style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);">${mine.length}</span>
-          <span id="notesec-${c.key}-arr" style="color:var(--mid,#9a9a9a);font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">▼</span>
+          ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="color:${hd.fg};font-size:12px;font-weight:700;letter-spacing:.3px;cursor:pointer;white-space:nowrap;">＋ Add ${singular.toLowerCase()}</span>` : ''}
+          <span style="font-family:var(--vault-mono,monospace);font-size:11px;color:${hd.fg};opacity:.75;">${mine.length}</span>
+          <span id="notesec-${c.key}-arr" style="color:${hd.fg};opacity:.85;font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">▼</span>
         </span>
       </button>
       <div id="notesec-${c.key}-body" style="display:block;margin-bottom:16px;">
