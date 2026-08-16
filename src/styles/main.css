@@ -129,7 +129,7 @@ body {
   width: 76px; height: 76px;
   border-radius: 50%;
   background: #000;
-  border: 10.5px solid #8f8f8f;   /* grey ring around a black circle (per the icon) */
+  border: 10px solid #8f8f8f;   /* grey ring around a black circle (per the icon) */
   cursor: pointer;
   display: flex;
   flex-direction: column;
