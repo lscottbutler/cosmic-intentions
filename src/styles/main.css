@@ -119,7 +119,7 @@ body {
   z-index: 99;
   overflow: visible;
   scrollbar-width: none;
-  transform: translateY(24px);   /* drop the hamburger down onto the frame */
+  transform: translateY(70px);   /* drop the hamburger well down onto the frame */
 }
 #topNav::-webkit-scrollbar { display: none; }
 
