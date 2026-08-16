@@ -577,9 +577,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- DAILY FOCUS — the user's pinned day: sessions to Play, plus jump-to shortcuts. Fed by ♥ favorites. -->
   <div class="page" id="page-dailyfocus">
-    <div style="max-width:900px;margin:0 auto;padding:32px 16px 80px;">
-      <h1 style="font-size:26px;font-weight:800;letter-spacing:.3px;color:var(--text,#fff);margin:0 0 8px;">My Favorites Autoplay</h1>
-      <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
+    <div class="pg-frame pf-navy">
+      <div class="pg-bezel">
+        <div class="pg-hdr">My Favorites Autoplay</div>
+        <div class="pg-screen">
+          <button onclick="goMemberDashboard()" class="pg-back">← BACK</button>
+          <p style="font-size:14px;color:var(--muted,#9a9a9a);margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
       <div data-random-note="" data-note-key="favorites" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:34px;"></div>
 
       <!-- SLEEP GURUS — "Teacher of the day": one teacher's section, rotates every 24h (shared/sleep-gurus.js → renderDailyGuru). -->
@@ -612,6 +615,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
       <div id="favorites-list" class="player-times-grid"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -629,19 +634,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   </div>
 
   <div class="page" id="page-notes">
-    <div style="max-width:900px;margin:0 auto;padding:22px 16px 70px;">
-      <div style="display:flex;justify-content:flex-end;margin:0 0 10px;">
-        <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
-      </div>
-      <div class="ci-mon rose">
-        <div class="mon-bezel">
-          <div class="mon-hdr">MY THOUGHTS</div>
-          <div class="mon-screen" style="text-align:center;color:#26364b;font-size:15px;line-height:1.6;">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface randomly around the site.</div>
+    <div class="pg-frame pf-plum">
+      <div class="pg-bezel">
+        <div class="pg-hdr">My Thoughts</div>
+        <div class="pg-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
+            <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;">← BACK</button>
+            <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
+          </div>
+          <p class="pg-intro">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface randomly around the site.</p>
+          <div id="notesQuickAdd" style="display:none;"></div>
+          <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
+          <div id="notesSections"></div>
         </div>
       </div>
-      <div id="notesQuickAdd" style="display:none;"></div>
-      <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
-      <div id="notesSections"></div>
     </div>
   </div>
 
@@ -1250,18 +1256,18 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- ═══ PILLAR 1: VISUALIZATION LIBRARY (goals list → a goal's activities) ═══ -->
   <div class="page" id="page-vizlibrary">
-    <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
-      <button onclick="navTo('dashboard')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">←</button>
-      <div class="ci-mon navy">
-        <div class="mon-bezel">
-          <div class="mon-hdr">VISUALIZATION LIBRARY</div>
-          <div class="mon-screen" style="text-align:center;color:#26364b;font-size:15px;line-height:1.6;">Pick a goal to visualize, review, meditate or give thanks.</div>
-        </div>
-      </div>
+    <div class="pg-frame pf-viz">
+      <div class="pg-bezel">
+        <div class="pg-hdr">Visualization Library</div>
+        <div class="pg-screen">
+          <button onclick="navTo('dashboard')" class="pg-back">← BACK</button>
+          <p class="pg-intro">Pick a goal to visualize, review, meditate or give thanks.</p>
       <style>
         #vizLibList{display:grid;grid-template-columns:1fr;gap:12px;}
       </style>
       <div id="vizLibList"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1298,17 +1304,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     .ci-mon.rose {--frame:#C97C74;--bezel:#8a4f49;--bezelDk:#6f3f3a;--chip:#9c5a53;--chipVal:#3f221f;}
   </style>
   <div class="page" id="page-myroadmap">
-    <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <button onclick="navTo('dashboard')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;">←</button>
-        <span style="font-weight:800;font-size:26px;letter-spacing:.3px;color:var(--text);line-height:1.1;">My Roadmap</span>
-      </div>
-
-      <!-- Intro copy + focus bullets, wrapped in the MONITOR frame (sage green). -->
-      <div class="ci-mon">
-        <div class="mon-bezel">
-          <div class="mon-hdr">MY ROADMAP</div>
-          <div class="mon-screen" style="padding:16px 16px;">
+    <!-- Full-bleed framed page (green/grey). Frame fills top→bottom, edge→edge;
+         duplicate "My Roadmap" title removed, BACK moved inside the white screen. -->
+    <div class="pg-frame">
+      <div class="pg-bezel">
+        <div class="pg-hdr">MY ROADMAP</div>
+        <div class="pg-screen">
+          <button onclick="navTo('dashboard')" class="pg-back">← BACK</button>
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <details style="margin:0 0 14px;">
               <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#2b6cb0;">How your roadmap works</summary>
@@ -1337,16 +1339,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                  No side margin, so the box + cards line up exactly with the intro paragraph above
                  (both sit inside the mon-screen's 16px side padding). -->
             <div id="todayWillWidget"></div>
+            <!-- One of the user's own REMINDERS surfaces here, fixed for the day (filled by sprinkleNotes). -->
+            <div data-random-note="reminder" data-note-key="myroadmap" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:14px 0 0;"></div>
           </div>
-          <div class="mon-chips">
-            <div class="mon-chip"><div class="k">STEPS</div><div class="v" id="rmStepCount">—</div></div>
-            <div class="mon-chip"><div class="k">DONE</div><div class="v" id="rmDoneCount">—</div></div>
-            <div class="mon-chip"><div class="k">LEFT</div><div class="v" id="rmLeftCount">—</div></div>
+          <div class="pg-chips">
+            <div class="pg-chip"><div class="k">STEPS</div><div class="v" id="rmStepCount">—</div></div>
+            <div class="pg-chip"><div class="k">DONE</div><div class="v" id="rmDoneCount">—</div></div>
+            <div class="pg-chip"><div class="k">LEFT</div><div class="v" id="rmLeftCount">—</div></div>
           </div>
-        </div>
       </div>
-      <!-- One of the user's own REMINDERS surfaces here, fixed for the day (filled by sprinkleNotes). -->
-      <div data-random-note="reminder" data-note-key="myroadmap" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;"></div>
     </div>
   </div>
 
@@ -1355,14 +1356,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
        To add an extra (meditation / gratitude / stoic / etc.) copy a
        card block and point its onclick at the player you want. -->
   <div class="page" id="page-runthroughs">
-    <div style="max-width:900px;margin:0 auto;padding:18px 16px 90px;">
-      <button onclick="navTo('home')" title="Back" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">←</button>
-      <div class="ci-mon rose">
-        <div class="mon-bezel">
-          <div class="mon-hdr">DAILY HABITS</div>
-          <div class="mon-screen" style="text-align:center;color:#26364b;font-size:15px;line-height:1.6;">Your daily run-throughs and rituals — one tap each.</div>
-        </div>
-      </div>
+    <div class="pg-frame pf-rose">
+      <div class="pg-bezel">
+        <div class="pg-hdr">Daily Habits</div>
+        <div class="pg-screen">
+          <button onclick="navTo('home')" class="pg-back">← BACK</button>
+          <p class="pg-intro">Your daily run-throughs and rituals — one tap each.</p>
 
       <!-- DAILY REVIEW RUN-THROUGHS — moved from the dashboard. Bodies are filled by
            the existing renderers via their element IDs (morningRunBody / dayRunBody /
@@ -1423,6 +1422,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
 
+      </div>
+        </div>
       </div>
     </div>
   </div>

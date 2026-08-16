@@ -449,6 +449,34 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-wins .wins-screen { background:#fff; border-radius:6px; flex:1; padding:22px 20px 40px; color:#1c1c1c; }
 #page-wins .wins-intro { text-align:center; color:#26364b; font-size:15px; line-height:1.6; margin:0 0 18px; }
 
+/* ── Reusable FULL-BLEED PAGE FRAME (from the Wins design) ──
+   Colors come from CSS vars so each page sets its own palette. Fills top→bottom
+   (pulls up over the transparent 38px topnav so the hamburger floats on the
+   frame) and edge→edge. Default palette = Roadmap green/grey. */
+.pg-frame {
+  --pf-frame:#8FA977; --pf-bezel:#6f7570; --pf-bezelDk:#5c6158; --pf-chipV:#20241f;
+  margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
+  margin-top: calc(-1 * var(--topnav, 38px));
+  background: var(--pf-frame); padding: 20px;
+  min-height: calc(100vh - var(--hdr, 56px));
+  display: flex; flex-direction: column;
+}
+.pg-bezel { background:var(--pf-bezel); border-radius:10px 10px 4px 4px; padding:0 16px 14px; flex:1; display:flex; flex-direction:column; }
+.pg-hdr { background:var(--pf-bezelDk); border-radius:12px 12px 0 0; margin:0 -16px 14px; padding:15px 8px; text-align:center; color:#eef0ea; font-weight:800; letter-spacing:6px; font-size:15px; text-transform:uppercase; }
+.pg-screen { background:#fff; border-radius:6px; flex:1; padding:20px 18px 34px; color:#1c1c1c; }
+.pg-back { background:#fff; border:1px solid rgba(0,0,0,.15); border-radius:8px; color:var(--brand); font-family:var(--vault-mono); font-size:11px; font-weight:800; letter-spacing:.8px; padding:8px 14px; cursor:pointer; margin-bottom:14px; }
+.pg-chips { display:flex; gap:8px; margin-top:14px; }
+.pg-chip { flex:1; text-align:center; }
+.pg-chip .k { background:var(--pf-bezel); color:#eef0ea; font-weight:800; letter-spacing:1px; font-size:11px; padding:7px 4px; border-radius:8px 8px 0 0; }
+.pg-chip .v { background:var(--pf-chipV); color:#eef0ea; font-weight:800; letter-spacing:1px; font-size:14px; padding:7px 4px; }
+.pg-intro { text-align:center; color:#26364b; font-size:15px; line-height:1.6; margin:0 0 16px; }
+/* Per-page palettes for the full-bleed frame (frame / bezel / dark-bezel) */
+.pg-frame.pf-black { --pf-frame:#2b2b2b; --pf-bezel:#4c4c4c; --pf-bezelDk:#1b1b1b; --pf-chipV:#111; }   /* Inner Citadel — black + gray */
+.pg-frame.pf-viz   { --pf-frame:#3a3a3a; --pf-bezel:#5c5c5c; --pf-bezelDk:#232323; --pf-chipV:#111; }   /* Viz Library — shades of black + grey */
+.pg-frame.pf-navy  { --pf-frame:#2b2f45; --pf-bezel:#4a5170; --pf-bezelDk:#1c2030; --pf-chipV:#141826; } /* My Favorites — navy + slate blue */
+.pg-frame.pf-rose  { --pf-frame:#C97C74; --pf-bezel:#8a4f49; --pf-bezelDk:#6f3f3a; --pf-chipV:#3f221f; } /* Daily Habits — existing rose */
+.pg-frame.pf-plum  { --pf-frame:#6a4a6e; --pf-bezel:#54415a; --pf-bezelDk:#3a2840; --pf-chipV:#281b2c; } /* My Thoughts — plum/purple */
+
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {
   font-family: 'Dancing Script', cursive;
