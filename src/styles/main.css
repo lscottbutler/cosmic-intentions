@@ -116,7 +116,7 @@ body {
   justify-content: center;
   padding: 0 16px;
   gap: 4px;
-  z-index: 99;
+  z-index: 300;   /* above the header (100) so the hamburger isn't clipped */
   overflow: visible;
   scrollbar-width: none;
   transform: translateY(-19px);   /* center the hamburger on the grey/white divider */
