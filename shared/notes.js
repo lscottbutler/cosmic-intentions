@@ -232,8 +232,8 @@ export function notesSaveField(el) {
 
 /* Quick-add panel at the top of My Thoughts: one input per category (A-Z),
    toggled by the "＋ ADD A THOUGHT" button, so you can add to any bucket fast. */
-export function notesToggleQuickAdd() {
-  const box = document.getElementById('notesQuickAdd');
+export function notesToggleQuickAdd(targetId) {
+  const box = document.getElementById(typeof targetId === 'string' ? targetId : 'notesQuickAdd');
   if (!box) return;
   if (box.style.display !== 'none') { box.style.display = 'none'; return; }   // hide if open
   if (box.dataset.built !== '1') {
