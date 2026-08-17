@@ -593,11 +593,36 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- 3-circle nav (matches the header hamburger): back to Citadel · menu · next -->
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 30px;">
         <button onclick="goMemberDashboard()" title="Back to the Citadel" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.28);">&#9664;</button>
-        <button onclick="toggleHamMenu()" title="Menu" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;padding:0;box-shadow:0 3px 12px rgba(0,0,0,.28);">
-          <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
-          <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
-          <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
-        </button>
+        <div class="ham-wrap" style="position:relative;">
+          <button title="Menu" onclick="this.parentElement.querySelector('.ham-menu').classList.toggle('open');" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;padding:0;box-shadow:0 3px 12px rgba(0,0,0,.28);">
+            <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
+            <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
+            <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
+          </button>
+          <!-- Same nav as the header hamburger, copied here so the center circle opens it locally. -->
+          <div class="ham-menu" onclick="if(event.target.closest('.tnav-btn'))this.classList.remove('open');">
+            <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+            <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
+            <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
+            <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
+            <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
+            <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
+            <button class="tnav-btn" onclick="navTo('entcard')">Entrepreneur Library</button>
+            <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
+            <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
+            <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
+            <button class="tnav-btn" onclick="window.open('/landing-v3','_blank')">Landing Page 3</button>
+            <button class="tnav-btn" onclick="window.open('/about','_blank')">About Us</button>
+            <button class="tnav-btn" onclick="favThisPage()">&#9734; Favorite This Page</button>
+            <button class="tnav-btn tnav-signout" onclick="signOut()">Step Away</button>
+            <div class="ham-menu-sep"></div>
+            <div class="theme-picker ham-theme" role="group" aria-label="Theme">
+              <button data-theme-btn="dark"  onclick="setTheme('dark')"  title="Night mode">&#9790;</button>
+              <button data-theme-btn="light" onclick="setTheme('light')" title="Daylight mode">&#9728;</button>
+              <button data-theme-btn="kids"  onclick="setTheme('kids')"  title="Kids mode">&#9733;</button>
+            </div>
+          </div>
+        </div>
         <button onclick="subnavForward()" title="Next" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.28);">&#9654;</button>
       </div>
 
