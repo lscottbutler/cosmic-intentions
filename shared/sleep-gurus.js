@@ -89,29 +89,15 @@ export function dailyGuruIndex() {
   return ((day % SLEEP_GURUS.length) + SLEEP_GURUS.length) % SLEEP_GURUS.length;
 }
 
-let _guruOverride = null;   // null = today's teacher; number = manually browsed
-
-export function guruNav(dir) {
-  const n = SLEEP_GURUS.length;
-  const cur = (_guruOverride != null) ? _guruOverride : dailyGuruIndex();
-  _guruOverride = ((cur + dir) % n + n) % n;
-  renderDailyGuru();
-}
-
 export function renderDailyGuru() {
   const box = document.getElementById('dailyGuru');
   if (!box) return;
-  const i = (_guruOverride != null) ? _guruOverride : dailyGuruIndex();
+  const i = dailyGuruIndex();
   const g = SLEEP_GURUS[i];
-  const navBtn = (dir, tri, lbl) => '<button onclick="guruNav(' + dir + ')" title="' + lbl + ' teacher" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;border:none;color:#fff;font-size:13px;line-height:1;cursor:pointer;padding:0;">' + tri + '</button>';
   box.innerHTML =
     '<div class="gb-eyebrow">Why play it as you drift off</div>' +
     '<p class="gb-intro">The autoplay you build here isn’t background noise — it’s the last thing your mind hears before sleep. Every teacher below points to the same window: the drowsy minutes as you fade off, when the subconscious is wide open to the words and voices you feed it.</p>' +
-    '<div style="display:flex;align-items:center;gap:10px;margin:0 0 4px;">' +
-      navBtn(-1, '&#9664;', 'Previous') +
-      '<div class="gb-daytag" style="margin:0;">Teacher of the day · a new one every 24 hours · ' + (i + 1) + ' of ' + SLEEP_GURUS.length + '</div>' +
-      navBtn(1, '&#9654;', 'Next') +
-    '</div>' +
+    '<div class="gb-daytag">Teacher of the day · a new one every 24 hours · ' + (i + 1) + ' of ' + SLEEP_GURUS.length + '</div>' +
     '<div class="guru-sec">' +
       '<h3>' + esc(g.name) + '</h3>' +
       '<div class="gb-src">' + esc(g.src) + '</div>' +
@@ -120,4 +106,4 @@ export function renderDailyGuru() {
     '</div>';
 }
 
-if (typeof window !== 'undefined') { window.renderDailyGuru = renderDailyGuru; window.guruNav = guruNav; }
+if (typeof window !== 'undefined') window.renderDailyGuru = renderDailyGuru;
