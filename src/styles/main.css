@@ -487,8 +487,26 @@ body:has(#page-notes.active)       .hdr { background:#3a3a3a; }
 
 /* Inner Citadel nav buttons — half height + no leading icon (direct children only,
    so the buttons INSIDE the expand panels are untouched). */
-#vaultMain > button { padding: 9px 16px !important; }
-#vaultMain > button > span:first-child { display: none !important; }
+#citadelNav > button { padding: 9px 16px !important; }
+#citadelNav > button > span:first-child { display: none !important; }
+/* Alphabetical order via flex `order` — each button + its attached panel share an
+   order value so they move together (source order breaks the tie). */
+#citadelNav > button:nth-of-type(1)  { order:2; }   /* Log A Win */
+#citadelNav > button:nth-of-type(2)  { order:10; }  /* Quick Thought */
+#citadelNav > button:nth-of-type(3)  { order:8; }   /* Play My Favorites */
+#citadelNav > button:nth-of-type(4)  { order:5; }   /* My Daily Habits */
+#citadelNav > button:nth-of-type(5)  { order:1; }   /* Creative Visualization Library */
+#citadelNav > button:nth-of-type(6)  { order:7; }   /* My Roadmap */
+#citadelNav > button:nth-of-type(7)  { order:3; }   /* Meditation Session */
+#citadelNav > button:nth-of-type(8)  { order:9; }   /* Practice Gratitude */
+#citadelNav > button:nth-of-type(9)  { order:4; }   /* Mind Loop */
+#citadelNav > button:nth-of-type(10) { order:6; }   /* My Goals */
+#citadelNav > #quickWinPanel { order:2; }
+#citadelNav > #dashQuickAdd  { order:10; }
+#citadelNav > #medBox        { order:3; }
+#citadelNav > #gratBox       { order:9; }
+#citadelNav > #mindLoopBox   { order:4; }
+#citadelNav > #goalsBox      { order:6; }
 
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {

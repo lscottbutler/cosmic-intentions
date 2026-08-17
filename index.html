@@ -762,6 +762,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <path d="M114 74 L126 90 L138 74"/>
           </svg>
         </div>
+        <!-- Nav buttons wrapped so CSS `order` can alphabetize them without moving the big attached panels. -->
+        <div id="citadelNav" style="display:flex;flex-direction:column;">
         <!-- QUICK WIN — tick a real habit / My Action / roadmap step right here; each tap logs the actual win -->
         <button onclick="var p=document.getElementById('quickWinPanel');var open=p.style.display==='none';p.style.display=open?'block':'none';this.querySelector('.qw-chev').textContent=open?'⌄':'›';if(open&&window.renderQuickWin)renderQuickWin();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:#F5A623;">&#10022;</span>
@@ -971,6 +973,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div id="layer-content-roadmap"></div>
         </div><!-- end colb-active-state -->
         </div><!-- end goalsBox -->
+        </div><!-- end citadelNav -->
 
         <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
         <div id="taskListWidget"></div>
