@@ -111,12 +111,12 @@ export function renderNotesPage() {
 
   // Section-header colors, borrowed from the goal-card palette.
   const NOTE_HDR = {
-    affirmation:{ bg:'#E8B923', fg:'#1a1a1a' },  // yellow
-    belief:     { bg:'#2B6CB0', fg:'#ffffff' },  // blue
-    reminder:   { bg:'#4C9A2A', fg:'#ffffff' },  // green (unspecified — pick)
-    inspiration:{ bg:'#E8743B', fg:'#ffffff' },  // orange
-    quote:      { bg:'#E0102B', fg:'#ffffff' },  // red
-    note:       { bg:'#141414', fg:'#ffffff' },  // dark dark grey
+    affirmation:{ bg:'#E8B923', fg:'#1a1a1a', add:'#8a6d16' },  // yellow → dark mustard/brown
+    belief:     { bg:'#2B6CB0', fg:'#ffffff', add:'#1c4a7d' },  // blue
+    reminder:   { bg:'#4C9A2A', fg:'#ffffff', add:'#356c1d' },  // green
+    inspiration:{ bg:'#E8743B', fg:'#ffffff', add:'#a84e22' },  // orange
+    quote:      { bg:'#E0102B', fg:'#ffffff', add:'#960b1d' },  // red
+    note:       { bg:'#141414', fg:'#ffffff', add:'#000000' },  // dark grey
   };
 
   host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + NOTE_CATS.map(c => {
@@ -148,15 +148,15 @@ export function renderNotesPage() {
 
     // Hidden until the user taps "＋ Add …" in the banner.
     const addBox = total < NOTES_CAP ? `
-      <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="＋ Add ${singular.toLowerCase()}…"
-        style="display:none;width:100%;box-sizing:border-box;padding:11px 13px;border:1px dashed #5E5E5E;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#f4f4f4;min-height:44px;overflow:hidden;resize:none;"></textarea>` : '';
+      <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="＋"
+        style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#fff;background:${hd.add};min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
 
     return `
       <div><button onclick="notesToggleSection('notesec-${c.key}')"
         style="width:100%;display:flex;align-items:center;justify-content:space-between;background:${hd.bg};border:1px solid rgba(0,0,0,.25);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
         <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:${hd.fg};text-transform:uppercase;">${esc(c.label)}</span>
         <span style="display:flex;align-items:center;gap:12px;">
-          ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="color:${hd.fg};font-size:12px;font-weight:700;letter-spacing:.3px;cursor:pointer;white-space:nowrap;">＋ Add ${singular.toLowerCase()}</span>` : ''}
+          ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:${hd.add};color:#fff;font-size:17px;font-weight:800;line-height:1;cursor:pointer;">＋</span>` : ''}
           <span style="font-family:var(--vault-mono,monospace);font-size:11px;color:${hd.fg};opacity:.75;">${mine.length}</span>
           <span id="notesec-${c.key}-arr" style="color:${hd.fg};opacity:.85;font-size:13px;transition:transform .2s ease;transform:rotate(0deg);">▼</span>
         </span>
