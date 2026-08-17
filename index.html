@@ -590,10 +590,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- AUTOPLAY RUNTHROUGH — moved to the top (was below the teacher / add sections) -->
       <div id="favorites-list" class="player-times-grid" style="margin-bottom:18px;"></div>
 
-      <!-- Page back / next — between the autoplay list and the teacher section -->
-      <div style="display:flex;align-items:center;gap:10px;margin:0 0 26px;">
-        <button onclick="subnavBack()" title="Back a page" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#000;border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;padding:0;">&#9664;</button>
-        <button onclick="subnavForward()" title="Forward a page" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#000;border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;padding:0;">&#9654;</button>
+      <!-- 3-circle nav template: back (orange) · hamburger menu (blue) · next (green) -->
+      <div style="display:flex;align-items:center;gap:14px;margin:4px 0 26px;">
+        <button onclick="subnavBack()" title="Back a page" style="width:54px;height:54px;border-radius:50%;background:#9a9a9a;border:5px solid #F7941E;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#1a1a1a;font-size:16px;line-height:1;">&#9664;</button>
+        <button onclick="toggleHamMenu()" title="Menu" style="width:54px;height:54px;border-radius:50%;background:#9a9a9a;border:5px solid #37A9E8;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#1a1a1a;font-size:20px;line-height:1;">&#9776;</button>
+        <button onclick="subnavForward()" title="Forward a page" style="width:54px;height:54px;border-radius:50%;background:#9a9a9a;border:5px solid #7DC242;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#1a1a1a;font-size:16px;line-height:1;">&#9654;</button>
       </div>
 
       <!-- SLEEP GURUS — "Teacher of the day": one teacher's section, rotates every 24h (shared/sleep-gurus.js → renderDailyGuru). -->
