@@ -487,7 +487,7 @@ body:has(#page-notes.active)       .hdr { background:#3a3a3a; }
 
 /* Inner Citadel nav buttons — half height + no leading icon (direct children only,
    so the buttons INSIDE the expand panels are untouched). */
-#citadelNav > button { padding: 9px 16px !important; }
+#citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; }
 #citadelNav > button > span:first-child { display: none !important; }
 /* Alphabetical order via flex `order` — each button + its attached panel share an
    order value so they move together (source order breaks the tie). */
