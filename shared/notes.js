@@ -137,13 +137,11 @@ export function renderNotesPage() {
           ${intentions.map((g, i) => `<option value="${g.id}"${n.goal === g.id ? ' selected' : ''}>${esc(goalLetter(g, i) + ' · ' + (g.title || '').replace(/^i am\s+/i, ''))}</option>`).join('')}
         </select>` : '';
       return `
-      <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;">
-        <div style="display:flex;align-items:flex-start;gap:8px;">
-          <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
-            style="flex:1;min-width:0;box-sizing:border-box;padding:13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.7;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
-          <button onclick="notesDelete('${n.id}')" title="Delete"
-            style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
-        </div>
+      <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;position:relative;">
+        <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
+          style="width:100%;box-sizing:border-box;padding:13px 48px 13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.7;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
+        <button onclick="notesDelete('${n.id}')" title="Delete"
+          style="position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         ${goalSel}
       </div>`;
     }).join('');
