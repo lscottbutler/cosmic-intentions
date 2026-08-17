@@ -489,6 +489,8 @@ body:has(#page-notes.active)       .hdr { background:#3a3a3a; }
 
 /* Inner Citadel nav buttons — half height + no leading icon (direct children only,
    so the buttons INSIDE the expand panels are untouched). */
+#citadelNav > button,
+#taskListWidget > div > details > summary { background: #6e6e6e !important; }
 #citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; }
 #citadelNav > button > span:first-child { display: none !important; }
 /* Top-right name removed — the "Welcome back, {name}" greeting covers it. */
