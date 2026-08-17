@@ -485,6 +485,11 @@ body:has(#page-runthroughs.active) .hdr { background:#C97C74; }
 body:has(#page-dailyfocus.active)  .hdr { background:#2b2f45; }
 body:has(#page-notes.active)       .hdr { background:#3a3a3a; }
 
+/* Inner Citadel nav buttons — half height + no leading icon (direct children only,
+   so the buttons INSIDE the expand panels are untouched). */
+#vaultMain > button { padding: 9px 16px !important; }
+#vaultMain > button > span:first-child { display: none !important; }
+
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {
   font-family: 'Dancing Script', cursive;
