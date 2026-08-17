@@ -162,7 +162,9 @@ body {
   z-index: 200;
   padding: 6px;
 }
-.ham-menu.open { display: flex; flex-direction: column; }
+/* Open as a fixed, centered overlay so it's always visible no matter which
+   hamburger (header or the on-page nav circle) triggers it. */
+.ham-menu.open { display: flex; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); max-height: 82vh; overflow-y: auto; z-index: 500; }
 .ham-menu .tnav-btn {
   display: block;
   width: 100%;
