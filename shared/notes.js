@@ -140,7 +140,7 @@ export function renderNotesPage() {
       <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;">
         <div style="display:flex;align-items:flex-start;gap:8px;">
           <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
-            style="flex:1;min-width:0;box-sizing:border-box;padding:11px 13px;border:none;border-radius:9px;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
+            style="flex:1;min-width:0;box-sizing:border-box;padding:13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.7;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
           <button onclick="notesDelete('${n.id}')" title="Delete"
             style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         </div>
