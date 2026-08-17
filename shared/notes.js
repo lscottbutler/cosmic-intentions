@@ -240,7 +240,10 @@ export function notesToggleQuickAdd(targetId) {
     const cats = [...NOTE_CATS].sort((a, b) => a.label.localeCompare(b.label));   // A–Z
     box.innerHTML =
       `<div style="background:#1f1f1f;border:1px solid var(--border,#333);border-radius:10px;padding:14px 16px;margin:0 0 18px;">` +
-        `<div style="font-weight:800;font-size:13px;letter-spacing:.5px;color:#fff;text-transform:uppercase;margin-bottom:12px;">Quick add a thought</div>` +
+        `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">` +
+          `<span style="font-weight:800;font-size:13px;letter-spacing:.5px;color:#fff;text-transform:uppercase;">Quick add a thought</span>` +
+          `<button onclick="navTo('notes')" title="Open My Thoughts" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:11px;letter-spacing:.3px;padding:7px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;">My Thoughts &rarr;</button>` +
+        `</div>` +
         cats.map(c => `
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
             <span style="width:118px;flex-shrink:0;font-weight:800;font-size:12px;text-transform:uppercase;color:#fff;letter-spacing:.5px;">${esc(c.label)}</span>
