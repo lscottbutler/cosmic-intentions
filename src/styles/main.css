@@ -1609,41 +1609,22 @@ input, textarea, select {
 
 /* ── CONTENT BLOCKS (display) ─────────────────────────── */
 .cb-display {
-  background: transparent !important;
-  border: 2px solid #ffffff;
-  border-radius: 4px !important;
-  padding: 1.5rem !important;
-  font-size: 14px;
-  color: var(--text) !important;
-  line-height: 1.7;
+  background: #f4f6f8 !important;
+  border: 1px solid #e3e7ec !important;
+  border-radius: 12px !important;
+  padding: 22px 24px !important;
+  font-size: 15px;
+  color: #26364b !important;
+  line-height: 1.8;
   margin: 14px 0;
   width: 100% !important;
   box-sizing: border-box;
+  text-align: left;
 }
 .cb-display.cb-blob-1,
 .cb-display.cb-blob-2,
 .cb-display.cb-blob-3 { background-image: none !important; }
 .cb-display:empty { display: none; }
-/* Home "welcome" quote block — professional card: soft background, room to
-   breathe, left-aligned, and NORMAL (non-uppercase) text. */
-.cb-display[data-block="home-welcome"] {
-  background: #f4f6f8 !important;
-  border: 1px solid #e3e7ec !important;
-  border-radius: 12px !important;
-  padding: 24px 26px !important;
-  text-align: left;
-}
-.cb-display[data-block="home-welcome"],
-.cb-display[data-block="home-welcome"] *,
-.cb-display[data-block="home-welcome"] p,
-.cb-display[data-block="home-welcome"] div,
-.cb-display[data-block="home-welcome"] span,
-.cb-display[data-block="home-welcome"] strong {
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  line-height: 1.85 !important;
-  font-size: 15px !important;
-}
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
 .cb-display p,
@@ -1689,7 +1670,7 @@ input, textarea, select {
 /* Column-A welcome/president block — theme-aware text (dark on light themes, white on dark), full-width, symmetric (left=right) padding */
 .vault-main .cb-display,
 .vault-main .cb-display * { color: var(--text) !important; text-decoration: none !important; }
-.vault-main .cb-display { padding: 16px !important; box-sizing: border-box; }
+.vault-main .cb-display { padding: 22px 24px !important; box-sizing: border-box; }
 .vault-main .cb-display * {
   width: auto !important;
   max-width: 100% !important;
@@ -1697,7 +1678,7 @@ input, textarea, select {
   word-break: normal !important;
 }
 .cb-display br + br { display: none; }
-.cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: var(--text) !important; text-transform: uppercase; letter-spacing: 0.03em; }
+.cb-display *, .cb-display p, .cb-display div, .cb-display span, .cb-display strong { color: var(--text) !important; text-transform: none; letter-spacing: normal; line-height: 1.8; }
 
 .cb-display strong { font-weight: 700; }
 .cb-display em { font-style: italic; }
