@@ -611,20 +611,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       </style>
       <div class="guru-box" id="dailyGuru"></div>
 
-      <!-- ADD TO AUTOPLAY — quick launcher to the two places you can ♥ things onto this list -->
-      <div style="margin:0 0 22px;">
-        <div style="font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted,#9a9a9a);margin:0 0 10px;">Add to your autoplay</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button onclick="openVizLibrary(); if(window.toast)toast('Tap a ♥ on a goal to add it to your autoplay','info');" style="flex:1;min-width:170px;display:flex;align-items:center;gap:12px;background:var(--off,#fff);border:1px solid var(--border,#E6E8EB);border-radius:12px;padding:13px 15px;cursor:pointer;color:var(--text);text-align:left;">
-            <span style="font-size:24px;line-height:1;">&#9673;</span>
-            <span><span style="display:block;font-weight:700;font-size:14px;">Visualizations &amp; Goals</span><span style="display:block;font-size:12px;opacity:.55;">Visualization Library</span></span>
-          </button>
-          <button onclick="navTo('dashboard'); if(window.toast)toast('Tap a ♥ on a session to add it to your autoplay','info');" style="flex:1;min-width:170px;display:flex;align-items:center;gap:12px;background:var(--off,#fff);border:1px solid var(--border,#E6E8EB);border-radius:12px;padding:13px 15px;cursor:pointer;color:var(--text);text-align:left;">
-            <span style="font-size:24px;line-height:1;">&#129496;</span>
-            <span><span style="display:block;font-weight:700;font-size:14px;">Sessions &amp; Timers</span><span style="display:block;font-size:12px;opacity:.55;">Dashboard</span></span>
-          </button>
-        </div>
-      </div>
         </div>
       </div>
     </div>
