@@ -150,8 +150,8 @@ body {
   display: none;
   position: absolute;         /* drops from .ham-wrap (in-flow), so the button scrolls away with the page */
   top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+  right: 0;                   /* anchor to the right so it never spills off-page */
+  left: auto;
   width: max-content;
   min-width: 200px;
   max-width: 94vw;
