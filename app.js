@@ -4045,17 +4045,19 @@ function injectPlaceholderCards() {
   if (document.querySelector('.ci-ph-card')) return;   // inject once
   // Per-page anchor: the top card goes right AFTER this element (the title/header).
   const cfg = {
-    notes:       '#page-notes > div > p',
+    notes:       '#page-notes .pg-intro',
     setup:       '#page-setup .setup-page-header',
     habits:      '#page-habits .setup-page-header',
-    vizlibrary:  '#page-vizlibrary > div > div',
-    runthroughs: '#page-runthroughs > div > div',
-    wins:        '#page-wins > div > div',
+    vizlibrary:  '#page-vizlibrary .pg-intro',
+    runthroughs: '#page-runthroughs .pg-intro',
+    wins:        '#page-wins .wins-intro',
   };
   Object.keys(cfg).forEach(id => {
     const page = document.getElementById('page-' + id);
     if (!page) return;
-    const wrap = page.firstElementChild || page;
+    // On the framed pages the content lives in the white .pg-screen/.wins-screen,
+    // not the outer frame — inject there so the cards sit in the content, not the frame edge.
+    const wrap = page.querySelector('.pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
     if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // top: under the title
     else wrap.insertBefore(_makePhCard(), wrap.firstChild);
