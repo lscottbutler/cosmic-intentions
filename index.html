@@ -85,11 +85,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   });
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.ham-wrap')) {
-      var m = document.getElementById('hamMenu');
-      if (m.classList.contains('open')) {
+      document.querySelectorAll('.ham-menu.open').forEach(function(m) {
         m.classList.remove('open');
-        document.getElementById('hamBtn').setAttribute('aria-expanded', 'false');
-      }
+      });
+      var b = document.getElementById('hamBtn');
+      if (b) b.setAttribute('aria-expanded', 'false');
     }
   });
 </script>
