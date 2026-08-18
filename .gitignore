@@ -70,3 +70,8 @@ images/videos/_dissect3/
 /_pptx/
 /*.pptx
 /art/
+
+# home-row sticker sources are heavy — commit only the compressed .webp
+images/home-row/*.png
+images/home-row/*.jpg
+images/home-row/*.jpeg
