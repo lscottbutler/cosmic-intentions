@@ -646,6 +646,9 @@ function updateUI(user) {
   const homeLoggedOut = document.getElementById('homeLoggedOut');
   if (homeLoggedIn)  homeLoggedIn.style.display  = loggedIn ? 'block' : 'none';
   if (homeLoggedOut) homeLoggedOut.style.display = loggedIn ? 'none'  : 'block';
+  // Fill the home "rotating thought" slots now (updateUI shows home without going
+  // through showPage, so sprinkleNotes would otherwise never run on first load).
+  if (loggedIn && typeof window.sprinkleNotes === 'function') window.sprinkleNotes();
   // Hide the app header + hamburger on the logged-out landing (it has its own nav).
   const _appHdr = document.querySelector('header.hdr');
   if (_appHdr) _appHdr.style.display = loggedIn ? '' : 'none';
