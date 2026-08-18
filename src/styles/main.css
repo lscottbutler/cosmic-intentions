@@ -1662,9 +1662,6 @@ input, textarea, select {
 .cb-display.cb-blob-2,
 .cb-display.cb-blob-3 { background-image: none !important; }
 .cb-display:empty { display: none; }
-/* Home welcome block sits on the blob image — white text + shadow for readability. */
-.cb-display[data-block="home-welcome"],
-.cb-display[data-block="home-welcome"] * { color:#ffffff !important; text-shadow:0 1px 3px rgba(0,0,0,.65) !important; }
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
 .cb-display p,
