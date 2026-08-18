@@ -75,6 +75,9 @@ const _ENT_RESOURCES = {
 };
 function _entResourcesBox(res) {
   res = res || _ENT_RESOURCES;   // per-card links if the card has them, else the shared defaults
+  const icoYT = `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:-4px;margin-right:7px;"><rect x="1" y="5" width="22" height="14" rx="4.5" fill="#FF0000"/><path d="M10 8.4v7.2l6-3.6z" fill="#fff"/></svg>`;
+  const icoPod = `<svg width="19" height="19" viewBox="0 0 24 24" style="vertical-align:-4px;margin-right:7px;" fill="none" stroke="#C05BEA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="11" r="2.3" fill="#C05BEA" stroke="none"/><path d="M8.2 15a5 5 0 1 1 7.6 0"/><path d="M5.7 17.6a8.5 8.5 0 1 1 12.6 0"/><path d="M12 13.3 11 21h2z" fill="#C05BEA" stroke="none"/></svg>`;
+  const icoArt = `<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-4px;margin-right:7px;" fill="none" stroke="#8FA977" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 12h6M9 16h6"/></svg>`;
   const col = (label, arr) => `<div>
     <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:13px;margin-bottom:8px;">${label}</div>
     ${(arr || []).map(r => r.url
@@ -84,9 +87,9 @@ function _entResourcesBox(res) {
   return `<div style="grid-column:span 2;align-self:start;border:1px solid rgba(255,255,255,.14);padding:14px 16px 12px;">
     <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:12px;">GO DEEPER</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;">
-      ${col('&#9654; YOUTUBE', res.youtube)}
-      ${col('&#127911; PODCASTS', res.podcasts)}
-      ${col('&#128196; ARTICLES', res.articles)}
+      ${col(icoYT + 'YOUTUBE', res.youtube)}
+      ${col(icoPod + 'PODCASTS', res.podcasts)}
+      ${col(icoArt + 'ARTICLES', res.articles)}
     </div>
   </div>`;
 }
