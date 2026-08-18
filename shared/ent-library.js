@@ -56,6 +56,39 @@ const _ENT_FORCES = [
   ['GRIT & DETERMINATION', 'The character and staying power to outlast the hard days.',
     [['Determined to Succeed', 'DETERMINED TO SUCCEED'], ['Living the Brand', 'LIVING THE BRAND'], ['Empathetic', 'EMPATHETIC'], ['Respected Manager', 'RESPECTED MANAGER'], ['Comfortable Delegating', 'COMFORTABLE DELEGATING'], ['Fairness', 'FAIRNESS'], ['Balance in Life', 'BALANCE IN LIFE']]],
 ];
+/* Shared "GO DEEPER" media for the whole library (the overview is the same on
+   every card). 3 columns — YouTube · Podcasts · Articles — 2 links each.
+   Real starter links; swap these for your own curated ones anytime. */
+const _ENT_RESOURCES = {
+  youtube: [
+    { label: 'Y Combinator — Startup advice', url: 'https://www.youtube.com/@ycombinator' },
+    { label: 'GaryVee — Entrepreneurship', url: 'https://www.youtube.com/@garyvee' },
+  ],
+  podcasts: [
+    { label: 'How I Built This (NPR)', url: 'https://www.npr.org/series/490248027/how-i-built-this' },
+    { label: 'Masters of Scale', url: 'https://mastersofscale.com' },
+  ],
+  articles: [
+    { label: 'Paul Graham — Essays', url: 'https://www.paulgraham.com/articles.html' },
+    { label: 'First Round Review', url: 'https://review.firstround.com' },
+  ],
+};
+function _entResourcesBox() {
+  const col = (label, arr) => `<div>
+    <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:13px;margin-bottom:8px;">${label}</div>
+    ${arr.map(r => r.url
+      ? `<a href="${r.url}" target="_blank" rel="noopener" style="display:block;color:#dfe7d6;font-size:13px;line-height:1.45;margin-bottom:7px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px;">${_esc(r.label)}</a>`
+      : `<div style="color:#7f8a76;font-size:13px;line-height:1.45;margin-bottom:7px;">${_esc(r.label)}</div>`).join('')}
+  </div>`;
+  return `<div style="grid-column:span 2;align-self:start;border:1px solid rgba(255,255,255,.14);padding:14px 16px 12px;">
+    <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:12px;">GO DEEPER</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;">
+      ${col('&#9654; YOUTUBE', _ENT_RESOURCES.youtube)}
+      ${col('&#127911; PODCASTS', _ENT_RESOURCES.podcasts)}
+      ${col('&#128196; ARTICLES', _ENT_RESOURCES.articles)}
+    </div>
+  </div>`;
+}
 function _entOverview() {
   const link = ([label, key]) => `<span onclick="entGoToCard('${key}')" style="cursor:pointer;text-decoration:none;">${label}</span>`;
   return `<div style="background:#1c1c1c;color:#fff;padding:20px 22px;">
@@ -67,6 +100,7 @@ function _entOverview() {
         <div style="font-size:14px;line-height:1.5;opacity:.85;margin-bottom:6px;">${desc}</div>
         <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.map(link).join(' &middot; ')}</div>
       </div>`).join('')}
+      ${_entResourcesBox()}
     </div>
   </div>`;
 }
