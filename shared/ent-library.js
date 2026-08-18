@@ -21,14 +21,27 @@ function _affLines(title) {
 
 /* A content block in the green "monitor" theme — dark header bar + white item
    "screens", each with a dark tab holding a large white number. */
-function _greenSection(title, items, mode) {
+function _greenSection(title, items, mode, cardKey) {
+  const favs = mode === 'aff' ? (_entAffFavs()[cardKey] || []) : null;
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
     <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">${title}</div>
     ${items.map((s, i) => `<div style="display:flex;align-items:stretch;margin-bottom:10px;">
       <div style="flex-shrink:0;width:56px;background:#20241f;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;font-family:var(--vault-mono,monospace);">${i + 1}</div>
       <div style="flex:1;background:#fff;padding:13px 15px;color:#1c1c1c;font-size:14px;line-height:1.5;">${_esc(s)}</div>
+      ${mode === 'aff' ? `<button onclick="entFav('${cardKey}',${i})" title="Favorite" aria-label="Favorite" style="flex-shrink:0;width:56px;background:#20241f;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;">${favs.includes(i) ? '&#9829;' : '&#9825;'}</button>` : ''}
     </div>`).join('')}
   </div>`;
+}
+/* Favorited affirmations, per card key (personal, saved locally). */
+function _entAffFavs() { try { return JSON.parse(localStorage.getItem('ci_ent_aff_favs') || '{}'); } catch (e) { return {}; } }
+export function entFav(key, i) {
+  const all = _entAffFavs();
+  const arr = all[key] || [];
+  const at = arr.indexOf(i);
+  if (at >= 0) arr.splice(at, 1); else arr.push(i);
+  if (arr.length) all[key] = arr; else delete all[key];
+  try { localStorage.setItem('ci_ent_aff_favs', JSON.stringify(all)); } catch (e) {}
+  renderEntLibrary();
 }
 
 /* Shared overview shown where the per-card directive used to be: the make-up of a
@@ -106,7 +119,7 @@ export function renderEntLibrary() {
     `${_entOverview()}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_entNotesSection(c)}
-     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff')}
+     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
      ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      <div id="entPlayer" style="display:none;"></div>`;
 }
