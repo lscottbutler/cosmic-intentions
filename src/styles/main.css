@@ -117,7 +117,7 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
   border-bottom: none;
   display: flex;
   align-items: center;
-  justify-content: flex-end;   /* hamburger sits on the right */
+  justify-content: center;   /* hamburger centered in the column */
   padding: 0 20px;
   gap: 4px;
   z-index: 300;   /* above the header (100) so the hamburger isn't clipped */
@@ -128,22 +128,6 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
 
 /* ── HAMBURGER NAV (red circle, centered) ───────────── */
 .ham-wrap { position: relative; }
-/* Grey rounded "tab" behind the header hamburger — pops up above the page-title
-   line and reads as a distinct nub on the (now uniform) dark header. Scoped to
-   #topNav so the My-Favorites 3-circle nav copy isn't given a tab.
-   Bottom-anchored so it can never hang down into the white content. */
-#topNav .ham-wrap::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: -30px;              /* sits down onto the title bar */
-  width: 104px;
-  height: 104px;             /* rounded top rises above the title line */
-  background: #3f3f3f;
-  border-radius: 52px 52px 0 0;
-  z-index: -1;               /* behind the hamburger button */
-}
 .ham-btn {
   width: 76px; height: 76px;
   border-radius: 50%;
