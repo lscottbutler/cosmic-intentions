@@ -73,23 +73,24 @@ const _ENT_RESOURCES = {
     { label: 'First Round Review', url: 'https://review.firstround.com' },
   ],
 };
-function _entResourcesBox() {
+function _entResourcesBox(res) {
+  res = res || _ENT_RESOURCES;   // per-card links if the card has them, else the shared defaults
   const col = (label, arr) => `<div>
     <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:13px;margin-bottom:8px;">${label}</div>
-    ${arr.map(r => r.url
+    ${(arr || []).map(r => r.url
       ? `<a href="${r.url}" target="_blank" rel="noopener" style="display:block;color:#dfe7d6;font-size:13px;line-height:1.45;margin-bottom:7px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px;">${_esc(r.label)}</a>`
       : `<div style="color:#7f8a76;font-size:13px;line-height:1.45;margin-bottom:7px;">${_esc(r.label)}</div>`).join('')}
   </div>`;
   return `<div style="grid-column:span 2;align-self:start;border:1px solid rgba(255,255,255,.14);padding:14px 16px 12px;">
     <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:12px;">GO DEEPER</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;">
-      ${col('&#9654; YOUTUBE', _ENT_RESOURCES.youtube)}
-      ${col('&#127911; PODCASTS', _ENT_RESOURCES.podcasts)}
-      ${col('&#128196; ARTICLES', _ENT_RESOURCES.articles)}
+      ${col('&#9654; YOUTUBE', res.youtube)}
+      ${col('&#127911; PODCASTS', res.podcasts)}
+      ${col('&#128196; ARTICLES', res.articles)}
     </div>
   </div>`;
 }
-function _entOverview() {
+function _entOverview(c) {
   const link = ([label, key]) => `<span onclick="entGoToCard('${key}')" style="cursor:pointer;text-decoration:none;">${label}</span>`;
   return `<div style="background:#1c1c1c;color:#fff;padding:20px 22px;">
     <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:8px;">THE SUCCESSFUL ENTREPRENEUR</div>
@@ -100,7 +101,7 @@ function _entOverview() {
         <div style="font-size:14px;line-height:1.5;opacity:.85;margin-bottom:6px;">${desc}</div>
         <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.map(link).join(' &middot; ')}</div>
       </div>`).join('')}
-      ${_entResourcesBox()}
+      ${_entResourcesBox(c && c.resources)}
     </div>
   </div>`;
 }
@@ -150,7 +151,7 @@ export function renderEntLibrary() {
   const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
 
   host.innerHTML = monitor +
-    `${_entOverview()}
+    `${_entOverview(c)}
      ${_entNotesSection(c)}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}

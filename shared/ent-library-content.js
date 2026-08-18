@@ -13,7 +13,12 @@ export const ENT_CARDS = [
     directive: 'Discipline is not what you do — it is who you are. Never negotiate with discomfort; run the protocol.',
     affirmations: ['I am disciplined. My routine is non-negotiable.', 'I keep my promises to myself first.', 'Consistency is my compound interest.', 'I do the work whether I feel like it or not.', 'Zero exceptions, zero excuses.'],
     beliefs: ['Discipline is freedom, not restriction.', 'Every streak day is proof of who I am becoming.', 'Motivation is optional; the protocol is not.', 'I never negotiate with discomfort.'],
-    roadmap: ['Define three daily non-negotiables and lock the times.', 'Track each day as a streak — never miss twice.', 'Remove one friction point that keeps becoming an excuse.', 'Prep tomorrow’s first task the night before.', 'Review the streak weekly as your scoreboard.', 'Add a new non-negotiable only after 30 clean days.'] },
+    roadmap: ['Define three daily non-negotiables and lock the times.', 'Track each day as a streak — never miss twice.', 'Remove one friction point that keeps becoming an excuse.', 'Prep tomorrow’s first task the night before.', 'Review the streak weekly as your scoreboard.', 'Add a new non-negotiable only after 30 clean days.'],
+    resources: {
+      youtube:  [{ label: 'Jocko Willink — Discipline', url: 'https://www.youtube.com/@JockoPodcastOfficial' }, { label: 'Huberman Lab — Discipline', url: 'https://www.youtube.com/@hubermanlab' }],
+      podcasts: [{ label: 'The Jocko Podcast', url: 'https://jockopodcast.com' }, { label: 'Huberman Lab', url: 'https://www.hubermanlab.com/podcast' }],
+      articles: [{ label: 'James Clear — Habits', url: 'https://jamesclear.com/articles' }, { label: 'Farnam Street', url: 'https://fs.blog' }],
+    } },
 
   { n: 2, key: 'RISK TAKER', title: 'I AM A RISK TAKER',
     directive: 'Staying safe is the real risk. Make the calculated bet before the crowd can see it.',
@@ -37,7 +42,12 @@ export const ENT_CARDS = [
     directive: 'Your confidence is internally sourced. Move without waiting for permission — the proof arrives after the step, never before it.',
     affirmations: ['I am self-confident. My certainty is earned, not borrowed.', 'I trust myself to figure it out as I go.', 'I do not need anyone’s permission to move.', 'My confidence is the signal, not the noise.', 'I was built for exactly this.'],
     beliefs: ['Confidence is a decision I make daily, not a feeling I wait for.', 'Every win is confirmation of what I already knew about myself.', 'Doubt is a visitor, not a resident.', 'I act first; the evidence follows.'],
-    roadmap: ['Name one thing today you’ll do without asking permission.', 'Start a daily proof log — one line of evidence you’re capable.', 'Take the step before you feel ready; ready comes after.', 'Replace “I hope” with “I know” when you speak about your goals.', 'Surround your space with visible evidence of past wins.', 'Review the proof log weekly and watch the certainty compound.'] },
+    roadmap: ['Name one thing today you’ll do without asking permission.', 'Start a daily proof log — one line of evidence you’re capable.', 'Take the step before you feel ready; ready comes after.', 'Replace “I hope” with “I know” when you speak about your goals.', 'Surround your space with visible evidence of past wins.', 'Review the proof log weekly and watch the certainty compound.'],
+    resources: {
+      youtube:  [{ label: 'Mel Robbins — Confidence', url: 'https://www.youtube.com/@melrobbins' }, { label: 'TED — Self-confidence talks', url: 'https://www.youtube.com/@TED' }],
+      podcasts: [{ label: 'The Mel Robbins Podcast', url: 'https://www.melrobbins.com/podcast' }, { label: 'The Tony Robbins Podcast', url: 'https://www.tonyrobbins.com/podcasts' }],
+      articles: [{ label: 'Psychology Today — Confidence', url: 'https://www.psychologytoday.com/us/basics/confidence' }, { label: 'James Clear — Self-belief', url: 'https://jamesclear.com/articles' }],
+    } },
 
   { n: 6, key: 'PASSIONATE', title: 'I AM PASSIONATE',
     directive: 'Your passion is the one ingredient no competitor can replicate. Reignite the why every single day.',
