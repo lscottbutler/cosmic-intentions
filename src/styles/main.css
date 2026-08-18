@@ -1666,6 +1666,15 @@ input, textarea, select {
 .cb-display:empty { display: none; }
 /* Thought boxes sitting on the red-blob image — white text/icon for readability. */
 .redblob-note span { color:#ffffff !important; text-shadow:0 1px 2px rgba(0,0,0,.55) !important; }
+/* Welcome callout: force the INNER text to the intended airy type — the content-block
+   injection carries its own color/size/weight which was overriding the card. */
+.dash-note-block[data-block="dashboard-note-2"],
+.dash-note-block[data-block="dashboard-note-2"] *,
+.dash-note-block[data-block="dashboard-inspiration"],
+.dash-note-block[data-block="dashboard-inspiration"] * {
+  color:#3a4a63 !important; font-size:15.5px !important; line-height:1.72 !important;
+  font-weight:400 !important; letter-spacing:.1px !important; text-align:left !important;
+}
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
 .cb-display p,
