@@ -117,8 +117,8 @@ export function renderEntLibrary() {
 
   host.innerHTML = monitor +
     `${_entOverview()}
-     ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_entNotesSection(c)}
+     ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
      ${_greenSection('BELIEFS', c.beliefs, 'belief')}
      <div id="entPlayer" style="display:none;"></div>`;
