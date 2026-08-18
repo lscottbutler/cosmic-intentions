@@ -128,17 +128,6 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
 
 /* ── HAMBURGER NAV (red circle, centered) ───────────── */
 .ham-wrap { position: relative; }
-/* Dark tab that pops up behind the header hamburger (uniform on every page). */
-#topNav .ham-wrap::before {
-  content: '';
-  position: absolute;
-  left: 50%; transform: translateX(-50%);
-  top: -6px;
-  width: 82px; height: 94px;
-  background: #2b2b2b;
-  border-radius: 16px 16px 0 0;
-  z-index: -1;
-}
 .ham-btn {
   width: 76px; height: 76px;
   border-radius: 50%;
