@@ -1662,6 +1662,8 @@ input, textarea, select {
 .cb-display.cb-blob-2,
 .cb-display.cb-blob-3 { background-image: none !important; }
 .cb-display:empty { display: none; }
+/* Thought boxes sitting on the red-blob image — white text/icon for readability. */
+.redblob-note span { color:#ffffff !important; text-shadow:0 1px 2px rgba(0,0,0,.55) !important; }
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
 .cb-display p,
