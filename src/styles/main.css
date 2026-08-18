@@ -10,7 +10,10 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-size: 110%;
+  line-height: 1.7;   /* comfortable, airy default across the whole site */
 }
+/* Reading text everywhere gets the same airy spacing. */
+p, li { line-height: 1.7; }
 /* Site-wide font: force Roboto Condensed on every element, override CMS inline styles */
 *, *::before, *::after {
   font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif !important;
