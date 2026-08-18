@@ -12,8 +12,8 @@ body {
   font-size: 110%;
   line-height: 1.7;   /* comfortable, airy default across the whole site */
 }
-/* Reading text everywhere gets the same airy spacing. */
-p, li { line-height: 1.7; }
+/* Reading text everywhere = same size + airy spacing as the welcome block. */
+p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
 /* Site-wide font: force Roboto Condensed on every element, override CMS inline styles */
 *, *::before, *::after {
   font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif !important;
