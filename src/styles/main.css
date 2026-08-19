@@ -62,9 +62,9 @@ p, li, blockquote,
   --p4:#52B896;  --p5:#4A9EAD;  --p6:#5A8EA8;  --p7:#6A7E9E;  --p8:#8A7A9E;
   --orange: #38A038;
   --vault-mono: 'Courier New', 'IBM Plex Mono', monospace;
-  /* Typography — DARK: driven / athletic (condensed headers + Roboto body) */
-  --font-head: 'Roboto Condensed', system-ui, -apple-system, sans-serif;
-  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
+  /* Typography — DARK: calm / premium (Poppins headers + Lora serif body) */
+  --font-head: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-body: 'Lora', Georgia, 'Times New Roman', serif;
 }
 
 /* WHITE / daylight (women) */
@@ -74,9 +74,9 @@ p, li, blockquote,
   --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
   --border:#D9DEE3; --border-2:#E7EAED;
   --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;
-  /* Typography — LIGHT: calm / premium (Poppins headers + Lora serif body) */
-  --font-head: 'Poppins', system-ui, -apple-system, sans-serif;
-  --font-body: 'Lora', Georgia, 'Times New Roman', serif;
+  /* Typography — LIGHT: driven / athletic (condensed headers + Roboto body) */
+  --font-head: 'Roboto Condensed', system-ui, -apple-system, sans-serif;
+  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
 }
 /* WHITE + primary colors (kids) */
 [data-theme="kids"] {
