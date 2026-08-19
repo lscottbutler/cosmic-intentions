@@ -298,6 +298,35 @@ export function toast(msg, type = '', duration = 3000) {
 // activate all three together whenever any of them is requested. Navigating to a
 // specific one scrolls to that section.
 const INPUT_PAGES = ['notes', 'setup', 'habits'];
+
+/* Add the reusable right-hand column (clown + Big 3 stats) to a framed page,
+   wrapping the page's existing content into a 75% main column. Idempotent —
+   safe to call on every navigation; re-fills the stats each time. */
+function ensurePageSideColumn(pageId) {
+  try {
+    const page = document.getElementById('page-' + pageId);
+    if (!page) return;
+    const screen = page.querySelector('.pg-screen, .wins-screen');
+    if (!screen) return;
+    let side = screen.querySelector('.pg-side');
+    if (!screen.querySelector('.pg-body')) {
+      const main = document.createElement('div');
+      main.className = 'pg-body-main';
+      while (screen.firstChild) main.appendChild(screen.firstChild);
+      const layout = document.createElement('div');
+      layout.className = 'pg-body';
+      side = document.createElement('aside');
+      side.className = 'pg-side';
+      side.innerHTML = '<img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div class="pg-side-stats"></div>';
+      layout.appendChild(main);
+      layout.appendChild(side);
+      screen.appendChild(layout);
+    }
+    const statsEl = side && side.querySelector('.pg-side-stats');
+    if (statsEl && typeof vizSideStatsHTML === 'function') statsEl.innerHTML = vizSideStatsHTML();
+  } catch (e) { console.error('[pageSideColumn]', e); }
+}
+
 export function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const isInputs = INPUT_PAGES.includes(id);
@@ -324,6 +353,12 @@ export function showPage(id) {
   if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
+
+  // Reusable right-hand column (clown + Big 3 stats) on these framed pages.
+  if (id === 'dailyfocus') ensurePageSideColumn('dailyfocus');
+  if (isInputs) ensurePageSideColumn('notes');
+  if (id === 'myroadmap') ensurePageSideColumn('myroadmap');
+  if (id === 'wins') ensurePageSideColumn('wins');
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders

@@ -495,6 +495,12 @@ details.rm-drop[open]::details-content { height: auto; }
 .pg-frame.pf-navy  { --pf-frame:#2b2f45; --pf-bezel:#4a5170; --pf-bezelDk:#1c2030; --pf-chipV:#141826; } /* My Favorites — navy + slate blue */
 .pg-frame.pf-rose  { --pf-frame:#C97C74; --pf-bezel:#8a4f49; --pf-bezelDk:#6f3f3a; --pf-chipV:#3f221f; } /* Daily Habits — existing rose */
 .pg-frame.pf-plum  { --pf-frame:#3a3a3a; --pf-bezel:#565656; --pf-bezelDk:#6f6f6f; --pf-chipV:#222; } /* My Thoughts — three greys (dark → lighter → lightest) */
+/* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
+   75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
+   content into .pg-body-main and appends .pg-side. */
+.pg-body { display:grid; grid-template-columns:3fr 1fr; gap:16px; align-items:start; }
+.pg-side { border:1px dashed var(--border,#cfcfcf); border-radius:10px; min-height:240px; padding:14px; }
+@media (max-width:767px){ .pg-body { grid-template-columns:1fr; } }
 /* Top header adopts the active framed page's frame color (falls back to #2b2b2b). */
 /* App header matches the page-title bar (bezelDk) so the two bars read as ONE
    uniform surface — no two-tone seam behind the hamburger. */
