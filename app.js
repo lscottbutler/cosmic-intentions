@@ -329,13 +329,9 @@ function ensurePageSideColumn(pageId) {
 
 export function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const isInputs = INPUT_PAGES.includes(id);
-  if (isInputs) {
-    INPUT_PAGES.forEach(pid => { const el = document.getElementById('page-' + pid); if (el) el.classList.add('active'); });
-  } else {
-    const target = document.getElementById('page-' + id);
-    if (target) target.classList.add('active');
-  }
+  // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
+  const target = document.getElementById('page-' + id);
+  if (target) target.classList.add('active');
 
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
@@ -344,12 +340,12 @@ export function showPage(id) {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
-  if (isInputs) {   // render all three merged sections
+  if (id === 'notes') {   // My Thoughts — its own page
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
-    renderPBIntentionList();
-    if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
   }
+  if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
+  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
@@ -357,7 +353,7 @@ export function showPage(id) {
 
   // Reusable right-hand column (clown + Big 3 stats) on these framed pages.
   if (id === 'dailyfocus') ensurePageSideColumn('dailyfocus');
-  if (isInputs) ensurePageSideColumn('notes');
+  if (id === 'notes') ensurePageSideColumn('notes');
   if (id === 'myroadmap') ensurePageSideColumn('myroadmap');
   if (id === 'wins') ensurePageSideColumn('wins');
 
@@ -367,7 +363,7 @@ export function showPage(id) {
   // scrolled down when a page first loads. For a merged sub-section (Goals /
   // Habits) scroll to that section instead of the very top.
   window.scrollTo(0, 0);
-  const _section = (isInputs && id !== 'notes') ? document.getElementById('page-' + id) : null;
+  const _section = null;   // pages are individual now — always land at the top
   requestAnimationFrame(() => requestAnimationFrame(() => {
     if (_section) _section.scrollIntoView({ block: 'start' });
     else window.scrollTo(0, 0);
