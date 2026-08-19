@@ -4,7 +4,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
   background: var(--white);
   color: var(--black);
   min-height: 100vh;
@@ -17,7 +17,7 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
 /* Site-wide font: force Roboto Condensed on every element, override CMS inline styles.
    ONE font everywhere — no cursive / mono exceptions (matches the welcome block). */
 *, *::before, *::after {
-  font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif !important;
 }
 
 /* ── DESIGN TOKENS ────────────────────────────────────────────
@@ -2202,7 +2202,7 @@ input, textarea, select {
 /* ── COLUMN B BANNERS ──────────────────────────────── */
 
 .vault-date-line {
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -2260,7 +2260,7 @@ input, textarea, select {
   box-sizing: border-box;
 }
 .acc-trigger:hover, .acc-trigger.open { background: var(--border); }
-.acc-label { flex: 1; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Roboto Condensed', sans-serif; font-size: 16px; font-weight: 400; word-break: break-word; min-width: 0; }
+.acc-label { flex: 1; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 400; word-break: break-word; min-width: 0; }
 .acc-arrow { font-size: 9px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
 .acc-trigger.open .acc-arrow { transform: rotate(90deg); }
 .acc-panel {
@@ -2657,7 +2657,7 @@ input, textarea, select {
 .colb-banner:hover { filter: brightness(1.08); }
 .colb-banner-title {
   flex: 1;
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.14em;
