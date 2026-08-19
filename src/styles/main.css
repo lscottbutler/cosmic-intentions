@@ -515,6 +515,10 @@ body:has(#page-dashboard.active)   .hdr { background:#1b1b1b; }
 #taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List (slot 11) */
 #citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; }
 #citadelNav > button > span:first-child { display: none !important; }
+/* Citadel nav LABELS: just a touch above the 15.5px body text (was rendering too big) */
+#citadelNav > button > span[style*="flex:1"] { font-size: 16px !important; }
+/* trim the ">" chevrons down to match */
+#citadelNav > button > span:last-child { font-size: 15px !important; }
 /* Top-right name removed — the "Welcome back, {name}" greeting covers it. */
 #hdrUser { display: none !important; }
 /* Alphabetical order via flex `order` — each button + its attached panel share an
