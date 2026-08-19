@@ -3744,10 +3744,20 @@ export async function generateBBFW(idx, force) {
    elements (e.g. the per-goal admin box) can be re-injected without a refetch.
    window.injectContentBlocks() fills every [data-block] from this cache. */
 const _blockCache = {};
+/* Content to show for a block — the per-user Citadel welcome overrides the admin
+   dashboard-note-2 copy; every other block shows its admin body. ALL fill paths
+   route through this so no path can clobber the user's override. */
+function _blockContentFor(slug, body) {
+  if (slug === 'dashboard-note-2') {
+    const u = _citadelWelcome().trim();
+    if (u) return u.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  }
+  return body;
+}
 if (typeof window !== 'undefined') {
   window.injectContentBlocks = function () {
     Object.keys(_blockCache).forEach(slug => {
-      const body = _blockCache[slug];
+      const body = _blockContentFor(slug, _blockCache[slug]);
       document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
         if (body && body.trim()) { el.innerHTML = body; el.style.display = ''; }
         else { el.style.display = 'none'; }
@@ -3764,8 +3774,9 @@ async function loadContentBlocks() {
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
     // Inject into display elements
     document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
-      if (body && body.trim()) {
-        el.innerHTML = body;
+      const content = _blockContentFor(slug, body);
+      if (content && content.trim()) {
+        el.innerHTML = content;
         el.style.display = '';
       } else {
         el.style.display = 'none';
