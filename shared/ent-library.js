@@ -154,7 +154,7 @@ export function renderEntLibrary() {
   const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
 
   host.innerHTML = monitor +
-    `${_entOverview(c)}
+    `<div style="background:#8FA977;padding:0 18px 4px;">${_entOverview(c)}</div>
      ${_entNotesSection(c)}
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
