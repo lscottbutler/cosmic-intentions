@@ -4,7 +4,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-head, 'Poppins'), system-ui, -apple-system, sans-serif;
   background: var(--white);
   color: var(--black);
   min-height: 100vh;
@@ -14,10 +14,17 @@ body {
 }
 /* Reading text everywhere = same size + airy spacing as the welcome block. */
 p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
-/* Site-wide font: force Roboto Condensed on every element, override CMS inline styles.
-   ONE font everywhere — no cursive / mono exceptions (matches the welcome block). */
+/* Per-theme typography. Everything defaults to the theme's HEAD font so all
+   headers / labels / buttons / numbers stay consistent; only reading text uses
+   the BODY font. Each var carries system fallbacks, so a failed webfont load can
+   never break the layout. Pairings live in the theme blocks above. */
 *, *::before, *::after {
-  font-family: 'Poppins', system-ui, -apple-system, sans-serif !important;
+  font-family: var(--font-head, 'Poppins'), system-ui, -apple-system, sans-serif !important;
+}
+p, li, blockquote,
+.dash-note-block, .dash-note-block *,
+.pg-intro, .wins-intro {
+  font-family: var(--font-body, 'Poppins'), system-ui, -apple-system, sans-serif !important;
 }
 
 /* ── DESIGN TOKENS ────────────────────────────────────────────
@@ -55,6 +62,9 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
   --p4:#52B896;  --p5:#4A9EAD;  --p6:#5A8EA8;  --p7:#6A7E9E;  --p8:#8A7A9E;
   --orange: #38A038;
   --vault-mono: 'Courier New', 'IBM Plex Mono', monospace;
+  /* Typography — DARK: driven / athletic (condensed headers + Roboto body) */
+  --font-head: 'Roboto Condensed', system-ui, -apple-system, sans-serif;
+  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
 }
 
 /* WHITE / daylight (women) */
@@ -64,6 +74,9 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
   --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
   --border:#D9DEE3; --border-2:#E7EAED;
   --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;
+  /* Typography — LIGHT: calm / premium (Poppins headers + Lora serif body) */
+  --font-head: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-body: 'Lora', Georgia, 'Times New Roman', serif;
 }
 /* WHITE + primary colors (kids) */
 [data-theme="kids"] {
@@ -72,6 +85,9 @@ p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
   --black:#1D3557; --text:#1D3557; --mid:#4A6FA5; --muted:#6A8FC0; --text-warm:#7A6A4A;
   --border:#1E90FF; --border-2:#5AA9FF;   /* DODGER-BLUE THEME EXPERIMENT (was yellow #FFCE3A/#FFE08A) */
   --brand:#FF8C00; --accent:#E63946; --teal-ui:#17A2B8; --danger:#E63946; --success:#2FA94B; --pink:#FF5FA2; --purple:#7B5CD6; --maroon:#E63946;
+  /* Typography — KIDS: playful / rounded (Fredoka headers + Nunito body) */
+  --font-head: 'Fredoka', system-ui, -apple-system, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
 }
 
 /* THEME PICKER (header) */

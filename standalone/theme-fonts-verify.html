@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@400;500&family=Poppins:wght@400;700;800&family=Lora:wght@400;500&family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#555;padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;font-size:14px;}
+  .col{border-radius:14px;overflow:hidden;}
+  .tag{padding:8px 14px;font-family:'Poppins',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;color:#fff;background:#111;}
+  .body{padding:22px 20px 26px;min-height:230px;}
+  .h{font-weight:800;font-size:24px;margin:0 0 6px;line-height:1.1;}
+  .sub{font-size:11px;letter-spacing:1px;font-weight:700;margin:0 0 16px;opacity:.7;}
+  .p{font-size:14px;line-height:1.6;margin:0 0 16px;}
+  .chip{display:inline-block;font-weight:700;font-size:12px;padding:6px 12px;border-radius:20px;}
+
+  /* DARK — Roboto Condensed + Roboto */
+  .dark{background:#1A1A1A;}
+  .dark .h{font-family:'Roboto Condensed',sans-serif;color:#fff;text-transform:uppercase;letter-spacing:.5px;}
+  .dark .sub{font-family:'Roboto Condensed',sans-serif;color:#F5A623;}
+  .dark .p{font-family:'Roboto',sans-serif;color:#cfcfcf;}
+  .dark .chip{font-family:'Roboto Condensed',sans-serif;background:#F5A623;color:#111;}
+
+  /* LIGHT — Poppins + Lora */
+  .light{background:#FFFFFF;}
+  .light .h{font-family:'Poppins',sans-serif;color:#14233f;}
+  .light .sub{font-family:'Poppins',sans-serif;color:#3D7FD4;}
+  .light .p{font-family:'Lora',serif;color:#3a4a63;}
+  .light .chip{font-family:'Poppins',sans-serif;background:#3D7FD4;color:#fff;}
+
+  /* KIDS — Fredoka + Nunito */
+  .kids{background:#FFF3D9;}
+  .kids .h{font-family:'Fredoka',sans-serif;color:#E8524A;}
+  .kids .sub{font-family:'Fredoka',sans-serif;color:#38A038;}
+  .kids .p{font-family:'Nunito',sans-serif;color:#4a4032;}
+  .kids .chip{font-family:'Fredoka',sans-serif;background:#52B896;color:#fff;}
+</style></head>
+<body>
+  <div class="col dark"><div class="tag">DARK · Roboto Condensed + Roboto</div>
+    <div class="body"><p class="h">Welcome back, Scotty</p><p class="sub">AFFIRMATIONS</p>
+      <p class="p">I am self-confident. My certainty is earned, not borrowed. I trust myself to figure it out as I go.</p>
+      <span class="chip">TRY FOR $0</span></div></div>
+  <div class="col light"><div class="tag">LIGHT · Poppins + Lora</div>
+    <div class="body"><p class="h">Welcome back, Scotty</p><p class="sub">AFFIRMATIONS</p>
+      <p class="p">I am self-confident. My certainty is earned, not borrowed. I trust myself to figure it out as I go.</p>
+      <span class="chip">Try for $0</span></div></div>
+  <div class="col kids"><div class="tag">KIDS · Fredoka + Nunito</div>
+    <div class="body"><p class="h">Welcome back, Scotty</p><p class="sub">AFFIRMATIONS</p>
+      <p class="p">I am self-confident. My certainty is earned, not borrowed. I trust myself to figure it out as I go.</p>
+      <span class="chip">Try for $0</span></div></div>
+</body></html>
