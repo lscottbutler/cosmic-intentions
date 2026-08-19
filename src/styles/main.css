@@ -2579,6 +2579,19 @@ input, textarea, select {
   }
 }
 
+/* ── MOBILE: Inner Citadel fills the column ──────────────
+   The dashboard nests pg-frame + pg-bezel + pg-screen + vault-layout +
+   vault-main paddings (~84px/side) — on phones that crushed the widgets
+   into a narrow center strip. Trim each layer so they fill edge-to-edge. */
+@media (max-width: 767px) {
+  #page-dashboard .pg-frame     { padding: 8px !important; }
+  #page-dashboard .pg-bezel     { padding: 0 6px 10px !important; }
+  #page-dashboard .pg-screen    { padding: 10px 7px 22px !important; }
+  #page-dashboard .vault-layout { padding: 0 !important; }
+  #page-dashboard .vault-main   { padding: 10px 6px 0 !important; }
+  #page-dashboard .vault-sidebar{ padding: 10px 6px !important; }
+}
+
 /* ── MOBILE ─────────────────────────────────────────── */
 @media (max-width: 760px) {
   .vault-layout { flex-direction: column; }
