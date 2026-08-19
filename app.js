@@ -339,12 +339,13 @@ export function showPage(id) {
 
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
-  if (id === 'dashboard') renderDashboard();
+  if (id === 'dashboard') { renderDashboard(); applyUserCitadelWelcome(); }
   if (id === 'dailyfocus') {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
   if (isInputs) {   // render all three merged sections
+    applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
     renderPBIntentionList();
     if (typeof window.renderPBHabitList === 'function') window.renderPBHabitList();
@@ -3787,6 +3788,35 @@ async function loadContentBlocks() {
     }
   });
   applyNoteBlobs();
+  applyUserCitadelWelcome();   // per-user welcome overrides the admin default
+}
+
+/* ── PER-USER CITADEL WELCOME ─────────────────────────────────────────────
+   Users can't edit admin content blocks, but they CAN write their own opening
+   message for Column A of the Inner Citadel (edited in My Thoughts). When set,
+   it overrides the admin home-video-1 block; blank = fall back to admin copy. */
+function _citadelWelcome() { try { return localStorage.getItem('ci_citadel_welcome') || ''; } catch (e) { return ''; } }
+function applyUserCitadelWelcome() {
+  const v = _citadelWelcome().trim();
+  // The visible first paragraph in Column A is the dashboard-note-2 box.
+  document.querySelectorAll('[data-block="dashboard-note-2"]').forEach(el => {
+    if (v) {
+      el.innerHTML = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+      el.style.display = '';
+    } else {
+      const admin = _blockCache['dashboard-note-2'] || '';
+      el.innerHTML = admin;
+      el.style.display = admin.trim() ? '' : 'none';
+    }
+  });
+  const inp = document.getElementById('citadelWelcomeInput');
+  if (inp && document.activeElement !== inp) inp.value = _citadelWelcome();
+}
+export function saveCitadelWelcome(el) {
+  const v = ((el && el.value) || '').slice(0, 2000);
+  try { localStorage.setItem('ci_citadel_welcome', v); } catch (e) {}
+  applyUserCitadelWelcome();
+  if (typeof toast === 'function') toast(v.trim() ? 'Your Citadel welcome saved ✓' : 'Reverted to the default welcome', 'success');
 }
 
 /* Cycle the 3 blob backgrounds (green / red / orange) across all note boxes
