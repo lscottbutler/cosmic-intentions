@@ -1341,7 +1341,7 @@ export function renderDashboard() {
 
   // Script-font greeting at the top of the member dashboard (one line)
   const greetEl = document.getElementById('dashGreeting');
-  if (greetEl) greetEl.textContent = `Welcome back, ${name}`;
+  if (greetEl) greetEl.textContent = `Welcome back ${name}`;
 
   // Only render Level 1 cards (tabs are now inside each card)
   const container = document.getElementById('intentionCards');
