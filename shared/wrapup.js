@@ -887,7 +887,7 @@ export function renderWrapup() {
         </button>
       </div>
       ${_open ? `<div style="padding-left:12px;border-left:2px solid var(--widget-border,#2a2a2a);">
-        <p style="font-size:13px;line-height:1.75;font-style:italic;color:var(--widget-text);margin:0;">${daily}</p>
+        <p style="color:var(--widget-text);margin:0;">${daily}</p>
         <button id="wrapupRegenBtn" onclick="wrapupRegenerate(this)" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:.5px;color:#E8743B;">&#8635; REWRITE</button>
       </div>` : ''}
     </div>`;
