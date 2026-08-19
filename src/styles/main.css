@@ -2169,7 +2169,7 @@ input, textarea, select {
 }
 .vault-item.selected .vault-item-title { color: var(--black); }
 .vault-item-num {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-warm);
   flex-shrink: 0;
