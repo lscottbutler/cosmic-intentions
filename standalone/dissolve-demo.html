@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>5-image dissolve demo</title>
+<style>
+  body{margin:0;background:#111;font-family:Arial,sans-serif;color:#fff;display:flex;flex-direction:column;align-items:center;padding:24px;}
+  h2{font-weight:800;letter-spacing:.5px;}
+  #stage{width:720px;max-width:92vw;aspect-ratio:16/9;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
+  p{color:#aaa;font-size:14px;}
+</style></head>
+<body>
+  <h2>Slow dissolve — 5 images</h2>
+  <div id="stage"></div>
+  <p>Crossfades every ~7s (5s hold + 2s fade), looping. This is the effect your goal images will use.</p>
+<script type="module">
+  import { mountDissolve } from '../shared/dissolve.js';
+  // Sample photos (Unsplash source will supply real per-goal images once wired).
+  const urls = [
+    'https://picsum.photos/seed/tesla1/800/450',
+    'https://picsum.photos/seed/tesla2/800/450',
+    'https://picsum.photos/seed/tesla3/800/450',
+    'https://picsum.photos/seed/tesla4/800/450',
+    'https://picsum.photos/seed/tesla5/800/450',
+  ];
+  mountDissolve(document.getElementById('stage'), urls, { hold: 5000, fade: 2000 });
+</script>
+</body></html>
