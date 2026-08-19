@@ -1686,8 +1686,10 @@ input, textarea, select {
 .dash-note-block[data-block="dashboard-note-2"] *,
 .dash-note-block[data-block="dashboard-inspiration"],
 .dash-note-block[data-block="dashboard-inspiration"] * {
-  color:#3a4a63 !important; font-size:15.5px !important; line-height:1.72 !important;
+  color:#3a4a63 !important; font-size:15.5px !important; line-height:1.75 !important;
   font-weight:400 !important; letter-spacing:.1px !important; text-align:left !important;
+  font-family:var(--font-body, Georgia, serif) !important;   /* match Today's Story */
+  font-style:italic !important;                              /* italic serif, like the right-side text */
 }
 /* Force all CMS-authored content inside to inherit our look and width */
 .cb-display *,
