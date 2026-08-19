@@ -5,7 +5,7 @@ import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
-import { renderRings, _wireRingsSync } from './shared/rings.js';
+import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
@@ -2081,6 +2081,8 @@ let _vizGoalIdx = 0;
 export function openVizLibrary() { renderVizLibrary(); navTo('vizlibrary'); }
 
 export function renderVizLibrary() {
+  const sideEl = document.getElementById('vizSideStats');
+  if (sideEl) { try { sideEl.innerHTML = vizSideStatsHTML(); } catch (e) { console.error('[vizSideStats]', e); } }
   const el = document.getElementById('vizLibList');
   if (!el) return;
   if (!intentions.length) {

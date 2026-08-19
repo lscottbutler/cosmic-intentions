@@ -280,6 +280,39 @@ export function currentTier() {
   return { tier, next, total };
 }
 
+/* Compact vertical "Big 3" stat list for the Viz Library side column —
+   one stat per line, populated from the live ring data. */
+export function vizSideStatsHTML() {
+  const s  = ringsSummary();
+  const wk = ringsWeekSummary();
+  const t  = currentTier();
+  const row = (label, val) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef0f2;font-size:13px;color:#1c1c1c;"><span>${label}</span><span style="font-weight:800;">${val}</span></div>`;
+  const pill = (label, icon, done) =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef0f2;font-size:13px;color:#1c1c1c;"><span style="width:16px;text-align:center;">${icon}</span><span style="flex:1;">${label}</span><span style="font-weight:800;color:${done ? '#2FA94B' : '#c4c6cb'};">${done ? '✓' : '–'}</span></div>`;
+  const hd = (txt) =>
+    `<div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#8a8a8a;margin:12px 0 2px;">${txt}</div>`;
+  const toNext = t.next ? Math.max(0, t.next.min - t.total) : 0;
+  return `<div style="background:#fff;border:1px solid #e6e9ed;border-radius:10px;padding:14px;">
+    <div style="font-weight:800;letter-spacing:1px;font-size:12px;color:#1C2230;margin-bottom:8px;">◈ THE BIG 3</div>
+    ${row('Points today', s.points + ' pts')}
+    ${row('Streak', s.streak + ' day' + (s.streak === 1 ? '' : 's'))}
+    ${hd('PILLARS ' + s.count + '/3')}
+    ${pill('Completed Tasks', '✓', s.closed.includes('Completed Tasks'))}
+    ${pill('Visualize', '✦', s.closed.includes('Visualize'))}
+    ${pill('Habits', '☑', s.closed.includes('Habits'))}
+    ${hd('PROGRESS')}
+    ${row('Momentum', s.score + '/100')}
+    ${row('Rank', t.tier.name)}
+    ${row('Perfect Days', t.total)}
+    ${t.next ? row('To ' + t.next.name, toNext + ' more') : ''}
+    ${hd('THIS WEEK')}
+    ${row('Perfect Days', wk.perfectDays)}
+    ${row('Pillars closed', wk.pillarsClosed)}
+    ${row('Gratitude bonus', s.gratitude ? 'Earned' : '–')}
+  </div>`;
+}
+
 /* Map a player URL to the ring a completed session should close.
    null = that player doesn't count toward a ring (e.g. countdown). */
 export function pillarForSrc(src) {
