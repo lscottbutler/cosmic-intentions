@@ -709,6 +709,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; My Citadel Welcome</div>
             <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of the Inner Citadel (Column A). Leave blank to use the default.</div>
             <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
+            <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
           </div>
           <div id="notesSections"></div>
         </div>
