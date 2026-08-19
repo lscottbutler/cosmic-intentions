@@ -16,6 +16,9 @@ body {
 p, li { font-size: 16px !important; line-height: 1.55 !important; font-style: normal !important; }
 /* Placeholder for the editable MY NOTES cards (contenteditable has none) */
 .ent-note:empty:before { content: attr(data-ph); color: #aaa; }
+/* Entrepreneur Library — soften every hard edge, just barely. Non-!important so
+   inline circles (border-radius:50%) and larger inline radii keep their shape. */
+#entLibHost, #entLibHost * { border-radius: 4px; }
 /* Per-theme typography. Everything defaults to the theme's HEAD font so all
    headers / labels / buttons / numbers stay consistent; only reading text uses
    the BODY font. Each var carries system fallbacks, so a failed webfont load can
