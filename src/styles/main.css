@@ -69,8 +69,8 @@ p, li, blockquote,
 
 /* WHITE / daylight (women) */
 [data-theme="light"] {
-  --white:#FFFFFF; --bg:#FFFFFF; --off:#F2F2F2; --card:#FFFFFF; --sunken:#EAEAEA; --ink:#1A1A1A;
-  --widget-bg:#75704e; --widget-band:#857f5a;   /* brown palette — replaces the black widget cards in light theme */
+  --white:#FFFFFF; --bg:#FFFFFF; --off:#FFFFFF; --card:#FFFFFF; --sunken:#FFFFFF; --ink:#1A1A1A;
+  --widget-bg:#FFFFFF; --widget-band:#FFFFFF; --widget-text:#1B2027; --widget-border:#E6E9ED;   /* all-white surfaces; separation via borders, not grey fills */
   --black:#1B2027; --text:#1B2027; --mid:#5C6670; --muted:#7A828C; --text-warm:#6A6258;
   --border:#D9DEE3; --border-2:#E7EAED;
   --brand:#C8810B; --accent:#2F6FD0; --teal-ui:#0F9AA0; --danger:#D23B3B; --success:#2E9E54; --pink:#C75A8C; --purple:#6A4FB0; --maroon:#BF4170;
