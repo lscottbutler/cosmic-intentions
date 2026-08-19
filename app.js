@@ -4177,7 +4177,12 @@ export async function init() {
   try { selectPlan('annual'); } catch (e) { console.error('[init] selectPlan:', e); }
 
   const _preview = _previewActive();
-  if (_preview) _seedPreviewDashboard();
+  if (_preview) {
+    _seedPreviewDashboard();
+    // Deep-link to any page for local verification: ?preview=1&page=vizlibrary
+    const _pg = new URLSearchParams(location.search).get('page');
+    if (_pg) setTimeout(() => { try { (window.navTo || showPage)(_pg); } catch (e) { try { showPage(_pg); } catch (e2) {} } }, 200);
+  }
 
   // Auth state listener (skipped in localhost preview mode)
   if (!_preview) sb.auth.onAuthStateChange((event, session) => {
