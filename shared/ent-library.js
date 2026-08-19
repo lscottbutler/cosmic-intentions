@@ -192,7 +192,8 @@ function _entNotesSection(c) {
   const mBtn = 'display:block;width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;';
   const grow = "this.style.height='auto';this.style.height=this.scrollHeight+'px';";
   const cards = notes.map((n, i) => `
-    <div style="position:relative;background:#fff;padding:14px 42px 12px 15px;">
+    <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 42px 12px 30px;">
+      <span title="Drag to reorder" style="position:absolute;top:8px;left:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
       <button onclick="entNoteMenu('${n.id}')" title="Organize / prioritize" style="position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:#555;padding:2px 4px;">&#8942;</button>
       <textarea onchange="entNoteSave('${n.id}',this)" oninput="${grow}" placeholder="Type a note…" style="width:100%;box-sizing:border-box;border:none;resize:none;overflow:hidden;font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;background:transparent;min-height:64px;outline:none;">${_esc(n.text || '')}</textarea>
       ${_noteMenuOpen === n.id ? `<div style="position:absolute;top:34px;right:8px;background:#20241f;z-index:6;box-shadow:0 6px 18px rgba(0,0,0,.45);min-width:160px;">
@@ -240,6 +241,35 @@ export function entNoteDelete(id) {
   renderEntLibrary();
 }
 export function entNoteMenu(id) { _noteMenuOpen = (_noteMenuOpen === id) ? null : id; renderEntLibrary(); }
+
+/* Drag-to-reorder the MY NOTES cards with the mouse. Dragging that starts on
+   the textarea is ignored so typing/selecting text still works. */
+let _dragNoteId = null;
+export function entNoteDragStart(id, ev) {
+  if (ev && ev.target && ev.target.tagName === 'TEXTAREA') { ev.preventDefault(); return; }
+  _dragNoteId = id;
+  if (ev && ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; try { ev.dataTransfer.setData('text/plain', id); } catch (e) {} }
+  if (ev && ev.currentTarget && ev.currentTarget.style) ev.currentTarget.style.opacity = '.45';
+}
+export function entNoteDragOver(ev) { if (ev) { ev.preventDefault(); if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move'; } }
+export function entNoteDragEnd(el) { if (el && el.style) el.style.opacity = ''; _dragNoteId = null; }
+export function entNoteDrop(targetId, ev) {
+  if (ev) ev.preventDefault();
+  const c = ENT_CARDS[_entIdx]; if (!c) return;
+  let src = _dragNoteId;
+  if (!src && ev && ev.dataTransfer) { try { src = ev.dataTransfer.getData('text/plain'); } catch (e) {} }
+  _dragNoteId = null;
+  if (!src || src === targetId) return;
+  const arr = _cardNotes(c.key);
+  const from = arr.findIndex(x => x.id === src);
+  const to   = arr.findIndex(x => x.id === targetId);
+  if (from < 0 || to < 0) return;
+  const [moved] = arr.splice(from, 1);
+  arr.splice(to, 0, moved);
+  _saveCardNotes(c.key, arr);
+  _noteMenuOpen = null;
+  renderEntLibrary();
+}
 
 /* Visualize this card: feed the fixed card into the existing 3-min viz player and
    embed it inline. Reuses players/3min-viz.html (reads the ?g= title). */
