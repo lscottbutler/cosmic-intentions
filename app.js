@@ -4057,7 +4057,7 @@ function injectPlaceholderCards() {
     if (!page) return;
     // On the framed pages the content lives in the white .pg-screen/.wins-screen,
     // not the outer frame — inject there so the cards sit in the content, not the frame edge.
-    const wrap = page.querySelector('.pg-screen, .wins-screen') || page.firstElementChild || page;
+    const wrap = page.querySelector('.viz-main, .pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
     if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // top: under the title
     else wrap.insertBefore(_makePhCard(), wrap.firstChild);

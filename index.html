@@ -1288,11 +1288,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-hdr">Visualization Library</div>
         <div class="pg-screen">
           <button onclick="navTo('dashboard')" class="pg-back">← BACK</button>
-          <p class="pg-intro">Pick a goal to visualize, review, meditate or give thanks.</p>
       <style>
         #vizLibList{display:grid;grid-template-columns:1fr;gap:12px;}
+        /* Viz Library: 75% main content + 25% side column */
+        .viz-layout{display:grid;grid-template-columns:3fr 1fr;gap:16px;align-items:start;}
+        .viz-side{border:1px dashed var(--border,#cfcfcf);border-radius:10px;min-height:240px;padding:14px;}
+        @media(max-width:767px){.viz-layout{grid-template-columns:1fr;}}
       </style>
-      <div id="vizLibList"></div>
+          <div class="viz-layout">
+            <div class="viz-main">
+              <p class="pg-intro">Pick a goal to visualize, review, meditate or give thanks.</p>
+              <div id="vizLibList"></div>
+            </div>
+            <aside class="viz-side"></aside>
+          </div>
         </div>
       </div>
     </div>
