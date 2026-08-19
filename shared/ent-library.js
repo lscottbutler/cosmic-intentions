@@ -84,9 +84,9 @@ function _entResourcesBox(res) {
       ? `<a href="${r.url}" target="_blank" rel="noopener" style="display:block;color:#dfe7d6;font-size:13px;line-height:1.45;margin-bottom:7px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px;">${_esc(r.label)}</a>`
       : `<div style="color:#7f8a76;font-size:13px;line-height:1.45;margin-bottom:7px;">${_esc(r.label)}</div>`).join('')}
   </div>`;
-  return `<div style="grid-column:span 2;align-self:start;border:1px solid rgba(255,255,255,.14);padding:14px 16px 12px;">
+  return `<div style="grid-column:1/-1;align-self:start;border:1px solid rgba(255,255,255,.14);padding:14px 16px 12px;">
     <div style="font-family:var(--vault-mono,monospace);font-weight:800;letter-spacing:2px;font-size:12px;color:#D9B94A;margin-bottom:12px;">GO DEEPER</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px 22px;">
       ${col(icoYT + 'YOUTUBE', res.youtube)}
       ${col(icoPod + 'PODCASTS', res.podcasts)}
       ${col(icoArt + 'ARTICLES', res.articles)}
