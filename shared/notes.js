@@ -149,7 +149,7 @@ export function renderNotesPage() {
     // Hidden until the user taps "＋ Add …" in the banner.
     const addBox = total < NOTES_CAP ? `
       <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="＋"
-        style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#fff;background:${hd.add};min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
+        style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:4px solid #000;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#1a1a1a;background:#fff;min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
 
     return `
       <div><button onclick="notesToggleSection('notesec-${c.key}')"
