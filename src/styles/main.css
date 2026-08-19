@@ -2558,11 +2558,11 @@ input, textarea, select {
 
 /* Delete / nav row */
 
-/* ── SYMMETRIC 50/50 DESKTOP GRID ───────────────────── */
+/* ── 75 / 25 DESKTOP GRID (Column A wide, Column B narrow) ── */
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; /* Hard 50% / 50% — minmax(0,..) stops wide content blowing out a track */
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) !important; /* Column A 75% / Column B 25% — minmax(0,..) stops wide content blowing out a track */
     gap: 32px !important;
     max-width: 1200px !important;
     width: 100% !important;
