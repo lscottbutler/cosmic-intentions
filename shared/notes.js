@@ -139,7 +139,7 @@ export function renderNotesPage() {
       return `
       <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;position:relative;">
         <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
-          style="width:100%;box-sizing:border-box;padding:13px 48px 13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.7;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
+          style="width:100%;box-sizing:border-box;padding:13px 48px 13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.55;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
         <button onclick="notesDelete('${n.id}')" title="Delete"
           style="position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         ${goalSel}
@@ -169,8 +169,13 @@ export function renderNotesPage() {
   const cap = document.getElementById('notesCapLine');
   if (cap) cap.textContent = `${total} / ${NOTES_CAP} thoughts`;
 
-  // Grow every textarea to fit its full text so nothing is ever clipped.
-  host.querySelectorAll('textarea').forEach(notesAutoGrow);
+  // Grow every textarea to fit its full text so nothing is ever clipped. Re-run
+  // after webfonts load + a short delay, since the text reflows taller once the
+  // real font swaps in (otherwise multi-line notes get clipped).
+  const _grow = () => host.querySelectorAll('textarea').forEach(notesAutoGrow);
+  _grow();
+  if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(_grow);
+  setTimeout(_grow, 300);
 }
 
 /* "＋ Add …" in a section banner → open the section, reveal + focus its add box. */
