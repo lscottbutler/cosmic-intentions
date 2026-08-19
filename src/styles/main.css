@@ -130,7 +130,7 @@ p, li, blockquote,
   border-bottom: none;
   display: flex;
   align-items: center;
-  justify-content: center;   /* hamburger centered in the column */
+  justify-content: flex-end;   /* hamburger top-right — sits above the side-column clown */
   padding: 0 20px;
   gap: 4px;
   z-index: 300;   /* above the header (100) so the hamburger isn't clipped */
