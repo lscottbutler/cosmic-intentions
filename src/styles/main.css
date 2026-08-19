@@ -10,10 +10,10 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-size: 110%;
-  line-height: 1.7;   /* comfortable, airy default across the whole site */
+  line-height: 1.45;   /* Headspace-style: tighter, cohesive line spacing (was 1.7, too loose) */
 }
-/* Reading text everywhere = same size + airy spacing as the welcome block. */
-p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
+/* Reading text everywhere = same size + Headspace-tight line spacing. */
+p, li { font-size: 15.5px !important; line-height: 1.45 !important; }
 /* Per-theme typography. Everything defaults to the theme's HEAD font so all
    headers / labels / buttons / numbers stay consistent; only reading text uses
    the BODY font. Each var carries system fallbacks, so a failed webfont load can
