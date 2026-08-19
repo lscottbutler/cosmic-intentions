@@ -518,8 +518,18 @@ body:has(#page-dashboard.active)   .hdr { background:#1b1b1b; }
 #citadelNav > button:nth-of-type(7),
 #citadelNav > button:nth-of-type(8) { background: #1c1c1c !important; }   /* black (odd slots) */
 #taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List (slot 11) */
-#citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; }
+#citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; margin-bottom: 0 !important; }
 #citadelNav > button > span:first-child { display: none !important; }
+/* The expandable/attached panels span both columns so they open full-width
+   below their button instead of squeezing into one grid cell. */
+#citadelNav > #quickWinPanel,
+#citadelNav > #dashQuickAdd,
+#citadelNav > #medBox,
+#citadelNav > #gratBox,
+#citadelNav > #mindLoopBox,
+#citadelNav > #goalsBox { grid-column: 1 / -1; margin-top: 0 !important; }
+/* Collapse to a single column on very narrow phones. */
+@media (max-width: 420px) { #citadelNav { grid-template-columns: 1fr !important; } }
 /* Citadel nav LABELS: just a touch above the 16px body text (was rendering too big) */
 #citadelNav > button > span[style*="flex:1"] { font-size: 16px !important; }
 /* trim the ">" chevrons down to match */
