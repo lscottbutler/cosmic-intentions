@@ -49,6 +49,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
       <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
       <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
+      <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
       <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
       <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
@@ -638,6 +639,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
             <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
+      <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
             <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
             <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
             <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
@@ -712,6 +714,23 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
           </div>
           <div id="notesSections"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY NOTES — standalone page for the Notes category -->
+  <div class="page" id="page-mynotes">
+    <div class="pg-frame pf-plum">
+      <div class="pg-bezel">
+        <div class="pg-hdr">My Notes</div>
+        <div class="pg-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
+            <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;">&larr; BACK</button>
+          </div>
+          <p class="pg-intro">Your notes — jot anything, and link a note to a goal so it shows on that goal's Visualize page.</p>
+          <div id="myNotesCap" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;"></div>
+          <div id="myNotesSections"></div>
         </div>
       </div>
     </div>

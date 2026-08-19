@@ -103,9 +103,10 @@ export function sprinkleNotes() {
 }
 
 /* ── page render ─────────────────────────────────────────────── */
-export function renderNotesPage() {
-  const host = document.getElementById('notesSections');
+export function renderNotesPage(cats, hostId, capId) {
+  const host = document.getElementById(hostId || 'notesSections');
   if (!host) return;
+  const catList = cats || NOTE_CATS.filter(c => c.key !== 'note');   // My Thoughts = everything except Notes (its own page now)
   const notes = readNotes();
   const total = notes.length;
 
@@ -119,7 +120,7 @@ export function renderNotesPage() {
     note:       { bg:'#141414', fg:'#ffffff', add:'#000000' },  // dark grey
   };
 
-  host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + NOTE_CATS.map(c => {
+  host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + catList.map(c => {
     const mine = notes.filter(n => n.cat === c.key)
       .sort((a, b) => (a.text || '').localeCompare(b.text || '', undefined, { sensitivity: 'base' }));
     const singular = esc(c.label.replace(/s$/, ''));   // "Reminders" → "Reminder"
@@ -166,7 +167,7 @@ export function renderNotesPage() {
       </div></div>`;
   }).join('') + `</div>`;
 
-  const cap = document.getElementById('notesCapLine');
+  const cap = document.getElementById(capId || 'notesCapLine');
   if (cap) cap.textContent = `${total} / ${NOTES_CAP} thoughts`;
 
   // Grow every textarea to fit its full text so nothing is ever clipped. Re-run
@@ -176,6 +177,11 @@ export function renderNotesPage() {
   _grow();
   if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(_grow);
   setTimeout(_grow, 300);
+}
+
+/* My Notes — the standalone page for just the Notes category (goal-linkable). */
+export function renderMyNotesPage() {
+  renderNotesPage(NOTE_CATS.filter(c => c.key === 'note'), 'myNotesSections', 'myNotesCap');
 }
 
 /* "＋ Add …" in a section banner → open the section, reveal + focus its add box. */
