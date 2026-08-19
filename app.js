@@ -2834,8 +2834,8 @@ export function renderVaultSidebar() {
       // players (so it's instantly recognizable). Not saved = hollow white outline;
       // saved = filled red (#e0102b). Same classic heart path in both states.
       const _HEART_PATH = `M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z`;
-      const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
-      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="24" height="24" fill="#e0102b" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+      const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="20" height="20" fill="#e0102b" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const isSelected = selectedVaultIdx === i._idx;
@@ -2846,13 +2846,13 @@ export function renderVaultSidebar() {
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:var(--ink);color:var(--on-ink)">${goalLetter(i, i._idx)}</div>
+          <div class="vault-item-num" style="background:#000;color:#fff">${goalLetter(i, i._idx)}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
           <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
             title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
-            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:${isFav ? '1' : '.55'};">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
+            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">

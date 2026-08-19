@@ -2146,8 +2146,8 @@ input, textarea, select {
 }
 .vin-arrow { color: var(--muted); font-size: 11px; flex-shrink: 0; }
 .vault-item-num {
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--ink);
   color: var(--on-ink);
@@ -2169,7 +2169,7 @@ input, textarea, select {
 }
 .vault-item.selected .vault-item-title { color: var(--black); }
 .vault-item-num {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-warm);
   flex-shrink: 0;
