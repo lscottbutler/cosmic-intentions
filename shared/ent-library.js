@@ -194,7 +194,8 @@ function _entNotesSection(c) {
   const cards = notes.map((n, i) => `
     <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
       <button onclick="entNoteDelete('${n.id}')" title="Delete note" aria-label="Delete note" style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#000;border:none;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;">&times;</button>
-      <textarea onchange="entNoteSave('${n.id}',this)" oninput="${grow}" placeholder="Type a note…" style="width:100%;box-sizing:border-box;border:none;resize:none;overflow:hidden;font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;background:transparent;min-height:64px;outline:none;">${_esc(n.text || '')}</textarea>
+      <span aria-hidden="true" style="float:left;shape-outside:circle(52%);-webkit-shape-outside:circle(52%);width:34px;height:34px;border-radius:50%;background:#000;color:#fff;font-weight:800;font-size:15px;text-align:center;line-height:34px;margin:2px 12px 4px 0;">${i + 1}</span>
+      <div class="ent-note" contenteditable="true" onblur="entNoteSave('${n.id}',this)" data-ph="Type a note…" style="font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;min-height:34px;outline:none;">${_esc(n.text || '')}</div>
       <span title="Drag to reorder" style="position:absolute;bottom:7px;right:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
     </div>`).join('');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
@@ -210,14 +211,15 @@ export function entAddNote() {
   _saveCardNotes(c.key, arr);
   _noteMenuOpen = null;
   renderEntLibrary();
-  const ts = document.querySelectorAll('#entLibHost textarea');
+  const ts = document.querySelectorAll('#entLibHost .ent-note');
   if (ts.length) ts[ts.length - 1].focus();
 }
 export function entNoteSave(id, el) {
   const c = ENT_CARDS[_entIdx]; if (!c || !el) return;
   const arr = _cardNotes(c.key);
   const n = arr.find(x => x.id === id);
-  if (n) { n.text = (el.value || '').slice(0, 2000); _saveCardNotes(c.key, arr); }
+  const val = (el.value != null ? el.value : (el.innerText || ''));   // textarea .value OR contenteditable .innerText
+  if (n) { n.text = val.slice(0, 2000); _saveCardNotes(c.key, arr); }
 }
 export function entNoteMove(id, dir) {
   const c = ENT_CARDS[_entIdx]; if (!c) return;
@@ -241,7 +243,7 @@ export function entNoteMenu(id) { _noteMenuOpen = (_noteMenuOpen === id) ? null 
    the textarea is ignored so typing/selecting text still works. */
 let _dragNoteId = null;
 export function entNoteDragStart(id, ev) {
-  if (ev && ev.target && ev.target.tagName === 'TEXTAREA') { ev.preventDefault(); return; }
+  if (ev && ev.target && (ev.target.tagName === 'TEXTAREA' || ev.target.isContentEditable)) { ev.preventDefault(); return; }
   _dragNoteId = id;
   if (ev && ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; try { ev.dataTransfer.setData('text/plain', id); } catch (e) {} }
   if (ev && ev.currentTarget && ev.currentTarget.style) ev.currentTarget.style.opacity = '.45';
