@@ -103,16 +103,7 @@ export function sprinkleNotes() {
 }
 
 /* ── page render ─────────────────────────────────────────────── */
-/* The page title rotates through these, one per day (24h each). Different phrases
-   land with different people, so the page speaks to a wider audience over time. */
-const NOTES_TITLES = ['In My Words', 'My Inner Voice', 'Words to Live By', 'My Creed', 'My Truths', 'Self-Talk'];
-export function _notesTitleForToday() {
-  const day = Math.floor(Date.now() / 86400000);   // whole days since epoch (UTC) → changes at midnight
-  return NOTES_TITLES[((day % NOTES_TITLES.length) + NOTES_TITLES.length) % NOTES_TITLES.length];
-}
 export function renderNotesPage() {
-  const titleEl = document.getElementById('notesPageTitle');
-  if (titleEl) titleEl.textContent = _notesTitleForToday();
   const host = document.getElementById('notesSections');
   if (!host) return;
   const notes = readNotes();
