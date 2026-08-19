@@ -6,6 +6,7 @@ import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, h
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
+import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
@@ -2169,7 +2170,9 @@ export function openVizGoal(idx) {
     opts.innerHTML = `
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:0 0 12px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
+        <div id="goalDissolve" style="position:absolute;inset:0;display:none;"></div>
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+        <button onclick="fetchGoalDissolve(${idx})" title="Slow dissolve of 5 images" style="position:absolute;top:8px;right:48px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center;">5&#10022;</button>
         <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
       <div style="background:${s.bg};color:${s.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;margin-bottom:12px;">${esc(it?.title || '')}</div>
@@ -3343,7 +3346,20 @@ async function loadGoalVisualization(intent) {
   const img = activeEl('goalVisualizationImage');
   const loader = activeEl('goalVisualizationLoader');
   const box = activeEl('goalVisualizationContainer');
+  const diss = activeEl('goalDissolve');
   if (!img || !loader || !intent) return;
+
+  // Multi-image slow dissolve when this goal has a 5-image set (opt-in).
+  const opts = Array.isArray(intent.imageOptions) ? intent.imageOptions.filter(Boolean) : [];
+  if (diss && opts.length > 1) {
+    if (box) box.style.display = '';
+    img.style.display = 'none';
+    loader.style.display = 'none';
+    diss.style.display = 'block';
+    mountDissolve(diss, opts, { hold: 5000, fade: 2000 });
+    return;
+  }
+  if (diss) { stopDissolve(diss); diss.style.display = 'none'; }
 
   const show = (url) => {
     img.onload = () => { loader.style.display = 'none'; img.style.display = 'block'; };
@@ -3377,12 +3393,40 @@ async function loadGoalVisualization(intent) {
   }
 }
 
+/* ✧ Fetch 5 Unsplash images for this goal and play a slow dissolve. Stores them
+   in imageOptions so the dissolve persists. Needs UNSPLASH_ACCESS_KEY on Netlify. */
+export async function fetchGoalDissolve(idx) {
+  const it = intentions[idx];
+  if (!it) return;
+  const loader = activeEl('goalVisualizationLoader');
+  const box = activeEl('goalVisualizationContainer');
+  if (box) box.style.display = '';
+  if (loader) { loader.style.display = ''; loader.innerHTML = '<span class="inline-spinner"></span> Finding 5 images…'; }
+  try {
+    const data = await window.ciApiJson('image-multi', { statement: it.title, count: 5 });
+    if (data && Array.isArray(data.urls) && data.urls.length > 1) {
+      it.imageOptions = data.urls;
+      if (!it.imageUrl || it.imageUrl.startsWith('data:')) it.imageUrl = data.urls[0];
+      saveIntentions();
+      loadGoalVisualization(it);
+      toast('5-image dissolve ready ✓', 'success');
+    } else {
+      if (loader) loader.style.display = 'none';
+      toast('Not enough images found — try a simpler goal title.', 'error');
+    }
+  } catch (e) {
+    if (loader) loader.style.display = 'none';
+    toast('Could not fetch images — is the Unsplash key set on Netlify?', 'error');
+  }
+}
+
 /* ↻ Re-roll the goal's visualization: drop the cached image and fetch a fresh
    one. Lets you replace an image that doesn't match the goal. */
 export function rerollGoalVisualization(idx) {
   const it = intentions[idx];
   if (!it) return;
   it.imageUrl = '';          // clear the stored URL so loadGoalVisualization re-fetches
+  it.imageOptions = null;    // drop any 5-image dissolve set → back to a single fresh image
   saveIntentions();
   const box = activeEl('goalVisualizationContainer');
   if (box) box.style.display = '';
@@ -3424,7 +3468,9 @@ function buildWorkspaceHeader(intent, idx) {
     <div style="padding:12px 16px 0;">
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
+        <div id="goalDissolve" style="position:absolute;inset:0;display:none;"></div>
         <div id="goalVisualizationLoader" style="padding:30px;text-align:center;color:var(--muted);font-size:13px;"><span class="inline-spinner"></span> Loading visualization…</div>
+        <button onclick="fetchGoalDissolve(${idx})" title="Slow dissolve of 5 images" style="position:absolute;top:8px;right:48px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center;">5&#10022;</button>
         <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
