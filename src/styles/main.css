@@ -14,18 +14,10 @@ body {
 }
 /* Reading text everywhere = same size + airy spacing as the welcome block. */
 p, li { font-size: 15.5px !important; line-height: 1.7 !important; }
-/* Site-wide font: force Roboto Condensed on every element, override CMS inline styles */
+/* Site-wide font: force Roboto Condensed on every element, override CMS inline styles.
+   ONE font everywhere — no cursive / mono exceptions (matches the welcome block). */
 *, *::before, *::after {
   font-family: 'Roboto Condensed', system-ui, -apple-system, sans-serif !important;
-}
-/* Re-allow the cursive accent font for designated elements */
-.home-hero em,
-[style*="Dancing Script"] {
-  font-family: 'Dancing Script', cursive !important;
-}
-/* Re-allow monospace for code / mono displays */
- [class*="-mono"], .vault-item-num {
-  font-family: 'Courier New', monospace !important;
 }
 
 /* ── DESIGN TOKENS ────────────────────────────────────────────
