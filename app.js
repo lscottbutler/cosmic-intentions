@@ -1367,6 +1367,18 @@ export const GREY_SHADES = [
   { bg: '#3878A8', text: '#FFFFFF' },
 ];
 
+/* Darken a hex color by fraction f (0-1) — used for the goal-card circles so
+   they read as a deeper shade of the card, not black. */
+export function darkenHex(hex, f) {
+  const h = (hex || '').replace('#', '');
+  const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  const n = parseInt(full, 16);
+  if (isNaN(n)) return hex;
+  let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  r = Math.round(r * (1 - f)); g = Math.round(g * (1 - f)); b = Math.round(b * (1 - f));
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
 export function renderDashboard() {
   const pb   = getPB();
   const name = pb['pb-name'] || 'Friend';
@@ -2876,6 +2888,7 @@ export function renderVaultSidebar() {
       const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#e0102b" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
+        const circle   = darkenHex(shade.bg, 0.5);   // circles = a deeper shade of the card color, not black
         const isSelected = selectedVaultIdx === i._idx;
         const isFav    = Array.isArray(_favs) && _favs.some(f => f && f.player === 'mindset' && f.goal === i._idx);
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
@@ -2884,13 +2897,13 @@ export function renderVaultSidebar() {
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:#000;color:#fff">${goalLetter(i, i._idx)}</div>
+          <div class="vault-item-num" style="background:${circle};color:#fff">${goalLetter(i, i._idx)}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
           <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
             title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
-            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
+            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:${circle};color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
