@@ -192,15 +192,10 @@ function _entNotesSection(c) {
   const mBtn = 'display:block;width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;';
   const grow = "this.style.height='auto';this.style.height=this.scrollHeight+'px';";
   const cards = notes.map((n, i) => `
-    <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 42px 12px 30px;">
-      <span title="Drag to reorder" style="position:absolute;top:8px;left:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
-      <button onclick="entNoteMenu('${n.id}')" title="Organize / prioritize" style="position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:#555;padding:2px 4px;">&#8942;</button>
+    <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
+      <button onclick="entNoteDelete('${n.id}')" title="Delete note" aria-label="Delete note" style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#000;border:none;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;">&times;</button>
       <textarea onchange="entNoteSave('${n.id}',this)" oninput="${grow}" placeholder="Type a note…" style="width:100%;box-sizing:border-box;border:none;resize:none;overflow:hidden;font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;background:transparent;min-height:64px;outline:none;">${_esc(n.text || '')}</textarea>
-      ${_noteMenuOpen === n.id ? `<div style="position:absolute;top:34px;right:8px;background:#20241f;z-index:6;box-shadow:0 6px 18px rgba(0,0,0,.45);min-width:160px;">
-        ${i > 0 ? `<button onclick="entNoteMove('${n.id}',-1)" style="${mBtn}">&#9650;&nbsp; Prioritize</button>` : ''}
-        ${i < notes.length - 1 ? `<button onclick="entNoteMove('${n.id}',1)" style="${mBtn}">&#9660;&nbsp; Move down</button>` : ''}
-        <button onclick="entNoteDelete('${n.id}')" style="${mBtn}color:#ff8a8a;">&times;&nbsp; Delete</button>
-      </div>` : ''}
+      <span title="Drag to reorder" style="position:absolute;bottom:7px;right:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
     </div>`).join('');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
     <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">MY NOTES</div>
