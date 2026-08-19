@@ -13,7 +13,7 @@ body {
   line-height: 1.45;   /* Headspace-style: tighter, cohesive line spacing (was 1.7, too loose) */
 }
 /* Reading text everywhere = ONE size + ONE line spacing, no exceptions. */
-p, li { font-size: 15.5px !important; line-height: 1.55 !important; font-style: normal !important; }
+p, li { font-size: 16px !important; line-height: 1.55 !important; font-style: normal !important; }
 /* Per-theme typography. Everything defaults to the theme's HEAD font so all
    headers / labels / buttons / numbers stay consistent; only reading text uses
    the BODY font. Each var carries system fallbacks, so a failed webfont load can
@@ -515,7 +515,7 @@ body:has(#page-dashboard.active)   .hdr { background:#1b1b1b; }
 #taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List (slot 11) */
 #citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; }
 #citadelNav > button > span:first-child { display: none !important; }
-/* Citadel nav LABELS: just a touch above the 15.5px body text (was rendering too big) */
+/* Citadel nav LABELS: just a touch above the 16px body text (was rendering too big) */
 #citadelNav > button > span[style*="flex:1"] { font-size: 16px !important; }
 /* trim the ">" chevrons down to match */
 #citadelNav > button > span:last-child { font-size: 15px !important; }
@@ -1690,7 +1690,7 @@ input, textarea, select {
 .dash-note-block[data-block="dashboard-note-2"] *,
 .dash-note-block[data-block="dashboard-inspiration"],
 .dash-note-block[data-block="dashboard-inspiration"] * {
-  color:#3a4a63 !important; font-size:15.5px !important; line-height:1.55 !important;
+  color:#3a4a63 !important; font-size:16px !important; line-height:1.55 !important;
   font-weight:400 !important; letter-spacing:.1px !important; text-align:left !important;
   font-family:var(--font-body, Georgia, serif) !important; font-style:normal !important;
 }
