@@ -124,7 +124,11 @@ function _thoughtImg(seed) {
 }
 /* Dominant color of an image — ported from players/art-frame.html: downscale to
    canvas, bucket colors (skip near white/black), average the most-populous. */
-function _dominantRGB(img) {
+/* Top-N prominent colors (ported from art-frame): downscale, bucket colors
+   (skip near white/black), return the most-populous — each subsequent one kept
+   only if it's visually distinct (channel-sum ≥ 100) from those already picked,
+   so #2 is a real accent, not a shade of #1. */
+function _topColors(img, n) {
   const c = document.createElement('canvas'), W = c.width = 80, H = c.height = 80, ctx = c.getContext('2d');
   ctx.drawImage(img, 0, 0, W, H);
   const d = ctx.getImageData(0, 0, W, H).data, buckets = {};
@@ -137,21 +141,30 @@ function _dominantRGB(img) {
     (buckets[k] || (buckets[k] = { n: 0, r: 0, g: 0, b: 0 }));
     const o = buckets[k]; o.n++; o.r += r; o.g += g; o.b += b;
   }
-  let best = null; for (const k in buckets) { if (!best || buckets[k].n > best.n) best = buckets[k]; }
-  if (!best) return null;
-  return { r: Math.round(best.r / best.n), g: Math.round(best.g / best.n), b: Math.round(best.b / best.n) };
+  const sorted = Object.keys(buckets).map(k => buckets[k]).sort((x, y) => y.n - x.n)
+    .map(o => ({ r: Math.round(o.r / o.n), g: Math.round(o.g / o.n), b: Math.round(o.b / o.n) }));
+  const out = [];
+  for (const col of sorted) {
+    if (out.every(p => Math.abs(p.r - col.r) + Math.abs(p.g - col.g) + Math.abs(p.b - col.b) >= 100)) out.push(col);
+    if (out.length >= n) break;
+  }
+  return out;
 }
-/* Set the card border to a darker VARIANT of the image's primary color. */
+/* Outer frame = darker variant of the #1 color; the white text box gets a 6px
+   border of the #2 (second most prominent) color. */
 function _applyDominantBorder(cardEl, url) {
   try {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
-        const c = _dominantRGB(img);
-        if (!c) return;
-        const f = 0.78;   // darken ~22% so the frame reads as a deep variant of the primary
-        cardEl.style.borderColor = `rgb(${Math.round(c.r * f)},${Math.round(c.g * f)},${Math.round(c.b * f)})`;
+        const cols = _topColors(img, 2);
+        if (!cols.length) return;
+        const c1 = cols[0], f = 0.78;   // darken ~22% for the deep outer frame
+        cardEl.style.borderColor = `rgb(${Math.round(c1.r * f)},${Math.round(c1.g * f)},${Math.round(c1.b * f)})`;
+        const c2 = cols[1] || c1;
+        const box = cardEl.querySelector('.thought-card__box');
+        if (box) box.style.border = `6px solid rgb(${c2.r},${c2.g},${c2.b})`;
       } catch (e) {}
     };
     img.src = url;
