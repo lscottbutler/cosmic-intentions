@@ -3768,14 +3768,22 @@ function _blockContentFor(slug, body) {
   }
   return body;
 }
+/* Admin content blocks that render inside the framed photo-card template with a
+   green "B" badge (vs the user's purple "C" thought cards). The Citadel Welcome
+   (dashboard-note-2) is deliberately NOT here — it stays the editable C block. */
+const CARD_BLOCKS = new Set(['home-welcome', 'home-section-1', 'home-section-2', 'dashboard-inspiration']);
+function _fillBlockEl(el, content) {
+  if (content && content.trim()) {
+    if (CARD_BLOCKS.has(el.getAttribute('data-block')) && typeof window.renderBlockCard === 'function') window.renderBlockCard(el, content);
+    else el.innerHTML = content;
+    el.style.display = '';
+  } else { el.style.display = 'none'; }
+}
 if (typeof window !== 'undefined') {
   window.injectContentBlocks = function () {
     Object.keys(_blockCache).forEach(slug => {
       const body = _blockContentFor(slug, _blockCache[slug]);
-      document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
-        if (body && body.trim()) { el.innerHTML = body; el.style.display = ''; }
-        else { el.style.display = 'none'; }
-      });
+      document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => _fillBlockEl(el, body));
     });
   };
 }
@@ -3788,13 +3796,7 @@ async function loadContentBlocks() {
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
     // Inject into display elements
     document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
-      const content = _blockContentFor(slug, body);
-      if (content && content.trim()) {
-        el.innerHTML = content;
-        el.style.display = '';
-      } else {
-        el.style.display = 'none';
-      }
+      _fillBlockEl(el, _blockContentFor(slug, body));
     });
     // Pre-fill admin editors
     const ed = document.getElementById(`admin-editor-${slug}`);

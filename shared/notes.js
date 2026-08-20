@@ -180,6 +180,29 @@ function _thoughtCard(n, cat, imgUrl) {
   </div>`;
 }
 
+/* Green "B" badge — marks a CONTENT BLOCK card (admin CMS content), to tell it
+   apart from the purple "C" thought cards. */
+export function contentBadge() {
+  return `<span class="ci-edit-badge ci-edit-badge--b" title="Content block (admin)" aria-hidden="true">B</span>`;
+}
+/* Render an admin content block inside the framed photo-card template with a
+   green B badge. Strips the CMS-normalising classes (.cb-display/.dash-note-block)
+   so their flatten-everything rules don't kill the card; content keeps its own
+   readable formatting in the white box. */
+export function renderBlockCard(el, html) {
+  if (!el) return;
+  el.classList.remove('cb-display', 'dash-note-block', 'redblob-note');
+  el.style.cssText = 'position:relative;background:none;border:none;padding:0;margin:6px 0 16px;box-shadow:none;';
+  const imgUrl = _thoughtImg(_hash((el.getAttribute('data-block') || 'block') + '|' + (html || '').length));
+  el.innerHTML = `<div class="thought-card thought-card--block">
+    <div class="thought-card__bg" style="background-image:url('${imgUrl}')"></div>
+    <div class="thought-card__box thought-card__box--block">${html}</div>
+    ${contentBadge()}
+  </div>`;
+  const card = el.querySelector('.thought-card');
+  if (card) _applyDominantBorder(card, imgUrl);
+}
+
 export function sprinkleNotes() {
   const slots = document.querySelectorAll('[data-random-note]');
   // Scattered surfacing stays OFF; only explicitly-placed home blocks
