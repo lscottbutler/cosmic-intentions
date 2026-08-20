@@ -2889,7 +2889,7 @@ input, textarea, select {
 .thought-card__box{position:relative;z-index:1;margin:25px;background:#f4f6f8;border-radius:3px;padding:24px 22px;box-shadow:0 3px 14px rgba(0,0,0,.30);display:flex;align-items:center;justify-content:center;text-align:center;min-height:64px;}
 .thought-card__body{font-size:22px;line-height:1.45;color:#1c1c1c;font-style:italic;font-weight:700;font-family:var(--font-body,'Lora',Georgia,serif)!important;letter-spacing:.1px!important;}
 /* Content-block variant: same frame, but readable left-aligned prose in the box. */
-.thought-card__box--block{display:block;text-align:left;padding:16px 18px;margin:8px;background:#f4f6f8;}
+.thought-card__box--block{display:block;text-align:left;padding:22px 26px;margin:8px;background:#f4f6f8;box-sizing:border-box;overflow:hidden;overflow-wrap:break-word;word-break:break-word;}
 /* Force CMS content to the full box width — defeats any inline width / max-width /
    CSS-columns / float the pasted block HTML brings (the .dash-note-block reset we
    lost when the card strips that class). */
