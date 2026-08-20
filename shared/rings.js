@@ -487,31 +487,31 @@ export function renderRings() {
   // Horizontal grid: rows = horizons (Daily→Yearly), columns = the 3 pillars.
   // Each cell is a horizontal progress bar in that horizon's colour. Row labels
   // carry the colour dot, so no separate legend is needed.
-  const pillarHead = PILLARS.map(p => {
+  // Vertical stack: one block per pillar (Completed Tasks, Visualize, Habits),
+  // each with its Daily/Weekly/Monthly/Yearly progress bars beneath. Was a
+  // 3-across grid that got clipped in the narrow sidebar.
+  const bigGrid = PILLARS.map(p => {
     const done = !!rings[p.key];
     const s = stats[p.key];
     const tip = done ? `${p.label} done today` : p.hint;
-    return `<div title="${tip}" style="text-align:center;${_mono}font-size:10px;font-weight:800;letter-spacing:.4px;color:${done ? G.done : G.lite};">
-        <span style="display:block;font-size:15px;margin-bottom:2px;color:${done ? G.done : G.mid};">${p.icon}</span>${p.label.toUpperCase()}
-        <span style="display:block;font-size:8.5px;font-weight:800;color:${done ? G.done : G.dim};margin-top:2px;">${done ? '✓ ' : ''}+${PTS.anchor}</span>
-        ${s.streak > 0 ? `<span style="display:block;font-size:9px;color:${G.brand};margin-top:1px;">🔥${s.streak}</span>` : ''}
+    const header = `<div title="${tip}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:15px;color:${done ? G.done : G.mid};">${p.icon}</span>
+        <span style="flex:1;${_mono}font-size:11px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.label.toUpperCase()}</span>
+        <span style="${_mono}font-size:9px;font-weight:800;color:${done ? G.done : G.dim};">${done ? '✓ ' : ''}+${PTS.anchor}</span>
+        ${s.streak > 0 ? `<span style="${_mono}font-size:9px;color:${G.brand};">🔥${s.streak}</span>` : ''}
       </div>`;
-  }).join('');
-  const barRows = HORIZONS.map(h => {
-    const label = `<div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;letter-spacing:.3px;color:${G.mid};">
-        <span style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:${h.col};"></span>${h.label}</div>`;
-    const bars = PILLARS.map(p => {
-      const frac = Math.max(0, Math.min(1, stats[p.key][h.key]));
-      return `<div title="${h.label} · ${p.label}: ${Math.round(frac * 100)}%" style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;">
-          <div style="position:absolute;left:0;top:0;bottom:0;width:${(frac * 100).toFixed(0)}%;background:${h.col};border-radius:6px;transition:width .3s;"></div>
+    const bars = HORIZONS.map(h => {
+      const frac = Math.max(0, Math.min(1, s[h.key]));
+      return `<div style="display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;margin-bottom:5px;">
+          <div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;letter-spacing:.3px;color:${G.mid};">
+            <span style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:${h.col};"></span>${h.label}</div>
+          <div title="${h.label} · ${p.label}: ${Math.round(frac * 100)}%" style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;">
+            <div style="position:absolute;left:0;top:0;bottom:0;width:${(frac * 100).toFixed(0)}%;background:${h.col};border-radius:6px;transition:width .3s;"></div>
+          </div>
         </div>`;
     }).join('');
-    return label + bars;
+    return `<div style="margin-bottom:14px;">${header}${bars}</div>`;
   }).join('');
-  const bigGrid = `
-    <div style="display:grid;grid-template-columns:64px 1fr 1fr 1fr;gap:9px 10px;align-items:center;margin-bottom:6px;">
-      <div></div>${pillarHead}${barRows}
-    </div>`;
 
   // Bonus rings (Gratitude, then Meditate) — earn points, not required for a
   // Perfect Day. Gratitude is tappable; Meditate closes only from a session.
