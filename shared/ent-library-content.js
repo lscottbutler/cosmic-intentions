@@ -206,6 +206,106 @@ export const ENT_CARDS = [
     roadmap: ['Choose one system to capture every task and idea.', 'Do a full brain-dump into that system today.', 'Give every project one clear next action.', 'Set a weekly review to keep the system clean.', 'Label and organize one messy area of your work.', 'Trust the system, then act from it — not from memory.'] },
 ];
 
+/* STOIC PRINCIPLES + WINNING ATTITUDES, authored per card from its identity.
+   Frozen + shared across all members (same reference points for everyone), keyed
+   by ENT_CARDS[].key. Rendered as two extra green sections on the ent-lib page.
+   Attitudes are "LABEL — statement" strings so they render in the same numbered box. */
+export const ENT_MINDSET = {
+  'DISCIPLINED': {
+    stoic: ['I control my effort and my habits; outcomes are not mine to command.', 'The obstacle to today’s work is today’s work — I begin anyway.', 'I do not wait to feel ready; I act, and readiness follows.', 'Comfort is a poor master; I answer to my standards, not my moods.'],
+    attitudes: ['RELENTLESS — I show up whether or not I feel like it.', 'NON-NEGOTIABLE — my routine is not up for daily debate.', 'PROOF-DRIVEN — every clean day is evidence of who I’m becoming.', 'UNSHAKEABLE — I never miss twice.'] },
+  'RISK TAKER': {
+    stoic: ['I fear only what is in my power to avoid: inaction and cowardice.', 'I prepare for the worst outcome, then act without dread of it.', 'Fortune favors the one who has already accepted the loss.', 'What I risk, I risk on purpose; what I cannot control, I release.'],
+    attitudes: ['BOLD — I move while others hesitate.', 'ASYMMETRIC — I take capped downside for uncapped upside.', 'DECISIVE — I would rather act and adjust than wait and wonder.', 'FEARLESS — fear is a signal I’m near the edge that matters.'] },
+  'STRATEGIC THINKER': {
+    stoic: ['I see things as they are, not as I wish them to be.', 'The wise look past the moment to the second and third effect.', 'I spend my best hours thinking, for a clear mind is my greatest asset.', 'I do not chase every opportunity; I choose the one that matters.'],
+    attitudes: ['FAR-SIGHTED — I play ten moves ahead.', 'LEVERAGED — I find the point where small effort moves great weight.', 'PATIENT — I win the long game on purpose.', 'CLEAR-EYED — I act on what is, not on what I hope.'] },
+  'EXECUTING STRATEGY': {
+    stoic: ['Knowing the good and not doing it is the same as not knowing it.', 'I finish what I begin; an unfinished plan is only a wish.', 'The task before me deserves my full and immediate attention.', 'I judge myself by what I ship, not by what I intend.'],
+    attitudes: ['RUTHLESS — I close the gap between vision and reality.', 'ACCOUNTABLE — every initiative has an owner, a deadline, a metric.', 'DECISIVE — green light or red light, nothing ambiguous.', 'RELIABLE — I never let a great plan die unused.'] },
+  'SELF CONFIDENT': {
+    stoic: ['I need no one’s approval to know my own worth.', 'My certainty rests on what I control, so it cannot be taken.', 'I act first; the evidence of my ability follows.', 'Doubt is a visitor I acknowledge and do not house.'],
+    attitudes: ['CERTAIN — my confidence is earned, not borrowed.', 'SELF-RELIANT — I trust myself to figure it out as I go.', 'UNAPOLOGETIC — I don’t wait for permission to move.', 'PROVEN — every win confirms what I already knew.'] },
+  'PASSIONATE': {
+    stoic: ['I pour myself fully into work worthy of my one life.', 'My fire is fuel, not a fever; I let it drive, not rule me.', 'I love the labor itself, not only the reward it may bring.', 'A life spent on what matters cannot be a life wasted.'],
+    attitudes: ['OBSESSED — I love this enough to make quitting unthinkable.', 'WHOLEHEARTED — I bring my full heart to the goal.', 'MAGNETIC — people follow the energy I carry.', 'DEVOTED — every milestone deepens the fire.'] },
+  'PROFITABLE': {
+    stoic: ['I steward resources as a trust, not a plaything.', 'I measure the model by its truth: the numbers do not flatter.', 'I create value first; a fair reward is the natural echo.', 'Waste offends me; I spend where it builds and cut where it drains.'],
+    attitudes: ['VALUE-DRIVEN — I create real value and capture a fair share.', 'NUMERATE — I think in revenue, margin, and cash flow.', 'RESPONSIBLE — financial strength is my duty, not my hope.', 'DECISIVE — every choice moves a number I can name.'] },
+  'GREAT SALES PERSON': {
+    stoic: ['I serve first; the sale is the byproduct of genuine help.', 'A “no” costs me nothing I was owed; I meet it with grace.', 'I speak the truth plainly, for trust is the only real close.', 'I control my preparation and my follow-up, not the answer.'],
+    attitudes: ['SERVANT — I sell by serving, not by pushing.', 'TRUSTED — I build trust before I ask for anything.', 'PERSISTENT — follow-up is where most deals are won.', 'RESILIENT — every no gets me closer to the right yes.'] },
+  'SKILLFUL COMMUNICATOR': {
+    stoic: ['I say the true thing simply; ornament is the enemy of clarity.', 'I listen more than I speak, for I learn nothing while talking.', 'My words are seeds; I choose them knowing what they grow.', 'I speak to be understood, not to be admired.'],
+    attitudes: ['CLEAR — I say the true thing simply.', 'PRESENT — I make people feel genuinely heard.', 'PRECISE — clarity is kindness.', 'ATTUNED — I listen more than I speak.'] },
+  'EMPATHETIC': {
+    stoic: ['I remember that every person carries a burden I cannot see.', 'I seek first to understand, treating others as I would be treated.', 'I lead with understanding, for force wins compliance, not hearts.', 'Patience with people is patience with myself.'],
+    attitudes: ['UNDERSTANDING — I listen to understand, not to reply.', 'CONNECTED — I win through connection, not force.', 'PERCEPTIVE — I see the human behind the request.', 'SAFE — people open up because they feel secure with me.'] },
+  'STRONG WORK ETHIC': {
+    stoic: ['The work itself is the reward; I need no witness to do it well.', 'I rise and labor, for that is what I was made to do.', 'No task is beneath me if it serves the mission.', 'I earn my rest by the honest weight of my effort.'],
+    attitudes: ['TIRELESS — I outwork the room, quietly.', 'HUMBLE — no job is beneath me.', 'CONSISTENT — I do the unglamorous work every day.', 'EARNEST — I let the effort speak.'] },
+  'SELF STARTER': {
+    stoic: ['I do not wait for a signal; the need itself is my command.', 'I am the author of my own motion.', 'Where others see permission, I see responsibility.', 'The first step is always mine to take.'],
+    attitudes: ['PROACTIVE — I begin before I’m told.', 'OWNING — where others wait, I see responsibility.', 'INITIATING — the first step is always mine.', 'DRIVEN — I am the author of my own motion.'] },
+  'SELF PROMOTER': {
+    stoic: ['I speak of my work honestly, neither shrinking nor inflating.', 'False modesty serves no one; I let my results be known.', 'I value my worth rightly, and so can name it aloud.', 'I seek to be useful more than to be liked.'],
+    attitudes: ['VISIBLE — I let the right people know what I’ve built.', 'UNSHRINKING — I don’t hide my results out of false modesty.', 'CONFIDENT — I name my worth without apology.', 'STRATEGIC — I put my work where it will be seen.'] },
+  'RESPECTED MANAGER': {
+    stoic: ['I lead by example, for authority without character is hollow.', 'I am fair to all and a slave to none; respect is earned, not demanded.', 'I own the failures and share the credit.', 'I serve those I lead, and so they follow willingly.'],
+    attitudes: ['EXEMPLARY — I lead by example, not by title.', 'FAIR — I hold everyone, including myself, to the standard.', 'ACCOUNTABLE — I own the failures and share the credit.', 'TRUSTED — my word is reliable, so my team follows.'] },
+  'LIVING THE BRAND': {
+    stoic: ['What I preach, I practice; hypocrisy is a debt that always comes due.', 'My character is the brand; all else is packaging.', 'I am the same in private as in public.', 'I embody the values I ask others to trust.'],
+    attitudes: ['AUTHENTIC — I am the same in private as in public.', 'CONSISTENT — I practice what I preach.', 'EMBODIED — my character is the brand.', 'TRUSTWORTHY — I keep the promise the brand makes.'] },
+  'MANAGING TIME WISELY': {
+    stoic: ['Time is the only wealth I cannot earn back; I spend it deliberately.', 'I guard my hours as a miser guards gold, then give them to what matters.', 'It is not that I have too little time, but that I waste too much.', 'I do the important thing first, before the urgent devours the day.'],
+    attitudes: ['DELIBERATE — I spend my hours on purpose.', 'FOCUSED — I do the important before the urgent.', 'PROTECTIVE — I guard my best hours fiercely.', 'PRESENT — I give each task my full attention, then move on.'] },
+  'SUCCESSFUL NEGOTIATOR': {
+    stoic: ['I hold my aim firmly and my ego loosely.', 'The one who can walk away holds the real power.', 'I seek what is fair, for a deal built on loss will not last.', 'I listen twice as much as I argue.'],
+    attitudes: ['PREPARED — I know my number and my walk-away.', 'COMPOSED — I stay calm while others react.', 'FAIR — I seek a deal that lasts, not one that wins once.', 'PATIENT — the one who can wait, wins.'] },
+  'QUALITY PEOPLE': {
+    stoic: ['I become the person I wish to attract.', 'I am known by the company I keep, so I choose it with care.', 'I give before I ask, and the right people notice.', 'Character calls to character.'],
+    attitudes: ['MAGNETIC — I become who I wish to attract.', 'SELECTIVE — I choose my circle with care.', 'GENEROUS — I give before I ask.', 'DISCERNING — I invest in character, not convenience.'] },
+  'EXECUTING CONCEPT': {
+    stoic: ['An idea unbuilt is merely a daydream; I give mine hands.', 'I test in reality, not in my imagination.', 'I would rather ship the imperfect than polish the unseen.', 'The concept proves itself only in the doing.'],
+    attitudes: ['BUILDER — I give my ideas hands.', 'SHIPPING — I’d rather launch imperfect than hoard perfect.', 'GROUNDED — I test in reality, not in my head.', 'DECISIVE — I move the concept from mind to market.'] },
+  'FACILITATOR': {
+    stoic: ['I serve the group’s aim above my own voice.', 'I make the path smooth so others can carry the load.', 'The best leader is the one whose people say, “we did it ourselves.”', 'I draw out the best in others rather than impose my own.'],
+    attitudes: ['ENABLING — I make it easy for others to do great work.', 'SELFLESS — I serve the aim above my own voice.', 'UNIFYING — I turn a room of individuals into a team.', 'STEADY — I keep the group moving toward the goal.'] },
+  'OUTSIDE BOX': {
+    stoic: ['I question the assumptions others accept without thought.', 'The rule is a tool, not a master; I use it or set it aside.', 'I seek the truth, even when it lives outside the usual road.', 'A fresh eye sees what habit has made invisible.'],
+    attitudes: ['INVENTIVE — I find the door where others see a wall.', 'QUESTIONING — I challenge the assumptions everyone accepts.', 'ORIGINAL — I seek the answer no one else has tried.', 'CURIOUS — I look where habit has stopped others from looking.'] },
+  'FAIRNESS': {
+    stoic: ['Justice is giving each their due; I weigh without favor.', 'I hold myself to the harshest standard I set for others.', 'I would rather be just than be liked.', 'Fairness is the foundation on which trust is built.'],
+    attitudes: ['JUST — I give each person their due.', 'IMPARTIAL — I weigh without favor.', 'PRINCIPLED — I’d rather be fair than popular.', 'CONSISTENT — the standard is the same for everyone, including me.'] },
+  'GOOD LISTENER': {
+    stoic: ['Nature gave me two ears and one mouth for a reason.', 'I listen to understand, not to wait for my turn.', 'In silence I learn what noise would have hidden.', 'The person before me deserves my whole attention.'],
+    attitudes: ['ATTENTIVE — I give my whole attention to the speaker.', 'PATIENT — I listen to understand, not to reply.', 'CURIOUS — I ask one more question before I respond.', 'PRESENT — I quiet my own voice to hear theirs.'] },
+  'METICULOUS PLANNER': {
+    stoic: ['I plan for the storm while the sky is clear.', 'Foresight spares me the panic of the unprepared.', 'I map the road, then walk it one deliberate step at a time.', 'What I anticipate, I can absorb.'],
+    attitudes: ['THOROUGH — I leave no detail to chance.', 'PREPARED — I plan for the storm in clear weather.', 'DELIBERATE — I map the road before I walk it.', 'CALM — foresight spares me the panic of the unready.'] },
+  'AWARE OF LIMITATIONS': {
+    stoic: ['I know what is mine to do and what is not, and I am at peace with both.', 'Wisdom begins in admitting what I do not know.', 'I ask for help without shame, for no one masters everything.', 'I build my strengths and hire my gaps.'],
+    attitudes: ['HONEST — I know what I do and don’t do well.', 'HUMBLE — wisdom starts in admitting what I don’t know.', 'RESOURCEFUL — I hire my gaps and build my strengths.', 'SECURE — I ask for help without shame.'] },
+  'BALANCE IN LIFE': {
+    stoic: ['I labor hard and rest well; both are part of a whole life.', 'A bow always bent will break; I know when to unstring it.', 'I tend to body, mind, and spirit, for one neglected undoes the rest.', 'Enough is a feast; I do not sacrifice my life to build one.'],
+    attitudes: ['WHOLE — I tend to body, mind, and spirit.', 'SUSTAINABLE — I rest so I can labor for the long run.', 'PRESENT — I am fully at work, then fully at home.', 'GROUNDED — I know when enough is a feast.'] },
+  'CHARMING': {
+    stoic: ['I make others feel their own worth, and they remember me for it.', 'Warmth costs nothing and returns much.', 'I am genuinely interested in people, and it shows.', 'Grace in small moments builds trust in large ones.'],
+    attitudes: ['WARM — I make people feel their own worth.', 'INTERESTED — I am genuinely curious about people.', 'GRACIOUS — I bring ease to every room I enter.', 'MEMORABLE — I leave people better than I found them.'] },
+  'COMFORTABLE DELEGATING': {
+    stoic: ['I trust others to carry what need not be mine alone.', 'To do everything myself is pride, not virtue.', 'I give the task and the authority to match it.', 'I free my hands for the work only I can do.'],
+    attitudes: ['TRUSTING — I hand off the task and the authority with it.', 'SECURE — letting go is strength, not loss of control.', 'FOCUSED — I keep only the work only I can do.', 'EMPOWERING — I grow others by giving them real weight.'] },
+  'COMPETITIVE': {
+    stoic: ['My truest rival is the person I was yesterday.', 'I compete to become excellent, not merely to defeat.', 'I honor a worthy opponent, for they sharpen me.', 'I control my effort; the standings are not mine to command.'],
+    attitudes: ['HUNGRY — I play to win, every time.', 'SELF-MEASURING — my real rival is yesterday’s me.', 'RELENTLESS — I raise my game against the best.', 'GRACIOUS — I honor the opponent who sharpens me.'] },
+  'DETERMINED TO SUCCEED': {
+    stoic: ['The obstacle is the way; what blocks the path becomes the path.', 'I persist not from stubbornness but from purpose.', 'Defeat is a lesson, never a verdict.', 'I bend, but I do not break.'],
+    attitudes: ['UNSTOPPABLE — the obstacle is the way.', 'PERSISTENT — I bend but I do not break.', 'RESILIENT — defeat is a lesson, never a verdict.', 'PURPOSEFUL — I persist from purpose, not pride.'] },
+  'ORGANIZATIONAL SKILLS': {
+    stoic: ['Order in my affairs makes room for order in my mind.', 'A place for everything, and my attention freed for what matters.', 'I master the small systems so the large ones cannot master me.', 'Clarity outside creates calm within.'],
+    attitudes: ['ORDERLY — a place for everything, everything in its place.', 'SYSTEMATIC — I build systems so nothing slips.', 'CLEAR — order outside creates calm within.', 'EFFICIENT — I remove friction before it costs me.'] },
+};
+
 /* Card art path for a key. Files live in images/entrepreneur-library/ and mostly
    follow "ENT <KEY>.PNG", with a few naming quirks handled here. */
 const _IMG_OVERRIDE = {

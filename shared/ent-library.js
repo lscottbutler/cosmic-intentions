@@ -4,7 +4,7 @@
    for every member (see shared/ent-library-content.js). */
 
 import { toast } from '../app.js';
-import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent, entCardImg } from './ent-library-content.js';
+import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
 let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
 if (_entIdx < 0) _entIdx = 0;
@@ -163,6 +163,8 @@ export function renderEntLibrary() {
      ${_greenSection('ROADMAP', c.roadmap, 'num')}
      ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
      ${_greenSection('BELIEFS', c.beliefs, 'belief', c.key)}
+     ${ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') : ''}
+     ${ENT_MINDSET[c.key] ? _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''}
      <div id="entPlayer" style="display:none;"></div>`;
 }
 
