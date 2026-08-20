@@ -22,19 +22,35 @@ For ANY change to the app, before reporting:
 1. **LOCAL = SOURCE OF TRUTH.** Make sure the local server is up
    (double-click `vibe-preview.bat` → http://127.0.0.1:8080) and load the affected
    page THERE. It runs the actual current code; the live site does not.
-2. **PROVE IT RENDERS.** Standalone page (e.g. player/*.html) → headless screenshot
-   with msedge `--headless --screenshot` and actually look at it. Auth-gated page
-   (index.html) → can't screenshot without login; say plainly "could not visually
-   verify — needs login" instead of implying it works.
+2. **PROVE IT RENDERS — you CAN see the auth-gated app now (no excuses).** Start the
+   Vite dev server (`npm run dev`; run it in the background, and unsandboxed if the
+   port bind is refused), then open the REAL logged-in dashboard with NO auth via
+   preview mode:
+     `http://localhost:5173/?preview=1&page=<id>`
+     ids: dashboard · notes · mynotes · dailyfocus · myroadmap · wins · vizlibrary ·
+          entcard · setup · habits
+   Screenshot with headless msedge `--headless=new --screenshot`, OR — for exact
+   sizes/positions — MEASURE with Playwright driving the installed Edge
+   (`chromium.launch({channel:'msedge'})`; set localStorage, reload, read
+   `getBoundingClientRect()`). "The CSS has the rule" / "the code looks right" is NOT
+   proof — look at the pixels or measure them.
 3. **AFTER PUSHING, CONFIRM IT DEPLOYED.** Run `bash scripts/deploy-status.sh`.
    The newest Netlify deploy state MUST be `ready`. If it's `error`/`skipped`
    (e.g. "credit usage exceeded"), the change is NOT live — say so and STOP.
-   Do NOT keep pushing into a failing pipeline.
 4. **One change → verify → report.** No batches of hopeful commits.
-5. **State the evidence** in the report ("verified on localhost", "deploy <hash>: ready").
-   If you couldn't verify something, say exactly what you couldn't verify.
+5. **State the evidence with real numbers** ("welcome 560, cards 560, aligned; deploy
+   <hash>: ready"). If you couldn't verify something, say exactly what you couldn't.
 
-If you can't prove it, the honest answer is "not verified yet" — never "done".
+**NO SHIT RESPONSES (Scott's words, 2026-08-20 — hard rule).** NEVER say "done",
+"fixed", "matching", or "works" on a hunch or because the code/CSS looks right. That
+is banned. Prove it with a screenshot or a measurement, or state plainly what you did
+NOT verify. If you can't prove it, the honest answer is "not verified yet" — never "done".
+
+**DON'T ARGUE WITH SCOTT ABOUT WHAT HE SEES.** If he says it's wrong and your check
+says right, there IS a gap (browser/CDN cache, live ≠ preview, his zoom/viewport) —
+find and close it, don't insist you're right. To see HIS actual live render: tell him
+to append `?diag=1` to the URL — a green overlay prints the real rendered width/left/
+right of the key elements; he screenshots it and you finally see what HIS browser draws.
 
 ## Deploy reality (learned the hard way 2026-06-18)
 - Netlify auto-deploys `main`, BUT the team (CI26) hit its usage cap and EVERY deploy

@@ -18,6 +18,20 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
 <!-- THEME: apply saved theme before paint (no flash) + expose setTheme for the header picker -->
 <script>(function(){var q;try{q=new URLSearchParams(location.search).get('theme');}catch(e){}try{var t=q||localStorage.getItem('ci_theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(q)localStorage.setItem('ci_theme',q);}catch(e){document.documentElement.setAttribute('data-theme','dark');}
 window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}document.documentElement.setAttribute('data-theme',n);};})();</script>
+<!-- DIAG OVERLAY — add ?diag=1 to the URL to see the REAL rendered sizes of key
+     elements on YOUR live screen, then screenshot it. Lets Claude see what your
+     browser actually renders (the app is login-gated, so this is the bridge). -->
+<script>(function(){
+  try{ if(!/[?&]diag=1/.test(location.search)) return; }catch(e){ return; }
+  var box=document.createElement('div');
+  box.id='ci-diag';
+  box.style.cssText='position:fixed;top:6px;left:6px;z-index:2147483647;background:#000;color:#0f0;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px 10px;border:2px solid #0f0;border-radius:6px;max-width:94vw;white-space:pre;pointer-events:none;';
+  function px(label,sel){var e=document.querySelector(sel);if(!e)return label+': (not found)';var r=e.getBoundingClientRect();return label+': w='+Math.round(r.width)+'  L='+Math.round(r.left)+'  R='+Math.round(r.right);}
+  function tick(){ if(!document.body)return; if(!box.parentNode)document.body.appendChild(box);
+    box.textContent=['DIAG — screenshot this box','viewport '+window.innerWidth+'x'+window.innerHeight+'  dpr '+window.devicePixelRatio,px('welcome','[data-block=\"dashboard-note-2\"]'),px('nav   ','#citadelNav'),px('cards ','#vaultList'),px('card1 ','.vault-item')].join('\n'); }
+  if(document.readyState!=='loading')tick(); else document.addEventListener('DOMContentLoaded',tick);
+  setInterval(tick,1000);
+})();</script>
 </head>
 <body>
 
