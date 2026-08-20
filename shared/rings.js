@@ -533,13 +533,13 @@ export function renderRings() {
       : `<span title="${cfg.title}" style="position:relative;width:44px;height:44px;flex:0 0 auto;display:inline-block;">${icon}</span>`;
     const sub = cfg.sub;
     return `
-    <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};display:flex;align-items:center;gap:12px;">
-      ${knob}
-      <span style="flex:1;min-width:0;">
-        <div style="font-weight:800;font-size:13px;color:${G.bright};">${b.label}${on ? ' ✓' : ''}</div>
-        <div style="font-size:11px;color:${G.dim};margin-top:2px;">${sub}</div>
-      </span>
-      <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${col};border:1px solid ${col};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${val} BONUS</span>
+    <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:7px;">
+        ${knob}
+        <span style="flex:1;min-width:0;font-weight:800;font-size:14px;color:${G.bright};">${b.label}${on ? ' ✓' : ''}</span>
+        <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${col};border:1px solid ${col};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${val} BONUS</span>
+      </div>
+      <div style="font-size:11px;color:${G.dim};line-height:1.45;">${sub}</div>
     </div>`;
   }).join('');
 

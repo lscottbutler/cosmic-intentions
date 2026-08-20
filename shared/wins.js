@@ -172,20 +172,23 @@ export function renderWins() {
   // count, white inner panel for the content, and a dark footer bar.
   el.innerHTML = `
     <div style="background:#4A90D9;border:1px solid #4A90D9;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 4px 12px;">
-        <span style="font-size:14pt;font-weight:800;line-height:1.15;color:#fff;">◈ WINS WALL</span>
+      <div onclick="toggleColBSection('wins')" style="display:flex;align-items:center;gap:8px;padding:2px 4px 12px;cursor:pointer;user-select:none;">
+        <span style="flex:1;font-size:14pt;font-weight:800;line-height:1.15;color:#fff;">◈ WINS WALL</span>
         <span style="font-family:var(--vault-mono);font-size:10px;color:#fff;opacity:.9;">${today} today · ${wins.length} all-time</span>
+        <span class="colb-banner-arrow open" id="wins-arr">▶</span>
       </div>
-      <div style="background:#fff;border-radius:8px;padding:12px;overflow:hidden;">
-        <div style="display:flex;gap:6px;margin-bottom:12px;">
-          <input id="winInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
-            onkeydown="if(event.key==='Enter')winAdd()"
-            style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
-          <button onclick="winAdd()"
-            style="flex-shrink:0;background:${BRAND};border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+      <div id="wins-body">
+        <div style="background:#fff;border-radius:8px;padding:12px;overflow:hidden;">
+          <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <input id="winInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
+              onkeydown="if(event.key==='Enter')winAdd()"
+              style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
+            <button onclick="winAdd()"
+              style="flex-shrink:0;background:${BRAND};border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+          </div>
+          ${body}
         </div>
-        ${body}
+        <button onclick="navTo('wins')" style="width:100%;margin-top:10px;background:#333;color:#fff;border:none;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;">SEE ALL WINS →</button>
       </div>
-      <button onclick="navTo('wins')" style="width:100%;margin-top:10px;background:#333;color:#fff;border:none;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;">SEE ALL WINS →</button>
     </div>`;
 }
