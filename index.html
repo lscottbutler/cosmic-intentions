@@ -821,22 +821,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
-        <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:#ffffff;border:1px solid #e9edf2;border-left:4px solid #e0102b;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:24px 28px;margin:6px 0 16px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
+        <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:22px 26px;margin:6px auto 16px;max-width:560px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
         <!-- 🏆 INSPIRATION — admin-curated champion (photo + story) who uses meditation/visualization. Hidden until filled from the Admin page (slug: dashboard-inspiration). -->
-        <div class="dash-note-block" data-block="dashboard-inspiration" style="display:none;background:#ffffff;border:1px solid #e9edf2;border-left:4px solid #e0102b;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:24px 28px;margin:6px 0 16px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
+        <div class="dash-note-block" data-block="dashboard-inspiration" style="display:none;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:22px 26px;margin:6px auto 16px;max-width:560px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
-        <!-- WHICH DIRECTION? — the two pillar buttons, up top -->
-        <div class="dash-direction" style="margin:6px 0 12px;text-align:center;">
-          <svg viewBox="0 0 150 112" width="126" height="94" fill="none" stroke="var(--text,#12224b)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Which direction — choose your path">
-            <path d="M75 6 V32"/>
-            <path d="M75 32 C66 58 26 54 24 88"/>
-            <path d="M75 32 V92"/>
-            <path d="M75 32 C84 58 124 54 126 88"/>
-            <path d="M12 74 L24 90 L36 74"/>
-            <path d="M63 78 L75 94 L87 78"/>
-            <path d="M114 74 L126 90 L138 74"/>
-          </svg>
-        </div>
         <!-- Nav buttons wrapped so CSS `order` can alphabetize them without moving the big attached panels. -->
         <div id="citadelNav" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;grid-auto-flow:row dense;align-items:start;">
         <!-- QUICK WIN — tick a real habit / My Action / roadmap step right here; each tap logs the actual win -->
