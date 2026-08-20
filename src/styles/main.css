@@ -2034,7 +2034,7 @@ input, textarea, select {
 .vault-sidebar::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
 
 /* Column A — same slim scrollbar as Column B (kill the fat grey default) */
-.vault-main { scrollbar-width: thin; scrollbar-color: var(--mid) transparent; scrollbar-gutter: stable both-edges; }
+.vault-main { scrollbar-width: thin; scrollbar-color: var(--mid) transparent; }
 .vault-main::-webkit-scrollbar { width: 3px; }
 .vault-main::-webkit-scrollbar-track { background: transparent; }
 .vault-main::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
@@ -2195,10 +2195,7 @@ input, textarea, select {
 }
 /* The whole Column A stack — welcome box, nav buttons, goal cards — is one
    width (560px, centered) so everything lines up. */
-/* Column A content centered with visible margins. Only #citadelNav takes the
-   86% (the goal cards #vaultList live INSIDE it, so narrowing both double-applied). */
-#citadelNav { width: 86%; max-width: 560px; margin-left: auto; margin-right: auto; }
-#vaultList { margin-left: auto; margin-right: auto; }
+/* Citadel content fills Column A — same clean layout as the My Thoughts page. */
 .vault-item-body { flex: 1; min-width: 0; }
 .vault-item-title {
   font-size: 14px;
@@ -2569,34 +2566,33 @@ input, textarea, select {
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr) !important; /* Column A 80% / Column B 20% — Big 3 + Wins narrower, cards wider */
-    gap: 32px !important;
-    max-width: 1200px !important;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 22px !important;
+    max-width: 1100px !important;
     width: 100% !important;
     margin: 0 auto !important;
     padding: 0 24px !important;
-    align-items: start !important;
   }
 
   /* Reset column containers to fill their respective 50% slot bounds dynamically */
   .vault-sidebar {
     width: 100% !important;
     max-width: 100% !important;
-    height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
-    max-height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
-    position: sticky !important;
-    top: var(--hdr) !important;
-    overflow-y: auto !important;
-    padding: 0 !important;   /* zero padding — fill the 50% track edge-to-edge, matching Column A */
+    height: auto !important;
+    max-height: none !important;
+    position: static !important;
+    overflow: visible !important;
+    padding: 0 !important;
     border-left: none !important;
     border-right: none !important;
   }
 
   .vault-main {
     width: 100% !important;
-    height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
-    max-height: calc(100vh - var(--hdr) - var(--topnav, 0px)) !important;
-    overflow-y: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     padding: 0 !important;
   }
 }
