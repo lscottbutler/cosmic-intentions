@@ -181,9 +181,17 @@ function _thoughtCard(n, cat, imgUrl) {
 }
 
 /* Green "B" badge — marks a CONTENT BLOCK card (admin CMS content), to tell it
-   apart from the purple "C" thought cards. */
-export function contentBadge() {
-  return `<span class="ci-edit-badge ci-edit-badge--b" title="Content block (admin)" aria-hidden="true">B</span>`;
+   apart from the purple "C" thought cards. Taps through to the block's editor. */
+export function contentBadge(slug) {
+  return `<button class="ci-edit-badge ci-edit-badge--b" title="Edit this content block" aria-label="Edit content block" onclick="ciEditBlock('${slug || ''}');event.stopPropagation();return false;">B</button>`;
+}
+export function ciEditBlock(slug) {
+  try { const go = window.navTo || window.showPage; if (go) go('admin'); } catch (e) {}
+  // Let the Admin page show, then scroll to + focus this block's editor.
+  setTimeout(() => {
+    const ed = document.getElementById('admin-editor-' + slug);
+    if (ed) { try { ed.scrollIntoView({ behavior: 'smooth', block: 'center' }); ed.focus(); } catch (e) {} }
+  }, 240);
 }
 /* Render an admin content block inside the framed photo-card template with a
    green B badge. Strips the CMS-normalising classes (.cb-display/.dash-note-block)
@@ -197,7 +205,7 @@ export function renderBlockCard(el, html) {
   el.innerHTML = `<div class="thought-card thought-card--block">
     <div class="thought-card__bg" style="background-image:url('${imgUrl}')"></div>
     <div class="thought-card__box thought-card__box--block">${html}</div>
-    ${contentBadge()}
+    ${contentBadge(el.getAttribute('data-block'))}
   </div>`;
   const card = el.querySelector('.thought-card');
   if (card) _applyDominantBorder(card, imgUrl);
