@@ -1792,7 +1792,7 @@ input, textarea, select {
   width: 22px !important;
   height: 22px !important;
   border-radius: 50% !important;
-  background: #000 !important;
+  background: var(--purple, #7C5CC4) !important;
   border: none !important;
   color: #fff !important;
   font-family: var(--vault-mono, monospace) !important;
