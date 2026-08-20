@@ -259,7 +259,7 @@ export function renderNotesPage(cats, hostId, capId) {
     return `
       <div id="notesec-${c.key}"><button onclick="notesToggleSection('notesec-${c.key}')"
         style="width:100%;display:flex;align-items:center;justify-content:space-between;background:${hd.bg};border:1px solid rgba(0,0,0,.25);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
-        <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:${hd.fg};text-transform:uppercase;">${esc(c.label)}</span>
+        <span style="font-weight:800;font-size:15px;letter-spacing:2px;color:${hd.fg};text-transform:uppercase;">${esc(c.label)}</span>
         <span style="display:flex;align-items:center;gap:12px;">
           ${total < NOTES_CAP ? `<span onclick="event.stopPropagation();notesShowAdd('${c.key}')" title="Add a ${singular.toLowerCase()}" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:${hd.add};color:#fff;font-size:17px;font-weight:800;line-height:1;cursor:pointer;">＋</span>` : ''}
           <span style="font-family:var(--vault-mono,monospace);font-size:11px;color:${hd.fg};opacity:.75;">${mine.length}</span>
