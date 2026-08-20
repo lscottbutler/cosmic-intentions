@@ -3757,10 +3757,14 @@ const _blockCache = {};
 /* Content to show for a block — the per-user Citadel welcome overrides the admin
    dashboard-note-2 copy; every other block shows its admin body. ALL fill paths
    route through this so no path can clobber the user's override. */
+/* Black "C" edit badge for the Citadel Welcome box → jumps to the My Citadel
+   Welcome editor. Kept identical to editBadge('welcome') in shared/notes.js. */
+const _WELCOME_EDIT_BADGE = `<button onclick="ciEditThought('welcome');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit your Citadel welcome" class="ci-edit-badge">C</button>`;
 function _blockContentFor(slug, body) {
   if (slug === 'dashboard-note-2') {
     const u = _citadelWelcome().trim();
-    if (u) return u.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    const base = u ? u.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : (body || '');
+    return base && base.trim() ? base + _WELCOME_EDIT_BADGE : base;
   }
   return body;
 }
@@ -3822,11 +3826,11 @@ function applyUserCitadelWelcome() {
   // The visible first paragraph in Column A is the dashboard-note-2 box.
   document.querySelectorAll('[data-block="dashboard-note-2"]').forEach(el => {
     if (v) {
-      el.innerHTML = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+      el.innerHTML = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + _WELCOME_EDIT_BADGE;
       el.style.display = '';
     } else {
       const admin = _blockCache['dashboard-note-2'] || '';
-      el.innerHTML = admin;
+      el.innerHTML = admin.trim() ? admin + _WELCOME_EDIT_BADGE : admin;
       el.style.display = admin.trim() ? '' : 'none';
     }
   });

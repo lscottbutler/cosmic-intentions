@@ -79,6 +79,29 @@ export function dailyNote(cat, slotKey) {
   return pool[idx];
 }
 
+/* Small black circle with a white "C" — an edit button that surfaces on any
+   thought displayed around the site. Tapping it jumps to where that thought is
+   edited (the My Thoughts page). dest: 'welcome' → the My Citadel Welcome
+   editor; a category key (affirmation/belief/…) → that section. The host element
+   MUST be position:relative for the absolute badge to anchor to its corner. */
+export function editBadge(dest) {
+  return `<button onclick="ciEditThought('${dest || ''}');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit this thought" class="ci-edit-badge">C</button>`;
+}
+export function ciEditThought(dest) {
+  try { const go = window.navTo || window.showPage; if (go) go('notes'); } catch (e) {}
+  // Let the My Thoughts page render, then scroll to the exact edit spot.
+  setTimeout(() => {
+    if (dest === 'welcome') {
+      const inp = document.getElementById('citadelWelcomeInput');
+      if (inp) { try { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); inp.focus(); } catch (e) {} }
+      return;
+    }
+    let target = dest ? document.getElementById('notesec-' + dest) : null;
+    target = target || document.getElementById('notesSections');
+    if (target) { try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }
+  }, 160);
+}
+
 /* Fill every [data-random-note] slot on the page with a thought that stays
    fixed for the day (see dailyNote). The attribute value optionally restricts
    to a category (''=any); data-note-key gives the slot a stable identity so
@@ -96,9 +119,11 @@ export function sprinkleNotes() {
     const n = dailyNote(cat, key);
     if (!n) { el.style.display = 'none'; return; }
     el.style.display = '';
+    el.style.position = 'relative';   // anchor the "C" edit badge to the corner
     el.innerHTML =
       `<span style="flex-shrink:0;color:#e0102b;font-size:15px;">✦</span>` +
-      `<span style="flex:1;min-width:0;font-size:14px;font-style:italic;color:var(--text,#eee);line-height:1.5;">${esc(n.text)}</span>`;
+      `<span style="flex:1;min-width:0;font-size:14px;font-style:italic;color:var(--text,#eee);line-height:1.5;">${esc(n.text)}</span>` +
+      editBadge(n.cat || cat || '');
   });
 }
 

@@ -1781,6 +1781,32 @@ input, textarea, select {
 .cb-display, .cb-display *, .cb-display a,
 .dash-note-block, .dash-note-block *, .dash-note-block a { text-decoration: none !important; }
 
+/* "C" edit badge — a black circle with a white C on any surfaced thought. The
+   double-class selector outranks ".dash-note-block *" so it isn't flattened to a
+   transparent/black block by the CMS-normalising rules above. */
+.ci-edit-badge,
+.dash-note-block .ci-edit-badge {
+  position: absolute !important;
+  bottom: 6px !important;
+  right: 6px !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  background: #000 !important;
+  border: none !important;
+  color: #fff !important;
+  font-family: var(--vault-mono, monospace) !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  z-index: 3 !important;
+}
+
 /* ── NOTES PAGE ─────────────────────────────────────────── */
 
 /* ── ADMIN PAGE ────────────────────────────────────────── */
