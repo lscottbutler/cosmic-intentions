@@ -89,17 +89,24 @@ export function editBadge(dest) {
 }
 export function ciEditThought(dest) {
   try { const go = window.navTo || window.showPage; if (go) go('notes'); } catch (e) {}
-  // Let the My Thoughts page render, then scroll to the exact edit spot.
+  // Let the My Thoughts page render, then scroll to + highlight the exact edit spot.
   setTimeout(() => {
-    if (dest === 'welcome') {
-      const inp = document.getElementById('citadelWelcomeInput');
-      if (inp) { try { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); inp.focus(); } catch (e) {} }
-      return;
-    }
-    let target = dest ? document.getElementById('notesec-' + dest) : null;
-    target = target || document.getElementById('notesSections');
-    if (target) { try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }
+    let target = null;
+    if (dest === 'welcome') target = document.getElementById('citadelWelcomeInput');
+    else if (dest) target = document.getElementById('notesec-' + dest);
+    if (!target) target = document.getElementById('notesSections');
+    if (!target) return;
+    try { target.scrollIntoView({ behavior: 'smooth', block: dest === 'welcome' ? 'center' : 'start' }); } catch (e) {}
+    if (dest === 'welcome' && typeof target.focus === 'function') { try { target.focus(); } catch (e) {} }
+    _flashEditing(target);
   }, 160);
+}
+/* Thick yellow border on the thought section (or welcome field) being edited,
+   so it's obvious what you're editing. Clears any previous highlight first. */
+function _flashEditing(el) {
+  document.querySelectorAll('.ci-editing-highlight').forEach(x => x.classList.remove('ci-editing-highlight'));
+  void el.offsetWidth;   // reflow so the pulse restarts if the same target is re-picked
+  el.classList.add('ci-editing-highlight');
 }
 
 /* Fill every [data-random-note] slot on the page with a thought that stays
@@ -178,7 +185,7 @@ export function renderNotesPage(cats, hostId, capId) {
         style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:4px solid #000;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#1a1a1a;background:#fff;min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
 
     return `
-      <div><button onclick="notesToggleSection('notesec-${c.key}')"
+      <div id="notesec-${c.key}"><button onclick="notesToggleSection('notesec-${c.key}')"
         style="width:100%;display:flex;align-items:center;justify-content:space-between;background:${hd.bg};border:1px solid rgba(0,0,0,.25);border-radius:10px;padding:14px 18px;cursor:pointer;margin-bottom:10px;">
         <span style="font-weight:800;font-size:15px;letter-spacing:.5px;color:${hd.fg};text-transform:uppercase;">${esc(c.label)}</span>
         <span style="display:flex;align-items:center;gap:12px;">

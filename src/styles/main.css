@@ -1781,6 +1781,17 @@ input, textarea, select {
 .cb-display, .cb-display *, .cb-display a,
 .dash-note-block, .dash-note-block *, .dash-note-block a { text-decoration: none !important; }
 
+/* Thick yellow border on the thought section (or Citadel Welcome field) you
+   jumped to edit via the "C" badge — pulses a few times to catch the eye, then
+   holds so it's obvious what's being edited. */
+@keyframes ci-edit-pulse { 0%, 100% { outline-color: #FFD400; } 50% { outline-color: #FF9500; } }
+.ci-editing-highlight {
+  outline: 4px solid #FFD400 !important;
+  outline-offset: 3px !important;
+  border-radius: 10px !important;
+  animation: ci-edit-pulse 0.9s ease-in-out 3;
+}
+
 /* "C" edit badge — a black circle with a white C on any surfaced thought. The
    double-class selector outranks ".dash-note-block *" so it isn't flattened to a
    transparent/black block by the CMS-normalising rules above. */
