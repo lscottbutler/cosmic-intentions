@@ -715,9 +715,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-hdr" id="notesPageTitle">My Thoughts<span style="display:block;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:none;opacity:.85;margin-top:5px;">Words to Live By</span></div>
         <div class="pg-screen">
           <p class="pg-intro">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface randomly around the site.</p>
-          <div id="notesSections"></div>
-          <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
-          <!-- Toolbar moved down to sit just above the My Citadel Welcome box, per request. -->
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
             <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;">← BACK</button>
             <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
@@ -729,6 +726,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
             <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
           </div>
+          <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
+          <div id="notesSections"></div>
         </div>
       </div>
     </div>
