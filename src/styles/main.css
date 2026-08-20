@@ -498,9 +498,10 @@ details.rm-drop[open]::details-content { height: auto; }
 /* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
    75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
    content into .pg-body-main and appends .pg-side. */
-.pg-body { display:grid; grid-template-columns:3fr 1fr; gap:16px; align-items:start; }
-.pg-side { border:1px dashed var(--border,#cfcfcf); border-radius:10px; min-height:240px; padding:14px; }
-@media (max-width:767px){ .pg-body { grid-template-columns:1fr; } }
+.pg-body { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,1fr); gap:16px; align-items:start; }
+.pg-side { border:1px dashed var(--border,#cfcfcf); border-radius:10px; min-height:240px; padding:14px; min-width:0; }
+.pg-body-main { min-width:0; }   /* let the column shrink below content min-content — kills mobile overflow */
+@media (max-width:767px){ .pg-body { grid-template-columns:minmax(0,1fr); } }
 /* Top header adopts the active framed page's frame color (falls back to #2b2b2b). */
 /* App header matches the page-title bar (bezelDk) so the two bars read as ONE
    uniform surface — no two-tone seam behind the hamburger. */

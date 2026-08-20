@@ -1219,15 +1219,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <input type="text" id="pbNewIntentionInput" placeholder="I AM …" maxlength="150"
             style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;margin-bottom:14px;" />
           <div style="display:flex;gap:12px;margin-bottom:14px;">
-            <div style="flex:1;">
+            <div style="flex:1;min-width:0;">
               <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">STARTED</label>
               <input type="date" id="pbNewStartDate"
-                style="width:100%;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
+                style="width:100%;min-width:0;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
             </div>
-            <div style="flex:1;">
+            <div style="flex:1;min-width:0;">
               <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">TARGET DATE</label>
               <input type="date" id="pbNewTargetDate"
-                style="width:100%;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
+                style="width:100%;min-width:0;box-sizing:border-box;padding:11px;border:none;border-radius:7px;font-size:14px;color:#1a1a1a;background:#fff;" />
             </div>
           </div>
           <label style="display:block;color:#cfcfcf;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;">CATEGORY</label>
@@ -1319,9 +1319,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <style>
         #vizLibList{display:grid;grid-template-columns:1fr;gap:12px;}
         /* Viz Library: 75% main content + 25% side column */
-        .viz-layout{display:grid;grid-template-columns:3fr 1fr;gap:16px;align-items:start;}
-        .viz-side{border:1px dashed var(--border,#cfcfcf);border-radius:10px;min-height:240px;padding:14px;}
-        @media(max-width:767px){.viz-layout{grid-template-columns:1fr;}}
+        .viz-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:start;}
+        .viz-main{min-width:0;}
+        .viz-side{border:1px dashed var(--border,#cfcfcf);border-radius:10px;min-height:240px;padding:14px;min-width:0;}
+        @media(max-width:767px){.viz-layout{grid-template-columns:minmax(0,1fr);}}
       </style>
           <div class="viz-layout">
             <div class="viz-main">
