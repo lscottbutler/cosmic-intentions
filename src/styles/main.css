@@ -2877,5 +2877,14 @@ input, textarea, select {
 .aff-grid .aff-card__body{font-size:clamp(13px,1.5vw,18px);}
 @media(max-width:560px){.aff-grid{grid-template-columns:1fr;}}
 
+/* Surfaced-thought photo card — text + rotating owned image; the border color is
+   set at runtime to a variant of the image's dominant color (see notes.js). */
+.thought-card{position:relative;display:flex;background:#f4f6f8;border:8px solid #888;border-radius:4px;min-height:118px;overflow:hidden;transition:border-color .5s ease;}
+.thought-card__text{flex:1 1 58%;min-width:0;padding:15px 17px;display:flex;flex-direction:column;justify-content:center;}
+.thought-card__label{font-family:var(--vault-mono,monospace);font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8a8a8a;text-transform:uppercase;margin-bottom:6px;}
+.thought-card__body{font-size:15px;line-height:1.5;color:#1c1c1c;font-style:italic;}
+.thought-card__img{flex:1 1 42%;background-size:cover;background-position:center;background-color:#eee;min-width:96px;}
+@media(max-width:520px){.thought-card{flex-direction:column;}.thought-card__img{min-height:130px;}}
+
 /* White placeholder for the Log-A-Win inputs (dark #0d0d0d background). */
 #winInput::placeholder, #qwWinInput::placeholder { color: rgba(255,255,255,.85); }

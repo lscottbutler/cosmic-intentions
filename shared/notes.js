@@ -115,22 +115,83 @@ function _flashEditing(el) {
    two slots don't show the same thought. Empty slots (no matching thoughts)
    hide themselves. Called on each page nav so the right thoughts appear as the
    user moves around the site. */
+/* Owned image set the thought cards rotate through (images/50-50/). Swap this
+   folder/list to point at the full ~300-image library when it's in the repo. */
+const CARD_IMG_DIR = 'images/50-50/';
+const CAT_LABELS = { affirmation: 'AFFIRMATION', belief: 'BELIEF', reminder: 'REMINDER', inspiration: 'INSPIRATION', quote: 'QUOTE', note: 'NOTE' };
+function _thoughtImg(seed) {
+  return CARD_IMG_DIR + encodeURIComponent(AFF_IMAGES[Math.abs(seed) % AFF_IMAGES.length]);
+}
+/* Dominant color of an image — ported from players/art-frame.html: downscale to
+   canvas, bucket colors (skip near white/black), average the most-populous. */
+function _dominantRGB(img) {
+  const c = document.createElement('canvas'), W = c.width = 80, H = c.height = 80, ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, W, H);
+  const d = ctx.getImageData(0, 0, W, H).data, buckets = {};
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2], a = d[i + 3];
+    if (a < 200) continue;
+    if (r > 235 && g > 235 && b > 235) continue;   // skip near-white
+    if (r < 22 && g < 22 && b < 22) continue;       // skip near-black
+    const k = (r >> 4) + '-' + (g >> 4) + '-' + (b >> 4);
+    (buckets[k] || (buckets[k] = { n: 0, r: 0, g: 0, b: 0 }));
+    const o = buckets[k]; o.n++; o.r += r; o.g += g; o.b += b;
+  }
+  let best = null; for (const k in buckets) { if (!best || buckets[k].n > best.n) best = buckets[k]; }
+  if (!best) return null;
+  return { r: Math.round(best.r / best.n), g: Math.round(best.g / best.n), b: Math.round(best.b / best.n) };
+}
+/* Set the card border to a darker VARIANT of the image's primary color. */
+function _applyDominantBorder(cardEl, url) {
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const c = _dominantRGB(img);
+        if (!c) return;
+        const f = 0.78;   // darken ~22% so the frame reads as a deep variant of the primary
+        cardEl.style.borderColor = `rgb(${Math.round(c.r * f)},${Math.round(c.g * f)},${Math.round(c.b * f)})`;
+      } catch (e) {}
+    };
+    img.src = url;
+  } catch (e) {}
+}
+function _thoughtCard(n, cat, imgUrl) {
+  const label = CAT_LABELS[cat] || 'THOUGHT';
+  return `<div class="thought-card">
+    <div class="thought-card__text">
+      <div class="thought-card__label">${esc(label)}</div>
+      <div class="thought-card__body">${esc(n.text)}</div>
+    </div>
+    <div class="thought-card__img" style="background-image:url('${imgUrl}')"></div>
+    ${editBadge(cat || '')}
+  </div>`;
+}
+
 export function sprinkleNotes() {
   const slots = document.querySelectorAll('[data-random-note]');
   // Scattered surfacing stays OFF; only explicitly-placed home blocks
-  // (data-home-thought) show a rotating thought.
+  // (data-home-thought) show a rotating thought — now as a photo card.
   slots.forEach((el, i) => {
     if (!el.hasAttribute('data-home-thought')) { el.style.display = 'none'; return; }
     const cat = el.getAttribute('data-random-note') || '';
     const key = el.getAttribute('data-note-key') || String(i);
     const n = dailyNote(cat, key);
     if (!n) { el.style.display = 'none'; return; }
+    const thoughtCat = n.cat || cat || '';
     el.style.display = '';
-    el.style.position = 'relative';   // anchor the "C" edit badge to the corner
-    el.innerHTML =
-      `<span style="flex-shrink:0;color:#e0102b;font-size:15px;">✦</span>` +
-      `<span style="flex:1;min-width:0;font-size:14px;font-style:italic;color:var(--text,#eee);line-height:1.5;">${esc(n.text)}</span>` +
-      editBadge(n.cat || cat || '');
+    el.classList.remove('redblob-note');
+    // The card carries its own frame — clear the slot's own chrome.
+    el.style.background = 'none';
+    el.style.border = 'none';
+    el.style.padding = '0';
+    el.style.minHeight = '0';
+    el.style.position = 'relative';
+    const imgUrl = _thoughtImg(_hash(key + '|' + (n.text || '')));
+    el.innerHTML = _thoughtCard(n, thoughtCat, imgUrl);
+    const card = el.querySelector('.thought-card');
+    if (card) _applyDominantBorder(card, imgUrl);
   });
 }
 
