@@ -563,11 +563,11 @@ export function renderRings() {
 
   el.innerHTML = `
     <div style="background:${G.bg};border:1px solid ${perfect ? G.done : G.border};border-radius:16px;padding:16px 16px 18px;margin-bottom:8px;transition:border-color .3s;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <span style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:${G.bright};">◈ THE BIG 3</span>
-        <span style="${_mono}font-size:12px;font-weight:800;color:${G.mid};"><b style="font-size:16px;color:${G.brand};">${points}</b> pts today</span>
+      <div style="margin-bottom:12px;">
+        <div style="${_mono}font-size:12px;font-weight:800;letter-spacing:1.5px;color:${G.bright};">◈ THE BIG 3</div>
+        <div style="${_mono}font-size:12px;font-weight:800;color:${G.mid};margin-top:5px;"><b style="font-size:16px;color:${G.brand};">${points}</b> pts today</div>
+        <div style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;margin-top:3px;">🔥 ${streak} DAY STREAK</div>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin:0 0 12px;"><span style="${_mono}font-size:11px;color:${G.dim};letter-spacing:.5px;">🔥 ${streak} DAY STREAK</span></div>
 
       <!-- Evening Wrap-Up story slot — filled by renderWrapup() (see call at end of renderRings). -->
       <div id="wrapupWidget"></div>
