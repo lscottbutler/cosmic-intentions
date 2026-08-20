@@ -160,11 +160,11 @@ function _applyDominantBorder(cardEl, url) {
 function _thoughtCard(n, cat, imgUrl) {
   const label = CAT_LABELS[cat] || 'THOUGHT';
   return `<div class="thought-card">
-    <div class="thought-card__text">
+    <div class="thought-card__bg" style="background-image:url('${imgUrl}')"></div>
+    <div class="thought-card__box">
       <div class="thought-card__label">${esc(label)}</div>
       <div class="thought-card__body">${esc(n.text)}</div>
     </div>
-    <div class="thought-card__img" style="background-image:url('${imgUrl}')"></div>
     ${editBadge(cat || '')}
   </div>`;
 }
