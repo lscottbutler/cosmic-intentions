@@ -2566,19 +2566,19 @@ input, textarea, select {
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;   /* single column — Column B stacks at the bottom of Column A */
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) !important;   /* My Thoughts .pg-body dimensions: Column A wide, Column B narrow */
     align-items: start !important;
-    gap: 22px !important;
-    max-width: 820px !important;
+    gap: 16px !important;
     width: 100% !important;
     margin: 0 auto !important;
-    padding: 0 24px !important;
+    padding: 0 !important;
   }
 
   /* Reset column containers to fill their respective 50% slot bounds dynamically */
   .vault-sidebar {
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;   /* pg-side lets the narrow column shrink below its 272px base */
     height: auto !important;
     max-height: none !important;
     position: static !important;
@@ -2588,11 +2588,10 @@ input, textarea, select {
     border-right: none !important;
   }
 
-  /* Column B moved to the bottom of Column A (single column). Its internal
-     structure is unchanged; widgets render at natural size, full column width. */
-
+  /* Column A (main) — fills its 3fr track, like .pg-body-main on My Thoughts. */
   .vault-main {
     width: 100% !important;
+    min-width: 0 !important;
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
