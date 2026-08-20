@@ -2588,6 +2588,10 @@ input, textarea, select {
     border-right: none !important;
   }
 
+  /* Column B widgets (Big 3, Wins Wall, loop card) slimmed to sit compactly
+     inside the narrow sidebar — they were built at ~17.6px and looked bloated. */
+  .vault-sidebar > * { zoom: 0.82; }
+
   .vault-main {
     width: 100% !important;
     height: auto !important;
