@@ -2566,7 +2566,7 @@ input, textarea, select {
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) !important; /* Column A 75% / Column B 25% — minmax(0,..) stops wide content blowing out a track */
+    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr) !important; /* Column A 80% / Column B 20% — Big 3 + Wins narrower, cards wider */
     gap: 32px !important;
     max-width: 1200px !important;
     width: 100% !important;
