@@ -2195,7 +2195,10 @@ input, textarea, select {
 }
 /* The whole Column A stack — welcome box, nav buttons, goal cards — is one
    width (560px, centered) so everything lines up. */
-#vaultList, #citadelNav { max-width: 560px; margin-left: auto; margin-right: auto; }
+/* Column A content centered with visible margins. Only #citadelNav takes the
+   86% (the goal cards #vaultList live INSIDE it, so narrowing both double-applied). */
+#citadelNav { width: 86%; max-width: 560px; margin-left: auto; margin-right: auto; }
+#vaultList { margin-left: auto; margin-right: auto; }
 .vault-item-body { flex: 1; min-width: 0; }
 .vault-item-title {
   font-size: 14px;
