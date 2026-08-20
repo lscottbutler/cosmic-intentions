@@ -2192,8 +2192,9 @@ input, textarea, select {
   justify-content: center;
   flex-shrink: 0;
 }
-/* Goal cards match the welcome box width (560px, centered). */
-#vaultList { max-width: 560px; margin-left: auto; margin-right: auto; }
+/* The whole Column A stack — welcome box, nav buttons, goal cards — is one
+   width (560px, centered) so everything lines up. */
+#vaultList, #citadelNav { max-width: 560px; margin-left: auto; margin-right: auto; }
 .vault-item-body { flex: 1; min-width: 0; }
 .vault-item-title {
   font-size: 14px;
