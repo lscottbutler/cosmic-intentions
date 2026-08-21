@@ -144,10 +144,10 @@ p, li, blockquote,
   position: relative;
   top: -14px;                 /* pull up under the hamburger, close the gap */
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   justify-content: center;
-  gap: 6px;
-  padding: 0 16px;
+  gap: 5px;
+  padding: 0 6px;
   background: transparent;
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
   flex-wrap: wrap;
@@ -155,26 +155,32 @@ p, li, blockquote,
 .top-tab {
   appearance: none;
   border: none;
-  background: #eef1f4;
-  color: #14243a;
+  flex: 1 1 auto;             /* grow so each wrapped row fills the full width (no side gaps) */
+  min-width: 150px;          /* forces a balanced wrap (~7 + 4) instead of cramming one row */
+  max-width: 300px;
+  background: #111;           /* black boxes */
+  color: #fff;
   font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1.2px;
-  padding: 9px 18px;
-  border-radius: 12px 12px 0 0;          /* folder-tab shape: rounded top corners */
+  letter-spacing: 1px;
+  padding: 11px 10px;
+  border-radius: 10px 10px 0 0;          /* folder-tab shape: rounded top corners */
   cursor: pointer;
   line-height: 1;
-  box-shadow: 0 -1px 4px rgba(0,0,0,0.10);
+  white-space: nowrap;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.18);
   transition: background .15s, color .15s, transform .1s;
 }
-.top-tab:hover { background: #ffffff; transform: translateY(-2px); }
+.top-tab:hover { background: #000; transform: translateY(-2px); }
 .top-tab:active { transform: translateY(0); }
 .top-tab--fav {
+  flex: 0 1 auto;            /* the heart stays compact; the text tabs do the filling */
+  min-width: 62px;
   background: #005A9C;
   color: #ff4d6a;
   font-size: 16px;
-  padding: 8px 16px;
+  padding: 10px 16px;
 }
 .top-tab--fav:hover { background: #0a6bb5; color: #ff6b83; }
 
