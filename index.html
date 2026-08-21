@@ -761,6 +761,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- MY TASK LIST — top of Column B (moved from Column A); renderWrapup fills it -->
+        <div id="taskListWidget"></div>
+
         <!-- Date banner — TOP of Column B; filled by setEl('vaultDateLine') -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
 
@@ -1052,8 +1055,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div><!-- end goalsBox -->
         </div><!-- end citadelNav -->
 
-        <!-- MY TASK LIST — moved up to sit directly under the pillar buttons; renderWrapup fills it -->
-        <div id="taskListWidget"></div>
+        <!-- MY TASK LIST moved to the top of Column B (vault-sidebar). -->
 
         <!-- MINDSET box removed 2026-08-20 (cleanup) — library now lives on the Entrepreneur Library. -->
 
