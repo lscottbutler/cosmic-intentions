@@ -671,14 +671,25 @@ function _todayChecklist() {
       </div>
     </details>`;
 
-    // MY TASK LIST: flatten every proven action into one big list (no per-goal
-    // grouping). Each card already carries its goal-colour rail + code chip, so
-    // you can still tell which goal a task belongs to.
-    if (hasAi) allTaskCards += _aiRowArr.join('');
+    // MY TASK LIST — group each goal's tasks under its OWN collapsible bar
+    // (single-open accordion via wrapupTaskGoalToggle). Tap a goal to reveal
+    // that goal's task cards.
+    if (hasAi) {
+      const gOpen = _taskGoalSel === idx;
+      allTaskCards += `<div style="margin-bottom:10px;">
+        <button onclick="wrapupTaskGoalToggle(${idx})" style="width:100%;display:flex;align-items:center;gap:10px;background:${shade.bg};color:${shade.text};border:none;border-radius:10px;padding:11px 14px;cursor:pointer;font-family:var(--vault-mono);font-weight:400;font-size:11pt;letter-spacing:.5px;text-align:left;">
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-weight:800;font-size:12px;">${letter}</span>
+          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.title)}</span>
+          <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:10px;opacity:.85;">${_aiRowArr.length}</span>
+          <span id="taskGoalArr-${idx}" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#000;color:#fff;font-size:10px;transition:transform .2s;transform:rotate(${gOpen ? '0' : '-90'}deg);">▾</span>
+        </button>
+        <div id="taskGoalPanel-${idx}" style="display:${gOpen ? 'block' : 'none'};padding-top:8px;">${_aiRowArr.join('')}</div>
+      </div>`;
+    }
   });
 
-  // MY TASK LIST — one big flat list of every proven action across all goals
-  // (no per-goal bars); each card still shows its goal-colour rail + code.
+  // MY TASK LIST — each goal in its own collapsible bar (see the per-goal build
+  // in the loop above); tasks still show their goal-colour rail + code.
   fullRows = allTaskCards;
   return { rows, total, done, fullRows };
 }
