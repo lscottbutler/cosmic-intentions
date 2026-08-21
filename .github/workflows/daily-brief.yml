@@ -1,6 +1,7 @@
-name: Daily build brief
+name: Daily Bible Brief (DBB)
 
-# Emails Scott the latest CI Master Build Library session brief every morning at
+# Emails Scott the latest CI Master Build Library session brief (the "Daily Bible
+# Brief" / DBB) every morning at
 # 6:00 AM Bangkok time (UTC+7 -> 23:00 UTC the day before).
 #
 # SETUP (one time): add two repo secrets (Settings -> Secrets -> Actions):
@@ -51,5 +52,5 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           from: Cosmic Intentions Build Bot <${{ secrets.MAIL_USERNAME }}>
           to: lscottbutler@gmail.com
-          subject: "CI daily build brief — ${{ steps.brief.outputs.date }}"
+          subject: "CI Daily Bible Brief (DBB) — ${{ steps.brief.outputs.date }}"
           body: file:///tmp/brief.txt
