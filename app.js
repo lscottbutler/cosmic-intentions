@@ -688,6 +688,8 @@ function updateUI(user) {
   if (_appHdr) _appHdr.style.display = loggedIn ? '' : 'none';
   const _topNav = document.getElementById('topNav');
   if (_topNav) _topNav.style.display = loggedIn ? '' : 'none';
+  const _tabBar = document.getElementById('tabBar');
+  if (_tabBar) _tabBar.style.display = loggedIn ? 'flex' : 'none';
 
   const topnavSignOut = document.getElementById('topnav-signout');
   if (topnavSignOut) topnavSignOut.style.display = loggedIn ? 'inline-block' : 'none';

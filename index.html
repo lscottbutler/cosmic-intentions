@@ -85,6 +85,18 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </div>
   </div>
 </nav>
+
+<!-- TOP TAB BANNER — quick page tabs across the top, just under the hamburger.
+     Shown for members by updateU. -->
+<nav id="tabBar" style="display:none">
+  <button class="top-tab" onclick="navTo('notes')">MY WORDS</button>
+  <button class="top-tab" onclick="openMyRoadmap()">ROADMAP</button>
+  <button class="top-tab top-tab--fav" onclick="navTo('dailyfocus')" title="Play My Favorites" aria-label="Play My Favorites">&#9829;</button>
+  <button class="top-tab" onclick="openVizLibrary()">VIZ LIBRARY</button>
+  <button class="top-tab" onclick="navTo('wins')">MY WINS</button>
+  <button class="top-tab" onclick="navTo('entcard')">ENT LIB</button>
+</nav>
+
 <script>
   function toggleHamMenu() {
     var b = document.getElementById('hamBtn'), m = document.getElementById('hamMenu');

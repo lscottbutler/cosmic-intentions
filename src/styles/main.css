@@ -139,6 +139,45 @@ p, li, blockquote,
 }
 #topNav::-webkit-scrollbar { display: none; }
 
+/* ── TOP TAB BANNER (quick page tabs, just under the hamburger) ───────────── */
+#tabBar {
+  position: relative;
+  top: -14px;                 /* pull up under the hamburger, close the gap */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: transparent;
+  z-index: 120;               /* above header (100), below the hamburger/menu (300) */
+  flex-wrap: wrap;
+}
+.top-tab {
+  appearance: none;
+  border: none;
+  background: #eef1f4;
+  color: #14243a;
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  padding: 9px 18px;
+  border-radius: 12px 12px 0 0;          /* folder-tab shape: rounded top corners */
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.10);
+  transition: background .15s, color .15s, transform .1s;
+}
+.top-tab:hover { background: #ffffff; transform: translateY(-2px); }
+.top-tab:active { transform: translateY(0); }
+.top-tab--fav {
+  background: #005A9C;
+  color: #ff4d6a;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+.top-tab--fav:hover { background: #0a6bb5; color: #ff6b83; }
+
 /* ── HAMBURGER NAV (red circle, centered) ───────────── */
 .ham-wrap { position: relative; }
 .ham-btn {
