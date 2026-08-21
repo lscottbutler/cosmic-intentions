@@ -1803,7 +1803,7 @@ input, textarea, select {
   width: 22px !important;
   height: 22px !important;
   border-radius: 50% !important;
-  background: var(--purple, #7C5CC4) !important;
+  background: #000 !important;
   border: none !important;
   color: #fff !important;
   font-family: var(--vault-mono, monospace) !important;
@@ -1818,7 +1818,7 @@ input, textarea, select {
   z-index: 3 !important;
 }
 /* Green "B" variant — content-block cards (vs the purple "C" thought cards). */
-.ci-edit-badge--b{ background: #2FA94B !important; }
+.ci-edit-badge--b{ background: #000 !important; }
 
 /* ── NOTES PAGE ─────────────────────────────────────────── */
 
