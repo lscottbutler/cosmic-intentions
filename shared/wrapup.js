@@ -158,7 +158,7 @@ const _openGoals = new Set();
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
 
 // Whether the "MY TASK LIST" (everything-at-once) panel is expanded (survives re-renders).
-let _taskListOpen = false;
+let _taskListOpen = true;
 export function wrapupTaskListToggle(open) { _taskListOpen = !!open; }
 
 // Which goals have their proven-actions "Show N more" list expanded (survives re-renders).
