@@ -802,6 +802,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- MY TASK LIST — moved to the TOP of Column B; renderWrapup fills it -->
+        <div id="taskListWidget"></div>
+
         <!-- + ADD A THOUGHT — duplicate of the My Thoughts button; opens a quick-add box right here -->
         <button onclick="notesToggleQuickAdd('sideQuickAdd')" style="width:100%;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:12px 16px;border-radius:8px;cursor:pointer;margin-bottom:10px;">&#43; ADD A THOUGHT</button>
         <div id="sideQuickAdd" style="display:none;margin-bottom:12px;"></div>
@@ -885,7 +888,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="dash-note-block" data-block="dashboard-inspiration" style="display:none;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:22px 26px;margin:6px 0 16px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
         <!-- MY TASK LIST — Column A, above the goal nav; renderWrapup fills it -->
-        <div id="taskListWidget"></div>
+        <!-- MY TASK LIST moved to the TOP of Column B (vault-sidebar) -->
 
         <!-- Nav buttons wrapped so CSS `order` can alphabetize them without moving the big attached panels. -->
         <div id="citadelNav" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;grid-auto-flow:row dense;align-items:start;">
