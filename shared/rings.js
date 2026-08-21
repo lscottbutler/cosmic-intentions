@@ -444,7 +444,7 @@ function _nestedRingSVG(fracs) {
    7/30/365. Streak = consecutive closed days ending today (0 once today lapses,
    so the center reads "keep it alive today"). One LS.get per day, not per anchor. */
 function _allAnchorStats() {
-  const keys = PILLARS.map(p => p.key);
+  const keys = [...PILLARS.map(p => p.key), ...BONUS.map(b => b.key)];   // pillars + bonus rings
   const today = new Date();
   const acc = {};
   keys.forEach(k => acc[k] = { w: 0, m: 0, y: 0, streak: 0, live: true, daily: 0 });
@@ -465,6 +465,31 @@ function _allAnchorStats() {
     out[k] = { daily: a.daily, weekly: a.w / 7, monthly: a.m / 30, yearly: a.y / 365, streak: a.streak };
   });
   return out;
+}
+
+/* One anchor as a vertical block: icon + label + points/streak header, then the
+   Daily/Weekly/Monthly/Yearly bars. Used for the 3 pillars AND the bonus rings
+   (Gratitude/Meditate) so they all read identically. onclick makes the block
+   tappable (Gratitude launches its session). */
+function _anchorBlock({ icon, label, pts, done, s, onclick, title }) {
+  const header = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:15px;color:${done ? G.done : G.mid};">${icon}</span>
+      <span style="flex:1;${_mono}font-size:11px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${String(label).toUpperCase()}</span>
+      <span style="${_mono}font-size:9px;font-weight:800;color:${done ? G.done : G.dim};">${done ? '✓ ' : ''}+${pts}</span>
+      ${s.streak > 0 ? `<span style="${_mono}font-size:9px;color:${G.brand};">🔥${s.streak}</span>` : ''}
+    </div>`;
+  const bars = HORIZONS.map(h => {
+    const frac = Math.max(0, Math.min(1, s[h.key]));
+    return `<div style="display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;letter-spacing:.3px;color:${G.mid};">
+          <span style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:${h.col};"></span>${h.label}</div>
+        <div title="${h.label}: ${Math.round(frac * 100)}%" style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${(frac * 100).toFixed(0)}%;background:${h.col};border-radius:6px;transition:width .3s;"></div>
+        </div>
+      </div>`;
+  }).join('');
+  const attrs = `${title ? `title="${title}"` : ''}${onclick ? ` onclick="${onclick}"` : ''}`;
+  return `<div ${attrs} style="margin-bottom:14px;${onclick ? 'cursor:pointer;' : ''}">${header}${bars}</div>`;
 }
 
 /* ── Render the widget ───────────────────────────────── */
@@ -490,28 +515,11 @@ export function renderRings() {
   // Vertical stack: one block per pillar (Completed Tasks, Visualize, Habits),
   // each with its Daily/Weekly/Monthly/Yearly progress bars beneath. Was a
   // 3-across grid that got clipped in the narrow sidebar.
-  const bigGrid = PILLARS.map(p => {
-    const done = !!rings[p.key];
-    const s = stats[p.key];
-    const tip = done ? `${p.label} done today` : p.hint;
-    const header = `<div title="${tip}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="font-size:15px;color:${done ? G.done : G.mid};">${p.icon}</span>
-        <span style="flex:1;${_mono}font-size:11px;font-weight:800;letter-spacing:.5px;color:${done ? G.done : G.lite};">${p.label.toUpperCase()}</span>
-        <span style="${_mono}font-size:9px;font-weight:800;color:${done ? G.done : G.dim};">${done ? '✓ ' : ''}+${PTS.anchor}</span>
-        ${s.streak > 0 ? `<span style="${_mono}font-size:9px;color:${G.brand};">🔥${s.streak}</span>` : ''}
-      </div>`;
-    const bars = HORIZONS.map(h => {
-      const frac = Math.max(0, Math.min(1, s[h.key]));
-      return `<div style="display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;margin-bottom:5px;">
-          <div style="display:flex;align-items:center;gap:6px;${_mono}font-size:9px;font-weight:800;letter-spacing:.3px;color:${G.mid};">
-            <span style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:${h.col};"></span>${h.label}</div>
-          <div title="${h.label} · ${p.label}: ${Math.round(frac * 100)}%" style="position:relative;height:11px;background:${G.track};border-radius:6px;overflow:hidden;">
-            <div style="position:absolute;left:0;top:0;bottom:0;width:${(frac * 100).toFixed(0)}%;background:${h.col};border-radius:6px;transition:width .3s;"></div>
-          </div>
-        </div>`;
-    }).join('');
-    return `<div style="margin-bottom:14px;">${header}${bars}</div>`;
-  }).join('');
+  const bigGrid = PILLARS.map(p => _anchorBlock({
+    icon: p.icon, label: p.label, pts: PTS.anchor,
+    done: !!rings[p.key], s: stats[p.key],
+    title: !!rings[p.key] ? `${p.label} done today` : p.hint,
+  })).join('');
 
   // Bonus rings (Gratitude, then Meditate) — earn points, not required for a
   // Perfect Day. Gratitude is tappable; Meditate closes only from a session.
@@ -523,24 +531,15 @@ export function renderRings() {
     gratitude: { col: G.grat,     pts: PTS.gratitude, onclick: 'launchGratitude(event)', sub: 'Bonus ring — play to earn (not required for a Perfect Day)', title: 'Play a gratitude session' },
     meditate:  { col: '#8b7bf7',  pts: PTS.anchor,    onclick: null,                     sub: 'Bonus ring — closes from a meditation session',              title: 'Closes when you finish a meditation session' },
   };
+  // Gratitude + Meditate now render as pillar-style blocks (icon + label +
+  // points + Daily/Weekly/Monthly/Yearly bars), same as the 3 pillars.
   const bonus = BONUS.map(b => {
-    const on  = !!rings[b.key];
     const cfg = _bonusCfg[b.key] || _bonusCfg.gratitude;
-    const col = cfg.col, val = cfg.pts;
-    const icon = `${_ringSVG(44, 18, 4, on, col)}<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:${on ? col : G.dim};">${b.icon}</span>`;
-    const knob = cfg.onclick
-      ? `<button onclick="${cfg.onclick}" title="${cfg.title}" style="position:relative;width:44px;height:44px;flex:0 0 auto;background:none;border:none;cursor:pointer;padding:0;">${icon}</button>`
-      : `<span title="${cfg.title}" style="position:relative;width:44px;height:44px;flex:0 0 auto;display:inline-block;">${icon}</span>`;
-    const sub = cfg.sub;
-    return `
-    <div style="margin-top:10px;padding-top:12px;border-top:1px dashed ${G.track};">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:7px;">
-        ${knob}
-        <span style="flex:1;min-width:0;font-weight:800;font-size:14px;color:${G.bright};">${b.label}${on ? ' ✓' : ''}</span>
-        <span style="${_mono}font-size:9px;font-weight:800;letter-spacing:1px;color:${col};border:1px solid ${col};border-radius:999px;padding:4px 9px;white-space:nowrap;">+${val} BONUS</span>
-      </div>
-      <div style="font-size:11px;color:${G.dim};line-height:1.45;">${sub}</div>
-    </div>`;
+    return _anchorBlock({
+      icon: b.icon, label: b.label, pts: cfg.pts,
+      done: !!rings[b.key], s: stats[b.key] || { daily: 0, weekly: 0, monthly: 0, yearly: 0, streak: 0 },
+      onclick: cfg.onclick || '', title: cfg.title,
+    });
   }).join('');
 
   // Week strip — last 7 days ending today
