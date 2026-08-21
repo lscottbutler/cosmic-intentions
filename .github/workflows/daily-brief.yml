@@ -1,0 +1,55 @@
+name: Daily build brief
+
+# Emails Scott the latest CI Master Build Library session brief every morning at
+# 6:00 AM Bangkok time (UTC+7 -> 23:00 UTC the day before).
+#
+# SETUP (one time): add two repo secrets (Settings -> Secrets -> Actions):
+#   MAIL_USERNAME = your Gmail address (lscottbutler@gmail.com)
+#   MAIL_PASSWORD = a Gmail *App Password* (Google Account -> Security -> 2-Step
+#                   Verification -> App passwords). NOT your real password.
+# Repo stays PRIVATE. The app password is stored only as an encrypted GitHub secret.
+
+on:
+  schedule:
+    - cron: '0 23 * * *'    # 23:00 UTC == 06:00 Asia/Bangkok
+  workflow_dispatch: {}       # manual "Run workflow" to test now
+
+permissions:
+  contents: read
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build the brief (latest session-log entry)
+        id: brief
+        run: |
+          DOC=docs/CI_MASTER_BUILD_LIBRARY.md
+          OUT=/tmp/brief.txt
+          if [ ! -f "$DOC" ]; then echo "No Library doc yet." > "$OUT"; else
+            # Grab from "# PART 2" to the first dated "## " entry through the next "## " (or EOF).
+            awk '
+              /^# PART 2/ {inlog=1; next}
+              inlog && /^## / {seen++; if (seen>1) exit}
+              inlog && seen>=1 {print}
+            ' "$DOC" > "$OUT"
+            [ -s "$OUT" ] || echo "No session entry logged yet." > "$OUT"
+          fi
+          echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+          echo "----- brief preview -----"; cat "$OUT"
+
+      - name: Email the brief
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Cosmic Intentions Build Bot <${{ secrets.MAIL_USERNAME }}>
+          to: lscottbutler@gmail.com
+          subject: "CI daily build brief — ${{ steps.brief.outputs.date }}"
+          body: file:///tmp/brief.txt
