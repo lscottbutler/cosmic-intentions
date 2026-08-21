@@ -690,9 +690,13 @@ function updateUI(user) {
   if (_topNav) _topNav.style.display = loggedIn ? '' : 'none';
   const _tabBar = document.getElementById('tabBar');
   if (_tabBar) _tabBar.style.display = loggedIn ? 'flex' : 'none';
+  const _midHam = document.getElementById('midHam');
+  if (_midHam) _midHam.style.display = loggedIn ? '' : 'none';
 
   const topnavSignOut = document.getElementById('topnav-signout');
   if (topnavSignOut) topnavSignOut.style.display = loggedIn ? 'inline-block' : 'none';
+  const midSignOut = document.getElementById('mid-topnav-signout');
+  if (midSignOut) midSignOut.style.display = loggedIn ? 'inline-block' : 'none';
 
   // Pricing section — only for logged-out visitors
   const hp = document.getElementById('homePricing');
@@ -728,6 +732,10 @@ function updateUI(user) {
   const topNotes = document.getElementById('topnav-notes');
   if (topAdmin) topAdmin.style.display = isOwner ? 'inline-block' : 'none';
   if (topNotes) topNotes.style.display = isOwner ? 'inline-block' : 'none';
+  const midAdmin = document.getElementById('mid-topnav-admin');
+  const midNotes = document.getElementById('mid-topnav-notes');
+  if (midAdmin) midAdmin.style.display = isOwner ? 'inline-block' : 'none';
+  if (midNotes) midNotes.style.display = isOwner ? 'inline-block' : 'none';
 }
 
 /* ─────────────────────────────────────────────────────────

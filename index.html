@@ -89,34 +89,61 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 <!-- TOP TAB BANNER — quick page tabs across the top, just under the hamburger.
      Shown for members by updateU. -->
 <nav id="tabBar" style="display:none">
-  <button class="top-tab" onclick="navTo('notes')">MY WORDS</button>
+  <button class="top-tab" onclick="goMemberDashboard()">INNER CITADEL</button>
+  <button class="top-tab" onclick="navTo('notes')">MY THOUGHTS</button>
+  <button class="top-tab" onclick="navTo('mynotes')">MY NOTES</button>
   <button class="top-tab" onclick="openMyRoadmap()">ROADMAP</button>
-  <button class="top-tab top-tab--fav" onclick="navTo('dailyfocus')" title="Play My Favorites" aria-label="Play My Favorites">&#9829;</button>
+  <button class="top-tab top-tab--fav" onclick="navTo('dailyfocus')" title="Favorites Auto Play" aria-label="Favorites Auto Play">&#9829;</button>
   <button class="top-tab" onclick="openVizLibrary()">VIZ LIBRARY</button>
+  <button class="top-tab" onclick="navTo('runthroughs')">DAILY HABITS</button>
   <button class="top-tab" onclick="navTo('wins')">MY WINS</button>
   <button class="top-tab" onclick="navTo('entcard')">ENT LIB</button>
 </nav>
 
+<!-- FLOATING MID-PAGE HAMBURGER — duplicate of the top menu, fixed at the left-center of
+     the viewport (Column A side). Members only; hidden on the community/home page via CSS.
+     Menu items are cloned from #hamMenu at boot so the two stay in sync. -->
+<div id="midHam" class="ham-wrap" style="display:none">
+  <button id="midHamBtn" class="ham-btn" aria-label="Menu" aria-expanded="false" aria-controls="midHamMenu" onclick="toggleHamMenu(this)">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="ham-menu" id="midHamMenu"></div>
+</div>
+
 <script>
-  function toggleHamMenu() {
-    var b = document.getElementById('hamBtn'), m = document.getElementById('hamMenu');
+  // Toggle a hamburger menu. Pass the clicked button to toggle its own sibling menu;
+  // call with no argument to toggle the top nav menu (back-compat).
+  function toggleHamMenu(btn) {
+    var b, m;
+    if (btn && btn.closest) { b = btn; m = btn.closest('.ham-wrap').querySelector('.ham-menu'); }
+    else { b = document.getElementById('hamBtn'); m = document.getElementById('hamMenu'); }
+    if (!m || !b) return;
     var open = m.classList.toggle('open');
     b.setAttribute('aria-expanded', String(open));
   }
-  // Close after picking an item, or when clicking outside the menu.
-  document.getElementById('hamMenu').addEventListener('click', function(e) {
-    if (e.target.closest('.tnav-btn')) {
-      this.classList.remove('open');
-      document.getElementById('hamBtn').setAttribute('aria-expanded', 'false');
+  // Clone the top menu's items into the floating mid-page menu (single source of truth).
+  (function () {
+    var src = document.getElementById('hamMenu'), dst = document.getElementById('midHamMenu');
+    if (src && dst) {
+      dst.innerHTML = src.innerHTML;
+      // De-dupe IDs so getElementById() still targets the top instance; keep the clones addressable as mid-*.
+      dst.querySelectorAll('[id]').forEach(function (el) { el.id = 'mid-' + el.id; });
+    }
+  })();
+  // Close a menu after picking an item (works for every .ham-menu instance).
+  document.addEventListener('click', function (e) {
+    var item = e.target.closest('.tnav-btn');
+    if (item) {
+      var m = item.closest('.ham-menu');
+      if (m) m.classList.remove('open');
+      document.querySelectorAll('.ham-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
     }
   });
-  document.addEventListener('click', function(e) {
+  // Close any open menu when clicking outside a hamburger.
+  document.addEventListener('click', function (e) {
     if (!e.target.closest('.ham-wrap')) {
-      document.querySelectorAll('.ham-menu.open').forEach(function(m) {
-        m.classList.remove('open');
-      });
-      var b = document.getElementById('hamBtn');
-      if (b) b.setAttribute('aria-expanded', 'false');
+      document.querySelectorAll('.ham-menu.open').forEach(function (m) { m.classList.remove('open'); });
+      document.querySelectorAll('.ham-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
     }
   });
 </script>
