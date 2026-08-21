@@ -1080,6 +1080,49 @@ export async function syncRingsToSupabase() {
 }
 _wireRingsSync(syncRingsToSupabase);   // rings.js fires this on every ring change
 
+/* My Thoughts library (ci_notes) → cloud. Stored as a `notes` JSONB column on
+   profiles. Resilient: no-ops quietly if the column isn't there yet.
+   Fire-and-forget from notes.js on every save (all thought edits funnel through
+   _saveNotes). */
+export async function syncNotesToSupabase() {
+  if (!currentUser) return;
+  try {
+    const notes = LS.get('ci_notes') || [];
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      notes,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] notes sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncNotesToSupabase failed:', e); }
+}
+
+/* Favorites / Daily-Focus autoplay pins (ci_favorites) → cloud. Stored as a
+   `favorites` JSONB column on profiles. Resilient: no-ops if the column is
+   missing. Fired instantly from notes.js saves, and by a tab-hide safety net
+   below (favorites are also written from player-launcher/wrapup). */
+export async function syncFavoritesToSupabase() {
+  if (!currentUser) return;
+  try {
+    const favorites = LS.get('ci_favorites') || [];
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      favorites,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.warn('[Supabase] favorites sync skipped (run the add-column SQL?):', error.message);
+  } catch (e) { console.warn('[Supabase] syncFavoritesToSupabase failed:', e); }
+}
+
+// Safety net: flush notes + favorites to the cloud when the tab is backgrounded
+// or closed, so favorite writes that don't go through notes.js (player-launcher,
+// wrapup) still reach Supabase. no-ops until logged in.
+if (typeof window !== 'undefined') {
+  const _bgSync = () => { try { syncFavoritesToSupabase(); syncNotesToSupabase(); } catch (e) {} };
+  window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') _bgSync(); });
+  window.addEventListener('pagehide', _bgSync);
+}
+
 async function syncFromSupabase() {
   if (!currentUser) return;
   syncPending = true;
@@ -1173,6 +1216,21 @@ async function syncFromSupabase() {
         if (typeof renderRings === 'function') renderRings();
       }
     } catch (e) {}
+    // My Thoughts library (cross-device, mirrors habits): cloud wins when it
+    // holds data; otherwise seed the cloud from a device that has local thoughts.
+    try {
+      const localNotes = JSON.parse(localStorage.getItem('ci_notes') || '[]');
+      if (Array.isArray(data.notes) && data.notes.length) LS.set('ci_notes', data.notes);
+      else if (Array.isArray(localNotes) && localNotes.length) syncNotesToSupabase();
+    } catch (e) {}
+    // Favorites / autoplay pins — same guard.
+    try {
+      const localFavs = JSON.parse(localStorage.getItem('ci_favorites') || '[]');
+      if (Array.isArray(data.favorites) && data.favorites.length) LS.set('ci_favorites', data.favorites);
+      else if (Array.isArray(localFavs) && localFavs.length) syncFavoritesToSupabase();
+    } catch (e) {}
+    if (typeof window !== 'undefined' && window.sprinkleNotes) try { window.sprinkleNotes(); } catch (e) {}
+    if (typeof window !== 'undefined' && window.renderFavorites) try { window.renderFavorites(); } catch (e) {}
     if (typeof window !== 'undefined' && window.renderRunThroughs) window.renderRunThroughs();
     if (typeof window !== 'undefined' && window.renderHabits) window.renderHabits();
     console.log('[Supabase] syncFromSupabase — localStorage updated:', pb);

@@ -1,4 +1,4 @@
-import { esc, toast, intentions, goalLetter } from '../app.js';
+import { esc, toast, intentions, goalLetter, syncNotesToSupabase, syncFavoritesToSupabase } from '../app.js';
 
 /* ── MY NOTES ──────────────────────────────────────────────────
    A Pegboard-style personal library: the user types their own
@@ -43,6 +43,7 @@ export function readNotes() {
 }
 function _saveNotes(a) {
   try { localStorage.setItem('ci_notes', JSON.stringify(a)); } catch (e) {}
+  try { syncNotesToSupabase && syncNotesToSupabase(); } catch (e) {}   // fire-and-forget cloud sync
 }
 function _readFavs() {
   try { const a = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); return Array.isArray(a) ? a : []; }
@@ -50,6 +51,7 @@ function _readFavs() {
 }
 function _saveFavs(a) {
   try { localStorage.setItem('ci_favorites', JSON.stringify(a)); } catch (e) {}
+  try { syncFavoritesToSupabase && syncFavoritesToSupabase(); } catch (e) {}   // fire-and-forget cloud sync
 }
 function _noteIsPinned(id) { return _readFavs().some(f => f && f.type === 'note' && f.id === id); }
 function _id() { return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
