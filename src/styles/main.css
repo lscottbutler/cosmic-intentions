@@ -122,8 +122,8 @@ p, li, blockquote,
 /* ── TOP NAV BAR ─────────────────────────────────────── */
 #topNav {
   position: relative;   /* in flow → scrolls away with the page */
-  top: -19px;           /* nudge the hamburger up onto the divider (via top, NOT transform,
-                           so a fixed-position menu still anchors to the viewport) */
+  top: -47px;           /* nudge the hamburger up so its 76px circle is vertically
+                           centered on the 56px header bar (was -19px = hanging low) */
   left: 0; right: 0;
   height: var(--topnav);
   background: transparent;
