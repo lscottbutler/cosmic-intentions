@@ -740,7 +740,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-hdr">My Notes</div>
         <div class="pg-screen">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
-            <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;">&larr; BACK</button>
+            <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           </div>
           <p class="pg-intro">Your notes — jot anything, and link a note to a goal so it shows on that goal's Visualize page.</p>
           <div id="myNotesCap" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;"></div>
@@ -1151,7 +1151,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="setup-page">
 
       <div class="setup-page-header">
-        <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:12px;">&larr; BACK</button>
+        <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
         <h1>My Goals</h1>
         <p>Your identity, purpose and goals. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
@@ -1271,7 +1271,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-habits">
     <div class="setup-page">
       <div class="setup-page-header">
-        <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:12px;">&larr; BACK</button>
+        <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
         <h1>My Habits</h1>
         <p>Your daily habits — rename, reorder, add or delete. They show as a checklist on your dashboard and reset every morning. Changes save automatically.</p>
       </div>
@@ -1312,7 +1312,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr">Visualization Library</div>
         <div class="pg-screen">
-          <button onclick="navTo('dashboard')" class="pg-back">← BACK</button>
+          <button onclick="navTo('dashboard')" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
       <style>
         #vizLibList{display:grid;grid-template-columns:1fr;gap:12px;}
         /* Viz Library: 75% main content + 25% side column */
@@ -1373,7 +1373,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr">MY ROADMAP</div>
         <div class="pg-screen">
-          <button onclick="navTo('dashboard')" class="pg-back">← BACK</button>
+          <button onclick="navTo('dashboard')" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <details style="margin:0 0 14px;">
               <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#2b6cb0;">How your roadmap works</summary>
@@ -1424,7 +1424,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr">Daily Habits</div>
         <div class="pg-screen">
-          <button onclick="navTo('home')" class="pg-back">← BACK</button>
+          <button onclick="navTo('home')" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           <p class="pg-intro">Your daily run-throughs and rituals — one tap each.</p>
 
       <!-- DAILY REVIEW RUN-THROUGHS — moved from the dashboard. Bodies are filled by
@@ -1501,7 +1501,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="wins-bezel">
         <div class="wins-hdr">MY WINS</div>
         <div class="wins-screen">
-          <button onclick="goMemberDashboard()" style="background:#fff;border:1px solid #e2c86a;border-radius:8px;color:var(--brand);font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:0.8px;padding:8px 14px;cursor:pointer;margin-bottom:14px;">← BACK</button>
+          <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           <p class="wins-intro">Everything you've done — grouped by goal, filtered, and counted.</p>
           <div id="winsPageBody"></div>
         </div>
