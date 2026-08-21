@@ -3759,7 +3759,7 @@ const _blockCache = {};
    route through this so no path can clobber the user's override. */
 /* Black "C" edit badge for the Citadel Welcome box → jumps to the My Citadel
    Welcome editor. Kept identical to editBadge('welcome') in shared/notes.js. */
-const _WELCOME_EDIT_BADGE = `<button onclick="ciEditThought('welcome');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit your Citadel welcome" class="ci-edit-badge">C</button>`;
+const _WELCOME_EDIT_BADGE = `<button onclick="ciEditThought('welcome');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit your Citadel welcome" class="ci-edit-badge"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>`;
 function _blockContentFor(slug, body) {
   if (slug === 'dashboard-note-2') {
     const u = _citadelWelcome().trim();
