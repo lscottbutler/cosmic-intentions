@@ -185,7 +185,7 @@ function _thoughtCard(n, cat, imgUrl) {
 /* Green "B" badge — marks a CONTENT BLOCK card (admin CMS content), to tell it
    apart from the purple "C" thought cards. Taps through to the block's editor. */
 export function contentBadge(slug) {
-  return `<button class="ci-edit-badge ci-edit-badge--b" title="Edit this content block" aria-label="Edit content block" onclick="ciEditBlock('${slug || ''}');event.stopPropagation();return false;">B</button>`;
+  return `<button class="ci-edit-badge ci-edit-badge--b" title="Edit this content block" aria-label="Edit content block" onclick="ciEditBlock('${slug || ''}');event.stopPropagation();return false;">${EDIT_ICON}</button>`;
 }
 export function ciEditBlock(slug) {
   try { const go = window.navTo || window.showPage; if (go) go('admin'); } catch (e) {}
