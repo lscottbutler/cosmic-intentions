@@ -85,7 +85,7 @@ export function dailyNote(cat, slotKey) {
    editor; a category key (affirmation/belief/…) → that section. The host element
    MUST be position:relative for the absolute badge to anchor to its corner. */
 /* Pencil (edit) glyph shown in the purple badge = "this is editable". */
-const EDIT_ICON = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+const EDIT_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
 export function editBadge(dest) {
   return `<button onclick="ciEditThought('${dest || ''}');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit this thought" class="ci-edit-badge">${EDIT_ICON}</button>`;
 }
