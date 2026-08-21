@@ -524,7 +524,6 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
       _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
       depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
       _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
-      _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
       _mSep(),
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
@@ -605,7 +604,6 @@ function _todayChecklist() {
         i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
         _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
-        _mItem(`wrapCopyCode('${code}')`, '⧉', 'Copy code'),
         _mSep(),
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
