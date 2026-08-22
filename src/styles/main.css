@@ -143,28 +143,27 @@ p, li, blockquote,
 #tabBar {
   position: relative;
   top: -14px;                 /* pull up under the hamburger, close the gap */
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);   /* always 2 rows: 6 + 5 (last tab widened) */
   align-items: stretch;
-  justify-content: center;
-  gap: 5px;
+  gap: 4px;
   padding: 0 6px;
   background: transparent;
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
-  flex-wrap: wrap;
 }
+/* 11th tab spans 2 columns so row 2 fills the full width with no trailing gap. */
+#tabBar .top-tab:nth-child(11) { grid-column: span 2; }
 .top-tab {
   appearance: none;
   border: none;
-  flex: 1 1 auto;             /* grow so each wrapped row fills the full width (no side gaps) */
-  min-width: 150px;          /* forces a balanced wrap (~7 + 4) instead of cramming one row */
-  max-width: 300px;
+  min-width: 0;              /* grid cell handles width — always 2 rows of 6 */
   background: #111;           /* black boxes */
   color: #fff;
   font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1px;
-  padding: 11px 10px;
+  letter-spacing: .4px;
+  padding: 8px 7px;
   border-radius: 10px 10px 0 0;          /* folder-tab shape: rounded top corners */
   cursor: pointer;
   line-height: 1;
@@ -176,11 +175,11 @@ p, li, blockquote,
 .top-tab:active { transform: translateY(0); }
 .top-tab--fav {
   flex: 0 1 auto;            /* the heart stays compact; the text tabs do the filling */
-  min-width: 62px;
+  min-width: 44px;
   background: #000000;
   color: #ff4d6a;
-  font-size: 16px;
-  padding: 10px 16px;
+  font-size: 14px;
+  padding: 7px 12px;
 }
 .top-tab--fav:hover { filter: brightness(1.08); }
 
