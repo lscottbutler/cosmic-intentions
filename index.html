@@ -1580,21 +1580,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           <p class="wins-intro">Your libraries and courses — pick one to open.</p>
           <div id="cosmicLibraryBody">
-            <div class="cl-grid">
+            <h3 class="cl-section-title">Entrepreneur Library</h3>
+            <!-- 3-column grid of every Entrepreneur card image; filled by renderCosmicLibrary()
+                 from ENT_CARDS. Each image opens its corresponding card. -->
+            <div id="cosmicLibraryGrid" class="cl-imggrid"></div>
 
-              <!-- Entrepreneur course (working example — opens the Entrepreneur Library) -->
-              <button class="cl-tile" onclick="navTo('entcard')">
-                <span class="cl-tile-title">Entrepreneur Library</span>
-                <span class="cl-tile-sub">The founder's mindset course</span>
-              </button>
-
-              <!-- Placeholder for the next library -->
-              <div class="cl-tile cl-tile--soon">
-                <span class="cl-tile-title">The 50 Things People Want Most</span>
-                <span class="cl-tile-sub">Coming soon</span>
-              </div>
-
-            </div>
+            <h3 class="cl-section-title cl-section-title--soon">The 50 Things People Want Most · Coming soon</h3>
           </div>
         </div>
       </div>

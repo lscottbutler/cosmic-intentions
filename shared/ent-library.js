@@ -122,6 +122,18 @@ export function entGoToCard(key) {
   window.scrollTo(0, 0);
 }
 
+/* COSMIC LIBRARY hub — a 3-column grid of every Entrepreneur card image; each image
+   opens its corresponding card in the Entrepreneur Library. Built from ENT_CARDS so it
+   stays in sync and reuses entCardImg() (which handles the file-naming quirks). */
+export function renderCosmicLibrary() {
+  const host = document.getElementById('cosmicLibraryGrid');
+  if (!host) return;
+  host.innerHTML = ENT_CARDS.map(c => `
+    <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(c.key)}')" title="${_esc(c.title || c.key)}" aria-label="${_esc(c.title || c.key)}">
+      <img src="${entCardImg(c.key)}" alt="${_esc(c.title || c.key)}" loading="lazy" onerror="this.closest('.cl-card').style.display='none'">
+    </button>`).join('');
+}
+
 export function renderEntLibrary() {
   const host = document.getElementById('entLibHost');
   if (!host) return;

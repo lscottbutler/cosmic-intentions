@@ -350,6 +350,7 @@ export function showPage(id) {
   if (id === 'admin') loadAIPrompts();
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
+  if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
 
   // Reusable right-hand column (clown + Big 3 stats) on these framed pages.
