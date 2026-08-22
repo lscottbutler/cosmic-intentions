@@ -2098,6 +2098,10 @@ input, textarea, select {
 }
 .pg-side-note { display: block; }
 .pg-side-note:empty { display: none; }
+.pg-side-add { width: 100%; background: #e0102b; border: none; color: #fff; font-weight: 800; font-size: 12px; letter-spacing: .5px; padding: 11px 14px; border-radius: 8px; cursor: pointer; }
+.pg-side-empty { font-size: 12px; line-height: 1.5; color: var(--mid, #9a9a9a); font-style: italic; }
+/* Hide the empty-state hint once a surfaced thought is showing above it. */
+.pg-2col-side:has(.pg-side-note:not(:empty)) .pg-side-empty { display: none; }
 @media (max-width: 900px) {
   .pg-2col { flex-direction: column; }
   .pg-2col-side { flex-basis: auto; width: 100%; max-width: none; }
