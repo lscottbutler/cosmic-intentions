@@ -2102,7 +2102,8 @@ input, textarea, select {
 .pg-side-empty { font-size: 12px; line-height: 1.5; color: var(--mid, #9a9a9a); font-style: italic; }
 /* Hide the empty-state hint once a surfaced thought is showing above it. */
 .pg-2col-side:has(.pg-side-note:not(:empty)) .pg-side-empty { display: none; }
-@media (max-width: 900px) {
+/* Keep Column B on the RIGHT for PC + tablet; only stack it on phones (<600px). */
+@media (max-width: 600px) {
   .pg-2col { flex-direction: column; }
   .pg-2col-side { flex-basis: auto; width: 100%; max-width: none; }
 }
