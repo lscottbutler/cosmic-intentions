@@ -105,12 +105,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 <!-- FLOATING MID-PAGE HAMBURGER — duplicate of the top menu, fixed at the left-center of
      the viewport (Column A side). Members only; hidden on the community/home page via CSS.
      Menu items are cloned from #hamMenu at boot so the two stay in sync. -->
-<div id="midHam" class="ham-wrap" style="display:none">
-  <button id="midHamBtn" class="ham-btn" aria-label="Menu" aria-expanded="false" aria-controls="midHamMenu" onclick="toggleHamMenu(this)">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="ham-menu" id="midHamMenu"></div>
-</div>
+<!-- (Floating mid-page hamburger removed per request — top hamburger + tab bar remain.) -->
 
 <script>
   // Toggle a hamburger menu. Pass the clicked button to toggle its own sibling menu;
@@ -123,15 +118,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var open = m.classList.toggle('open');
     b.setAttribute('aria-expanded', String(open));
   }
-  // Clone the top menu's items into the floating mid-page menu (single source of truth).
-  (function () {
-    var src = document.getElementById('hamMenu'), dst = document.getElementById('midHamMenu');
-    if (src && dst) {
-      dst.innerHTML = src.innerHTML;
-      // De-dupe IDs so getElementById() still targets the top instance; keep the clones addressable as mid-*.
-      dst.querySelectorAll('[id]').forEach(function (el) { el.id = 'mid-' + el.id; });
-    }
-  })();
   // Close a menu after picking an item (works for every .ham-menu instance).
   document.addEventListener('click', function (e) {
     var item = e.target.closest('.tnav-btn');
@@ -1577,7 +1563,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="wins-bezel">
         <div class="wins-hdr">COSMIC LIBRARY</div>
         <div class="wins-screen">
-          <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+            <button onclick="subnavForward()" aria-label="Next" title="Next" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+          </div>
           <p class="wins-intro">Your libraries and courses — pick one to open.</p>
           <div id="cosmicLibraryBody">
             <h3 class="cl-section-title">Entrepreneur Library</h3>
