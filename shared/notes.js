@@ -168,7 +168,7 @@ function _applyDominantBorder(cardEl, url) {
         cardEl.style.borderColor = `rgb(${Math.round(c1.r * f)},${Math.round(c1.g * f)},${Math.round(c1.b * f)})`;
         const c2 = cols[1] || c1;
         const box = cardEl.querySelector('.thought-card__box');
-        if (box) box.style.border = `6px solid rgb(${c2.r},${c2.g},${c2.b})`;
+        if (box) box.style.border = `3px solid rgb(${c2.r},${c2.g},${c2.b})`;
       } catch (e) {}
     };
     img.src = url;
