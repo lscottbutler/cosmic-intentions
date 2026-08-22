@@ -122,16 +122,47 @@ export function entGoToCard(key) {
   window.scrollTo(0, 0);
 }
 
+/* THE 50 THINGS PEOPLE WANT MOST — a synthesized list of the most universal human wants,
+   grounded in the classic desire frameworks (Cashvertising's "Life-Force 8" + secondary
+   wants, Steven Reiss's 16 Basic Desires, and Maslow). Used as the second library on the
+   Cosmic Library hub. (No apostrophes — labels ride inside inline onclick handlers.) */
+const FIFTY_THINGS = [
+  'Good Health', 'Financial Freedom', 'A Loving Relationship', 'Happiness', 'Peace of Mind',
+  'Personal Freedom', 'Security', 'Self-Confidence', 'Success', 'Respect',
+  'Recognition', 'A Sense of Purpose', 'More Time', 'More Energy', 'Less Stress',
+  'Better Sleep', 'Physical Fitness', 'A Youthful Appearance', 'Popularity', 'Belonging',
+  'True Friendship', 'Family Harmony', 'A Happy Marriage', 'Romance', 'Intimacy',
+  'Thriving Children', 'Safety and Protection', 'A Comfortable Home', 'Wealth', 'Passive Income',
+  'Career Advancement', 'Job Satisfaction', 'Mastery of a Skill', 'Knowledge', 'Creativity',
+  'Adventure', 'Travel', 'Fun and Enjoyment', 'Beauty', 'Personal Style',
+  'Status', 'Influence', 'Independence', 'Self-Improvement', 'Spiritual Fulfillment',
+  'To Be Loved', 'To Feel Important', 'To Leave a Legacy', 'Fairness and Justice', 'Convenience',
+];
+
 /* COSMIC LIBRARY hub — a 3-column grid of every Entrepreneur card image; each image
    opens its corresponding card in the Entrepreneur Library. Built from ENT_CARDS so it
-   stays in sync and reuses entCardImg() (which handles the file-naming quirks). */
+   stays in sync and reuses entCardImg() (which handles the file-naming quirks).
+   Also renders the "50 Things People Want Most" grid (placeholder art reuses ENT images). */
 export function renderCosmicLibrary() {
   const host = document.getElementById('cosmicLibraryGrid');
-  if (!host) return;
-  host.innerHTML = ENT_CARDS.map(c => `
-    <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(c.key)}')" title="${_esc(c.title || c.key)}" aria-label="${_esc(c.title || c.key)}">
-      <img src="${entCardImg(c.key)}" alt="${_esc(c.title || c.key)}" loading="lazy" onerror="this.closest('.cl-card').style.display='none'">
-    </button>`).join('');
+  if (host) {
+    host.innerHTML = ENT_CARDS.map(c => `
+      <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(c.key)}')" title="${_esc(c.title || c.key)}" aria-label="${_esc(c.title || c.key)}">
+        <img src="${entCardImg(c.key)}" alt="${_esc(c.title || c.key)}" loading="lazy" onerror="this.closest('.cl-card').style.display='none'">
+      </button>`).join('');
+  }
+  const fifty = document.getElementById('fiftyThingsGrid');
+  if (fifty) {
+    fifty.innerHTML = FIFTY_THINGS.map((label, i) => {
+      const img = entCardImg(ENT_CARDS[i % ENT_CARDS.length].key);   // reused ENT art (placeholder)
+      const t = _esc(label);
+      return `
+      <button class="cl-card cl-card--cap" onclick="toast('Coming soon: ${t}','info')" title="${t}" aria-label="${t}">
+        <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+        <span class="cl-card-cap">${t}</span>
+      </button>`;
+    }).join('');
+  }
 }
 
 export function renderEntLibrary() {

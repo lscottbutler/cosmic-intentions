@@ -1574,7 +1574,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                  from ENT_CARDS. Each image opens its corresponding card. -->
             <div id="cosmicLibraryGrid" class="cl-imggrid"></div>
 
-            <h3 class="cl-section-title cl-section-title--soon">The 50 Things People Want Most · Coming soon</h3>
+            <h3 class="cl-section-title" style="margin-top:28px;">50 Things People Want Most</h3>
+            <!-- 3-column grid of the 50 things. Placeholder art reuses the ENT card images
+                 for this initial setup; filled by renderCosmicLibrary() from FIFTY_THINGS. -->
+            <div id="fiftyThingsGrid" class="cl-imggrid"></div>
           </div>
         </div>
       </div>
