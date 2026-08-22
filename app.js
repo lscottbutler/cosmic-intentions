@@ -1411,21 +1411,22 @@ export async function saveIntentions() {
    DASHBOARD — RENDER
 ───────────────────────────────────────────────────────── */
 const CARD_COLORS = [
-  '#E8524A','#E8893A','#88B83A','#52B896',
-  '#4A9EAD','#5A8EA8','#6A7E9E','#8A7A9E'
+  '#E4E8EB','#C6CCD1','#AEB6BC','#8A939B',
+  '#6B747D','#515A63','#3B424A','#242A30'
 ];
+/* Grayscale ramp (light → dark) — goal cards are black & white, not colored. */
 export const GREY_SHADES = [
-  { bg: '#E84040', text: '#FFFFFF' },
-  { bg: '#E86030', text: '#FFFFFF' },
-  { bg: '#E88020', text: '#FFFFFF' },
-  { bg: '#E8A828', text: '#1C2230' },
-  { bg: '#E8C830', text: '#1C2230' },
-  { bg: '#A8C830', text: '#1C2230' },
-  { bg: '#48B860', text: '#FFFFFF' },
-  { bg: '#38A888', text: '#FFFFFF' },
-  { bg: '#2898A8', text: '#FFFFFF' },
-  { bg: '#7888A8', text: '#FFFFFF' },
-  { bg: '#3878A8', text: '#FFFFFF' },
+  { bg: '#F2F4F6', text: '#1C2126' },
+  { bg: '#E4E8EB', text: '#1C2126' },
+  { bg: '#D6DBDF', text: '#1C2126' },
+  { bg: '#C6CCD1', text: '#1C2126' },
+  { bg: '#AEB6BC', text: '#1C2126' },
+  { bg: '#8A939B', text: '#1C2126' },
+  { bg: '#6B747D', text: '#FFFFFF' },
+  { bg: '#515A63', text: '#FFFFFF' },
+  { bg: '#3B424A', text: '#FFFFFF' },
+  { bg: '#2A3036', text: '#FFFFFF' },
+  { bg: '#1C2126', text: '#FFFFFF' },
 ];
 
 /* Darken a hex color by fraction f (0-1) — used for the goal-card circles so
