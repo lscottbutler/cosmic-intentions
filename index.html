@@ -96,8 +96,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="top-tab top-tab--fav" onclick="navTo('dailyfocus')" title="Favorites Auto Play" aria-label="Favorites Auto Play">&#9829;</button>
   <button class="top-tab" onclick="openVizLibrary()">VIZ LIBRARY</button>
   <button class="top-tab" onclick="navTo('runthroughs')">DAILY HABITS</button>
-  <button class="top-tab" onclick="location.href='players/meditation.html'">MEDITATION</button>
-  <button class="top-tab" onclick="location.href='players/gratitude.html'">GRATITUDE</button>
+  <button class="top-tab" onclick="navTo('meditation')">MEDITATION</button>
+  <button class="top-tab" onclick="navTo('gratitude')">GRATITUDE</button>
   <button class="top-tab" onclick="navTo('wins')">MY WINS</button>
   <button class="top-tab" onclick="navTo('cosmiclibrary')">COSMIC LIBRARY</button>
 </nav>
@@ -1542,6 +1542,66 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <div data-random-note="affirmation" data-home-thought data-note-key="habits-aff" class="pg-side-note"></div>
             <div data-random-note="belief" data-home-thought data-note-key="habits-belief" class="pg-side-note"></div>
             <div data-random-note="reminder" data-home-thought data-note-key="habits-reminder" class="pg-side-note"></div>
+          </aside>
+          </div><!-- /pg-2col -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDITATION PAGE — in-app landing: launch button + Column B (thoughts) -->
+  <div class="page" id="page-meditation">
+    <div class="pg-frame pf-navy">
+      <div class="pg-bezel">
+        <div class="pg-hdr">Meditation</div>
+        <div class="pg-screen">
+          <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          <p class="pg-intro">Quiet the mind before you begin.</p>
+          <div class="pg-2col">
+          <div class="pg-2col-main">
+            <button onclick="location.href='players/meditation.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:20px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+              <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9789;</span>
+              <span style="flex:1;min-width:0;"><span style="display:block;font-weight:800;font-size:16px;letter-spacing:.3px;">Start Meditation</span><span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Pick your length and settle in</span></span>
+              <span style="flex-shrink:0;font-size:20px;opacity:.8;">&#8250;</span>
+            </button>
+          </div>
+          <aside class="pg-2col-side">
+            <div class="pg-side-label">MY THOUGHTS</div>
+            <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
+            <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
+            <div data-random-note="affirmation" data-home-thought data-note-key="med-aff" class="pg-side-note"></div>
+            <div data-random-note="belief" data-home-thought data-note-key="med-belief" class="pg-side-note"></div>
+            <div data-random-note="reminder" data-home-thought data-note-key="med-reminder" class="pg-side-note"></div>
+          </aside>
+          </div><!-- /pg-2col -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRATITUDE PAGE — in-app landing: launch button + Column B (thoughts) -->
+  <div class="page" id="page-gratitude">
+    <div class="pg-frame pf-rose">
+      <div class="pg-bezel">
+        <div class="pg-hdr">Gratitude</div>
+        <div class="pg-screen">
+          <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          <p class="pg-intro">Take a moment to appreciate what is already yours.</p>
+          <div class="pg-2col">
+          <div class="pg-2col-main">
+            <button onclick="location.href='players/gratitude.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:20px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+              <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10084;</span>
+              <span style="flex:1;min-width:0;"><span style="display:block;font-weight:800;font-size:16px;letter-spacing:.3px;">Start Gratitude</span><span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">A short guided gratitude session</span></span>
+              <span style="flex-shrink:0;font-size:20px;opacity:.8;">&#8250;</span>
+            </button>
+          </div>
+          <aside class="pg-2col-side">
+            <div class="pg-side-label">MY THOUGHTS</div>
+            <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
+            <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
+            <div data-random-note="affirmation" data-home-thought data-note-key="grat-aff" class="pg-side-note"></div>
+            <div data-random-note="belief" data-home-thought data-note-key="grat-belief" class="pg-side-note"></div>
+            <div data-random-note="reminder" data-home-thought data-note-key="grat-reminder" class="pg-side-note"></div>
           </aside>
           </div><!-- /pg-2col -->
         </div>
