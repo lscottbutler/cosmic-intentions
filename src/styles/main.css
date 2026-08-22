@@ -172,7 +172,7 @@ p, li, blockquote,
   box-shadow: 0 -1px 4px rgba(0,0,0,0.18);
   transition: background .15s, color .15s, transform .1s;
 }
-.top-tab:hover { background: #000; transform: translateY(-2px); }
+.top-tab:hover { transform: translateY(-2px); filter: brightness(1.08); }
 .top-tab:active { transform: translateY(0); }
 .top-tab--fav {
   flex: 0 1 auto;            /* the heart stays compact; the text tabs do the filling */
@@ -182,7 +182,20 @@ p, li, blockquote,
   font-size: 16px;
   padding: 10px 16px;
 }
-.top-tab--fav:hover { background: #000000; color: #ff6b83; }
+.top-tab--fav:hover { filter: brightness(1.08); }
+
+/* Tab colors from the goal-card spectrum (GREY_SHADES), one shade per tab in order. */
+#tabBar .top-tab:nth-child(1)  { background:#E84040; color:#fff; }
+#tabBar .top-tab:nth-child(2)  { background:#E86030; color:#fff; }
+#tabBar .top-tab:nth-child(3)  { background:#E88020; color:#fff; }
+#tabBar .top-tab:nth-child(4)  { background:#E8A828; color:#1C2230; }
+#tabBar .top-tab:nth-child(5)  { background:#E8C830; color:#e0102b; }  /* fav heart */
+#tabBar .top-tab:nth-child(6)  { background:#A8C830; color:#1C2230; }
+#tabBar .top-tab:nth-child(7)  { background:#48B860; color:#fff; }
+#tabBar .top-tab:nth-child(8)  { background:#38A888; color:#fff; }
+#tabBar .top-tab:nth-child(9)  { background:#2898A8; color:#fff; }
+#tabBar .top-tab:nth-child(10) { background:#7888A8; color:#fff; }
+#tabBar .top-tab:nth-child(11) { background:#3878A8; color:#fff; }
 
 /* (Floating mid-page hamburger removed per request.) */
 
