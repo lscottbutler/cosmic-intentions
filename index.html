@@ -67,7 +67,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
       <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
       <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
-      <button class="tnav-btn" onclick="navTo('entcard')">Entrepreneur Library</button>
+      <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
       <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
       <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
       <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
@@ -99,7 +99,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="top-tab" onclick="location.href='players/meditation.html'">MEDITATION</button>
   <button class="top-tab" onclick="location.href='players/gratitude.html'">GRATITUDE</button>
   <button class="top-tab" onclick="navTo('wins')">MY WINS</button>
-  <button class="top-tab" onclick="navTo('entcard')">ENT LIB</button>
+  <button class="top-tab" onclick="navTo('cosmiclibrary')">COSMIC LIBRARY</button>
 </nav>
 
 <!-- FLOATING MID-PAGE HAMBURGER — duplicate of the top menu, fixed at the left-center of
@@ -698,7 +698,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
             <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
             <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
-            <button class="tnav-btn" onclick="navTo('entcard')">Entrepreneur Library</button>
+            <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
             <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
             <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
             <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
@@ -1561,6 +1561,41 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           <p class="wins-intro">Everything you've done — grouped by goal, filtered, and counted.</p>
           <div id="winsPageBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COSMIC LIBRARY PAGE — the hub/index of all libraries & courses (the Entrepreneur
+       course, and more to come like "The 50 Things People Want Most"). Copied from the
+       My Wins frame. Add course/card links inside .cl-grid below.
+         • Whole course:   <button class="cl-tile" onclick="navTo('entcard')">...</button>
+         • One specific card (jumps straight to it):
+                           onclick="navTo('entcard'); entGoToCard('SELF CONFIDENT')"  -->
+  <div class="page" id="page-cosmiclibrary">
+    <div class="wins-frame">
+      <div class="wins-bezel">
+        <div class="wins-hdr">COSMIC LIBRARY</div>
+        <div class="wins-screen">
+          <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          <p class="wins-intro">Your libraries and courses — pick one to open.</p>
+          <div id="cosmicLibraryBody">
+            <div class="cl-grid">
+
+              <!-- Entrepreneur course (working example — opens the Entrepreneur Library) -->
+              <button class="cl-tile" onclick="navTo('entcard')">
+                <span class="cl-tile-title">Entrepreneur Library</span>
+                <span class="cl-tile-sub">The founder's mindset course</span>
+              </button>
+
+              <!-- Placeholder for the next library -->
+              <div class="cl-tile cl-tile--soon">
+                <span class="cl-tile-title">The 50 Things People Want Most</span>
+                <span class="cl-tile-sub">Coming soon</span>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
