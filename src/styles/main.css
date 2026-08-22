@@ -111,7 +111,7 @@ p, li, blockquote,
   position: relative;   /* in flow → scrolls away with the page */
   top: 0; left: 0; right: 0;
   height: var(--hdr);
-  background: #005A9C;   /* Dodger blue top bar */
+  background: #000000;   /* Dodger blue top bar */
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -177,12 +177,12 @@ p, li, blockquote,
 .top-tab--fav {
   flex: 0 1 auto;            /* the heart stays compact; the text tabs do the filling */
   min-width: 62px;
-  background: #005A9C;
+  background: #000000;
   color: #ff4d6a;
   font-size: 16px;
   padding: 10px 16px;
 }
-.top-tab--fav:hover { background: #0a6bb5; color: #ff6b83; }
+.top-tab--fav:hover { background: #000000; color: #ff6b83; }
 
 /* (Floating mid-page hamburger removed per request.) */
 
@@ -563,13 +563,13 @@ details.rm-drop[open]::details-content { height: auto; }
 /* Top header adopts the active framed page's frame color (falls back to #2b2b2b). */
 /* App header matches the page-title bar (bezelDk) so the two bars read as ONE
    uniform surface — no two-tone seam behind the hamburger. */
-body:has(#page-wins.active)        .hdr { background:#005A9C; }
-body:has(#page-myroadmap.active)   .hdr { background:#005A9C; }
-body:has(#page-vizlibrary.active)  .hdr { background:#005A9C; }
-body:has(#page-runthroughs.active) .hdr { background:#005A9C; }
-body:has(#page-dailyfocus.active)  .hdr { background:#005A9C; }
-body:has(#page-notes.active)       .hdr { background:#005A9C; }
-body:has(#page-dashboard.active)   .hdr { background:#005A9C; }
+body:has(#page-wins.active)        .hdr { background:#000000; }
+body:has(#page-myroadmap.active)   .hdr { background:#000000; }
+body:has(#page-vizlibrary.active)  .hdr { background:#000000; }
+body:has(#page-runthroughs.active) .hdr { background:#000000; }
+body:has(#page-dailyfocus.active)  .hdr { background:#000000; }
+body:has(#page-notes.active)       .hdr { background:#000000; }
+body:has(#page-dashboard.active)   .hdr { background:#000000; }
 
 /* Inner Citadel nav buttons — half height + no leading icon (direct children only,
    so the buttons INSIDE the expand panels are untouched). */
