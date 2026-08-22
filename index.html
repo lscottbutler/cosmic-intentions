@@ -769,9 +769,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
             <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           </div>
+          <div class="pg-2col">
+          <div class="pg-2col-main">
           <p class="pg-intro">Your notes — jot anything, and link a note to a goal so it shows on that goal's Visualize page.</p>
           <div id="myNotesCap" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;"></div>
           <div id="myNotesSections"></div>
+          </div><!-- /pg-2col-main -->
+          <aside class="pg-2col-side">
+            <div class="pg-side-label">MY THOUGHTS</div>
+            <div data-random-note="affirmation" data-home-thought data-note-key="mynotes-aff" class="pg-side-note"></div>
+            <div data-random-note="belief" data-home-thought data-note-key="mynotes-belief" class="pg-side-note"></div>
+            <div data-random-note="reminder" data-home-thought data-note-key="mynotes-reminder" class="pg-side-note"></div>
+          </aside>
+          </div><!-- /pg-2col -->
         </div>
       </div>
     </div>
@@ -1568,6 +1578,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button onclick="subnavForward()" aria-label="Next" title="Next" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
           </div>
           <p class="wins-intro">Your libraries and courses — pick one to open.</p>
+          <div class="pg-2col">
+          <div class="pg-2col-main">
           <div id="cosmicLibraryBody">
             <h3 class="cl-section-title">Entrepreneur Library</h3>
             <!-- 3-column grid of every Entrepreneur card image; filled by renderCosmicLibrary()
@@ -1578,7 +1590,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <!-- 3-column grid of the 50 things. Placeholder art reuses the ENT card images
                  for this initial setup; filled by renderCosmicLibrary() from FIFTY_THINGS. -->
             <div id="fiftyThingsGrid" class="cl-imggrid"></div>
-          </div>
+          </div><!-- /cosmicLibraryBody -->
+          </div><!-- /pg-2col-main -->
+          <aside class="pg-2col-side">
+            <div class="pg-side-label">MY THOUGHTS</div>
+            <div data-random-note="affirmation" data-home-thought data-note-key="cosmic-aff" class="pg-side-note"></div>
+            <div data-random-note="belief" data-home-thought data-note-key="cosmic-belief" class="pg-side-note"></div>
+            <div data-random-note="reminder" data-home-thought data-note-key="cosmic-reminder" class="pg-side-note"></div>
+          </aside>
+          </div><!-- /pg-2col -->
         </div>
       </div>
     </div>
