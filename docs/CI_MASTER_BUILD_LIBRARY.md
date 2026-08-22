@@ -127,6 +127,16 @@ Called via `ciApi(name, body)` / `ciApiJson` (`shared/api.js`), which attach the
 # PART 2 — SESSION LOG
 _(Newest first. On "SESSION DONE FOR THE DAY," append a dated, plain-English bullet summary of the day's work + where each key area stands.)_
 
+## 2026-08-22
+**Focus:** top-navigation overhaul, cross-page floating hamburger, Daily Habits 2-column, Citadel cleanup, and the coach / B2B model docs.
+- **Header:** top bar set to Dodger blue (#005A9C) site-wide; hamburger horizontally centered.
+- **Tab bar (NEW):** a persistent tab banner under the hamburger with 11 tabs (Inner Citadel, My Thoughts, My Notes, Roadmap, Favorites Autoplay [heart], Viz Library, Daily Habits, Meditation, Gratitude, My Wins, Ent Lib). Restyled as full-width black boxes that fill BOTH rows (balanced 7+4 wrap via flex-grow + 150px min-width). Shown for members in `updateUI`. (`index.html` #tabBar; `main.css` .top-tab)
+- **Floating hamburger (NEW):** a duplicate menu fixed at the left-center of every member page; opens the full 16-item menu cloned from `#hamMenu` at boot; hidden on the community/home page via `body:has(#page-home.active)`. `toggleHamMenu(btn)` generalized so multiple hamburgers work independently. (`index.html` #midHam; `app.js` updateUI)
+- **Daily Habits:** added the right 25% column (generic `.pg-2col` layout) mirroring the Citadel; filled with the user's own thoughts (peppered slots, auto-filled by `sprinkleNotes`, no ID conflicts). (`index.html` #page-runthroughs; `main.css` .pg-2col)
+- **Citadel:** moved the Task List to the TOP of Column B (was Column A); removed the `dashboard-inspiration` placeholder card that was showing "====" junk content.
+- **Coach / B2B model:** documented the B2B2C coach play. `GLOSSARY.md` gained a "Coach / B2B model" section (B2B2C, seat, revenue share, white-label, design partner, consent gate). New private `marketing/07-pricing-offers/coach-model.md` one-pager (tiers, LTV/CAC math, go-to-market, consent-gate as priority #1).
+- **Where we stand:** navigation is now consistent and always-accessible across every member page. Next: decide coach-tier pricing; build the consent gate + seat management. Pending activations unchanged (SQL for `profiles.notes`/`favorites`; Gmail app password for the DBB email; backup secrets for encrypted off-site copies).
+
 ## 2026-08-20
 **Focus:** thought/content cards, badges, Big 3, task list, dashboard layout, security & backups planning, and authoring this Library.
 - **Layout:** rebuilt the Citadel to match the My Thoughts 2-column `.pg-body` (no scroll line); moved the Task List into Column A above the goal nav (open by default) and reorganized it **by goal** (collapsible bars). Added a duplicate **+ ADD A THOUGHT** button to Column B.
