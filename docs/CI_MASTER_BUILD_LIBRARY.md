@@ -127,6 +127,18 @@ Called via `ciApi(name, body)` / `ciApiJson` (`shared/api.js`), which attach the
 # PART 2 — SESSION LOG
 _(Newest first. On "SESSION DONE FOR THE DAY," append a dated, plain-English bullet summary of the day's work + where each key area stands.)_
 
+## 2026-08-23
+**Focus:** Cosmic Library, the black-&-white restyle pass, and a hard fix for Netlify credit burn.
+- **Cosmic Library (NEW):** renamed the Entrepreneur Library into a **hub** — a new page (`#page-cosmiclibrary`, copied from the My Wins frame) that indexes multiple libraries/courses. Holds a **3-column grid of all 31 Entrepreneur card images** (each opens its card via `entGoToCard`) and a researched **"50 Things People Want Most"** card set (placeholder art reuses the ENT images for now). The ENT LIB tab + both nav menus now open the hub. (`shared/ent-library.js` renderCosmicLibrary + FIFTY_THINGS)
+- **Meditation & Gratitude (NEW in-app pages):** the two tabs used to jump straight into full-screen players; now they're real app pages (`#page-meditation`, `#page-gratitude`) with a "Start" launch button + the right-hand Thoughts column.
+- **Right 25% "Column B":** added the surfaced-thoughts column to Cosmic Library, My Notes, Meditation, Gratitude (Daily Habits already had it). Fixed two bugs Scott caught: it looked empty on accounts with no matching thoughts (added an always-visible **+ ADD A THOUGHT** button + hint), and a `@media` breakpoint that **stacked it to the bottom under 900px** (now stays on the right down to 600px). (`.pg-2col` in `main.css`)
+- **Thought cards:** now **half-width**, centered in the column, text sized to match surrounding body text (16px), borders halved (outer 4px / inner 3px), bold removed.
+- **Nav + frame restyle (black & white in progress):** header bar → **black**; the 11 tabs squished into a **fixed 6-column grid = always two rows (6+5)** and colored with the goal-card spectrum; page frames first matched each tab's color, then **unified so every page uses the same slate frame as My Wins** (`#7888A8`) per Scott going B&W. `updateUI` sets `#tabBar` to `grid`.
+- **Goal cards → black & white:** replaced the colored goal-card palette (`CARD_COLORS` + `GREY_SHADES` in `app.js`) with a **grayscale ramp**. This greys everything keyed to a goal (cards, badges, code chips, workspace titles, wrap-up rails, quick-win rows).
+- **My Goals dropdown:** now starts **collapsed**.
+- **NETLIFY CREDITS — deploy discipline (important):** auto-pushing every change was burning build credits (**18 builds in one day**; repo is ~1.3 GB images + 1.3 GB git history so each build is heavy). Switched to **COMMIT-ONLY** and installed a **PreToolUse hook** (`.claude/hooks/git-push-gate.sh`, wired in `.claude/settings.json`) that forces an approval **prompt on any `git push`** — Claude can no longer auto-deploy. Push only on Scott's "push it live" (+ approve the prompt). Hook needs a one-time `/hooks` reload (or restart) to activate. See memory [[feedback_always_push]].
+- **Where we stand:** UI is **mid-transition to black & white** — page frames unified to slate, goal cards grayscale, header black; **tabs are still the colored spectrum** (pending Scott's call on greying them too). Deploy is now enforced commit-only. **NOT PUSHED:** all of today's visual work after the coach-model entry is committed **locally only**, awaiting "push it live" (one build instead of ~18).
+
 ## 2026-08-22
 **Focus:** top-navigation overhaul, cross-page floating hamburger, Daily Habits 2-column, Citadel cleanup, and the coach / B2B model docs.
 - **Header:** top bar set to Dodger blue (#005A9C) site-wide; hamburger horizontally centered.
