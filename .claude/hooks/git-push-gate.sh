@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# Gate `git push` behind an explicit approval prompt so Claude can never auto-push
-# and burn Netlify build credits. Commits, status, log, etc. are unaffected.
-# Fires as a PreToolUse hook on Bash/PowerShell; reads the tool call JSON on stdin.
+# Block `git push` to protect Netlify build credits (each push = a full deploy).
+# Uses exit code 2 (hard hook veto) because permission decisions are ignored under
+# bypassPermissions mode. Escape hatch for an intentional deploy: create the marker
+# file .claude/ALLOW_PUSH, push, then remove it. Claude only creates that marker when
+# Scott says "push it live". Commits, status, log, etc. are unaffected.
 d=$(cat)
 if printf '%s' "$d" | grep -qiE 'git.*push'; then
-  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"git push is gated to protect Netlify build credits — approve ONLY when you want to deploy. Say '\''push it live'\'' and approve this prompt."}}'
+  if [ -f "C:/WORK/ROOT/.claude/ALLOW_PUSH" ]; then
+    exit 0   # intentional deploy — allow this push through
+  fi
+  echo "git push BLOCKED to protect Netlify credits (it deploys + burns a build). To deploy, tell Claude 'push it live' — it unlocks for exactly one push." >&2
+  exit 2
 fi
 exit 0
