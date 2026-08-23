@@ -3834,8 +3834,16 @@ function _blockContentFor(slug, body) {
    green "B" badge (vs the user's purple "C" thought cards). The Citadel Welcome
    (dashboard-note-2) is deliberately NOT here — it stays the editable C block. */
 const CARD_BLOCKS = new Set(['home-welcome', 'home-section-1', 'home-section-2', 'dashboard-inspiration']);
+/* True if a content-block body is placeholder junk — a wall of one repeated character
+   (e.g. "pppppp") once tags/whitespace are stripped. Lets us hide garbage instead of
+   rendering it. Real copy has many distinct characters. */
+function _isJunkBlock(html) {
+  const txt = String(html || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').replace(/&[a-z]+;/gi, '').replace(/\s+/g, '');
+  if (txt.length < 8) return false;
+  return new Set(txt.toLowerCase()).size <= 2;
+}
 function _fillBlockEl(el, content) {
-  if (content && content.trim()) {
+  if (content && content.trim() && !_isJunkBlock(content)) {
     if (CARD_BLOCKS.has(el.getAttribute('data-block')) && typeof window.renderBlockCard === 'function') window.renderBlockCard(el, content);
     else el.innerHTML = content;
     el.style.display = '';
@@ -3894,8 +3902,9 @@ function applyUserCitadelWelcome() {
       el.style.display = '';
     } else {
       const admin = _blockCache['dashboard-note-2'] || '';
-      el.innerHTML = admin.trim() ? admin + _WELCOME_EDIT_BADGE : admin;
-      el.style.display = admin.trim() ? '' : 'none';
+      const showAdmin = admin.trim() && !_isJunkBlock(admin);
+      el.innerHTML = showAdmin ? admin + _WELCOME_EDIT_BADGE : '';
+      el.style.display = showAdmin ? '' : 'none';
     }
   });
   const inp = document.getElementById('citadelWelcomeInput');
