@@ -126,7 +126,7 @@ p, li, blockquote,
                            so a fixed-position menu still anchors to the viewport) */
   left: 0; right: 0;
   height: var(--topnav);
-  background: transparent;
+  background: #000;          /* extend the black header down to the tabs (kills the white gap) */
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -150,6 +150,7 @@ p, li, blockquote,
   padding: 0 6px;
   background: #7888A8;         /* same slate as the My Notes / page frames (was transparent → showed white) */
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
+  top: -19px;                 /* pull up flush to the header so no gap shows */
 }
 /* 11th tab spans 2 columns so row 2 fills the full width with no trailing gap. */
 #tabBar .top-tab:nth-child(11) { grid-column: span 2; }
@@ -546,12 +547,12 @@ details.rm-drop[open]::details-content { height: auto; }
   --pf-frame:#8FA977; --pf-bezel:#6f7570; --pf-bezelDk:#5c6158; --pf-chipV:#20241f;
   margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
   margin-top: calc(-1 * var(--topnav, 38px));
-  background: var(--pf-frame); padding: 20px;
+  background: var(--pf-frame); padding: 6px;
   min-height: calc(100vh - var(--hdr, 56px));
   display: flex; flex-direction: column;
 }
-.pg-bezel { background:var(--pf-bezel); border-radius:10px 10px 4px 4px; padding:0 16px 14px; flex:1; display:flex; flex-direction:column; }
-.pg-hdr { background:var(--pf-bezelDk); border-radius:12px 12px 0 0; margin:0 -16px 14px; padding:15px 8px; text-align:center; color:#eef0ea; font-weight:800; letter-spacing:6px; font-size:15px; text-transform:uppercase; }
+.pg-bezel { background:var(--pf-bezel); border-radius:10px 10px 4px 4px; padding:0 6px 8px; flex:1; display:flex; flex-direction:column; }
+.pg-hdr { background:var(--pf-bezelDk); border-radius:12px 12px 0 0; margin:0 -6px 12px; padding:15px 8px; text-align:center; color:#eef0ea; font-weight:800; letter-spacing:6px; font-size:15px; text-transform:uppercase; }
 .pg-screen { background:#fff; border-radius:6px; flex:1; padding:20px 18px 34px; color:#1c1c1c; }
 .pg-back { background:#fff; border:1px solid rgba(0,0,0,.15); border-radius:8px; color:var(--brand); font-family:var(--vault-mono); font-size:11px; font-weight:800; letter-spacing:.8px; padding:8px 14px; cursor:pointer; margin-bottom:14px; }
 .pg-chips { display:flex; gap:8px; margin-top:14px; }
