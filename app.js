@@ -2347,6 +2347,73 @@ export function openMyRoadmap() {
   navTo('myroadmap');
 }
 
+/* ── SHAREABLE ROADMAPS (read-only, link-only, nothing stored server-side) ─────
+   The roadmap is encoded into the link itself (base64url). Anyone with the link can
+   view the steps read-only; no comments, no PII, no database. See docs/SPEC_shareable_roadmaps.md */
+function _b64urlEncode(obj) {
+  const b = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  return b.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function _b64urlDecode(str) {
+  try {
+    const b = String(str).replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(b))));
+  } catch (e) { return null; }
+}
+/* Build + copy a read-only share link for a goal's roadmap. */
+export function shareRoadmap(idx) {
+  const list = intentions || [];
+  const i = (typeof idx === 'number' && list[idx]) ? idx : (selectedVaultIdx != null && list[selectedVaultIdx] ? selectedVaultIdx : 0);
+  const intn = list[i];
+  if (!intn) { if (typeof toast === 'function') toast('Add a goal first.', 'error'); return; }
+  const steps = (Array.isArray(intn.achievers?.roadmap) && intn.achievers.roadmap.length)
+    ? intn.achievers.roadmap
+    : ((intn.roadmapAI?.tasks || []).map(t => (t && (t.text || t.title)) || t).filter(Boolean));
+  if (!steps.length) { if (typeof toast === 'function') toast("Generate this goal's roadmap first, then share it.", 'info'); return; }
+  const title = (intn.title || 'My Roadmap').replace(/^(i am)\s+/i, 'I AM ');
+  const payload = { v: 1, t: title, c: intn.category || '', h: 'Anonymous',
+    s: steps.slice(0, 20).map(x => String(x).slice(0, 240)) };
+  const link = location.origin + '/?r=' + _b64urlEncode(payload);
+  try {
+    navigator.clipboard.writeText(link);
+    if (typeof toast === 'function') toast('Read-only link copied — anyone with it can view these steps (no personal info shared).', 'success');
+  } catch (e) { if (typeof toast === 'function') toast('Share link: ' + link, 'info'); }
+  return link;
+}
+/* Render a standalone, auth-free, read-only page for a shared roadmap link. */
+function renderSharedRoadmap(encoded) {
+  const d = _b64urlDecode(encoded);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const box = document.createElement('div');
+  box.id = 'sharedRoadmapView';
+  if (!d || !Array.isArray(d.s) || !d.s.length) {
+    box.innerHTML = `<div style="max-width:640px;margin:70px auto;padding:0 22px;font-family:'Poppins',system-ui,sans-serif;text-align:center;color:#26364b;">
+      <h1 style="font-size:22px;">This roadmap link is no longer valid.</h1>
+      <p style="margin-top:14px;"><a href="/" style="color:#2b6cb0;font-weight:700;">Go to Cosmic Intentions →</a></p></div>`;
+  } else {
+    const steps = d.s.map(s => `<li style="margin:0 0 12px;line-height:1.5;">${esc(s)}</li>`).join('');
+    box.innerHTML = `
+      <div style="min-height:100vh;background:#eef1f4;font-family:'Poppins',system-ui,sans-serif;padding:40px 18px;box-sizing:border-box;">
+        <div style="max-width:680px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(20,40,80,.12);overflow:hidden;">
+          <div style="background:#7888A8;color:#fff;padding:22px 26px;">
+            <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.85;">Shared Roadmap &middot; ${esc(d.h || 'Anonymous')}</div>
+            <div style="font-size:22px;font-weight:800;margin-top:6px;">${esc(d.t || 'My Roadmap')}</div>
+          </div>
+          <div style="padding:26px 30px;color:#1c2126;">
+            <ol style="margin:0;padding-left:22px;font-size:16px;">${steps}</ol>
+          </div>
+          <div style="padding:20px 30px 30px;border-top:1px solid #e9edf2;text-align:center;">
+            <div style="font-size:13px;color:#6b747d;margin-bottom:12px;">Build your own roadmap for any goal, one clear step at a time.</div>
+            <a href="/" style="display:inline-block;background:#e0102b;color:#fff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.5px;padding:12px 22px;border-radius:10px;">Try Cosmic Intentions</a>
+          </div>
+        </div>
+      </div>`;
+  }
+  document.body.innerHTML = '';
+  document.body.appendChild(box);
+  document.title = (d && d.t) ? d.t + ' · Cosmic Intentions' : 'Shared Roadmap · Cosmic Intentions';
+}
+
 /* ── ASS (Audio Slide Show) players: Affirmations / Beliefs / Stoic ───────────
    Each reads the SELECTED-by-idx goal's own mindset list (already AI-generated &
    saved to Supabase), drops it in localStorage, and opens the shared ASS player. */
@@ -4277,6 +4344,10 @@ function injectPlaceholderCards() {
 }
 
 export async function init() {
+  // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
+  // stop normal boot. No auth, no data stored server-side (the roadmap rides in the link).
+  const _shared = new URLSearchParams(location.search).get('r');
+  if (_shared) { try { renderSharedRoadmap(_shared); } catch (e) {} return; }
   // Load local data first
   loadIntentionsFromLS();
   // Non-critical UI setup must NOT abort boot — an uncaught throw here skips the
