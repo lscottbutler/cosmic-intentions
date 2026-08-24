@@ -5,7 +5,9 @@
 # file .claude/ALLOW_PUSH, push, then remove it. Claude only creates that marker when
 # Scott says "push it live". Commits, status, log, etc. are unaffected.
 d=$(cat)
-if printf '%s' "$d" | grep -qiE 'git.*push'; then
+# Match only a real `git push` invocation (optionally `git -C <path> push`),
+# NOT the word "push" inside a commit message or other text.
+if printf '%s' "$d" | grep -qiE 'git( +-[cC] +[^ ]+)? +push([ ";&]|\\|$)'; then
   if [ -f "C:/WORK/ROOT/.claude/ALLOW_PUSH" ]; then
     exit 0   # intentional deploy — allow this push through
   fi
