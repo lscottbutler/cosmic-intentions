@@ -268,7 +268,8 @@ p, li, blockquote,
 
 /* ── COLUMN B MASTER LINK LIST ───────────── */
 .colb-links { margin: 0 0 14px; }
-.colb-links-hd { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a97a8; margin: 0 0 6px; }
+.colb-links-hd { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a97a8; margin: 16px 0 6px; border-top: 1px solid var(--border, #e6e9ed); padding-top: 12px; }
+.colb-links .colb-links-hd:first-child { margin-top: 0; border-top: none; padding-top: 0; }
 .colb-link { display: block; width: 100%; text-align: left; background: #111; color: #fff; border: none; border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
 .colb-link:hover { background: #000; }
 .colb-link--play { background: #0F9AA0; }

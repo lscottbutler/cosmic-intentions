@@ -161,34 +161,46 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   // ── COLUMN B MASTER LINK LIST — single source of truth, injected into every Column B.
   // Edit this array once and it updates on every page.
   window.colbLinksHTML = function () {
-    var L = [
-      ["goMemberDashboard()", "Inner Citadel", ""],
-      ["navTo('notes')", "My Thoughts · My Words", ""],
-      ["navTo('mynotes')", "My Notes", ""],
-      ["navTo('setup')", "My Goals", ""],
-      ["navTo('habits')", "My Habits", ""],
-      ["openMyRoadmap()", "Roadmap", ""],
-      ["navTo('dailyfocus')", "My Favorites Autoplay", ""],
-      ["openVizLibrary()", "Visualization Library", ""],
-      ["navTo('runthroughs')", "Daily Habits", ""],
-      ["navTo('meditation')", "Meditation", ""],
-      ["navTo('gratitude')", "Gratitude", ""],
-      ["navTo('wins')", "My Wins", ""],
-      ["navTo('cosmiclibrary')", "Cosmic Library", ""],
-      ["navTo('entcard')", "Entrepreneur Library", ""],
-      ["navTo('admin')", "Admin", ""],
-      ["location.href='players/3min-viz.html'", "3-Min Visualization", "colb-link--play"],
-      ["location.href='players/meditation.html'", "Meditation Player", "colb-link--play"],
-      ["location.href='players/gratitude.html'", "Gratitude Player", "colb-link--play"],
-      ["location.href='players/gratitude-guided.html'", "Gratitude Guided", "colb-link--play"],
-      ["location.href='players/recite.html'", "Recitations", "colb-link--play"],
-      ["window.open('/landing','_blank')", "Landing Page 1", "colb-link--ext"],
-      ["window.open('/landing-v2','_blank')", "Landing Page 2", "colb-link--ext"],
-      ["window.open('/landing-v3','_blank')", "Landing Page 3", "colb-link--ext"],
-      ["window.open('/about','_blank')", "About Us", "colb-link--ext"]
+    var S = [
+      ["Mind Work", [
+        ["goMemberDashboard()", "Inner Citadel", ""],
+        ["navTo('dailyfocus')", "My Favorites Autoplay", ""],
+        ["openVizLibrary()", "Visualization Library", ""],
+        ["navTo('runthroughs')", "Daily Habits", ""],
+        ["navTo('habits')", "My Habits", ""],
+        ["navTo('meditation')", "Meditation", ""],
+        ["navTo('gratitude')", "Gratitude", ""],
+        ["location.href='players/3min-viz.html'", "3-Min Visualization", "colb-link--play"],
+        ["location.href='players/meditation.html'", "Meditation Player", "colb-link--play"],
+        ["location.href='players/gratitude.html'", "Gratitude Player", "colb-link--play"],
+        ["location.href='players/gratitude-guided.html'", "Gratitude Guided", "colb-link--play"],
+        ["location.href='players/recite.html'", "Recitations", "colb-link--play"]
+      ]],
+      ["Goals", [
+        ["navTo('setup')", "My Goals", ""],
+        ["openMyRoadmap()", "Roadmap", ""],
+        ["navTo('wins')", "My Wins", ""],
+        ["navTo('cosmiclibrary')", "Cosmic Library", ""],
+        ["navTo('entcard')", "Entrepreneur Library", ""]
+      ]],
+      ["In My Words", [
+        ["navTo('notes')", "My Thoughts · My Words", ""],
+        ["navTo('mynotes')", "My Notes", ""]
+      ]],
+      ["More", [
+        ["navTo('admin')", "Admin", ""],
+        ["window.open('/landing','_blank')", "Landing Page 1", "colb-link--ext"],
+        ["window.open('/landing-v2','_blank')", "Landing Page 2", "colb-link--ext"],
+        ["window.open('/landing-v3','_blank')", "Landing Page 3", "colb-link--ext"],
+        ["window.open('/about','_blank')", "About Us", "colb-link--ext"]
+      ]]
     ];
-    var h = '<div class="colb-links"><div class="colb-links-hd">LINKS</div>';
-    for (var i = 0; i < L.length; i++) h += '<button class="colb-link ' + L[i][2] + '" onclick="' + L[i][0] + '">' + L[i][1] + '</button>';
+    var h = '<div class="colb-links">';
+    for (var s = 0; s < S.length; s++) {
+      h += '<div class="colb-links-hd">' + S[s][0] + '</div>';
+      var arr = S[s][1];
+      for (var i = 0; i < arr.length; i++) h += '<button class="colb-link ' + arr[i][2] + '" onclick="' + arr[i][0] + '">' + arr[i][1] + '</button>';
+    }
     return h + '</div>';
   };
   window.injectColbLinks = function () {
