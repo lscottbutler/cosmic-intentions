@@ -275,6 +275,10 @@ p, li, blockquote,
   pointer-events: none; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.45);
 }
 .dbg-label b { color: #a80000; margin-right: 5px; }
+
+/* EMBED MODE — page shown inside the shell content pane: hide app chrome. */
+html.embed header.hdr, html.embed #topNav, html.embed #tabBar { display: none !important; }
+html.embed, html.embed body { background: #fff !important; }
 /* Roadmap collapsible dropdowns (MY ACTION PLAN / PROVEN ACTIONS = RESULTS) */
 details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }

@@ -122,6 +122,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open');
   });
 
+  // EMBED MODE — when a page is loaded inside the shell content pane (?embed=1), strip the
+  // app chrome (header, tab bar) so only the page content shows in the pane.
+  if (new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');
+
   // DEV LABEL OVERLAY — tags every named element (id / data-block / data-note-key) on the
   // active page with a NUMBER + its NAME (10pt lime). Turn on by adding ?label=1 to the URL,
   // or call toggleLabels() in the console. Screenshot it to tell me what to move where.
