@@ -317,7 +317,13 @@ function ensurePageSideColumn(pageId) {
       layout.className = 'pg-body';
       side = document.createElement('aside');
       side.className = 'pg-side';
-      side.innerHTML = '<img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div class="pg-side-stats"></div>';
+      side.innerHTML =
+        '<div class="colb-nav">' +
+        '<button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>' +
+        '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>' +
+        '<button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>' +
+        '</div>' +
+        '<img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div class="pg-side-stats"></div>';
       layout.appendChild(main);
       layout.appendChild(side);
       screen.appendChild(layout);

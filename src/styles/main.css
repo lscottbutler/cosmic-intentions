@@ -253,6 +253,18 @@ p, li, blockquote,
 .ham-menu .tnav-signout { margin-left: 0; }
 .ham-menu-sep { height: 1px; background: var(--border); margin: 6px 4px; }
 .ham-menu .ham-theme { justify-content: center; padding: 4px 0 2px; }
+
+/* ── COLUMN B NAV CLUSTER (back / menu / forward) ───────────── */
+.colb-nav { display: flex; justify-content: center; gap: 14px; margin: 0 0 14px; }
+.colb-nav-btn {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: #000; border: 6px solid #8f8f8f; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px;
+  padding: 0; box-shadow: 0 3px 10px rgba(0,0,0,.25); transition: filter .12s, transform .1s;
+}
+.colb-nav-btn:hover { filter: brightness(1.15); }
+.colb-nav-btn:active { transform: translateY(1px); }
+.colb-nav-menu span { display: block; width: 16px; height: 2.5px; background: #fff; border-radius: 2px; }
 /* Roadmap collapsible dropdowns (MY ACTION PLAN / PROVEN ACTIONS = RESULTS) */
 details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }

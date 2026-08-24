@@ -75,37 +75,51 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="top-tab" onclick="navTo('cosmiclibrary')">COSMIC LIBRARY</button>
 </nav>
 
+<!-- GLOBAL NAV MENU — one instance, opened by the ≡ button in every Column B nav cluster. -->
+<div class="ham-menu ham-menu--global" id="hamMenu">
+  <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+  <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
+  <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
+  <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
+  <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
+  <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
+  <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
+  <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
+  <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
+  <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
+  <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
+  <button class="tnav-btn" onclick="window.open('/landing-v3','_blank')">Landing Page 3</button>
+  <button class="tnav-btn" onclick="window.open('/about','_blank')">About Us</button>
+  <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
+  <button class="tnav-btn" onclick="favThisPage()">☆ Favorite This Page</button>
+  <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
+  <div class="ham-menu-sep"></div>
+  <div class="theme-picker ham-theme" role="group" aria-label="Theme">
+    <button data-theme-btn="dark"  onclick="setTheme('dark')"  title="Night mode">&#9790;</button>
+    <button data-theme-btn="light" onclick="setTheme('light')" title="Daylight mode">&#9728;</button>
+    <button data-theme-btn="kids"  onclick="setTheme('kids')"  title="Kids mode">&#9733;</button>
+  </div>
+</div>
+
 <!-- FLOATING MID-PAGE HAMBURGER — duplicate of the top menu, fixed at the left-center of
      the viewport (Column A side). Members only; hidden on the community/home page via CSS.
      Menu items are cloned from #hamMenu at boot so the two stay in sync. -->
 <!-- (Floating mid-page hamburger removed per request — top hamburger + tab bar remain.) -->
 
 <script>
-  // Toggle a hamburger menu. Pass the clicked button to toggle its own sibling menu;
-  // call with no argument to toggle the top nav menu (back-compat).
-  function toggleHamMenu(btn) {
-    var b, m;
-    if (btn && btn.closest) { b = btn; m = btn.closest('.ham-wrap').querySelector('.ham-menu'); }
-    else { b = document.getElementById('hamBtn'); m = document.getElementById('hamMenu'); }
-    if (!m || !b) return;
-    var open = m.classList.toggle('open');
-    b.setAttribute('aria-expanded', String(open));
+  // One global nav menu (#hamMenu), opened by the ≡ button in every Column B nav cluster.
+  function toggleHamMenu() {
+    var m = document.getElementById('hamMenu');
+    if (m) m.classList.toggle('open');
   }
-  // Close a menu after picking an item (works for every .ham-menu instance).
+  // Close the menu after picking an item.
   document.addEventListener('click', function (e) {
-    var item = e.target.closest('.tnav-btn');
-    if (item) {
-      var m = item.closest('.ham-menu');
-      if (m) m.classList.remove('open');
-      document.querySelectorAll('.ham-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
-    }
+    if (e.target.closest('.tnav-btn')) { var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open'); }
   });
-  // Close any open menu when clicking outside a hamburger.
+  // Close when clicking outside the menu and outside a ≡ trigger.
   document.addEventListener('click', function (e) {
-    if (!e.target.closest('.ham-wrap')) {
-      document.querySelectorAll('.ham-menu.open').forEach(function (m) { m.classList.remove('open'); });
-      document.querySelectorAll('.ham-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
-    }
+    if (e.target.closest('#hamMenu') || e.target.closest('.colb-nav-menu') || e.target.closest('.ham-btn')) return;
+    var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open');
   });
 </script>
 
@@ -749,6 +763,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div id="myNotesSections"></div>
           </div><!-- /pg-2col-main -->
           <aside class="pg-2col-side">
+            <div class="colb-nav">
+              <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+              <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+              <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+            </div>
             <div class="pg-side-label">MY THOUGHTS</div>
             <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
             <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
@@ -773,6 +792,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- DEPOSITORY INDEX SIDEBAR -->
       <aside class="vault-sidebar" id="vaultSidebar">
 
+        <!-- COLUMN B NAV CLUSTER: back / menu / forward -->
+        <div class="colb-nav">
+          <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+          <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+        </div>
+
         <!-- MY TASK LIST — moved to the TOP of Column B; renderWrapup fills it -->
         <div id="taskListWidget"></div>
 
@@ -780,36 +806,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <button onclick="notesToggleQuickAdd('sideQuickAdd')" style="width:100%;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:9px 16px;border-radius:6px;cursor:pointer;margin-bottom:10px;">&#43; ADD A THOUGHT</button>
         <div id="sideQuickAdd" style="display:none;margin-bottom:12px;"></div>
 
-        <!-- MENU — moved here from the top bar (below + ADD A THOUGHT) -->
-        <div class="ham-wrap" style="position:relative;display:flex;justify-content:center;margin:0 0 14px;">
-          <button id="hamBtn" class="ham-btn" aria-label="Menu" aria-expanded="false" aria-controls="hamMenu" onclick="toggleHamMenu()">
-            <span></span><span></span><span></span>
-          </button>
-          <div class="ham-menu" id="hamMenu">
-            <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
-            <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
-            <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
-            <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
-            <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
-            <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
-            <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
-            <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
-            <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
-            <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
-            <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
-            <button class="tnav-btn" onclick="window.open('/landing-v3','_blank')">Landing Page 3</button>
-            <button class="tnav-btn" onclick="window.open('/about','_blank')">About Us</button>
-            <button class="tnav-btn" id="topnav-admin" style="display:none" onclick="navTo('admin')">Admin</button>
-            <button class="tnav-btn" onclick="favThisPage()">☆ Favorite This Page</button>
-            <button class="tnav-btn tnav-signout" id="topnav-signout" onclick="signOut()" style="display:none">Step Away</button>
-            <div class="ham-menu-sep"></div>
-            <div class="theme-picker ham-theme" role="group" aria-label="Theme">
-              <button data-theme-btn="dark"  onclick="setTheme('dark')"  title="Night mode">&#9790;</button>
-              <button data-theme-btn="light" onclick="setTheme('light')" title="Daylight mode">&#9728;</button>
-              <button data-theme-btn="kids"  onclick="setTheme('kids')"  title="Kids mode">&#9733;</button>
-            </div>
-          </div>
-        </div>
+        <!-- (nav menu moved to a global dropdown; opened by the Column B nav cluster's menu button) -->
 
         <!-- Date banner — TOP of Column B; filled by setEl('vaultDateLine') -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
@@ -1541,6 +1538,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <!-- RIGHT 25% COLUMN — mirrors the Citadel's right column. Peppered with the
                user's own thoughts (auto-filled by sprinkleNotes; unique note-keys). -->
           <aside class="pg-2col-side">
+            <div class="colb-nav">
+              <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+              <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+              <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+            </div>
             <div class="pg-side-label">MY THOUGHTS</div>
             <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
             <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
@@ -1571,6 +1573,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </button>
           </div>
           <aside class="pg-2col-side">
+            <div class="colb-nav">
+              <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+              <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+              <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+            </div>
             <div class="pg-side-label">MY THOUGHTS</div>
             <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
             <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
@@ -1601,6 +1608,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </button>
           </div>
           <aside class="pg-2col-side">
+            <div class="colb-nav">
+              <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+              <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+              <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+            </div>
             <div class="pg-side-label">MY THOUGHTS</div>
             <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
             <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
@@ -1662,6 +1674,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div><!-- /cosmicLibraryBody -->
           </div><!-- /pg-2col-main -->
           <aside class="pg-2col-side">
+            <div class="colb-nav">
+              <button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+              <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+              <button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+            </div>
             <div class="pg-side-label">MY THOUGHTS</div>
             <button onclick="navTo('notes')" class="pg-side-add">&#43; ADD A THOUGHT</button>
             <div class="pg-side-empty">Your affirmations, beliefs &amp; reminders surface here as you add them.</div>
