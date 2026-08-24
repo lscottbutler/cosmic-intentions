@@ -582,6 +582,12 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#7888A8; }
 #page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#566279; }
 #page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#424B5C; }
+
+/* Inner Citadel (dashboard): no grey frame/bezel — plain white; title in Dodger blue. */
+#page-dashboard .pg-frame { --pf-frame:#ffffff; --pf-bezel:#ffffff; --pf-bezelDk:#ffffff; padding:0; }
+#page-dashboard .pg-bezel { padding:0; border-radius:0; }
+#page-dashboard .pg-hdr   { color:#1E90FF; margin:0 0 8px; box-shadow:none; }
+
 /* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
    75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
    content into .pg-body-main and appends .pg-side. */
