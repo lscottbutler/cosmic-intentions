@@ -148,7 +148,7 @@ p, li, blockquote,
   align-items: stretch;
   gap: 4px;
   padding: 0 6px;
-  background: #7888A8;         /* same slate as the My Notes / page frames (was transparent → showed white) */
+  background: #ffffff;         /* white strip behind the tabs */
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
   top: 0;                     /* sit right under the (now half-height) header */
 }
