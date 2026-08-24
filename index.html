@@ -1542,6 +1542,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
            the existing renderers via their element IDs (morningRunBody / dayRunBody /
            eveningRunBody / habitsWidget) — do not duplicate these IDs.
            (wrapupWidget moved to the dashboard, under The Big 3.) -->
+      <!-- EDIT HABITS — jumps to the My Habits editor (add / rename / reorder / delete) -->
+      <button onclick="navTo('habits')" style="display:inline-flex;align-items:center;gap:8px;background:#111;color:#fff;border:none;cursor:pointer;font-weight:800;font-size:13px;letter-spacing:.5px;padding:9px 16px;border-radius:8px;margin:0 0 14px;">&#9998; EDIT HABITS</button>
       <div id="habitsWidget"></div>
 
       <!-- RUN-THROUGH CARDS — add / reorder freely -->
