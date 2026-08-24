@@ -365,6 +365,9 @@ export function showPage(id) {
   if (id === 'myroadmap') ensurePageSideColumn('myroadmap');
   if (id === 'wins') ensurePageSideColumn('wins');
 
+  // Master link list at the top of every Column B (single source: window.colbLinksHTML).
+  if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
+
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
   // (images, deferred sidebar/build-sheet render) can't leave the page
