@@ -319,9 +319,9 @@ function ensurePageSideColumn(pageId) {
       side.className = 'pg-side';
       side.innerHTML =
         '<div class="colb-nav">' +
-        '<button class="colb-nav-btn" onclick="subnavBack()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>' +
+        '<button class="colb-nav-btn" onclick="tabStep(-1)" aria-label="Previous tab" title="Previous tab"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>' +
         '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>' +
-        '<button class="colb-nav-btn" onclick="subnavForward()" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>' +
+        '<button class="colb-nav-btn" onclick="tabStep(1)" aria-label="Next tab" title="Next tab"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>' +
         '</div>' +
         '<img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div class="pg-side-stats"></div>';
       layout.appendChild(main);
@@ -404,6 +404,21 @@ if (typeof history !== 'undefined' &&
 // identically. The actual page swap happens in the popstate handler below.
 export function subnavBack()    { history.back();    }
 export function subnavForward() { history.forward(); }
+
+/* Step through the top tab bar in order (dir -1 = previous tab, +1 = next tab), wrapping
+   around. The Column B nav cluster arrows use this — go to whichever tab is next/prev. */
+const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','runthroughs','meditation','gratitude','wins','cosmiclibrary'];
+export function tabStep(dir) {
+  const active = document.querySelector('.page.active');
+  let cur = active ? active.id.replace(/^page-/, '') : 'dashboard';
+  let i = _TAB_ORDER.indexOf(cur);
+  if (i < 0) i = 0;
+  i = (i + (dir || 0) + _TAB_ORDER.length) % _TAB_ORDER.length;
+  const id = _TAB_ORDER[i];
+  if (id === 'myroadmap'  && typeof window.openMyRoadmap === 'function')  return window.openMyRoadmap();
+  if (id === 'vizlibrary' && typeof window.openVizLibrary === 'function') return window.openVizLibrary();
+  navTo(id);
+}
 
 // Browser (or mouse) Back/Forward → move within the app, don't leave the site.
 window.addEventListener('popstate', (e) => {
