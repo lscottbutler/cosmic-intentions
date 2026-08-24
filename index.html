@@ -121,6 +121,38 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     if (e.target.closest('#hamMenu') || e.target.closest('.colb-nav-menu') || e.target.closest('.ham-btn')) return;
     var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open');
   });
+
+  // DEV LABEL OVERLAY — tags every named element (id / data-block / data-note-key) on the
+  // active page with a NUMBER + its NAME (10pt lime). Turn on by adding ?label=1 to the URL,
+  // or call toggleLabels() in the console. Screenshot it to tell me what to move where.
+  window.toggleLabels = function (on) {
+    var turnOn = (on === undefined) ? !document.body.classList.contains('dbg-on') : !!on;
+    document.querySelectorAll('.dbg-label').forEach(function (x) { x.remove(); });
+    document.body.classList.toggle('dbg-on', turnOn);
+    if (!turnOn) return;
+    var active = document.querySelector('.page.active') || document.body, n = 0, seen = {};
+    active.querySelectorAll('[id],[data-block],[data-note-key]').forEach(function (el) {
+      var cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return;
+      var r = el.getBoundingClientRect();
+      if (r.width < 12 || r.height < 10) return;
+      var name = el.id || el.getAttribute('data-block') || el.getAttribute('data-note-key');
+      if (!name || seen[name]) return; seen[name] = 1;
+      n++;
+      var t = document.createElement('div');
+      t.className = 'dbg-label';
+      t.innerHTML = '<b>' + n + '</b>' + name;
+      t.style.top = (window.scrollY + r.top) + 'px';
+      t.style.left = (window.scrollX + r.left) + 'px';
+      document.body.appendChild(t);
+    });
+  };
+  (function () {
+    if (!new URLSearchParams(location.search).has('label')) return;
+    var run = function () { try { window.toggleLabels(true); } catch (e) {} };
+    window.addEventListener('load', function () { setTimeout(run, 700); });
+    setInterval(run, 2000);   // re-tag after page swaps / async renders
+  })();
 </script>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->

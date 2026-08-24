@@ -265,6 +265,16 @@ p, li, blockquote,
 .colb-nav-btn:hover { filter: brightness(1.15); }
 .colb-nav-btn:active { transform: translateY(1px); }
 .colb-nav-menu span { display: block; width: 16px; height: 2.5px; background: #fff; border-radius: 2px; }
+
+/* ── DEV LABEL OVERLAY (?label=1) — number + asset name on every named element ── */
+.dbg-label {
+  position: absolute; z-index: 2147483000;
+  background: #39FF14; color: #000;
+  font: 700 10pt/1.15 'Courier New', monospace;
+  padding: 1px 5px; border: 1px solid #000; border-radius: 2px;
+  pointer-events: none; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.45);
+}
+.dbg-label b { color: #a80000; margin-right: 5px; }
 /* Roadmap collapsible dropdowns (MY ACTION PLAN / PROVEN ACTIONS = RESULTS) */
 details.rm-drop > summary { list-style: none; cursor: pointer; }
 details.rm-drop > summary::-webkit-details-marker { display: none; }
