@@ -58,8 +58,8 @@ p, li, blockquote,
   /* metrics */
   --radius: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,.07);
-  --hdr:    56px;
-  --topnav: 38px;
+  --hdr:    28px;
+  --topnav: 0px;
   --subnav: 0px;
 
   --mb1:#E8524A; --mb2:#E8893A; --mb3:#88B83A; --mb4:#52B896; --mb5:#4A9EAD;
@@ -150,7 +150,7 @@ p, li, blockquote,
   padding: 0 6px;
   background: #7888A8;         /* same slate as the My Notes / page frames (was transparent → showed white) */
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
-  top: -19px;                 /* pull up flush to the header so no gap shows */
+  top: 0;                     /* sit right under the (now half-height) header */
 }
 /* 11th tab spans 2 columns so row 2 fills the full width with no trailing gap. */
 #tabBar .top-tab:nth-child(11) { grid-column: span 2; }
