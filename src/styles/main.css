@@ -567,9 +567,7 @@ details.rm-drop[open]::details-content { height: auto; }
 .pg-frame.pf-rose  { --pf-frame:#C97C74; --pf-bezel:#8a4f49; --pf-bezelDk:#6f3f3a; --pf-chipV:#3f221f; } /* Daily Habits — existing rose */
 .pg-frame.pf-plum  { --pf-frame:#3a3a3a; --pf-bezel:#565656; --pf-bezelDk:#6f6f6f; --pf-chipV:#222; } /* My Thoughts — three greys (dark → lighter → lightest) */
 
-/* ── PAGE FRAME COLORS MATCHED TO EACH TAB'S SPECTRUM COLOR ─────────────────
-   frame = tab color, bezel = darker, header = darkest. */
-/* Every page uses the SAME neutral slate frame as My Wins (going black & white). */
+/* ── EVERY PAGE = plain white (like the Inner Citadel), no grey frame; Dodger-blue title. */
 #page-dashboard   .pg-frame,
 #page-notes       .pg-frame,
 #page-mynotes     .pg-frame,
@@ -578,15 +576,12 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-vizlibrary  .pg-frame,
 #page-runthroughs .pg-frame,
 #page-meditation  .pg-frame,
-#page-gratitude   .pg-frame { --pf-frame:#7888A8; --pf-bezel:#566279; --pf-bezelDk:#424B5C; }
-#page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#7888A8; }
-#page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#566279; }
-#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#424B5C; }
-
-/* Inner Citadel (dashboard): no grey frame/bezel — plain white; title in Dodger blue. */
-#page-dashboard .pg-frame { --pf-frame:#ffffff; --pf-bezel:#ffffff; --pf-bezelDk:#ffffff; padding:0; }
-#page-dashboard .pg-bezel { padding:0; border-radius:0; }
-#page-dashboard .pg-hdr   { color:#1E90FF; margin:0 0 8px; box-shadow:none; }
+#page-gratitude   .pg-frame { --pf-frame:#fff; --pf-bezel:#fff; --pf-bezelDk:#fff; padding:0; }
+.pg-bezel { padding:0; border-radius:0; }
+.pg-hdr   { color:#1E90FF; margin:0 0 8px; box-shadow:none; }
+#page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#fff; padding:0; }
+#page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#fff; padding:0; }
+#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; color:#1E90FF; margin:0 0 8px; }
 
 /* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
    75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
