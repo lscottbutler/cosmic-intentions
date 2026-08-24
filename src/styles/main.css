@@ -266,6 +266,14 @@ p, li, blockquote,
 .colb-nav-btn:active { transform: translateY(1px); }
 .colb-nav-menu span { display: block; width: 16px; height: 2.5px; background: #fff; border-radius: 2px; }
 
+/* ── COLUMN B MASTER LINK LIST ───────────── */
+.colb-links { margin: 0 0 14px; }
+.colb-links-hd { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a97a8; margin: 0 0 6px; }
+.colb-link { display: block; width: 100%; text-align: left; background: #111; color: #fff; border: none; border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
+.colb-link:hover { background: #000; }
+.colb-link--play { background: #0F9AA0; }
+.colb-link--ext  { background: #6A4FB0; }
+
 /* ── DEV LABEL OVERLAY (?label=1) — number + asset name on every named element ── */
 .dbg-label {
   position: absolute; z-index: 2147483000;

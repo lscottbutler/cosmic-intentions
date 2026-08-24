@@ -835,6 +835,35 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button class="colb-nav-btn" onclick="tabStep(1)" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
         </div>
 
+        <!-- ══ COLUMN B MASTER LINK LIST — every link on the site (tweak/reorder freely) ══ -->
+        <div class="colb-links">
+          <div class="colb-links-hd">LINKS</div>
+          <button class="colb-link" onclick="goMemberDashboard()">Inner Citadel</button>
+          <button class="colb-link" onclick="navTo('notes')">My Thoughts &middot; My Words</button>
+          <button class="colb-link" onclick="navTo('mynotes')">My Notes</button>
+          <button class="colb-link" onclick="navTo('setup')">My Goals</button>
+          <button class="colb-link" onclick="navTo('habits')">My Habits</button>
+          <button class="colb-link" onclick="openMyRoadmap()">Roadmap</button>
+          <button class="colb-link" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
+          <button class="colb-link" onclick="openVizLibrary()">Visualization Library</button>
+          <button class="colb-link" onclick="navTo('runthroughs')">Daily Habits</button>
+          <button class="colb-link" onclick="navTo('meditation')">Meditation</button>
+          <button class="colb-link" onclick="navTo('gratitude')">Gratitude</button>
+          <button class="colb-link" onclick="navTo('wins')">My Wins</button>
+          <button class="colb-link" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
+          <button class="colb-link" onclick="navTo('entcard')">Entrepreneur Library</button>
+          <button class="colb-link" onclick="navTo('admin')">Admin</button>
+          <button class="colb-link colb-link--play" onclick="location.href='players/3min-viz.html'">3-Min Visualization</button>
+          <button class="colb-link colb-link--play" onclick="location.href='players/meditation.html'">Meditation Player</button>
+          <button class="colb-link colb-link--play" onclick="location.href='players/gratitude.html'">Gratitude Player</button>
+          <button class="colb-link colb-link--play" onclick="location.href='players/gratitude-guided.html'">Gratitude Guided</button>
+          <button class="colb-link colb-link--play" onclick="location.href='players/recite.html'">Recitations</button>
+          <button class="colb-link colb-link--ext" onclick="window.open('/landing','_blank')">Landing Page 1</button>
+          <button class="colb-link colb-link--ext" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
+          <button class="colb-link colb-link--ext" onclick="window.open('/landing-v3','_blank')">Landing Page 3</button>
+          <button class="colb-link colb-link--ext" onclick="window.open('/about','_blank')">About Us</button>
+        </div>
+
         <!-- MY TASK LIST — moved to the TOP of Column B; renderWrapup fills it -->
         <div id="taskListWidget"></div>
 
