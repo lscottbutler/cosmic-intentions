@@ -147,7 +147,7 @@ p, li, blockquote,
   grid-template-columns: repeat(6, 1fr);   /* always 2 rows: 6 + 5 (last tab widened) */
   align-items: stretch;
   gap: 4px;
-  padding: 0 6px;
+  padding: 20px 6px 0;         /* 20px white space between the black header and the tabs */
   background: #ffffff;         /* white strip behind the tabs */
   z-index: 120;               /* above header (100), below the hamburger/menu (300) */
   top: 0;                     /* sit right under the (now half-height) header */
