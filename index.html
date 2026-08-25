@@ -1680,11 +1680,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <p class="pg-intro">Quiet the mind before you begin.</p>
           <div class="pg-2col">
           <div class="pg-2col-main">
-            <button onclick="location.href='players/meditation.html'" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:20px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
-              <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9789;</span>
-              <span style="flex:1;min-width:0;"><span style="display:block;font-weight:800;font-size:16px;letter-spacing:.3px;">Start Meditation</span><span style="display:block;font-size:12px;opacity:.7;margin-top:2px;">Pick your length and settle in</span></span>
-              <span style="flex-shrink:0;font-size:20px;opacity:.8;">&#8250;</span>
-            </button>
+            <!-- MEDITATION TIMER GRID — pick a length; each launches the meditation player. -->
+            <div style="background:var(--teal-ui,#0F9AA0); border-radius:12px; padding:18px 14px 16px; margin-bottom:12px;">
+              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button><button class="dot-fav" data-player="meditation" data-min="1" onclick="favSession('meditation',1,event)" title="Favorite the 1-minute meditation" aria-label="Favorite the 1-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3 Minutes</button><button class="dot-fav" data-player="meditation" data-min="3" onclick="favSession('meditation',3,event)" title="Favorite the 3-minute meditation" aria-label="Favorite the 3-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5 Minutes</button><button class="dot-fav" data-player="meditation" data-min="5" onclick="favSession('meditation',5,event)" title="Favorite the 5-minute meditation" aria-label="Favorite the 5-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10 Minutes</button><button class="dot-fav" data-player="meditation" data-min="10" onclick="favSession('meditation',10,event)" title="Favorite the 10-minute meditation" aria-label="Favorite the 10-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15 Minutes</button><button class="dot-fav" data-player="meditation" data-min="15" onclick="favSession('meditation',15,event)" title="Favorite the 15-minute meditation" aria-label="Favorite the 15-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20 Minutes</button><button class="dot-fav" data-player="meditation" data-min="20" onclick="favSession('meditation',20,event)" title="Favorite the 20-minute meditation" aria-label="Favorite the 20-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30 Minutes</button><button class="dot-fav" data-player="meditation" data-min="30" onclick="favSession('meditation',30,event)" title="Favorite the 30-minute meditation" aria-label="Favorite the 30-minute meditation">&#9825;</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button><button class="dot-fav" data-player="meditation" data-min="45" onclick="favSession('meditation',45,event)" title="Favorite the 45-minute meditation" aria-label="Favorite the 45-minute meditation">&#9825;</button></div>
+              </div>
+            </div>
           </div>
           <aside class="pg-2col-side">
             <div class="colb-nav">
