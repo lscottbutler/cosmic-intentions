@@ -367,6 +367,8 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
+  // Intro card at the top of Column A on selected pages.
+  if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders

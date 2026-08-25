@@ -211,6 +211,26 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       else col.insertAdjacentHTML('afterbegin', window.colbLinksHTML());
     });
   };
+
+  // ── COLUMN A INTRO CARD — an editable info card at the top of the main column on
+  // selected pages. Placeholder copy for now; give Scott real text per page later.
+  window.PAGE_INTRO_CARD =
+    '<div class="page-intro-card">' +
+      '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>' +
+      '<div class="page-intro-cols">' +
+        '<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li><li>Ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam</li></ul>' +
+        '<ul><li>Quis nostrud exercitation ullamco</li><li>Laboris nisi ut aliquip ex ea</li><li>Duis aute irure dolor in reprehenderit</li><li>Voluptate velit esse cillum dolore</li><li>Excepteur sint occaecat cupidatat</li></ul>' +
+      '</div>' +
+    '</div>';
+  window.injectPageIntro = function () {
+    var active = document.querySelector('.page.active'); if (!active) return;
+    var id = active.id.replace('page-', '');
+    var WANT = ['dashboard', 'notes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary'];
+    if (WANT.indexOf(id) < 0) return;
+    var main = active.querySelector('#vaultMain') || active.querySelector('.pg-2col-main') || active.querySelector('.pg-body-main');
+    if (!main || main.querySelector(':scope > .page-intro-card')) return;
+    main.insertAdjacentHTML('afterbegin', window.PAGE_INTRO_CARD);
+  };
 </script>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
