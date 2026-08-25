@@ -287,12 +287,13 @@ export function renderFavorites() {
     attachDrag(row);
     return row;
   }
-  playable.forEach(f => {
+  playable.forEach((f, i) => {
+    const rowBg = (i % 2) ? '#566270' : '#1c1c1c';   // alternate grey / black down the list
     const row = document.createElement('div');
     row.className = 'fav-row';
     row.draggable = true;
     row._fav = f;
-    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:#1A1A1A;border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:' + rowBg + ';border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
     const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const _t = favType(f);
     const _label = _t === 'note' ? (f.text || f.title || 'Note')
@@ -312,11 +313,9 @@ export function renderFavorites() {
     const cb = row.querySelector('input');
     row.querySelector('.fav-remove').addEventListener('click', (e) => { e.stopPropagation(); removeFavorite(f); });
     cb.checked = true;                    // default: the whole day is queued, ready to Play
-    row.style.borderColor = '#e02020';
-    row.style.background  = '#261515';
+    row.style.borderColor = '#e02020';    // red border = queued; background stays the alternating black/grey
     cb.addEventListener('change', () => {
       row.style.borderColor = cb.checked ? '#e02020' : '#333';
-      row.style.background  = cb.checked ? '#261515' : '#1A1A1A';
       syncPlay();
     });
     row.addEventListener('click', e => {
