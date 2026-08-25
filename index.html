@@ -1693,6 +1693,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button><button class="dot-fav" data-player="meditation" data-min="45" onclick="favSession('meditation',45,event)" title="Favorite the 45-minute meditation" aria-label="Favorite the 45-minute meditation">&#9825;</button></div>
               </div>
             </div>
+            <!-- MEDITATIONS stats -->
+            <div class="med-stats">
+              <div class="med-stats-hd">Meditations</div>
+              <div class="med-stat"><span>This Week</span><b id="medStatWeek">0</b></div>
+              <div class="med-stat"><span>This Month</span><b id="medStatMonth">0</b></div>
+              <div class="med-stat"><span>This Year</span><b id="medStatYear">0</b></div>
+              <div class="med-stat med-stat--streak"><span>Daily Streak</span><b id="medStatStreak">365</b></div>
+            </div>
           </div>
           <aside class="pg-2col-side">
             <div class="colb-nav">

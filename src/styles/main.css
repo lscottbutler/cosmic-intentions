@@ -281,6 +281,14 @@ p, li, blockquote,
 .page-intro-cols { display: flex; gap: 28px; flex-wrap: wrap; }
 .page-intro-cols ul { flex: 1; min-width: 200px; margin: 0; padding-left: 20px; color: var(--text, #1b2027); font-size: 14px; line-height: 1.9; }
 
+/* ── MEDITATIONS STATS BOX ───────────── */
+.med-stats { border: 1px solid var(--border, #d9dee3); border-radius: 12px; background: #fff; padding: 14px 18px; margin: 0 0 14px; }
+.med-stats-hd { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #1E90FF; margin: 0 0 8px; }
+.med-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--border-2, #eef0f2); font-size: 15px; color: var(--text, #1b2027); }
+.med-stat:first-of-type { border-top: none; }
+.med-stat b { font-size: 18px; font-weight: 800; }
+.med-stat--streak b { color: #e0102b; }
+
 /* ── DEV LABEL OVERLAY (?label=1) — number + asset name on every named element ── */
 .dbg-label {
   position: absolute; z-index: 2147483000;
