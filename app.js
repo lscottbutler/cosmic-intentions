@@ -333,6 +333,31 @@ function ensurePageSideColumn(pageId) {
   } catch (e) { console.error('[pageSideColumn]', e); }
 }
 
+/* Meditation stats box — counts completed meditation sessions (ci_med_log, one date-key
+   per finished session) into This Week / Month / Year, and the consecutive-day streak. */
+export function renderMeditationStats() {
+  let log = [];
+  try { log = LS.get('ci_med_log') || []; } catch (e) {}
+  if (!Array.isArray(log)) log = [];
+  const DAY = 86400000;
+  const toTs = s => {
+    if (typeof s === 'string' && /^\d{4}-\d{2}-\d{2}/.test(s)) { const p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).getTime(); }
+    const d = new Date(s); return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  };
+  const tss = log.map(toTs).filter(t => t != null);
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const week  = tss.filter(t => t >= today0 - 6 * DAY && t <= today0).length;
+  const month = tss.filter(t => { const d = new Date(t); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length;
+  const year  = tss.filter(t => new Date(t).getFullYear() === now.getFullYear()).length;
+  const daySet = new Set(tss);
+  let streak = 0, cur = today0;
+  if (!daySet.has(cur)) cur -= DAY;   // if none logged today yet, count the run ending yesterday
+  while (daySet.has(cur)) { streak++; cur -= DAY; }
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('medStatWeek', week); set('medStatMonth', month); set('medStatYear', year); set('medStatStreak', streak);
+}
+
 export function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
@@ -357,6 +382,7 @@ export function showPage(id) {
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
+  if (id === 'meditation') renderMeditationStats();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
 
   // Reusable right-hand column (clown + Big 3 stats) on these framed pages.

@@ -342,7 +342,13 @@ export function markPillar(key) {
   }
 
   if (key === 'visualize') LS.set('ci_viz_plays', (LS.get('ci_viz_plays') || 0) + 1);
-  if (key === 'meditate')  LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
+  if (key === 'meditate') {
+    LS.set('ci_med_plays', (LS.get('ci_med_plays') || 0) + 1);
+    const _mlog = LS.get('ci_med_log') || [];        // one date-key per completed session
+    _mlog.push(today);
+    LS.set('ci_med_log', _mlog);
+    if (typeof window.renderMeditationStats === 'function') window.renderMeditationStats();
+  }
 
   if (!wasPerfect && _isPerfect(_getRings(today))) _celebratePerfect();
   renderRings();
