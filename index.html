@@ -204,24 +204,33 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   // COLUMN B QUICK TABS — the old top tab-bar, re-homed under the nav circles.
   // Alphabetical, colored with the goal-card spectrum. Single source, injected
   // into every Column B just like the link list.
-  window.colbTabsHTML = function () {
-    var T = [
-      ["navTo('cosmiclibrary')", "Cosmic Library", "#E84040", "#fff"],
-      ["navTo('runthroughs')",   "Daily Habits",   "#E86030", "#fff"],
-      ["navTo('dailyfocus')",    "♥ Favorites","#E88020", "#fff"],
-      ["navTo('gratitude')",     "Gratitude",      "#E8A828", "#1C2230"],
-      ["goMemberDashboard()",    "Inner Citadel",  "#E8C830", "#1C2230"],
-      ["navTo('meditation')",    "Meditation",     "#A8C830", "#1C2230"],
-      ["navTo('mynotes')",       "My Notes",       "#48B860", "#fff"],
-      ["navTo('notes')",         "My Thoughts",    "#38A888", "#fff"],
-      ["navTo('wins')",          "My Wins",        "#2898A8", "#fff"],
-      ["openMyRoadmap()",        "Roadmap",        "#7888A8", "#fff"],
-      ["openVizLibrary()",       "Viz Library",    "#3878A8", "#fff"]
-    ];
-    var h = '<div class="colb-tabs">';
+  // [pageId, onclick, label, bg, textColor] — pageId ties a tab to its .page so
+  // Column B can paint itself that tab's color and flag the active tab.
+  window.COLB_TABS = [
+    ["cosmiclibrary", "navTo('cosmiclibrary')", "Cosmic Library", "#E84040", "#fff"],
+    ["runthroughs",   "navTo('runthroughs')",   "Daily Habits",   "#E86030", "#fff"],
+    ["dailyfocus",    "navTo('dailyfocus')",    "♥ Favorites",   "#E88020", "#fff"],
+    ["gratitude",     "navTo('gratitude')",     "Gratitude",      "#E8A828", "#1C2230"],
+    ["dashboard",     "goMemberDashboard()",    "Inner Citadel",  "#E8C830", "#1C2230"],
+    ["meditation",    "navTo('meditation')",    "Meditation",     "#A8C830", "#1C2230"],
+    ["mynotes",       "navTo('mynotes')",       "My Notes",       "#48B860", "#fff"],
+    ["notes",         "navTo('notes')",         "My Thoughts",    "#38A888", "#fff"],
+    ["wins",          "navTo('wins')",          "My Wins",        "#2898A8", "#fff"],
+    ["myroadmap",     "openMyRoadmap()",        "Roadmap",        "#7888A8", "#fff"],
+    ["vizlibrary",    "openVizLibrary()",       "Viz Library",    "#3878A8", "#fff"]
+  ];
+  window.colbTabColor = function (page) {
+    for (var i = 0; i < window.COLB_TABS.length; i++) if (window.COLB_TABS[i][0] === page) return window.COLB_TABS[i][3];
+    return '';
+  };
+  window.colbTabsHTML = function (active) {
+    var T = window.COLB_TABS, h = '<div class="colb-tabs">';
     for (var i = 0; i < T.length; i++) {
       var wide = (i === T.length - 1 && T.length % 2 === 1) ? 'grid-column:1/-1;' : '';
-      h += '<button class="colb-tab" onclick="' + T[i][0] + '" style="background:' + T[i][2] + ';color:' + T[i][3] + ';' + wide + '">' + T[i][1] + '</button>';
+      var isA = T[i][0] === active;
+      // Active tab shares Column B's colour, so a white ring differentiates it.
+      var ring = isA ? 'box-shadow:inset 0 0 0 3px #fff;' : '';
+      h += '<button class="colb-tab' + (isA ? ' colb-tab--active' : '') + '" onclick="' + T[i][1] + '" style="background:' + T[i][3] + ';color:' + T[i][4] + ';' + wide + ring + '">' + T[i][2] + '</button>';
     }
     return h + '</div>';
   };
@@ -238,6 +247,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   };
   window.injectColbLinks = function () {
     var injected = false;
+    var activePage = document.querySelector('.page.active');
+    var pageId = activePage ? activePage.id.replace('page-', '') : '';
+    var tabColor = window.colbTabColor(pageId);
     document.querySelectorAll('.page.active .vault-sidebar, .page.active .pg-2col-side, .page.active .pg-side').forEach(function (col) {
       if (!col.querySelector(':scope > .colb-links')) {          // links not yet injected
         var cluster = col.querySelector(':scope > .colb-nav');
@@ -246,9 +258,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       }
       if (!col.querySelector(':scope > .colb-tabs')) {            // colored tabs under the nav circles
         var cl = col.querySelector(':scope > .colb-nav');
-        if (cl) cl.insertAdjacentHTML('afterend', window.colbTabsHTML());
-        else col.insertAdjacentHTML('afterbegin', window.colbTabsHTML());
+        if (cl) cl.insertAdjacentHTML('afterend', window.colbTabsHTML(pageId));
+        else col.insertAdjacentHTML('afterbegin', window.colbTabsHTML(pageId));
       }
+      // Column B background = the current page's tab colour (blank pages keep default).
+      if (tabColor) { col.style.background = tabColor; col.classList.add('colb-tinted'); }
       // Pepper thoughts only where the column has none of its own.
       if (!col.querySelector('[data-random-note]') && !col.querySelector(':scope > .colb-thoughts')) {
         col.insertAdjacentHTML('beforeend', window.colbThoughtsHTML());
