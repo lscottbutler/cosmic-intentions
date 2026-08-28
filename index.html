@@ -84,6 +84,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
   <button class="tnav-btn" onclick="openVizLibrary()">Visualization Library</button>
   <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
+  <button class="tnav-btn" onclick="navTo('meditation')">Meditation</button>
+  <button class="tnav-btn" onclick="navTo('gratitude')">Gratitude</button>
   <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
   <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
   <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
@@ -199,13 +201,32 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     }
     return h + '</div>';
   };
+  // Peppered "My Thoughts" block — surfaced daily thoughts, injected into any
+  // Column B that doesn't already carry its own MY THOUGHTS slots (e.g. the
+  // dashboard vault sidebar). sprinkleNotes() fills the [data-random-note] slots.
+  window.colbThoughtsHTML = function () {
+    return '<div class="colb-thoughts">' +
+      '<div class="colb-links-hd">My Thoughts</div>' +
+      '<div data-random-note="affirmation" data-home-thought data-note-key="colb-aff" class="pg-side-note"></div>' +
+      '<div data-random-note="belief" data-home-thought data-note-key="colb-belief" class="pg-side-note"></div>' +
+      '<div data-random-note="reminder" data-home-thought data-note-key="colb-reminder" class="pg-side-note"></div>' +
+      '</div>';
+  };
   window.injectColbLinks = function () {
+    var injected = false;
     document.querySelectorAll('.page.active .vault-sidebar, .page.active .pg-2col-side, .page.active .pg-side').forEach(function (col) {
-      if (col.querySelector(':scope > .colb-links')) return;   // already injected
-      var cluster = col.querySelector(':scope > .colb-nav');
-      if (cluster) cluster.insertAdjacentHTML('afterend', window.colbLinksHTML());
-      else col.insertAdjacentHTML('afterbegin', window.colbLinksHTML());
+      if (!col.querySelector(':scope > .colb-links')) {          // links not yet injected
+        var cluster = col.querySelector(':scope > .colb-nav');
+        if (cluster) cluster.insertAdjacentHTML('afterend', window.colbLinksHTML());
+        else col.insertAdjacentHTML('afterbegin', window.colbLinksHTML());
+      }
+      // Pepper thoughts only where the column has none of its own.
+      if (!col.querySelector('[data-random-note]') && !col.querySelector(':scope > .colb-thoughts')) {
+        col.insertAdjacentHTML('beforeend', window.colbThoughtsHTML());
+        injected = true;
+      }
     });
+    if (injected && typeof window.sprinkleNotes === 'function') { try { window.sprinkleNotes(); } catch (e) {} }
   };
 
   // ── COLUMN A INTRO CARD — an editable info card at the top of the main column on

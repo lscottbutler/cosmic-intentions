@@ -154,6 +154,8 @@ p, li, blockquote,
 }
 /* 11th tab spans 2 columns so row 2 fills the full width with no trailing gap. */
 #tabBar .top-tab:nth-child(11) { grid-column: span 2; }
+/* Top tab bar removed — navigation now lives in Column B (link list + ham menu). */
+#tabBar { display: none !important; }
 .top-tab {
   appearance: none;
   border: none;
