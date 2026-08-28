@@ -1,4 +1,4 @@
-import { buildContext, callClaude, currentUser, esc, getPB, goalLetter, GREY_SHADES, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
+import { buildContext, callClaude, currentUser, esc, getPB, goalLetter, GREY_SHADES, GOAL_COLORS, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
 import { setTaskWin } from './wins.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
@@ -20,7 +20,7 @@ export function buildCardHTML(intention, idx, color) {
     <!-- CARD HEADER -->
     <div class="card-header-v2" style="background:${color}" onclick="toggleCardV2(${idx})">
       <button class="card-play-btn" onclick="launchVisualization(${idx},3);event.stopPropagation()">▶</button>
-      <div class="card-num-circle">${goalLetter(intention, idx)}</div>
+      <div class="card-num-circle" style="background:${(GOAL_COLORS[idx % GOAL_COLORS.length]||{}).bg};color:${(GOAL_COLORS[idx % GOAL_COLORS.length]||{}).text};">${goalLetter(intention, idx)}</div>
       <div class="card-title-v2">${esc(intention.title)}</div>
       <div class="card-views">👁 ${views}</div>
       <span class="card-chevron-v2" id="chev-${idx}">▾</span>

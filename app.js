@@ -1481,6 +1481,14 @@ export const GREY_SHADES = [
   { bg: '#1C2126', text: '#FFFFFF' },
 ];
 
+/* Full-color spectrum for the goal LETTER CIRCLES only (cards stay grayscale). */
+export const GOAL_COLORS = [
+  { bg: '#E84040', text: '#fff' }, { bg: '#E86030', text: '#fff' }, { bg: '#E88020', text: '#fff' },
+  { bg: '#E8A828', text: '#1C2230' }, { bg: '#E8C830', text: '#1C2230' }, { bg: '#A8C830', text: '#1C2230' },
+  { bg: '#48B860', text: '#fff' }, { bg: '#38A888', text: '#fff' }, { bg: '#2898A8', text: '#fff' },
+  { bg: '#7888A8', text: '#fff' }, { bg: '#3878A8', text: '#fff' },
+];
+
 /* Darken a hex color by fraction f (0-1) — used for the goal-card circles so
    they read as a deeper shade of the card, not black. */
 export function darkenHex(hex, f) {
