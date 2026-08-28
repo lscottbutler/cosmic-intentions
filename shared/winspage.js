@@ -24,9 +24,9 @@ export function renderWinsPage() {
   const s      = winStats();
   const wins   = getWins();
 
-  const stat = (label, val) => `<div style="flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;">
-    <div style="font-size:22px;font-weight:800;color:var(--text);line-height:1;">${val}</div>
-    <div style="font-family:var(--vault-mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:5px;">${label}</div>
+  const stat = (label, val) => `<div style="flex:1;min-width:0;background:#6e6e6e;border:none;border-radius:10px;padding:14px 8px;text-align:center;">
+    <div style="font-size:22px;font-weight:800;color:#fff;line-height:1;">${val}</div>
+    <div style="font-family:var(--vault-mono);font-size:8px;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:0.5px;margin-top:5px;">${label}</div>
   </div>`;
   const bestDay = s.bestDay ? `${_label(s.bestDay)} · ${s.bestCount}` : '—';
   const stats = `<div style="display:flex;gap:8px;margin-bottom:18px;">
