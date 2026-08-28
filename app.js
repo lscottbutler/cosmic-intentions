@@ -3078,6 +3078,7 @@ export function renderVaultSidebar() {
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const circle   = darkenHex(shade.bg, 0.5);   // circles = a deeper shade of the card color, not black
+        const gc       = GOAL_COLORS[i._idx % GOAL_COLORS.length] || { bg: circle, text: '#fff' };   // colored letter circle
         const isSelected = selectedVaultIdx === i._idx;
         const isFav    = Array.isArray(_favs) && _favs.some(f => f && f.player === 'mindset' && f.goal === i._idx);
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
@@ -3086,7 +3087,7 @@ export function renderVaultSidebar() {
           onmousedown="event.preventDefault()"
           onclick="selectVaultIntention(${i._idx})"
           style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:${circle};color:#fff">${goalLetter(i, i._idx)}</div>
+          <div class="vault-item-num" style="background:${gc.bg};color:${gc.text}">${goalLetter(i, i._idx)}</div>
           <div class="vault-item-body">
             <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
           </div>
