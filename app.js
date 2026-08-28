@@ -3098,7 +3098,7 @@ export function renderVaultSidebar() {
           </div>
           <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
             title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
-            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:${circle};color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
+            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
         </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
