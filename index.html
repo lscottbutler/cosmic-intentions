@@ -249,7 +249,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var injected = false;
     var activePage = document.querySelector('.page.active');
     var pageId = activePage ? activePage.id.replace('page-', '') : '';
-    var tabColor = window.colbTabColor(pageId);
     document.querySelectorAll('.page.active .vault-sidebar, .page.active .pg-2col-side, .page.active .pg-side').forEach(function (col) {
       if (!col.querySelector(':scope > .colb-links')) {          // links not yet injected
         var cluster = col.querySelector(':scope > .colb-nav');
@@ -261,8 +260,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         if (cl) cl.insertAdjacentHTML('afterend', window.colbTabsHTML(pageId));
         else col.insertAdjacentHTML('afterbegin', window.colbTabsHTML(pageId));
       }
-      // Column B background = the current page's tab colour (blank pages keep default).
-      if (tabColor) { col.style.background = tabColor; col.classList.add('colb-tinted'); }
+      // Column B background = dark grey; the tabs/links carry the colour, each boxed.
+      col.style.background = '#343A40'; col.classList.add('colb-tinted');
       // Pepper thoughts only where the column has none of its own.
       if (!col.querySelector('[data-random-note]') && !col.querySelector(':scope > .colb-thoughts')) {
         col.insertAdjacentHTML('beforeend', window.colbThoughtsHTML());

@@ -161,7 +161,7 @@ p, li, blockquote,
    Alphabetical, colored inline with the goal-card spectrum. */
 .colb-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0 6px; }
 .colb-tab {
-  appearance: none; border: none; border-radius: 8px; padding: 9px 8px;
+  appearance: none; box-sizing: border-box; border: 1px solid #8b9099; border-radius: 8px; padding: 9px 8px;
   font-family: 'Roboto Condensed', system-ui, sans-serif; font-size: 11px;
   font-weight: 800; letter-spacing: .3px; line-height: 1.1; cursor: pointer;
   text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -298,10 +298,10 @@ p, li, blockquote,
 .colb-links { margin: 0 0 14px; }
 .colb-links-hd { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; background: #e0102b; border-radius: 6px; margin: 16px 0 8px; padding: 7px 12px; }
 .colb-links .colb-links-hd:first-child { margin-top: 0; }
-.colb-link { display: block; width: 100%; text-align: left; background: #fff; color: #111; border: 1px solid rgba(0,0,0,.14); border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
+.colb-link { display: block; width: 100%; box-sizing: border-box; text-align: left; background: #fff; color: #111; border: 1px solid #8b9099; border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
 .colb-link:hover { background: #f0f0f0; }
-.colb-link--play { background: #0F9AA0; color: #fff; border-color: transparent; }
-.colb-link--ext  { background: #6A4FB0; color: #fff; border-color: transparent; }
+.colb-link--play { background: #0F9AA0; color: #fff; }
+.colb-link--ext  { background: #6A4FB0; color: #fff; }
 
 /* ── COLUMN A INTRO CARD ───────────── */
 .page-intro-card { border: 1px solid #9fd0ff; border-radius: 14px; background: #fff; padding: 20px 22px; margin: 0 0 16px; }
