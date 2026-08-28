@@ -156,6 +156,19 @@ p, li, blockquote,
 #tabBar .top-tab:nth-child(11) { grid-column: span 2; }
 /* Top tab bar removed — navigation now lives in Column B (link list + ham menu). */
 #tabBar { display: none !important; }
+
+/* Column B quick tabs — the old top tabs, re-homed under the nav circles.
+   Alphabetical, colored inline with the goal-card spectrum. */
+.colb-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0 6px; }
+.colb-tab {
+  appearance: none; border: none; border-radius: 8px; padding: 9px 8px;
+  font-family: 'Roboto Condensed', system-ui, sans-serif; font-size: 11px;
+  font-weight: 800; letter-spacing: .3px; line-height: 1.1; cursor: pointer;
+  text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: filter .15s, transform .1s;
+}
+.colb-tab:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.colb-tab:active { transform: translateY(0); }
 .top-tab {
   appearance: none;
   border: none;
