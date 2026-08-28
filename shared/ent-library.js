@@ -172,7 +172,7 @@ export function renderEntLibrary() {
   const has = entCardHasContent(c);
 
   const monitor = `
-    <div style="background:#8FA977;padding:22px 20px 14px;">
+    <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
         <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">${_esc(ENT_CARD_TYPE)}</div>
         <div style="background:#fff;position:relative;min-height:120px;display:flex;align-items:center;justify-content:center;line-height:0;">
