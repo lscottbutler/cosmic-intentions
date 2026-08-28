@@ -169,6 +169,19 @@ p, li, blockquote,
 }
 .colb-tab:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .colb-tab:active { transform: translateY(0); }
+
+/* "The Successful Entrepreneur" overview, re-homed on the Cosmic Library page
+   as a collapsible dropdown (dark card matching the Entrepreneur Library look). */
+.ent-overview-dd { margin: 0 0 22px; border-radius: 10px; overflow: hidden; background: #1c1c1c; }
+.ent-overview-dd__sum {
+  list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; font-family: var(--vault-mono, monospace); font-weight: 800;
+  letter-spacing: 2px; font-size: 13px; color: #D9B94A; background: #1c1c1c;
+}
+.ent-overview-dd__sum::-webkit-details-marker { display: none; }
+.ent-overview-dd__chev { color: #8FA977; font-size: 15px; transition: transform .2s; }
+.ent-overview-dd[open] .ent-overview-dd__chev { transform: rotate(180deg); }
+.ent-overview-dd__body { padding: 0 22px 22px; color: #fff; }
 .top-tab {
   appearance: none;
   border: none;

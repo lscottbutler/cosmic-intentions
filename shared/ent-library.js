@@ -144,6 +144,24 @@ const FIFTY_THINGS = [
    stays in sync and reuses entCardImg() (which handles the file-naming quirks).
    Also renders the "50 Things People Want Most" grid (placeholder art reuses ENT images). */
 export function renderCosmicLibrary() {
+  // "The Successful Entrepreneur" overview (from the Entrepreneur Library card)
+  // re-homed here as a collapsible dropdown, above the Entrepreneur grid.
+  const dd = document.getElementById('entOverviewDropdown');
+  if (dd) {
+    const link = ([label, key]) => `<span onclick="entGoToCard('${key}')" style="cursor:pointer;">${label}</span>`;
+    const forces = _ENT_FORCES.map(([name, desc, skills]) => `<div>
+      <div style="color:#8FA977;font-weight:800;letter-spacing:1px;font-size:15px;margin-bottom:3px;">${name}</div>
+      <div style="font-size:14px;line-height:1.5;opacity:.85;margin-bottom:6px;">${desc}</div>
+      <div style="font-size:12px;line-height:1.7;color:#b9cfa8;">${skills.map(link).join(' &middot; ')}</div>
+    </div>`).join('');
+    dd.innerHTML = `<details class="ent-overview-dd">
+      <summary class="ent-overview-dd__sum">THE SUCCESSFUL ENTREPRENEUR<span class="ent-overview-dd__chev">&#9662;</span></summary>
+      <div class="ent-overview-dd__body">
+        <p style="margin:0 0 16px;font-size:16px;line-height:1.55;">A successful entrepreneur isn't one trait &mdash; it's a stack of them. These 31 identity skills resolve into four forces. Master the balance and the business follows.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 26px;">${forces}${_entResourcesBox(null)}</div>
+      </div>
+    </details>`;
+  }
   const host = document.getElementById('cosmicLibraryGrid');
   if (host) {
     host.innerHTML = ENT_CARDS.map(c => `
