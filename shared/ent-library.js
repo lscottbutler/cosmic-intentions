@@ -12,6 +12,12 @@ const _open = { ab: false, rm: false };   // which content panels are expanded
 
 const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const _pad2 = n => String(n).padStart(2, '0');
+/* First sentence of a directive — the one-line "why this is crucial". Em dashes
+   and semicolons don't end a sentence; only . ! ? followed by a space or the end. */
+function _firstSentence(s) {
+  const m = String(s || '').match(/^.*?[.!?](?=\s|$)/);
+  return m ? m[0] : String(s || '');
+}
 /* Split "I AM SELF-CONFIDENT" onto two lines after the leading verb phrase. */
 function _affLines(title) {
   const t = _esc(title);
@@ -162,12 +168,30 @@ export function renderCosmicLibrary() {
       </div>
     </details>`;
   }
+  // Entrepreneur Library — the 31 cards grouped under their four forces, each
+  // card followed by a one-sentence "why this is crucial" (the card's directive).
   const host = document.getElementById('cosmicLibraryGrid');
   if (host) {
-    host.innerHTML = ENT_CARDS.map(c => `
-      <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(c.key)}')" title="${_esc(c.title || c.key)}" aria-label="${_esc(c.title || c.key)}">
-        <img src="${entCardImg(c.key)}" alt="${_esc(c.title || c.key)}" loading="lazy" onerror="this.closest('.cl-card').style.display='none'">
-      </button>`).join('');
+    host.className = 'ent-force-groups';
+    const byKey = k => ENT_CARDS.find(c => c.key === k);
+    host.innerHTML = _ENT_FORCES.map(([name, desc, skills]) => {
+      const cards = skills.map(([label, key]) => {
+        const c = byKey(key);
+        if (!c) return '';
+        const why = c.directive ? _firstSentence(c.directive) : '';
+        return `<div class="ent-force-card">
+          <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(key)}')" title="${_esc(c.title || key)}" aria-label="${_esc(c.title || key)}">
+            <img src="${entCardImg(key)}" alt="${_esc(c.title || key)}" loading="lazy" onerror="this.closest('.ent-force-card').style.display='none'">
+          </button>
+          <div class="ent-force-why">${_esc(why)}</div>
+        </div>`;
+      }).join('');
+      return `<section class="ent-force-sec">
+        <h4 class="ent-force-sec__head">${_esc(name)}</h4>
+        <p class="ent-force-sec__desc">${_esc(desc)}</p>
+        <div class="ent-force-sec__grid">${cards}</div>
+      </section>`;
+    }).join('');
   }
   const fifty = document.getElementById('fiftyThingsGrid');
   if (fifty) {

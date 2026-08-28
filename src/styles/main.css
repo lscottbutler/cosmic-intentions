@@ -616,6 +616,17 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-card-cap { line-height:1.25; font-size:12px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; color:#26364b; padding:9px 8px 11px; text-align:center; }
 @media (max-width:560px){ #page-cosmiclibrary .cl-imggrid { grid-template-columns:repeat(2,1fr); } }
 
+/* Entrepreneur Library grouped by force — section heading, its cards, and a
+   one-sentence "why this is crucial" under each card. */
+#page-cosmiclibrary .ent-force-groups { display:block; }
+#page-cosmiclibrary .ent-force-sec { margin:0 0 30px; }
+#page-cosmiclibrary .ent-force-sec__head { font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; margin:0 0 2px; }
+#page-cosmiclibrary .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:0 0 14px; max-width:640px; }
+#page-cosmiclibrary .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px 14px; }
+#page-cosmiclibrary .ent-force-card { display:flex; flex-direction:column; }
+#page-cosmiclibrary .ent-force-why { font-size:12.5px; line-height:1.45; color:#555; margin-top:8px; }
+@media (max-width:560px){ #page-cosmiclibrary .ent-force-sec__grid { grid-template-columns:repeat(2,1fr); } }
+
 /* ── Reusable FULL-BLEED PAGE FRAME (from the Wins design) ──
    Colors come from CSS vars so each page sets its own palette. Fills top→bottom
    (pulls up over the transparent 38px topnav so the hamburger floats on the
