@@ -3079,7 +3079,7 @@ export function renderVaultSidebar() {
       // saved = filled red (#e0102b). Same classic heart path in both states.
       const _HEART_PATH = `M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z`;
       const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
-      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#e0102b" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+      const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#fff" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const circle   = darkenHex(shade.bg, 0.5);   // circles = a deeper shade of the card color, not black
