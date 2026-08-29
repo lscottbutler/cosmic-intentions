@@ -155,6 +155,7 @@ function _aiErrMsg(e) {
 
 // Which goal dropdowns are expanded in the wrap-up (survives re-renders).
 const _openGoals = new Set();
+let _didDefaultOpen = false;   // launch the Action Plan with the first goal already expanded
 export function wrapupGoalToggle(idx, open) { if (open) _openGoals.add(idx); else _openGoals.delete(idx); }
 
 // Whether the "MY TASK LIST" (everything-at-once) panel is expanded (survives re-renders).
@@ -555,6 +556,10 @@ function _todayChecklist() {
     .map((it, idx) => ({ it, idx }))
     .filter(o => o.it && (o.it.title || '').trim());
   if (!items.length) return null;
+  // Launch with the first goal's My Actions tab already expanded (default tab is
+  // 'my'), so the user immediately sees something actionable — not a wall of
+  // identical collapsed bars. Only forced once; user toggles are respected after.
+  if (!_didDefaultOpen && items[0]) { _openGoals.add(items[0].idx); _didDefaultOpen = true; }
   let total = 0, done = 0, rows = '', fullRows = '';
   let allTaskCards = '';   // MY TASK LIST: every proven action across all goals, flattened into one list
   items.forEach(({ it, idx }) => {
