@@ -3563,6 +3563,7 @@ function showVaultBuildSheet(idx) {
   // Populate workspace: header + the single 10-step AI roadmap view
   const hdr = document.getElementById('vaultWorkspaceHeader');
   if (hdr) hdr.innerHTML = buildWorkspaceHeader(intent, idx);
+  if (typeof window.injectContentBlocks === 'function') window.injectContentBlocks();   // fill the admin-editable goal-viz-note block
   loadGoalVisualization(intent);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
@@ -3718,6 +3719,8 @@ function buildWorkspaceHeader(intent, idx) {
         <button onclick="fetchGoalDissolve(${idx})" title="Slow dissolve of 5 images" style="position:absolute;top:8px;right:48px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center;">5&#10022;</button>
         <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
+      <!-- Admin-editable note (slug: goal-viz-note) — hidden until you add text on the Admin page. -->
+      <div data-block="goal-viz-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:10px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:14px 16px;margin:0 4px 8px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
         <div style="flex:1;background:${shade.bg};color:${shade.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>

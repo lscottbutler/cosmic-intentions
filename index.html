@@ -2299,6 +2299,22 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
 
+      <!-- Block: goal-viz-note — editable note above each goal's visualization workspace -->
+      <div class="admin-block" id="adminBlock-goal-viz-note">
+        <div class="admin-block-hd">🟡 GOAL VISUALIZATION · note above the goal title (hidden until you add text) <span class="admin-block-slug">goal-viz-note</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('goal-viz-note','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('goal-viz-note','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('goal-viz-note')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('goal-viz-note','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-goal-viz-note" contenteditable="true" data-slug="goal-viz-note"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-goal-viz-note" onclick="saveContentBlock('goal-viz-note')">Save</button>
+          <span class="admin-save-status" id="admin-status-goal-viz-note"></span>
+        </div>
+      </div>
+
       <!-- Block: dashboard-inspiration — champion photo + story -->
       <div class="admin-block" id="adminBlock-dashboard-inspiration">
         <div class="admin-block-hd">🏆 DASHBOARD · Inspiration — champion photo + story <span class="admin-block-slug">dashboard-inspiration</span></div>
