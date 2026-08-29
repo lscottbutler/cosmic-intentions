@@ -1512,9 +1512,13 @@ export function renderDashboard() {
   const helloEl = document.getElementById('dashHello');
   if (helloEl) helloEl.innerHTML = `Welcome back, ${esc(name)} ✦<br><span>Your effort today is a testament to your dedication, your discipline, your drive.</span>`;
 
-  // Script-font greeting at the top of the member dashboard (one line)
+  // "Welcome back" greeting removed; move the page title ("The Inner Citadel")
+  // down into its spot at the top of Column A instead.
   const greetEl = document.getElementById('dashGreeting');
-  if (greetEl) greetEl.textContent = `Welcome back ${name}`;
+  if (greetEl) greetEl.style.display = 'none';
+  const _dashHdr  = document.querySelector('#page-dashboard .pg-hdr');
+  const _dashMain = document.getElementById('vaultMain');
+  if (_dashHdr && _dashMain && _dashHdr.parentElement !== _dashMain) _dashMain.insertBefore(_dashHdr, _dashMain.firstChild);
 
   // Only render Level 1 cards (tabs are now inside each card)
   const container = document.getElementById('intentionCards');
