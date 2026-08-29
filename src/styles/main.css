@@ -667,6 +667,9 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-gratitude   .pg-frame { --pf-frame:#fff; --pf-bezel:#fff; --pf-bezelDk:#fff; padding:0; }
 .pg-bezel { padding:0; border-radius:0; }
 .pg-hdr   { color:#1E90FF; margin:0 0 8px; box-shadow:none; }
+/* Dashboard: left-align "THE INNER CITADEL" so it stacks above the greeting
+   (32px matches the greeting's text-left inside vault-main). */
+#page-dashboard .pg-hdr { text-align:left; padding-left:32px; }
 #page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#fff; padding:0; }
 #page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#fff; padding:0; }
 #page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; color:#1E90FF; margin:0 0 8px; }
@@ -747,7 +750,7 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
   color: var(--text);
   padding: 12px 14px 2px;
   flex-shrink: 0;   /* vault-main is a flex column; without this the greeting collapses to a sliver on desktop */
-  text-align: center;
+  text-align: left;
   text-transform: none;
 }
 .dash-greeting:empty { display: none; }
