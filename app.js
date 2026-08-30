@@ -2268,12 +2268,48 @@ export function renderVizLibrary() {
   }
   el.innerHTML = intentions.map((it, idx) => {
     const s = GREY_SHADES[idx % GREY_SHADES.length];
-    return `<button onclick="openVizGoal(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
+    return `<button onclick="vizLibToggle(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
       <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;${_goalCircleStyle(idx)};display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(it, idx)}</span>
       <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(it.title || '')}</span>
-      <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
-    </button>`;
+      <span id="vizLibCaret-${idx}" style="flex-shrink:0;font-size:20px;opacity:.9;transition:transform .15s;">›</span>
+    </button>
+    <div id="vizLibPanel-${idx}" class="viz-lib-panel" style="display:none;"></div>`;
   }).join('');
+}
+
+/* The goal's visualization launchers, shown INLINE just below its card on the
+   Visualization Library (accordion) — no page change. Image + quick-viz timers
+   (launchCountdown opens the same full-screen countdown overlay from anywhere). */
+function buildVizInline(idx, it) {
+  const hasImg = it.imageUrl && !String(it.imageUrl).startsWith('data:');
+  const img = hasImg ? `<img src="${esc(it.imageUrl)}" alt="${esc(it.title || '')}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;display:block;margin:0 0 10px;">` : '';
+  const timers = [['15s', 15], ['30s', 30], ['60s', 60], ['2m', 120], ['3m', 180], ['5m', 300], ['10m', 600], ['15m', 900]]
+    .map(([lbl, secs]) => `<button onclick="launchCountdown(${idx},${secs})" title="${lbl} visualization" style="aspect-ratio:1;min-width:0;border-radius:50%;background:#fff;border:3px solid #F2911E;color:#1D3557;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">${lbl}</button>`).join('');
+  return `<div style="padding:10px 6px 14px;">
+    ${img}
+    <div style="display:flex;gap:10px;align-items:stretch;background:#1AA5BA;border:3px solid #F2911E;border-radius:12px;padding:12px;">
+      <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">${timers}</div>
+      <button onclick="openVizGoal(${idx})" title="Open the full visualization page" style="flex-shrink:0;width:54px;background:#7C5CC4;border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#8599;</button>
+    </div>
+  </div>`;
+}
+
+/* Accordion toggle for the Visualization Library — opens the goal's launchers in
+   a panel right below its card; a second tap (or opening another) collapses it. */
+export function vizLibToggle(idx) {
+  const panel = document.getElementById(`vizLibPanel-${idx}`);
+  if (!panel) return;
+  const wasOpen = panel.style.display === 'block';
+  document.querySelectorAll('.viz-lib-panel').forEach(p => { p.style.display = 'none'; p.innerHTML = ''; });
+  document.querySelectorAll('[id^="vizLibCaret-"]').forEach(c => { c.style.transform = ''; });
+  if (wasOpen) return;
+  const it = intentions[idx] ? (intentions[idx] = hydrateIntent(intentions[idx])) : null;
+  if (!it) return;
+  panel.innerHTML = buildVizInline(idx, it);
+  panel.style.display = 'block';
+  const caret = document.getElementById(`vizLibCaret-${idx}`);
+  if (caret) caret.style.transform = 'rotate(90deg)';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /* ── GOAL → ENTREPRENEUR-SKILL MATCHING ──────────────────────────────────────
