@@ -693,6 +693,15 @@ details.rm-drop[open]::details-content { height: auto; }
 /* All page titles: left-aligned, doubled (30px), Dodger-blue, moved down so the
    title sits 15px above the intro-card (blue) line. */
 .pg-hdr   { color:#1E90FF; margin:55px 0 15px; box-shadow:none; text-align:left; font-size:30px; padding:0 8px 0 32px; }
+/* Title ⓘ info button + "what is this page" popover. Circle takes the title's
+   colour (currentColor); the "i" is white. */
+.title-info-btn { width: 24px; height: 24px; border-radius: 50%; background: currentColor; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-left: 12px; padding: 0; position: relative; top: -4px; flex-shrink: 0; }
+.title-info-btn::before { content: 'i'; color: #fff; font: italic 700 15px Georgia, 'Times New Roman', serif; line-height: 1; }
+.title-info-btn:hover { filter: brightness(1.1); }
+.title-info-pop { background: #fff; border: 1px solid #cfd8e3; border-radius: 12px; box-shadow: 0 12px 34px rgba(20,40,80,.16); padding: 16px 20px; margin: 0 0 16px; max-width: 660px; color: #333; font-size: 14px; line-height: 1.7; text-transform: none; letter-spacing: normal; }
+.title-info-pop .ti-cols { display: flex; gap: 24px; flex-wrap: wrap; }
+.title-info-pop .ti-cols ul { flex: 1; min-width: 220px; margin: 0; padding-left: 20px; line-height: 1.9; }
+
 /* Each page's title matches its Column B tab colour (COLB_TABS), site-wide. */
 #page-dashboard    .pg-hdr  { color: #E8C830; }  /* Inner Citadel */
 #page-runthroughs  .pg-hdr  { color: #E86030; }  /* Daily Habits */

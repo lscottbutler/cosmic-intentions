@@ -397,6 +397,7 @@ export function showPage(id) {
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
   // Intro card at the top of Column A on selected pages.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
+  if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders

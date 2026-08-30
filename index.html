@@ -292,6 +292,39 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     if (greeting) greeting.insertAdjacentHTML('afterend', window.PAGE_INTRO_CARD);
     else main.insertAdjacentHTML('afterbegin', window.PAGE_INTRO_CARD);
   };
+
+  // ── TITLE INFO (ⓘ) — a small "i" next to the page title that opens a
+  // "what am I looking at" popover. Per-page help HTML lives in PAGE_HELP.
+  window.PAGE_HELP = {
+    myroadmap:
+      '<div class="ti-cols">' +
+        '<ul><li>Ten concrete steps, built for your exact goal</li><li>Break any step into sharper sub-steps</li><li>Learn from people who&rsquo;ve done it &mdash; real videos &amp; sources</li><li>Progress tracked as you check things off</li><li>The plan deepens as far as you want to go</li></ul>' +
+        '<ul><li>One clear next action, every day</li><li>Add your own tasks whenever you like</li><li>Reorder them to match your real life</li><li>Nothing vague &mdash; only what to do next</li><li>Come back daily; momentum compounds</li></ul>' +
+      '</div>'
+  };
+  window.injectTitleInfo = function () {
+    var active = document.querySelector('.page.active'); if (!active) return;
+    var id = active.id.replace('page-', '');
+    var hdr = active.querySelector('.pg-hdr, .wins-hdr'); if (!hdr) return;
+    if (hdr.querySelector('.title-info-btn')) return;   // already added
+    var help = window.PAGE_HELP[id]; if (!help) return;
+    var btn = document.createElement('button');
+    btn.className = 'title-info-btn'; btn.type = 'button';
+    btn.setAttribute('aria-label', 'What is this page?');
+    hdr.appendChild(btn);
+    var pop = document.createElement('div');
+    pop.className = 'title-info-pop'; pop.style.display = 'none';
+    pop.innerHTML = help;
+    hdr.insertAdjacentElement('afterend', pop);
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      pop.style.display = (pop.style.display === 'none') ? 'block' : 'none';
+    });
+  };
+  // Click anywhere else closes any open info popover.
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.title-info-pop').forEach(function (p) { p.style.display = 'none'; });
+  });
 </script>
 
 <!-- DRAWER REMOVED — nav lives in home-col-right grid -->
@@ -1597,29 +1630,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-screen">
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <button onclick="shareRoadmap()" title="Copy a read-only link to this roadmap" style="display:inline-flex;align-items:center;gap:8px;background:#7888A8;color:#fff;border:none;cursor:pointer;font-weight:800;font-size:12px;letter-spacing:.5px;padding:9px 16px;border-radius:8px;margin:0 0 14px;">&#128279; SHARE THIS ROADMAP (READ-ONLY LINK)</button>
-            <details style="margin:0 0 14px;">
-              <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#2b6cb0;">How your roadmap works</summary>
-              <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:10px;">
-                <div style="flex:1;min-width:240px;">
-                  <ul style="margin:0;padding-left:20px;color:#333;font-size:14px;line-height:1.9;">
-                    <li>Ten concrete steps, built for your exact goal</li>
-                    <li>Break any step into sharper sub-steps</li>
-                    <li>Learn from people who've done it — real videos &amp; sources</li>
-                    <li>Progress tracked as you check things off</li>
-                    <li>The plan deepens as far as you want to go</li>
-                  </ul>
-                </div>
-                <div style="flex:1;min-width:240px;">
-                  <ul style="margin:0;padding-left:20px;color:#333;font-size:14px;line-height:1.9;">
-                    <li>One clear next action, every day</li>
-                    <li>Add your own tasks whenever you like</li>
-                    <li>Reorder them to match your real life</li>
-                    <li>Nothing vague — only what to do next</li>
-                    <li>Come back daily; momentum compounds</li>
-                  </ul>
-                </div>
-              </div>
-            </details>
+            <!-- "How your roadmap works" moved into the ⓘ info popover next to the title. -->
             <!-- ACTION PLAN — wrapup.js renders into this container; moved INSIDE the monitor screen.
                  No side margin, so the box + cards line up exactly with the intro paragraph above
                  (both sit inside the mon-screen's 16px side padding). -->
