@@ -160,6 +160,7 @@ p, li, blockquote,
 /* Column B quick tabs — the old top tabs, re-homed under the nav circles.
    Alphabetical, colored inline with the goal-card spectrum. */
 .colb-tabs { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 10px 0 6px; }
+.colb-tab, .colb-link { text-transform: uppercase; }
 .colb-tab {
   appearance: none; box-sizing: border-box; border: 1px solid #8b9099; border-radius: 8px; padding: 9px 8px;
   font-family: 'Roboto Condensed', system-ui, sans-serif; font-size: 11px;
