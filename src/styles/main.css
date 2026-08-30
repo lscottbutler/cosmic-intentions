@@ -730,6 +730,7 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 /* Alternating black / grey down the visual (alphabetical) list; Task List black.
    nth-of-type is SOURCE order, so these map to visual slots via their `order`:
    black = visual slots 1,3,5,7,9  →  Creative Viz(5), Meditation(7), My Daily Habits(4), My Roadmap(6), Practice Gratitude(8). */
+#citadelNav { padding: 0 15px; box-sizing: border-box; }   /* indent the nav buttons 15px, matching the goal cards */
 #citadelNav > button { background: #6e6e6e !important; }   /* default grey (even slots) */
 #citadelNav > button:nth-of-type(4),
 #citadelNav > button:nth-of-type(5),
