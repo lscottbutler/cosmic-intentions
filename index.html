@@ -249,7 +249,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var injected = false;
     var activePage = document.querySelector('.page.active');
     var pageId = activePage ? activePage.id.replace('page-', '') : '';
-    document.querySelectorAll('.page.active .vault-sidebar, .page.active .pg-2col-side, .page.active .pg-side').forEach(function (col) {
+    document.querySelectorAll('.page.active .vault-sidebar, .page.active .pg-2col-side, .page.active .pg-side, .page.active .viz-side').forEach(function (col) {
       if (!col.querySelector(':scope > .colb-links')) {          // links not yet injected
         var cluster = col.querySelector(':scope > .colb-nav');
         if (cluster) cluster.insertAdjacentHTML('afterend', window.colbLinksHTML());
@@ -1543,7 +1543,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               <p class="pg-intro">Pick a goal to visualize, review, meditate or give thanks.</p>
               <div id="vizLibList"></div>
             </div>
-            <aside class="viz-side"><img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div id="vizSideStats"></div></aside>
+            <aside class="viz-side">
+              <div class="colb-nav">
+                <button class="colb-nav-btn" onclick="tabStep(-1)" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+                <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
+                <button class="colb-nav-btn" onclick="tabStep(1)" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
+              </div>
+              <img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div id="vizSideStats"></div></aside>
           </div>
         </div>
       </div>
