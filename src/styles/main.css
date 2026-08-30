@@ -693,8 +693,18 @@ details.rm-drop[open]::details-content { height: auto; }
 /* All page titles: left-aligned, doubled (30px), Dodger-blue, moved down so the
    title sits 15px above the intro-card (blue) line. */
 .pg-hdr   { color:#1E90FF; margin:55px 0 15px; box-shadow:none; text-align:left; font-size:30px; padding:0 8px 0 32px; }
-/* Visualization Library title matches its Column B tab colour. */
-#page-vizlibrary .pg-hdr { color: #3878A8; }
+/* Each page's title matches its Column B tab colour (COLB_TABS), site-wide. */
+#page-dashboard    .pg-hdr  { color: #E8C830; }  /* Inner Citadel */
+#page-runthroughs  .pg-hdr  { color: #E86030; }  /* Daily Habits */
+#page-dailyfocus   .pg-hdr  { color: #E88020; }  /* Favorites Autoplay */
+#page-gratitude    .pg-hdr  { color: #E8A828; }  /* Gratitude */
+#page-meditation   .pg-hdr  { color: #A8C830; }  /* Meditation */
+#page-mynotes      .pg-hdr  { color: #48B860; }  /* Notes */
+#page-notes        .pg-hdr  { color: #38A888; }  /* Thoughts */
+#page-myroadmap    .pg-hdr  { color: #7888A8; }  /* Roadmap */
+#page-vizlibrary   .pg-hdr  { color: #3878A8; }  /* Viz Library */
+#page-wins         .wins-hdr { color: #2898A8; } /* Wins */
+#page-cosmiclibrary .wins-hdr { color: #E84040; } /* Cosmic Library */
 /* Kill the per-page subtitle lines and the stray lone back button on every page —
    the Column B nav circles handle "back"; the title sits right above its content. */
 .pg-intro, .wins-intro { display: none !important; }
@@ -706,7 +716,7 @@ button[aria-label="Forward"]:not(.colb-nav-btn) { display: none !important; }
 #page-dashboard .vault-sidebar > .colb-nav { margin-top:112px; }
 #page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#fff; padding:0; }
 #page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#fff; padding:0; }
-#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; color:#1E90FF; margin:30px 0 8px; text-align:left; font-size:30px; padding-left:32px; }
+#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; margin:30px 0 8px; text-align:left; font-size:30px; padding-left:32px; }
 
 /* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
    75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
