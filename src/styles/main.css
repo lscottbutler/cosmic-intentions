@@ -690,7 +690,9 @@ details.rm-drop[open]::details-content { height: auto; }
 /* Kill the per-page subtitle lines and the stray lone back button on every page —
    the Column B nav circles handle "back"; the title sits right above its content. */
 .pg-intro, .wins-intro { display: none !important; }
-button[aria-label="Back"]:not(.colb-nav-btn) { display: none !important; }
+button[aria-label="Back"]:not(.colb-nav-btn),
+button[aria-label="Next"]:not(.colb-nav-btn),
+button[aria-label="Forward"]:not(.colb-nav-btn) { display: none !important; }
 /* Dashboard Column B starts below the title line (aligned with the intro card):
    push the nav-circle cluster down and everything below it follows. */
 #page-dashboard .vault-sidebar > .colb-nav { margin-top:112px; }
