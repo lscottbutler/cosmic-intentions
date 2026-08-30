@@ -312,9 +312,14 @@ p, li, blockquote,
 .colb-links-hd { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; background: #e0102b; border-radius: 6px; margin: 16px 0 8px; padding: 7px 12px; }
 .colb-links .colb-links-hd:first-child { margin-top: 0; }
 .colb-link { display: block; width: 100%; box-sizing: border-box; text-align: left; background: #fff; color: #111; border: 1px solid #8b9099; border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
-.colb-link:hover { background: #f0f0f0; }
-.colb-link--play { background: #0F9AA0; color: #fff; }
-.colb-link--ext  { background: #6A4FB0; color: #fff; }
+/* White link tabs → the saved two-grey combo (from the autoplay rows):
+   alternating dark #1c1c1c / lighter #566270, white text. Accent links (play/ext) keep their colour. */
+.colb-link:not(.colb-link--play):not(.colb-link--ext) { color: #fff; border-color: transparent; }
+.colb-link:not(.colb-link--play):not(.colb-link--ext):nth-of-type(odd)  { background: #1c1c1c; }
+.colb-link:not(.colb-link--play):not(.colb-link--ext):nth-of-type(even) { background: #566270; }
+.colb-link:not(.colb-link--play):not(.colb-link--ext):hover { filter: brightness(1.12); }
+.colb-link--play { background: #0F9AA0; color: #fff; border-color: transparent; }
+.colb-link--ext  { background: #6A4FB0; color: #fff; border-color: transparent; }
 
 /* ── COLUMN A INTRO CARD ───────────── */
 .page-intro-card { border: 1px solid #9fd0ff; border-radius: 14px; background: #fff; padding: 20px 22px; margin: 0 0 16px; }
