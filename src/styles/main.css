@@ -309,7 +309,7 @@ p, li, blockquote,
 
 /* ── COLUMN B MASTER LINK LIST ───────────── */
 .colb-links { margin: 0 0 14px; }
-.colb-links-hd { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; background: #e0102b; border-radius: 6px; margin: 16px 0 8px; padding: 7px 12px; }
+.colb-links-hd { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; background: #1D3557; border-radius: 6px; margin: 16px 0 8px; padding: 7px 12px; }
 .colb-links .colb-links-hd:first-child { margin-top: 0; }
 .colb-link { display: block; width: 100%; box-sizing: border-box; text-align: left; background: #fff; color: #111; border: 1px solid #8b9099; border-radius: 6px; padding: 8px 12px; margin-bottom: 5px; cursor: pointer; font: 700 13px 'Roboto Condensed', system-ui, sans-serif; letter-spacing: .3px; }
 /* White link tabs → the saved two-grey combo (from the autoplay rows):
