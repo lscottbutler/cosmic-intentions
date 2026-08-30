@@ -283,15 +283,15 @@ p, li, blockquote,
 .ham-menu .ham-theme { justify-content: center; padding: 4px 0 2px; }
 
 /* ── COLUMN B NAV CLUSTER (back / menu / forward) ───────────── */
-.colb-nav { display: flex; justify-content: center; gap: 14px; margin: 0 0 14px; }
-/* Each nav button gets its own green ring, larger than the button, sitting BEHIND
-   it so adjacent rings overlap/interlock in the gaps. */
+.colb-nav { display: flex; justify-content: center; gap: 14px; margin: 0 0 14px; position: relative; isolation: isolate; }
+/* Each nav button gets its own solid green circle, sitting BEHIND the button face
+   so adjacent circles overlap/interlock in the gaps. */
 .colb-nav-btn { position: relative; }
 .colb-nav-btn::before {
   content: ''; position: absolute; top: 50%; left: 50%;
-  width: 90px; height: 90px; transform: translate(-50%, -50%);
-  border: 3px solid #8CC63F; border-radius: 50%;
-  pointer-events: none;
+  width: 74px; height: 74px; transform: translate(-50%, -50%);
+  background: #8CC63F; border-radius: 50%;
+  z-index: -1; pointer-events: none;
 }
 .colb-nav-btn {
   width: 46px; height: 46px; border-radius: 50%;
