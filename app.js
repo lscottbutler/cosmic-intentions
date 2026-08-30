@@ -327,6 +327,8 @@ function ensurePageSideColumn(pageId) {
       layout.appendChild(main);
       layout.appendChild(side);
       screen.appendChild(layout);
+      // Any element tagged data-side-column moves from Column A into Column B.
+      main.querySelectorAll('[data-side-column]').forEach(function (el) { side.appendChild(el); });
     }
     const statsEl = side && side.querySelector('.pg-side-stats');
     if (statsEl && typeof vizSideStatsHTML === 'function') statsEl.innerHTML = vizSideStatsHTML();
