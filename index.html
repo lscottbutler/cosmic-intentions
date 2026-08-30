@@ -1243,6 +1243,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
 
+        <!-- Admin-editable note (slug: my-goals-note) — shows above goal A when My Goals is open; hidden until you add text on the Admin page. -->
+        <div data-block="my-goals-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.07);padding:16px 20px;margin:0 15px 14px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
+
         <!-- INTENTION LIST — goal cards -->
         <div class="vault-list" id="vaultList"></div>
 
@@ -2252,6 +2255,22 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="admin-block-foot">
           <button class="admin-save-btn" id="admin-save-dashboard-note-2" onclick="saveContentBlock('dashboard-note-2')">Save</button>
           <span class="admin-save-status" id="admin-status-dashboard-note-2"></span>
+        </div>
+      </div>
+
+      <!-- Block: my-goals-note — editable note above the goal list (My Goals) -->
+      <div class="admin-block" id="adminBlock-my-goals-note">
+        <div class="admin-block-hd">🟡 MY GOALS · note above goal A (hidden until you add text) <span class="admin-block-slug">my-goals-note</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('my-goals-note','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('my-goals-note','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('my-goals-note')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('my-goals-note','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-my-goals-note" contenteditable="true" data-slug="my-goals-note"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-my-goals-note" onclick="saveContentBlock('my-goals-note')">Save</button>
+          <span class="admin-save-status" id="admin-status-my-goals-note"></span>
         </div>
       </div>
 
