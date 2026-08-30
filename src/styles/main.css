@@ -692,6 +692,8 @@ details.rm-drop[open]::details-content { height: auto; }
 /* All page titles: left-aligned, doubled (30px), Dodger-blue, moved down so the
    title sits 15px above the intro-card (blue) line. */
 .pg-hdr   { color:#1E90FF; margin:55px 0 15px; box-shadow:none; text-align:left; font-size:30px; padding:0 8px 0 32px; }
+/* Visualization Library title matches its Column B tab colour. */
+#page-vizlibrary .pg-hdr { color: #3878A8; }
 /* Kill the per-page subtitle lines and the stray lone back button on every page —
    the Column B nav circles handle "back"; the title sits right above its content. */
 .pg-intro, .wins-intro { display: none !important; }
