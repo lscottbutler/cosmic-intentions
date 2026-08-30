@@ -289,14 +289,14 @@ p, li, blockquote,
 .colb-nav-btn { position: relative; }
 .colb-nav-btn::before {
   content: ''; position: absolute; top: 50%; left: 50%;
-  width: 66px; height: 66px; transform: translate(-50%, -50%);
-  background: #8CC63F; border-radius: 50%;
+  width: 56px; height: 56px; transform: translate(-50%, -50%);
+  background: #8f8f8f; border-radius: 50%;
   z-index: -1; pointer-events: none;
 }
 /* Center hamburger button 40% larger (46 → 64px), with a proportionally larger
-   green circle so the reduced halo still wraps it. */
+   circle so the reduced halo still wraps it. */
 .colb-nav-btn.colb-nav-menu { width: 64px; height: 64px; }
-.colb-nav-btn.colb-nav-menu::before { width: 84px; height: 84px; }
+.colb-nav-btn.colb-nav-menu::before { width: 74px; height: 74px; }
 .colb-nav-btn {
   width: 46px; height: 46px; border-radius: 50%;
   background: #000; border: 6px solid #8f8f8f; cursor: pointer;
