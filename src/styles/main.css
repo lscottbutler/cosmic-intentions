@@ -687,6 +687,10 @@ details.rm-drop[open]::details-content { height: auto; }
 /* All page titles: left-aligned, doubled (30px), Dodger-blue, moved down so the
    title sits 15px above the intro-card (blue) line. */
 .pg-hdr   { color:#1E90FF; margin:55px 0 15px; box-shadow:none; text-align:left; font-size:30px; padding:0 8px 0 32px; }
+/* Kill the per-page subtitle lines and the stray lone back button on every page —
+   the Column B nav circles handle "back"; the title sits right above its content. */
+.pg-intro, .wins-intro { display: none !important; }
+button[aria-label="Back"]:not(.colb-nav-btn) { display: none !important; }
 /* Dashboard Column B starts below the title line (aligned with the intro card):
    push the nav-circle cluster down and everything below it follows. */
 #page-dashboard .vault-sidebar > .colb-nav { margin-top:112px; }
