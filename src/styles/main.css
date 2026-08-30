@@ -283,16 +283,20 @@ p, li, blockquote,
 .ham-menu .ham-theme { justify-content: center; padding: 4px 0 2px; }
 
 /* ── COLUMN B NAV CLUSTER (back / menu / forward) ───────────── */
-.colb-nav { display: flex; justify-content: center; gap: 14px; margin: 0 0 14px; position: relative; isolation: isolate; }
+.colb-nav { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 0 0 14px; position: relative; isolation: isolate; }
 /* Each nav button gets its own solid green circle, sitting BEHIND the button face
    so adjacent circles overlap/interlock in the gaps. */
 .colb-nav-btn { position: relative; }
 .colb-nav-btn::before {
   content: ''; position: absolute; top: 50%; left: 50%;
-  width: 74px; height: 74px; transform: translate(-50%, -50%);
+  width: 66px; height: 66px; transform: translate(-50%, -50%);
   background: #8CC63F; border-radius: 50%;
   z-index: -1; pointer-events: none;
 }
+/* Center hamburger button 40% larger (46 → 64px), with a proportionally larger
+   green circle so the reduced halo still wraps it. */
+.colb-nav-btn.colb-nav-menu { width: 64px; height: 64px; }
+.colb-nav-btn.colb-nav-menu::before { width: 84px; height: 84px; }
 .colb-nav-btn {
   width: 46px; height: 46px; border-radius: 50%;
   background: #000; border: 6px solid #8f8f8f; cursor: pointer;
@@ -301,7 +305,7 @@ p, li, blockquote,
 }
 .colb-nav-btn:hover { filter: brightness(1.15); }
 .colb-nav-btn:active { transform: translateY(1px); }
-.colb-nav-menu span { display: block; width: 16px; height: 2.5px; background: #fff; border-radius: 2px; }
+.colb-nav-menu span { display: block; width: 22px; height: 3.5px; background: #fff; border-radius: 2px; }
 
 /* ── COLUMN B MASTER LINK LIST ───────────── */
 .colb-links { margin: 0 0 14px; }
