@@ -1820,6 +1820,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="pg-2col">
           <div class="pg-2col-main">
           <div id="cosmicLibraryBody">
+            <!-- Quick links to the two libraries on this page. -->
+            <div class="cl-lib-nav">
+              <button class="cl-lib-btn" onclick="navTo('entcard')">Entrepreneur Course</button>
+              <button class="cl-lib-btn" onclick="var e=document.getElementById('fiftyThingsGrid'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'});">50 Things People Want Most</button>
+            </div>
             <!-- "The Successful Entrepreneur" 4-forces overview, as a collapsible
                  dropdown (filled by renderCosmicLibrary). -->
             <div id="entOverviewDropdown"></div>

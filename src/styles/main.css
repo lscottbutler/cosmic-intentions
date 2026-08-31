@@ -641,6 +641,12 @@ details.rm-drop[open]::details-content { height: auto; }
 
 /* Entrepreneur Library grouped by force — section heading, its cards, and a
    one-sentence "why this is crucial" under each card. */
+/* Cosmic Library page — quick-link buttons to the two libraries (grey combo). */
+#page-cosmiclibrary .cl-lib-nav { display:flex; flex-direction:column; gap:6px; margin:0 0 16px; }
+#page-cosmiclibrary .cl-lib-btn { display:block; width:100%; text-align:left; border:none; border-radius:6px; padding:11px 14px; color:#fff; font:800 13px 'Roboto Condensed',system-ui,sans-serif; letter-spacing:.3px; text-transform:uppercase; cursor:pointer; }
+#page-cosmiclibrary .cl-lib-btn:nth-child(1) { background:#1c1c1c; }
+#page-cosmiclibrary .cl-lib-btn:nth-child(2) { background:#566270; }
+#page-cosmiclibrary .cl-lib-btn:hover { filter:brightness(1.12); }
 #page-cosmiclibrary .ent-force-groups { display:block; }
 #page-cosmiclibrary .ent-force-sec { margin:0 0 30px; }
 #page-cosmiclibrary .ent-force-sec__head { font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; margin:0 0 2px; }
