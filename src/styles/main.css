@@ -2412,7 +2412,7 @@ input, textarea, select {
 /* Intention list */
 .vault-list {
   overflow-y: visible;
-  padding: 6px 15px;
+  padding: 6px 0;
   gap: 20px;
   display: flex;
   flex-direction: column;
