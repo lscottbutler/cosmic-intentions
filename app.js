@@ -3123,6 +3123,8 @@ export function renderVaultSidebar() {
       const _HEART_PATH = `M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z`;
       const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
       const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#fff" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+      const VIZ_ICON  = `<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" style="display:block"><path d="M8 5v14l11-7z"/></svg>`;   // play = visualize
+      const EDIT_ICON = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`;   // pencil = edit
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const circle   = darkenHex(shade.bg, 0.5);   // circles = a deeper shade of the card color, not black
@@ -3131,18 +3133,22 @@ export function renderVaultSidebar() {
         const isFav    = Array.isArray(_favs) && _favs.some(f => f && f.player === 'mindset' && f.goal === i._idx);
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
         return `
-        <button class="vault-item${isSelected ? ' selected' : ''}"
-          onmousedown="event.preventDefault()"
-          onclick="selectVaultIntention(${i._idx})"
-          style="background:${shade.bg};color:${shade.text}">
-          <div class="vault-item-num" style="background:${gc.bg};color:${gc.text}">${goalLetter(i, i._idx)}</div>
-          <div class="vault-item-body">
-            <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
+        <div class="vault-row${isSelected ? ' selected' : ''}">
+          <button class="vault-item${isSelected ? ' selected' : ''}"
+            onmousedown="event.preventDefault()"
+            onclick="selectVaultIntention(${i._idx})"
+            style="background:${shade.bg};color:${shade.text}">
+            <div class="vault-item-num" style="background:${gc.bg};color:${gc.text}">${goalLetter(i, i._idx)}</div>
+            <div class="vault-item-body">
+              <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
+            </div>
+          </button>
+          <div class="vault-actions">
+            <button class="vault-act${isFav ? ' is-fav' : ''}" onclick="toggleGoalFavorite(${i._idx}, event)" title="${isFav ? 'Remove from' : 'Add to'} favorites loop" aria-label="Favorite">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</button>
+            <button class="vault-act" onclick="launchCountdown(${i._idx}, 180)" title="Visualize this goal" aria-label="Visualize">${VIZ_ICON}</button>
+            <button class="vault-act" onclick="navTo('setup')" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
           </div>
-          <span class="vault-fav" onclick="event.stopPropagation(); toggleGoalFavorite(${i._idx}, event)"
-            title="${isFav ? 'Remove from' : 'Add to'} favorites loop"
-            style="margin-left:auto;flex:0 0 auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#000;color:#fff;opacity:1;">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</span>
-        </button>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
+        </div>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
           <div style="display:flex; gap:8px; margin-bottom:6px;">
             <button onclick="closeGoalPlayer()" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">&times; Close</button>

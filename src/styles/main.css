@@ -2439,6 +2439,13 @@ input, textarea, select {
   background: rgba(56,160,56,0.07);
   border-left-color: var(--orange);
 }
+/* Goal row = 75% card + 25% action strip (heart · visualize · edit). */
+.vault-row { display: flex; gap: 10px; align-items: stretch; }
+.vault-row > .vault-item { flex: 1 1 auto; width: auto; }
+.vault-actions { flex: 0 0 25%; display: flex; align-items: center; justify-content: space-evenly; gap: 6px; background: #e6e8ec; border-radius: 10px; padding: 6px 8px; box-sizing: border-box; }
+.vault-act { width: 36px; height: 36px; border-radius: 50%; background: #000; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #fff; padding: 0; flex-shrink: 0; transition: filter .12s; }
+.vault-act:hover { filter: brightness(1.35); }
+.vault-act.is-fav svg { fill: #fff; }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
