@@ -287,13 +287,15 @@ export function renderFavorites() {
     attachDrag(row);
     return row;
   }
+  const PLAY_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" style="display:block"><path d="M8 5v14l11-7z"/></svg>';
+  const X_ICON    = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   playable.forEach((f, i) => {
     const rowBg = (i % 2) ? '#566270' : '#1c1c1c';   // alternate grey / black down the list
     const row = document.createElement('div');
     row.className = 'fav-row';
     row.draggable = true;
     row._fav = f;
-    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:' + rowBg + ';border:1px solid #333;border-radius:6px;padding:11px 14px;margin-bottom:6px;cursor:pointer;';
+    row.style.cssText = 'display:flex;align-items:stretch;gap:10px;margin-bottom:6px;';
     const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const _t = favType(f);
     const _label = _t === 'note' ? (f.text || f.title || 'Note')
@@ -305,20 +307,26 @@ export function renderFavorites() {
                 : (f.player === 'gratitude' && f.ep != null) ? 'Gratitude'
                 : f.minutes + ' min';
     row.innerHTML =
-      '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
-      '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
-      `<span style="flex:1;min-width:0;font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
-      `<span style="margin-left:auto;flex-shrink:0;color:#9a9a9a;font-size:14px;">${_meta}</span>` +
-      `<button class="fav-remove" title="Remove from favorites" style="flex-shrink:0;background:none;border:none;color:#c76;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:4px;">&times;</button>`;
+      '<div class="fav-main" style="flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:' + rowBg + ';border:1px solid #e02020;border-radius:6px;padding:11px 14px;cursor:pointer;">' +
+        '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
+        '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
+        `<span style="flex:1;min-width:0;font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
+        `<span style="margin-left:auto;flex-shrink:0;color:#cfcfcf;font-size:14px;">${_meta}</span>` +
+      '</div>' +
+      '<div class="vault-actions">' +
+        `<button class="vault-act fav-play" title="Play this" aria-label="Play">${PLAY_ICON}</button>` +
+        `<button class="vault-act fav-rm" title="Remove from favorites" aria-label="Remove">${X_ICON}</button>` +
+      '</div>';
     const cb = row.querySelector('input');
-    row.querySelector('.fav-remove').addEventListener('click', (e) => { e.stopPropagation(); removeFavorite(f); });
+    const main = row.querySelector('.fav-main');
+    row.querySelector('.fav-rm').addEventListener('click', (e) => { e.stopPropagation(); removeFavorite(f); });
+    row.querySelector('.fav-play').addEventListener('click', (e) => { e.stopPropagation(); if (typeof window.openFavorite === 'function') window.openFavorite(f); });
     cb.checked = true;                    // default: the whole day is queued, ready to Play
-    row.style.borderColor = '#e02020';    // red border = queued; background stays the alternating black/grey
     cb.addEventListener('change', () => {
-      row.style.borderColor = cb.checked ? '#e02020' : '#333';
+      main.style.borderColor = cb.checked ? '#e02020' : '#333';
       syncPlay();
     });
-    row.addEventListener('click', e => {
+    main.addEventListener('click', e => {
       if (e.target === cb || e.target.classList.contains('fav-grip')) return;
       cb.checked = !cb.checked; cb.dispatchEvent(new Event('change'));
     });
