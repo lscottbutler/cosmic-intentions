@@ -46,6 +46,12 @@ const CAT_LABEL = (c) => c || 'UNSORTED';
 let _open = true;   // dashboard dropdown expanded? (survives re-renders)
 export function habitsToggleSection(open) { _open = !!open; }
 
+// Time-of-day sections shown as their own collapsible dropdowns (display label + order).
+const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH', ''];
+const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+const _openCats = new Set();
+export function habitsSectionToggle(cat, open) { if (open) _openCats.add(cat); else _openCats.delete(cat); }
+
 function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }
 function _done()     { return LS.get(_doneKey()) || {}; }
@@ -230,30 +236,25 @@ export function renderHabits() {
   const d = _done();
   const groups = _grouped(getHabitList());
 
-  let body = '';
-  [...HABIT_CATS, ''].forEach(cat => {
-    // Alphabetical within each category (case-insensitive) — don't mutate the stored order.
+  // Each time-of-day section is its own collapsible dropdown (collapsed by default).
+  let html = '';
+  SECTION_ORDER.forEach(cat => {
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
     if (!items.length) return;
-    body += `<div style="background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;padding:7px 11px;border-radius:7px;margin:12px 0 6px;">${CAT_LABEL(cat)}</div>`;
-    // Two-column grid of habit rows.
-    body += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">` + items.map(h => _habitRow(h, !!d[h.id])).join('') + `</div>`;
+    const doneN = items.filter(h => !!d[h.id]).length;
+    const open = _openCats.has(cat);
+    html += `<details class="habit-drop" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
+        <span>${SECTION_LABEL[cat]}</span>
+        <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
+      </summary>
+      <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">${items.map(h => _habitRow(h, !!d[h.id])).join('')}</div>
+      </div>
+    </details>`;
   });
-
-  el.innerHTML = `
-    <div style="background:#AEB6C1;border:1px solid #AEB6C1;border-radius:12px;padding:14px;margin-bottom:8px;">
-      <details class="rm-drop" ${_open ? 'open' : ''} ontoggle="habitsToggleSection(this.open)">
-        <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#AEB6C1;color:#1a1a1a;border-radius:10px;cursor:pointer;">
-          <span style="font-size:18pt;font-weight:800;line-height:1.15;">◈ DAILY HABITS</span>
-          <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-            <button onclick="event.stopPropagation();navTo('habits')" title="Open My Habits page" aria-label="Open My Habits page" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#333;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
-            <span class="rm-caret" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#333;color:#fff;">▾</span>
-          </span>
-        </summary>
-        <div style="background:#fff;border:none;border-radius:8px;padding:8px 10px 10px;margin-top:10px;overflow:hidden;">${body}</div>
-        <div style="font-size:10px;color:#333;line-height:1.4;padding:9px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>
-      </details>
-    </div>`;
+  el.innerHTML = html +
+    `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
 }
 
 /* ── Pegboard editor (banner-grouped, rename / recategorize / reorder / delete) ── */

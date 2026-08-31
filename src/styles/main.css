@@ -2460,8 +2460,12 @@ input, textarea, select {
 #favorites-list { padding: 0 20px; box-sizing: border-box; }
 /* Mind Loop panel — 20px padding each side. */
 #sleepLoopWidget { padding: 0 20px; box-sizing: border-box; }
-/* Daily Habits widget — inset the whole grey card 20px each side. */
+/* Daily Habits — each time-of-day section is its own collapsible dropdown. */
 #habitsWidget { margin-left: 20px; margin-right: 20px; }
+.habit-drop summary { list-style: none; }
+.habit-drop summary::-webkit-details-marker { display: none; }
+.habit-drop .habit-caret { display: inline-block; transition: transform .15s; }
+.habit-drop[open] .habit-caret { transform: rotate(90deg); }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
