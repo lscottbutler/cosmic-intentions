@@ -168,21 +168,32 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         ["navTo('entcard')", "Entrepreneur Course", ""],
         ["navTo('cosmiclibrary')", "50 Things People Want Most", ""]
       ]],
-      ["More", [
+      ["Admin", [
         ["navTo('admin')", "Admin", ""],
         ["window.open('/landing','_blank')", "Landing Page 1", "colb-link--ext"],
         ["window.open('/landing-v2','_blank')", "Landing Page 2", "colb-link--ext"],
         ["window.open('/landing-v3','_blank')", "Landing Page 3", "colb-link--ext"],
         ["window.open('/about','_blank')", "About Us", "colb-link--ext"]
-      ]]
+      ], "drop"]   // collapsible — landing pages hidden inside until opened
     ];
     var h = '<div class="colb-links">';
     for (var s = 0; s < S.length; s++) {
-      h += '<div class="colb-links-hd">' + S[s][0] + '</div>';
-      var arr = S[s][1];
-      for (var i = 0; i < arr.length; i++) h += '<button class="colb-link ' + arr[i][2] + '" onclick="' + arr[i][0] + '">' + arr[i][1] + '</button>';
+      var arr = S[s][1], linksHtml = '';
+      for (var i = 0; i < arr.length; i++) linksHtml += '<button class="colb-link ' + arr[i][2] + '" onclick="' + arr[i][0] + '">' + arr[i][1] + '</button>';
+      if (S[s][2] === 'drop') {
+        h += '<div class="colb-links-hd colb-links-hd--drop" onclick="window.colbDrop(this)">' + S[s][0] + '</div><div class="colb-drop-body" style="display:none">' + linksHtml + '</div>';
+      } else {
+        h += '<div class="colb-links-hd">' + S[s][0] + '</div>' + linksHtml;
+      }
     }
     return h + '</div>';
+  };
+  // Toggle a collapsible link section (e.g. Admin) — hides its links until opened.
+  window.colbDrop = function (hd) {
+    var body = hd.nextElementSibling;
+    var open = (body.style.display === 'none' || !body.style.display);
+    body.style.display = open ? 'block' : 'none';
+    hd.classList.toggle('open', open);
   };
   // COLUMN B QUICK TABS — the old top tab-bar, re-homed under the nav circles.
   // Alphabetical, colored with the goal-card spectrum. Single source, injected
