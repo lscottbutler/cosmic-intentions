@@ -254,6 +254,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         if (cl) cl.insertAdjacentHTML('afterend', window.colbTabsHTML(pageId));
         else col.insertAdjacentHTML('afterbegin', window.colbTabsHTML(pageId));
       }
+      // Date banner sits just under the 3 nav circles (above the tabs).
+      var dateLine = col.querySelector('#vaultDateLine');
+      var navCl = col.querySelector(':scope > .colb-nav');
+      if (dateLine && navCl && dateLine.previousElementSibling !== navCl) navCl.insertAdjacentElement('afterend', dateLine);
       // Column B background stays default (white/theme); tabs/links carry the colour.
       col.style.background = ''; col.classList.remove('colb-tinted');
       // Pepper thoughts only where the column has none of its own.
