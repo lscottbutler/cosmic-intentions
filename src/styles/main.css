@@ -2458,6 +2458,8 @@ input, textarea, select {
 .vault-act.is-fav svg { fill: #fff; }
 /* Favorites Autoplay list — 20px padding each side (play button + rows). */
 #favorites-list { padding: 0 20px; box-sizing: border-box; }
+/* Mind Loop panel — 20px padding each side. */
+#sleepLoopWidget { padding: 0 20px; box-sizing: border-box; }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
