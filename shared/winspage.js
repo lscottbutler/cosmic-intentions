@@ -86,11 +86,15 @@ export function renderWinsPage() {
         <span style="font-weight:800;color:var(--text);font-size:15px;">${label}</span>
         <span style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);">${items.length}</span>
       </div>
-      ${items.map(w => { const m = catMeta(w.category || ''); return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-2);">
-        <span style="color:${m.color};font-size:13px;flex-shrink:0;line-height:1.6;">✦</span>
-        <div style="flex:1;min-width:0;font-size:14px;color:var(--text);line-height:1.6;">${esc(w.text)}</div>
-        <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:14px;color:var(--muted);line-height:1.6;white-space:nowrap;">${_label(w.date)}</span>
-        <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;padding:0;">×</button>
+      ${items.map(w => { const m = catMeta(w.category || ''); return `<div class="vault-row" style="margin-bottom:8px;">
+        <div class="vault-item" style="background:#f1f2f4;cursor:default;align-items:flex-start;">
+          <span style="color:${m.color};font-size:15px;flex-shrink:0;line-height:1.5;">✦</span>
+          <div class="vault-item-body"><div style="font-size:14px;color:#26364b;line-height:1.5;">${esc(w.text)}</div></div>
+          <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:12px;color:var(--muted);white-space:nowrap;line-height:1.5;">${_label(w.date)}</span>
+        </div>
+        <div class="vault-actions" style="flex:0 0 60px;">
+          <button class="vault-act" onclick="winDelete(${w.ts})" title="Remove" aria-label="Delete"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
       </div>`; }).join('')}
     </div>`;
   });
