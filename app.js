@@ -2271,13 +2271,27 @@ export function renderVizLibrary() {
     el.innerHTML = `<div style="padding:16px 14px;font-size:13px;color:var(--muted);line-height:1.6;">No goals yet — add an intention first.</div>`;
     return;
   }
+  const _HEART_PATH = `M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z`;
+  const FAV_ADD_SVG    = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+  const FAV_REMOVE_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#fff" style="display:block"><path d="${_HEART_PATH}"/></svg>`;
+  const VIZ_ICON  = `<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" style="display:block"><path d="M8 5v14l11-7z"/></svg>`;
+  const EDIT_ICON = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`;
+  let _favsViz = []; try { _favsViz = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (e) {}
   el.innerHTML = intentions.map((it, idx) => {
     const s = GREY_SHADES[idx % GREY_SHADES.length];
-    return `<button onclick="vizLibToggle(${idx})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${s.bg};color:${s.text};border-radius:12px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
-      <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;${_goalCircleStyle(idx)};display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(it, idx)}</span>
-      <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(it.title || '')}</span>
-      <span id="vizLibCaret-${idx}" style="flex-shrink:0;font-size:20px;opacity:.9;transition:transform .15s;">›</span>
-    </button>
+    const isFav = Array.isArray(_favsViz) && _favsViz.some(f => f && f.player === 'mindset' && f.goal === idx);
+    return `
+    <div class="vault-row">
+      <button class="vault-item" onmousedown="event.preventDefault()" onclick="vizLibToggle(${idx})" style="background:${s.bg};color:${s.text}">
+        <div class="vault-item-num" style="${_goalCircleStyle(idx)}">${goalLetter(it, idx)}</div>
+        <div class="vault-item-body"><div class="vault-item-title" style="color:${s.text}">${esc(it.title || '')}</div></div>
+      </button>
+      <div class="vault-actions">
+        <button class="vault-act${isFav ? ' is-fav' : ''}" onclick="toggleGoalFavorite(${idx}, event)" title="${isFav ? 'Remove from' : 'Add to'} favorites" aria-label="Favorite">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</button>
+        <button class="vault-act" onclick="launchCountdown(${idx}, 180)" title="Visualize this goal" aria-label="Visualize">${VIZ_ICON}</button>
+        <button class="vault-act" onclick="navTo('setup')" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
+      </div>
+    </div>
     <div id="vizLibPanel-${idx}" class="viz-lib-panel" style="display:none;"></div>`;
   }).join('');
 }
