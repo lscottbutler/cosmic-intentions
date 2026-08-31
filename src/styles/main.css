@@ -664,7 +664,7 @@ details.rm-drop[open]::details-content { height: auto; }
 /* Intro-card pages: the title lives in pg-bezel above this 20px top padding, so
    remove it there — the title's own 15px bottom margin then sets the gap to the
    blue intro-card line (matching the dashboard, whose title is inside). */
-#page-notes .pg-screen, #page-myroadmap .pg-screen, #page-dailyfocus .pg-screen,
+#page-dashboard .pg-screen, #page-notes .pg-screen, #page-myroadmap .pg-screen, #page-dailyfocus .pg-screen,
 #page-meditation .pg-screen, #page-gratitude .pg-screen { padding-top: 0; }
 .pg-back { background:#fff; border:1px solid rgba(0,0,0,.15); border-radius:8px; color:var(--brand); font-family:var(--vault-mono); font-size:11px; font-weight:800; letter-spacing:.8px; padding:8px 14px; cursor:pointer; margin-bottom:14px; }
 .pg-chips { display:flex; gap:8px; margin-top:14px; }
@@ -725,7 +725,7 @@ button[aria-label="Forward"]:not(.colb-nav-btn) { display: none !important; }
 #page-dashboard .vault-sidebar > .colb-nav { margin-top:112px; }
 #page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#fff; padding:0; }
 #page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#fff; padding:0; }
-#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; margin:30px 0 8px; text-align:left; font-size:30px; padding-left:32px; }
+#page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; margin:55px 0 15px; text-align:left; font-size:30px; padding:0 8px 0 32px; }
 
 /* Reusable right-hand column (clown + Big 3 stats) on framed pages — the same
    75/25 split the Viz Library uses. JS (ensurePageSideColumn) wraps a page's
