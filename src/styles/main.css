@@ -647,7 +647,7 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(1) { background:#1c1c1c; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(2) { background:#566270; }
 #page-cosmiclibrary .cl-lib-btn:hover { filter:brightness(1.12); }
-#page-cosmiclibrary .ent-force-groups { display:block; }
+#page-cosmiclibrary .ent-force-groups { display:block; padding:0 20px; box-sizing:border-box; }
 #page-cosmiclibrary .ent-force-sec { margin:0 0 30px; }
 #page-cosmiclibrary .ent-force-sec__head { font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; margin:0 0 2px; }
 #page-cosmiclibrary .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:0 0 14px; max-width:640px; }
