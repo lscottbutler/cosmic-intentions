@@ -2460,6 +2460,8 @@ input, textarea, select {
 #favorites-list { padding: 0 20px; box-sizing: border-box; }
 /* Mind Loop panel — 20px padding each side. */
 #sleepLoopWidget { padding: 0 20px; box-sizing: border-box; }
+/* Daily Habits widget — inset the whole grey card 20px each side. */
+#habitsWidget { margin-left: 20px; margin-right: 20px; }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
