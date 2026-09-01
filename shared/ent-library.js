@@ -186,11 +186,11 @@ export function renderCosmicLibrary() {
           <div class="ent-force-why">${_esc(why)}</div>
         </div>`;
       }).join('');
-      return `<section class="ent-force-sec">
-        <h4 class="ent-force-sec__head">${_esc(name)}</h4>
+      return `<details class="ent-force-sec">
+        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
         <p class="ent-force-sec__desc">${_esc(desc)}</p>
         <div class="ent-force-sec__grid">${cards}</div>
-      </section>`;
+      </details>`;
     }).join('');
   }
   const fifty = document.getElementById('fiftyThingsGrid');

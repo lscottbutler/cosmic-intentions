@@ -282,14 +282,41 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   window.injectPageIntro = function () {
     var active = document.querySelector('.page.active'); if (!active) return;
     var id = active.id.replace('page-', '');
-    var WANT = ['dashboard', 'notes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary'];
+    // Pages that need a Lorem intro card of their OWN. Pages NOT listed here
+    // (wins / vizlibrary / runthroughs / setup / habits) already get one from
+    // injectPlaceholderCards (.ci-ph-card) — don't add a second and duplicate it.
+    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard'];
     if (WANT.indexOf(id) < 0) return;
-    var main = active.querySelector('#vaultMain') || active.querySelector('.pg-2col-main') || active.querySelector('.pg-body-main');
-    if (!main || main.querySelector(':scope > .page-intro-card')) return;
-    // Keep the "Welcome back" greeting at the very top; the intro card sits under it.
-    var greeting = main.querySelector(':scope > #dashGreeting');
-    if (greeting) greeting.insertAdjacentHTML('afterend', window.PAGE_INTRO_CARD);
-    else main.insertAdjacentHTML('afterbegin', window.PAGE_INTRO_CARD);
+    if (active.querySelector('.page-intro-card, .ci-ph-card')) return;   // never duplicate an existing intro card
+    // entcard draws into a dynamic host — insert BEFORE it so we're not wiped.
+    var ANCHOR = { entcard: '#entLibHost' };
+    if (ANCHOR[id]) {
+      var anchorEl = active.querySelector(ANCHOR[id]);
+      if (!anchorEl) return;
+      anchorEl.insertAdjacentHTML('beforebegin', window.PAGE_INTRO_CARD);
+    } else {
+      var main = active.querySelector('#vaultMain') || active.querySelector('.pg-2col-main') || active.querySelector('.pg-body-main');
+      if (!main) return;
+      // Keep the "Welcome back" greeting at the very top; the intro card sits under it.
+      var greeting = main.querySelector(':scope > #dashGreeting');
+      if (greeting) greeting.insertAdjacentHTML('afterend', window.PAGE_INTRO_CARD);
+      else main.insertAdjacentHTML('afterbegin', window.PAGE_INTRO_CARD);
+    }
+  };
+  // Admin-editable text box that sits directly UNDER whatever intro card a page has
+  // (.page-intro-card from injectPageIntro OR .ci-ph-card from injectPlaceholderCards).
+  // One per page, slug intro-note-<id>; edited on the Admin page; hidden until filled.
+  window.injectIntroAdminBox = function () {
+    var active = document.querySelector('.page.active'); if (!active) return;
+    var id = active.id.replace('page-', '');
+    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'runthroughs', 'vizlibrary', 'wins', 'entcard'];
+    if (WANT.indexOf(id) < 0) return;
+    var slug = 'intro-note-' + id;
+    if (active.querySelector('[data-block="' + slug + '"]')) return;   // once per page
+    var card = active.querySelector('.page-intro-card, .ci-ph-card');
+    if (!card) return;
+    card.insertAdjacentHTML('afterend', '<div data-block="' + slug + '" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.07);padding:16px 20px;margin:0 0 16px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>');
+    if (typeof window.injectContentBlocks === 'function') window.injectContentBlocks();
   };
 
   // ── TITLE INFO (ⓘ) — a small "i" next to the page title that opens a
@@ -1251,7 +1278,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="colb-selection-state">
 
         <!-- Admin-editable note (slug: my-goals-note) — shows above goal A when My Goals is open; hidden until you add text on the Admin page. -->
-        <div data-block="my-goals-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.07);padding:16px 20px;margin:0 15px 14px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
+        <div data-block="my-goals-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.07);padding:16px 20px;margin:0 0 14px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
 
         <!-- INTENTION LIST — goal cards -->
         <div class="vault-list" id="vaultList"></div>
@@ -2299,6 +2326,188 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="admin-block-foot">
           <button class="admin-save-btn" id="admin-save-goal-viz-note" onclick="saveContentBlock('goal-viz-note')">Save</button>
           <span class="admin-save-status" id="admin-status-goal-viz-note"></span>
+        </div>
+      </div>
+
+      <!-- ═══ INTRO-AREA TEXT BOXES — one per page, sits directly under the intro card.
+           Edit here on the fly; blank = hidden. Slugs: intro-note-<page>. ═══ -->
+      <div class="admin-block" id="adminBlock-intro-note-dashboard">
+        <div class="admin-block-hd">📝 INNER CITADEL (Dashboard) · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dashboard</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dashboard','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dashboard','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-dashboard')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dashboard','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-dashboard" contenteditable="true" data-slug="intro-note-dashboard"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-dashboard" onclick="saveContentBlock('intro-note-dashboard')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-dashboard"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-myroadmap">
+        <div class="admin-block-hd">📝 ROADMAP · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-myroadmap</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-myroadmap','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-myroadmap','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-myroadmap')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-myroadmap','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-myroadmap" contenteditable="true" data-slug="intro-note-myroadmap"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-myroadmap" onclick="saveContentBlock('intro-note-myroadmap')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-myroadmap"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-notes">
+        <div class="admin-block-hd">📝 THOUGHTS · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-notes</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-notes','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-notes','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-notes')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-notes','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-notes" contenteditable="true" data-slug="intro-note-notes"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-notes" onclick="saveContentBlock('intro-note-notes')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-notes"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-dailyfocus">
+        <div class="admin-block-hd">📝 FAVORITES AUTOPLAY · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dailyfocus</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dailyfocus','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dailyfocus','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-dailyfocus')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-dailyfocus','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-dailyfocus" contenteditable="true" data-slug="intro-note-dailyfocus"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-dailyfocus" onclick="saveContentBlock('intro-note-dailyfocus')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-dailyfocus"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-meditation">
+        <div class="admin-block-hd">📝 MEDITATION · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-meditation</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-meditation','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-meditation','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-meditation')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-meditation','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-meditation" contenteditable="true" data-slug="intro-note-meditation"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-meditation" onclick="saveContentBlock('intro-note-meditation')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-meditation"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-gratitude">
+        <div class="admin-block-hd">📝 GRATITUDE · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-gratitude</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-gratitude','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-gratitude','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-gratitude')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-gratitude','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-gratitude" contenteditable="true" data-slug="intro-note-gratitude"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-gratitude" onclick="saveContentBlock('intro-note-gratitude')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-gratitude"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-cosmiclibrary">
+        <div class="admin-block-hd">📝 COSMIC LIBRARY · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-cosmiclibrary</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-cosmiclibrary','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-cosmiclibrary','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-cosmiclibrary')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-cosmiclibrary','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-cosmiclibrary" contenteditable="true" data-slug="intro-note-cosmiclibrary"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-cosmiclibrary" onclick="saveContentBlock('intro-note-cosmiclibrary')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-cosmiclibrary"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-wins">
+        <div class="admin-block-hd">📝 WINS · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-wins</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-wins','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-wins','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-wins')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-wins','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-wins" contenteditable="true" data-slug="intro-note-wins"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-wins" onclick="saveContentBlock('intro-note-wins')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-wins"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-mynotes">
+        <div class="admin-block-hd">📝 NOTES (My Notes) · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-mynotes</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-mynotes','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-mynotes','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-mynotes')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-mynotes','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-mynotes" contenteditable="true" data-slug="intro-note-mynotes"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-mynotes" onclick="saveContentBlock('intro-note-mynotes')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-mynotes"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-vizlibrary">
+        <div class="admin-block-hd">📝 VIZ LIBRARY · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-vizlibrary</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-vizlibrary','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-vizlibrary','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-vizlibrary')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-vizlibrary','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-vizlibrary" contenteditable="true" data-slug="intro-note-vizlibrary"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-vizlibrary" onclick="saveContentBlock('intro-note-vizlibrary')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-vizlibrary"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-runthroughs">
+        <div class="admin-block-hd">📝 DAILY HABITS · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-runthroughs</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-runthroughs','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-runthroughs','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-runthroughs')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-runthroughs','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-runthroughs" contenteditable="true" data-slug="intro-note-runthroughs"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-runthroughs" onclick="saveContentBlock('intro-note-runthroughs')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-runthroughs"></span>
+        </div>
+      </div>
+
+      <div class="admin-block" id="adminBlock-intro-note-entcard">
+        <div class="admin-block-hd">📝 ENTREPRENEUR COURSE (card page) · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-entcard</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-entcard','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-entcard','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('intro-note-entcard')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('intro-note-entcard','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-intro-note-entcard" contenteditable="true" data-slug="intro-note-entcard"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-intro-note-entcard" onclick="saveContentBlock('intro-note-entcard')">Save</button>
+          <span class="admin-save-status" id="admin-status-intro-note-entcard"></span>
         </div>
       </div>
 

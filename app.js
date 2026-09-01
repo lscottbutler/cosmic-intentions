@@ -395,8 +395,10 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
-  // Intro card at the top of Column A on selected pages.
+  // Intro card at the top of Column A on selected pages, then the admin-editable
+  // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
+  if (typeof window.injectIntroAdminBox === 'function') window.injectIntroAdminBox();
   if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
 
   closeDrawer();

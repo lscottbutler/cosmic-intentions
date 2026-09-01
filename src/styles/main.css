@@ -647,14 +647,21 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(1) { background:#1c1c1c; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(2) { background:#566270; }
 #page-cosmiclibrary .cl-lib-btn:hover { filter:brightness(1.12); }
-#page-cosmiclibrary .ent-force-groups { display:block; padding:0 20px; box-sizing:border-box; }
-#page-cosmiclibrary .ent-force-sec { margin:0 0 30px; }
-#page-cosmiclibrary .ent-force-sec__head { font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; margin:0 0 2px; }
-#page-cosmiclibrary .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:0 0 14px; max-width:640px; }
-#page-cosmiclibrary .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px 14px; }
+#page-cosmiclibrary .ent-force-groups { display:block; box-sizing:border-box; }   /* indent now comes from .pg-2col-main */
+#page-cosmiclibrary .ent-force-sec { margin:0 0 12px; }
+/* Each force is now a collapsible dropdown — the header toggles its cards. */
+#page-cosmiclibrary .ent-force-sec__head { list-style:none; cursor:pointer; display:block; }
+#page-cosmiclibrary .ent-force-sec__head::-webkit-details-marker { display:none; }
+#page-cosmiclibrary .ent-force-sec__bar { display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; padding:11px 16px; background:#eef2ea; border:1px solid #dbe4d4; border-radius:10px; }
+#page-cosmiclibrary .ent-force-sec__chev { color:#4d7c3a; font-size:15px; transition:transform .2s; flex-shrink:0; }
+#page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__chev { transform:rotate(180deg); }
+#page-cosmiclibrary .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:12px 2px 14px; max-width:640px; }
+/* display:grid only when the section is open, otherwise this ID-specific rule
+   would override the browser's UA "hide closed <details> children" rule. */
+#page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px 14px; }
 #page-cosmiclibrary .ent-force-card { display:flex; flex-direction:column; }
 #page-cosmiclibrary .ent-force-why { font-size:12.5px; line-height:1.45; color:#555; margin-top:8px; }
-@media (max-width:560px){ #page-cosmiclibrary .ent-force-sec__grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:560px){ #page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__grid { grid-template-columns:repeat(2,1fr); } }
 
 /* ── Reusable FULL-BLEED PAGE FRAME (from the Wins design) ──
    Colors come from CSS vars so each page sets its own palette. Fills top→bottom
@@ -712,18 +719,8 @@ details.rm-drop[open]::details-content { height: auto; }
 .title-info-pop .ti-cols { display: flex; gap: 24px; flex-wrap: wrap; }
 .title-info-pop .ti-cols ul { flex: 1; min-width: 220px; margin: 0; padding-left: 20px; line-height: 1.9; }
 
-/* Each page's title matches its Column B tab colour (COLB_TABS), site-wide. */
-#page-dashboard    .pg-hdr  { color: #E8C830; }  /* Inner Citadel */
-#page-runthroughs  .pg-hdr  { color: #E86030; }  /* Daily Habits */
-#page-dailyfocus   .pg-hdr  { color: #E88020; }  /* Favorites Autoplay */
-#page-gratitude    .pg-hdr  { color: #E8A828; }  /* Gratitude */
-#page-meditation   .pg-hdr  { color: #A8C830; }  /* Meditation */
-#page-mynotes      .pg-hdr  { color: #48B860; }  /* Notes */
-#page-notes        .pg-hdr  { color: #38A888; }  /* Thoughts */
-#page-myroadmap    .pg-hdr  { color: #7888A8; }  /* Roadmap */
-#page-vizlibrary   .pg-hdr  { color: #3878A8; }  /* Viz Library */
-#page-wins         .wins-hdr { color: #2898A8; } /* Wins */
-#page-cosmiclibrary .wins-hdr { color: #E84040; } /* Cosmic Library */
+/* All page titles are black (previously each matched its Column B tab colour). */
+.pg-hdr, .wins-hdr { color: #111 !important; }
 /* Kill the per-page subtitle lines and the stray lone back button on every page —
    the Column B nav circles handle "back"; the title sits right above its content. */
 .pg-intro, .wins-intro { display: none !important; }
@@ -798,7 +795,10 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 #citadelNav > button:nth-of-type(8)  { order:9; }   /* Practice Gratitude */
 #citadelNav > button:nth-of-type(9)  { order:4; }   /* Mind Loop */
 #citadelNav > button:nth-of-type(10) { order:6; }   /* My Goals */
-#citadelNav > #quickWinPanel { order:2; }
+#citadelNav > #quickWinPanel { order:11; }   /* Quick Win panel opens at the BOTTOM of the nav grid, not inline after Log A Win */
+/* Golden-opportunity quote card at the bottom of Column B — hidden for now
+   (sprinkleNotes() re-shows it with display:'', so !important is required). */
+[data-random-note="quote"][data-home-thought] { display: none !important; }
 #citadelNav > #dashQuickAdd  { order:10; }
 #citadelNav > #medBox        { order:3; }
 #citadelNav > #gratBox       { order:9; }
@@ -2420,6 +2420,20 @@ input, textarea, select {
 }
 
 /* Intention list */
+/* My Goals: indent the goal cards + Add Intention row slightly in from the nav
+   buttons above, so the whole block sits a touch to the right on both sides. */
+#goalsBox { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
+/* Same slight indent for each page's main list/content (Cosmic Library,
+   Meditation, Gratitude, Notes, Thoughts, Wins, Roadmap, Viz Library). Scoped
+   per list container so the page titles and intro lines are left untouched. */
+#page-meditation .pg-2col-main,
+#page-gratitude .pg-2col-main,
+#page-cosmiclibrary .pg-2col-main,
+#winsPageBody,
+#myNotesSections,
+#notesSections,
+#vizLibList,
+#todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
 .vault-list {
   overflow-y: visible;
   padding: 6px 0;
