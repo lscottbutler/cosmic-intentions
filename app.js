@@ -744,8 +744,6 @@ function updateUI(user) {
   if (_appHdr) _appHdr.style.display = loggedIn ? '' : 'none';
   const _topNav = document.getElementById('topNav');
   if (_topNav) _topNav.style.display = loggedIn ? '' : 'none';
-  const _siteLogo = document.getElementById('siteLogo');
-  if (_siteLogo) _siteLogo.style.display = loggedIn ? 'block' : 'none';
   const _tabBar = document.getElementById('tabBar');
   if (_tabBar) _tabBar.style.display = loggedIn ? 'grid' : 'none';
 
