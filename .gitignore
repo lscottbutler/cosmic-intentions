@@ -57,6 +57,10 @@ standalone-3mv/
 # marketing department — private strategy/copy working docs (never publish to live site)
 marketing/
 
+# knowledge pack for the CI Marketing Claude Project — copies of private business/
+# marketing docs; keep out of git (upload to the Claude Project by hand)
+CI-KNOWLEDGE/
+
 # Local Netlify folder
 .netlify
 

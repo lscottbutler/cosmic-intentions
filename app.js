@@ -4056,7 +4056,88 @@ if (typeof window !== 'undefined') {
       const body = _blockContentFor(slug, _blockCache[slug]);
       document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => _fillBlockEl(el, body));
     });
+    if (typeof stampContentBlockNums === 'function') stampContentBlockNums();
   };
+}
+
+/* ── CONTENT-BLOCK NUMBERING (refinement aid) ─────────────────────────────────
+   Number every editor in the Admin "Content Blocks" section (1..N in page order)
+   and stamp the SAME number onto each block's live box on the site (data-cbnum →
+   a #N badge via CSS when body.cbnums is set). Lets Scott match a box on a page
+   to its Admin editor. Numbers auto-follow the Admin DOM order — add/remove a
+   block and everything renumbers on next load. */
+// Which page each content block lives on (so the Admin header can jump to it).
+// intro-note-<page> maps to its page automatically; the rest are listed here.
+function _blockPage(slug) {
+  if (slug.indexOf('intro-note-') === 0) return slug.slice('intro-note-'.length);
+  const M = {
+    'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
+    'home-video-1': 'dashboard', 'dashboard-note-2': 'dashboard',
+    'my-goals-note': 'dashboard', 'goal-viz-note': 'dashboard', 'dashboard-inspiration': 'dashboard',
+  };
+  return M[slug] || null;   // NOT-PLACED blocks (shows nowhere yet) return null
+}
+// Jump from the Admin editor to the block's live box on the site + flash it.
+function adminGoToBlock(slug) {
+  const page = _blockPage(slug);
+  if (!page) { if (typeof toast === 'function') toast('Block "' + slug + '" isn\'t placed on a page yet.', ''); return; }
+  if (typeof window.navTo === 'function') window.navTo(page);
+  setTimeout(() => {
+    const el = document.querySelector('#page-' + page + ' [data-block="' + slug + '"]');
+    if (!el) { if (typeof toast === 'function') toast('Placed on "' + page + '", but its box isn\'t on screen right now.', ''); return; }
+    // If the box is empty (hidden), briefly reveal a placeholder so you can SEE its spot.
+    if (getComputedStyle(el).display === 'none') {
+      el.style.display = '';
+      if (!el.textContent.trim()) {
+        el.dataset._ph = '1';
+        el.innerHTML = '<span style="opacity:.55;font-style:italic">Empty — add text in Admin block #' + ((window.BLOCK_NUM && window.BLOCK_NUM[slug]) || '?') + '</span>';
+      }
+    }
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('cb-flash');
+    setTimeout(() => {
+      el.classList.remove('cb-flash');
+      if (el.dataset._ph) { delete el.dataset._ph; el.innerHTML = ''; el.style.display = 'none'; }
+    }, 3000);
+  }, 500);
+}
+if (typeof window !== 'undefined') window.adminGoToBlock = adminGoToBlock;
+
+function numberContentBlocks() {
+  const blocks = document.querySelectorAll('[id^="adminBlock-"]');
+  const map = {};
+  blocks.forEach((el, i) => {
+    const n = i + 1;
+    const slug = el.id.replace('adminBlock-', '');
+    map[slug] = n;
+    const hd = el.querySelector('.admin-block-hd');
+    if (hd && !hd.querySelector('.admin-block-num')) {
+      const chip = document.createElement('span');
+      chip.className = 'admin-block-num';
+      chip.textContent = n;
+      hd.insertBefore(chip, hd.firstChild);
+    }
+    // Make the header a link to where the block appears (if it's placed).
+    if (hd && !hd.dataset.linked && _blockPage(slug)) {
+      hd.dataset.linked = '1';
+      hd.classList.add('cb-hd-link');
+      hd.title = 'Click to jump to where this block appears on the site';
+      hd.addEventListener('click', () => adminGoToBlock(slug));
+    }
+  });
+  window.BLOCK_NUM = map;
+  stampContentBlockNums();
+}
+function stampContentBlockNums() {
+  const map = window.BLOCK_NUM; if (!map) return;
+  document.querySelectorAll('[data-block]').forEach(el => {
+    const n = map[el.getAttribute('data-block')];
+    if (n && el.getAttribute('data-cbnum') != n) el.setAttribute('data-cbnum', n);
+  });
+}
+if (typeof window !== 'undefined') {
+  window.numberContentBlocks = numberContentBlocks;
+  window.stampContentBlockNums = stampContentBlockNums;
 }
 
 async function loadContentBlocks() {
@@ -4595,6 +4676,11 @@ export async function init() {
 
   // Load content blocks for all users (public read)
   loadContentBlocks();
+
+  // Content-block number badges (refinement aid): number the Admin editors and
+  // stamp the matching #N onto each live box. Remove the 'cbnums' class to hide.
+  document.body.classList.add('cbnums');
+  try { numberContentBlocks(); } catch (e) { console.error('[init] numberContentBlocks:', e); }
 }
 
 // Keyboard shortcuts

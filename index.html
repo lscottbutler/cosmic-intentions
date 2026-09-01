@@ -164,7 +164,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   // Edit this array once and it updates on every page.
   window.colbLinksHTML = function () {
     var S = [
-      ["Cosmic Library", [
+      ["Courses", [
         ["navTo('entcard')", "Entrepreneur Course", ""],
         ["navTo('cosmiclibrary')", "50 Things People Want Most", ""]
       ]],
@@ -206,12 +206,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     ["dailyfocus",    "navTo('dailyfocus')",    "♥ Favorites Autoplay", "#E88020", "#fff"],
     ["gratitude",     "navTo('gratitude')",     "Gratitude",      "#E8A828", "#1C2230"],
     ["dashboard",     "goMemberDashboard()",    "Inner Citadel",  "#E8C830", "#1C2230"],
-    ["meditation",    "navTo('meditation')",    "Meditation",     "#A8C830", "#1C2230"],
+    ["meditation",    "navTo('meditation')",    "Meditate",       "#A8C830", "#1C2230"],
     ["mynotes",       "navTo('mynotes')",       "Notes",          "#48B860", "#fff"],
     ["notes",         "navTo('notes')",         "Thoughts",       "#38A888", "#fff"],
     ["wins",          "navTo('wins')",          "Wins",           "#2898A8", "#fff"],
-    ["myroadmap",     "openMyRoadmap()",        "Roadmap",        "#7888A8", "#fff"],
-    ["vizlibrary",    "openVizLibrary()",       "Viz Library",    "#3878A8", "#fff"]
+    ["myroadmap",     "openMyRoadmap()",        "The Map",        "#7888A8", "#fff"],
+    ["vizlibrary",    "openVizLibrary()",       "Visualize",      "#3878A8", "#fff"]
   ];
   window.colbTabColor = function (page) {
     for (var i = 0; i < window.COLB_TABS.length; i++) if (window.COLB_TABS[i][0] === page) return window.COLB_TABS[i][3];
@@ -1125,7 +1125,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- QUICK WIN — tick a real habit / My Action / roadmap step right here; each tap logs the actual win -->
         <button onclick="var p=document.getElementById('quickWinPanel');var open=p.style.display==='none';p.style.display=open?'block':'none';this.querySelector('.qw-chev').textContent=open?'⌄':'›';if(open&&window.renderQuickWin)renderQuickWin();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:#F5A623;">&#10022;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Log A Win</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Quick Win</span>
           <span class="qw-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <div id="quickWinPanel" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 20px;margin:-4px 0 12px;">
@@ -1141,29 +1141,29 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY FAVORITES AUTOPLAY — jump to the ♥-pinned "Play My Day" page -->
         <button onclick="navTo('dailyfocus')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:var(--pink,#ff8ab8);">&#9829;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Play My Favorites</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Favorites Autoplay</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
         <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Daily Habits</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Daily Habits</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#10022;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Creative Visualization Library</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Visualize</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Roadmap</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">The Map</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
         <button onclick="var b=document.getElementById('medBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.med-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditation Session</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Meditate</span>
           <span class="med-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATIONS picker — banner + teal timer grid; hidden until Meditate is tapped -->
@@ -1210,7 +1210,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- GRATITUDE — inline dropdown (like Meditate): reveals the gratitude timer picker below -->
         <button onclick="var b=document.getElementById('gratBox');var open=b.style.display==='none';b.style.display=open?'block':'none';this.querySelector('.grat-chev').textContent=open?'⌄':'›';if(open&&window.syncSessionHearts)syncSessionHearts();" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">♥</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Practice Gratitude</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Gratitude</span>
           <span class="grat-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- GRATITUDE picker — teal timer grid; hidden until Gratitude is tapped. Each dot plays the gratitude session, which closes the Big 3 Gratitude ring on finish. -->
@@ -1266,7 +1266,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
         <button onclick="var b=document.getElementById('goalsBox');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('.goals-chev').textContent=o?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9678;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">My Goals</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">The Pegboard</span>
           <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
@@ -1429,7 +1429,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <div class="setup-page-header">
         <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
-        <h1>My Goals</h1>
+        <h1>The Pegboard</h1>
         <p>Your identity, purpose and goals. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
 
@@ -1587,7 +1587,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-vizlibrary">
     <div class="pg-frame pf-viz">
       <div class="pg-bezel">
-        <div class="pg-hdr">Visualization Library</div>
+        <div class="pg-hdr">Visualize</div>
         <div class="pg-screen">
           <button onclick="navTo('dashboard')" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
       <style>
@@ -1654,7 +1654,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
          duplicate "My Roadmap" title removed, BACK moved inside the white screen. -->
     <div class="pg-frame">
       <div class="pg-bezel">
-        <div class="pg-hdr">MY ROADMAP</div>
+        <div class="pg-hdr">THE MAP</div>
         <div class="pg-screen">
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <!-- "How your roadmap works" moved into the ⓘ info popover next to the title. -->
@@ -1728,7 +1728,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-meditation">
     <div class="pg-frame pf-navy">
       <div class="pg-bezel">
-        <div class="pg-hdr">Meditation</div>
+        <div class="pg-hdr">Meditate</div>
         <div class="pg-screen">
           <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
           <p class="pg-intro">Quiet the mind before you begin.</p>
@@ -1849,20 +1849,25 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <!-- Quick links to the two libraries on this page. -->
             <div class="cl-lib-nav">
               <button class="cl-lib-btn" onclick="navTo('entcard')">Entrepreneur Course</button>
-              <button class="cl-lib-btn" onclick="var e=document.getElementById('fiftyThingsGrid'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'});">50 Things People Want Most</button>
+              <button class="cl-lib-btn" onclick="var d=document.querySelector('#page-cosmiclibrary .cl-section-drop'); if(d){d.open=true; d.scrollIntoView({behavior:'smooth',block:'start'});}">50 Things People Want Most</button>
             </div>
             <!-- "The Successful Entrepreneur" 4-forces overview, as a collapsible
                  dropdown (filled by renderCosmicLibrary). -->
             <div id="entOverviewDropdown"></div>
-            <h3 class="cl-section-title">Entrepreneur Library</h3>
-            <!-- 3-column grid of every Entrepreneur card image; filled by renderCosmicLibrary()
-                 from ENT_CARDS. Each image opens its corresponding card. -->
-            <div id="cosmicLibraryGrid" class="cl-imggrid"></div>
+            <!-- Entrepreneur Library — collapsible dropdown holding the four force
+                 sections (LEG WORK / SMART THINKING / DRIVE / GRIT & DETERMINATION),
+                 filled by renderCosmicLibrary() into #cosmicLibraryGrid. -->
+            <details class="cl-section-drop" open>
+              <summary class="cl-section-drop__sum"><span class="cl-section-drop__bar">Entrepreneur Library<span class="cl-section-drop__chev">&#9662;</span></span></summary>
+              <div id="cosmicLibraryGrid" class="cl-imggrid"></div>
+            </details>
 
-            <h3 class="cl-section-title" style="margin-top:28px;">50 Things People Want Most</h3>
-            <!-- 3-column grid of the 50 things. Placeholder art reuses the ENT card images
-                 for this initial setup; filled by renderCosmicLibrary() from FIFTY_THINGS. -->
-            <div id="fiftyThingsGrid" class="cl-imggrid"></div>
+            <!-- 50 Things — collapsible dropdown; the grid inside is filled by
+                 renderCosmicLibrary() from FIFTY_THINGS. -->
+            <details class="cl-section-drop">
+              <summary class="cl-section-drop__sum"><span class="cl-section-drop__bar">50 Things People Want Most<span class="cl-section-drop__chev">&#9662;</span></span></summary>
+              <div id="fiftyThingsGrid" class="cl-imggrid"></div>
+            </details>
           </div><!-- /cosmicLibraryBody -->
           </div><!-- /pg-2col-main -->
           <aside class="pg-2col-side">

@@ -638,6 +638,18 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-card--cap { display:flex; flex-direction:column; background:#fff; }
 #page-cosmiclibrary .cl-card-cap { line-height:1.25; font-size:12px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; color:#26364b; padding:9px 8px 11px; text-align:center; }
 @media (max-width:560px){ #page-cosmiclibrary .cl-imggrid { grid-template-columns:repeat(2,1fr); } }
+/* 50 Things — collapsible section dropdown (matches the force dropdowns above). */
+#page-cosmiclibrary .cl-section-drop { margin:28px 0 12px; }
+#page-cosmiclibrary .cl-section-drop__sum { list-style:none; cursor:pointer; display:block; }
+#page-cosmiclibrary .cl-section-drop__sum::-webkit-details-marker { display:none; }
+#page-cosmiclibrary .cl-section-drop__bar { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:15px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#26364b; padding:11px 16px; background:#eef2f6; border:1px solid #dbe2ea; border-radius:10px; }
+#page-cosmiclibrary .cl-section-drop__chev { color:#26364b; font-size:15px; transition:transform .2s; flex-shrink:0; }
+#page-cosmiclibrary .cl-section-drop[open] .cl-section-drop__chev { transform:rotate(180deg); }
+#page-cosmiclibrary .cl-section-drop .cl-imggrid { margin-top:12px; }
+/* Closed <details> must hide its content — the ID-specific display rules above
+   (.cl-imggrid display:grid / .ent-force-groups display:block) would otherwise
+   beat the browser's default "hide closed content" rule. */
+#page-cosmiclibrary .cl-section-drop:not([open]) > *:not(summary) { display:none !important; }
 
 /* Entrepreneur Library grouped by force — section heading, its cards, and a
    one-sentence "why this is crucial" under each card. */
@@ -799,6 +811,31 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 /* Golden-opportunity quote card at the bottom of Column B — hidden for now
    (sprinkleNotes() re-shows it with display:'', so !important is required). */
 [data-random-note="quote"][data-home-thought] { display: none !important; }
+
+/* ── CONTENT-BLOCK NUMBER BADGES (refinement aid) ──────────────────────────
+   Each editor in the Admin "Content Blocks" section is numbered, and the SAME
+   number is shown as a small badge inside that block's live box on the site, so
+   you can match a box on any page to its Admin editor. Toggled by body.cbnums
+   (set at boot). To hide for launch: remove the .cbnums class / say "turn off
+   the block numbers". */
+.admin-block-num { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px; margin-right:8px; background:#1D3557; color:#fff; border-radius:6px; font:700 12px/1 ui-monospace,Menlo,Consolas,monospace; vertical-align:middle; }
+body.cbnums [data-block][data-cbnum] { position:relative; }
+body.cbnums [data-block][data-cbnum]::after {
+  content:'#' attr(data-cbnum);
+  position:absolute; top:4px; right:6px; z-index:5;
+  background:#1D3557; color:#fff; font:700 11px/1 ui-monospace,Menlo,Consolas,monospace;
+  padding:3px 6px; border-radius:6px; letter-spacing:.5px; pointer-events:none;
+}
+/* Admin content-block header is a LINK to where the block lives on the site. */
+.admin-block-hd.cb-hd-link { cursor:pointer; border-radius:8px; transition:background .12s; }
+.admin-block-hd.cb-hd-link:hover { background:rgba(29,53,87,.08); }
+.admin-block-hd.cb-hd-link::after { content:' \2197'; color:#1D3557; font-weight:800; }
+/* Flash-highlight the target box when you jump to it from Admin. */
+.cb-flash { animation: cb-flash-kf .9s ease-in-out 3; }
+@keyframes cb-flash-kf {
+  0%,100% { box-shadow:0 0 0 0 rgba(245,166,35,0); }
+  50% { box-shadow:0 0 0 4px rgba(245,166,35,.95), 0 0 18px 4px rgba(245,166,35,.5); }
+}
 #citadelNav > #dashQuickAdd  { order:10; }
 #citadelNav > #medBox        { order:3; }
 #citadelNav > #gratBox       { order:9; }
