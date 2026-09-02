@@ -1504,6 +1504,16 @@ function _goalCircleStyle(idx) {
   const c = GOAL_COLORS[((idx % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   return 'background:' + c.bg + ';color:' + c.text;
 }
+// Pretty date; falls back to the raw value if it isn't a parseable date.
+function _fmtDate(d) { if (!d) return ''; const x = new Date(d); return isNaN(x.getTime()) ? String(d) : x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+// Start date + "My Reality On or Before" target date, shown under a goal's title.
+function _goalDatesHTML(g) {
+  const sd = _fmtDate(g && g.startDate), td = _fmtDate(g && g.targetDate);
+  const none = '<span style="opacity:.55">not set</span>';
+  return '<div style="padding:0 6px 14px;font-size:13px;line-height:1.7;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 22px;">' +
+    '<span><strong style="color:var(--text);">Start date:</strong> ' + (sd || none) + '</span>' +
+    '<span><strong style="color:var(--text);">My Reality On or Before:</strong> ' + (td || none) + '</span></div>';
+}
 
 /* Darken a hex color by fraction f (0-1) — used for the goal-card circles so
    they read as a deeper shade of the card, not black. */
@@ -2413,6 +2423,7 @@ export function openVizGoal(idx) {
         <button onclick="rerollGoalVisualization(${idx})" title="Get a different image for this goal" style="position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;">&#8635;</button>
       </div>
       <div style="background:${s.bg};color:${s.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;margin-bottom:12px;">${esc(it?.title || '')}</div>
+      ${_goalDatesHTML(it)}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
         ${acts.map(([k,ic,lbl]) =>
           `<button onclick="playGoalInWorkspace(${idx},'${k}',event)" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;"><span style="font-size:14px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
@@ -3150,7 +3161,9 @@ export function renderVaultSidebar() {
       listEl.innerHTML = filtered.map((i, listIdx) => {
         const shade    = GREY_SHADES[i._idx % GREY_SHADES.length];   // by goal index so the workspace title matches this card
         const circle   = darkenHex(shade.bg, 0.5);   // circles = a deeper shade of the card color, not black
-        const gc       = GOAL_COLORS[i._idx % GOAL_COLORS.length] || { bg: circle, text: '#fff' };   // colored letter circle
+        const _letr    = goalLetter(i, i._idx);
+        const _lci     = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : (Number.isFinite(i._idx) ? i._idx : listIdx);
+        const gc       = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: circle, text: '#fff' };   // letter circle keyed by the goal LETTER (A=red, B=orange…) so it's always coloured + consistent
         const isSelected = selectedVaultIdx === i._idx;
         const isFav    = Array.isArray(_favs) && _favs.some(f => f && f.player === 'mindset' && f.goal === i._idx);
         // DVB image is no longer shown inline in the list — it opens in Column B on select.
@@ -3773,10 +3786,28 @@ function buildDailyNote(intent, idx) {
   return pool[(dayOfYear + (idx || 0)) % pool.length];
 }
 
+/* Jump to the goals editor AND straight to this exact goal to tweak it. */
+export function editGoalDirect(idx) {
+  if (typeof window.navTo === 'function') window.navTo('setup');
+  setTimeout(() => {
+    const el = document.getElementById('pb-goal-' + idx);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('cb-flash');
+    setTimeout(() => el.classList.remove('cb-flash'), 2500);
+    const ta = el.querySelector('textarea');
+    if (ta) ta.focus();
+  }, 400);
+}
+if (typeof window !== 'undefined') window.editGoalDirect = editGoalDirect;
+
 /* ── WORKSPACE HEADER — goal card + brand banner ──────── */
 function buildWorkspaceHeader(intent, idx) {
   const color = CARD_COLORS[idx % CARD_COLORS.length];
   const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same palette as the goal box → title matches its card
+  const _letr = goalLetter(intent, idx);
+  const _lci  = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : (Number.isFinite(idx) ? idx : 0);
+  const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   return `
     <div style="padding:12px 16px 0;">
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
@@ -3789,18 +3820,18 @@ function buildWorkspaceHeader(intent, idx) {
       <!-- Admin-editable note (slug: goal-viz-note) — hidden until you add text on the Admin page. -->
       <div data-block="goal-viz-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:10px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:14px 16px;margin:0 4px 8px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;background:${shade.bg};color:${shade.text};padding:20px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${esc(intent.title)}</div>
+        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;"><span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:${gc.bg};color:${gc.text};font-weight:800;font-size:16px;">${goalLetter(intent, idx)}</span><span style="min-width:0;">${esc(intent.title)}</span></div>
+        <button class="bs-close-btn" onclick="editGoalDirect(${idx})" title="Edit this exact goal">&#9998;</button>
         <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
-        ${[['3min','&#9673;','3 MIN']].map(([k,ic,lbl]) =>
-          `<button onclick="playGoalInWorkspace(${idx},'${k}',event)"
-            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;">
-            <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">${ic}</span>${lbl}</button>`
-        ).join('')}
-        <button onclick="closeVaultBuildSheet()"
-          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--brand);border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
-          <span style="font-size:13px;line-height:1;color:var(--brand);">&#8592;</span>BACK TO MY GOALS</button>
+      ${_goalDatesHTML(intent)}
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px 4px 10px;">
+        <button onclick="openMyRoadmap()" title="Go to your Action Plan"
+          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
+          <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#9678;</span>MY ACTION PLAN</button>
+        <button onclick="openVizGoal(${idx})" title="Visualize this goal"
+          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
+          <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#10022;</span>VISUALIZATION</button>
       </div>
       <!-- QUICK-VIZ TIMERS — one tap drops an experienced user straight into a visualization of a set length -->
       <div style="display:flex;gap:10px;align-items:stretch;background:#1AA5BA;border:3px solid #F2911E;border-radius:12px;padding:12px;margin:4px 4px 12px;">
@@ -3812,12 +3843,6 @@ function buildWorkspaceHeader(intent, idx) {
         </div>
         <button onclick="openVizLibrary();event.stopPropagation()" title="More visualization options"
           style="flex-shrink:0;width:54px;background:#7C5CC4;border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#9776;</button>
-      </div>
-      <div class="dashboard-note-container">
-        <div class="dashboard-note-box">
-          <span class="note-pin-icon">📍</span>
-          <p class="dashboard-note-text">${esc(buildDailyNote(intent, idx))}</p>
-        </div>
       </div>
       <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
         <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
