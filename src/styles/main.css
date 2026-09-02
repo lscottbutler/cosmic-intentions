@@ -821,10 +821,27 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 .admin-block-num { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px; margin-right:8px; background:#1D3557; color:#fff; border-radius:6px; font:700 12px/1 ui-monospace,Menlo,Consolas,monospace; vertical-align:middle; }
 body.cbnums [data-block][data-cbnum] { position:relative; }
 body.cbnums [data-block][data-cbnum]::after {
-  content:'#' attr(data-cbnum);
+  content:'#' attr(data-cbnum) '  \270E EDIT';
   position:absolute; top:4px; right:6px; z-index:5;
   background:#1D3557; color:#fff; font:700 11px/1 ui-monospace,Menlo,Consolas,monospace;
   padding:3px 6px; border-radius:6px; letter-spacing:.5px; pointer-events:none;
+}
+/* The numbered box is clickable → jumps to its Admin editor (refinement view). */
+body.cbnums [data-block][data-cbnum] { cursor:pointer; }
+body.cbnums [data-block][data-cbnum]:hover { outline:2px solid rgba(29,53,87,.4); outline-offset:2px; }
+body.cbnums [data-block][data-cbnum]:hover::after { background:#e0102b; }
+/* Refinement view: reveal the EMPTY per-page admin paragraph box (intro-note-*)
+   so every page shows the same title → data box → admin paragraph structure and
+   you can see where to drop text. Only in body.cbnums — turns off with the block
+   numbers at launch. Filled boxes ignore this (they're not :empty). */
+body.cbnums [data-block^="intro-note-"]:empty {
+  display:block !important;
+  background:#fafbfc !important; border:1.5px dashed #c3ccd6 !important; box-shadow:none !important;
+  color:#8a97a6;
+}
+body.cbnums [data-block^="intro-note-"]:empty::before {
+  content:'\270E  Admin paragraph (block #' attr(data-cbnum) ') — add text on the Admin page';
+  font-style:italic; font-size:14px;
 }
 /* Admin content-block header is a LINK to where the block lives on the site. */
 .admin-block-hd.cb-hd-link { cursor:pointer; border-radius:8px; transition:background .12s; }

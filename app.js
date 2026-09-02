@@ -4140,6 +4140,33 @@ if (typeof window !== 'undefined') {
   window.stampContentBlockNums = stampContentBlockNums;
 }
 
+// Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
+// adminGoToBlock). Scroll to it, flash it, focus the editor for a quick edit.
+function adminEditBlock(slug) {
+  if (typeof window.navTo === 'function') window.navTo('admin');
+  setTimeout(() => {
+    const ab = document.getElementById('adminBlock-' + slug);
+    if (!ab) return;
+    ab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    ab.classList.add('cb-flash');
+    setTimeout(() => ab.classList.remove('cb-flash'), 3000);
+    const ed = document.getElementById('admin-editor-' + slug);
+    if (ed) ed.focus();
+  }, 400);
+}
+if (typeof window !== 'undefined') {
+  window.adminEditBlock = adminEditBlock;
+  // Refinement view only: clicking any numbered content box jumps to its Admin
+  // editor. Delegated so it works for boxes injected/re-rendered at any time.
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('cbnums')) return;
+    const box = e.target.closest('[data-block][data-cbnum]');
+    if (!box) return;
+    if (e.target.closest('a,button,input,select,textarea')) return;   // don't hijack real controls inside
+    adminEditBlock(box.getAttribute('data-block'));
+  });
+}
+
 async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
