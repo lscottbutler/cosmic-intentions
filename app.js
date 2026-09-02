@@ -641,6 +641,11 @@ export async function doSignUp() {
   const name  = document.getElementById('su-name').value.trim();
   const email = document.getElementById('su-email').value.trim();
   const pass  = document.getElementById('su-pass').value;
+  const code  = (document.getElementById('su-code')?.value || '').trim();
+  // Invite-only while in build. Change INVITE_CODE to rotate it. (Soft gate — the
+  // hard lock is "Disable new signups" in Supabase → Auth settings.)
+  const INVITE_CODE = 'COSMIC-2026';
+  if (code.toUpperCase() !== INVITE_CODE.toUpperCase()) { showAuthError('Sign-ups are invite-only right now — enter your invite code.'); return; }
   if (!name)            { showAuthError('Enter your name.'); return; }
   if (!email)           { showAuthError('Enter your email.'); return; }
   if (pass.length < 8)  { showAuthError('Password must be at least 8 characters.'); return; }
