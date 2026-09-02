@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI — Column A as content (not a menu)</title>
+<style>
+  :root{--ink:#161a1f;--muted:#6b7684;--line:#e7eaee;--bg:#f6f7f9;--card:#fff;--navy:#1D3557;--red:#e0102b;--amber:#F5A623;--dark:#1c1c1c;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;background:var(--dark);color:#fff}
+  .wm{font-weight:900;letter-spacing:5px;font-size:14px}.wm span{color:var(--amber)}
+  .tr{display:flex;align-items:center;gap:12px}
+  .step{background:none;border:none;color:#c7ccd3;font-size:11px;letter-spacing:1.5px;font-weight:700;cursor:pointer}
+  .cta{background:var(--red);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-weight:800;font-size:12px;letter-spacing:.5px;cursor:pointer}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 22px 60px;display:grid;grid-template-columns:1fr 260px;gap:24px;align-items:start}
+  @media(max-width:820px){.wrap{grid-template-columns:1fr}}
+  .h1{font-size:26px;font-weight:800;letter-spacing:1px;margin:2px 0 2px}
+  .kick{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:800;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+  .kick::after{content:'';flex:1;height:1px;background:var(--line)}
+  .intro{background:var(--card);border:1px solid #cfe4fb;border-radius:12px;padding:14px 16px;color:#3a4a63;font-size:13.5px;margin:10px 0 4px}
+  .adminbox{border:1.5px dashed #c3ccd6;border-radius:12px;padding:12px 16px;color:#8a97a6;font-style:italic;font-size:13px;margin:10px 0 4px}
+
+  /* Pegboard goal cards with action strip */
+  .goal{display:flex;gap:0;margin:0 12px 12px;border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(20,40,80,.06)}
+  .goal .main{flex:1;display:flex;align-items:center;gap:12px;background:#f1f2f4;padding:14px 16px}
+  .goal .badge{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .goal .txt{font-size:14px;font-weight:600;color:#20262e}
+  .goal .strip{display:flex;background:#e7e9ed;flex-shrink:0}
+  .goal .strip button{width:44px;border:none;background:none;cursor:pointer;font-size:15px;color:#333;border-left:1px solid #d7dbe0}
+  .addint{display:block;width:calc(100% - 24px);margin:2px 12px 0;background:var(--dark);color:#fff;border:none;border-radius:10px;padding:13px;font-weight:800;font-size:13px;cursor:pointer}
+
+  /* Visualize card */
+  .viz{margin:2px 12px 0;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 6px 18px rgba(20,40,80,.10)}
+  .viz .art{height:150px;background:linear-gradient(135deg,#233b6e,#3a6ea8 60%,#57c0d8);display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;padding:18px}
+  .viz .art b{font-size:18px;font-weight:800;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .viz .bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);padding:12px 16px}
+  .viz .bar span{font-size:13px;color:var(--muted)}
+  .viz .play{background:var(--navy);color:#fff;border:none;border-radius:999px;padding:9px 18px;font-weight:800;font-size:12px;cursor:pointer}
+
+  .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 12px}
+  .b3{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center}
+  .b3 .ring{width:44px;height:44px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--line)}
+  .b3.done .ring{border-color:#3ec46d;background:#eafaef}
+  .b3 .k{font-weight:800;font-size:13px}.b3 .v{font-size:11px;color:var(--muted)}
+
+  .hab{display:flex;align-items:center;justify-content:space-between;color:#fff;border-radius:10px;padding:11px 15px;margin:0 12px 8px;font-weight:700;font-size:13px}
+  .hab.m{background:#E88A2A}.hab.d{background:#2F8F8F}.hab.e{background:#7A5CC0}
+
+  /* Column B rail — navigation only (neutral) */
+  .rail .navitem{display:block;width:100%;text-align:left;background:var(--dark);color:#fff;border:none;border-radius:8px;padding:12px 14px;margin-bottom:8px;font-weight:800;letter-spacing:1.5px;font-size:12px;cursor:pointer;border-left:4px solid transparent}
+  .rail .navitem.active{border-left-color:var(--navy);background:#2a2f37}
+  .rail .lbl{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:800;margin:0 0 10px}
+  .gear{margin-top:10px;text-align:center}.gear button{background:none;border:none;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer}
+  .note{max-width:1120px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:12.5px}.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="wm">THE <span>INNER CITADEL</span></div>
+    <div class="tr"><button class="step">STEP AWAY</button><button class="cta">+ ADD INTENTION</button></div>
+  </div>
+
+  <div class="wrap">
+    <!-- COLUMN A = the work (no button menu) -->
+    <main>
+      <div class="h1">The Inner Citadel</div>
+      <div class="intro">Welcome back. One visualization and two habits stand between you and a Perfect Day.</div>
+      <div class="adminbox">✎ Admin paragraph — your editable message drops in here.</div>
+
+      <!-- Land straight on the Pegboard -->
+      <div class="kick">The Pegboard · your goals</div>
+      <div class="goal"><div class="main"><span class="badge" style="background:#e0102b">A</span><span class="txt">I AM LAUNCHING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER</span></div><div class="strip"><button>♡</button><button>▶</button><button>✎</button></div></div>
+      <div class="goal"><div class="main"><span class="badge" style="background:#e8742a">B</span><span class="txt">I AM PERFECT EYE HEALTH</span></div><div class="strip"><button>♡</button><button>▶</button><button>✎</button></div></div>
+      <div class="goal"><div class="main"><span class="badge" style="background:#e0a020">C</span><span class="txt">I AM THE PROUD OWNER OF A XIAOMI SU7</span></div><div class="strip"><button>♡</button><button>▶</button><button>✎</button></div></div>
+      <button class="addint">+ Add Intention</button>
+
+      <!-- Then Visualize, in context -->
+      <div class="kick">Visualize · goal A</div>
+      <div class="viz">
+        <div class="art"><b>I AM LAUNCHING COSMIC INTENTIONS<br>GLOBALLY THIS SEPTEMBER</b></div>
+        <div class="bar"><span>3-min · 10-min · countdown</span><button class="play">▶ Visualize now</button></div>
+      </div>
+
+      <!-- Daily loop -->
+      <div class="kick">Today</div>
+      <div class="big3">
+        <div class="b3 done"><div class="ring">✓</div><div class="k">Tasks</div><div class="v">2 / 3</div></div>
+        <div class="b3"><div class="ring">✦</div><div class="k">Visualize</div><div class="v">not yet</div></div>
+        <div class="b3"><div class="ring">☑</div><div class="k">Habits</div><div class="v">6 / 9</div></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="hab m"><span>Morning</span><span>2/4 ▸</span></div>
+      <div class="hab d"><span>Day</span><span>3/3 ▸</span></div>
+      <div class="hab e"><span>Evening</span><span>1/2 ▸</span></div>
+    </main>
+
+    <!-- COLUMN B = navigation ONLY -->
+    <aside class="rail">
+      <div class="lbl">Navigation</div>
+      <button class="navitem active">TODAY</button>
+      <button class="navitem">PRACTICE</button>
+      <button class="navitem">THE MAP</button>
+      <button class="navitem">LIBRARY</button>
+      <button class="navitem">WINS</button>
+      <div class="gear"><button>⚙ Admin</button></div>
+    </aside>
+  </div>
+
+  <div class="note"><b>The point:</b> Column A no longer repeats the menu — you land straight on your <b>Pegboard</b> and a <b>Visualize</b> card, so the screen is full of *your* stuff, not buttons. Column B is the only navigation. (Rail shown here as the 5 groups; could stay as your current tabs — that's a separate call.)</div>
+</body>
+</html>

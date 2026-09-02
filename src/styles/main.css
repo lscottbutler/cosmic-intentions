@@ -727,7 +727,7 @@ details.rm-drop[open]::details-content { height: auto; }
 .title-info-btn { width: 24px; height: 24px; border-radius: 50%; background: currentColor; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-left: 12px; padding: 0; position: relative; top: -4px; flex-shrink: 0; }
 .title-info-btn::before { content: 'i'; color: #fff; font: italic 700 15px Georgia, 'Times New Roman', serif; line-height: 1; }
 .title-info-btn:hover { filter: brightness(1.1); }
-.title-info-pop { background: #fff; border: 1px solid #cfd8e3; border-radius: 12px; box-shadow: 0 12px 34px rgba(20,40,80,.16); padding: 16px 20px; margin: 0 0 16px; max-width: 660px; color: #333; font-size: 14px; line-height: 1.7; text-transform: none; letter-spacing: normal; }
+.title-info-pop { background: #fff; border: 1px solid #cfd8e3; border-radius: 12px; box-shadow: 0 12px 34px rgba(20,40,80,.16); padding: 16px 20px; margin: 0 18px 16px; max-width: 660px; color: #333; font-size: 14px; line-height: 1.7; text-transform: none; letter-spacing: normal; }
 .title-info-pop .ti-cols { display: flex; gap: 24px; flex-wrap: wrap; }
 .title-info-pop .ti-cols ul { flex: 1; min-width: 220px; margin: 0; padding-left: 20px; line-height: 1.9; }
 
@@ -806,7 +806,7 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 #citadelNav > button:nth-of-type(7)  { order:3; }   /* Meditation Session */
 #citadelNav > button:nth-of-type(8)  { order:9; }   /* Practice Gratitude */
 #citadelNav > button:nth-of-type(9)  { order:4; }   /* Mind Loop */
-#citadelNav > button:nth-of-type(10) { order:6; }   /* My Goals */
+#citadelNav > button:nth-of-type(10) { order:0; grid-column:1/-1; }   /* Goals / Intentions — leads Column A, full width, above the nav buttons */
 #citadelNav > #quickWinPanel { order:11; }   /* Quick Win panel opens at the BOTTOM of the nav grid, not inline after Log A Win */
 /* Golden-opportunity quote card at the bottom of Column B — hidden for now
    (sprinkleNotes() re-shows it with display:'', so !important is required). */
@@ -857,7 +857,7 @@ body.cbnums [data-block^="intro-note-"]:empty::before {
 #citadelNav > #medBox        { order:3; }
 #citadelNav > #gratBox       { order:9; }
 #citadelNav > #mindLoopBox   { order:4; }
-#citadelNav > #goalsBox      { order:6; }
+#citadelNav > #goalsBox      { order:0; }   /* goals render right under the Goals / Intentions header */
 
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {
@@ -2129,6 +2129,14 @@ input, textarea, select {
 .admin-toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
 .admin-tb-btn { background: var(--border); border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .admin-tb-btn:hover { background: var(--border-2); }
+.admin-tb-inserts { display: inline-flex; gap: 6px; margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--border, #e6e8eb); }
+.admin-tb-btn.admin-tb-insert { background: #1D3557; color: #fff; letter-spacing: .3px; }
+.admin-tb-btn.admin-tb-insert:hover { background: #294a77; }
+/* Live preview of the info box, shown under the admin editor. */
+.ib-preview { margin: 12px 0 4px; }
+.ib-preview-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a97a6; font-weight: 800; margin: 0 0 6px; }
+.ib-preview-body { pointer-events: none; }
+.ib-preview-body:empty { display: none; }
 /* Sequential block number (white on a black circle) in each block's toolbar,
    so you can tell at a glance which block is which. Auto-counts every .admin-block. */
 .admin-page { counter-reset: cblock; }
@@ -2521,6 +2529,19 @@ input, textarea, select {
 .vault-row { display: flex; gap: 10px; align-items: stretch; }
 .vault-row > .vault-item { flex: 1 1 auto; width: auto; }
 .vault-actions { flex: 0 0 25%; display: flex; align-items: center; justify-content: space-evenly; gap: 6px; background: #e6e8ec; border-radius: 10px; padding: 6px 8px; box-sizing: border-box; }
+/* Encouragement stickers — the home-row images ARE the buttons. Press one to
+   hear + see a warm, personalized line. Peppered wherever the band appears. */
+.encourage-band img { cursor: pointer; transition: transform .12s ease; }
+.encourage-band img:hover { transform: scale(1.14); }
+.encourage-band img:active { transform: scale(.96); }
+/* The pop card that appears when you press an encouragement sticker. */
+.encourage-pop { position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 22px); z-index: 2147483000;
+  display: flex; align-items: center; gap: 14px; max-width: min(92vw, 460px);
+  background: #fff; border: 1px solid #e6e9ee; border-radius: 16px; box-shadow: 0 18px 50px rgba(20,40,80,.25);
+  padding: 16px 20px 16px 16px; opacity: 0; transition: opacity .3s ease, transform .3s ease; cursor: pointer; }
+.encourage-pop.show { opacity: 1; transform: translate(-50%, 0); }
+.encourage-pop img { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
+.encourage-pop p { margin: 0; font-size: 16px; line-height: 1.4; color: #1b2330; font-weight: 600; }
 .vault-act { width: 36px; height: 36px; border-radius: 50%; background: #000; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #fff; padding: 0; flex-shrink: 0; transition: filter .12s; }
 .vault-act:hover { filter: brightness(1.35); }
 .vault-act.is-fav svg { fill: #fff; }

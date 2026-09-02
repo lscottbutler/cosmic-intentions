@@ -398,7 +398,7 @@ export function showPage(id) {
   // Intro card at the top of Column A on selected pages, then the admin-editable
   // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
-  if (typeof window.injectIntroAdminBox === 'function') window.injectIntroAdminBox();
+  if (typeof window.wireInfoBoxAdmin === 'function') window.wireInfoBoxAdmin();
   if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
 
   closeDrawer();
@@ -4043,10 +4043,37 @@ function _isJunkBlock(html) {
   if (txt.length < 8) return false;
   return new Set(txt.toLowerCase()).size <= 2;
 }
+/* ── INFO-BOX RICH INSERTS ────────────────────────────────────────────────────
+   Admin can drop tokens into any content block; they expand to real embeds/players
+   when the box renders. Tokens survive contenteditable (they're just text):
+     {{video:URL}}            → responsive YouTube embed
+     {{player:visualize}}     → "Take a minute to visualize" launch card
+     {{player:meditate}}      → "Take a minute to meditate"
+     {{player:gratitude}}     → "Take a minute to give thanks" */
+function _videoEmbed(url) {
+  const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([\w-]{11})/);
+  const src = m ? `https://www.youtube.com/embed/${m[1]}` : String(url);
+  return `<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;margin:8px 0;"><iframe src="${esc(src)}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+}
+function _playerCard(type) {
+  const M = {
+    visualize: { icon: '✦', label: 'Take a minute to visualize',   sub: 'Picture it done',        go: "navTo('vizlibrary')" },
+    meditate:  { icon: '☾', label: 'Take a minute to meditate',    sub: 'Quiet the mind',         go: "navTo('meditation')" },
+    gratitude: { icon: '❤', label: 'Take a minute to give thanks', sub: 'Appreciate what is yours', go: "navTo('gratitude')" },
+  };
+  const c = M[type]; if (!c) return '';
+  return `<div class="ib-player" role="button" tabindex="0" onclick="${c.go}" style="display:flex;align-items:center;gap:14px;cursor:pointer;background:#111;color:#fff;border-radius:12px;padding:14px 16px;margin:8px 0;"><span style="font-size:24px;line-height:1;flex-shrink:0;">${c.icon}</span><span style="flex:1;min-width:0;"><span style="display:block;font-weight:800;font-size:15px;">${c.label}</span><span style="display:block;font-size:12px;opacity:.72;">${c.sub}</span></span><span style="font-size:20px;opacity:.8;flex-shrink:0;">&rsaquo;</span></div>`;
+}
+function _expandBlockTokens(html) {
+  if (!html || String(html).indexOf('{{') < 0) return html;
+  return String(html)
+    .replace(/\{\{video:([^}]+)\}\}/g, (m, u) => _videoEmbed(u.trim()))
+    .replace(/\{\{player:(visualize|meditate|gratitude)\}\}/g, (m, t) => _playerCard(t));
+}
 function _fillBlockEl(el, content) {
   if (content && content.trim() && !_isJunkBlock(content)) {
     if (CARD_BLOCKS.has(el.getAttribute('data-block')) && typeof window.renderBlockCard === 'function') window.renderBlockCard(el, content);
-    else el.innerHTML = content;
+    else el.innerHTML = _expandBlockTokens(content);
     el.style.display = '';
   } else { el.style.display = 'none'; }
 }
@@ -4138,6 +4165,61 @@ function stampContentBlockNums() {
 if (typeof window !== 'undefined') {
   window.numberContentBlocks = numberContentBlocks;
   window.stampContentBlockNums = stampContentBlockNums;
+}
+
+/* Admin inserts — drop a token into a content-block editor at the caret. */
+function _adminInsertAtCaret(slug, text) {
+  const ed = document.getElementById('admin-editor-' + slug);
+  if (!ed) return;
+  ed.focus();
+  try { if (!document.execCommand('insertText', false, text)) ed.innerHTML += text; }
+  catch (e) { ed.innerHTML += text; }
+  ed.dispatchEvent(new Event('input', { bubbles: true }));
+}
+export function adminInsertVideo(slug) {
+  const url = window.prompt('Paste a YouTube (or video) link to embed in this box:');
+  if (url && url.trim()) _adminInsertAtCaret(slug, ' {{video:' + url.trim() + '}} ');
+}
+export function adminInsertPlayer(slug, type) { _adminInsertAtCaret(slug, ' {{player:' + type + '}} '); }
+/* Add the rich-insert buttons + a LIVE PREVIEW to every info-box (intro-note-*)
+   editor. The preview renders the box exactly as members will see it (tokens
+   expanded), so the admin never has to think about raw HTML/tokens. */
+function enhanceInfoBoxToolbars() {
+  document.querySelectorAll('[id^="adminBlock-intro-note-"]').forEach(holder => {
+    if (holder.dataset.ibEnhanced) return;
+    const slug = holder.id.replace('adminBlock-', '');
+    const tb = holder.querySelector('.admin-toolbar');
+    const ed = document.getElementById('admin-editor-' + slug);
+    if (!tb || !ed) return;
+    holder.dataset.ibEnhanced = '1';
+    // 1) Rich-insert buttons.
+    const grp = document.createElement('span');
+    grp.className = 'admin-tb-inserts';
+    [['🎬 Video', "adminInsertVideo('" + slug + "')"],
+     ['✦ Visualize', "adminInsertPlayer('" + slug + "','visualize')"],
+     ['☾ Meditate', "adminInsertPlayer('" + slug + "','meditate')"],
+     ['❤ Give thanks', "adminInsertPlayer('" + slug + "','gratitude')"]].forEach(([label, onclick]) => {
+      const b = document.createElement('button');
+      b.className = 'admin-tb-btn admin-tb-insert'; b.type = 'button';
+      b.setAttribute('onclick', onclick); b.textContent = label;
+      grp.appendChild(b);
+    });
+    tb.appendChild(grp);
+    // 2) Live preview under the editor.
+    const prev = document.createElement('div');
+    prev.className = 'ib-preview';
+    prev.innerHTML = '<div class="ib-preview-label">Live preview &mdash; how this info box will look</div><div class="ib-preview-body page-intro-card"></div>';
+    ed.insertAdjacentElement('afterend', prev);
+    const body = prev.querySelector('.ib-preview-body');
+    const render = () => { const html = _expandBlockTokens(ed.innerHTML || ''); body.innerHTML = html; body.style.display = (html && html.replace(/<[^>]*>/g, '').trim()) || /<(iframe|img|div|button)/i.test(html) ? '' : 'none'; };
+    ed.addEventListener('input', render);
+    render();
+  });
+}
+if (typeof window !== 'undefined') {
+  window.adminInsertVideo = adminInsertVideo;
+  window.adminInsertPlayer = adminInsertPlayer;
+  window.enhanceInfoBoxToolbars = enhanceInfoBoxToolbars;
 }
 
 // Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
@@ -4257,7 +4339,7 @@ export async function saveContentBlock(slug) {
   setTimeout(() => { st.textContent = ''; }, 3000);
   // Push live immediately to any display elements on page
   document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
-    if (body) { el.innerHTML = body; el.style.display = ''; }
+    if (body) { el.innerHTML = _expandBlockTokens(body); el.style.display = ''; }
     else el.style.display = 'none';
   });
 }
@@ -4579,9 +4661,9 @@ function injectPlaceholderCards() {
     // not the outer frame — inject there so the cards sit in the content, not the frame edge.
     const wrap = page.querySelector('.viz-main, .pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
-    if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // top: under the title
+    if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // the info box, under the title
     else wrap.insertBefore(_makePhCard(), wrap.firstChild);
-    wrap.appendChild(_makePhCard());                                        // bottom: end of page
+    // (bottom placeholder card removed — one admin-controlled info box per page)
   });
 }
 
@@ -4708,6 +4790,7 @@ export async function init() {
   // stamp the matching #N onto each live box. Remove the 'cbnums' class to hide.
   document.body.classList.add('cbnums');
   try { numberContentBlocks(); } catch (e) { console.error('[init] numberContentBlocks:', e); }
+  try { enhanceInfoBoxToolbars(); } catch (e) { console.error('[init] enhanceInfoBoxToolbars:', e); }
 }
 
 // Keyboard shortcuts

@@ -850,7 +850,7 @@ export function renderWrapup() {
       <div style="padding:0;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 14px;background:#1D3557;color:#fff;border-radius:10px;cursor:pointer;">
-            <span style="font-size:10pt;font-weight:800;line-height:1.15;">ACTION PLAN</span>
+            <span style="font-size:10pt;font-weight:800;line-height:1.15;">YOUR STEPS</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
               <span style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,0.55);display:inline-flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-weight:800;font-size:11px;letter-spacing:.5px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};white-space:nowrap;">${chk.done}/${chk.total}</span>
               <span class="rm-caret" style="display:inline-block;color:#fff;">▾</span>

@@ -164,10 +164,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   // Edit this array once and it updates on every page.
   window.colbLinksHTML = function () {
     var S = [
-      ["Courses", [
-        ["navTo('entcard')", "Entrepreneur Course", ""],
-        ["navTo('cosmiclibrary')", "50 Things People Want Most", ""]
-      ]],
       ["Admin", [
         ["navTo('admin')", "Admin", ""],
         ["window.open('/landing','_blank')", "Landing Page 1", "colb-link--ext"],
@@ -210,7 +206,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     ["mynotes",       "navTo('mynotes')",       "Notes",          "#48B860", "#fff"],
     ["notes",         "navTo('notes')",         "Thoughts",       "#38A888", "#fff"],
     ["wins",          "navTo('wins')",          "Wins",           "#2898A8", "#fff"],
-    ["myroadmap",     "openMyRoadmap()",        "The Map",        "#7888A8", "#fff"],
+    ["myroadmap",     "openMyRoadmap()",        "Action Plan",    "#7888A8", "#fff"],
     ["vizlibrary",    "openVizLibrary()",       "Visualize",      "#3878A8", "#fff"]
   ];
   window.colbTabColor = function (page) {
@@ -303,19 +299,21 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       else main.insertAdjacentHTML('afterbegin', window.PAGE_INTRO_CARD);
     }
   };
-  // Admin-editable text box that sits directly UNDER whatever intro card a page has
-  // (.page-intro-card from injectPageIntro OR .ci-ph-card from injectPlaceholderCards).
-  // One per page, slug intro-note-<id>; edited on the Admin page; hidden until filled.
-  window.injectIntroAdminBox = function () {
+  // The page's INFO BOX (.page-intro-card / .ci-ph-card) IS the admin-editable block.
+  // Convert it in place: give it data-block="intro-note-<id>" and let the admin
+  // content fill it (empty = hidden in production, dashed placeholder in the
+  // refinement view). One box per page, edited on the Admin page → complete admin
+  // control over the info box. Replaces the old separate note box.
+  window.wireInfoBoxAdmin = function () {
     var active = document.querySelector('.page.active'); if (!active) return;
     var id = active.id.replace('page-', '');
     var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'runthroughs', 'vizlibrary', 'wins', 'entcard'];
     if (WANT.indexOf(id) < 0) return;
     var slug = 'intro-note-' + id;
-    if (active.querySelector('[data-block="' + slug + '"]')) return;   // once per page
     var card = active.querySelector('.page-intro-card, .ci-ph-card');
-    if (!card) return;
-    card.insertAdjacentHTML('afterend', '<div data-block="' + slug + '" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.07);padding:16px 20px;margin:0 0 16px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>');
+    if (!card || card.getAttribute('data-block') === slug) return;   // no box, or already wired
+    card.setAttribute('data-block', slug);
+    card.innerHTML = '';   // drop the placeholder Lorem — the admin content fills the box
     if (typeof window.injectContentBlocks === 'function') window.injectContentBlocks();
   };
 
@@ -638,12 +636,17 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="home-col-left">
 
           <h2 style="margin:0 0 10px;color:var(--text);font-size:22px;font-weight:800;letter-spacing:.3px;line-height:1.2;">Welcome to the Cosmic Intentions Community</h2>
+
+          <!-- Block: home-welcome — admin-editable, directly under the headline (the green zone) -->
+          <div class="cb-display" data-block="home-welcome"></div>
+
           <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 0 14px;">
             <img src="images/home-welcome-languages.jpg" alt="" style="flex:1;min-width:160px;max-width:300px;height:auto;">
           </div>
           <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;opacity:.85;">There are lots of new and exciting things happening including the introduction of the Entrepreneur Library.</p>
-          <!-- Decorative sticker band (home-row webp images) — spread these out on request. -->
-          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 16px;margin:20px 0 6px;">
+          <!-- Sticker band (home-row webp images) — each image is an ENCOURAGEMENT BUTTON:
+               tap any sticker to hear + see a warm, personalized line (playEncouragement). -->
+          <div class="encourage-band" onclick="if(event.target.tagName==='IMG')playEncouragement()" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 16px;margin:20px 0 6px;">
             <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" style="height:70px;width:auto;">
             <img src="images/home-row/home-tiger.webp" alt="" loading="lazy" style="height:70px;width:auto;">
             <img src="images/home-row/home-panda.webp" alt="" loading="lazy" style="height:70px;width:auto;">
@@ -676,9 +679,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- Entrepreneur Library Slideshow -->
           <div class="ent-slideshow"></div>
-
-          <!-- Block: home-welcome -->
-          <div class="cb-display" data-block="home-welcome"></div>
 
           <!-- INFO BLOCK — paragraph + 5 bullets + one rotating thought from My Thoughts -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:12px;">
@@ -1157,7 +1157,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </button>
         <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">The Map</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Action Plan</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
@@ -1266,13 +1266,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
         <button onclick="var b=document.getElementById('goalsBox');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('.goals-chev').textContent=o?'⌄':'›';" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9678;</span>
-          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">The Pegboard</span>
-          <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Goals / Intentions</span>
+          <span class="goals-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">&#8964;</span>
         </button>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
              #colb-selection-state), so it functions identically to its old location. -->
-        <div id="goalsBox" style="display:none; margin-bottom:16px;">
+        <div id="goalsBox" style="display:block; margin-bottom:16px;">
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
@@ -1429,7 +1429,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <div class="setup-page-header">
         <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
-        <h1>The Pegboard</h1>
+        <h1>Goals / Intentions</h1>
         <p>Your identity, purpose and goals. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
 
@@ -1654,7 +1654,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
          duplicate "My Roadmap" title removed, BACK moved inside the white screen. -->
     <div class="pg-frame">
       <div class="pg-bezel">
-        <div class="pg-hdr">THE MAP</div>
+        <div class="pg-hdr">ACTION PLAN</div>
         <div class="pg-screen">
             <p style="margin:0 0 10px;color:#26364b;font-size:15px;line-height:1.6;">This is the plan for your most important goal — turned into concrete steps by AI. Work one step at a time; your Action Plan below always shows the one thing to do next.</p>
             <!-- "How your roadmap works" moved into the ⓘ info popover next to the title. -->
