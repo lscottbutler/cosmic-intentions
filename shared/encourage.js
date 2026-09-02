@@ -75,7 +75,29 @@ export function encourageButtonHTML(cls) {
   return '<button class="encourage-btn ' + (cls || '') + '" onclick="playEncouragement()" title="Tap for a boost" aria-label="A little encouragement"><img src="' + ENCOURAGE_STICKER + '" alt="" draggable="false"></button>';
 }
 
+/* ── PEPPER — one encouragement sticker on each of these pages (10 total), each a
+   different home-row image, dropped right under the page title. Tap = a boost. */
+const PEPPER_IMGS = ['home-rocket', 'home-tiger', 'home-dunk', 'home-batter', 'home-bullhorn', 'home-hand-bird', 'home-record-player', 'home-flowers', 'home-panda', 'home-travel'];
+const PEPPER_PAGES = ['dashboard', 'myroadmap', 'wins', 'runthroughs', 'meditation', 'gratitude', 'notes', 'mynotes', 'cosmiclibrary', 'vizlibrary'];
+export function sprinkleEncouragements() {
+  const active = document.querySelector('.page.active'); if (!active) return;
+  const id = active.id.replace('page-', '');
+  const idx = PEPPER_PAGES.indexOf(id); if (idx < 0) return;
+  // Live in Column B (the navigation column), under the nav circles.
+  const col = active.querySelector('.vault-sidebar, .pg-2col-side, .pg-side, .viz-side');
+  if (!col || col.querySelector('.encourage-inline')) return;   // no Column B, or once already
+  const img = PEPPER_IMGS[idx % PEPPER_IMGS.length];
+  // No label / no tooltip — it's an easter egg. Click it for a surprise boost.
+  const html = '<div class="encourage-inline encourage-band">' +
+    '<button onclick="playEncouragement()" aria-label="A little encouragement"><img src="images/home-row/' + img + '.webp" alt="" draggable="false"></button>' +
+    '</div>';
+  const nav = col.querySelector(':scope > .colb-nav');
+  if (nav) nav.insertAdjacentHTML('afterend', html);   // right under the 3 nav circles
+  else col.insertAdjacentHTML('afterbegin', html);
+}
+
 if (typeof window !== 'undefined') {
   window.playEncouragement = playEncouragement;
   window.encourageButtonHTML = encourageButtonHTML;
+  window.sprinkleEncouragements = sprinkleEncouragements;
 }

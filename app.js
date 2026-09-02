@@ -400,6 +400,7 @@ export function showPage(id) {
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
   if (typeof window.wireInfoBoxAdmin === 'function') window.wireInfoBoxAdmin();
   if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
+  if (typeof window.sprinkleEncouragements === 'function') window.sprinkleEncouragements();
 
   closeDrawer();
   // Force top now, and again after layout settles, so async re-renders
@@ -4057,9 +4058,11 @@ function _videoEmbed(url) {
 }
 function _playerCard(type) {
   const M = {
-    visualize: { icon: '✦', label: 'Take a minute to visualize',   sub: 'Picture it done',        go: "navTo('vizlibrary')" },
-    meditate:  { icon: '☾', label: 'Take a minute to meditate',    sub: 'Quiet the mind',         go: "navTo('meditation')" },
+    visualize: { icon: '✦', label: 'Take a minute to visualize',   sub: 'Picture it done',          go: "navTo('vizlibrary')" },
+    meditate:  { icon: '☾', label: 'Take a minute to meditate',    sub: 'Quiet the mind',           go: "navTo('meditation')" },
     gratitude: { icon: '❤', label: 'Take a minute to give thanks', sub: 'Appreciate what is yours', go: "navTo('gratitude')" },
+    slideshow: { icon: '🎞', label: 'Take a minute — audio slideshow', sub: 'Your affirmations, on a loop', go: "encLaunch('slideshow')" },
+    board:     { icon: '🖼', label: 'Open your Digital Vision Board',   sub: 'See it. Feel it. Believe it.', go: "encLaunch('board')" },
   };
   const c = M[type]; if (!c) return '';
   return `<div class="ib-player" role="button" tabindex="0" onclick="${c.go}" style="display:flex;align-items:center;gap:14px;cursor:pointer;background:#111;color:#fff;border-radius:12px;padding:14px 16px;margin:8px 0;"><span style="font-size:24px;line-height:1;flex-shrink:0;">${c.icon}</span><span style="flex:1;min-width:0;"><span style="display:block;font-weight:800;font-size:15px;">${c.label}</span><span style="display:block;font-size:12px;opacity:.72;">${c.sub}</span></span><span style="font-size:20px;opacity:.8;flex-shrink:0;">&rsaquo;</span></div>`;
@@ -4068,7 +4071,16 @@ function _expandBlockTokens(html) {
   if (!html || String(html).indexOf('{{') < 0) return html;
   return String(html)
     .replace(/\{\{video:([^}]+)\}\}/g, (m, u) => _videoEmbed(u.trim()))
-    .replace(/\{\{player:(visualize|meditate|gratitude)\}\}/g, (m, t) => _playerCard(t));
+    .replace(/\{\{player:(visualize|meditate|gratitude|slideshow|board)\}\}/g, (m, t) => _playerCard(t));
+}
+// Launch the audio slideshow / vision board for the member's first goal (or send
+// them to pick one if they have none yet). Runs in app scope so `intentions` etc. resolve.
+if (typeof window !== 'undefined') {
+  window.encLaunch = function (what) {
+    const has = (typeof intentions !== 'undefined' && intentions && intentions.length);
+    if (what === 'board')     { has ? openVizGoal(0)        : (window.navTo && window.navTo('vizlibrary')); }
+    else                      { has ? launchAffirmations(0) : (window.navTo && window.navTo('vizlibrary')); }
+  };
 }
 function _fillBlockEl(el, content) {
   if (content && content.trim() && !_isJunkBlock(content)) {
@@ -4181,6 +4193,34 @@ export function adminInsertVideo(slug) {
   if (url && url.trim()) _adminInsertAtCaret(slug, ' {{video:' + url.trim() + '}} ');
 }
 export function adminInsertPlayer(slug, type) { _adminInsertAtCaret(slug, ' {{player:' + type + '}} '); }
+/* Insert the classic info-box layout: a full-width paragraph, then two columns of
+   bullets below (the old intro-card format). Editable HTML the admin fills in. */
+export function adminInsertCols(slug) {
+  const ed = document.getElementById('admin-editor-' + slug);
+  if (!ed) return;
+  const tpl = '<p>Write your intro here &mdash; this spans the full width.</p>' +
+    '<div class="ib-2col"><ul><li>Point one</li><li>Point two</li><li>Point three</li></ul>' +
+    '<ul><li>Point four</li><li>Point five</li><li>Point six</li></ul></div><p><br></p>';
+  ed.focus();
+  try { if (!document.execCommand('insertHTML', false, tpl)) ed.innerHTML += tpl; }
+  catch (e) { ed.innerHTML += tpl; }
+  ed.dispatchEvent(new Event('input', { bubbles: true }));
+}
+/* Add the "2 Columns" layout button to EVERY content-block toolbar. */
+function addColsButtonToToolbars() {
+  document.querySelectorAll('[id^="adminBlock-"] .admin-toolbar').forEach(tb => {
+    if (tb.dataset.colsBtn) return;
+    const holder = tb.closest('[id^="adminBlock-"]'); if (!holder) return;
+    tb.dataset.colsBtn = '1';
+    const slug = holder.id.replace('adminBlock-', '');
+    const b = document.createElement('button');
+    b.className = 'admin-tb-btn admin-tb-insert'; b.type = 'button';
+    b.setAttribute('onclick', "adminInsertCols('" + slug + "')");
+    b.textContent = '▤ 2 Columns';
+    tb.appendChild(b);
+  });
+}
+if (typeof window !== 'undefined') { window.adminInsertCols = adminInsertCols; window.addColsButtonToToolbars = addColsButtonToToolbars; }
 /* Add the rich-insert buttons + a LIVE PREVIEW to every info-box (intro-note-*)
    editor. The preview renders the box exactly as members will see it (tokens
    expanded), so the admin never has to think about raw HTML/tokens. */
@@ -4198,7 +4238,9 @@ function enhanceInfoBoxToolbars() {
     [['🎬 Video', "adminInsertVideo('" + slug + "')"],
      ['✦ Visualize', "adminInsertPlayer('" + slug + "','visualize')"],
      ['☾ Meditate', "adminInsertPlayer('" + slug + "','meditate')"],
-     ['❤ Give thanks', "adminInsertPlayer('" + slug + "','gratitude')"]].forEach(([label, onclick]) => {
+     ['❤ Give thanks', "adminInsertPlayer('" + slug + "','gratitude')"],
+     ['🎞 Slideshow', "adminInsertPlayer('" + slug + "','slideshow')"],
+     ['🖼 Vision Board', "adminInsertPlayer('" + slug + "','board')"]].forEach(([label, onclick]) => {
       const b = document.createElement('button');
       b.className = 'admin-tb-btn admin-tb-insert'; b.type = 'button';
       b.setAttribute('onclick', onclick); b.textContent = label;
@@ -4791,6 +4833,7 @@ export async function init() {
   document.body.classList.add('cbnums');
   try { numberContentBlocks(); } catch (e) { console.error('[init] numberContentBlocks:', e); }
   try { enhanceInfoBoxToolbars(); } catch (e) { console.error('[init] enhanceInfoBoxToolbars:', e); }
+  try { addColsButtonToToolbars(); } catch (e) { console.error('[init] addColsButtonToToolbars:', e); }
 }
 
 // Keyboard shortcuts

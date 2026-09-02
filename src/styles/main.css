@@ -2126,7 +2126,8 @@ input, textarea, select {
 .admin-block { background: var(--off); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
 .admin-block-hd { background: var(--off); padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .admin-block-slug { font-size: 10px; color: var(--muted); font-family: monospace; }
-.admin-toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
+.admin-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
+.admin-tb-inserts { flex-wrap: wrap; }
 .admin-tb-btn { background: var(--border); border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .admin-tb-btn:hover { background: var(--border-2); }
 .admin-tb-inserts { display: inline-flex; gap: 6px; margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--border, #e6e8eb); }
@@ -2148,7 +2149,10 @@ input, textarea, select {
   background: #000; color: #fff; border-radius: 50%;
   font-size: 12px; font-weight: 800; font-family: inherit;
 }
-.admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: var(--black); line-height: 1.7; outline: none; width: 100%; max-width: 100%; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word; }
+.admin-editor { min-height: 80px; padding: 12px 16px; font-size: 13px; color: #111; line-height: 1.7; outline: none; width: 100%; max-width: 100%; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word; }
+/* Force ALL editor text black & readable — overrides light inline colors pasted
+   in from elsewhere (incl. struck-through / highlighted text). */
+.admin-editor, .admin-editor * { color: #111 !important; background-color: transparent !important; }
 .admin-editor *, .admin-editor p, .admin-editor div, .admin-editor span {
   max-width: 100% !important;
   width: auto !important;
@@ -2534,6 +2538,16 @@ input, textarea, select {
 .encourage-band img { cursor: pointer; transition: transform .12s ease; }
 .encourage-band img:hover { transform: scale(1.14); }
 .encourage-band img:active { transform: scale(.96); }
+/* Peppered encouragement sticker — an easter egg: big, centered in Column B under
+   the nav circles, no label. Click for a surprise boost. */
+.encourage-inline { display: flex; justify-content: center; margin: 12px auto 16px; }
+.encourage-inline button { background: none; border: none; padding: 0; cursor: pointer; line-height: 0; }
+.encourage-inline img { width: 110px; height: 110px; object-fit: contain; }
+/* "2 Columns" info-box layout: full-width paragraph above, two columns below.
+   Renders as two columns in the info box + live preview; stacks inside the editor
+   (the .admin-editor display:block rule), which is fine — the preview shows real. */
+.ib-2col { display: flex; gap: 24px; flex-wrap: wrap; margin: 6px 0; }
+.ib-2col > ul { flex: 1; min-width: 200px; margin: 0; padding-left: 20px; line-height: 1.8; }
 /* The pop card that appears when you press an encouragement sticker. */
 .encourage-pop { position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 22px); z-index: 2147483000;
   display: flex; align-items: center; gap: 14px; max-width: min(92vw, 460px);
