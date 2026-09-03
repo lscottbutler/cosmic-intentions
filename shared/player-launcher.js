@@ -1,4 +1,4 @@
-import { closeDrawer } from '../app.js';
+import { closeDrawer, goalCase } from '../app.js';
 import { markPillar, pillarForSrc } from './rings.js';
 
 /* Pillar of the player currently open in the column — set on open,
@@ -299,7 +299,7 @@ export function renderFavorites() {
     const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const _t = favType(f);
     const _label = _t === 'note' ? (f.text || f.title || 'Note')
-                 : f.player === 'mindset' ? (f.title || 'Goal visualization')
+                 : f.player === 'mindset' ? goalCase(f.title || 'Goal visualization')
                  : (f.player === 'gratitude' && f.ep != null) ? (GRAT_EP_TITLES[f.ep] || ('Episode ' + f.ep))
                  : (FAV_LABEL[f.player] || f.player);
     const _meta = _t === 'note' ? 'card'
@@ -310,7 +310,7 @@ export function renderFavorites() {
       '<div class="fav-main" style="flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:' + rowBg + ';border:1px solid #e02020;border-radius:6px;padding:11px 14px;cursor:pointer;">' +
         '<span class="fav-grip" title="Drag to reorder" style="cursor:grab;color:#666;font-size:20px;line-height:.55;letter-spacing:-4px;">&#8942;&#8942;</span>' +
         '<input type="checkbox" style="width:20px;height:20px;accent-color:#e02020;cursor:pointer;">' +
-        `<span style="flex:1;min-width:0;font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(_label)}</span>` +
+        `<span style="flex:1;min-width:0;font-size:15px;font-weight:400;color:#fff;line-height:1.35;overflow-wrap:anywhere;">${_esc(_label)}</span>` +
         `<span style="margin-left:auto;flex-shrink:0;color:#cfcfcf;font-size:14px;">${_meta}</span>` +
       '</div>' +
       '<div class="vault-actions">' +

@@ -82,6 +82,19 @@ export function goalLetter(intention, idx) {
   return s;
 }
 
+/* Goal titles DISPLAY as "I AM launching…" — keep a leading "I AM" (or lone "I")
+   uppercase, lowercase the rest. The stored title is untouched (edited as-typed). */
+export function goalCase(t) {
+  if (t == null) return t;
+  const s = String(t);
+  let m = s.match(/^(\s*)(i\s+am)\b(.*)$/is);
+  if (m) return m[1] + 'I AM' + m[3].toLowerCase();
+  m = s.match(/^(\s*)(i)\b(.*)$/is);
+  if (m) return m[1] + 'I' + m[3].toLowerCase();
+  return s.toLowerCase();
+}
+if (typeof window !== 'undefined') window.goalCase = goalCase;
+
 /* ─────────────────────────────────────────────────────────
    SUPABASE INIT
 ───────────────────────────────────────────────────────── */
@@ -2369,7 +2382,7 @@ export function renderVizLibrary() {
     <div class="vault-row">
       <button class="vault-item" onmousedown="event.preventDefault()" onclick="vizLibToggle(${idx})" style="background:${s.bg};color:${s.text}">
         ${goalBadge(goalLetter(it, idx), _goalColor(idx).bg, _goalColor(idx).text, 34)}
-        <div class="vault-item-body"><div class="vault-item-title" style="color:${s.text}">${esc(it.title || '')}</div></div>
+        <div class="vault-item-body"><div class="vault-item-title" style="color:${s.text}">${esc(goalCase(it.title || ''))}</div></div>
       </button>
       <div class="vault-actions">
         <button class="vault-act${isFav ? ' is-fav' : ''}" onclick="toggleGoalFavorite(${idx}, event)" title="${isFav ? 'Remove from' : 'Add to'} favorites" aria-label="Favorite">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</button>
@@ -3249,7 +3262,7 @@ export function renderVaultSidebar() {
             style="background:${shade.bg};color:${shade.text}">
             ${goalBadge(goalLetter(i, i._idx), gc.bg, gc.text, 34)}
             <div class="vault-item-body">
-              <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
+              <div class="vault-item-title" style="color:${shade.text}">${esc(goalCase(i.title))}</div>
             </div>
           </button>
           <div class="vault-actions">
@@ -3996,7 +4009,7 @@ function buildWorkspaceHeader(intent, idx) {
   return `
     <div style="padding:12px 16px 0;">
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:2px 4px 4px;">
-        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(intent.title)}</span></div>
+        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(goalCase(intent.title))}</span></div>
         <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
         <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
       </div>

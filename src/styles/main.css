@@ -799,7 +799,9 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 /* Collapse to a single column on very narrow phones. */
 @media (max-width: 420px) { #citadelNav { grid-template-columns: 1fr !important; } }
 /* Citadel nav LABELS: just a touch above the 16px body text (was rendering too big) */
-#citadelNav > button > span[style*="flex:1"] { font-size: 16px !important; }
+#citadelNav > button > span[style*="flex:1"] { font-size: 16px !important; text-transform: uppercase; letter-spacing: .3px; }
+/* Column-A / Task List headers all-caps site-wide. */
+#taskListWidget summary span { text-transform: uppercase; }
 /* trim the ">" chevrons down to match */
 #citadelNav > button > span:last-child { font-size: 15px !important; }
 /* Top-right name removed — the "Welcome back, {name}" greeting covers it. */
@@ -2511,6 +2513,10 @@ input, textarea, select {
 #notesSections,
 #vizLibList,
 #todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
+/* My Favorites Autoplay: the autoplay button + cards are indented 20px (via
+   .player-times-grid). Indent the intro line the same so the whole block is
+   clearly inset, matching the other pages. */
+#page-dailyfocus .pg-body-main > p { padding-left: 20px; padding-right: 20px; box-sizing: border-box; }
 .vault-list {
   overflow-y: visible;
   padding: 6px 0;

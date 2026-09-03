@@ -1,6 +1,6 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
-import { LS, esc, toast, buildContext, getPB, goalBadge, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey } from '../app.js';
 import { setTaskWin } from './wins.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
@@ -652,7 +652,7 @@ function _todayChecklist() {
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
-        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(it.title)}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(goalCase(it.title))}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
       </summary>
       <div class="wtabs">
         <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
@@ -683,7 +683,7 @@ function _todayChecklist() {
       allTaskCards += `<div style="margin-bottom:10px;">
         <button onclick="wrapupTaskGoalToggle(${idx})" style="width:100%;display:flex;align-items:center;gap:10px;background:${shade.bg};color:${shade.text};border:none;border-radius:10px;padding:11px 14px;cursor:pointer;font-family:var(--vault-mono);font-weight:400;font-size:11pt;letter-spacing:.5px;text-align:left;">
           ${goalBadge(letter, gc.bg, gc.text, 24)}
-          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.title)}</span>
+          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(goalCase(it.title))}</span>
           <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:10px;opacity:.85;">${_aiRowArr.length}</span>
           <span id="taskGoalArr-${idx}" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#000;color:#fff;font-size:10px;transition:transform .2s;transform:rotate(${gOpen ? '0' : '-90'}deg);">▾</span>
         </button>
@@ -879,7 +879,7 @@ export function renderWrapup() {
       <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
           <summary style="display:flex;align-items:center;gap:14px;padding:9px 16px;background:var(--ink,#111);color:#fff;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:1;">
-            <span style="flex-shrink:0;line-height:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11.5" cy="14.5" r="9.4"/><circle cx="11.5" cy="14.5" r="6.1"/><circle cx="11.5" cy="14.5" r="2.8"/><circle cx="11.5" cy="14.5" r="0.5" fill="currentColor" stroke="none"/><path d="M11.5 14.5 L22.5 3.5"/><path d="M8.7 13.4 L11.5 14.5 L12.6 11.7"/><path d="M18 3.5 L22.5 3.5 L22.5 8"/></svg></span>
+            <span style="flex-shrink:0;line-height:0;"><svg width="18" height="18" viewBox="0 0 64 64" fill="currentColor"><path d="M57.3638,25.8994c0,0,3.9517-7.0232-1.0266-8.9007c-4.9778-1.8776-10.6816,9.374-10.6816,9.374s-4.5-0.8711-7.8044-0.6693c-2.6404,0.1616-7.4351,0.2857-6.8716,5.3135l-7.0715,1.5822c-0.241-1.0858,0.3589-2.043,1.4001-2.3601l3.1392-0.981c-0.6309-2.8903-2.2117-5.0723-4.1306-5.278c-2.6692-0.2861-4.9714,3.3087-4.939,8.0306c0.0327,4.7212,2.3835,8.2842,5.0491,7.9614c1.9829-0.2401,3.5745-2.5919,4.1157-5.6406l3.0879-0.4242c-0.4485,6.9872-3.4888,13.0157-7.6606,14.0447c-5.2856,1.3044-10.2678-5.7123-10.3379-15.902C13.5615,21.861,18.447,14.7759,23.75,16.0073c3.2314,0.7501,5.8296,4.4891,7.0969,9.3668c1.1057-0.9022,2.467-1.356,3.7678-1.5991c-1.707-7.6962-5.6868-14.0198-10.8982-15.7642c-8.6936-2.9095-17.3977,7.546-17.2839,24.0887s8.9609,26.8776,17.6135,23.8487c5.9927-2.0977,10.2561-10.2845,11.2556-19.594c1.6926,0.0295,3.5103-0.8217,4.7942-1.3865c3.0303-1.3336,6.6418-4.1288,6.6418-4.1288s10.2219,7.3921,13.7886,3.4439C64.0923,30.3339,57.3638,25.8994,57.3638,25.8994z"/></svg></span>
             <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Task List</span>
             <span class="rm-caret" style="flex-shrink:0;font-size:15px;opacity:.8;">▾</span>
           </summary>
