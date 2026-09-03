@@ -879,7 +879,7 @@ export function renderWrapup() {
       <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
           <summary style="display:flex;align-items:center;gap:14px;padding:9px 16px;background:var(--ink,#111);color:#fff;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:1;">
-            <span style="flex-shrink:0;line-height:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="13.5" r="7.5"/><circle cx="10.5" cy="13.5" r="3.6"/><circle cx="10.5" cy="13.5" r="0.6" fill="currentColor" stroke="none"/><path d="M10.5 13.5 L20.5 3.5"/><path d="M15.8 3.5 H20.5 V8.2"/></svg></span>
+            <span style="flex-shrink:0;line-height:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11.5" cy="14.5" r="9.4"/><circle cx="11.5" cy="14.5" r="6.1"/><circle cx="11.5" cy="14.5" r="2.8"/><circle cx="11.5" cy="14.5" r="0.5" fill="currentColor" stroke="none"/><path d="M11.5 14.5 L22.5 3.5"/><path d="M8.7 13.4 L11.5 14.5 L12.6 11.7"/><path d="M18 3.5 L22.5 3.5 L22.5 8"/></svg></span>
             <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Task List</span>
             <span class="rm-caret" style="flex-shrink:0;font-size:15px;opacity:.8;">▾</span>
           </summary>

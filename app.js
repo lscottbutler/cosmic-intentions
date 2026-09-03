@@ -3737,6 +3737,21 @@ export function slideToggle(el, forceOpen) {
   el.classList.add('cc-collapse');
   const isOpen = el.classList.contains('cc-open');
   const open = (forceOpen === undefined || forceOpen === null) ? !isOpen : !!forceOpen;
+  // Finalize only AFTER the max-height transition actually ends — a fixed timer can
+  // fire a hair early on a busy render and chop the last frames (the "slam shut").
+  if (el._ccTimer) { clearTimeout(el._ccTimer); el._ccTimer = null; }
+  if (el._ccEnd) { el.removeEventListener('transitionend', el._ccEnd); el._ccEnd = null; }
+  const finalize = (ev) => {
+    if (ev && (ev.target !== el || (ev.propertyName && ev.propertyName !== 'max-height'))) return;
+    el.removeEventListener('transitionend', finalize);
+    if (el._ccTimer) { clearTimeout(el._ccTimer); el._ccTimer = null; }
+    el._ccEnd = null;
+    if (el.classList.contains('cc-open')) el.style.maxHeight = 'none';   // opened → let content grow
+    else el.style.display = 'none';                                      // closed → remove from flow
+  };
+  el._ccEnd = finalize;
+  el.addEventListener('transitionend', finalize);
+  el._ccTimer = setTimeout(finalize, 1400);   // safety net if transitionend never fires
   if (open) {
     el.style.display = '';
     el.classList.add('cc-open');
@@ -3752,7 +3767,6 @@ export function slideToggle(el, forceOpen) {
     } else {
       el.style.maxHeight = el.scrollHeight + 'px'; el.style.opacity = '1';
     }
-    setTimeout(() => { if (el.classList.contains('cc-open')) el.style.maxHeight = 'none'; }, 1120);
   } else {
     el.style.maxHeight = el.scrollHeight + 'px'; el.style.opacity = '1';
     el.classList.remove('cc-open');
@@ -3760,7 +3774,6 @@ export function slideToggle(el, forceOpen) {
       if (el.classList.contains('cc-open')) return;
       el.style.maxHeight = '0px'; el.style.opacity = '0';
     }));
-    setTimeout(() => { if (!el.classList.contains('cc-open')) el.style.display = 'none'; }, 1120);
   }
   return open;
 }
@@ -3776,9 +3789,22 @@ export function toggleRoadmap() {
   if (a) a.style.transform = 'translateY(-50%) rotate(' + (open ? '0deg' : '-90deg') + ')';
 }
 
+/* Hide/show the goal's greeting box (goal-viz-note, "What would you like to do…")
+   when an action opens, so the content sits right under the header. Idempotent;
+   only acts when the box actually holds text. */
+function _setGreetingHidden(hidden) {
+  const greet = document.querySelector('#vaultWorkspaceHeader [data-block="goal-viz-note"]');
+  if (!greet || !greet.textContent.trim()) return;
+  const visible = greet.classList.contains('cc-open') ||
+    (greet.style.display !== 'none' && greet.style.maxHeight !== '0px' && greet.offsetHeight > 1);
+  if (hidden && visible) slideToggle(greet, false);
+  else if (!hidden && !visible) slideToggle(greet, true);
+}
+
 /* The VISUALIZATION button slides the goal's quick-viz timer box open/closed. */
 export function wsToggleViz(idx) {
-  slideToggle(document.getElementById('wsVizBox-' + idx));
+  const opened = slideToggle(document.getElementById('wsVizBox-' + idx));
+  _setGreetingHidden(opened);
 }
 if (typeof window !== 'undefined') window.wsToggleViz = wsToggleViz;
 
@@ -3798,9 +3824,11 @@ export function openActionPlan(idx) {
     if (tp && tp.classList.contains('cc-open')) slideToggle(tp, false);       // close the timeline panel too
     if (vbox && vbox.classList.contains('cc-open')) slideToggle(vbox, false); // roll up the visualization timers
     slideToggle(vz, false);
+    _setGreetingHidden(true);                          // hide the "what would you like to do" greeting
     if (row) row.style.gridTemplateColumns = '1fr';   // MY ACTION PLAN fills the row
   } else {
     slideToggle(vz, true);
+    _setGreetingHidden(false);                         // bring the greeting back
     if (row) row.style.gridTemplateColumns = 'repeat(2,1fr)';
   }
 }
@@ -3967,6 +3995,12 @@ function buildWorkspaceHeader(intent, idx) {
   const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   return `
     <div style="padding:12px 16px 0;">
+      <div style="position:relative;display:flex;align-items:center;gap:12px;padding:2px 4px 4px;">
+        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(intent.title)}</span></div>
+        <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
+        <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
+      </div>
+      <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalDissolve" style="position:absolute;inset:0;display:none;"></div>
@@ -3976,19 +4010,13 @@ function buildWorkspaceHeader(intent, idx) {
       </div>
       <!-- Admin-editable note (slug: goal-viz-note) — hidden until you add text on the Admin page. -->
       <div data-block="goal-viz-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:10px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:14px 16px;margin:0 4px 8px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
-      <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(intent.title)}</span></div>
-        <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
-        <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
-      </div>
-      <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
       <div id="wsBtnRow-${idx}" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px 4px 10px;">
+        <button id="wsVizBtn-${idx}" onclick="wsToggleViz(${idx})" title="Open your visualization timers"
+          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
+          <span style="line-height:0;color:var(--brand);flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:block;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg></span>VISUALIZATION</button>
         <button onclick="openActionPlan(${idx})" title="Open your Action Plan roadmap"
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
           <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#9678;</span>MY ACTION PLAN</button>
-        <button id="wsVizBtn-${idx}" onclick="wsToggleViz(${idx})" title="Open your visualization timers"
-          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
-          <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#10022;</span>VISUALIZATION</button>
       </div>
       <!-- QUICK-VIZ TIMERS — collapsed; opened by the VISUALIZATION button above -->
       <div id="wsVizBox-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">

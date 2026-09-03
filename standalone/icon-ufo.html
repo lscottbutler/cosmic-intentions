@@ -1,0 +1,43 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>UFO v2</title>
+<style>
+  body{margin:0;background:#1e1e1e;font-family:system-ui,sans-serif;color:#ddd;padding:30px;}
+  h2{font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:#9aa;margin:22px 0 12px;}
+  .row{display:flex;align-items:center;gap:40px;flex-wrap:wrap;}
+  .lab{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#9aa;}
+  .light{background:#fff;padding:20px 26px;border-radius:12px;}
+</style></head>
+<body>
+  <!-- Flat flying saucer, matching the sample: gray dome (+highlight), two-tone blue disc, rim lights, shadow -->
+  <svg style="display:none"><symbol id="ufo" viewBox="0 0 64 46">
+    <ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/>
+    <!-- disc: dark underside -->
+    <path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/>
+    <!-- disc: main body -->
+    <ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/>
+    <!-- disc: lighter top surface -->
+    <ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/>
+    <!-- rim lights -->
+    <circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/>
+    <circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/>
+    <circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/>
+    <circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/>
+    <circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/>
+    <!-- dome -->
+    <path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/>
+    <!-- dome highlight -->
+    <path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/>
+    <ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/>
+  </symbol></svg>
+
+  <h2>UFO v2 — dark bg (like Column B chrome area)</h2>
+  <div class="row">
+    <div class="lab"><svg width="60" height="43"><use href="#ufo"/></svg>60</div>
+    <div class="lab"><svg width="80" height="57"><use href="#ufo"/></svg>80</div>
+    <div class="lab"><svg width="110" height="79"><use href="#ufo"/></svg>110</div>
+  </div>
+  <h2>on white (Column B bg)</h2>
+  <div class="row">
+    <div class="light"><svg width="92" height="66"><use href="#ufo"/></svg></div>
+  </div>
+</body></html>

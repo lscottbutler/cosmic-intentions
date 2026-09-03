@@ -294,10 +294,14 @@ p, li, blockquote,
   background: #8f8f8f; border-radius: 50%;
   z-index: -1; pointer-events: none;
 }
-/* Center hamburger button 40% larger (46 → 64px), with a proportionally larger
-   circle so the reduced halo still wraps it. */
-.colb-nav-btn.colb-nav-menu { width: 64px; height: 64px; }
-.colb-nav-btn.colb-nav-menu::before { width: 74px; height: 74px; }
+/* Center menu button is now a bare UFO icon (no black circle / halo) — "where do
+   you want to go?". */
+.colb-nav-btn.colb-nav-menu {
+  width: auto; height: auto;
+  background: none !important; border: none !important; box-shadow: none !important; border-radius: 0;
+}
+.colb-nav-btn.colb-nav-menu::before { display: none !important; }
+.colb-nav-btn.colb-nav-menu:hover { filter: brightness(1.06); transform: translateY(-1px); }
 .colb-nav-btn {
   width: 46px; height: 46px; border-radius: 50%;
   background: #000; border: 6px solid #8f8f8f; cursor: pointer;
@@ -782,6 +786,8 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 #taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List (slot 11) */
 #citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; margin-bottom: 0 !important; }
 #citadelNav > button > span:first-child { display: none !important; }
+/* …except the Goals / Intentions header (button 10), which shows its bullseye badge. */
+#citadelNav > button:nth-of-type(10) > span:first-child { display: inline-flex !important; }
 /* The expandable/attached panels span both columns so they open full-width
    below their button instead of squeezing into one grid cell. */
 #citadelNav > #quickWinPanel,

@@ -463,10 +463,6 @@ function renderRoadmapAI(r, idx) {
 
   return `
     <div style="padding:4px 0 16px;">
-      <div style="background:#E84B3C;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
-        <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:0.5px;">${esc(r.intention || '')}</span>
-      </div>
-
       ${planDrop}
       ${provenDrop}
 
@@ -538,7 +534,6 @@ export function buildRoadmapPanel(intention, idx) {
 
   return `
     <div style="padding:16px;">
-      <div style="font-family:var(--vault-mono);font-size:22px;color:#F5A623;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;">◈ TODAY I WILL</div>
       ${intakeControls}
       <div id="panel-roadmap-ai-${idx}">
         ${renderRoadmapAI(intention.roadmapAI || { intention: intention.title || '', tasks: [], userTasks: [] }, idx)}
