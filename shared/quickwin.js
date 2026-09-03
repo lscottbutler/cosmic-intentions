@@ -1,4 +1,4 @@
-import { LS, esc, dayKey, intentions, GREY_SHADES, GOAL_COLORS, goalLetter, selectedVaultIdx } from '../app.js';
+import { LS, esc, dayKey, goalBadge, intentions, GREY_SHADES, GOAL_COLORS, goalLetter, selectedVaultIdx } from '../app.js';
 import { getHabitList, habitToggle } from './habits.js';
 import { wrapToggleAction } from './wrapup.js';
 import { toggleRoadmapTaskDone, toggleRoadmapUserTaskDone } from './card-builder.js';
@@ -73,7 +73,7 @@ function _goalBadge(idx) {
   const gc     = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#000', text: '#fff' };
   const letter = goalLetter(intentions[idx], idx);
   return `<button onclick="event.stopPropagation();qwOpenGoal(${idx})" title="Open goal ${letter}"
-    style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:${gc.bg};color:${gc.text};font-size:12px;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${letter}</button>`;
+    style="flex-shrink:0;border:none;cursor:pointer;background:none;padding:0;line-height:0;">${goalBadge(letter, gc.bg, gc.text, 24)}</button>`;
 }
 
 /* Open a goal's workspace and actually bring it into view. selectVaultIntention

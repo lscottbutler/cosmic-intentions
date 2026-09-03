@@ -1,6 +1,6 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
-import { LS, esc, toast, buildContext, getPB, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, goalBadge, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey } from '../app.js';
 import { setTaskWin } from './wins.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
@@ -652,7 +652,7 @@ function _todayChecklist() {
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
-        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${gc.bg};color:${gc.text};font-weight:800;font-size:12px;letter-spacing:0;">${letter}</span><span style="min-width:0;">${esc(it.title)}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(it.title)}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
       </summary>
       <div class="wtabs">
         <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
@@ -682,7 +682,7 @@ function _todayChecklist() {
       const gOpen = _taskGoalSel === idx;
       allTaskCards += `<div style="margin-bottom:10px;">
         <button onclick="wrapupTaskGoalToggle(${idx})" style="width:100%;display:flex;align-items:center;gap:10px;background:${shade.bg};color:${shade.text};border:none;border-radius:10px;padding:11px 14px;cursor:pointer;font-family:var(--vault-mono);font-weight:400;font-size:11pt;letter-spacing:.5px;text-align:left;">
-          <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${gc.bg};color:${gc.text};font-weight:800;font-size:12px;">${letter}</span>
+          ${goalBadge(letter, gc.bg, gc.text, 24)}
           <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.title)}</span>
           <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:10px;opacity:.85;">${_aiRowArr.length}</span>
           <span id="taskGoalArr-${idx}" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#000;color:#fff;font-size:10px;transition:transform .2s;transform:rotate(${gOpen ? '0' : '-90'}deg);">▾</span>
@@ -879,7 +879,7 @@ export function renderWrapup() {
       <div style="margin-bottom:12px;">
         <details class="rm-drop" ${_taskListOpen ? 'open' : ''} ontoggle="wrapupTaskListToggle(this.open)">
           <summary style="display:flex;align-items:center;gap:14px;padding:9px 16px;background:var(--ink,#111);color:#fff;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:1;">
-            <span style="flex-shrink:0;font-size:15px;line-height:1;">◈</span>
+            <span style="flex-shrink:0;line-height:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="13.5" r="7.5"/><circle cx="10.5" cy="13.5" r="3.6"/><circle cx="10.5" cy="13.5" r="0.6" fill="currentColor" stroke="none"/><path d="M10.5 13.5 L20.5 3.5"/><path d="M15.8 3.5 H20.5 V8.2"/></svg></span>
             <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Task List</span>
             <span class="rm-caret" style="flex-shrink:0;font-size:15px;opacity:.8;">▾</span>
           </summary>

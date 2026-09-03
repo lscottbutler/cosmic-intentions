@@ -1,4 +1,4 @@
-import { buildContext, callClaude, currentUser, esc, getPB, goalLetter, GREY_SHADES, GOAL_COLORS, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
+import { buildContext, callClaude, currentUser, esc, getPB, goalBadge, goalLetter, GREY_SHADES, GOAL_COLORS, intentions, renderDashboard, renderVaultSidebar, saveIntentions, selectVaultIntention, selectedVaultIdx, toast, uploadVisionImage } from '../app.js';
 import { launchAffirmationPlayer } from './player-launcher.js';
 import { setTaskWin } from './wins.js';
 /* ── CARD BUILDER + INTENTION MANAGEMENT ────────────────
@@ -20,7 +20,7 @@ export function buildCardHTML(intention, idx, color) {
     <!-- CARD HEADER -->
     <div class="card-header-v2" style="background:${color}" onclick="toggleCardV2(${idx})">
       <button class="card-play-btn" onclick="launchVisualization(${idx},3);event.stopPropagation()">▶</button>
-      <div class="card-num-circle" style="background:${(GOAL_COLORS[idx % GOAL_COLORS.length]||{}).bg};color:${(GOAL_COLORS[idx % GOAL_COLORS.length]||{}).text};">${goalLetter(intention, idx)}</div>
+      ${goalBadge(goalLetter(intention, idx), (GOAL_COLORS[idx % GOAL_COLORS.length]||{}).bg, (GOAL_COLORS[idx % GOAL_COLORS.length]||{}).text, 30)}
       <div class="card-title-v2">${esc(intention.title)}</div>
       <div class="card-views">👁 ${views}</div>
       <span class="card-chevron-v2" id="chev-${idx}">▾</span>
@@ -783,13 +783,31 @@ export function renderPBIntentionList() {
   }
   const catOptions = [
     { value: '', label: '— Category —' },
-    { value: 'wealth',       label: 'Wealth'       },
-    { value: 'health',       label: 'Health'       },
-    { value: 'relationship', label: 'Relationship' },
-    { value: 'purpose',      label: 'Purpose'      },
-    { value: 'mindset',      label: 'Mindset'      },
-    { value: 'creative',     label: 'Create'       },
-    { value: 'growth',       label: 'Growth'       },
+    { value: 'wealth',          label: 'Wealth'               },
+    { value: 'makingmoney',     label: 'Making Money'         },
+    { value: 'moneymanagement', label: 'Money Management'     },
+    { value: 'career',          label: 'Career'               },
+    { value: 'business',        label: 'Business'             },
+    { value: 'health',          label: 'Health'               },
+    { value: 'fitness',         label: 'Fitness'              },
+    { value: 'vitality',        label: 'Energy & Vitality'    },
+    { value: 'mindset',         label: 'Mindset'              },
+    { value: 'confidence',      label: 'Confidence'           },
+    { value: 'peace',           label: 'Peace of Mind'        },
+    { value: 'responsibility',  label: 'Full Responsibility'  },
+    { value: 'discipline',      label: 'Discipline & Habits'  },
+    { value: 'focus',           label: 'Focus & Productivity' },
+    { value: 'growth',          label: 'Growth'               },
+    { value: 'purpose',         label: 'Purpose'              },
+    { value: 'spirituality',    label: 'Spirituality'         },
+    { value: 'learning',        label: 'Learning & Mastery'   },
+    { value: 'creative',        label: 'Create'               },
+    { value: 'relationship',    label: 'Relationship'         },
+    { value: 'family',          label: 'Family'               },
+    { value: 'community',       label: 'Friends & Community'  },
+    { value: 'leadership',      label: 'Leadership'           },
+    { value: 'adventure',       label: 'Adventure & Travel'   },
+    { value: 'legacy',          label: 'Contribution & Legacy'},
   ];
   const fld = 'width:100%;box-sizing:border-box;padding:8px 12px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
   const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
@@ -801,10 +819,16 @@ export function renderPBIntentionList() {
     ).join('');
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
+    const _letr = goalLetter(i, idx);
+    const _lci  = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : idx;
+    const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };   // same colored letter badge as the Citadel cards
     return `
     <div id="pb-goal-${idx}" style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
       <div style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;min-width:0;">Goal ${goalLetter(i, idx)}</div>
+        <div style="display:flex;align-items:center;gap:11px;min-width:0;">
+          ${goalBadge(_letr, gc.bg, gc.text, 36)}
+          <span style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${_letr}</span>
+        </div>
         <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
           <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
           <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"

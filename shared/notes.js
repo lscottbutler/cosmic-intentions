@@ -327,8 +327,10 @@ export function renderMyNotesPage() {
 export function notesShowAdd(cat) {
   const body = document.getElementById(`notesec-${cat}-body`);
   const arr  = document.getElementById(`notesec-${cat}-arr`);
-  if (body && body.style.display === 'none') {
-    body.style.display = '';
+  if (body) {
+    const visible = body.classList.contains('cc-open') ||
+      (body.style.display !== 'none' && body.style.maxHeight !== '0px' && body.offsetHeight > 1);
+    if (!visible) { if (typeof window.slideToggle === 'function') window.slideToggle(body, true); else body.style.display = ''; }
     if (arr) arr.style.transform = 'rotate(0deg)';
     body.querySelectorAll('textarea').forEach(el => { if (el.style.display !== 'none') notesAutoGrow(el); });
   }
@@ -347,11 +349,16 @@ export function notesToggleSection(key) {
   const body = document.getElementById(key + '-body');
   const arr  = document.getElementById(key + '-arr');
   if (!body) return;
-  const open = body.style.display !== 'none';
-  body.style.display = open ? 'none' : '';
-  if (arr) arr.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+  // Smooth roll up/down (same calm slide as the Citadel goal dropdowns). Detect
+  // real visibility so an initially-open section closes on the first click.
+  const visible = body.classList.contains('cc-open') ||
+    (body.style.display !== 'none' && body.style.maxHeight !== '0px' && body.offsetHeight > 1);
+  const open = !visible;
+  if (typeof window.slideToggle === 'function') window.slideToggle(body, open);
+  else body.style.display = open ? '' : 'none';
+  if (arr) arr.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
   // Now visible → size the textareas (scrollHeight is 0 while hidden).
-  if (!open) body.querySelectorAll('textarea').forEach(notesAutoGrow);
+  if (open) body.querySelectorAll('textarea').forEach(notesAutoGrow);
 }
 
 /* onchange for both existing notes (data-id) and the add box (data-add). */

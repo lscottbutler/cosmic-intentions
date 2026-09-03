@@ -1500,19 +1500,88 @@ export const GOAL_COLORS = [
   { bg: '#7888A8', text: '#fff' }, { bg: '#3878A8', text: '#fff' },
 ];
 /* Inline style for a goal letter circle, colored by goal index. */
+function _goalColor(idx) {
+  return GOAL_COLORS[((idx % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+}
 function _goalCircleStyle(idx) {
-  const c = GOAL_COLORS[((idx % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+  const c = _goalColor(idx);
   return 'background:' + c.bg + ';color:' + c.text;
 }
+// 8-lobe scalloped goal badge (replaces the round letter-circle). Static 100×100
+// path; goalBadge() renders it at any px with the goal letter centered inside.
+const _SCALLOP_D = (() => {
+  const cx = 50, cy = 50, baseR = 32, bumpR = 14, lobes = 8, pts = [];
+  for (let i = 0; i < lobes; i++) { const a = (i / lobes) * 2 * Math.PI - Math.PI / 2; pts.push([cx + baseR * Math.cos(a), cy + baseR * Math.sin(a)]); }
+  let d = 'M ' + pts[0][0].toFixed(2) + ' ' + pts[0][1].toFixed(2) + ' ';
+  for (let i = 1; i <= lobes; i++) { const p = pts[i % lobes]; d += 'A ' + bumpR + ' ' + bumpR + ' 0 0 1 ' + p[0].toFixed(2) + ' ' + p[1].toFixed(2) + ' '; }
+  return d + 'Z';
+})();
+export function goalBadge(letter, bg, textColor, px) {
+  px = px || 34;
+  return '<span style="display:inline-flex;flex-shrink:0;width:' + px + 'px;height:' + px + 'px;line-height:0;vertical-align:middle;">' +
+    '<svg width="' + px + '" height="' + px + '" viewBox="0 0 100 100" style="display:block;">' +
+    '<path d="' + _SCALLOP_D + '" fill="' + (bg || '#1D3557') + '"/>' +
+    '<text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="' + (textColor || '#fff') + '" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-weight="800" font-size="50">' + (letter == null ? '' : letter) + '</text></svg></span>';
+}
+if (typeof window !== 'undefined') window.goalBadge = goalBadge;
 // Pretty date; falls back to the raw value if it isn't a parseable date.
 function _fmtDate(d) { if (!d) return ''; const x = new Date(d); return isNaN(x.getTime()) ? String(d) : x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
 // Start date + "My Reality On or Before" target date, shown under a goal's title.
 function _goalDatesHTML(g) {
   const sd = _fmtDate(g && g.startDate), td = _fmtDate(g && g.targetDate);
   const none = '<span style="opacity:.55">not set</span>';
-  return '<div style="padding:0 6px 14px;font-size:13px;line-height:1.7;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 22px;">' +
+  return '<div style="padding:0 6px 14px;font-size:13px;line-height:1.7;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;text-align:center;gap:4px 22px;">' +
     '<span><strong style="color:var(--text);">Start date:</strong> ' + (sd || none) + '</span>' +
     '<span><strong style="color:var(--text);">My Reality On or Before:</strong> ' + (td || none) + '</span></div>';
+}
+
+/* Local (not-yet-synced) goal completion, keyed by goal index — same convention
+   as the favorites store. */
+function _isGoalComplete(idx) {
+  try { return (JSON.parse(localStorage.getItem('ci_goal_complete') || '[]') || []).includes(idx); } catch (e) { return false; }
+}
+export function toggleGoalComplete(idx, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem('ci_goal_complete') || '[]') || []; } catch (e) {}
+  const at = arr.indexOf(idx);
+  if (at >= 0) arr.splice(at, 1); else arr.push(idx);
+  try { localStorage.setItem('ci_goal_complete', JSON.stringify(arr)); } catch (e) {}
+  const panel = document.getElementById('goalTimeline-' + idx);
+  if (panel) { const wasOpen = panel.classList.contains('cc-open'); panel.innerHTML = _goalTimelineHTML(intentions[idx], idx); if (wasOpen) panel.style.maxHeight = 'none'; }
+}
+if (typeof window !== 'undefined') window.toggleGoalComplete = toggleGoalComplete;
+
+/* The goal's timeline as 5 mini-columns: colored letter · start date · on-or-before
+   completion date · days to completion · mark-complete circle. Opened by the
+   TIMELINE & PROGRESS button in the workspace (replaces the old plain date line). */
+function _goalTimelineHTML(g, idx) {
+  const sd = _fmtDate(g && g.startDate), td = _fmtDate(g && g.targetDate);
+  const none = '<span style="opacity:.5">—</span>';
+  let days = none;
+  if (g && g.targetDate) {
+    const t = new Date(g.targetDate);
+    if (!isNaN(t.getTime())) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const diff = Math.ceil((t.getTime() - today.getTime()) / 86400000);
+      days = diff >= 0
+        ? '<strong style="color:#fff;">' + diff + '</strong> day' + (diff === 1 ? '' : 's')
+        : '<strong style="color:#ff6b6b;">' + Math.abs(diff) + '</strong> over';
+    }
+  }
+  const done = _isGoalComplete(idx);
+  const letter = goalLetter(g, idx);
+  const _lci = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : (Number.isFinite(idx) ? idx : 0);
+  const gc = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+  const head = 'font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:6px;white-space:nowrap;';
+  const val = 'font-size:13px;line-height:1.3;color:#fff;white-space:nowrap;';
+  return '<div style="display:grid;grid-template-columns:auto 1fr 1fr auto auto;gap:8px 14px;align-items:center;justify-items:center;text-align:center;background:#1a1a1a;border:none;border-radius:12px;padding:16px;margin:0 4px 12px;overflow-x:auto;">' +
+    '<div><div style="' + head + '">Goal</div>' + goalBadge(letter, gc.bg, gc.text, 32) + '</div>' +
+    '<div><div style="' + head + '">Start date</div><div style="' + val + '">' + (sd || none) + '</div></div>' +
+    '<div><div style="' + head + '">On or before</div><div style="' + val + '">' + (td || none) + '</div></div>' +
+    '<div><div style="' + head + '">Days to go</div><div style="' + val + '">' + days + '</div></div>' +
+    '<div><div style="' + head + '">Done</div><button onclick="toggleGoalComplete(' + idx + ', event)" title="Mark this goal complete" style="width:34px;height:34px;border-radius:50%;border:2px solid ' + (done ? '#2fae60' : 'rgba(255,255,255,.55)') + ';background:' + (done ? '#2fae60' : 'transparent') + ';color:#fff;font-size:16px;font-weight:800;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">' + (done ? '&#10003;' : '') + '</button></div>' +
+    '</div>';
 }
 
 /* Darken a hex color by fraction f (0-1) — used for the goal-card circles so
@@ -2299,7 +2368,7 @@ export function renderVizLibrary() {
     return `
     <div class="vault-row">
       <button class="vault-item" onmousedown="event.preventDefault()" onclick="vizLibToggle(${idx})" style="background:${s.bg};color:${s.text}">
-        <div class="vault-item-num" style="${_goalCircleStyle(idx)}">${goalLetter(it, idx)}</div>
+        ${goalBadge(goalLetter(it, idx), _goalColor(idx).bg, _goalColor(idx).text, 34)}
         <div class="vault-item-body"><div class="vault-item-title" style="color:${s.text}">${esc(it.title || '')}</div></div>
       </button>
       <div class="vault-actions">
@@ -2318,13 +2387,18 @@ export function renderVizLibrary() {
 function buildVizInline(idx, it) {
   const hasImg = it.imageUrl && !String(it.imageUrl).startsWith('data:');
   const img = hasImg ? `<img src="${esc(it.imageUrl)}" alt="${esc(it.title || '')}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;display:block;margin:0 0 10px;">` : '';
-  const timers = [['15s', 15], ['30s', 30], ['60s', 60], ['2m', 120], ['3m', 180], ['5m', 300], ['10m', 600], ['15m', 900]]
-    .map(([lbl, secs]) => `<button onclick="launchCountdown(${idx},${secs})" title="${lbl} visualization" style="aspect-ratio:1;min-width:0;border-radius:50%;background:#fff;border:3px solid #F2911E;color:#1D3557;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">${lbl}</button>`).join('');
+  const timers = [['15 Seconds', 15], ['30 Seconds', 30], ['1 Minute', 60], ['2 Minutes', 120], ['3 Minutes', 180], ['5 Minutes', 300], ['10 Minutes', 600], ['15 Minutes', 900]]
+    .map(([lbl, secs]) => `<div style="display:flex;align-items:stretch;gap:8px;">
+      <button onclick="launchCountdown(${idx},${secs})" title="${lbl} visualization" style="flex:1;min-width:0;box-sizing:border-box;padding:13px 16px;border-radius:10px;background:#fff;border:none;color:#1D3557;font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">${lbl}</button>
+      <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+      <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+      <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+    </div>`).join('');
   return `<div style="padding:10px 6px 14px;">
     ${img}
-    <div style="display:flex;gap:10px;align-items:stretch;background:#1AA5BA;border:3px solid #F2911E;border-radius:12px;padding:12px;">
-      <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">${timers}</div>
-      <button onclick="openVizGoal(${idx})" title="Open the full visualization page" style="flex-shrink:0;width:54px;background:#7C5CC4;border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#8599;</button>
+    <div style="display:flex;flex-direction:column;gap:10px;background:#1a1a1a;border:none;border-radius:12px;padding:12px;">
+      ${timers}
+      <button onclick="openVizGoal(${idx})" title="Open the full visualization page" style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;background:#7C5CC4;border:none;color:#fff;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">Open full visualization page &#8599;</button>
     </div>
   </div>`;
 }
@@ -2406,7 +2480,7 @@ export function openVizGoal(idx) {
       .map(({ g, i }) => {
         const cs = GREY_SHADES[i % GREY_SHADES.length];
         return `<button onclick="openVizGoal(${i})" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;cursor:pointer;background:${cs.bg};color:${cs.text};border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);">
-          <span style="flex-shrink:0;width:34px;height:34px;border-radius:50%;${_goalCircleStyle(i)};display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${goalLetter(g, i)}</span>
+          ${goalBadge(goalLetter(g, i), _goalColor(i).bg, _goalColor(i).text, 34)}
           <span style="flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.2;">${esc(g.title || '')}</span>
           <span style="flex-shrink:0;font-size:20px;opacity:.9;">›</span>
         </button>`;
@@ -3173,7 +3247,7 @@ export function renderVaultSidebar() {
             onmousedown="event.preventDefault()"
             onclick="selectVaultIntention(${i._idx})"
             style="background:${shade.bg};color:${shade.text}">
-            <div class="vault-item-num" style="background:${gc.bg};color:${gc.text}">${goalLetter(i, i._idx)}</div>
+            ${goalBadge(goalLetter(i, i._idx), gc.bg, gc.text, 34)}
             <div class="vault-item-body">
               <div class="vault-item-title" style="color:${shade.text}">${esc(i.title)}</div>
             </div>
@@ -3647,7 +3721,7 @@ function showVaultBuildSheet(idx) {
   loadGoalVisualization(intent);
 
   const roadmapEl = document.getElementById('layer-content-roadmap');
-  if (roadmapEl) { roadmapEl.innerHTML = buildRoadmapPanel(intent, idx); roadmapEl.style.display = ''; }   // OPEN by default — Visualization + Roadmap stacked; banner can still collapse it
+  if (roadmapEl) { roadmapEl.innerHTML = buildRoadmapPanel(intent, idx); roadmapEl.style.display = 'none'; roadmapEl.classList.remove('cc-open'); }   // COLLAPSED by default — MY ACTION PLAN button / banner slides it open
 
   populateWorkspaceBrandBanner();
 
@@ -3655,16 +3729,99 @@ function showVaultBuildSheet(idx) {
   window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
 }
 
-/* The "…'S PERSONAL ROADMAP" banner is a dropdown: show/hide the roadmap content
-   below it and rotate the banner arrow. */
+/* Smoothly slide a panel open/closed (max-height + opacity). Returns the new
+   open state. Pass forceOpen (true/false) to force a direction. */
+export function slideToggle(el, forceOpen) {
+  if (typeof el === 'string') el = document.getElementById(el);
+  if (!el) return false;
+  el.classList.add('cc-collapse');
+  const isOpen = el.classList.contains('cc-open');
+  const open = (forceOpen === undefined || forceOpen === null) ? !isOpen : !!forceOpen;
+  if (open) {
+    el.style.display = '';
+    el.classList.add('cc-open');
+    if (!isOpen) {
+      // Paint the collapsed state, THEN transition to full on the next frame. Double
+      // rAF reliably animates even when opening from display:none the first time
+      // (a single sync reflow sometimes paints the final state → the "explode").
+      el.style.maxHeight = '0px'; el.style.opacity = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (!el.classList.contains('cc-open')) return;
+        el.style.maxHeight = el.scrollHeight + 'px'; el.style.opacity = '1';
+      }));
+    } else {
+      el.style.maxHeight = el.scrollHeight + 'px'; el.style.opacity = '1';
+    }
+    setTimeout(() => { if (el.classList.contains('cc-open')) el.style.maxHeight = 'none'; }, 1120);
+  } else {
+    el.style.maxHeight = el.scrollHeight + 'px'; el.style.opacity = '1';
+    el.classList.remove('cc-open');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (el.classList.contains('cc-open')) return;
+      el.style.maxHeight = '0px'; el.style.opacity = '0';
+    }));
+    setTimeout(() => { if (!el.classList.contains('cc-open')) el.style.display = 'none'; }, 1120);
+  }
+  return open;
+}
+if (typeof window !== 'undefined') window.slideToggle = slideToggle;
+
+/* The "…'S PERSONAL ROADMAP" banner (and the MY ACTION PLAN button) is a
+   dropdown: slide the roadmap content open/closed and rotate the banner arrow. */
 export function toggleRoadmap() {
   const c = document.getElementById('layer-content-roadmap');
   const a = document.getElementById('brand-banner-arrow');
   if (!c) return;
-  const open = c.style.display !== 'none';        // currently open → about to close
-  c.style.display = open ? 'none' : '';
-  if (a) a.style.transform = 'translateY(-50%) rotate(' + (open ? '-90deg' : '0deg') + ')';
+  const open = slideToggle(c);
+  if (a) a.style.transform = 'translateY(-50%) rotate(' + (open ? '0deg' : '-90deg') + ')';
 }
+
+/* The VISUALIZATION button slides the goal's quick-viz timer box open/closed. */
+export function wsToggleViz(idx) {
+  slideToggle(document.getElementById('wsVizBox-' + idx));
+}
+if (typeof window !== 'undefined') window.wsToggleViz = wsToggleViz;
+
+/* MY ACTION PLAN: slide the roadmap open/closed AND fade away the clutter above it
+   (the Timeline & Progress button + its panel + the Visualization button) so the
+   open roadmap reads clean. MY ACTION PLAN itself stays (goes full-width) as the
+   toggle to close again. */
+export function openActionPlan(idx) {
+  const c = document.getElementById('layer-content-roadmap');
+  if (!c) return;
+  const open = slideToggle(c);
+  const tp   = document.getElementById('goalTimeline-' + idx);
+  const vz   = document.getElementById('wsVizBtn-' + idx);
+  const vbox = document.getElementById('wsVizBox-' + idx);
+  const row  = document.getElementById('wsBtnRow-' + idx);
+  if (open) {
+    if (tp && tp.classList.contains('cc-open')) slideToggle(tp, false);       // close the timeline panel too
+    if (vbox && vbox.classList.contains('cc-open')) slideToggle(vbox, false); // roll up the visualization timers
+    slideToggle(vz, false);
+    if (row) row.style.gridTemplateColumns = '1fr';   // MY ACTION PLAN fills the row
+  } else {
+    slideToggle(vz, true);
+    if (row) row.style.gridTemplateColumns = 'repeat(2,1fr)';
+  }
+}
+if (typeof window !== 'undefined') window.openActionPlan = openActionPlan;
+
+/* Calm, slow expand/collapse for the Column-A panels (meditation-app feel — move
+   slowly = calmly). Slides the target box open/closed and flips the caret.
+   `beforeOpen` runs just before opening so lazily-built panels have content to
+   measure for the height animation. */
+export function calmExpand(boxId, chev, beforeOpen) {
+  const box = document.getElementById(boxId);
+  if (!box) return false;
+  const visible = box.classList.contains('cc-open') ||
+    (box.style.display !== 'none' && box.style.maxHeight !== '0px' && box.offsetHeight > 1);
+  const open = !visible;
+  if (open && typeof beforeOpen === 'function') { try { beforeOpen(); } catch (e) {} }
+  slideToggle(box, open);
+  if (chev) chev.textContent = open ? '⌄' : '›';
+  return open;
+}
+if (typeof window !== 'undefined') window.calmExpand = calmExpand;
 
 /* Fetch a Pexels visualization for the selected goal and slot it into the
    workspace header (keyword extraction + search happen server-side). */
@@ -3820,34 +3977,36 @@ function buildWorkspaceHeader(intent, idx) {
       <!-- Admin-editable note (slug: goal-viz-note) — hidden until you add text on the Admin page. -->
       <div data-block="goal-viz-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:10px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:14px 16px;margin:0 4px 8px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:8px 4px 4px;">
-        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;"><span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:${gc.bg};color:${gc.text};font-weight:800;font-size:16px;">${goalLetter(intent, idx)}</span><span style="min-width:0;">${esc(intent.title)}</span></div>
-        <button class="bs-close-btn" onclick="editGoalDirect(${idx})" title="Edit this exact goal">&#9998;</button>
-        <button class="bs-close-btn" onclick="closeVaultBuildSheet()" title="Close">✕</button>
+        <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(intent.title)}</span></div>
+        <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
+        <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
       </div>
-      ${_goalDatesHTML(intent)}
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px 4px 10px;">
-        <button onclick="openMyRoadmap()" title="Go to your Action Plan"
+      <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
+      <div id="wsBtnRow-${idx}" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px 4px 10px;">
+        <button onclick="openActionPlan(${idx})" title="Open your Action Plan roadmap"
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
           <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#9678;</span>MY ACTION PLAN</button>
-        <button onclick="openVizGoal(${idx})" title="Visualize this goal"
+        <button id="wsVizBtn-${idx}" onclick="wsToggleViz(${idx})" title="Open your visualization timers"
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
           <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#10022;</span>VISUALIZATION</button>
       </div>
-      <!-- QUICK-VIZ TIMERS — one tap drops an experienced user straight into a visualization of a set length -->
-      <div style="display:flex;gap:10px;align-items:stretch;background:#1AA5BA;border:3px solid #F2911E;border-radius:12px;padding:12px;margin:4px 4px 12px;">
-        <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-          ${[['15s',15],['30s',30],['60s',60],['2m',120],['3m',180],['5m',300],['10m',600],['15m',900]].map(([lbl,secs]) =>
-            `<button onclick="launchCountdown(${idx},${secs});event.stopPropagation()" title="${lbl} visualization"
-              style="aspect-ratio:1;min-width:0;border-radius:50%;background:#fff;border:3px solid #F2911E;color:#1D3557;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">${lbl}</button>`
-          ).join('')}
-        </div>
+      <!-- QUICK-VIZ TIMERS — collapsed; opened by the VISUALIZATION button above -->
+      <div id="wsVizBox-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
+      <div style="display:flex;flex-direction:column;gap:10px;background:#1a1a1a;border:none;border-radius:12px;padding:12px;margin:4px 4px 12px;">
+        ${[['15 Seconds',15],['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['3 Minutes',180],['5 Minutes',300],['10 Minutes',600],['15 Minutes',900]].map(([lbl,secs]) =>
+          `<div style="display:flex;align-items:stretch;gap:8px;">
+            <button onclick="launchCountdown(${idx},${secs});event.stopPropagation()" title="${lbl} visualization"
+              style="flex:1;min-width:0;box-sizing:border-box;padding:13px 16px;border-radius:10px;background:#fff;border:none;color:#1D3557;font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">${lbl}</button>
+            <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+            <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+            <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
+          </div>`
+        ).join('')}
         <button onclick="openVizLibrary();event.stopPropagation()" title="More visualization options"
-          style="flex-shrink:0;width:54px;background:#7C5CC4;border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">&#9776;</button>
+          style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;background:#7C5CC4;border:none;color:#fff;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">More visualization options &#9776;</button>
       </div>
-      <div id="brand-banner" onclick="toggleRoadmap()" title="Show / hide roadmap" style="margin:8px 0; position:relative; cursor:pointer;">
-        <span id="brand-banner-text">MY'S PERSONAL ROADMAP</span>
-        <span id="brand-banner-arrow" style="position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(0deg); color:var(--brand); font-size:13px; transition:transform .25s ease; pointer-events:none;">&#9660;</span>
-      </div>
+      </div><!-- end #wsVizBox collapse -->
+      <!-- Roadmap banner removed — the MY ACTION PLAN button above is the sole control for #layer-content-roadmap. -->
     </div>`;
 }
 

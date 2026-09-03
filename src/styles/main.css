@@ -741,7 +741,10 @@ button[aria-label="Next"]:not(.colb-nav-btn),
 button[aria-label="Forward"]:not(.colb-nav-btn) { display: none !important; }
 /* Dashboard Column B starts below the title line (aligned with the intro card):
    push the nav-circle cluster down and everything below it follows. */
-#page-dashboard .vault-sidebar > .colb-nav { margin-top:112px; }
+#page-dashboard .vault-sidebar > #vaultDateLine { margin-top:8px; margin-bottom:16px; }
+/* Drop all of Column B down so its top (the date banner) lines up with the top
+   edge of the welcome card in Column A. */
+#page-dashboard .vault-sidebar { padding-top:106px !important; }
 #page-wins .wins-frame,  #page-cosmiclibrary .wins-frame { background:#fff; padding:0; }
 #page-wins .wins-bezel,  #page-cosmiclibrary .wins-bezel { background:#fff; padding:0; }
 #page-wins .wins-hdr,    #page-cosmiclibrary .wins-hdr   { background:#fff; margin:55px 0 15px; text-align:left; font-size:30px; padding:0 8px 0 32px; }
@@ -834,13 +837,15 @@ body.cbnums [data-block][data-cbnum]:hover::after { background:#e0102b; }
    so every page shows the same title → data box → admin paragraph structure and
    you can see where to drop text. Only in body.cbnums — turns off with the block
    numbers at launch. Filled boxes ignore this (they're not :empty). */
-body.cbnums [data-block^="intro-note-"]:empty {
+body.cbnums [data-block^="intro-note-"]:empty,
+body.cbnums [data-block="goal-viz-note"]:empty {
   display:block !important;
   background:#fafbfc !important; border:1.5px dashed #c3ccd6 !important; box-shadow:none !important;
   color:#8a97a6;
 }
-body.cbnums [data-block^="intro-note-"]:empty::before {
-  content:'\270E  Admin paragraph (block #' attr(data-cbnum) ') — add text on the Admin page';
+body.cbnums [data-block^="intro-note-"]:empty::before,
+body.cbnums [data-block="goal-viz-note"]:empty::before {
+  content:'\270E  Admin paragraph (block #' attr(data-cbnum) ') — instructions / guidance above the goal — add text on the Admin page';
   font-style:italic; font-size:14px;
 }
 /* Admin content-block header is a LINK to where the block lives on the site. */
@@ -2543,6 +2548,11 @@ input, textarea, select {
 .encourage-inline { display: flex; justify-content: center; margin: 12px auto 16px; }
 .encourage-inline button { background: none; border: none; padding: 0; cursor: pointer; line-height: 0; }
 .encourage-inline img { width: 110px; height: 110px; object-fit: contain; }
+/* Smooth slide-open/close panels (workspace VISUALIZATION box + roadmap). */
+.cc-collapse { overflow: hidden; transition: max-height 1s ease, opacity 1s ease; }
+/* Brief highlight when jumping to an element (e.g. edit-this-goal). */
+.cc-flash { animation: ccFlash 2.4s ease; }
+@keyframes ccFlash { 0%,100% { box-shadow: 0 0 0 0 rgba(242,145,30,0); } 15% { box-shadow: 0 0 0 4px rgba(242,145,30,.55); } }
 /* "2 Columns" info-box layout: full-width paragraph above, two columns below.
    Renders as two columns in the info box + live preview; stacks inside the editor
    (the .admin-editor display:block rule), which is fine — the preview shows real. */

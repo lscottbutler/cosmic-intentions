@@ -145,6 +145,26 @@ const FIFTY_THINGS = [
   'To Be Loved', 'To Feel Important', 'To Leave a Legacy', 'Fairness and Justice', 'Convenience',
 ];
 
+/* The 50 wants sorted into intuitive life-area groups — same collapsible dropdown
+   treatment as the Entrepreneur forces. Labels MUST match FIFTY_THINGS exactly
+   (card art is looked up by each label's original index). All 50 appear once. */
+const FIFTY_GROUPS = [
+  ['HEALTH & VITALITY', 'Feel strong, rested, and fully alive.',
+    ['Good Health', 'Physical Fitness', 'More Energy', 'Better Sleep', 'Less Stress', 'A Youthful Appearance']],
+  ['WEALTH & SECURITY', 'Money, safety, and a stable foundation.',
+    ['Financial Freedom', 'Wealth', 'Passive Income', 'Security', 'Safety and Protection', 'A Comfortable Home', 'Convenience']],
+  ['LOVE & RELATIONSHIPS', 'Deep bonds with the people who matter most.',
+    ['A Loving Relationship', 'A Happy Marriage', 'Romance', 'Intimacy', 'True Friendship', 'Family Harmony', 'Thriving Children', 'To Be Loved']],
+  ['SUCCESS & ACHIEVEMENT', 'Win, grow, and be recognized for it.',
+    ['Success', 'Career Advancement', 'Job Satisfaction', 'Mastery of a Skill', 'Status', 'Influence', 'Recognition', 'To Leave a Legacy']],
+  ['FREEDOM & GROWTH', 'Own your time and keep becoming more.',
+    ['Personal Freedom', 'Independence', 'More Time', 'Self-Improvement', 'Knowledge', 'Creativity']],
+  ['PEACE & PURPOSE', 'Inner calm, confidence, and meaning.',
+    ['Happiness', 'Peace of Mind', 'A Sense of Purpose', 'Spiritual Fulfillment', 'Self-Confidence', 'To Feel Important', 'Respect', 'Fairness and Justice']],
+  ['FUN & BELONGING', 'Enjoy life and feel part of something.',
+    ['Adventure', 'Travel', 'Fun and Enjoyment', 'Beauty', 'Personal Style', 'Popularity', 'Belonging']],
+];
+
 /* COSMIC LIBRARY hub — a 3-column grid of every Entrepreneur card image; each image
    opens its corresponding card in the Entrepreneur Library. Built from ENT_CARDS so it
    stays in sync and reuses entCardImg() (which handles the file-naming quirks).
@@ -195,14 +215,23 @@ export function renderCosmicLibrary() {
   }
   const fifty = document.getElementById('fiftyThingsGrid');
   if (fifty) {
-    fifty.innerHTML = FIFTY_THINGS.map((label, i) => {
-      const img = entCardImg(ENT_CARDS[i % ENT_CARDS.length].key);   // reused ENT art (placeholder)
-      const t = _esc(label);
-      return `
-      <button class="cl-card cl-card--cap" onclick="toast('Coming soon: ${t}','info')" title="${t}" aria-label="${t}">
-        <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
-        <span class="cl-card-cap">${t}</span>
-      </button>`;
+    fifty.className = 'ent-force-groups';   // stack the group dropdowns full-width (not the 3-col image grid)
+    fifty.innerHTML = FIFTY_GROUPS.map(([name, desc, labels]) => {
+      const cards = labels.map(label => {
+        const i = FIFTY_THINGS.indexOf(label);
+        const img = entCardImg(ENT_CARDS[(i < 0 ? 0 : i) % ENT_CARDS.length].key);   // reused ENT art (placeholder)
+        const t = _esc(label);
+        return `
+        <button class="cl-card cl-card--cap" onclick="toast('Coming soon: ${t}','info')" title="${t}" aria-label="${t}">
+          <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+          <span class="cl-card-cap">${t}</span>
+        </button>`;
+      }).join('');
+      return `<details class="ent-force-sec">
+        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
+        <p class="ent-force-sec__desc">${_esc(desc)}</p>
+        <div class="ent-force-sec__grid">${cards}</div>
+      </details>`;
     }).join('');
   }
 }
