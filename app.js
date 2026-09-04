@@ -2544,7 +2544,7 @@ export function openVizGoal(idx) {
         <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 2px 10px;">Go back</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <button onclick="navTo('vizlibrary')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 8px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:15px;line-height:1;color:var(--brand);flex-shrink:0;">&#8592;</span>VISUALIZATION LIBRARY</button>
-          <button onclick="navTo('dashboard')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 8px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:15px;line-height:1;color:var(--brand);flex-shrink:0;">&#8962;</span>THE INNER CITADEL</button>
+          <button onclick="navTo('dashboard')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 8px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;"><span style="font-size:15px;line-height:1;color:var(--brand);flex-shrink:0;">&#8962;</span>MY GOALS</button>
         </div>
       </div>`;
   }
@@ -4204,7 +4204,7 @@ export async function generateBBFW(idx, force) {
     { t: 3,  msg: 'PASS 1/3: EXCAVATING ALIGNED AFFIRMATIONS & TARGET AXIS ROADMAPS…' },
     { t: 6,  msg: 'PASS 2/3: STRIPPING GENERIC NOISE. CALIBRATING STRATEGIC METRICS…' },
     { t: 9,  msg: 'PASS 3/3: WEAVING CUSTOM PERSONAL DANGER ZONES & MINDSET ARMOR SEEDS…' },
-    { t: 12, msg: 'MINTING COMPLETED. ENGAGING THE INNER CITADEL.' },
+    { t: 12, msg: 'MINTING COMPLETED. ENGAGING MY GOALS.' },
   ];
   const _apexTimers = [];
   if (panel) {

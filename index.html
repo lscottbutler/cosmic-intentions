@@ -62,7 +62,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 <!-- TOP TAB BANNER — quick page tabs across the top, just under the hamburger.
      Shown for members by updateU. -->
 <nav id="tabBar" style="display:none">
-  <button class="top-tab" onclick="goMemberDashboard()">INNER CITADEL</button>
+  <button class="top-tab" onclick="goMemberDashboard()">MY GOALS</button>
   <button class="top-tab" onclick="navTo('notes')">MY THOUGHTS</button>
   <button class="top-tab" onclick="navTo('mynotes')">MY JOURNAL</button>
   <button class="top-tab" onclick="openMyRoadmap()">ROADMAP</button>
@@ -77,7 +77,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 <!-- GLOBAL NAV MENU — one instance, opened by the ≡ button in every Column B nav cluster. -->
 <div class="ham-menu ham-menu--global" id="hamMenu">
-  <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+  <button class="tnav-btn" onclick="goMemberDashboard()">My Goals</button>
   <button class="tnav-btn" onclick="navTo('setup')"><svg width="16" height="16" viewBox="0 0 64 64" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path d="M57.3638,25.8994c0,0,3.9517-7.0232-1.0266-8.9007c-4.9778-1.8776-10.6816,9.374-10.6816,9.374s-4.5-0.8711-7.8044-0.6693c-2.6404,0.1616-7.4351,0.2857-6.8716,5.3135l-7.0715,1.5822c-0.241-1.0858,0.3589-2.043,1.4001-2.3601l3.1392-0.981c-0.6309-2.8903-2.2117-5.0723-4.1306-5.278c-2.6692-0.2861-4.9714,3.3087-4.939,8.0306c0.0327,4.7212,2.3835,8.2842,5.0491,7.9614c1.9829-0.2401,3.5745-2.5919,4.1157-5.6406l3.0879-0.4242c-0.4485,6.9872-3.4888,13.0157-7.6606,14.0447c-5.2856,1.3044-10.2678-5.7123-10.3379-15.902C13.5615,21.861,18.447,14.7759,23.75,16.0073c3.2314,0.7501,5.8296,4.4891,7.0969,9.3668c1.1057-0.9022,2.467-1.356,3.7678-1.5991c-1.707-7.6962-5.6868-14.0198-10.8982-15.7642c-8.6936-2.9095-17.3977,7.546-17.2839,24.0887s8.9609,26.8776,17.6135,23.8487c5.9927-2.0977,10.2561-10.2845,11.2556-19.594c1.6926,0.0295,3.5103-0.8217,4.7942-1.3865c3.0303-1.3336,6.6418-4.1288,6.6418-4.1288s10.2219,7.3921,13.7886,3.4439C64.0923,30.3339,57.3638,25.8994,57.3638,25.8994z"/></svg>Goals / Intentions</button>
   <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
   <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
@@ -238,7 +238,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     ["runthroughs",   "navTo('runthroughs')",   "Daily Habits",   "#E86030", "#fff"],
     ["dailyfocus",    "navTo('dailyfocus')",    "♥ Favorites Autoplay", "#E88020", "#fff"],
     ["gratitude",     "navTo('gratitude')",     "Gratitude",      "#E8A828", "#1C2230"],
-    ["dashboard",     "goMemberDashboard()",    "Inner Citadel",  "#E8C830", "#1C2230"],
+    ["dashboard",     "goMemberDashboard()",    "My Goals",       "#E8C830", "#1C2230"],
     ["meditation",    "navTo('meditation')",    "Meditate",       "#A8C830", "#1C2230"],
     ["mynotes",       "navTo('mynotes')",       "Journal",        "#48B860", "#fff"],
     ["notes",         "navTo('notes')",         "Thoughts",       "#38A888", "#fff"],
@@ -914,7 +914,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-hdr">My Favorites Autoplay</div>
         <div class="pg-screen">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;margin-left:auto;">&#10022; Citadel</button>
+            <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;margin-left:auto;">&#10022; My Goals</button>
           </div>
           <p style="font-size:14px;color:#1a1a1a;margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
       <div data-random-note="quote" data-home-thought data-note-key="favorites" data-side-column style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:34px;"></div>
@@ -924,7 +924,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- 3-circle nav (matches the header hamburger): back to Citadel · menu · next -->
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 30px;">
-        <button onclick="goMemberDashboard()" title="Back to the Citadel" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.28);">&#9664;</button>
+        <button onclick="goMemberDashboard()" title="Back to My Goals" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.28);">&#9664;</button>
         <div class="ham-wrap" style="position:relative;">
           <button title="Menu" onclick="this.parentElement.querySelector('.ham-menu').classList.toggle('open');" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;padding:0;box-shadow:0 3px 12px rgba(0,0,0,.28);">
             <span style="display:block;width:22px;height:3px;background:#fff;border-radius:3px;"></span>
@@ -933,7 +933,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </button>
           <!-- Same nav as the header hamburger, copied here so the center circle opens it locally. -->
           <div class="ham-menu" onclick="if(event.target.closest('.tnav-btn'))this.classList.remove('open');">
-            <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
+            <button class="tnav-btn" onclick="goMemberDashboard()">My Goals</button>
             <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
       <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
@@ -1006,7 +1006,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <!-- Edit My Citadel Welcome Text — the welcome shows on the Citadel; it's edited here (clean Citadel page). -->
           <div style="background:#fff;border:1px solid #e3e7ec;border-radius:12px;padding:16px 18px;margin:0 0 18px;">
             <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; Edit My Citadel Welcome Text</div>
-            <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of the Inner Citadel (Column A). Leave blank to use the default.</div>
+            <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of My Goals (Column A). Leave blank to use the default.</div>
             <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
             <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
           </div>
@@ -1087,7 +1087,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-dashboard">
     <div class="pg-frame pf-black">
       <div class="pg-bezel">
-        <div class="pg-hdr">The Inner Citadel</div>
+        <div class="pg-hdr">My Goals</div>
         <div class="pg-screen">
     <div class="vault-layout">
 
@@ -2395,7 +2395,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <!-- ═══ INTRO-AREA TEXT BOXES — one per page, sits directly under the intro card.
            Edit here on the fly; blank = hidden. Slugs: intro-note-<page>. ═══ -->
       <div class="admin-block" id="adminBlock-intro-note-dashboard">
-        <div class="admin-block-hd">📝 INNER CITADEL (Dashboard) · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dashboard</span></div>
+        <div class="admin-block-hd">📝 MY GOALS (Dashboard) · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dashboard</span></div>
         <div class="admin-toolbar">
           <button class="admin-tb-btn" onclick="adminFmt('intro-note-dashboard','bold')"><b>B</b></button>
           <button class="admin-tb-btn" onclick="adminFmt('intro-note-dashboard','italic')"><i>I</i></button>
