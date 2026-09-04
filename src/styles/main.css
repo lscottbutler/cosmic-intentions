@@ -2407,8 +2407,20 @@ input, textarea, select {
   content: ""; position: absolute; left: 29px; top: 12px; bottom: 12px;
   width: 3px; background: #d7dbe0; border-radius: 2px; z-index: 0;
 }
-/* uniform dark step buttons (drop the alternating grey/black) */
-#page-dashboard.path-mode #citadelNav > button { background: #1c1c1c !important; position: relative; }
+/* step headers painted their real SECTION colour (same spectrum as the old
+   Column-B tabs), so the path is colour-coded not monochrome. Light chips get
+   dark text. Overrides the base grey/black via higher specificity + !important. */
+#page-dashboard.path-mode #citadelNav > button { position: relative; color: #fff !important; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { background: #E8C830 !important; color: #1C2230 !important; }  /* Goals / Intentions */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { background: #3878A8 !important; }                            /* Visualize */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { background: #A8C830 !important; color: #1C2230 !important; }  /* Meditate */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { background: #E8A828 !important; color: #1C2230 !important; }  /* Gratitude */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(1)  { background: #2898A8 !important; }                            /* Quick Win */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(9)  { background: #8E6BB0 !important; }                            /* Mind Loop */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(4)  { background: #E86030 !important; }                            /* Daily Habits */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { background: #7888A8 !important; }                            /* Action Plan */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(3)  { background: #E88020 !important; }                            /* Favorites Autoplay */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(2)  { background: #38A888 !important; }                            /* Quick Thought */
 /* every step = a node on the spine */
 #page-dashboard.path-mode #citadelNav > button::before {
   content: ""; position: absolute; left: -32px; top: 50%; transform: translateY(-50%);
