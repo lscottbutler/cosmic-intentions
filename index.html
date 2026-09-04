@@ -295,8 +295,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       if (dateLine && col.firstElementChild !== dateLine) col.insertAdjacentElement('afterbegin', dateLine);
       // Column B background stays default (white/theme); tabs/links carry the colour.
       col.style.background = ''; col.classList.remove('colb-tinted');
-      // Pepper thoughts only where the column has none of its own.
-      if (!col.querySelector('[data-random-note]') && !col.querySelector(':scope > .colb-thoughts')) {
+      // Pepper thoughts only where the column has none of its own (skip Visualize + Citadel + My Thoughts — Scott wants those Column B nav-only).
+      if (pageId !== 'vizlibrary' && pageId !== 'dashboard' && pageId !== 'notes' && !col.querySelector('[data-random-note]') && !col.querySelector(':scope > .colb-thoughts')) {
         col.insertAdjacentHTML('beforeend', window.colbThoughtsHTML());
         injected = true;
       }
@@ -1065,11 +1065,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- COLUMN B MASTER LINK LIST is injected here by window.injectColbLinks() (single source) -->
 
-        <!-- MY TASK LIST — moved to the TOP of Column B; renderWrapup fills it -->
-        <div id="taskListWidget"></div>
-
-        <!-- + ADD A THOUGHT — duplicate of the My Thoughts button; opens a quick-add box right here -->
-        <button onclick="notesToggleQuickAdd('sideQuickAdd')" style="width:100%;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:9px 16px;border-radius:6px;cursor:pointer;margin-bottom:10px;">&#43; ADD A THOUGHT</button>
+        <!-- Task List + ADD A THOUGHT removed from the Citadel Column B per request 2026-09-04 (kept hidden so JS targeting stays safe). -->
+        <div id="taskListWidget" style="display:none"></div>
         <div id="sideQuickAdd" style="display:none;margin-bottom:12px;"></div>
 
         <!-- (nav menu moved to a global dropdown; opened by the Column B nav cluster's menu button) -->
@@ -1077,12 +1074,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- Date banner — TOP of Column B; filled by setEl('vaultDateLine') -->
         <div class="vault-date-line" id="vaultDateLine" style="margin-bottom:8px;"></div>
 
-        <!-- TODAY'S 3 PILLARS — moved to Column B, just under the date banner; filled by renderRings() -->
-        <!-- (The Evening Wrap-Up story now renders INSIDE this card, above the pillars — see rings.js.) -->
-        <div id="ringsWidget"></div>
-
-        <!-- ACTION PLAN (#todayWillWidget) moved behind the My Roadmap button -> page-myroadmap -->
-        <div id="winsWidget"></div>
+        <!-- THE BIG 3 (#ringsWidget) + WINS WALL (#winsWidget) removed from the Citadel Column B per request 2026-09-04. -->
+        <div id="ringsWidget" style="display:none"></div>
+        <div id="winsWidget" style="display:none"></div>
         <!-- MIND LOOP (#sleepLoopWidget) moved to Column A, under the Task List -->
 
 
@@ -1090,8 +1084,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <span id="affirmation-ticker-text" style="display:none;"></span>
 
 
-        <!-- PEGBOARD LOOP WIDGET -->
-        <div class="pb-loop-card">
+        <!-- PEGBOARD LOOP WIDGET (MY MISSION) — removed from the Citadel Column B per request 2026-09-04. -->
+        <div class="pb-loop-card" style="display:none">
           <div class="pb-loop-bg" id="pbLoopBg"></div>
           <div class="pb-loop-content" id="pbLoopContent">
             <div class="pb-loop-label" id="pbLoopLabel">MY MISSION</div>
@@ -1642,7 +1636,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               <div class="colb-nav">
                                 <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?"><svg width="94" height="68" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg></button>
                               </div>
-              <img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div id="vizSideStats"></div></aside>
+            </aside>
           </div>
         </div>
       </div>

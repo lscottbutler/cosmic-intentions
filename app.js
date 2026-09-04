@@ -332,11 +332,9 @@ function ensurePageSideColumn(pageId) {
       side.className = 'pg-side';
       side.innerHTML =
         '<div class="colb-nav">' +
-        '<button class="colb-nav-btn" onclick="tabStep(-1)" aria-label="Previous tab" title="Previous tab"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>' +
-        '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>' +
-        '<button class="colb-nav-btn" onclick="tabStep(1)" aria-label="Next tab" title="Next tab"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>' +
+        '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?"><svg width="94" height="68" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg></button>' +
         '</div>' +
-        '<img src="images/home-clown.png" alt="" style="width:100%;height:auto;display:block;margin-bottom:14px;"><div class="pg-side-stats"></div>';
+        '<div class="pg-side-stats"></div>';
       layout.appendChild(main);
       layout.appendChild(side);
       screen.appendChild(layout);
