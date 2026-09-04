@@ -1607,6 +1607,35 @@ export function darkenHex(hex, f) {
   return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
+/* ── THE PATH (Phase 1) ───────────────────────────────────────────────────
+   Retire Column B on the dashboard without stranding anything. The rail hosts
+   three things the JS still needs by ID — the UFO menu button, the date banner
+   (#vaultDateLine), and the in-column player (#playerColumn). We ADD a menu
+   button to Column A and MOVE the date + player into Column A (same IDs, so
+   player-launcher.js and setEl() keep working), then hide the rail via the
+   reversible `.path-mode` class. Idempotent: safe to call on every render. */
+const _UFO_SVG = '<svg width="88" height="64" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg>';
+function _pathLayout() {
+  const page = document.getElementById('page-dashboard');
+  const main = document.getElementById('vaultMain');
+  if (!page || !main) return;
+  page.classList.add('path-mode');
+  // 1) Menu button at the top of Column A (so the rail can hide without losing nav).
+  let bar = document.getElementById('pathMenuBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'pathMenuBar';
+    bar.innerHTML = '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?">' + _UFO_SVG + '</button>';
+    const hdr = main.querySelector('.pg-hdr');
+    main.insertBefore(bar, hdr ? hdr.nextSibling : main.firstChild);
+  }
+  // 2) Move the date banner + in-column player into Column A (by ID → JS still finds them).
+  const dl = document.getElementById('vaultDateLine');
+  if (dl && dl.parentElement !== main) main.insertBefore(dl, bar.nextSibling);
+  const pc = document.getElementById('playerColumn');
+  if (pc && pc.parentElement !== main) main.insertBefore(pc, (dl && dl.parentElement === main) ? dl.nextSibling : bar.nextSibling);
+}
+
 export function renderDashboard() {
   const pb   = getPB();
   const name = pb['pb-name'] || 'Friend';
@@ -1620,6 +1649,7 @@ export function renderDashboard() {
   const _dashHdr  = document.querySelector('#page-dashboard .pg-hdr');
   const _dashMain = document.getElementById('vaultMain');
   if (_dashHdr && _dashMain && _dashHdr.parentElement !== _dashMain) _dashMain.insertBefore(_dashHdr, _dashMain.firstChild);
+  _pathLayout();   // Phase 1: single-column "The Path" — relocate menu/date/player into Column A, hide the rail
 
   // Only render Level 1 cards (tabs are now inside each card)
   const container = document.getElementById('intentionCards');
