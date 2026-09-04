@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Path — mock</title>
+<style>
+  :root{
+    --ink:#141414; --brand:#E8C830; --green:#2FA94B; --text:#1c2230;
+    --muted:#8a929c; --line:#e6e9ed; --card:#ffffff; --node:#c9ced6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#f4f6f8;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);}
+  .wrap{max-width:720px;margin:0 auto;padding:26px 22px 60px;background:#fff;min-height:100vh;box-shadow:0 0 40px rgba(0,0,0,.05);}
+
+  /* top bar: title + single tucked menu */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .title{font-size:30px;font-weight:800;letter-spacing:8px;margin:0;}
+  .subtitle{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin:2px 0 20px;font-weight:700;}
+  .menuBtn{position:relative;background:none;border:none;cursor:pointer;padding:0;}
+  .menuBtn small{position:absolute;top:100%;right:0;white-space:nowrap;font-size:9px;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+
+  /* day banner */
+  .day{background:var(--ink);color:#eef0ea;text-align:center;font-weight:800;letter-spacing:2px;font-size:12px;
+       text-transform:uppercase;border-radius:12px;padding:13px;margin-bottom:16px;}
+
+  /* welcome */
+  .welcome{border:1px solid #cfe0f0;border-radius:16px;padding:18px 20px;margin-bottom:26px;background:#fbfdff;}
+  .welcome p{margin:0;font-size:15.5px;line-height:1.6;color:#26364b;}
+
+  /* progress meter */
+  .progress{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .progress .bar{flex:1;height:8px;border-radius:999px;background:#eceef1;overflow:hidden;}
+  .progress .bar > i{display:block;height:100%;width:33%;background:var(--green);border-radius:999px;}
+  .progress .lbl{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+  .pathLabel{font-size:12px;font-weight:800;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin:22px 0 14px;}
+
+  /* the path timeline */
+  .path{position:relative;}
+  .step{position:relative;padding-left:56px;padding-bottom:16px;}
+  /* vertical connector line */
+  .step::before{content:"";position:absolute;left:19px;top:6px;bottom:-6px;width:3px;background:var(--line);}
+  .step:last-child::before{display:none;}
+  .step.done::before{background:var(--green);}
+  /* node */
+  .node{position:absolute;left:6px;top:2px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+        justify-content:center;font-weight:800;font-size:13px;background:#fff;border:3px solid var(--node);color:var(--muted);z-index:2;}
+  .step.done .node{background:var(--green);border-color:var(--green);color:#fff;}
+  .step.now  .node{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 4px rgba(20,20,20,.08);}
+
+  /* step card */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;
+        align-items:center;gap:14px;box-shadow:0 2px 8px rgba(20,40,80,.05);}
+  .step.now .card{border-color:var(--ink);box-shadow:0 6px 18px rgba(20,40,80,.12);}
+  .step.done .card{background:#f7faf8;}
+  .ic{flex-shrink:0;width:38px;height:38px;border-radius:10px;background:#f1f3f6;display:flex;align-items:center;justify-content:center;color:var(--ink);}
+  .step.now .ic{background:var(--ink);color:#fff;}
+  .step.done .ic{background:#e4f3e8;color:var(--green);}
+  .meta{flex:1;min-width:0;}
+  .meta .h{font-size:16px;font-weight:800;letter-spacing:.3px;}
+  .meta .s{font-size:12.5px;color:var(--muted);margin-top:1px;}
+  .act{flex-shrink:0;}
+  .btn{border:none;border-radius:9px;padding:10px 16px;font-weight:800;font-size:12px;letter-spacing:.5px;cursor:pointer;}
+  .btn.go{background:var(--ink);color:#fff;}
+  .btn.ghost{background:#f1f3f6;color:var(--muted);}
+  .chk{color:var(--green);font-weight:800;font-size:13px;letter-spacing:.5px;}
+
+  /* goals mini-cards shown inline under step 1 */
+  .goals{margin:10px 0 0 56px;display:flex;flex-direction:column;gap:8px;}
+  .goal{display:flex;align-items:center;gap:11px;background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:11px 13px;}
+  .goal .bdg{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;}
+  .goal .gt{font-size:14px;font-weight:600;color:#26364b;}
+
+  /* end-of-day */
+  .endcard{margin-top:10px;border:1px dashed #cfd6de;border-radius:14px;padding:18px;text-align:center;color:var(--muted);}
+  .endcard b{color:var(--text);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div>
+        <h1 class="title">MY GOALS</h1>
+      </div>
+      <!-- the ONE tucked menu: everything not part of today's walk -->
+      <button class="menuBtn" title="Library · Proof · History · Admin">
+        <svg width="72" height="52" viewBox="0 0 64 46" style="display:block;overflow:visible;">
+          <ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/>
+          <path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/>
+          <ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/>
+          <ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/>
+          <circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/>
+          <circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/>
+          <circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/>
+          <path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/>
+          <path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/>
+        </svg>
+        <small>menu</small>
+      </button>
+    </div>
+    <div class="subtitle">Today's Path</div>
+
+    <div class="day">Friday September 4th — Day 247 of 365 · 118 remaining</div>
+
+    <div class="welcome">
+      <p>I'm doing it. One day at a time, Scott. We're building momentum as we move closer to Cosmic Intentions' worldwide launch this November 1st, 2026.</p>
+    </div>
+
+    <div class="progress">
+      <span class="lbl">2 of 6 done</span>
+      <span class="bar"><i></i></span>
+      <span class="lbl">Keep going ✦</span>
+    </div>
+
+    <div class="pathLabel">Walk your path</div>
+
+    <div class="path">
+
+      <!-- STEP 1 — Goals: done -->
+      <div class="step done">
+        <div class="node">✓</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="meta"><div class="h">Read your intentions</div><div class="s">2 active goals — remind yourself where you're headed</div></div>
+          <div class="act"><span class="chk">DONE ✓</span></div>
+        </div>
+      </div>
+      <div class="goals">
+        <div class="goal"><span class="bdg" style="background:#E0102B;">A</span><span class="gt">I AM launching Cosmic Intentions globally this September</span></div>
+        <div class="goal"><span class="bdg" style="background:#2F6FB0;">B</span><span class="gt">I AM in the best shape of my life</span></div>
+      </div>
+
+      <!-- STEP 2 — Visualize: done -->
+      <div class="step done">
+        <div class="node">✓</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="meta"><div class="h">Visualize</div><div class="s">3-minute guided visualization of your goal</div></div>
+          <div class="act"><span class="chk">DONE ✓</span></div>
+        </div>
+      </div>
+
+      <!-- STEP 3 — Meditate: current -->
+      <div class="step now">
+        <div class="node">3</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c-2 3-2 5 0 7 2-2 2-4 0-7z"/><path d="M4 21c2-5 6-7 8-7s6 2 8 7"/></svg>
+          </div>
+          <div class="meta"><div class="h">Meditate</div><div class="s">Calm your mind — opens right here, no page-hop</div></div>
+          <div class="act"><button class="btn go">DO NOW ▸</button></div>
+        </div>
+      </div>
+
+      <!-- STEP 4 — Gratitude -->
+      <div class="step">
+        <div class="node">4</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-2 5 5 0 0 1 9 2c-2 4.5-9 9-9 9z"/></svg>
+          </div>
+          <div class="meta"><div class="h">Gratitude</div><div class="s">Name three things — bank the good</div></div>
+          <div class="act"><button class="btn go">DO NOW ▸</button></div>
+        </div>
+      </div>
+
+      <!-- STEP 5 — Log a win -->
+      <div class="step">
+        <div class="node">5</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+          </div>
+          <div class="meta"><div class="h">Log a win</div><div class="s">One thing that moved you forward today</div></div>
+          <div class="act"><button class="btn go">DO NOW ▸</button></div>
+        </div>
+      </div>
+
+      <!-- STEP 6 — Wrap up -->
+      <div class="step">
+        <div class="node">6</div>
+        <div class="card">
+          <div class="ic">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.7.9-5.5-4-3.9 5.5-.8z"/></svg>
+          </div>
+          <div class="meta"><div class="h">Close the day</div><div class="s">Your Big 3 · streak · one-line recap</div></div>
+          <div class="act"><button class="btn ghost">LATER</button></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="endcard">Finish all six and today's path is <b>complete</b> — streak +1, momentum +.<br>Extra tools (Cosmic Library · Proof · Journal &amp; Wins history · Admin) live in the ▸ menu, out of your way.</div>
+
+  </div>
+</body>
+</html>
