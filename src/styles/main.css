@@ -2517,9 +2517,10 @@ input, textarea, select {
    .player-times-grid). Indent the intro line the same so the whole block is
    clearly inset, matching the other pages. */
 #page-dailyfocus .pg-body-main > p { padding-left: 20px; padding-right: 20px; box-sizing: border-box; }
-/* My Thoughts page: strip the clown + THE BIG 3 stats from its Column B (2026-09-04). */
+/* My Thoughts + Action Plan pages: strip the clown + THE BIG 3 stats from Column B (2026-09-04). */
 #page-notes .pg-side > img,
-#page-notes .pg-side .pg-side-stats { display: none !important; }
+#page-notes .pg-side .pg-side-stats,
+#page-myroadmap .pg-side .pg-side-stats { display: none !important; }
 /* Remove the "MY THOUGHTS" surfaced-thoughts block from EVERY Column B (Scott, 2026-09-04) —
    the label, ＋ADD A THOUGHT button, empty-state line, surfaced cards, and injected version. */
 .pg-side-label, .pg-side-add, .pg-side-empty, .pg-side-note, .colb-thoughts { display: none !important; }
