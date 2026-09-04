@@ -64,7 +64,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 <nav id="tabBar" style="display:none">
   <button class="top-tab" onclick="goMemberDashboard()">INNER CITADEL</button>
   <button class="top-tab" onclick="navTo('notes')">MY THOUGHTS</button>
-  <button class="top-tab" onclick="navTo('mynotes')">MY NOTES</button>
+  <button class="top-tab" onclick="navTo('mynotes')">MY JOURNAL</button>
   <button class="top-tab" onclick="openMyRoadmap()">ROADMAP</button>
   <button class="top-tab top-tab--fav" onclick="navTo('dailyfocus')" title="Favorites Auto Play" aria-label="Favorites Auto Play">&#9829;</button>
   <button class="top-tab" onclick="openVizLibrary()">VIZ LIBRARY</button>
@@ -81,7 +81,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="navTo('setup')"><svg width="16" height="16" viewBox="0 0 64 64" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path d="M57.3638,25.8994c0,0,3.9517-7.0232-1.0266-8.9007c-4.9778-1.8776-10.6816,9.374-10.6816,9.374s-4.5-0.8711-7.8044-0.6693c-2.6404,0.1616-7.4351,0.2857-6.8716,5.3135l-7.0715,1.5822c-0.241-1.0858,0.3589-2.043,1.4001-2.3601l3.1392-0.981c-0.6309-2.8903-2.2117-5.0723-4.1306-5.278c-2.6692-0.2861-4.9714,3.3087-4.939,8.0306c0.0327,4.7212,2.3835,8.2842,5.0491,7.9614c1.9829-0.2401,3.5745-2.5919,4.1157-5.6406l3.0879-0.4242c-0.4485,6.9872-3.4888,13.0157-7.6606,14.0447c-5.2856,1.3044-10.2678-5.7123-10.3379-15.902C13.5615,21.861,18.447,14.7759,23.75,16.0073c3.2314,0.7501,5.8296,4.4891,7.0969,9.3668c1.1057-0.9022,2.467-1.356,3.7678-1.5991c-1.707-7.6962-5.6868-14.0198-10.8982-15.7642c-8.6936-2.9095-17.3977,7.546-17.2839,24.0887s8.9609,26.8776,17.6135,23.8487c5.9927-2.0977,10.2561-10.2845,11.2556-19.594c1.6926,0.0295,3.5103-0.8217,4.7942-1.3865c3.0303-1.3336,6.6418-4.1288,6.6418-4.1288s10.2219,7.3921,13.7886,3.4439C64.0923,30.3339,57.3638,25.8994,57.3638,25.8994z"/></svg>Goals / Intentions</button>
   <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
   <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
-  <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
+  <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
   <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
   <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
   <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
@@ -240,11 +240,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     ["gratitude",     "navTo('gratitude')",     "Gratitude",      "#E8A828", "#1C2230"],
     ["dashboard",     "goMemberDashboard()",    "Inner Citadel",  "#E8C830", "#1C2230"],
     ["meditation",    "navTo('meditation')",    "Meditate",       "#A8C830", "#1C2230"],
-    ["mynotes",       "navTo('mynotes')",       "Notes",          "#48B860", "#fff"],
+    ["mynotes",       "navTo('mynotes')",       "Journal",        "#48B860", "#fff"],
     ["notes",         "navTo('notes')",         "Thoughts",       "#38A888", "#fff"],
     ["wins",          "navTo('wins')",          "Wins",           "#2898A8", "#fff"],
     ["myroadmap",     "openMyRoadmap()",        "Action Plan",    "#7888A8", "#fff"],
-    ["vizlibrary",    "openVizLibrary()",       "Visualize",      "#3878A8", "#fff"]
+    ["vizlibrary",    "openVizLibrary()",       "Visualize",      "#3878A8", "#fff"],
+    ["proof",         "navTo('proof')",         "Proof",          "#8E6BB0", "#fff"]
   ];
   window.colbTabColor = function (page) {
     for (var i = 0; i < window.COLB_TABS.length; i++) if (window.COLB_TABS[i][0] === page) return window.COLB_TABS[i][3];
@@ -320,7 +321,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     // Pages that need a Lorem intro card of their OWN. Pages NOT listed here
     // (wins / vizlibrary / runthroughs / setup / habits) already get one from
     // injectPlaceholderCards (.ci-ph-card) — don't add a second and duplicate it.
-    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard'];
+    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
     if (WANT.indexOf(id) < 0) return;
     if (active.querySelector('.page-intro-card, .ci-ph-card')) return;   // never duplicate an existing intro card
     // entcard draws into a dynamic host — insert BEFORE it so we're not wiped.
@@ -346,7 +347,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   window.wireInfoBoxAdmin = function () {
     var active = document.querySelector('.page.active'); if (!active) return;
     var id = active.id.replace('page-', '');
-    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'runthroughs', 'vizlibrary', 'wins', 'entcard'];
+    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'runthroughs', 'vizlibrary', 'wins', 'entcard', 'proof'];
     if (WANT.indexOf(id) < 0) return;
     var slug = 'intro-note-' + id;
     var card = active.querySelector('.page-intro-card, .ci-ph-card');
@@ -935,7 +936,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button class="tnav-btn" onclick="goMemberDashboard()">The Inner Citadel</button>
             <button class="tnav-btn" onclick="navTo('dailyfocus')">My Favorites Autoplay</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
-      <button class="tnav-btn" onclick="navTo('mynotes')">My Notes</button>
+      <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
             <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
             <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
             <button class="tnav-btn" onclick="navTo('runthroughs')">Daily Habits</button>
@@ -1002,8 +1003,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
           </div>
           <div id="notesQuickAdd" style="display:none;"></div>
+          <!-- Edit My Citadel Welcome Text — the welcome shows on the Citadel; it's edited here (clean Citadel page). -->
           <div style="background:#fff;border:1px solid #e3e7ec;border-radius:12px;padding:16px 18px;margin:0 0 18px;">
-            <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; My Citadel Welcome</div>
+            <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; Edit My Citadel Welcome Text</div>
             <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of the Inner Citadel (Column A). Leave blank to use the default.</div>
             <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
             <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
@@ -1015,11 +1017,45 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </div>
   </div>
 
+  <!-- PROOF PAGE — documented practitioners of visualization / mental rehearsal.
+       SAFE RULE: admin-curated public-record FACTS + a source link only. Never a
+       fabricated quote, never an implied endorsement of Cosmic Intentions. -->
+  <div class="page" id="page-proof">
+    <div class="pg-frame pf-navy">
+      <div class="pg-bezel">
+        <div class="pg-hdr">Proof</div>
+        <div class="pg-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
+            <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
+          </div>
+          <div class="pg-2col">
+          <div class="pg-2col-main">
+          <p class="pg-intro">People who reached the top and openly credit visualization and mental rehearsal. Fill your mind with proof of what's possible.</p>
+          <!-- Admin-curated proof wall. Fill it on the Admin page (block: proof-wall) with
+               documented names + one line of what they did + a source link. Public record
+               only — never imply they use or endorse this app. -->
+          <div data-block="proof-wall" style="background:#fff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:18px 20px;margin:0 0 16px;font-size:15px;line-height:1.7;color:#3a4a63;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#8a97a6;margin-bottom:8px;">Wall of proof &mdash; curating</div>
+            <p style="margin:0 0 8px;">Documented champions who credit visualization &amp; mental rehearsal are being added here, each with a public source. Add them on the Admin page (block <strong>proof-wall</strong>).</p>
+            <p style="margin:0;font-size:12.5px;color:#8a97a6;font-style:italic;">Public record only &mdash; real names, real sources, no implied endorsement of this app.</p>
+          </div>
+          </div><!-- /pg-2col-main -->
+          <aside class="pg-2col-side">
+            <div class="colb-nav">
+                            <button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?"><svg width="94" height="68" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg></button>
+                          </div>
+          </aside>
+          </div><!-- /pg-2col -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MY NOTES — standalone page for the Notes category -->
   <div class="page" id="page-mynotes">
     <div class="pg-frame pf-plum">
       <div class="pg-bezel">
-        <div class="pg-hdr">My Notes</div>
+        <div class="pg-hdr">My Journal</div>
         <div class="pg-screen">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
             <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
@@ -1864,14 +1900,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="pg-2col">
           <div class="pg-2col-main">
           <div id="cosmicLibraryBody">
-            <!-- Quick links to the two libraries on this page. -->
-            <div class="cl-lib-nav">
-              <button class="cl-lib-btn" onclick="navTo('entcard')">Entrepreneur Course</button>
-              <button class="cl-lib-btn" onclick="var d=document.querySelector('#page-cosmiclibrary .cl-section-drop'); if(d){d.open=true; d.scrollIntoView({behavior:'smooth',block:'start'});}">50 Things People Want Most</button>
-            </div>
-            <!-- "The Successful Entrepreneur" 4-forces overview, as a collapsible
-                 dropdown (filled by renderCosmicLibrary). -->
-            <div id="entOverviewDropdown"></div>
             <!-- Entrepreneur Library — collapsible dropdown holding the four force
                  sections (LEG WORK / SMART THINKING / DRIVE / GRIT & DETERMINATION),
                  filled by renderCosmicLibrary() into #cosmicLibraryGrid. -->
@@ -2348,6 +2376,23 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="admin-block-foot">
           <button class="admin-save-btn" id="admin-save-goal-viz-note" onclick="saveContentBlock('goal-viz-note')">Save</button>
           <span class="admin-save-status" id="admin-status-goal-viz-note"></span>
+        </div>
+      </div>
+
+      <!-- Block: proof-wall — the Proof page. PUBLIC-RECORD facts + source links only; never a
+           fabricated quote or an implied endorsement of Cosmic Intentions. -->
+      <div class="admin-block" id="adminBlock-proof-wall">
+        <div class="admin-block-hd">🟣 PROOF WALL · documented champions on the Proof page — public facts + sources only, no endorsements <span class="admin-block-slug">proof-wall</span></div>
+        <div class="admin-toolbar">
+          <button class="admin-tb-btn" onclick="adminFmt('proof-wall','bold')"><b>B</b></button>
+          <button class="admin-tb-btn" onclick="adminFmt('proof-wall','italic')"><i>I</i></button>
+          <button class="admin-tb-btn" onclick="adminLink('proof-wall')">🔗</button>
+          <button class="admin-tb-btn" onclick="adminFmt('proof-wall','removeFormat')">✕</button>
+        </div>
+        <div class="admin-editor" id="admin-editor-proof-wall" contenteditable="true" data-slug="proof-wall"></div>
+        <div class="admin-block-foot">
+          <button class="admin-save-btn" id="admin-save-proof-wall" onclick="saveContentBlock('proof-wall')">Save</button>
+          <span class="admin-save-status" id="admin-status-proof-wall"></span>
         </div>
       </div>
 

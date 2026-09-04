@@ -35,11 +35,15 @@ export function renderWinsPage() {
 
   const goalOpts = ['<option value="">— No goal (mini-win) —</option>']
     .concat((intentions || []).map(i => `<option value="${esc(i.title)}">${esc(i.title)}</option>`)).join('');
-  const addForm = `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
-    <input id="winPageInput" type="text" maxlength="160" placeholder="Log a win or conviction…" onkeydown="if(event.key==='Enter')winPageAdd()"
-      style="flex:2;min-width:180px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:14px;color:var(--text);">
-    <select id="winPageGoal" style="flex:1;min-width:140px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:13px;color:var(--text);">${goalOpts}</select>
-    <button onclick="winPageAdd()" style="background:var(--brand);border:none;border-radius:8px;padding:11px 20px;font-weight:800;color:#0a0a0a;cursor:pointer;">+ Add</button>
+  const addForm = `<div style="margin-bottom:16px;">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+      <input id="winPageInput" type="text" maxlength="160" placeholder="Log a win or conviction…" onkeydown="if(event.key==='Enter')winPageAdd()"
+        style="flex:2;min-width:180px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:14px;color:var(--text);">
+      <select id="winPageGoal" style="flex:1;min-width:140px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:13px;color:var(--text);">${goalOpts}</select>
+      <button onclick="winPageAdd()" style="background:var(--brand);border:none;border-radius:8px;padding:11px 20px;font-weight:800;color:#0a0a0a;cursor:pointer;">+ Add</button>
+    </div>
+    <input id="winPageFeeling" type="text" maxlength="90" placeholder="how did that feel? (optional)" onkeydown="if(event.key==='Enter')winPageAdd()"
+      style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-size:13px;font-style:italic;color:var(--muted);">
   </div>`;
 
   // filter chips
@@ -89,7 +93,7 @@ export function renderWinsPage() {
       ${items.map(w => { const m = catMeta(w.category || ''); return `<div class="vault-row" style="margin-bottom:8px;">
         <div class="vault-item" style="background:#f1f2f4;cursor:default;align-items:flex-start;">
           <span style="color:${m.color};font-size:15px;flex-shrink:0;line-height:1.5;">✦</span>
-          <div class="vault-item-body"><div style="font-size:14px;color:#26364b;line-height:1.5;">${esc(w.text)}</div></div>
+          <div class="vault-item-body"><div style="font-size:14px;color:#26364b;line-height:1.5;">${esc(w.text)}${w.feeling ? `<div style="font-size:12px;font-style:italic;color:#8a97a6;margin-top:2px;">❦ ${esc(w.feeling)}</div>` : ''}</div></div>
           <span style="flex-shrink:0;font-family:var(--vault-mono);font-size:12px;color:var(--muted);white-space:nowrap;line-height:1.5;">${_label(w.date)}</span>
         </div>
         <div class="vault-actions" style="flex:0 0 60px;">

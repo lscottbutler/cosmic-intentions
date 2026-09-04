@@ -394,13 +394,19 @@ function renderRoadmapAI(r, idx) {
   // tactical task list. No paragraphs, no fluff.
   const locks = r.locks || {};
   const dones = r.done  || {};
+  // Number badges take the goal's own card colour (same letter→GOAL_COLORS map the
+  // Citadel/Pegboard cards use). Only the numbers get coloured; ✕/done/lock stay black.
+  const _letr    = goalLetter(intentions[idx], idx);
+  const _lci     = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : idx;
+  const _gc      = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+  const numCircle = RM_CIRCLE.replace('background:#000', `background:${_gc.bg}`).replace('color:#fff', `color:${_gc.text}`);
   const taskRows = (r.tasks || []).map((t, i) => {
     const locked = !!locks[i];
     const done   = !!dones[i];
     return `<div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
       <button onclick="deleteRoadmapTask(${idx},${i});event.stopPropagation();" title="Delete this action"
         style="${RM_CIRCLE}font-size:14px;">✕</button>
-      <span style="${RM_CIRCLE}font-family:var(--vault-mono);font-size:14px;font-weight:800;">${i + 1}</span>
+      <span style="${numCircle}font-family:var(--vault-mono);font-size:14px;font-weight:800;">${i + 1}</span>
       <span style="flex:1;min-width:0;font-size:13px;line-height:1.6;${done ? 'text-decoration:line-through;color:var(--muted);' : 'color:var(--text);'}">${esc(t)}</span>
       <button onclick="toggleRoadmapTaskDone(${idx},${i});event.stopPropagation();"
         style="${RM_CIRCLE}font-size:14px;" title="${done ? 'Completed — tap to undo' : 'Mark done → logs a win'}">${done ? '✓' : '○'}</button>

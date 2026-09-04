@@ -455,7 +455,7 @@ export function subnavForward() { history.forward(); }
 
 /* Step through the top tab bar in order (dir -1 = previous tab, +1 = next tab), wrapping
    around. The Column B nav cluster arrows use this — go to whichever tab is next/prev. */
-const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','runthroughs','meditation','gratitude','wins','cosmiclibrary'];
+const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','runthroughs','meditation','gratitude','wins','cosmiclibrary','proof'];
 export function tabStep(dir) {
   const active = document.querySelector('.page.active');
   let cur = active ? active.id.replace(/^page-/, '') : 'dashboard';
@@ -4341,6 +4341,7 @@ function _blockPage(slug) {
     'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
     'home-video-1': 'dashboard', 'dashboard-note-2': 'dashboard',
     'my-goals-note': 'dashboard', 'goal-viz-note': 'dashboard', 'dashboard-inspiration': 'dashboard',
+    'proof-wall': 'proof',
   };
   return M[slug] || null;   // NOT-PLACED blocks (shows nowhere yet) return null
 }
@@ -5366,4 +5367,4 @@ function startEntSlideshow() {
 document.addEventListener('DOMContentLoaded', startEntSlideshow);
 
 document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); startAffirmationLoop(null); });
-
+

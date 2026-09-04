@@ -16,6 +16,8 @@ const MAX_SHOWN = 30;
 function _todayKey() { return dayKey(); }
 
 export function getWins() { return LS.get('ci_wins') || []; }
+/* Read + clear an optional "how did that feel?" input, if present. */
+function _feeling(id) { const el = document.getElementById(id); if (!el) return ''; const v = (el.value || '').trim().slice(0, 90); el.value = ''; return v; }
 function _save(w) { LS.set('ci_wins', w); }
 
 /* Format a YYYY-MM-DD key as "Jun 30" (or "Today"). */
@@ -32,8 +34,9 @@ export function winAdd() {
   if (!input) return;
   const text = (input.value || '').trim();
   if (!text) return;
+  const feeling = _feeling('winFeeling');
   const wins = getWins();
-  wins.unshift({ text, date: _todayKey(), ts: Date.now() });
+  wins.unshift({ text, ...(feeling ? { feeling } : {}), date: _todayKey(), ts: Date.now() });
   _save(wins);
   input.value = '';
   toast('✦ Win logged', 'success');
@@ -48,8 +51,9 @@ export function qwWinAdd() {
   if (!input) return;
   const text = (input.value || '').trim();
   if (!text) return;
+  const feeling = _feeling('qwWinFeeling');
   const wins = getWins();
-  wins.unshift({ text: text.slice(0, 120), date: _todayKey(), ts: Date.now() });
+  wins.unshift({ text: text.slice(0, 120), ...(feeling ? { feeling } : {}), date: _todayKey(), ts: Date.now() });
   _save(wins);
   input.value = '';
   toast('✦ Win logged', 'success');
@@ -137,8 +141,9 @@ export function winPageAdd() {
   if (!text) return;
   const sel = document.getElementById('winPageGoal');
   const goal = sel ? sel.value : '';
+  const feeling = _feeling('winPageFeeling');
   const wins = getWins();
-  wins.unshift({ text: text.slice(0, 160), date: _todayKey(), ts: Date.now(), goal, category: goal ? _goalCategory(goal) : '' });
+  wins.unshift({ text: text.slice(0, 160), ...(feeling ? { feeling } : {}), date: _todayKey(), ts: Date.now(), goal, category: goal ? _goalCategory(goal) : '' });
   _save(wins);
   input.value = '';
   toast('✦ Win logged', 'success');
@@ -156,7 +161,7 @@ export function renderWins() {
     <div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #E6E6E6;">
       <span style="color:${BRAND};font-size:13px;line-height:1.5;flex-shrink:0;">✦</span>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;color:#1D3557;line-height:1.5;">${esc(w.text)}</div>
+        <div style="font-size:13px;color:#1D3557;line-height:1.5;">${esc(w.text)}${w.feeling ? `<div style="font-size:11px;font-style:italic;color:#8a97a6;margin-top:2px;">❦ ${esc(w.feeling)}</div>` : ''}</div>
         <div style="font-family:var(--vault-mono);font-size:8px;color:#8A8A8A;letter-spacing:0.5px;margin-top:2px;">${_label(w.date)}</div>
       </div>
       <button onclick="winDelete(${w.ts})" title="Remove" style="flex-shrink:0;background:none;border:none;color:#B0B0B0;font-size:14px;cursor:pointer;line-height:1;padding:0 2px;">×</button>
@@ -179,13 +184,15 @@ export function renderWins() {
       </div>
       <div id="wins-body">
         <div style="background:#fff;border-radius:8px;padding:12px;overflow:hidden;">
-          <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <div style="display:flex;gap:6px;margin-bottom:6px;">
             <input id="winInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
               onkeydown="if(event.key==='Enter')winAdd()"
               style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
             <button onclick="winAdd()"
               style="flex-shrink:0;background:${BRAND};border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
           </div>
+          <input id="winFeeling" type="text" maxlength="90" placeholder="how did that feel? (optional)" onkeydown="if(event.key==='Enter')winAdd()"
+            style="width:100%;box-sizing:border-box;margin-bottom:12px;background:#0d0d0d;border:1px solid #262626;border-radius:6px;padding:7px 11px;font-size:11px;color:#bbb;font-style:italic;font-family:inherit;">
           ${body}
         </div>
         <button onclick="navTo('wins')" style="width:100%;margin-top:10px;background:#333;color:#fff;border:none;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;">SEE ALL WINS →</button>

@@ -15,7 +15,7 @@ export const NOTE_CATS = [
   { key: 'reminder',    label: 'Reminders',    icon: '⏰', ph: 'Remember to…' },
   { key: 'inspiration', label: 'Inspirations', icon: '✧', ph: 'What inspires me…' },
   { key: 'quote',       label: 'Quotes',       icon: '❝', ph: 'A quote I love…' },
-  { key: 'note',        label: 'Notes',        icon: '📝', ph: 'A note…' },
+  { key: 'note',        label: 'Journal',      icon: '📝', ph: 'Write it as if it already happened…' },
 ];
 const CAT_LABEL = Object.fromEntries(NOTE_CATS.map(c => [c.key, c.label]));
 
@@ -288,7 +288,7 @@ export function renderNotesPage(cats, hostId, capId) {
 
     // Hidden until the user taps "＋ Add …" in the banner.
     const addBox = total < NOTES_CAP ? `
-      <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="＋"
+      <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph || '＋')}"
         style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:4px solid #000;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#1a1a1a;background:#fff;min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
 
     return `

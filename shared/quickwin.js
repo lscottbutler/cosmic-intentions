@@ -143,12 +143,16 @@ export function renderQuickWin() {
   // Inline Wins Wall logger — same input as the Wins Wall widget, surfaced
   // here so a mini-win can be logged without scrolling. Uses qwWinInput /
   // qwWinAdd so it doesn't collide with the Wins Wall's own winInput/winAdd.
-  const winBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">
-      <input id="qwWinInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
-        onkeydown="if(event.key==='Enter')qwWinAdd()"
-        style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
-      <button onclick="qwWinAdd()"
-        style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+  const winBar = `<div style="margin-bottom:10px;">
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <input id="qwWinInput" type="text" maxlength="120" placeholder="Log a mini-win or conviction…"
+          onkeydown="if(event.key==='Enter')qwWinAdd()"
+          style="flex:1;min-width:0;background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:9px 11px;font-size:12px;color:#eee;font-family:inherit;">
+        <button onclick="qwWinAdd()"
+          style="flex-shrink:0;background:#F5A623;border:none;border-radius:6px;padding:9px 14px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#0a0a0a;cursor:pointer;">+ ADD</button>
+      </div>
+      <input id="qwWinFeeling" type="text" maxlength="90" placeholder="how did that feel? (optional)" onkeydown="if(event.key==='Enter')qwWinAdd()"
+        style="width:100%;box-sizing:border-box;background:#0d0d0d;border:1px solid #262626;border-radius:6px;padding:7px 11px;font-size:11px;color:#bbb;font-style:italic;font-family:inherit;">
     </div>`;
   const tabBar = `<div style="display:flex;gap:6px;margin-bottom:10px;">` + TABS.map(t =>
     `<button onclick="qwTab('${t.key}')" style="flex:1;background:${_tab === t.key ? 'var(--ink)' : 'var(--widget-band)'};color:${_tab === t.key ? '#fff' : 'var(--widget-text)'};border:none;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:700;cursor:pointer;">${t.label}</button>`
