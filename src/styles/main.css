@@ -2383,7 +2383,11 @@ input, textarea, select {
 /* ── THE PATH (Phase 1) — single-column dashboard, Column B retired ──────────
    Reversible: remove `.path-mode` (set in _pathLayout) to restore the rail. */
 #page-dashboard.path-mode .vault-sidebar { display: none !important; }
-#page-dashboard.path-mode .vault-main { width: 100%; max-width: 720px; margin: 0 auto; }
+/* The desktop layout is a 2-track GRID; hiding the sidebar leaves its empty
+   track reserving space (so the column sits left of centre). Collapse to a
+   plain block on the dashboard and centre the single column within it. */
+#page-dashboard.path-mode .vault-layout { display: block !important; }
+#page-dashboard.path-mode .vault-main { width: 100%; max-width: 760px; margin: 0 auto; flex: none !important; }
 #pathMenuBar { display: flex; justify-content: flex-end; align-items: center; margin: 2px 0 4px; }
 #pathMenuBar .colb-nav-menu { background: none; border: none; padding: 0; cursor: pointer; }
 #page-dashboard.path-mode #vaultDateLine { margin: 2px 0 14px; }
