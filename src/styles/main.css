@@ -2445,6 +2445,25 @@ input, textarea, select {
 #page-dashboard.path-mode #citadelNav > #mindLoopBox::before,
 #page-dashboard.path-mode #citadelNav > #dashQuickAdd::before { display: none !important; }
 
+/* ── THE PATH (Phase 3) — done-checks + progress meter ──────────────────────
+   A completed step's node turns green with a ✓. Placed AFTER the numbered-node
+   rules so it wins on equal specificity. */
+#page-dashboard.path-mode #citadelNav > button.path-done::before {
+  content: "✓" !important; background: #2FA94B !important; border-color: #2FA94B !important; color: #fff !important;
+}
+/* progress meter above the path */
+#pathProgress { display: none; }
+#page-dashboard.path-mode #pathProgress {
+  display: flex; align-items: center; gap: 12px; margin: 4px 4px 14px; padding-left: 2px;
+}
+#pathProgress .pp-lbl {
+  font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  color: #8a929c; white-space: nowrap;
+}
+#pathProgress .pp-bar { flex: 1; height: 8px; border-radius: 999px; background: #e9ecef; overflow: hidden; }
+#pathProgress .pp-fill { display: block; height: 100%; width: 0; background: #2FA94B; border-radius: 999px; transition: width .4s ease; }
+#pathProgress.pp-complete .pp-lbl { color: #2FA94B; }
+
 /* ── VAULT STATS ROW — what you've done, top of Column A ── */
 .vault-stats-row {
   display: grid;

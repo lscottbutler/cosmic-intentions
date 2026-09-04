@@ -5,7 +5,7 @@ import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
-import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
+import { renderRings, _wireRingsSync, vizSideStatsHTML, ringsSummary } from './shared/rings.js';
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs } from './shared/habits.js';
@@ -1634,7 +1634,52 @@ function _pathLayout() {
   if (dl && dl.parentElement !== main) main.insertBefore(dl, bar.nextSibling);
   const pc = document.getElementById('playerColumn');
   if (pc && pc.parentElement !== main) main.insertBefore(pc, (dl && dl.parentElement === main) ? dl.nextSibling : bar.nextSibling);
+  // 3) Progress meter — "X of 5 done today" (Phase 3). Sits just above the path.
+  if (!document.getElementById('pathProgress')) {
+    const pb = document.createElement('div');
+    pb.id = 'pathProgress';
+    pb.innerHTML = '<span class="pp-lbl">Today’s path</span><span class="pp-bar"><i class="pp-fill"></i></span>';
+    const nav = document.getElementById('citadelNav');
+    if (nav) nav.parentElement.insertBefore(pb, nav);
+  }
+  _pathProgress();
 }
+
+/* Phase 3 — reflect real completion on the path. Each of the 5 core steps checks
+   off green when its work is done today, and the progress bar fills. Reads live
+   Big-3 / ring state; step 1 (Goals) counts once you've opened a goal today. */
+function _pathProgress() {
+  const nav = document.getElementById('citadelNav');
+  if (!nav) return;
+  let s = {};
+  try { s = ringsSummary() || {}; } catch (e) {}
+  const today = dayKey();
+  let goalsOpened = false, winToday = false;
+  try { goalsOpened = localStorage.getItem('ci_path_goals_' + today) === '1'; } catch (e) {}
+  try { winToday = ((LS.get('ci_wins') || [])).some(w => w && w.date === today); } catch (e) {}
+  // done state keyed by the button's nth-of-type position (matches the CSS nodes)
+  const done = {
+    10: goalsOpened,                                   // ① Goals / Intentions
+    5:  (s.closed || []).includes('Visualize'),        // ② Visualize
+    7:  !!s.meditate,                                   // ③ Meditate
+    8:  !!s.gratitude,                                  // ④ Gratitude
+    1:  winToday,                                       // ⑤ Quick Win
+  };
+  const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
+  btns.forEach((b, i) => {
+    const nth = i + 1;
+    if (Object.prototype.hasOwnProperty.call(done, nth)) b.classList.toggle('path-done', !!done[nth]);
+  });
+  const total = 5;
+  const count = Object.values(done).filter(Boolean).length;
+  const pb = document.getElementById('pathProgress');
+  if (pb) {
+    const fill = pb.querySelector('.pp-fill'); if (fill) fill.style.width = Math.round(count / total * 100) + '%';
+    const lbl = pb.querySelector('.pp-lbl'); if (lbl) lbl.textContent = count >= total ? 'Path complete ✓' : count + ' of ' + total + ' done today';
+    pb.classList.toggle('pp-complete', count >= total);
+  }
+}
+if (typeof window !== 'undefined') window.updatePathProgress = _pathProgress;
 
 export function renderDashboard() {
   const pb   = getPB();
@@ -3518,6 +3563,9 @@ export function selectVaultIntention(idx) {
   selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
+    // The Path: opening a goal today checks off step ① ("read your intentions").
+    try { localStorage.setItem('ci_path_goals_' + dayKey(), '1'); } catch (e) {}
+    if (typeof window.updatePathProgress === 'function') window.updatePathProgress();
     if (intentions[selectedVaultIdx]) intentions[selectedVaultIdx] = hydrateIntent(intentions[selectedVaultIdx]);
     showVaultBuildSheet(selectedVaultIdx);
     // Seed goal-specific content into players
