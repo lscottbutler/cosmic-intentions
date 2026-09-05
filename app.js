@@ -1654,20 +1654,23 @@ function _pathProgress() {
   let s = {};
   try { s = ringsSummary() || {}; } catch (e) {}
   const closed = s.closed || [];
+  let goalsOpened = false;
+  try { goalsOpened = localStorage.getItem('ci_path_goals_' + dayKey()) === '1'; } catch (e) {}
   // done state keyed by the button's nth-of-type position (matches the CSS nodes)
   const done = {
-    4: closed.includes('Habits'),          // ① Daily Habits
-    5: closed.includes('Visualize'),       // ② Visualize
-    7: !!s.meditate,                        // ③ Meditate
-    8: !!s.gratitude,                       // ④ Gratitude
-    6: closed.includes('Completed Tasks'), // ⑤ Action Plan
+    4:  closed.includes('Habits'),          // ① Daily Habits
+    10: goalsOpened,                        // ② Goals / Intentions (opened a goal today)
+    5:  closed.includes('Visualize'),       // ③ Visualize
+    7:  !!s.meditate,                        // ④ Meditate
+    8:  !!s.gratitude,                       // ⑤ Gratitude
+    6:  closed.includes('Completed Tasks'), // ⑥ Action Plan
   };
   const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
   btns.forEach((b, i) => {
     const nth = i + 1;
     if (Object.prototype.hasOwnProperty.call(done, nth)) b.classList.toggle('path-done', !!done[nth]);
   });
-  const total = 5;
+  const total = Object.keys(done).length;   // tracks however many numbered steps exist
   const count = Object.values(done).filter(Boolean).length;
   const pb = document.getElementById('pathProgress');
   if (pb) {

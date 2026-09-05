@@ -2431,23 +2431,24 @@ input, textarea, select {
   border: 3px solid #c4cad2; color: #55606e; font-size: 13px; font-weight: 800;
   display: flex; align-items: center; justify-content: center; z-index: 2;
 }
-/* numbered core steps: DailyHabits(4) Visualize(5) Meditate(7) Gratitude(8) ActionPlan(6) */
+/* numbered core steps: Habits(4) Goals(10) Visualize(5) Meditate(7) Gratitude(8) ActionPlan(6) */
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(4)::before  { content: "1"; border-color: #1c1c1c; color: #1c1c1c; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)::before  { content: "2"; border-color: #1c1c1c; color: #1c1c1c; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)::before  { content: "3"; border-color: #1c1c1c; color: #1c1c1c; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)::before  { content: "4"; border-color: #1c1c1c; color: #1c1c1c; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)::before  { content: "5"; border-color: #1c1c1c; color: #1c1c1c; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(10)::before { content: "2"; border-color: #1c1c1c; color: #1c1c1c; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)::before  { content: "3"; border-color: #1c1c1c; color: #1c1c1c; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)::before  { content: "4"; border-color: #1c1c1c; color: #1c1c1c; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)::before  { content: "5"; border-color: #1c1c1c; color: #1c1c1c; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)::before  { content: "6"; border-color: #1c1c1c; color: #1c1c1c; }
 
 /* ── Path order (single column, top → bottom): core walk first, extras below ── */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { order: 0 !important; }   /* Goals / Intentions (anchor, top) */
-#page-dashboard.path-mode #citadelNav > #goalsBox              { order: 1 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(4)  { order: 8 !important; }   /* ① Daily Habits */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { order: 10 !important; }  /* ② Visualize */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { order: 12 !important; }  /* ③ Meditate */
-#page-dashboard.path-mode #citadelNav > #medBox               { order: 13 !important; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { order: 16 !important; }  /* ④ Gratitude */
-#page-dashboard.path-mode #citadelNav > #gratBox              { order: 17 !important; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { order: 20 !important; }  /* ⑤ Action Plan */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { order: 10 !important; }  /* ② Goals / Intentions */
+#page-dashboard.path-mode #citadelNav > #goalsBox              { order: 11 !important; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { order: 14 !important; }  /* ③ Visualize */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { order: 16 !important; }  /* ④ Meditate */
+#page-dashboard.path-mode #citadelNav > #medBox               { order: 17 !important; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { order: 20 !important; }  /* ⑤ Gratitude */
+#page-dashboard.path-mode #citadelNav > #gratBox              { order: 21 !important; }
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { order: 24 !important; }  /* ⑥ Action Plan */
 /* — extras (reachable, but below the daily walk) — */
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(1)  { order: 44 !important; }  /* Quick Win */
 #page-dashboard.path-mode #citadelNav > #quickWinPanel        { order: 45 !important; }
