@@ -1661,10 +1661,10 @@ function _pathProgress() {
   const STEPS = [
     { nth: 4,  label: 'Habits',    done: closed.includes('Habits') },          // ①
     { nth: 10, label: 'Goals',     done: goalsOpened },                        // ②
-    { nth: 5,  label: 'Vis',       done: closed.includes('Visualize') },       // ③
+    { nth: 5,  label: 'Visualize', done: closed.includes('Visualize') },       // ③
     { nth: 7,  label: 'Meditate',  done: !!s.meditate },                        // ④
     { nth: 8,  label: 'Gratitude', done: !!s.gratitude },                       // ⑤
-    { nth: 6,  label: 'Action',    done: closed.includes('Completed Tasks') },  // ⑥
+    { nth: 6,  label: 'Plan',      done: closed.includes('Completed Tasks') },  // ⑥
   ];
   const byNth = {}; STEPS.forEach(st => { byNth[st.nth] = st.done; });
   const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
