@@ -2445,20 +2445,19 @@ input, textarea, select {
   content: ""; position: absolute; left: 29px; top: 12px; bottom: 12px;
   width: 3px; background: #d7dbe0; border-radius: 2px; z-index: 0;
 }
-/* step headers painted their real SECTION colour (same spectrum as the old
-   Column-B tabs), so the path is colour-coded not monochrome. Light chips get
-   dark text. Overrides the base grey/black via higher specificity + !important. */
+/* step headers alternate grey / dark-grey by WALK position (Scott 2026-09-05),
+   all white text. Overrides the base grey/black via higher specificity. */
 #page-dashboard.path-mode #citadelNav > button { position: relative; color: #fff !important; }
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { background: #E8C830 !important; color: #1C2230 !important; }  /* Goals / Intentions */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { background: #3878A8 !important; }                            /* Visualize */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { background: #A8C830 !important; color: #1C2230 !important; }  /* Meditate */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { background: #E8A828 !important; color: #1C2230 !important; }  /* Gratitude */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(1)  { background: #2898A8 !important; }                            /* Quick Win */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(9)  { background: #8E6BB0 !important; }                            /* Mind Loop */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(4)  { background: #E86030 !important; }                            /* Daily Habits */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { background: #7888A8 !important; }                            /* Action Plan */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(3)  { background: #E88020 !important; }                            /* Favorites Autoplay */
-#page-dashboard.path-mode #citadelNav > button:nth-of-type(2)  { background: #38A888 !important; }                            /* Quick Thought */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(4)  { background: #6e6e6e !important; }  /* 1 Daily Habits — grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { background: #3a3a3a !important; }  /* 2 Goals — dark grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { background: #6e6e6e !important; }  /* 3 Visualize — grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { background: #3a3a3a !important; }  /* 4 Meditate — dark grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { background: #6e6e6e !important; }  /* 5 Gratitude — grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { background: #3a3a3a !important; }  /* 6 Action Plan — dark grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(1)  { background: #6e6e6e !important; }  /* Quick Win — grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(9)  { background: #3a3a3a !important; }  /* Mind Loop — dark grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(3)  { background: #6e6e6e !important; }  /* Favorites — grey */
+#page-dashboard.path-mode #citadelNav > button:nth-of-type(2)  { background: #3a3a3a !important; }  /* Quick Thought — dark grey */
 /* every step = a node on the spine */
 #page-dashboard.path-mode #citadelNav > button::before {
   content: ""; position: absolute; left: -32px; top: 50%; transform: translateY(-50%);
