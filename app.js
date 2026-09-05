@@ -4090,7 +4090,19 @@ function buildWorkspaceHeader(intent, idx) {
         <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
         <button onclick="calmExpand('goalNote-${idx}')" title="Attach a note to this goal" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);line-height:1;cursor:pointer;padding:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4"/></svg></button>
         <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
-        <button onclick="event.stopPropagation();toggleHamMenu()" title="Menu — where do you want to go?" aria-label="Menu" class="ham-btn" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--ink);border:1px solid var(--border);cursor:pointer;padding:0;"><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span></button>
+        <button onclick="calmExpand('goalMenu-${idx}')" title="Goal actions" aria-label="Goal menu" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--ink);border:1px solid var(--border);cursor:pointer;padding:0;"><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span><span style="display:block;width:18px;height:2.5px;background:var(--brand);border-radius:2px;"></span></button>
+      </div>
+      <div id="goalMenu-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
+        <div style="display:flex;flex-direction:column;gap:6px;padding:8px 4px 4px;">
+          ${[
+            ['&#10022;', 'Visualize', `wsToggleViz(${idx})`],
+            ['&#9678;', 'My Action Plan', `openActionPlan(${idx})`],
+            ['&#128462;', 'Note', `calmExpand('goalNote-${idx}')`],
+            ['&#9829;', 'Favorite this goal', `toggleGoalFavorite(${idx})`],
+            ['&#9998;', 'Edit goal', `editGoalDirect(${idx})`],
+            ['&#10005;', 'Delete goal', `deleteIntention(${idx})`],
+          ].map(([ic, lbl, act]) => `<button onclick="${act}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:14px;font-weight:600;color:${lbl==='Delete goal'?'#e0102b':'var(--text)'};cursor:pointer;"><span style="flex-shrink:0;width:18px;text-align:center;color:${lbl==='Delete goal'?'#e0102b':'var(--brand)'};">${ic}</span>${lbl}</button>`).join('')}
+        </div>
       </div>
       <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
       <div id="goalNote-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
