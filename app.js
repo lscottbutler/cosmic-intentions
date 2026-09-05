@@ -8,7 +8,7 @@ import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings, _wireRingsSync, vizSideStatsHTML, ringsSummary } from './shared/rings.js';
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
-import { renderHabits, renderRunThroughs } from './shared/habits.js';
+import { renderHabits, renderRunThroughs, getHabitList } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
@@ -4195,6 +4195,25 @@ function saveGoalNote(idx, val) {
   }, 500);
 }
 if (typeof window !== 'undefined') window.saveGoalNote = saveGoalNote;
+
+/* Daily Habits inline (path step opens here instead of navigating). Today's
+   checklist — tick to toggle, same store as everywhere (ci_habits_<date>). */
+function renderDailyHabitsInline() {
+  const el = document.getElementById('dailyHabitsInlineBody');
+  if (!el) return;
+  let done = {}, list = [];
+  try { done = LS.get('ci_habits_' + dayKey()) || {}; } catch (e) {}
+  try { list = getHabitList() || []; } catch (e) {}
+  if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No habits yet — add them on My Habits.</div>'; return; }
+  el.innerHTML = list.map(h => {
+    const on = !!done[h.id];
+    return `<div style="display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--widget-border,#2a2a2a);">
+      <button onclick="habitToggle('${h.id}');renderDailyHabitsInline()" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid ${on ? '#2FA94B' : 'var(--muted)'};background:${on ? '#2FA94B' : 'transparent'};color:#fff;font-size:13px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${on ? '✓' : ''}</button>
+      <span style="flex:1;min-width:0;font-size:14px;line-height:1.4;color:var(--widget-text,#eee);${on ? 'text-decoration:line-through;opacity:.6;' : ''}">${esc(h.name)}</span>
+    </div>`;
+  }).join('') + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:10px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
+}
+if (typeof window !== 'undefined') window.renderDailyHabitsInline = renderDailyHabitsInline;
 
 /* ── STRATEGY LAYER — Backbone Framework ─────────────── */
 function buildStrategyContent(intent, idx) {
