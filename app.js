@@ -406,6 +406,7 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
+  ensurePageNav();   // Column B retired → put the UFO menu in the page header instead
   // Intro card at the top of Column A on selected pages, then the admin-editable
   // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
@@ -1615,6 +1616,36 @@ export function darkenHex(hex, f) {
    player-launcher.js and setEl() keep working), then hide the rail via the
    reversible `.path-mode` class. Idempotent: safe to call on every render. */
 const _UFO_SVG = '<svg width="88" height="64" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg>';
+/* Column B is retired site-wide. Every framed page already has a Back button in
+   its header — inject the UFO menu right next to it so navigation survives. */
+function ensurePageNav() {
+  const page = document.querySelector('.page.active');
+  if (!page || page.id === 'page-dashboard' || page.id === 'page-home') return;
+  if (page.querySelector('.page-ufo-menu')) return;
+  const ufo = document.createElement('button');
+  ufo.type = 'button';
+  ufo.className = 'page-ufo-menu';
+  ufo.setAttribute('aria-label', 'Menu');
+  ufo.title = 'Where do you want to go?';
+  ufo.innerHTML = _UFO_SVG;
+  ufo.addEventListener('click', function (e) { e.stopPropagation(); if (typeof window.toggleHamMenu === 'function') window.toggleHamMenu(); });
+  // Prefer to sit next to the page's existing Back button (any style) — but only a
+  // VISIBLE one in the header, never a hidden Column-B tab/link.
+  const back = [...page.querySelectorAll('button[aria-label="Back"], button.pg-back, button[onclick="goMemberDashboard()"]')]
+    .find(bn => bn.offsetParent !== null && !bn.closest('.pg-2col-side, .viz-side, .pg-side, .colb-tabs, .colb-links, .colb-nav'));
+  if (back && back.parentElement) { back.parentElement.insertBefore(ufo, back.nextSibling); return; }
+  // No Back button in the header — add a Back + Menu row at the top of the screen.
+  const screen = page.querySelector('.pg-screen, .wins-screen, .mon-screen') || page;
+  const row = document.createElement('div');
+  row.className = 'page-nav-row';
+  const bk = document.createElement('button');
+  bk.type = 'button'; bk.className = 'page-back-btn'; bk.setAttribute('aria-label', 'Back'); bk.title = 'Back to My Goals';
+  bk.innerHTML = '&#9664;';
+  bk.addEventListener('click', function () { if (typeof window.goMemberDashboard === 'function') window.goMemberDashboard(); });
+  row.appendChild(bk); row.appendChild(ufo);
+  screen.insertBefore(row, screen.firstChild);
+}
+
 function _pathLayout() {
   const page = document.getElementById('page-dashboard');
   const main = document.getElementById('vaultMain');

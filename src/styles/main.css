@@ -2382,6 +2382,19 @@ input, textarea, select {
   .pg-2col-side { flex-basis: auto; width: 100%; max-width: none; }
 }
 
+/* ── Retire Column B on EVERY framed page (Scott 2026-09-05) ──────────────────
+   Single column everywhere, like the dashboard Path. The three side-column
+   systems are hidden and their main column flows full width. Navigation (UFO
+   menu) is injected into each page header next to the Back button by
+   ensurePageNav(); the Back button itself already lives in every header. */
+.pg-2col-side, .viz-side, .pg-side { display: none !important; }
+.pg-2col, .pg-body, .viz-layout { display: block !important; }
+.page-ufo-menu { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; margin-left: 8px; line-height: 0; }
+.page-ufo-menu svg { width: 54px; height: auto; display: block; }
+.page-nav-row { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; }
+.page-nav-row .page-ufo-menu { margin-left: 0; }
+.page-back-btn { width: 40px; height: 40px; border-radius: 50%; background: #000; border: none; color: #fff; font-size: 15px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+
 .vault-layout {
   display: flex;
   min-height: calc(100vh - var(--hdr));
