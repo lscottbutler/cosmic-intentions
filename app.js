@@ -1625,7 +1625,12 @@ function _pathLayout() {
   if (!bar) {
     bar = document.createElement('div');
     bar.id = 'pathMenuBar';
-    bar.innerHTML = '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?">' + _UFO_SVG + '</button>';
+    const _navCircle = (fn, label, glyph) => '<button onclick="' + fn + '" title="' + label + '" aria-label="' + label + '" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:16px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;">' + glyph + '</button>';
+    bar.innerHTML =
+      _navCircle('goMemberDashboard()', 'Home', '&#8962;') +
+      _navCircle('subnavBack()', 'Go back', '&#9664;') +
+      '<button class="colb-nav-btn colb-nav-menu" onclick="toggleHamMenu()" aria-label="Menu" title="Where do you want to go?" style="background:none;border:none;padding:0;cursor:pointer;flex-shrink:0;">' + _UFO_SVG + '</button>' +
+      _navCircle('subnavForward()', 'Go forward', '&#9654;');
     const hdr = main.querySelector('.pg-hdr');
     main.insertBefore(bar, hdr ? hdr.nextSibling : main.firstChild);
   }
