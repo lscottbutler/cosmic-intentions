@@ -2510,6 +2510,14 @@ input, textarea, select {
     flex: 0 0 auto !important; width: 100% !important;
     justify-content: flex-end !important; gap: 10px !important; margin-top: 4px;
   }
+  /* Bare-minimum side padding on phones: shrink the frame chrome so content
+     uses nearly the full width. (Scott, 2026-09-05.) */
+  .pg-bezel  { padding-left: 3px !important; padding-right: 3px !important; }
+  .pg-screen { padding-left: 6px !important; padding-right: 6px !important; }
+  /* tighten the Path spine gutter too, shifting the spine + nodes to stay aligned */
+  #page-dashboard.path-mode #citadelNav { padding-left: 34px !important; padding-right: 2px !important; }
+  #page-dashboard.path-mode #citadelNav::before { left: 16px !important; }
+  #page-dashboard.path-mode #citadelNav > button::before { left: -30px !important; }
 }
 
 /* ── VAULT STATS ROW — what you've done, top of Column A ── */
@@ -3210,11 +3218,13 @@ input, textarea, select {
    vault-main paddings (~84px/side) — on phones that crushed the widgets
    into a narrow center strip. Trim each layer so they fill edge-to-edge. */
 @media (max-width: 767px) {
-  #page-dashboard .pg-frame     { padding: 8px !important; }
-  #page-dashboard .pg-bezel     { padding: 0 6px 10px !important; }
-  #page-dashboard .pg-screen    { padding: 10px 7px 22px !important; }
+  /* Bare-minimum side padding on phones — frame is white on the dashboard, so
+     the L/R chrome was just wasted space. Keep top/bottom, kill L/R. (Scott, 2026-09-05.) */
+  #page-dashboard .pg-frame     { padding: 6px 0 !important; }
+  #page-dashboard .pg-bezel     { padding: 0 0 10px !important; }
+  #page-dashboard .pg-screen    { padding: 10px 2px 22px !important; }
   #page-dashboard .vault-layout { padding: 0 !important; }
-  #page-dashboard .vault-main   { padding: 10px 6px 0 !important; }
+  #page-dashboard .vault-main   { padding: 10px 0 0 !important; }
   #page-dashboard .vault-sidebar{ padding: 10px 6px !important; }
 }
 
