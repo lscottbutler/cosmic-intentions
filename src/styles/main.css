@@ -2404,6 +2404,8 @@ input, textarea, select {
   box-shadow: 0 6px 22px rgba(0,0,0,.34); backdrop-filter: blur(2px);
 }
 #floatNav.show { display: flex; }
+/* Scroll room at the bottom so the fixed nav never covers the last content. */
+body.has-floatnav { padding-bottom: 92px; }
 #floatNav .fn-btn {
   width: 40px; height: 40px; border-radius: 50%; background: #1c1c1c; border: 1px solid #333;
   color: var(--brand, #E8C830); font-size: 15px; line-height: 1; cursor: pointer;

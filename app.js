@@ -1632,7 +1632,10 @@ function ensureFloatNav() {
     fn.querySelector('.fn-menu').addEventListener('click', function (e) { e.stopPropagation(); if (typeof window.toggleHamMenu === 'function') window.toggleHamMenu(); });
   }
   const active = document.querySelector('.page.active');
-  fn.classList.toggle('show', !!(active && active.id !== 'page-home'));
+  const show = !!(active && active.id !== 'page-home');
+  fn.classList.toggle('show', show);
+  // Give the page bottom room so the fixed nav never covers the last content.
+  document.body.classList.toggle('has-floatnav', show);
 }
 
 function _pathLayout() {
