@@ -2518,6 +2518,11 @@ input, textarea, select {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+  /* Goal workspace header: the round action buttons (timeline/note/edit/menu)
+     crush the title on a phone — let the title take the full width and the
+     buttons wrap to a row below it. */
+  .ws-hdr-row { flex-wrap: wrap !important; }
+  .ws-hdr-row > *:first-child { flex-basis: 100% !important; }
   /* Goal row: the 75/25 title-vs-actions split crushes the title to one letter
      per line on a narrow phone. STACK it — full-width title on top, the
      heart/play/edit buttons on their own row below. (Scott, 2026-09-05.) */
