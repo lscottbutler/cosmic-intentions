@@ -2139,6 +2139,16 @@ input, textarea, select {
 .admin-block { background: var(--off); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
 .admin-block-hd { background: var(--off); padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .admin-block-slug { font-size: 10px; color: var(--muted); font-family: monospace; }
+/* Accordion: each content-block editor collapses under its header (Scott 2026-09-05).
+   Closed by default → the Admin page is a tidy list of headers. */
+.admin-block:not(.admin-open) > *:not(.admin-block-hd) { display: none !important; }
+.admin-block:not(.admin-open) .admin-block-hd { border-bottom: none; }
+.cb-hd-toggle { cursor: pointer; user-select: none; justify-content: flex-start; gap: 8px; }
+.cb-hd-toggle .admin-block-slug { margin-left: auto; }
+.cb-hd-toggle::after { content: "\25B8"; flex-shrink: 0; color: var(--muted); font-size: 12px; transition: transform .2s ease; }
+.admin-block.admin-open > .cb-hd-toggle::after { transform: rotate(90deg); }
+.cb-hd-jump { flex-shrink: 0; background: none; border: none; color: #1D3557; font-weight: 800; font-size: 13px; line-height: 1; cursor: pointer; padding: 0 2px; }
+.cb-hd-jump:hover { color: #E0102B; }
 .admin-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
 .admin-tb-inserts { flex-wrap: wrap; }
 .admin-tb-btn { background: var(--border); border: none; color: var(--black); border-radius: 4px; padding: 3px 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }

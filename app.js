@@ -4464,12 +4464,23 @@ function numberContentBlocks() {
       chip.textContent = n;
       hd.insertBefore(chip, hd.firstChild);
     }
-    // Make the header a link to where the block appears (if it's placed).
-    if (hd && !hd.dataset.linked && _blockPage(slug)) {
-      hd.dataset.linked = '1';
-      hd.classList.add('cb-hd-link');
-      hd.title = 'Click to jump to where this block appears on the site';
-      hd.addEventListener('click', () => adminGoToBlock(slug));
+    // Header = accordion toggle: each block starts CLOSED so the Admin page is a
+    // tidy list of headers; click one to open its editor. Placed blocks keep a
+    // jump-to-page link as a small ↗ button that doesn't trigger the collapse.
+    if (hd && !hd.dataset.wired) {
+      hd.dataset.wired = '1';
+      hd.classList.add('cb-hd-toggle');
+      hd.title = 'Click to open / close this block';
+      hd.addEventListener('click', () => el.classList.toggle('admin-open'));
+      if (_blockPage(slug)) {
+        const jump = document.createElement('button');
+        jump.type = 'button';
+        jump.className = 'cb-hd-jump';
+        jump.textContent = '↗';
+        jump.title = 'Jump to where this block appears on the site';
+        jump.addEventListener('click', (ev) => { ev.stopPropagation(); adminGoToBlock(slug); });
+        hd.appendChild(jump);
+      }
     }
   });
   window.BLOCK_NUM = map;
