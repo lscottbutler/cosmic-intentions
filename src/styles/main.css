@@ -2480,6 +2480,26 @@ input, textarea, select {
 #pathProgress .pp-fill { display: block; height: 100%; width: 0; background: #2FA94B; border-radius: 999px; transition: width .4s ease; }
 #pathProgress.pp-complete .pp-lbl { color: #2FA94B; }
 
+/* ── MOBILE: drop the desktop indent pass ───────────────────────────────────
+   The 15–20px left/right section paddings we added to align things on desktop
+   crush the content on a narrow phone. Zero them under 600px so text/cards use
+   the full width. Desktop is untouched. (Scott, 2026-09-05 — "get rid of those
+   indentations on mobile".) The Path spine padding is a separate, newer rule
+   with higher specificity, so the dashboard keeps its nodes. */
+@media (max-width: 600px) {
+  #citadelNav,
+  #goalsBox,
+  #todayWillWidget,
+  #favorites-list,
+  #sleepLoopWidget,
+  #quickWinPanel,
+  #page-cosmiclibrary .ent-force-groups,
+  #page-dailyfocus .pg-body-main > p {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
 /* ── VAULT STATS ROW — what you've done, top of Column A ── */
 .vault-stats-row {
   display: grid;
