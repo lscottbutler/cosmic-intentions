@@ -406,7 +406,7 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
-  ensureFloatNav();   // Column B retired → one fixed floating nav, always on screen
+  ensurePageNav();   // Column B retired → in-flow Back/Menu/Forward nav
   // Intro card at the top of Column A on selected pages, then the admin-editable
   // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
@@ -1616,26 +1616,35 @@ export function darkenHex(hex, f) {
    player-launcher.js and setEl() keep working), then hide the rail via the
    reversible `.path-mode` class. Idempotent: safe to call on every render. */
 const _UFO_SVG = '<svg width="88" height="64" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg>';
-/* ONE global FLOATING nav — fixed on screen so the user never scrolls to the top
-   to go back. Back · Menu · Forward, shown on every member page (hidden on the
-   public home). Replaces the old top nav bar + per-page header menus. */
-function ensureFloatNav() {
-  let fn = document.getElementById('floatNav');
-  if (!fn) {
-    fn = document.createElement('div');
-    fn.id = 'floatNav';
-    fn.innerHTML =
-      '<button type="button" class="fn-btn" aria-label="Go back" title="Back" onclick="subnavBack()">&#9664;</button>' +
-      '<button type="button" class="fn-menu" aria-label="Menu" title="Where do you want to go?">' + _UFO_SVG + '</button>' +
-      '<button type="button" class="fn-btn" aria-label="Go forward" title="Forward" onclick="subnavForward()">&#9654;</button>';
-    document.body.appendChild(fn);
-    fn.querySelector('.fn-menu').addEventListener('click', function (e) { e.stopPropagation(); if (typeof window.toggleHamMenu === 'function') window.toggleHamMenu(); });
-  }
+/* In-flow nav (Back · Menu · Forward). On the dashboard it sits ~40px below the
+   goals section (Scott's placement); on other member pages it sits at the top of
+   the content. Scrolls with the page — no fixed overlay, no taskbar clash. */
+function ensurePageNav() {
+  // Retire the old fixed floating nav if it's still around.
+  const old = document.getElementById('floatNav'); if (old) old.remove();
+  document.body.classList.remove('has-floatnav');
   const active = document.querySelector('.page.active');
-  const show = !!(active && active.id !== 'page-home');
-  fn.classList.toggle('show', show);
-  // Give the page bottom room so the fixed nav never covers the last content.
-  document.body.classList.toggle('has-floatnav', show);
+  if (!active || active.id === 'page-home') return;
+  if (active.querySelector('.flow-nav')) return;
+  const nav = document.createElement('div');
+  nav.className = 'flow-nav';
+  nav.innerHTML =
+    '<button type="button" class="fn-btn" aria-label="Go back" title="Back" onclick="subnavBack()">&#9664;</button>' +
+    '<button type="button" class="fn-menu" aria-label="Menu" title="Where do you want to go?">' + _UFO_SVG + '</button>' +
+    '<button type="button" class="fn-btn" aria-label="Go forward" title="Forward" onclick="subnavForward()">&#9654;</button>';
+  nav.querySelector('.fn-menu').addEventListener('click', function (e) { e.stopPropagation(); if (typeof window.toggleHamMenu === 'function') window.toggleHamMenu(); });
+  // Dashboard: drop it into the path right below the goals section (goalsBox).
+  if (active.id === 'page-dashboard') {
+    const goalsBox = document.getElementById('goalsBox');
+    if (goalsBox && goalsBox.parentElement && goalsBox.parentElement.id === 'citadelNav') {
+      nav.style.order = '12';   // goalsBox is order 11, Visualize is 14 → sits just under goals
+      goalsBox.parentElement.insertBefore(nav, goalsBox.nextSibling);
+      return;
+    }
+  }
+  // Other pages: top of the content.
+  const screen = active.querySelector('.pg-screen, .wins-screen, .mon-screen') || active;
+  screen.insertBefore(nav, screen.firstChild);
 }
 
 function _pathLayout() {
