@@ -4088,9 +4088,18 @@ function buildWorkspaceHeader(intent, idx) {
       <div style="position:relative;display:flex;align-items:center;gap:12px;padding:2px 4px 4px;">
         <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(goalCase(intent.title))}</span></div>
         <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
+        <button onclick="calmExpand('goalNote-${idx}')" title="Attach a note to this goal" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);line-height:1;cursor:pointer;padding:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4"/></svg></button>
         <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
       </div>
       <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
+      <div id="goalNote-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
+        <div style="padding:8px 4px 4px;">
+          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 0 6px;">Note for this goal</div>
+          <textarea id="goalNoteInput-${idx}" placeholder="Jot a private note about this goal — a reminder, a why, a next thought…" oninput="saveGoalNote(${idx}, this.value)"
+            style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:14px;line-height:1.55;color:var(--text);min-height:84px;resize:vertical;font-family:inherit;">${esc(intent.note || '')}</textarea>
+          <div id="goalNoteStatus-${idx}" style="font-size:11px;color:var(--muted);margin-top:4px;height:14px;"></div>
+        </div>
+      </div>
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalDissolve" style="position:absolute;inset:0;display:none;"></div>
@@ -4127,6 +4136,23 @@ function buildWorkspaceHeader(intent, idx) {
       <!-- Roadmap banner removed — the MY ACTION PLAN button above is the sole control for #layer-content-roadmap. -->
     </div>`;
 }
+
+/* Attach/save a free-text note to a single goal. Stored on intentions[idx].note
+   so it persists + syncs like everything else. Debounced so we don't write on
+   every keystroke. */
+let _goalNoteT;
+function saveGoalNote(idx, val) {
+  if (!intentions[idx]) return;
+  intentions[idx].note = val;
+  const st = document.getElementById('goalNoteStatus-' + idx);
+  if (st) st.textContent = 'Saving…';
+  clearTimeout(_goalNoteT);
+  _goalNoteT = setTimeout(() => {
+    if (typeof saveIntentions === 'function') saveIntentions();
+    if (st) { st.textContent = 'Saved ✓'; clearTimeout(st._c); st._c = setTimeout(() => { if (st.textContent === 'Saved ✓') st.textContent = ''; }, 1500); }
+  }, 500);
+}
+if (typeof window !== 'undefined') window.saveGoalNote = saveGoalNote;
 
 /* ── STRATEGY LAYER — Backbone Framework ─────────────── */
 function buildStrategyContent(intent, idx) {
