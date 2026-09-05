@@ -1204,12 +1204,16 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span class="qt-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <div id="dashQuickAdd" style="display:none;margin:-4px 0 12px;"></div>
-        <!-- MY FAVORITES AUTOPLAY — jump to the ♥-pinned "Play My Day" page -->
-        <button onclick="navTo('dailyfocus')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <!-- MY FAVORITES AUTOPLAY — inline: the ♥-pinned list + Play My Day -->
+        <button onclick="calmExpand('favoritesBox', this.querySelector('.fav-chev'), function(){ if(window.renderFavoritesInline)renderFavoritesInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:var(--pink,#ff8ab8);">&#9829;</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Favorites Autoplay</span>
-          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span class="fav-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
+        <div id="favoritesBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
+          <button onclick="playAllFavorites()" style="width:100%;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;padding:12px;border-radius:8px;cursor:pointer;margin-bottom:12px;">&#9654; PLAY MY DAY</button>
+          <div id="favoritesInlineHost"></div>
+        </div>
         <!-- DAILY HABITS — inline dropdown (like Meditate/Gratitude): today's habit checklist -->
         <button onclick="calmExpand('dailyHabitsBox', this.querySelector('.dh-chev'), function(){ if(window.renderDailyHabitsInline)renderDailyHabitsInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
@@ -1219,16 +1223,22 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="dailyHabitsBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
           <div id="dailyHabitsInlineBody"></div>
         </div>
-        <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="calmExpand('visualizeBox', this.querySelector('.viz-chev'), function(){ if(window.renderVisualizeInline)renderVisualizeInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;line-height:0;"><svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg></span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Visualize</span>
-          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span class="viz-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <div id="visualizeBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
+          <div id="visualizeInlineBody"></div>
+        </div>
+        <button onclick="calmExpand('actionPlanBox', this.querySelector('.ap-chev'), function(){ if(window.renderActionPlanInline)renderActionPlanInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Action Plan</span>
-          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span class="ap-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
+        <div id="actionPlanBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
+          <div id="actionPlanInlineBody"></div>
+        </div>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
         <button onclick="calmExpand('medBox', this.querySelector('.med-chev'), function(){ if(window.syncSessionHearts)syncSessionHearts(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>

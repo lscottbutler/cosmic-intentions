@@ -2480,17 +2480,20 @@ input, textarea, select {
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { order: 10 !important; }  /* ② Goals / Intentions */
 #page-dashboard.path-mode #citadelNav > #goalsBox              { order: 11 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { order: 14 !important; }  /* ③ Visualize */
+#page-dashboard.path-mode #citadelNav > #visualizeBox          { order: 15 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(7)  { order: 16 !important; }  /* ④ Meditate */
 #page-dashboard.path-mode #citadelNav > #medBox               { order: 17 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(8)  { order: 20 !important; }  /* ⑤ Gratitude */
 #page-dashboard.path-mode #citadelNav > #gratBox              { order: 21 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(6)  { order: 24 !important; }  /* ⑥ Action Plan */
+#page-dashboard.path-mode #citadelNav > #actionPlanBox         { order: 25 !important; }
 /* — extras (reachable, but below the daily walk) — */
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(1)  { order: 44 !important; }  /* Quick Win */
 #page-dashboard.path-mode #citadelNav > #quickWinPanel        { order: 45 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(9)  { order: 48 !important; }  /* Mind Loop */
 #page-dashboard.path-mode #citadelNav > #mindLoopBox          { order: 49 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(3)  { order: 52 !important; }  /* Favorites Autoplay */
+#page-dashboard.path-mode #citadelNav > #favoritesBox          { order: 53 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(2)  { order: 60 !important; }  /* Quick Thought */
 #page-dashboard.path-mode #citadelNav > #dashQuickAdd         { order: 61 !important; }
 /* inline panels sit to the right of the spine, no node of their own */

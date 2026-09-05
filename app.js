@@ -372,6 +372,9 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
+  // Favorites Autoplay is now inline on the dashboard (its list was relocated there),
+  // so every "Favorites" link opens the inline panel instead of the emptied page.
+  if (id === 'dailyfocus') { _openFavoritesInline(); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
   const target = document.getElementById('page-' + id);
@@ -4214,6 +4217,66 @@ function renderDailyHabitsInline() {
   }).join('') + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:10px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
 }
 if (typeof window !== 'undefined') window.renderDailyHabitsInline = renderDailyHabitsInline;
+
+/* Visualize inline — tap a goal to start a 3-minute visualization. */
+function renderVisualizeInline() {
+  const el = document.getElementById('visualizeInlineBody');
+  if (!el) return;
+  const list = intentions || [];
+  if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">Add a goal first, then visualize it here.</div>'; return; }
+  el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin:0 0 8px;">Tap a goal for a 3-minute visualization.</div>' + list.map((it, idx) => {
+    const gcol = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+    return `<button onclick="launchCountdown(${idx},180)" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:6px;cursor:pointer;">${goalBadge(goalLetter(it, idx), gcol.bg, gcol.text, 26)}<span style="flex:1;min-width:0;font-size:14px;color:var(--text);">${esc(goalCase(it.title))}</span><span style="color:var(--brand);font-size:15px;flex-shrink:0;">&#9654;</span></button>`;
+  }).join('');
+}
+if (typeof window !== 'undefined') window.renderVisualizeInline = renderVisualizeInline;
+
+/* Action Plan inline — every goal's roadmap steps, tick to complete in place. */
+function renderActionPlanInline() {
+  const el = document.getElementById('actionPlanInlineBody');
+  if (!el) return;
+  const list = intentions || [];
+  let html = '';
+  list.forEach((it, idx) => {
+    const r = it && it.roadmapAI;
+    if (!r) return;
+    const tasks = (r.tasks || []).map((t, i) => ({ text: t, done: !!(r.done && r.done[i]), kind: 'rtask', ref: i }))
+      .concat((r.userTasks || []).map(u => ({ text: u.text, done: !!u.done, kind: 'rutask', ref: u.id })));
+    if (!tasks.length) return;
+    const gcol = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+    html += `<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">${goalBadge(goalLetter(it, idx), gcol.bg, gcol.text, 22)}<span style="font-size:12px;font-weight:700;color:var(--widget-text,#eee);min-width:0;">${esc(goalCase(it.title))}</span></div>` +
+      tasks.map(t => {
+        const oc = t.kind === 'rtask' ? `toggleRoadmapTaskDone(${idx},${t.ref})` : `toggleRoadmapUserTaskDone(${idx},${t.ref})`;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--widget-border,#2a2a2a);"><button onclick="${oc};renderActionPlanInline()" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid ${t.done ? '#2FA94B' : 'var(--muted)'};background:${t.done ? '#2FA94B' : 'transparent'};color:#fff;font-size:12px;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${t.done ? '✓' : ''}</button><span style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--widget-text,#eee);${t.done ? 'text-decoration:line-through;opacity:.6;' : ''}">${esc(t.text)}</span></div>`;
+      }).join('') + '</div>';
+  });
+  el.innerHTML = html || '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No roadmap steps yet — open a goal and generate its roadmap.</div>';
+}
+if (typeof window !== 'undefined') window.renderActionPlanInline = renderActionPlanInline;
+
+/* Favorites inline — host the real #favorites-list here and reuse renderFavorites
+   (keeps the drag/checkbox/autoplay logic intact). */
+function renderFavoritesInline() {
+  const host = document.getElementById('favoritesInlineHost');
+  const favList = document.getElementById('favorites-list');
+  if (host && favList && favList.parentElement !== host) host.appendChild(favList);
+  if (typeof window.renderFavorites === 'function') window.renderFavorites();
+}
+if (typeof window !== 'undefined') window.renderFavoritesInline = renderFavoritesInline;
+
+/* Open the dashboard and expand the inline Favorites panel (used to redirect the
+   old Favorites-page links now that the list lives inline). */
+function _openFavoritesInline() {
+  if (typeof window.goMemberDashboard === 'function') window.goMemberDashboard();
+  setTimeout(() => {
+    const box = document.getElementById('favoritesBox');
+    const btn = document.querySelector('#citadelNav [onclick*="favoritesBox"]');
+    if (box && getComputedStyle(box).display === 'none' && btn) btn.click();
+    else renderFavoritesInline();
+    const box2 = document.getElementById('favoritesBox');
+    if (box2) box2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 250);
+}
 
 /* ── STRATEGY LAYER — Backbone Framework ─────────────── */
 function buildStrategyContent(intent, idx) {
