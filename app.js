@@ -1638,7 +1638,7 @@ function _pathLayout() {
   if (!document.getElementById('pathProgress')) {
     const pb = document.createElement('div');
     pb.id = 'pathProgress';
-    pb.innerHTML = '<span class="pp-lbl">Today’s path</span><span class="pp-bar"><i class="pp-fill"></i></span>';
+    pb.innerHTML = '';   // filled by _pathProgress (label + labeled segment bar)
     const nav = document.getElementById('citadelNav');
     if (nav) nav.parentElement.insertBefore(pb, nav);
   }
@@ -1656,27 +1656,28 @@ function _pathProgress() {
   const closed = s.closed || [];
   let goalsOpened = false;
   try { goalsOpened = localStorage.getItem('ci_path_goals_' + dayKey()) === '1'; } catch (e) {}
-  // done state keyed by the button's nth-of-type position (matches the CSS nodes)
-  const done = {
-    4:  closed.includes('Habits'),          // ① Daily Habits
-    10: goalsOpened,                        // ② Goals / Intentions (opened a goal today)
-    5:  closed.includes('Visualize'),       // ③ Visualize
-    7:  !!s.meditate,                        // ④ Meditate
-    8:  !!s.gratitude,                       // ⑤ Gratitude
-    6:  closed.includes('Completed Tasks'), // ⑥ Action Plan
-  };
+  // The 6 numbered steps, IN ORDER, each with its short bar label + today's done
+  // state. `nth` ties each to its CSS node so the spine check-off stays in sync.
+  const STEPS = [
+    { nth: 4,  label: 'Habits',    done: closed.includes('Habits') },          // ①
+    { nth: 10, label: 'Goals',     done: goalsOpened },                        // ②
+    { nth: 5,  label: 'Vis',       done: closed.includes('Visualize') },       // ③
+    { nth: 7,  label: 'Meditate',  done: !!s.meditate },                        // ④
+    { nth: 8,  label: 'Gratitude', done: !!s.gratitude },                       // ⑤
+    { nth: 6,  label: 'Action',    done: closed.includes('Completed Tasks') },  // ⑥
+  ];
+  const byNth = {}; STEPS.forEach(st => { byNth[st.nth] = st.done; });
   const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
-  btns.forEach((b, i) => {
-    const nth = i + 1;
-    if (Object.prototype.hasOwnProperty.call(done, nth)) b.classList.toggle('path-done', !!done[nth]);
-  });
-  const total = Object.keys(done).length;   // tracks however many numbered steps exist
-  const count = Object.values(done).filter(Boolean).length;
+  btns.forEach((b, i) => { const nth = i + 1; if (nth in byNth) b.classList.toggle('path-done', !!byNth[nth]); });
+  const count = STEPS.filter(st => st.done).length;
+  const total = STEPS.length;
   const pb = document.getElementById('pathProgress');
   if (pb) {
-    const fill = pb.querySelector('.pp-fill'); if (fill) fill.style.width = Math.round(count / total * 100) + '%';
-    const lbl = pb.querySelector('.pp-lbl'); if (lbl) lbl.textContent = count >= total ? 'Path complete ✓' : count + ' of ' + total + ' done today';
     pb.classList.toggle('pp-complete', count >= total);
+    const segs = STEPS.map(st => `<span class="pp-seg${st.done ? ' done' : ''}">${st.label}</span>`).join('');
+    pb.innerHTML =
+      `<div class="pp-lbl">${count >= total ? 'PATH COMPLETE ✓' : count + ' of ' + total + ' done today'}</div>` +
+      `<div class="pp-segbar">${segs}</div>`;
   }
 }
 if (typeof window !== 'undefined') window.updatePathProgress = _pathProgress;

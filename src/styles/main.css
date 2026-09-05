@@ -2471,18 +2471,24 @@ input, textarea, select {
 #page-dashboard.path-mode #citadelNav > button.path-done::before {
   content: "✓" !important; background: #2FA94B !important; border-color: #2FA94B !important; color: #fff !important;
 }
-/* progress meter above the path */
+/* progress meter above the path — labeled segment bar: "X of N" then the six
+   step words across the column, each segment fills green when that step is done. */
 #pathProgress { display: none; }
-#page-dashboard.path-mode #pathProgress {
-  display: flex; align-items: center; gap: 12px; margin: 4px 4px 14px; padding-left: 2px;
-}
+#page-dashboard.path-mode #pathProgress { display: block; margin: 4px 4px 16px; }
 #pathProgress .pp-lbl {
   font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
-  color: #8a929c; white-space: nowrap;
+  color: #8a929c; margin-bottom: 6px;
 }
-#pathProgress .pp-bar { flex: 1; height: 8px; border-radius: 999px; background: #e9ecef; overflow: hidden; }
-#pathProgress .pp-fill { display: block; height: 100%; width: 0; background: #2FA94B; border-radius: 999px; transition: width .4s ease; }
 #pathProgress.pp-complete .pp-lbl { color: #2FA94B; }
+#pathProgress .pp-segbar { display: flex; gap: 3px; height: 26px; }
+#pathProgress .pp-seg {
+  flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; background: #e9ecef; color: #8a929c;
+  font-size: 8.5px; font-weight: 800; letter-spacing: .2px; text-transform: uppercase;
+  text-align: center; white-space: nowrap; overflow: hidden; padding: 0 2px; box-sizing: border-box;
+  transition: background .3s ease, color .3s ease;
+}
+#pathProgress .pp-seg.done { background: #2FA94B; color: #fff; }
 
 /* ── MOBILE: drop the desktop indent pass ───────────────────────────────────
    The 15–20px left/right section paddings we added to align things on desktop
