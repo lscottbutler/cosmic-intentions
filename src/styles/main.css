@@ -2401,6 +2401,9 @@ input, textarea, select {
   position: relative;
   padding-left: 46px !important;           /* room for the spine + nodes */
   padding-right: 4px !important;
+  /* breathing room so the LAST step never sits flush against the frame / mobile
+     browser toolbar (Scott: Quick Thought was cut off at max scroll). */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
 }
 /* the vertical spine */
 #page-dashboard.path-mode #citadelNav::before {
