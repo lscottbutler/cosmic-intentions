@@ -1653,17 +1653,14 @@ function _pathProgress() {
   if (!nav) return;
   let s = {};
   try { s = ringsSummary() || {}; } catch (e) {}
-  const today = dayKey();
-  let goalsOpened = false, winToday = false;
-  try { goalsOpened = localStorage.getItem('ci_path_goals_' + today) === '1'; } catch (e) {}
-  try { winToday = ((LS.get('ci_wins') || [])).some(w => w && w.date === today); } catch (e) {}
+  const closed = s.closed || [];
   // done state keyed by the button's nth-of-type position (matches the CSS nodes)
   const done = {
-    10: goalsOpened,                                   // ① Goals / Intentions
-    5:  (s.closed || []).includes('Visualize'),        // ② Visualize
-    7:  !!s.meditate,                                   // ③ Meditate
-    8:  !!s.gratitude,                                  // ④ Gratitude
-    1:  winToday,                                       // ⑤ Quick Win
+    4: closed.includes('Habits'),          // ① Daily Habits
+    5: closed.includes('Visualize'),       // ② Visualize
+    7: !!s.meditate,                        // ③ Meditate
+    8: !!s.gratitude,                       // ④ Gratitude
+    6: closed.includes('Completed Tasks'), // ⑤ Action Plan
   };
   const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
   btns.forEach((b, i) => {
