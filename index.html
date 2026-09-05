@@ -1600,7 +1600,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="pbThoughtsList"></div>
       </div>
 
-      <div style="height: 20px;"></div>
+      <!-- Clearance so the last section isn't hidden behind the fixed Save bar. -->
+      <div style="height: 100px;"></div>
     </div>
 
     <!-- SAVE BAR -->
