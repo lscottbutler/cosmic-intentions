@@ -809,23 +809,10 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
    black = visual slots 1,3,5,7,9  →  Creative Viz(5), Meditation(7), My Daily Habits(4), My Roadmap(6), Practice Gratitude(8). */
 #citadelNav { padding: 0 15px; box-sizing: border-box; }   /* indent the nav buttons 15px, matching the goal cards */
 #citadelNav > button { background: #1c1c1c !important; }   /* Goals/Intentions header — dark charcoal to match the section panels */
-#citadelNav > button:nth-of-type(4),
-#citadelNav > button:nth-of-type(5),
-#citadelNav > button:nth-of-type(6),
-#citadelNav > button:nth-of-type(7),
-#citadelNav > button:nth-of-type(8) { background: #1c1c1c !important; }   /* black (odd slots) */
-#taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List (slot 11) */
+#taskListWidget > div > details > summary { background: #1c1c1c !important; }   /* Task List header */
 #citadelNav > button { padding: 9px 16px !important; border-radius: 6px !important; margin-bottom: 0 !important; }
 #citadelNav > button > span:first-child { display: none !important; }
-/* …except the Goals / Intentions header (button 10), which shows its bullseye badge. */
-#citadelNav > button:nth-of-type(10) > span:first-child { display: inline-flex !important; }
-/* The expandable/attached panels span both columns so they open full-width
-   below their button instead of squeezing into one grid cell. */
-#citadelNav > #quickWinPanel,
-#citadelNav > #dashQuickAdd,
-#citadelNav > #medBox,
-#citadelNav > #gratBox,
-#citadelNav > #mindLoopBox,
+/* The Goals/Intentions panel spans full width below its header. */
 #citadelNav > #goalsBox { grid-column: 1 / -1; margin-top: 0 !important; }
 /* Collapse to a single column on very narrow phones. */
 @media (max-width: 420px) { #citadelNav { grid-template-columns: 1fr !important; } }
@@ -837,22 +824,7 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 #citadelNav > button > span:last-child { font-size: 15px !important; }
 /* Top-right name removed — the "Welcome back, {name}" greeting covers it. */
 #hdrUser { display: none !important; }
-/* Alphabetical order via flex `order` — each button + its attached panel share an
-   order value so they move together (source order breaks the tie). */
-#citadelNav > button:nth-of-type(1)  { order:2; }   /* Log A Win */
-#citadelNav > button:nth-of-type(2)  { order:10; }  /* Quick Thought */
-#citadelNav > button:nth-of-type(3)  { order:8; }   /* Play My Favorites */
-#citadelNav > button:nth-of-type(4)  { order:5; }   /* My Daily Habits */
-#citadelNav > button:nth-of-type(5)  { order:1; }   /* Creative Visualization Library */
-#citadelNav > button:nth-of-type(6)  { order:7; }   /* My Roadmap */
-#citadelNav > button:nth-of-type(7)  { order:3; }   /* Meditation Session */
-#citadelNav > button:nth-of-type(8)  { order:9; }   /* Practice Gratitude */
-#citadelNav > button:nth-of-type(9)  { order:4; }   /* Mind Loop */
-#citadelNav > button:nth-of-type(10) { order:0; grid-column:1/-1; }   /* Goals / Intentions — leads Column A, full width, above the nav buttons */
-#citadelNav > #quickWinPanel { order:11; }   /* Quick Win panel opens at the BOTTOM of the nav grid, not inline after Log A Win */
-/* citadelNav now holds ONLY the Goals/Intentions header button + its panel (the
-   9 other nav buttons were removed). The old nth-of-type order rules assumed 10
-   buttons, which shoved the lone header BELOW the cards. Force the header on top. */
+/* citadelNav holds the Goals/Intentions header button + its panel: header on top. */
 #citadelNav > button { order: 0 !important; }
 #citadelNav > #goalsBox { order: 1 !important; grid-column: 1 / -1; }
 #citadelNav > button > span:first-child { display: inline-flex !important; }  /* re-show the goals icon (was hidden by the old rules) */
@@ -903,11 +875,7 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
   0%,100% { box-shadow:0 0 0 0 rgba(245,166,35,0); }
   50% { box-shadow:0 0 0 4px rgba(245,166,35,.95), 0 0 18px 4px rgba(245,166,35,.5); }
 }
-#citadelNav > #dashQuickAdd  { order:10; }
-#citadelNav > #medBox        { order:3; }
-#citadelNav > #gratBox       { order:9; }
-#citadelNav > #mindLoopBox   { order:4; }
-#citadelNav > #goalsBox      { order:0; }   /* goals render right under the Goals / Intentions header */
+#citadelNav > #goalsBox      { order:1; }   /* goals render right under the Goals / Intentions header */
 
 /* Script-font "Welcome back, {name}" at the top of the member dashboard — one line */
 .dash-greeting {
