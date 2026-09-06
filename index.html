@@ -1288,6 +1288,65 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div><!-- end goalsBox -->
         </div><!-- end citadelNav -->
 
+        <!-- ── TOP SECTIONS shown EXPANDED in Column A so the Citadel has substance.
+             Each is a <details open> (collapsible, opens by default). Real content:
+             Daily Habits = today's checklist; Meditate/Visualize = play in-column;
+             Action Plan = your goals -> open each plan. Column B is still the full nav. -->
+        <div id="dashSections" style="padding:0 15px;box-sizing:border-box;">
+          <style>
+            .dash-sec { margin:0 0 12px; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(20,40,80,.06); }
+            .dash-sec > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px;
+              color:#fff; font-family:var(--vault-mono,monospace); font-size:13px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; padding:13px 16px; }
+            .dash-sec > summary::-webkit-details-marker { display:none; }
+            .dash-sec > summary .dsec-caret { transition:transform .25s ease; font-size:13px; opacity:.9; }
+            .dash-sec[open] > summary .dsec-caret { transform:rotate(90deg); }
+            .dash-sec-body { background:var(--card,#fff); padding:14px 16px 16px; }
+          </style>
+
+          <!-- DAILY HABITS -->
+          <details open class="dash-sec">
+            <summary style="background:#E86030;"><span>&#9672;&nbsp;&nbsp;Daily Habits</span><span class="dsec-caret">&#8250;</span></summary>
+            <div class="dash-sec-body"><div id="dailyHabitsInlineBody"></div></div>
+          </details>
+
+          <!-- ACTION PLAN -->
+          <details open class="dash-sec">
+            <summary style="background:#7888A8;"><span>&#128506;&nbsp;&nbsp;Action Plan</span><span class="dsec-caret">&#8250;</span></summary>
+            <div class="dash-sec-body"><div id="actionPlanInlineBody"></div></div>
+          </details>
+
+          <!-- VISUALIZE — session lengths open the visualization player in this column -->
+          <details open class="dash-sec">
+            <summary style="background:#3878A8;"><span>&#128065;&nbsp;&nbsp;Visualize</span><span class="dsec-caret">&#8250;</span></summary>
+            <div class="dash-sec-body" data-player-box>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                <div class="time-row"><button class="time-play" onclick="launchViz(3,event)">3 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="launchViz(5,event)">5 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="launchViz(10,event)">10 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="launchViz(15,event)">15 Minutes</button></div>
+              </div>
+              <button onclick="launchCreativeViz(event)" style="width:100%;margin-top:10px;background:#3878A8;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.4px;padding:12px;border-radius:10px;cursor:pointer;">&#10022;&nbsp; Creative Visualization</button>
+            </div>
+          </details>
+
+          <!-- MEDITATE — timer grid opens the meditation player in this column -->
+          <details open class="dash-sec">
+            <summary style="background:#A8C830;color:#1C2230;"><span>&#9790;&nbsp;&nbsp;Meditate</span><span class="dsec-caret" style="color:#1C2230;">&#8250;</span></summary>
+            <div class="dash-sec-body" data-player-box>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30 Minutes</button></div>
+                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button></div>
+              </div>
+            </div>
+          </details>
+        </div>
+
         <!-- MY TASK LIST moved to the top of Column B (vault-sidebar). -->
 
         <!-- MINDSET box removed 2026-08-20 (cleanup) — library now lives on the Entrepreneur Library. -->

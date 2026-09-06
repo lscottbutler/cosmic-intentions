@@ -3179,6 +3179,8 @@ export function renderVaultSidebar() {
   renderHabits();
   renderWins();
   renderSleepLoop();
+  if (typeof renderDailyHabitsInline === 'function') renderDailyHabitsInline();
+  if (typeof renderActionPlanInline === 'function') renderActionPlanInline();
 
   // Date line: "Monday, May 26  ·  146/365"
   const _now      = new Date();
@@ -3895,6 +3897,27 @@ function renderDailyHabitsInline() {
   el.innerHTML = html + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:12px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
 }
 if (typeof window !== 'undefined') window.renderDailyHabitsInline = renderDailyHabitsInline;
+
+/* Action Plan panel on the Citadel dashboard — lists each goal; tapping one opens
+   that goal's roadmap in the goals workspace above. Real content, nothing stubbed. */
+function renderActionPlanInline() {
+  const el = document.getElementById('actionPlanInlineBody');
+  if (!el) return;
+  if (!intentions.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">Add a goal above to build its action plan.</div>';
+    return;
+  }
+  const rows = intentions.map((g, i) => {
+    const c = _goalColor(i);
+    return `<button onclick="selectVaultIntention(${i})" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card,#fff);border:1px solid var(--border,#e3e7ec);border-radius:10px;padding:11px 13px;margin-bottom:8px;cursor:pointer;">
+      ${goalBadge(goalLetter(g, i), c.bg, c.text, 24)}
+      <span style="flex:1;min-width:0;font-size:14px;line-height:1.35;color:var(--text,#26364b);">${esc(goalCase(g.title || ''))}</span>
+      <span style="flex-shrink:0;color:#7888A8;font-weight:800;font-size:18px;">&#8250;</span>
+    </button>`;
+  }).join('');
+  el.innerHTML = rows + '<button onclick="openMyRoadmap()" style="width:100%;margin-top:4px;background:none;border:1px dashed var(--border,#cfd6de);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">OPEN FULL ACTION PLAN</button>';
+}
+if (typeof window !== 'undefined') window.renderActionPlanInline = renderActionPlanInline;
 
 /* Fetch a Pexels visualization for the selected goal and slot it into the
    workspace header (keyword extraction + search happen server-side). */
