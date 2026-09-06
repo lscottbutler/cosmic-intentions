@@ -49,8 +49,9 @@ export function habitsToggleSection(open) { _open = !!open; }
 // Time-of-day sections shown as their own collapsible dropdowns (display label + order).
 const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH', ''];
 const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
-const _openCats = new Set();
-export function habitsSectionToggle(cat, open) { if (open) _openCats.add(cat); else _openCats.delete(cat); }
+// Sections open FULLY EXPANDED by default; we only remember which ones the user collapses.
+const _closedCats = new Set();
+export function habitsSectionToggle(cat, open) { if (open) _closedCats.delete(cat); else _closedCats.add(cat); }
 
 function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }
@@ -236,13 +237,13 @@ export function renderHabits() {
   const d = _done();
   const groups = _grouped(getHabitList());
 
-  // Each time-of-day section is its own collapsible dropdown (collapsed by default).
+  // Each time-of-day section is its own collapsible dropdown (EXPANDED by default).
   let html = '';
   SECTION_ORDER.forEach(cat => {
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
     if (!items.length) return;
     const doneN = items.filter(h => !!d[h.id]).length;
-    const open = _openCats.has(cat);
+    const open = !_closedCats.has(cat);
     html += `<details class="habit-drop" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
       <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
         <span>${SECTION_LABEL[cat]}</span>
