@@ -449,6 +449,20 @@ details.rm-drop[open]::details-content { height: auto; }
   gap: 12px;
   margin-left: auto;
 }
+/* Mobile hamburger in the header — desktop keeps Column B, mobile hides it and
+   uses this to open the nav menu (Scott 2026-09-06). */
+.hdr-ham { display: none; }
+@media (max-width: 900px) {
+  .hdr-ham {
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; background: none; border: none; cursor: pointer; padding: 6px 4px; flex-shrink: 0;
+  }
+  .hdr-ham span { display: block; width: 24px; height: 3px; background: #fff; border-radius: 2px; }
+  /* Hide Column B on mobile; the main column flows full width. */
+  #page-dashboard .vault-sidebar,
+  .pg-2col-side, .viz-side, .pg-side { display: none !important; }
+  .pg-body { grid-template-columns: minmax(0, 1fr) !important; }
+}
 .hdr-user {
   font-size: 13px;
   color: #e8eaed;
