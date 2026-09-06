@@ -1005,6 +1005,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
           <div id="notesQuickAdd" style="display:none;"></div>
           <div id="notesCapLine" style="font-family:var(--vault-mono,monospace);font-size:11px;color:var(--mid,#9a9a9a);margin:0 0 18px;">0 / 50 thoughts</div>
+          <!-- Edit My Citadel Welcome Text — the opening line shown at the top of the Citadel dashboard; personalized here. -->
+          <div style="background:#fff;border:1px solid #e3e7ec;border-radius:12px;padding:16px 18px;margin:0 0 18px;">
+            <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; Edit My Citadel Welcome Text</div>
+            <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of the Citadel dashboard (Column A). Leave blank to use the default.</div>
+            <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
+            <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
+          </div>
           <div id="notesSections"></div>
         </div>
       </div>
@@ -1173,13 +1180,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:22px 26px;margin:6px 0 16px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
-        <!-- Edit My Citadel Welcome Text — the welcome shows at the top of this page; edited right here on the home page. -->
-        <div style="background:#fff;border:1px solid #e3e7ec;border-radius:12px;padding:16px 18px;margin:0 0 16px;">
-          <div style="font-weight:800;font-size:13px;letter-spacing:1px;color:#5c6158;text-transform:uppercase;margin-bottom:4px;">&#10022; Edit My Citadel Welcome Text</div>
-          <div style="font-size:13px;color:#7a828c;margin-bottom:10px;">Your own opening message at the top of My Goals (Column A). Leave blank to use the default.</div>
-          <textarea id="citadelWelcomeInput" oninput="notesAutoGrow(this)" onchange="saveCitadelWelcome(this)" placeholder="Write your own welcome…" style="width:100%;box-sizing:border-box;border:1px solid #e3e7ec;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;color:#26364b;background:#f8fafc;min-height:80px;resize:none;overflow:hidden;"></textarea>
-          <button onclick="saveCitadelWelcome(document.getElementById('citadelWelcomeInput'))" style="margin-top:10px;background:#5c6158;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;padding:11px 22px;border-radius:8px;cursor:pointer;">CHANGE</button>
-        </div>
+        <!-- Edit My Citadel Welcome Text lives on the My Thoughts page (edited there; the dashboard welcome shows it with a pencil badge that jumps there). -->
         <!-- 🏆 INSPIRATION — admin-curated champion (photo + story) who uses meditation/visualization. Hidden until filled from the Admin page (slug: dashboard-inspiration). -->
         <!-- dashboard-inspiration block removed from Column A per request (was showing placeholder ==== content) -->
         <!-- Date banner moved to the TOP of Column B (vault-sidebar) -->
