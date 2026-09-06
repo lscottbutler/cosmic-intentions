@@ -128,6 +128,27 @@ Called via `ciApi(name, body)` / `ciApiJson` (`shared/api.js`), which attach the
 # PART 2 — SESSION LOG
 _(Newest first. On "SESSION DONE FOR THE DAY," append a dated, plain-English bullet summary of the day's work + where each key area stands.)_
 
+## 2026-09-05
+**Focus:** a marathon Path day — mobile-hardened it, reordered/relabelled the walk, retired Column B **site-wide**, rebuilt navigation, and made **every step open inline**. ~20 deploys, all `ready` (through `7832de7`).
+- **Mobile hardening (The Path).** Goal-row title wrapped one-letter-per-line on phones → **stack the row** under 600px (full-width title, heart/play/edit below). Killed this week's desktop **indent pass** on mobile (frame chrome L/R → ~0) so content runs edge-to-edge; right margin ~4px. Fixed **bottom cut-off**: last step hidden behind the mobile toolbar → +72px path bottom padding.
+- **Reordered the walk (Scott's calls).** Numbered steps are now **1 Daily Habits · 2 Goals · 3 Visualize · 4 Meditate · 5 Gratitude · 6 Action Plan**, extras below (Quick Win, Mind Loop, Favorites, Quick Thought). Progress `_pathProgress` total is dynamic; done-state maps to Big-3 rings (Habits/Visualize/Completed-Tasks + Meditate/Gratitude bonus + Goals-opened).
+- **Segmented progress bar.** The "X of 6 done" bar is now the **step words across the column** — `HABITS · GOALS · VISUALIZE · MEDITATE · GRATITUDE · PLAN` — each segment fills green when that step is done.
+- **Per-goal Note** button in the goal workspace header (round ▤ next to ◎ Timeline); saves to `intentions[idx].note` (debounced, syncs), pre-fills on reopen. `saveGoalNote` in the HANDLERS allowlist.
+- **Goal header buttons churn:** added a ☰ that opened a per-goal actions menu → then **removed the ☰**; row is now **VISUALIZE · ROADMAP · MY ACTION PLAN** (ROADMAP == openActionPlan, still redundant with MY ACTION PLAN — open question).
+- **Admin accordion.** Admin → Content Blocks: each `.admin-block` collapses under its header (numberContentBlocks adds a `cb-hd-toggle` click + a small `↗` jump button); closed by default. 26 blocks, tidy list.
+- **NAVIGATION — retired Column B EVERYWHERE + rebuilt nav (the through-line of the day).**
+  - Column B (`.pg-2col-side` / `.viz-side` / dynamic `.pg-side`) is now **hidden on all framed pages**; main flows full width — single-column site-wide, like the dashboard.
+  - Nav churned hard chasing Scott's needs: top cluster (Home·Back·Menu·Forward) → **fixed floating** bottom-right (always visible) → clipped by his **Windows taskbar** → final answer: an **in-flow nav** (`ensurePageNav` builds `.flow-nav` Back·🛸Menu·Forward) placed **~40px below the goals** on the dashboard, top-of-content elsewhere; scrolls with the page. The hide-stray-Back rule (`button[aria-label="Back"]:not(.colb-nav-btn)`) bit us twice — use aria-label **"Go back"/"Go forward"** to dodge it.
+  - Added **Proof** to the global `#hamMenu` earlier as the nav safety net.
+- **EVERYTHING INLINE (Scott: "gratitude open inline lets do that for everything").** Every path step now **expands in place, none navigate**:
+  - Daily Habits → inline checklist (`renderDailyHabitsInline`, `ci_habits_<date>`).
+  - Visualize → inline goal list → 3-min `launchCountdown` (fresh render).
+  - Action Plan → inline list of every goal's roadmap steps, tick in place (fresh, reuses toggleRoadmapTaskDone).
+  - Favorites → **hosts the real `#favorites-list` inline** + Play My Day (reuses renderFavorites/playAllFavorites); `showPage('dailyfocus')` now **redirects** to the inline panel so nothing lands on the emptied page.
+  - Pattern: a `boxId` panel in `#citadelNav` + `calmExpand` + a render fn + a `.path-mode` order so the panel sits under its step. Handlers registered (216 wired).
+- **Step colours → greys.** Path headers now alternate **`#6e6e6e` / `#3a3a3a`** by walk position (white text), replacing the section-colour spectrum.
+- **Where we stand:** The Path is now a true single-column, everything-inline daily walk with an in-flow nav, live and mobile-solid. **Open items:** ROADMAP vs MY ACTION PLAN redundancy; Visualize/Action-Plan inline are compact (not the full library/roadmap pages) — offered to host those too; the framed pages still exist (reachable via menu) but are single-column and some (dailyfocus) are now vestigial.
+
 ## 2026-09-04
 **Focus:** the big one — reconceived the dashboard as **"The Path"** (a single guided daily walk, no navigation rail), built it safely in phases, plus a batch of morning fixes. All LIVE (`aafe547`, then the Path stack through `ddbe427`).
 - **THE PATH (the day's headline) — dashboard is now one guided column, Column B retired.** Scott's vision: CI is "The Path" the user works down each day, not a dashboard you jump around. So the persistent right-rail nav (Column B) was **removed from the dashboard** and everything not part of the daily walk moved into the **one tucked UFO menu**. Built in **reversible phases**, each verified before the next:
