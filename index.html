@@ -1300,7 +1300,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             .dash-sec > summary::-webkit-details-marker { display:none; }
             .dash-sec > summary .dsec-caret { transition:transform .25s ease; font-size:13px; opacity:.9; }
             .dash-sec[open] > summary .dsec-caret { transform:rotate(90deg); }
-            .dash-sec-body { background:var(--card,#fff); padding:14px 16px 16px; }
+            .dash-sec-body { background:var(--card,#fff); padding:14px 16px 16px; max-height:280px; overflow-y:auto; }
           </style>
 
           <!-- DAILY HABITS -->
