@@ -4208,13 +4208,29 @@ function renderDailyHabitsInline() {
   try { done = LS.get('ci_habits_' + dayKey()) || {}; } catch (e) {}
   try { list = getHabitList() || []; } catch (e) {}
   if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No habits yet — add them on My Habits.</div>'; return; }
-  el.innerHTML = list.map(h => {
+  // Group by time-of-day, same buckets/labels as the Habits page.
+  const CATS  = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
+  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
+  const catOf = h => (CATS.indexOf(h && h.cat) >= 0 ? h.cat : '');
+  const row = h => {
     const on = !!done[h.id];
     return `<div style="display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--widget-border,#2a2a2a);">
       <button onclick="habitToggle('${h.id}');renderDailyHabitsInline()" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid ${on ? '#2FA94B' : 'var(--muted)'};background:${on ? '#2FA94B' : 'transparent'};color:#fff;font-size:13px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${on ? '✓' : ''}</button>
       <span style="flex:1;min-width:0;font-size:14px;line-height:1.4;color:var(--widget-text,#eee);${on ? 'text-decoration:line-through;opacity:.6;' : ''}">${esc(h.name)}</span>
     </div>`;
-  }).join('') + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:10px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
+  };
+  let html = '';
+  [...CATS, ''].forEach(cat => {
+    const items = list.filter(h => catOf(h) === cat);
+    if (!items.length) return;
+    const dn = items.filter(h => done[h.id]).length;
+    html += `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 4px;">
+      <span style="font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:${COLOR[cat]};">${LABEL[cat]}</span>
+      <span style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);">${dn}/${items.length}</span>
+    </div>` + items.map(row).join('');
+  });
+  el.innerHTML = html + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:12px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
 }
 if (typeof window !== 'undefined') window.renderDailyHabitsInline = renderDailyHabitsInline;
 
