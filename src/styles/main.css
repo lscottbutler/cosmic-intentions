@@ -841,6 +841,12 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
 #citadelNav > button:nth-of-type(9)  { order:4; }   /* Mind Loop */
 #citadelNav > button:nth-of-type(10) { order:0; grid-column:1/-1; }   /* Goals / Intentions — leads Column A, full width, above the nav buttons */
 #citadelNav > #quickWinPanel { order:11; }   /* Quick Win panel opens at the BOTTOM of the nav grid, not inline after Log A Win */
+/* citadelNav now holds ONLY the Goals/Intentions header button + its panel (the
+   9 other nav buttons were removed). The old nth-of-type order rules assumed 10
+   buttons, which shoved the lone header BELOW the cards. Force the header on top. */
+#citadelNav > button { order: 0 !important; }
+#citadelNav > #goalsBox { order: 1 !important; grid-column: 1 / -1; }
+#citadelNav > button > span:first-child { display: inline-flex !important; }  /* re-show the goals icon (was hidden by the old rules) */
 /* Golden-opportunity quote card at the bottom of Column B — hidden for now
    (sprinkleNotes() re-shows it with display:'', so !important is required). */
 [data-random-note="quote"][data-home-thought] { display: none !important; }
