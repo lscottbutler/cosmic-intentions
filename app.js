@@ -3958,6 +3958,9 @@ if (typeof window !== 'undefined') window.openActionPlan = openActionPlan;
    slowly = calmly). Slides the target box open/closed and flips the caret.
    `beforeOpen` runs just before opening so lazily-built panels have content to
    measure for the height animation. */
+/* The dashboard path panels that count as "opening a section" — when any is open
+   the top welcome/intro boxes roll up so you focus on the section. */
+const _SECTION_BOXES = ['dailyHabitsBox', 'visualizeBox', 'actionPlanBox', 'favoritesBox', 'medBox', 'gratBox', 'quickWinPanel', 'mindLoopBox', 'dashQuickAdd'];
 export function calmExpand(boxId, chev, beforeOpen) {
   const box = document.getElementById(boxId);
   if (!box) return false;
@@ -3967,6 +3970,13 @@ export function calmExpand(boxId, chev, beforeOpen) {
   if (open && typeof beforeOpen === 'function') { try { beforeOpen(); } catch (e) {} }
   slideToggle(box, open);
   if (chev) chev.textContent = open ? '⌄' : '›';
+  if (_SECTION_BOXES.indexOf(boxId) >= 0) {
+    const page = document.getElementById('page-dashboard');
+    if (page) {
+      const anyOpen = open || _SECTION_BOXES.some(id => id !== boxId && (function (el) { return el && (el.classList.contains('cc-open') || (el.style.display !== 'none' && el.style.maxHeight !== '0px' && el.offsetHeight > 1)); })(document.getElementById(id)));
+      page.classList.toggle('step-open', anyOpen);
+    }
+  }
   return open;
 }
 if (typeof window !== 'undefined') window.calmExpand = calmExpand;

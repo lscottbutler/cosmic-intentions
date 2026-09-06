@@ -2476,6 +2476,11 @@ input, textarea, select {
 /* ── Path order (single column, top → bottom): core walk first, extras below ── */
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(4)  { order: 8 !important; }   /* ① Daily Habits */
 #page-dashboard.path-mode #citadelNav > #dailyHabitsBox        { order: 9 !important; }   /* habits panel right under it */
+/* When a step is open, roll up the top welcome/intro boxes so the section is the
+   focus (Scott 2026-09-06). */
+#page-dashboard.step-open [data-block="intro-note-dashboard"],
+#page-dashboard.step-open [data-block="dashboard-note-2"],
+#page-dashboard.step-open #dashHello { display: none !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(10) { order: 10 !important; }  /* ② Goals / Intentions */
 #page-dashboard.path-mode #citadelNav > #goalsBox              { order: 11 !important; }
 #page-dashboard.path-mode #citadelNav > button:nth-of-type(5)  { order: 14 !important; }  /* ③ Visualize */
