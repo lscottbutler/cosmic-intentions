@@ -89,7 +89,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="navTo('gratitude')"><svg width="16" height="16" viewBox="0 0 500 500" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><circle cx="129.642" cy="83.354" transform="rotate(-10.359 129.64 83.339)" r="51.442"/><path d="M394.979 153.809c-7.001-14.931-17.102-27.816-29.683-37.994-7.807-6.316-16.742-11.093-26.223-14.403l-89.4-31.21-.116-.038c-26.42-8.532-54.867 6.008-63.438 32.415-3.039 9.362-3.467 17.219-1.76 29.527l7.544 50.159-79.875-34.698c-12.662-5.503-27.389.306-32.891 12.969-5.501 12.664.305 27.39 12.969 32.891L212.32 245.65a24.993 24.993 0 0 0 24.973-2.939 25 25 0 0 0 9.786-23.163l-5.539-43.303 71.33 31.002L330 458.129v3.603c0 15.243 12.207 28.019 27.45 27.954 9.507-.04 17.705-4.909 22.613-12.278a27.394 27.394 0 0 0 4.834-13.529l18.539-244.931c4.052-22.186 1.139-44.672-8.457-65.139z"/></svg>Gratitude</button>
   <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
   <button class="tnav-btn" onclick="navTo('wins')">My Wins</button>
-  <button class="tnav-btn" onclick="navTo('proof')">Proof</button>
   <button class="tnav-btn" onclick="window.open('/landing','_blank')">Landing Page 1</button>
   <button class="tnav-btn" onclick="window.open('/landing-v2','_blank')">Landing Page 2</button>
   <button class="tnav-btn" onclick="window.open('/landing-v3','_blank')">Landing Page 3</button>
@@ -1204,41 +1203,28 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span class="qt-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
         <div id="dashQuickAdd" style="display:none;margin:-4px 0 12px;"></div>
-        <!-- MY FAVORITES AUTOPLAY — inline: the ♥-pinned list + Play My Day -->
-        <button onclick="calmExpand('favoritesBox', this.querySelector('.fav-chev'), function(){ if(window.renderFavoritesInline)renderFavoritesInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <!-- MY FAVORITES AUTOPLAY — jump to the ♥-pinned "Play My Day" page -->
+        <button onclick="navTo('dailyfocus')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;color:var(--pink,#ff8ab8);">&#9829;</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Favorites Autoplay</span>
-          <span class="fav-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <div id="favoritesBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
-          <button onclick="playAllFavorites()" style="width:100%;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;padding:12px;border-radius:8px;cursor:pointer;margin-bottom:12px;">&#9654; PLAY MY DAY</button>
-          <div id="favoritesInlineHost"></div>
-        </div>
-        <!-- DAILY HABITS — inline dropdown (like Meditate/Gratitude): today's habit checklist -->
-        <button onclick="calmExpand('dailyHabitsBox', this.querySelector('.dh-chev'), function(){ if(window.renderDailyHabitsInline)renderDailyHabitsInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <!-- HOME HUB — three big buttons, one per core page (mirrors the hamburger menu) -->
+        <button onclick="navTo('runthroughs')" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">&#9672;</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Daily Habits</span>
-          <span class="dh-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <div id="dailyHabitsBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
-          <div id="dailyHabitsInlineBody"></div>
-        </div>
-        <button onclick="calmExpand('visualizeBox', this.querySelector('.viz-chev'), function(){ if(window.renderVisualizeInline)renderVisualizeInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="openVizLibrary()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;line-height:0;"><svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg></span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Visualize</span>
-          <span class="viz-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <div id="visualizeBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
-          <div id="visualizeInlineBody"></div>
-        </div>
-        <button onclick="calmExpand('actionPlanBox', this.querySelector('.ap-chev'), function(){ if(window.renderActionPlanInline)renderActionPlanInline(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
+        <button onclick="openMyRoadmap()" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">🗺</span>
           <span style="flex:1;min-width:0;font-weight:400;font-size:16px;letter-spacing:.3px;">Action Plan</span>
-          <span class="ap-chev" style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
+          <span style="flex-shrink:0;font-size:20px;opacity:.8;">›</span>
         </button>
-        <div id="actionPlanBox" style="display:none;background:var(--widget-bg,#161616);border:1px solid var(--widget-border,#2a2a2a);border-radius:14px;padding:14px 18px;margin:-4px 0 12px;">
-          <div id="actionPlanInlineBody"></div>
-        </div>
         <!-- MEDITATE — inline dropdown (like Quick Win): reveals the Meditations picker below -->
         <button onclick="calmExpand('medBox', this.querySelector('.med-chev'), function(){ if(window.syncSessionHearts)syncSessionHearts(); })" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;cursor:pointer;background:var(--ink,#111);color:#fff;border-radius:14px;padding:18px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);">
           <span style="flex-shrink:0;font-size:22px;line-height:1;">☾</span>
@@ -1613,8 +1599,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="pbThoughtsList"></div>
       </div>
 
-      <!-- Clearance so the last section isn't hidden behind the fixed Save bar. -->
-      <div style="height: 100px;"></div>
+      <div style="height: 20px;"></div>
     </div>
 
     <!-- SAVE BAR -->

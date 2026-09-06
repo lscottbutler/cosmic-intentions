@@ -5,10 +5,10 @@ import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
 import { logActivity, logDailyLogin } from './shared/activity.js';
-import { renderRings, _wireRingsSync, vizSideStatsHTML, ringsSummary } from './shared/rings.js';
+import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
-import { renderHabits, renderRunThroughs, getHabitList } from './shared/habits.js';
+import { renderHabits, renderRunThroughs } from './shared/habits.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
@@ -372,9 +372,6 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
-  // Favorites Autoplay is now inline on the dashboard (its list was relocated there),
-  // so every "Favorites" link opens the inline panel instead of the emptied page.
-  if (id === 'dailyfocus') { _openFavoritesInline(); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
   const target = document.getElementById('page-' + id);
@@ -409,7 +406,6 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
-  ensurePageNav();   // Column B retired → in-flow Back/Menu/Forward nav
   // Intro card at the top of Column A on selected pages, then the admin-editable
   // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
@@ -1611,107 +1607,6 @@ export function darkenHex(hex, f) {
   return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-/* ── THE PATH (Phase 1) ───────────────────────────────────────────────────
-   Retire Column B on the dashboard without stranding anything. The rail hosts
-   three things the JS still needs by ID — the UFO menu button, the date banner
-   (#vaultDateLine), and the in-column player (#playerColumn). We ADD a menu
-   button to Column A and MOVE the date + player into Column A (same IDs, so
-   player-launcher.js and setEl() keep working), then hide the rail via the
-   reversible `.path-mode` class. Idempotent: safe to call on every render. */
-const _UFO_SVG = '<svg width="88" height="64" viewBox="0 0 64 46" style="display:block;overflow:visible;"><ellipse cx="32" cy="40.5" rx="16" ry="2.4" fill="#000" opacity=".13"/><path d="M5 24.5 C5 31 20 36 32 36 C44 36 59 31 59 24.5 C59 29 46 32 32 32 C18 32 5 29 5 24.5 Z" fill="#255E82"/><ellipse cx="32" cy="24.5" rx="27" ry="6.6" fill="#3B82B0"/><ellipse cx="32" cy="22.6" rx="19.5" ry="4.8" fill="#5AA0CB"/><circle cx="12.5" cy="24.8" r="1.9" fill="#EAF3F9"/><circle cx="22.2" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="32" cy="26.4" r="1.9" fill="#EAF3F9"/><circle cx="41.8" cy="26" r="1.9" fill="#EAF3F9"/><circle cx="51.5" cy="24.8" r="1.9" fill="#EAF3F9"/><path d="M20.5 21.5 A11.6 13 0 0 1 43.5 21.5 Z" fill="#AAB1B7"/><path d="M23 20.6 A9 10 0 0 1 34.5 15.2 A9 10 0 0 0 23 20.6 Z" fill="#C9CFD4"/><ellipse cx="28" cy="15.5" rx="3.2" ry="2.2" fill="#D9DDE1" opacity=".85"/></svg>';
-/* In-flow nav (Back · Menu · Forward). On the dashboard it sits ~40px below the
-   goals section (Scott's placement); on other member pages it sits at the top of
-   the content. Scrolls with the page — no fixed overlay, no taskbar clash. */
-function ensurePageNav() {
-  // Retire the old fixed floating nav if it's still around.
-  const old = document.getElementById('floatNav'); if (old) old.remove();
-  document.body.classList.remove('has-floatnav');
-  const active = document.querySelector('.page.active');
-  if (!active || active.id === 'page-home') return;
-  if (active.querySelector('.flow-nav')) return;
-  const nav = document.createElement('div');
-  nav.className = 'flow-nav';
-  nav.innerHTML =
-    '<button type="button" class="fn-btn" aria-label="Go back" title="Back" onclick="subnavBack()">&#9664;</button>' +
-    '<button type="button" class="fn-menu" aria-label="Menu" title="Where do you want to go?">' + _UFO_SVG + '</button>' +
-    '<button type="button" class="fn-btn" aria-label="Go forward" title="Forward" onclick="subnavForward()">&#9654;</button>';
-  nav.querySelector('.fn-menu').addEventListener('click', function (e) { e.stopPropagation(); if (typeof window.toggleHamMenu === 'function') window.toggleHamMenu(); });
-  // Dashboard: drop it into the path right below the goals section (goalsBox).
-  if (active.id === 'page-dashboard') {
-    const goalsBox = document.getElementById('goalsBox');
-    if (goalsBox && goalsBox.parentElement && goalsBox.parentElement.id === 'citadelNav') {
-      nav.style.order = '12';   // goalsBox is order 11, Visualize is 14 → sits just under goals
-      goalsBox.parentElement.insertBefore(nav, goalsBox.nextSibling);
-      return;
-    }
-  }
-  // Other pages: top of the content.
-  const screen = active.querySelector('.pg-screen, .wins-screen, .mon-screen') || active;
-  screen.insertBefore(nav, screen.firstChild);
-}
-
-function _pathLayout() {
-  const page = document.getElementById('page-dashboard');
-  const main = document.getElementById('vaultMain');
-  if (!page || !main) return;
-  page.classList.add('path-mode');
-  // Date banner + in-column player relocated to the top of Column A (by ID → JS
-  // still finds them). Navigation is the global FLOATING nav now (see
-  // ensureFloatNav), so there's no top menu bar to scroll up to.
-  const hdr = main.querySelector('.pg-hdr');
-  const _topRef = () => (hdr ? hdr.nextSibling : main.firstChild);
-  const dl = document.getElementById('vaultDateLine');
-  if (dl && dl.parentElement !== main) main.insertBefore(dl, _topRef());
-  const pc = document.getElementById('playerColumn');
-  if (pc && pc.parentElement !== main) main.insertBefore(pc, (dl && dl.parentElement === main) ? dl.nextSibling : _topRef());
-  // 3) Progress meter — "X of 5 done today" (Phase 3). Sits just above the path.
-  if (!document.getElementById('pathProgress')) {
-    const pb = document.createElement('div');
-    pb.id = 'pathProgress';
-    pb.innerHTML = '';   // filled by _pathProgress (label + labeled segment bar)
-    const nav = document.getElementById('citadelNav');
-    if (nav) nav.parentElement.insertBefore(pb, nav);
-  }
-  _pathProgress();
-}
-
-/* Phase 3 — reflect real completion on the path. Each of the 5 core steps checks
-   off green when its work is done today, and the progress bar fills. Reads live
-   Big-3 / ring state; step 1 (Goals) counts once you've opened a goal today. */
-function _pathProgress() {
-  const nav = document.getElementById('citadelNav');
-  if (!nav) return;
-  let s = {};
-  try { s = ringsSummary() || {}; } catch (e) {}
-  const closed = s.closed || [];
-  let goalsOpened = false;
-  try { goalsOpened = localStorage.getItem('ci_path_goals_' + dayKey()) === '1'; } catch (e) {}
-  // The 6 numbered steps, IN ORDER, each with its short bar label + today's done
-  // state. `nth` ties each to its CSS node so the spine check-off stays in sync.
-  const STEPS = [
-    { nth: 4,  label: 'Habits',    done: closed.includes('Habits') },          // ①
-    { nth: 10, label: 'Goals',     done: goalsOpened },                        // ②
-    { nth: 5,  label: 'Visualize', done: closed.includes('Visualize') },       // ③
-    { nth: 7,  label: 'Meditate',  done: !!s.meditate },                        // ④
-    { nth: 8,  label: 'Gratitude', done: !!s.gratitude },                       // ⑤
-    { nth: 6,  label: 'Plan',      done: closed.includes('Completed Tasks') },  // ⑥
-  ];
-  const byNth = {}; STEPS.forEach(st => { byNth[st.nth] = st.done; });
-  const btns = [...nav.querySelectorAll(':scope > button')];   // direct-child buttons == nth-of-type order
-  btns.forEach((b, i) => { const nth = i + 1; if (nth in byNth) b.classList.toggle('path-done', !!byNth[nth]); });
-  const count = STEPS.filter(st => st.done).length;
-  const total = STEPS.length;
-  const pb = document.getElementById('pathProgress');
-  if (pb) {
-    pb.classList.toggle('pp-complete', count >= total);
-    const segs = STEPS.map(st => `<span class="pp-seg${st.done ? ' done' : ''}">${st.label}</span>`).join('');
-    pb.innerHTML =
-      `<div class="pp-lbl">${count >= total ? 'PATH COMPLETE ✓' : count + ' of ' + total + ' done today'}</div>` +
-      `<div class="pp-segbar">${segs}</div>`;
-  }
-}
-if (typeof window !== 'undefined') window.updatePathProgress = _pathProgress;
-
 export function renderDashboard() {
   const pb   = getPB();
   const name = pb['pb-name'] || 'Friend';
@@ -1725,7 +1620,6 @@ export function renderDashboard() {
   const _dashHdr  = document.querySelector('#page-dashboard .pg-hdr');
   const _dashMain = document.getElementById('vaultMain');
   if (_dashHdr && _dashMain && _dashHdr.parentElement !== _dashMain) _dashMain.insertBefore(_dashHdr, _dashMain.firstChild);
-  _pathLayout();   // Phase 1: single-column "The Path" — relocate menu/date/player into Column A, hide the rail
 
   // Only render Level 1 cards (tabs are now inside each card)
   const container = document.getElementById('intentionCards');
@@ -3594,9 +3488,6 @@ export function selectVaultIntention(idx) {
   selectedVaultIdx = selectedVaultIdx === idx ? null : idx;
   renderVaultSidebar();
   if (selectedVaultIdx !== null) {
-    // The Path: opening a goal today checks off step ① ("read your intentions").
-    try { localStorage.setItem('ci_path_goals_' + dayKey(), '1'); } catch (e) {}
-    if (typeof window.updatePathProgress === 'function') window.updatePathProgress();
     if (intentions[selectedVaultIdx]) intentions[selectedVaultIdx] = hydrateIntent(intentions[selectedVaultIdx]);
     showVaultBuildSheet(selectedVaultIdx);
     // Seed goal-specific content into players
@@ -3958,9 +3849,6 @@ if (typeof window !== 'undefined') window.openActionPlan = openActionPlan;
    slowly = calmly). Slides the target box open/closed and flips the caret.
    `beforeOpen` runs just before opening so lazily-built panels have content to
    measure for the height animation. */
-/* The dashboard path panels that count as "opening a section" — when any is open
-   the top welcome/intro boxes roll up so you focus on the section. */
-const _SECTION_BOXES = ['dailyHabitsBox', 'visualizeBox', 'actionPlanBox', 'favoritesBox', 'medBox', 'gratBox', 'quickWinPanel', 'mindLoopBox', 'dashQuickAdd'];
 export function calmExpand(boxId, chev, beforeOpen) {
   const box = document.getElementById(boxId);
   if (!box) return false;
@@ -3970,13 +3858,6 @@ export function calmExpand(boxId, chev, beforeOpen) {
   if (open && typeof beforeOpen === 'function') { try { beforeOpen(); } catch (e) {} }
   slideToggle(box, open);
   if (chev) chev.textContent = open ? '⌄' : '›';
-  if (_SECTION_BOXES.indexOf(boxId) >= 0) {
-    const page = document.getElementById('page-dashboard');
-    if (page) {
-      const anyOpen = open || _SECTION_BOXES.some(id => id !== boxId && (function (el) { return el && (el.classList.contains('cc-open') || (el.style.display !== 'none' && el.style.maxHeight !== '0px' && el.offsetHeight > 1)); })(document.getElementById(id)));
-      page.classList.toggle('step-open', anyOpen);
-    }
-  }
   return open;
 }
 if (typeof window !== 'undefined') window.calmExpand = calmExpand;
@@ -4125,33 +4006,12 @@ function buildWorkspaceHeader(intent, idx) {
   const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   return `
     <div style="padding:12px 16px 0;">
-      <div class="ws-hdr-row" style="position:relative;display:flex;align-items:center;gap:12px;padding:2px 4px 4px;">
+      <div style="position:relative;display:flex;align-items:center;gap:12px;padding:2px 4px 4px;">
         <div style="flex:1;display:flex;align-items:center;gap:12px;background:${shade.bg};color:${shade.text};padding:14px 16px;border-radius:8px;font-size:18px;font-weight:700;letter-spacing:0.3px;line-height:1.3;">${goalBadge(goalLetter(intent, idx), gc.bg, gc.text, 36)}<span style="min-width:0;">${esc(goalCase(intent.title))}</span></div>
         <button onclick="calmExpand('goalTimeline-${idx}')" title="Timeline &amp; progress" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);font-size:19px;line-height:1;cursor:pointer;padding:0;">&#9678;</button>
-        <button onclick="calmExpand('goalNote-${idx}')" title="Attach a note to this goal" style="flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);border:1px solid var(--border);color:var(--brand);line-height:1;cursor:pointer;padding:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4"/></svg></button>
         <button onclick="editGoalDirect(${idx})" title="Edit this goal in Goals / Intentions" style="position:static;flex-shrink:0;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--off,#eef1f5);border:1px solid var(--border);color:var(--text);font-size:15px;line-height:1;cursor:pointer;padding:0;">&#9998;</button>
       </div>
-      <div id="goalMenu-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
-        <div style="display:flex;flex-direction:column;gap:6px;padding:8px 4px 4px;">
-          ${[
-            ['&#10022;', 'Visualize', `wsToggleViz(${idx})`],
-            ['&#9678;', 'My Action Plan', `openActionPlan(${idx})`],
-            ['&#128462;', 'Note', `calmExpand('goalNote-${idx}')`],
-            ['&#9829;', 'Favorite this goal', `toggleGoalFavorite(${idx})`],
-            ['&#9998;', 'Edit goal', `editGoalDirect(${idx})`],
-            ['&#10005;', 'Delete goal', `deleteIntention(${idx})`],
-          ].map(([ic, lbl, act]) => `<button onclick="${act}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:14px;font-weight:600;color:${lbl==='Delete goal'?'#e0102b':'var(--text)'};cursor:pointer;"><span style="flex-shrink:0;width:18px;text-align:center;color:${lbl==='Delete goal'?'#e0102b':'var(--brand)'};">${ic}</span>${lbl}</button>`).join('')}
-        </div>
-      </div>
       <div id="goalTimeline-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">${_goalTimelineHTML(intent, idx)}</div>
-      <div id="goalNote-${idx}" class="cc-collapse" style="max-height:0;opacity:0;">
-        <div style="padding:8px 4px 4px;">
-          <div style="font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:0 0 6px;">Note for this goal</div>
-          <textarea id="goalNoteInput-${idx}" placeholder="Jot a private note about this goal — a reminder, a why, a next thought…" oninput="saveGoalNote(${idx}, this.value)"
-            style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:14px;line-height:1.55;color:var(--text);min-height:84px;resize:vertical;font-family:inherit;">${esc(intent.note || '')}</textarea>
-          <div id="goalNoteStatus-${idx}" style="font-size:11px;color:var(--muted);margin-top:4px;height:14px;"></div>
-        </div>
-      </div>
       <div class="goal-visualization-container" id="goalVisualizationContainer" style="position:relative;margin:6px 0 10px;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--sunken);">
         <img id="goalVisualizationImage" src="" alt="Visualization" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:none;" />
         <div id="goalDissolve" style="position:absolute;inset:0;display:none;"></div>
@@ -4161,13 +4021,10 @@ function buildWorkspaceHeader(intent, idx) {
       </div>
       <!-- Admin-editable note (slug: goal-viz-note) — hidden until you add text on the Admin page. -->
       <div data-block="goal-viz-note" class="dash-note-block" style="display:none;position:relative;background:#ffffff;border:1px solid #e9edf2;border-radius:10px;box-shadow:0 6px 20px rgba(20,40,80,.06);padding:14px 16px;margin:0 4px 8px;font-size:15px;line-height:1.65;color:#3a4a63;"></div>
-      <div id="wsBtnRow-${idx}" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 10px;">
+      <div id="wsBtnRow-${idx}" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px 4px 10px;">
         <button id="wsVizBtn-${idx}" onclick="wsToggleViz(${idx})" title="Open your visualization timers"
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
-          <span style="line-height:0;color:var(--brand);flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:block;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg></span>VISUALIZE</button>
-        <button onclick="openActionPlan(${idx})" title="Open this goal's roadmap"
-          style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
-          <span style="line-height:0;color:var(--brand);flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></span>ROADMAP</button>
+          <span style="line-height:0;color:var(--brand);flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:block;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg></span>VISUALIZATION</button>
         <button onclick="openActionPlan(${idx})" title="Open your Action Plan roadmap"
           style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 6px;min-width:0;background:var(--ink);border:1px solid var(--border);color:var(--on-ink);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.3px;cursor:pointer;text-align:center;line-height:1.2;">
           <span style="font-size:13px;line-height:1;color:var(--brand);flex-shrink:0;">&#9678;</span>MY ACTION PLAN</button>
@@ -4190,118 +4047,6 @@ function buildWorkspaceHeader(intent, idx) {
       </div><!-- end #wsVizBox collapse -->
       <!-- Roadmap banner removed — the MY ACTION PLAN button above is the sole control for #layer-content-roadmap. -->
     </div>`;
-}
-
-/* Attach/save a free-text note to a single goal. Stored on intentions[idx].note
-   so it persists + syncs like everything else. Debounced so we don't write on
-   every keystroke. */
-let _goalNoteT;
-function saveGoalNote(idx, val) {
-  if (!intentions[idx]) return;
-  intentions[idx].note = val;
-  const st = document.getElementById('goalNoteStatus-' + idx);
-  if (st) st.textContent = 'Saving…';
-  clearTimeout(_goalNoteT);
-  _goalNoteT = setTimeout(() => {
-    if (typeof saveIntentions === 'function') saveIntentions();
-    if (st) { st.textContent = 'Saved ✓'; clearTimeout(st._c); st._c = setTimeout(() => { if (st.textContent === 'Saved ✓') st.textContent = ''; }, 1500); }
-  }, 500);
-}
-if (typeof window !== 'undefined') window.saveGoalNote = saveGoalNote;
-
-/* Daily Habits inline (path step opens here instead of navigating). Today's
-   checklist — tick to toggle, same store as everywhere (ci_habits_<date>). */
-function renderDailyHabitsInline() {
-  const el = document.getElementById('dailyHabitsInlineBody');
-  if (!el) return;
-  let done = {}, list = [];
-  try { done = LS.get('ci_habits_' + dayKey()) || {}; } catch (e) {}
-  try { list = getHabitList() || []; } catch (e) {}
-  if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No habits yet — add them on My Habits.</div>'; return; }
-  // Group by time-of-day, same buckets/labels as the Habits page.
-  const CATS  = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
-  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
-  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
-  const catOf = h => (CATS.indexOf(h && h.cat) >= 0 ? h.cat : '');
-  const row = h => {
-    const on = !!done[h.id];
-    return `<div style="display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--widget-border,#2a2a2a);">
-      <button onclick="habitToggle('${h.id}');renderDailyHabitsInline()" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid ${on ? '#2FA94B' : 'var(--muted)'};background:${on ? '#2FA94B' : 'transparent'};color:#fff;font-size:13px;font-weight:800;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${on ? '✓' : ''}</button>
-      <span style="flex:1;min-width:0;font-size:14px;line-height:1.4;color:var(--widget-text,#eee);${on ? 'text-decoration:line-through;opacity:.6;' : ''}">${esc(h.name)}</span>
-    </div>`;
-  };
-  let html = '';
-  [...CATS, ''].forEach(cat => {
-    const items = list.filter(h => catOf(h) === cat);
-    if (!items.length) return;
-    const dn = items.filter(h => done[h.id]).length;
-    html += `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 4px;">
-      <span style="font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:${COLOR[cat]};">${LABEL[cat]}</span>
-      <span style="font-family:var(--vault-mono);font-size:9px;color:var(--muted);">${dn}/${items.length}</span>
-    </div>` + items.map(row).join('');
-  });
-  el.innerHTML = html + '<button onclick="navTo(\'habits\')" style="width:100%;margin-top:12px;background:none;border:1px dashed var(--widget-border,#2a2a2a);border-radius:8px;padding:9px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:1px;color:var(--muted);cursor:pointer;">✎ EDIT HABITS</button>';
-}
-if (typeof window !== 'undefined') window.renderDailyHabitsInline = renderDailyHabitsInline;
-
-/* Visualize inline — tap a goal to start a 3-minute visualization. */
-function renderVisualizeInline() {
-  const el = document.getElementById('visualizeInlineBody');
-  if (!el) return;
-  const list = intentions || [];
-  if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">Add a goal first, then visualize it here.</div>'; return; }
-  el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin:0 0 8px;">Tap a goal for a 3-minute visualization.</div>' + list.map((it, idx) => {
-    const gcol = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
-    return `<button onclick="launchCountdown(${idx},180)" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:6px;cursor:pointer;">${goalBadge(goalLetter(it, idx), gcol.bg, gcol.text, 26)}<span style="flex:1;min-width:0;font-size:14px;color:var(--text);">${esc(goalCase(it.title))}</span><span style="color:var(--brand);font-size:15px;flex-shrink:0;">&#9654;</span></button>`;
-  }).join('');
-}
-if (typeof window !== 'undefined') window.renderVisualizeInline = renderVisualizeInline;
-
-/* Action Plan inline — every goal's roadmap steps, tick to complete in place. */
-function renderActionPlanInline() {
-  const el = document.getElementById('actionPlanInlineBody');
-  if (!el) return;
-  const list = intentions || [];
-  let html = '';
-  list.forEach((it, idx) => {
-    const r = it && it.roadmapAI;
-    if (!r) return;
-    const tasks = (r.tasks || []).map((t, i) => ({ text: t, done: !!(r.done && r.done[i]), kind: 'rtask', ref: i }))
-      .concat((r.userTasks || []).map(u => ({ text: u.text, done: !!u.done, kind: 'rutask', ref: u.id })));
-    if (!tasks.length) return;
-    const gcol = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
-    html += `<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">${goalBadge(goalLetter(it, idx), gcol.bg, gcol.text, 22)}<span style="font-size:12px;font-weight:700;color:var(--widget-text,#eee);min-width:0;">${esc(goalCase(it.title))}</span></div>` +
-      tasks.map(t => {
-        const oc = t.kind === 'rtask' ? `toggleRoadmapTaskDone(${idx},${t.ref})` : `toggleRoadmapUserTaskDone(${idx},${t.ref})`;
-        return `<div style="display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--widget-border,#2a2a2a);"><button onclick="${oc};renderActionPlanInline()" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid ${t.done ? '#2FA94B' : 'var(--muted)'};background:${t.done ? '#2FA94B' : 'transparent'};color:#fff;font-size:12px;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;">${t.done ? '✓' : ''}</button><span style="flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--widget-text,#eee);${t.done ? 'text-decoration:line-through;opacity:.6;' : ''}">${esc(t.text)}</span></div>`;
-      }).join('') + '</div>';
-  });
-  el.innerHTML = html || '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No roadmap steps yet — open a goal and generate its roadmap.</div>';
-}
-if (typeof window !== 'undefined') window.renderActionPlanInline = renderActionPlanInline;
-
-/* Favorites inline — host the real #favorites-list here and reuse renderFavorites
-   (keeps the drag/checkbox/autoplay logic intact). */
-function renderFavoritesInline() {
-  const host = document.getElementById('favoritesInlineHost');
-  const favList = document.getElementById('favorites-list');
-  if (host && favList && favList.parentElement !== host) host.appendChild(favList);
-  if (typeof window.renderFavorites === 'function') window.renderFavorites();
-}
-if (typeof window !== 'undefined') window.renderFavoritesInline = renderFavoritesInline;
-
-/* Open the dashboard and expand the inline Favorites panel (used to redirect the
-   old Favorites-page links now that the list lives inline). */
-function _openFavoritesInline() {
-  if (typeof window.goMemberDashboard === 'function') window.goMemberDashboard();
-  setTimeout(() => {
-    const box = document.getElementById('favoritesBox');
-    const btn = document.querySelector('#citadelNav [onclick*="favoritesBox"]');
-    if (box && getComputedStyle(box).display === 'none' && btn) btn.click();
-    else renderFavoritesInline();
-    const box2 = document.getElementById('favoritesBox');
-    if (box2) box2.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 250);
 }
 
 /* ── STRATEGY LAYER — Backbone Framework ─────────────── */
@@ -4640,23 +4385,12 @@ function numberContentBlocks() {
       chip.textContent = n;
       hd.insertBefore(chip, hd.firstChild);
     }
-    // Header = accordion toggle: each block starts CLOSED so the Admin page is a
-    // tidy list of headers; click one to open its editor. Placed blocks keep a
-    // jump-to-page link as a small ↗ button that doesn't trigger the collapse.
-    if (hd && !hd.dataset.wired) {
-      hd.dataset.wired = '1';
-      hd.classList.add('cb-hd-toggle');
-      hd.title = 'Click to open / close this block';
-      hd.addEventListener('click', () => el.classList.toggle('admin-open'));
-      if (_blockPage(slug)) {
-        const jump = document.createElement('button');
-        jump.type = 'button';
-        jump.className = 'cb-hd-jump';
-        jump.textContent = '↗';
-        jump.title = 'Jump to where this block appears on the site';
-        jump.addEventListener('click', (ev) => { ev.stopPropagation(); adminGoToBlock(slug); });
-        hd.appendChild(jump);
-      }
+    // Make the header a link to where the block appears (if it's placed).
+    if (hd && !hd.dataset.linked && _blockPage(slug)) {
+      hd.dataset.linked = '1';
+      hd.classList.add('cb-hd-link');
+      hd.title = 'Click to jump to where this block appears on the site';
+      hd.addEventListener('click', () => adminGoToBlock(slug));
     }
   });
   window.BLOCK_NUM = map;

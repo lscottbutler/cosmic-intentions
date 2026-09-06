@@ -214,7 +214,6 @@ export function ringsSummary() {
     perfect: _isPerfect(r),
     count:   _closedCount(r),
     gratitude: !!r.gratitude,
-    meditate: !!r.meditate,
     points:  dailyPoints(_todayKey()),
     score, streak,
   };
@@ -604,9 +603,6 @@ export function renderRings() {
   // Runtime call (NOT an import) → no circular-load risk; wrapup.js never calls
   // back into renderRings, so there's no render loop.
   if (typeof window !== 'undefined' && typeof window.renderWrapup === 'function') window.renderWrapup();
-  // The Path (Phase 3): refresh the step check-offs + progress bar whenever ring
-  // state changes (win logged, session finished, etc.). Runtime call, no import.
-  if (typeof window !== 'undefined' && typeof window.updatePathProgress === 'function') window.updatePathProgress();
 }
 
 /* app.js calls this once, passing its Supabase upsert fn (see cross-device sync). */
