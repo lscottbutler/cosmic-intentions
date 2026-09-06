@@ -462,6 +462,11 @@ details.rm-drop[open]::details-content { height: auto; }
   #page-dashboard .vault-sidebar,
   .pg-2col-side, .viz-side, .pg-side { display: none !important; }
   .pg-body { grid-template-columns: minmax(0, 1fr) !important; }
+  /* Align the inner panels to the vault-main 10px gutter (kill their own side padding). */
+  #page-dashboard #citadelNav,
+  #page-dashboard #dashSections,
+  #page-dashboard #goalsBox,
+  #page-dashboard .vault-list { padding-left: 0 !important; padding-right: 0 !important; }
   /* Goal row: the 75/25 title-vs-actions split crushes the title on a phone —
      stack it: full-width title on top, heart/play/edit on their own row below. */
   .vault-row { flex-direction: column !important; align-items: stretch !important; }
@@ -803,7 +808,7 @@ body:has(#page-dashboard.active)   .hdr { background:#000000; }
    nth-of-type is SOURCE order, so these map to visual slots via their `order`:
    black = visual slots 1,3,5,7,9  →  Creative Viz(5), Meditation(7), My Daily Habits(4), My Roadmap(6), Practice Gratitude(8). */
 #citadelNav { padding: 0 15px; box-sizing: border-box; }   /* indent the nav buttons 15px, matching the goal cards */
-#citadelNav > button { background: #6e6e6e !important; }   /* default grey (even slots) */
+#citadelNav > button { background: #1c1c1c !important; }   /* Goals/Intentions header — dark charcoal to match the section panels */
 #citadelNav > button:nth-of-type(4),
 #citadelNav > button:nth-of-type(5),
 #citadelNav > button:nth-of-type(6),
@@ -3110,11 +3115,12 @@ input, textarea, select {
    vault-main paddings (~84px/side) — on phones that crushed the widgets
    into a narrow center strip. Trim each layer so they fill edge-to-edge. */
 @media (max-width: 767px) {
-  #page-dashboard .pg-frame     { padding: 8px !important; }
-  #page-dashboard .pg-bezel     { padding: 0 6px 10px !important; }
-  #page-dashboard .pg-screen    { padding: 10px 7px 22px !important; }
+  /* Single 10px L/R gutter: zero the frame/bezel/screen sides, put the 10px on vault-main. */
+  #page-dashboard .pg-frame     { padding: 8px 0 !important; }
+  #page-dashboard .pg-bezel     { padding: 0 0 10px !important; }
+  #page-dashboard .pg-screen    { padding: 10px 0 22px !important; }
   #page-dashboard .vault-layout { padding: 0 !important; }
-  #page-dashboard .vault-main   { padding: 10px 6px 0 !important; }
+  #page-dashboard .vault-main   { padding: 10px 10px 0 !important; }
   #page-dashboard .vault-sidebar{ padding: 10px 6px !important; }
 }
 
