@@ -466,9 +466,13 @@ details.rm-drop[open]::details-content { height: auto; }
      stack it: full-width title on top, heart/play/edit on their own row below. */
   .vault-row { flex-direction: column !important; align-items: stretch !important; }
   .vault-row > .vault-item { width: 100% !important; }
+  /* No separate grey pill on mobile — the 3 buttons sit directly under the title
+     so each goal reads as one clean unit. */
   .vault-row > .vault-actions {
     flex: 0 0 auto !important; width: 100% !important;
-    justify-content: flex-end !important; gap: 10px !important; margin-top: 4px;
+    justify-content: flex-start !important; gap: 16px !important;
+    background: none !important; border-radius: 0 !important;
+    padding: 0 6px !important; margin-top: 6px !important;
   }
 }
 .hdr-user {
