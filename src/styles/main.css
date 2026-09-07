@@ -462,8 +462,6 @@ details.rm-drop[open]::details-content { height: auto; }
   #page-dashboard .vault-sidebar,
   .pg-2col-side, .viz-side, .pg-side { display: none !important; }
   .pg-body { grid-template-columns: minmax(0, 1fr) !important; }
-  /* (Mobile Back-button reveal lives right after the hide rule below so source
-     order lets it win — see the @media block after button[aria-label="Back"].) */
   /* Align the inner panels to the vault-main 10px gutter (kill their own side padding). */
   #page-dashboard #citadelNav,
   #page-dashboard #dashSections,
@@ -773,17 +771,11 @@ details.rm-drop[open]::details-content { height: auto; }
 /* Kill the per-page subtitle lines and the stray lone back button on every page —
    the Column B nav circles handle "back"; the title sits right above its content. */
 .pg-intro, .wins-intro { display: none !important; }
-button[aria-label="Back"]:not(.colb-nav-btn),
+/* The Back button ALWAYS shows on every page — it's the reliable way home, since
+   Column B isn't present on some pages (My Habits, Setup) and is hidden on mobile.
+   Only stray Next/Forward buttons stay hidden. */
 button[aria-label="Next"]:not(.colb-nav-btn),
 button[aria-label="Forward"]:not(.colb-nav-btn) { display: none !important; }
-/* EXCEPTION: pages with NO Column B (My Habits, Setup) must keep their Back
-   button — it's the only way off the page. */
-.setup-page-header button[aria-label="Back"] { display: inline-flex !important; }
-/* EXCEPTION: on mobile Column B is hidden on every page, so the page's own Back
-   button must show. Placed AFTER the hide rule so equal-specificity source order wins. */
-@media (max-width: 767px) {
-  button[aria-label="Back"]:not(.colb-nav-btn) { display: inline-flex !important; }
-}
 /* Dashboard Column B starts below the title line (aligned with the intro card):
    push the nav-circle cluster down and everything below it follows. */
 #page-dashboard .vault-sidebar > #vaultDateLine { margin-top:8px; margin-bottom:16px; }
