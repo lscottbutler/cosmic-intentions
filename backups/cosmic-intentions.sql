@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict lASr8RdT5SpffX5RsWZcHoacXnuR5qbVaRKdRSuK8ZeDobP3etoDpp4GWPXnR7g
+\restrict BqZXQG7L80f51dcziHRMQT2hIqkIgjcg9bfhPiV43aWO0VLKeU4sFuEHWXh6fKb
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
@@ -4251,7 +4251,8 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1573	i6ewnggl3cwn	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-08 00:17:52.362543+00	2026-09-08 00:17:52.362543+00	7qm6ba5zui7a	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
 00000000-0000-0000-0000-000000000000	1572	ksvsf4wp5gfr	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 00:17:11.457203+00	2026-09-08 02:45:35.561719+00	fnx2uyt76jia	76d23548-d94d-4577-a3e0-51f45d133573
 00000000-0000-0000-0000-000000000000	1574	ui6be47xdybd	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 02:45:35.579018+00	2026-09-08 03:57:45.546632+00	ksvsf4wp5gfr	76d23548-d94d-4577-a3e0-51f45d133573
-00000000-0000-0000-0000-000000000000	1575	rnrnhgbvaplx	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-08 03:57:45.560473+00	2026-09-08 03:57:45.560473+00	ui6be47xdybd	76d23548-d94d-4577-a3e0-51f45d133573
+00000000-0000-0000-0000-000000000000	1575	rnrnhgbvaplx	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 03:57:45.560473+00	2026-09-08 05:17:19.594874+00	ui6be47xdybd	76d23548-d94d-4577-a3e0-51f45d133573
+00000000-0000-0000-0000-000000000000	1576	niafzrt6e445	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-08 05:17:19.601713+00	2026-09-08 05:17:19.601713+00	rnrnhgbvaplx	76d23548-d94d-4577-a3e0-51f45d133573
 \.
 
 
@@ -4365,7 +4366,7 @@ b99695df-a936-4166-85af-83c0f2efc341	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-0
 5a1c860c-b418-4c37-944d-7d37cfc25a49	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 07:16:08.5597+00	2026-09-04 07:16:08.5597+00	\N	aal1	\N	\N	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36	49.229.213.117	\N	\N	\N	\N	\N
 5bcbbebc-3843-4fe4-abf7-a5f5ae22401f	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-03 07:48:37.31819+00	2026-09-07 22:47:29.304779+00	\N	aal1	\N	2026-09-07 22:47:29.303846	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
 0bf2b128-9a94-4f1d-8879-ff65e8ad4481	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 03:59:55.34431+00	2026-09-08 00:17:52.367996+00	\N	aal1	\N	2026-09-08 00:17:52.36789	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
-76d23548-d94d-4577-a3e0-51f45d133573	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 01:30:40.069608+00	2026-09-08 03:57:45.582231+00	\N	aal1	\N	2026-09-08 03:57:45.582129	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
+76d23548-d94d-4577-a3e0-51f45d133573	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 01:30:40.069608+00	2026-09-08 05:17:19.620438+00	\N	aal1	\N	2026-09-08 05:17:19.620342	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
 \.
 
 
@@ -4390,7 +4391,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-09-04 07:16:08.559071+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-09-08 03:57:45.56818+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-09-04 07:16:08.559071+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-09-08 05:17:19.607841+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
@@ -4889,7 +4890,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1575, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1576, true);
 
 
 --
@@ -6716,5 +6717,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict lASr8RdT5SpffX5RsWZcHoacXnuR5qbVaRKdRSuK8ZeDobP3etoDpp4GWPXnR7g
+\unrestrict BqZXQG7L80f51dcziHRMQT2hIqkIgjcg9bfhPiV43aWO0VLKeU4sFuEHWXh6fKb
 
