@@ -97,8 +97,7 @@ document.addEventListener('keydown',event=>{
  if(event.code==='Space'){event.preventDefault();ended?start():(playing?pause():resume())}
  if(event.key==='Escape'){try{if(window.parent!==window&&window.parent.closePlayerColumn)return window.parent.closePlayerColumn()}catch(error){}history.length>1?history.back():window.close()}
 });
-IMAGES.forEach(src=>{const image=new Image();image.src=src});
-start();
+Promise.all(IMAGES.map(src=>new Promise(resolve=>{const image=new Image();image.onload=resolve;image.onerror=resolve;image.src=src}))).then(start);
 </script>
 </body>
 </html>
