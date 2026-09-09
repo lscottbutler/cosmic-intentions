@@ -2356,7 +2356,8 @@ export function launchViz(minutes, ev) {
 export function launchDVB(idx, ev) {
   const intn = intentions[idx] || intentions[0];
   if (!intn) { toast('Add an intention first.', 'error'); return; }
-  const images = [...new Set([intn.imageUrl, ...(Array.isArray(intn.imageOptions) ? intn.imageOptions : []), ...(Array.isArray(intn.images) ? intn.images : [])].filter(Boolean))].slice(0, 5);
+  const savedSet = Array.isArray(intn.imageOptions) ? intn.imageOptions.filter(Boolean) : [];
+  const images = [...new Set((savedSet.length > 1 ? savedSet : [intn.imageUrl, ...savedSet, ...(Array.isArray(intn.images) ? intn.images : [])]).filter(Boolean))].filter(src => !/tesla/i.test(String(src))).slice(0, 5);
   try {
     localStorage.setItem('ci_dvb_images', JSON.stringify(images));
     localStorage.setItem('ci_dvb_title', intn.title || 'Digital Vision Board');
