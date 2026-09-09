@@ -2351,6 +2351,21 @@ export function launchViz(minutes, ev) {
   launchVisualization(idx, minutes, ev);
 }
 
+/* Open the selected goal's Digital Vision Board: exactly its five saved images,
+   with no guidance, narration, or cross-player content. */
+export function launchDVB(idx, ev) {
+  const intn = intentions[idx] || intentions[0];
+  if (!intn) { toast('Add an intention first.', 'error'); return; }
+  const images = [...new Set([intn.imageUrl, ...(Array.isArray(intn.imageOptions) ? intn.imageOptions : []), ...(Array.isArray(intn.images) ? intn.images : [])].filter(Boolean))].slice(0, 5);
+  try {
+    localStorage.setItem('ci_dvb_images', JSON.stringify(images));
+    localStorage.setItem('ci_dvb_title', intn.title || 'Digital Vision Board');
+  } catch (e) {}
+  const src = `players/dvb.html?goal=${encodeURIComponent(intn.title || '')}&_=${Date.now()}`;
+  if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(src, ev);
+  else window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes');
+}
+
 /* ── PILLAR 1: VISUALIZATION LIBRARY ──────────────────────────────────────
    Full-screen goals list → tap a goal → its 4 activities (creative viz,
    review, meditate, gratitude). Single-column / mobile-first. */
@@ -2407,6 +2422,7 @@ function buildVizInline(idx, it) {
     </div>`).join('');
   return `<div style="padding:10px 6px 14px;">
     ${img}
+    <button onclick="launchDVB(${idx}, event)" title="Play this goal's Digital Vision Board" style="width:100%;box-sizing:border-box;margin:0 0 10px;padding:15px 16px;border-radius:10px;background:#087f9e;border:none;color:#fff;font-size:15px;font-weight:800;letter-spacing:.8px;cursor:pointer;text-align:center;line-height:1;">PLAY DIGITAL VISION BOARD</button>
     <div style="display:flex;flex-direction:column;gap:10px;background:#1a1a1a;border:none;border-radius:12px;padding:12px;">
       ${timers}
       <button onclick="openVizGoal(${idx})" title="Open the full visualization page" style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;background:#7C5CC4;border:none;color:#fff;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">Open full visualization page &#8599;</button>
