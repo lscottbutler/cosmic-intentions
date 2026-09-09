@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict SmhgiIfNbiVfsMQT6Yeq5MOAC4nQCuvEeWicNEdfWP0HYZhKGBX6tASCZtHoNKp
+\restrict c2I0TnnVirpFAFGzW1NzbnmjbmRPgrg6vjdguKBQaH5UjFKZYhVaLNguPi8PhRX
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
@@ -78,7 +78,10 @@ DROP TRIGGER IF EXISTS protect_buckets_delete ON storage.buckets;
 DROP TRIGGER IF EXISTS enforce_bucket_name_length_trigger ON storage.buckets;
 DROP TRIGGER IF EXISTS tr_check_filters ON realtime.subscription;
 DROP INDEX IF EXISTS storage.vector_indexes_name_bucket_id_idx;
+DROP INDEX IF EXISTS storage.objects_bucket_id_name_version_key;
 DROP INDEX IF EXISTS storage.name_prefix_search;
+DROP INDEX IF EXISTS storage.idx_objects_null_version;
+DROP INDEX IF EXISTS storage.idx_objects_current_version;
 DROP INDEX IF EXISTS storage.idx_objects_bucket_id_name_lower;
 DROP INDEX IF EXISTS storage.idx_objects_bucket_id_name;
 DROP INDEX IF EXISTS storage.idx_multipart_uploads_list;
@@ -287,6 +290,7 @@ DROP FUNCTION IF EXISTS realtime.send(payload jsonb, event text, topic text, pri
 DROP FUNCTION IF EXISTS realtime.quote_wal2json(entity regclass);
 DROP FUNCTION IF EXISTS realtime.list_changes(publication name, slot_name name, max_changes integer, max_record_bytes integer);
 DROP FUNCTION IF EXISTS realtime.is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[]);
+DROP FUNCTION IF EXISTS realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text, negate boolean);
 DROP FUNCTION IF EXISTS realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text);
 DROP FUNCTION IF EXISTS realtime."cast"(val text, type_ regtype);
 DROP FUNCTION IF EXISTS realtime.build_prepared_statement_sql(prepared_statement_name text, entity regclass, columns realtime.wal_column[]);
@@ -584,7 +588,8 @@ CREATE TYPE realtime.equality_op AS ENUM (
 CREATE TYPE realtime.user_defined_filter AS (
 	column_name text,
 	op realtime.equality_op,
-	value text
+	value text,
+	negate boolean
 );
 
 
@@ -1352,6 +1357,18 @@ begin
 
                     execute 'execute walrus_rls_stmt' into subscription_has_access;
 
+                    -- Reset the role on every FOR..LOOP batch execution.
+                    -- The first batch of 10 rows is pre-fetched using the current connection role (PG internal behaviour)
+                    -- then we have to reset it again otherwise it would use the role defined in the `set_config` above
+                    -- to fetch the remaining rows when rows>10, which could be a user-defined role that lacks execution grants.
+                    -- The flow is:
+                    --   1. run batch with conn role
+                    --   2. set_config working_role
+                    --   3. execute walrus
+                    --   4. reset role (revert)
+                    --   5. repeat
+                    perform set_config('role', null, true);
+
                     if subscription_has_access then
                         visible_role_sub_ids = visible_role_sub_ids || subscription_id;
                     end if;
@@ -1610,39 +1627,105 @@ $$;
 
 
 --
+-- Name: check_equality_op(realtime.equality_op, regtype, text, text, boolean); Type: FUNCTION; Schema: realtime; Owner: -
+--
+
+CREATE FUNCTION realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text, negate boolean) RETURNS boolean
+    LANGUAGE plpgsql STABLE
+    AS $$
+declare
+    op_symbol text;
+    res boolean;
+begin
+    -- IS DISTINCT FROM / IS NOT DISTINCT FROM: infix, both sides typed literals
+    if op = 'isdistinct' then
+        execute format(
+            'select %L::%s %s %L::%s',
+            val_1,
+            type_::text,
+            case when negate then 'IS NOT DISTINCT FROM' else 'IS DISTINCT FROM' end,
+            val_2,
+            type_::text
+        ) into res;
+        return res;
+    end if;
+
+    -- IS requires a keyword RHS (NULL, TRUE, FALSE, UNKNOWN), not a typed literal
+    if op = 'is' then
+        if val_2 not in ('null', 'true', 'false', 'unknown') then
+            raise exception 'invalid value for is filter: must be null, true, false, or unknown';
+        end if;
+        execute format(
+            'select %L::%s %s %s',
+            val_1,
+            type_::text,
+            case when negate then 'IS NOT' else 'IS' end,
+            upper(val_2)
+        ) into res;
+        return res;
+    end if;
+
+    op_symbol = case
+        when op = 'eq'    then '='
+        when op = 'neq'   then '!='
+        when op = 'lt'    then '<'
+        when op = 'lte'   then '<='
+        when op = 'gt'    then '>'
+        when op = 'gte'   then '>='
+        when op = 'in'    then '= any'
+        when op = 'like'   then 'LIKE'
+        when op = 'ilike'  then 'ILIKE'
+        when op = 'match'  then '~'
+        when op = 'imatch' then '~*'
+        else null
+    end;
+
+    if op_symbol is null then
+        raise exception 'unsupported equality operator: %', op::text;
+    end if;
+
+    execute format(
+        'select %L::%s %s (%L::%s)',
+        val_1,
+        type_::text,
+        op_symbol,
+        val_2,
+        case when op = 'in' then type_::text || '[]' else type_::text end
+    ) into res;
+
+    return case when negate then not res else res end;
+end;
+$$;
+
+
+--
 -- Name: is_visible_through_filters(realtime.wal_column[], realtime.user_defined_filter[]); Type: FUNCTION; Schema: realtime; Owner: -
 --
 
 CREATE FUNCTION realtime.is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[]) RETURNS boolean
-    LANGUAGE sql IMMUTABLE
-    AS $_$
-/*
-Should the record be visible (true) or filtered out (false) after *filters* are applied
-*/
+    LANGUAGE sql STABLE
+    AS $$
     select
-        -- Default to allowed when no filters present
-        $2 is null -- no filters. this should not happen because subscriptions has a default
-        or array_length($2, 1) is null -- array length of an empty array is null
-        or bool_and(
-            coalesce(
+        filters is null
+        or array_length(filters, 1) is null
+        or coalesce(
+            count(col.name) = count(1)
+            and sum(
                 realtime.check_equality_op(
                     op:=f.op,
-                    type_:=coalesce(
-                        col.type_oid::regtype, -- null when wal2json version <= 2.4
-                        col.type_name::regtype
-                    ),
-                    -- cast jsonb to text
+                    type_:=coalesce(col.type_oid::regtype, col.type_name::regtype),
                     val_1:=col.value #>> '{}',
-                    val_2:=f.value
-                ),
-                false -- if null, filter does not match
-            )
+                    val_2:=f.value,
+                    negate:=coalesce(f.negate, false)
+                )::int
+            ) filter (where col.name is not null) = count(col.name),
+            false
         )
     from
         unnest(filters) f
-        join unnest(columns) col
+        left join unnest(columns) col
             on f.column_name = col.name;
-$_$;
+$$;
 
 
 --
@@ -1840,7 +1923,48 @@ begin
             if coalesce(jsonb_array_length(in_val), 0) > 100 then
                 raise exception 'too many values for `in` filter. Maximum 100';
             end if;
+        elsif filter.op = 'is'::realtime.equality_op then
+            -- `is` requires a keyword RHS rather than a typed literal
+            if filter.value not in ('null', 'true', 'false', 'unknown') then
+                raise exception 'invalid value for is filter: must be null, true, false, or unknown';
+            end if;
+            -- IS NULL works for any type, but IS TRUE/FALSE/UNKNOWN require a boolean
+            -- operand. Reject the non-null keywords on non-boolean columns here so they
+            -- don't abort apply_rls at WAL time.
+            if filter.value <> 'null' and col_type <> 'boolean'::regtype then
+                raise exception 'is % filter requires a boolean column, got %', filter.value, col_type::text;
+            end if;
+        elsif filter.op in ('like'::realtime.equality_op, 'ilike'::realtime.equality_op) then
+            -- like/ilike apply the text pattern operator (~~); reject column types that
+            -- have no such operator instead of failing at WAL time
+            if not exists (
+                select 1 from pg_catalog.pg_operator
+                where oprname = '~~' and oprleft = col_type
+            ) then
+                raise exception 'operator % requires a text-compatible column type, got %', filter.op::text, col_type::text;
+            end if;
+        elsif filter.op in ('match'::realtime.equality_op, 'imatch'::realtime.equality_op) then
+            -- match/imatch apply the regex operators ~ / ~*; reject column types that have
+            -- no such operator (e.g. integer) instead of failing at WAL time, mirroring the
+            -- like/ilike guard above.
+            if not exists (
+                select 1 from pg_catalog.pg_operator
+                where oprname = case when filter.op = 'imatch'::realtime.equality_op then '~*' else '~' end
+                  and oprleft = col_type
+                  and oprright = col_type
+                  and oprresult = 'boolean'::regtype
+            ) then
+                raise exception 'operator % requires a text-compatible column type, got %', filter.op::text, col_type::text;
+            end if;
+            -- validate the regex eagerly so a bad pattern is rejected here, not inside
+            -- apply_rls where it would abort the WAL stream for the entity
+            begin
+                perform '' ~ filter.value;
+            exception when others then
+                raise exception 'invalid regular expression for % filter: %', filter.op::text, sqlerrm;
+            end;
         else
+            -- eq/neq/lt/lte/gt/gte: value must be coercable to the type
             perform realtime.cast(filter.value, col_type);
         end if;
     end loop;
@@ -1853,8 +1977,10 @@ begin
         end loop;
     end if;
 
+    -- Apply consistent order to filters so the unique constraint can't be tricked by a
+    -- different filter order. negate is part of the sort key.
     new.filters = coalesce(
-        array_agg(f order by f.column_name, f.op, f.value),
+        array_agg(f order by f.column_name, f.op, f.value, f.negate),
         '{}'
     ) from unnest(new.filters) f;
 
@@ -3717,7 +3843,8 @@ CREATE TABLE realtime.messages (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 )
 PARTITION BY RANGE (inserted_at);
 
@@ -3735,7 +3862,8 @@ CREATE TABLE realtime.messages_2026_04_09 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3752,7 +3880,8 @@ CREATE TABLE realtime.messages_2026_04_10 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3769,7 +3898,8 @@ CREATE TABLE realtime.messages_2026_04_11 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3786,7 +3916,8 @@ CREATE TABLE realtime.messages_2026_04_12 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3803,7 +3934,8 @@ CREATE TABLE realtime.messages_2026_04_13 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3820,7 +3952,8 @@ CREATE TABLE realtime.messages_2026_04_14 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -3837,7 +3970,8 @@ CREATE TABLE realtime.messages_2026_04_15 (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    binary_payload bytea
+    binary_payload bytea,
+    skip_broadcast boolean DEFAULT false NOT NULL
 );
 
 
@@ -4248,11 +4382,14 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	1568	s75hnhugc4eq	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-07 02:03:10.744345+00	2026-09-07 07:53:42.051+00	6th5fxtf5cul	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
 00000000-0000-0000-0000-000000000000	1570	fnx2uyt76jia	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-07 07:41:34.225217+00	2026-09-08 00:17:11.444314+00	6kmkm6nazoy2	76d23548-d94d-4577-a3e0-51f45d133573
 00000000-0000-0000-0000-000000000000	1571	7qm6ba5zui7a	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-07 07:53:42.058713+00	2026-09-08 00:17:52.359308+00	s75hnhugc4eq	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
-00000000-0000-0000-0000-000000000000	1573	i6ewnggl3cwn	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-08 00:17:52.362543+00	2026-09-08 00:17:52.362543+00	7qm6ba5zui7a	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
 00000000-0000-0000-0000-000000000000	1572	ksvsf4wp5gfr	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 00:17:11.457203+00	2026-09-08 02:45:35.561719+00	fnx2uyt76jia	76d23548-d94d-4577-a3e0-51f45d133573
 00000000-0000-0000-0000-000000000000	1574	ui6be47xdybd	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 02:45:35.579018+00	2026-09-08 03:57:45.546632+00	ksvsf4wp5gfr	76d23548-d94d-4577-a3e0-51f45d133573
 00000000-0000-0000-0000-000000000000	1575	rnrnhgbvaplx	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 03:57:45.560473+00	2026-09-08 05:17:19.594874+00	ui6be47xdybd	76d23548-d94d-4577-a3e0-51f45d133573
 00000000-0000-0000-0000-000000000000	1576	niafzrt6e445	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-08 05:17:19.601713+00	2026-09-08 05:17:19.601713+00	rnrnhgbvaplx	76d23548-d94d-4577-a3e0-51f45d133573
+00000000-0000-0000-0000-000000000000	1573	i6ewnggl3cwn	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-08 00:17:52.362543+00	2026-09-09 02:38:37.659648+00	7qm6ba5zui7a	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
+00000000-0000-0000-0000-000000000000	1577	s4kr6vco75x5	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-09 02:38:37.678541+00	2026-09-09 03:36:51.435708+00	i6ewnggl3cwn	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
+00000000-0000-0000-0000-000000000000	1578	2nmfxxkmcsu5	0fa88179-af12-4659-ad95-c6ae5fbc23e1	t	2026-09-09 03:36:51.442406+00	2026-09-09 04:45:13.748893+00	s4kr6vco75x5	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
+00000000-0000-0000-0000-000000000000	1579	5tqy2zkgzj6b	0fa88179-af12-4659-ad95-c6ae5fbc23e1	f	2026-09-09 04:45:13.759963+00	2026-09-09 04:45:13.759963+00	2nmfxxkmcsu5	0bf2b128-9a94-4f1d-8879-ff65e8ad4481
 \.
 
 
@@ -4365,8 +4502,8 @@ COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_aft
 b99695df-a936-4166-85af-83c0f2efc341	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 07:13:36.82369+00	2026-09-04 07:13:36.82369+00	\N	aal1	\N	\N	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36	49.229.213.117	\N	\N	\N	\N	\N
 5a1c860c-b418-4c37-944d-7d37cfc25a49	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 07:16:08.5597+00	2026-09-04 07:16:08.5597+00	\N	aal1	\N	\N	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36	49.229.213.117	\N	\N	\N	\N	\N
 5bcbbebc-3843-4fe4-abf7-a5f5ae22401f	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-03 07:48:37.31819+00	2026-09-07 22:47:29.304779+00	\N	aal1	\N	2026-09-07 22:47:29.303846	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
-0bf2b128-9a94-4f1d-8879-ff65e8ad4481	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 03:59:55.34431+00	2026-09-08 00:17:52.367996+00	\N	aal1	\N	2026-09-08 00:17:52.36789	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
 76d23548-d94d-4577-a3e0-51f45d133573	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 01:30:40.069608+00	2026-09-08 05:17:19.620438+00	\N	aal1	\N	2026-09-08 05:17:19.620342	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
+0bf2b128-9a94-4f1d-8879-ff65e8ad4481	0fa88179-af12-4659-ad95-c6ae5fbc23e1	2026-09-04 03:59:55.34431+00	2026-09-09 04:45:13.785284+00	\N	aal1	\N	2026-09-09 04:45:13.785177	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36	124.120.206.116	\N	\N	\N	\N	\N
 \.
 
 
@@ -4391,7 +4528,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
-00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-09-04 07:16:08.559071+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-09-08 05:17:19.607841+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	0fa88179-af12-4659-ad95-c6ae5fbc23e1	authenticated	authenticated	lscottbutler@gmail.com	$2a$10$XMkXToy3rf6GLPozKtwjYujoN3PObLb8nrBWOrahmyPinnUT.Bkt2	2026-04-27 05:16:11.944701+00	\N		\N		\N			\N	2026-09-04 07:16:08.559071+00	{"provider": "email", "providers": ["email"]}	{"sub": "0fa88179-af12-4659-ad95-c6ae5fbc23e1", "email": "lscottbutler@gmail.com", "full_name": "Biscuit", "email_verified": true, "phone_verified": false}	\N	2026-04-27 05:16:11.924654+00	2026-09-09 04:45:13.767832+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	868440e8-823b-4ca9-8e3b-385af4fb8879	authenticated	authenticated	lscottbutler+eric@gmail.com	$2a$10$f7OirmB.9bbwX2AzIGIlPOJnkKa32XTqfH/ctmgBY28fFVJzM31RW	2026-04-27 02:14:39.757501+00	\N		\N		\N			\N	2026-05-29 00:52:38.824204+00	{"provider": "email", "providers": ["email"]}	{"sub": "868440e8-823b-4ca9-8e3b-385af4fb8879", "email": "lscottbutler+eric@gmail.com", "full_name": "Eric", "email_verified": true, "phone_verified": false}	\N	2026-04-27 02:14:39.741495+00	2026-05-29 00:52:38.850103+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
@@ -4602,7 +4739,7 @@ f4bcfe99-cd45-4de4-a11b-76f1983ae698	lscottbutler@gmail.com	iam-generator	2026-0
 -- Data for Name: messages_2026_04_09; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_09 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_09 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4610,7 +4747,7 @@ COPY realtime.messages_2026_04_09 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_10; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_10 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_10 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4618,7 +4755,7 @@ COPY realtime.messages_2026_04_10 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_11; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_11 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_11 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4626,7 +4763,7 @@ COPY realtime.messages_2026_04_11 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_12; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_12 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_12 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4634,7 +4771,7 @@ COPY realtime.messages_2026_04_12 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_13; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_13 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_13 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4642,7 +4779,7 @@ COPY realtime.messages_2026_04_13 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_14; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_14 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_14 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4650,7 +4787,7 @@ COPY realtime.messages_2026_04_14 (topic, extension, payload, event, private, up
 -- Data for Name: messages_2026_04_15; Type: TABLE DATA; Schema: realtime; Owner: -
 --
 
-COPY realtime.messages_2026_04_15 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload) FROM stdin;
+COPY realtime.messages_2026_04_15 (topic, extension, payload, event, private, updated_at, inserted_at, id, binary_payload, skip_broadcast) FROM stdin;
 \.
 
 
@@ -4736,6 +4873,11 @@ COPY realtime.schema_migrations (version, inserted_at) FROM stdin;
 20260606110000	2026-06-17 04:28:29
 20260616120000	2026-06-29 00:04:02
 20260624120000	2026-06-29 00:04:04
+20260626120000	2026-09-08 22:31:06
+20260706120000	2026-09-08 22:31:06
+20260707120000	2026-09-08 22:31:11
+20260709120000	2026-09-08 22:31:11
+20260714120000	2026-09-08 22:31:12
 \.
 
 
@@ -4843,6 +4985,9 @@ COPY storage.migrations (id, name, hash, executed_at) FROM stdin;
 62	object-versioning-core	0b855f00ff3be0bfca91efee02a9858912491a9a	2026-09-02 05:22:43.951029
 63	fix-search-name-relative-to-prefix	c7485e417624f795ce8bb2da21927f48e088904d	2026-09-02 05:22:44.00423
 64	fix-search-by-timestamp-sqli	0af424ecd388a39bb1645184b222185a12149675	2026-09-02 05:22:44.023561
+65	objects-key-version-index	603c1c55658e982d35839001e2c2b59a50703904	2026-09-08 22:31:11.409875
+66	objects-current-version-index	191466c93aa2c46a00e36505577c5fcab8d7cb4b	2026-09-08 22:31:11.418981
+67	objects-null-version-index	15bfe8c35b66642b6c78ba60060fa8793bd2207a	2026-09-08 22:31:11.424301
 \.
 
 
@@ -4890,7 +5035,7 @@ COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, up
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: -
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1576, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1579, true);
 
 
 --
@@ -5932,10 +6077,31 @@ CREATE INDEX idx_objects_bucket_id_name_lower ON storage.objects USING btree (bu
 
 
 --
+-- Name: idx_objects_current_version; Type: INDEX; Schema: storage; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_objects_current_version ON storage.objects USING btree (bucket_id, name COLLATE "C") WHERE (archived_at IS NULL);
+
+
+--
+-- Name: idx_objects_null_version; Type: INDEX; Schema: storage; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_objects_null_version ON storage.objects USING btree (bucket_id, name COLLATE "C") WHERE (NOT is_versioned);
+
+
+--
 -- Name: name_prefix_search; Type: INDEX; Schema: storage; Owner: -
 --
 
 CREATE INDEX name_prefix_search ON storage.objects USING btree (name text_pattern_ops);
+
+
+--
+-- Name: objects_bucket_id_name_version_key; Type: INDEX; Schema: storage; Owner: -
+--
+
+CREATE UNIQUE INDEX objects_bucket_id_name_version_key ON storage.objects USING btree (bucket_id, name COLLATE "C", version) NULLS NOT DISTINCT;
 
 
 --
@@ -6717,5 +6883,5 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 -- PostgreSQL database dump complete
 --
 
-\unrestrict SmhgiIfNbiVfsMQT6Yeq5MOAC4nQCuvEeWicNEdfWP0HYZhKGBX6tASCZtHoNKp
+\unrestrict c2I0TnnVirpFAFGzW1NzbnmjbmRPgrg6vjdguKBQaH5UjFKZYhVaLNguPi8PhRX
 
