@@ -2362,7 +2362,7 @@ export function launchDVB(idx, ev) {
     localStorage.setItem('ci_dvb_images', JSON.stringify(images));
     localStorage.setItem('ci_dvb_title', intn.title || 'Digital Vision Board');
   } catch (e) {}
-  const src = `players/dvb.html?goal=${encodeURIComponent(intn.title || '')}&_=${Date.now()}`;
+  const src = `players/dvb.html?goal=${encodeURIComponent(intn.title || '')}&images=${encodeURIComponent(JSON.stringify(images))}&_=${Date.now()}`;
   if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(src, ev);
   else window.open(src, 'ci_player', 'width=1100,height=720,resizable=yes');
 }
