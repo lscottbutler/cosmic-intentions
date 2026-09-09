@@ -1,352 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gratitude | Cosmic Intentions</title>
-  <script>(function(){var t;try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark';}catch(e){t='dark';}document.documentElement.setAttribute('data-theme',t);})();</script>
-  <style>
-    :root {
-      --frame-gray:  #8b8b8b;
-      --frame-width: 12px;
-      --frame-ratio: 5 / 6;
-      --accent:      #E0608A;     /* gratitude pink (frame + control pill) */
-      --bar:         #1c1c1c;
-      --bg:          #1a1a1a;
-    }
-    [data-theme="light"] { --bg:#EEF0F2; }
-    [data-theme="kids"]  { --bg:#FFF6E0; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      background: var(--bg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
-    }
-    .frame {
-      position: relative;
-      width: min(95vw, 95vh * 5 / 6, 560px);
-      aspect-ratio: var(--frame-ratio);
-      border: var(--frame-width) solid var(--accent);
-      box-sizing: border-box;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    /* slideshow area — two crossfading layers */
-    .photo { position: relative; flex: 0 0 56%; background: #ffffff; overflow: hidden; }
-    .slide {
-      position: absolute; inset: 0;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-color: #ffffff;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-    .slide.on { opacity: 1; }
-    .panel {
-      flex: 1 1 auto;
-      position: relative;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-sizing: border-box;
-    }
-    .label {
-      margin: 0;
-      padding: 16px 16px 10px;
-      text-align: center;
-      font-size: clamp(13px, 3.2vw, 17px);
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #222;
-    }
-    .bar { background: var(--accent); border-radius: 0; padding: 14px 18px; box-shadow: none; }
-    .row { display: flex; align-items: center; justify-content: space-between; }
-    .scrubtrack {
-      position: absolute; top: 56%; left: 0; right: 0; height: 8px;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.35);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-      z-index: 3; cursor: pointer; touch-action: none;
-    }
-    .scrubtrack::before { content: ''; position: absolute; left: 0; right: 0; top: -11px; bottom: -11px; }
-    .scrubfill {
-      position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
-      background: #ffdd00; box-shadow: 0 0 8px rgba(255,221,0,0.85);
-      transition: width 1s linear; pointer-events: none;
-    }
-    .scrubdot {
-      position: absolute; top: 56%; left: 0; width: 16px; height: 16px;
-      background: radial-gradient(circle at center, #fff 0 3px, #000 3px 100%);
-      border: none; border-radius: 50%; transform: translate(-50%, -50%);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.55); z-index: 4; pointer-events: none;
-      transition: left 1s linear;
-    }
-    .cbtn { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
-    .cbtn:active { transform: scale(0.92); }
-    .play { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-    .fav.on { color: #ff5a7a; }
-    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
-    .menu.hidden { display: none; }
-    .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
-    .menu button:hover { background: #222; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gratitude | Cosmic Intentions</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap');
+:root{--night:#06141c;--blue:#0077a6;--teal:#55d6ca;--gold:#f5a623;--cream:#fbf7ef;--ink:#102b36}
+*{box-sizing:border-box}html,body{height:100%;margin:0}button{font:inherit}body{display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 75% 15%,#173c4b 0,#081d27 35%,#030a0e 78%);color:var(--cream);font-family:'Roboto Condensed',sans-serif}
+.shell{width:min(96vw,calc(91vh * 16 / 9),1280px)}
+.player{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border:clamp(5px,.75vw,10px) solid var(--blue);background:#07151d;box-shadow:0 28px 80px #000c,0 0 45px #0077a638}
+.brand{position:absolute;z-index:30;top:4%;left:4%;display:flex;align-items:center;gap:.7rem;font-size:clamp(10px,.9vw,14px);font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-shadow:0 2px 12px #000}.mark{width:10px;height:10px;border:2px solid var(--gold);transform:rotate(45deg);box-shadow:0 0 12px #f5a623aa}
+.slides,.slide{position:absolute;inset:0}.slide{inset:-3%;opacity:0;background-position:center;background-size:cover;filter:blur(14px) brightness(.58) saturate(.85);transform:scale(1.06);transition:opacity 1.2s ease,filter 2.2s ease}.slide.on{opacity:1;filter:blur(0) brightness(.72) saturate(1.04);animation:drift 12s ease-in-out forwards}.shade{position:absolute;inset:0;background:linear-gradient(90deg,#031219da 0,#061a2375 39%,transparent 68%),linear-gradient(0deg,#031118c9 0,transparent 45%)}
+.copy{position:absolute;z-index:10;left:5%;bottom:11%;width:min(47%,580px)}.eyebrow{font-size:clamp(11px,1vw,15px);font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}.statement{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,58px);font-weight:500;line-height:1.06;margin:0;text-wrap:balance;text-shadow:0 3px 24px #000;transition:opacity .45s,transform .45s}.statement.fade{opacity:0;transform:translateY(10px)}
+.counter{margin-top:1.25rem;font-size:clamp(12px,1vw,15px);letter-spacing:.18em;text-transform:uppercase;color:#d4e1e2}.progress{position:absolute;z-index:20;left:0;right:0;bottom:0;height:4px;background:#ffffff20}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold));box-shadow:0 0 12px var(--teal);transition:width .2s linear}
+.card{position:absolute;z-index:40;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 42%,#123c4c,#06141c 65%);transition:opacity .8s,visibility .8s}.card.hidden{opacity:0;visibility:hidden}.sigil{width:clamp(52px,6vw,80px);aspect-ratio:1;border:1px solid #55d6ca88;border-radius:50%;position:relative;margin-bottom:2.2%}.sigil:before,.sigil:after{content:"";position:absolute;inset:22%;border:1px solid var(--gold);transform:rotate(45deg)}.sigil:after{inset:37%;background:var(--gold);box-shadow:0 0 22px var(--gold)}.card small{font-size:clamp(11px,1vw,14px);font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:var(--teal)}.card h1{font-family:'Fraunces',serif;font-size:clamp(42px,6vw,82px);font-weight:500;line-height:1;margin:.65rem 0}.card p{font-size:clamp(15px,1.4vw,21px);color:#bdd0d4;margin:0}.begin{margin-top:2rem;border:1px solid #f5a623b5;border-radius:100px;padding:13px 28px;background:#f5a62318;color:#fff;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}.begin:hover,.begin:focus-visible{background:var(--gold);color:var(--ink);outline:none}
+.reflection-card{background:radial-gradient(circle at 50% 40%,#174656,#06141c 67%)}.reflection-card h1{max-width:14ch;font-size:clamp(34px,5vw,68px);line-height:1.05}.reflection-card .countdown{font:300 clamp(62px,10vw,132px)/1 'Roboto Condensed',sans-serif;color:#fff;margin:3% 0 1%;font-variant-numeric:tabular-nums;text-shadow:0 0 28px #55d6ca55}.reflection-card p{max-width:34ch}
+.controls{height:58px;display:flex;align-items:center;justify-content:center;gap:14px}.control{width:42px;height:42px;border:1px solid #ffffff2b;border-radius:50%;background:#0b1c24;color:#edf6f6;cursor:pointer;font-size:17px}.control.primary{width:50px;height:50px;border:0;background:var(--teal);color:#05212a;box-shadow:0 0 22px #55d6ca55}.control:hover,.control:focus-visible{border-color:var(--teal);outline:none}.sound-state{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#849ba2}
+@keyframes drift{from{transform:scale(1.06) translate3d(0,0,0)}to{transform:scale(1.15) translate3d(-1.4%,.8%,0)}}
+@media(max-width:700px){.shell{width:100vw}.player{border-width:4px}.copy{left:6%;bottom:12%;width:82%}.statement{font-size:clamp(24px,7vw,40px)}.shade{background:linear-gradient(0deg,#031118e8 0,#061a2350 62%,transparent 100%)}.controls{height:52px}.control{width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition-duration:.01ms!important}.slide{transform:scale(1.02)!important}}
+</style>
 </head>
 <body>
-  <div class="frame">
-    <div class="photo" id="photo">
-      <div class="slide" id="slideA"></div>
-      <div class="slide" id="slideB"></div>
-    </div>
-    <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
-    <div class="scrubdot" id="dot"></div>
-    <div class="panel">
-      <p class="label" id="label">gratitude</p>
-
-      <div class="menu hidden" id="menu">
-        <button id="mHome">Home page</button>
-        <button id="mPeg">My Pegboard</button>
-      </div>
-
-      <div class="bar">
-        <div class="row">
-          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
-          <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
-          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
-          <button class="cbtn" id="fwd" aria-label="Forward">&#9197;</button>
-          <button class="cbtn fav" id="fav" aria-label="Favorite">&#9825;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    const PLAYER = 'gratitude';
-    const LABEL  = (m) => `${m} minute gratitude practice`;
-
-    /* ── Image slideshow ──────────────────────────────────────
-       Drop gratitude images in images/gratitude/ as gratitude.jpg,
-       gratitude-1.jpg … gratitude-8.jpg (any subset works — each is
-       probed, only ones that load are used). If NONE load yet, we fall
-       back to the meditation images so the player is never blank. */
-    const GRAT_IMAGES = ['gratitude.jpg', 'gratitude-1.jpg', 'gratitude-2.jpg', 'gratitude-3.jpg',
-                         'gratitude-4.jpg', 'gratitude-5.jpg', 'gratitude-6.jpg', 'gratitude-7.jpg', 'gratitude-8.jpg'];
-    const FALLBACK    = ['../images/meditation/meditation.jpg', '../images/meditation/meditation-1.jpg',
-                         '../images/meditation/meditation-2.jpg', '../images/meditation/meditation-3.jpg'];
-    const slideA = document.getElementById('slideA');
-    const slideB = document.getElementById('slideB');
-    let slides = [];          // urls that actually loaded
-    let slideIdx = 0;
-    let frontIsA = true;
-
-    function probe(url) {
-      return new Promise(res => { const im = new Image(); im.onload = () => res(url); im.onerror = () => res(null); im.src = url; });
-    }
-    (async function buildSlides() {
-      const found = (await Promise.all(GRAT_IMAGES.map(n => probe(`../images/gratitude/${n}`)))).filter(Boolean);
-      slides = found.length ? found : (await Promise.all(FALLBACK.map(probe))).filter(Boolean);
-      if (!slides.length) return;
-      slideA.style.backgroundImage = `url('${slides[0]}')`;
-      slideA.classList.add('on');
-      slideIdx = 0; frontIsA = true;
-    })();
-
-    function nextSlide() {
-      if (slides.length < 2) return;
-      slideIdx = (slideIdx + 1) % slides.length;
-      const incoming = frontIsA ? slideB : slideA;
-      const outgoing = frontIsA ? slideA : slideB;
-      incoming.style.backgroundImage = `url('${slides[slideIdx]}')`;
-      incoming.classList.add('on');
-      outgoing.classList.remove('on');
-      frontIsA = !frontIsA;
-    }
-
-    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 3;
-    const total = minutes * 60;
-    let timeRemaining = total;
-    document.getElementById('label').textContent = LABEL(minutes);
-    // Advance the slideshow evenly across the session (min 6s per image).
-    const SLIDE_MS = Math.max(6000, Math.round((total * 1000) / 8));
-
-    const dot = document.getElementById('dot');
-    const track = document.getElementById('track');
-    const fill = document.getElementById('fill');
-    const playBtn = document.getElementById('play');
-
-    function render() {
-      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
-      dot.style.left = pct + '%';
-      fill.style.width = pct + '%';
-    }
-    render();
-
-    /* ── tap / drag the track to seek ── */
-    let scrubbing = false;
-    function seekTo(clientX) {
-      const r = track.getBoundingClientRect();
-      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-      timeRemaining = Math.round(total * (1 - pct));
-      dot.style.transition = fill.style.transition = 'none';
-      render();
-    }
-    track.addEventListener('pointerdown', (e) => { scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
-    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
-    function endScrub() {
-      if (!scrubbing) return;
-      scrubbing = false;
-      dot.style.transition = fill.style.transition = '';
-      if (timeRemaining <= 0) endSession();
-    }
-    track.addEventListener('pointerup', endScrub);
-    track.addEventListener('pointercancel', endScrub);
-
-    /* ── close / parent navigation ── */
-    function closePlayer() {
-      try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
-      if (history.length > 1) history.back(); else window.close();
-    }
-    function nav(target) {
-      try {
-        if (window.parent && window.parent !== window) {
-          if (window.parent.closePlayerColumn) window.parent.closePlayerColumn();
-          if (window.parent.navTo) { window.parent.navTo(target); return; }
-        }
-      } catch (e) {}
-      window.location.href = '/';
-    }
-    /* Natural end → tell the parent so it can close the ring / advance a queue. */
-    function finishPlayer() {
-      try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
-      closePlayer();
-    }
-
-    /* ── ≡ menu ── */
-    const menu = document.getElementById('menu');
-    const menuBtn = document.getElementById('menuBtn');
-    menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
-    document.addEventListener('click', (e) => {
-      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== menuBtn) menu.classList.add('hidden');
-    });
-    document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
-    document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
-
-    /* ── ♥ favorite ── */
-    const favBtn = document.getElementById('fav');
-    const FAVS_KEY = 'ci_favorites';
-    const readFavs = () => { try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch (e) { return []; } };
-    const isFav = (a) => a.some(f => f.player === PLAYER && f.minutes === minutes);
-    function renderFav() { const on = isFav(readFavs()); favBtn.innerHTML = on ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', on); }
-    favBtn.onclick = () => {
-      let a = readFavs();
-      if (isFav(a)) a = a.filter(f => !(f.player === PLAYER && f.minutes === minutes));
-      else a.push({ player: PLAYER, minutes });
-      localStorage.setItem(FAVS_KEY, JSON.stringify(a));
-      renderFav();
-    };
-    renderFav();
-
-    /* ── bell ── */
-    function playBell() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const now = ctx.currentTime;
-        [660, 990].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          const start = now + i * 0.18;
-          gain.gain.setValueAtTime(0.0001, start);
-          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
-          osc.connect(gain).connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + 2.3);
-        });
-      } catch (e) { console.log('Audio blocked:', e); }
-    }
-
-    /* ── voice-over cues (drop MP3s in images/gratitude/vo/) ──
-       Optional — if the files aren't there yet, playback silently no-ops
-       and the bell still closes the session. */
-    const VO = {
-      start: new Audio('../images/gratitude/vo/cue-start.mp3'),
-      half:  new Audio('../images/gratitude/vo/cue-half.mp3'),
-      near:  new Audio('../images/gratitude/vo/cue-near.mp3'),
-      end:   new Audio('../images/gratitude/vo/cue-end.mp3'),
-    };
-    Object.values(VO).forEach(a => { a.preload = 'auto'; });
-    const halfAt = Math.floor(total / 2);
-    const nearAt = (total - 60) > halfAt ? total - 60 : 0;
-    const fired  = new Set();
-    function playVO(a) { try { a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {} }
-    let unlocked = false;
-    function unlockAudio() {
-      if (unlocked) return; unlocked = true;
-      Object.values(VO).forEach(a => {
-        a.muted = true;
-        const p = a.play();
-        if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
-      });
-    }
-    document.addEventListener('pointerdown', unlockAudio, { once: true });
-
-    /* ── timer + play/pause ── */
-    let timer = null;
-    let slideTimer = null;
-    let playing = false;
-    let ended = false;
-    function endSession() {
-      if (ended) return;
-      ended = true;
-      timeRemaining = 0;
-      setPlaying(false);
-      render();
-      playVO(VO.end);
-      setTimeout(() => { playBell(); setTimeout(finishPlayer, 4000); }, 6000);
-    }
-    function tick() {
-      timeRemaining--;
-      if (timeRemaining <= 0) { endSession(); return; }
-      render();
-      const elapsed = total - timeRemaining;
-      if (!fired.has('half') && elapsed >= halfAt) { fired.add('half'); playVO(VO.half); }
-      if (nearAt && !fired.has('near') && elapsed >= nearAt) { fired.add('near'); playVO(VO.near); }
-    }
-    function setPlaying(p) {
-      playing = p;
-      playBtn.innerHTML = p ? '&#9208;' : '&#9654;';
-      if (p && !timer) timer = setInterval(tick, 1000);
-      if (!p && timer) { clearInterval(timer); timer = null; }
-      // slideshow advances only while playing
-      if (p && !slideTimer) slideTimer = setInterval(nextSlide, SLIDE_MS);
-      if (!p && slideTimer) { clearInterval(slideTimer); slideTimer = null; }
-    }
-    playBtn.onclick = () => setPlaying(!playing);
-
-    const STEP = 10;
-    function adjust(delta) {
-      timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
-      render();
-      if (timeRemaining === 0) { endSession(); }
-    }
-    document.getElementById('rew').onclick = () => adjust(+STEP);
-    document.getElementById('fwd').onclick = () => adjust(-STEP);
-
-    // Auto-start after a brief beat; the opening cue plays as it begins.
-    setTimeout(() => {
-      setPlaying(true);
-      if (!fired.has('start')) { fired.add('start'); playVO(VO.start); }
-    }, 800);
-  </script>
+<main class="shell">
+ <section class="player" aria-label="Cosmic Intentions Gratitude Player">
+  <div class="brand"><span class="mark"></span>Cosmic Intentions</div>
+  <div class="slides"><div class="slide" id="slideA"></div><div class="slide" id="slideB"></div></div>
+  <div class="shade"></div>
+  <div class="copy"><div class="eyebrow">Gratitude</div><h2 class="statement" id="statement">I am grateful for this moment.</h2><div class="counter" id="counter">1 of 1</div></div>
+  <div class="progress"><i id="progress"></i></div>
+  <div class="card" id="intro"><div class="sigil"></div><small>Cosmic Intentions</small><h1>Gratitude</h1><p>Notice what is already good.</p><button class="begin" id="begin">Begin</button></div>
+  <div class="card reflection-card hidden" id="reflection"><small>One final moment</small><h1>Close your eyes and express your gratitude.</h1><div class="countdown" id="countdown">1:00</div><p>Let the feeling be enough.</p></div>
+  <div class="card hidden" id="outro"><div class="sigil"></div><small>Cosmic Intentions</small><h1>Thank you.</h1><p>Carry your gratitude with you.</p></div>
+ </section>
+ <nav class="controls" aria-label="Player controls"><button class="control" id="previous" aria-label="Previous gratitude">‹</button><button class="control primary" id="play" aria-label="Play or pause">▶</button><button class="control" id="next" aria-label="Next gratitude">›</button><button class="control" id="favorite" aria-label="Favorite gratitude">♡</button><button class="control" id="sound" aria-label="Mute or unmute">♪</button><button class="control" id="close" aria-label="Close">×</button><span class="sound-state" id="soundState">sound on</span></nav>
+</main>
+<script>
+const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),episode=params.get('ep')||'5';
+const fallback=[
+ {file:'a-fresh-cup-of-coffee-to-start-my-day.jpg',line:'I am grateful for a fresh cup of coffee to start my day.'},
+ {file:'waking-up-rested-to-a-bright-new-morning.jpg',line:'I am grateful for waking up rested to a bright new morning.'},
+ {file:'meaningful-work-and-creative-freedom.jpg',line:'I am grateful for meaningful work and creative freedom.'},
+ {file:'the-freedom-of-the-open-road.jpg',line:'I am grateful for the freedom of the open road.'}
+];
+let items=fallback,index=0,front=true,running=false,ended=false,reflecting=false,muted=false,timer=null,elapsed=0,reflectionRemaining=60,ctx=null;
+const secondsPerCard=10,a=$('slideA'),b=$('slideB');
+function imageUrl(item){return `../images/gratitude/episode-${episode}/${item.file}`}
+function normalizeLine(item){const raw=(item.line||item.text||item.title||'I am grateful for this moment.').trim();return /[.!?]$/.test(raw)?raw:`${raw}.`}
+function render(animate=true){const incoming=front?a:b,outgoing=front?b:a;incoming.style.backgroundImage=`url("${imageUrl(items[index])}")`;incoming.classList.add('on');outgoing.classList.remove('on');front=!front;const statement=$('statement');if(animate)statement.classList.add('fade');setTimeout(()=>{statement.textContent=normalizeLine(items[index]);statement.classList.remove('fade')},animate?240:0);$('counter').textContent=`${index+1} of ${items.length}`;$('favorite').textContent=isFavorite()?'♥':'♡';elapsed=0;updateProgress()}
+function updateProgress(){$('progress').style.width=`${Math.min(100,elapsed/secondsPerCard*100)}%`}
+function advance(direction=1){index=(index+direction+items.length)%items.length;render()}
+function tick(){if(reflecting){reflectionRemaining--;$('countdown').textContent=`0:${String(Math.max(0,reflectionRemaining)).padStart(2,'0')}`;$('progress').style.width=`${(60-reflectionRemaining)/60*100}%`;if(reflectionRemaining<=0)finish();return}elapsed++;updateProgress();if(elapsed>=secondsPerCard){if(index===items.length-1){beginReflection()}else advance(1)}}
+function setRunning(value){if(ended)return;running=value;$('play').textContent=value?'Ⅱ':'▶';clearInterval(timer);if(value)timer=setInterval(tick,1000)}
+function chime(){if(muted)return;try{ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();[523.25,659.25].forEach((frequency,i)=>{const oscillator=ctx.createOscillator(),gain=ctx.createGain(),start=ctx.currentTime+i*.18;oscillator.frequency.value=frequency;gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.13,start+.03);gain.gain.exponentialRampToValueAtTime(.0001,start+1.8);oscillator.connect(gain).connect(ctx.destination);oscillator.start(start);oscillator.stop(start+1.9)})}catch(error){}}
+function start(){ended=false;reflecting=false;reflectionRemaining=60;index=0;$('reflection').classList.add('hidden');$('outro').classList.add('hidden');$('intro').classList.add('hidden');render(false);chime();setRunning(true)}
+function beginReflection(){reflecting=true;reflectionRemaining=60;elapsed=0;$('countdown').textContent='1:00';$('progress').style.width='0';$('reflection').classList.remove('hidden');chime()}
+function finish(){ended=true;reflecting=false;running=false;clearInterval(timer);$('play').textContent='▶';$('progress').style.width='100%';chime();$('reflection').classList.add('hidden');setTimeout(()=>$('outro').classList.remove('hidden'),450);try{window.parent?.playerFinished?.()}catch(error){}}
+const favoritesKey='ci_gratitude_favorites';
+function favoriteIds(){try{return JSON.parse(localStorage.getItem(favoritesKey)||'[]')}catch(error){return[]}}
+function itemId(){return `${episode}:${items[index].file}`}
+function isFavorite(){return favoriteIds().includes(itemId())}
+function toggleFavorite(){let values=favoriteIds();values=isFavorite()?values.filter(id=>id!==itemId()):[...values,itemId()];localStorage.setItem(favoritesKey,JSON.stringify(values));$('favorite').textContent=isFavorite()?'♥':'♡'}
+async function load(){try{const response=await fetch(`../images/gratitude/manifest.json?_=${Date.now()}`),manifest=await response.json();if(Array.isArray(manifest[episode])&&manifest[episode].length)items=manifest[episode]}catch(error){}items.forEach(item=>{const image=new Image();image.src=imageUrl(item)});render(false)}
+$('begin').onclick=start;$('play').onclick=()=>ended?start():setRunning(!running);$('previous').onclick=()=>advance(-1);$('next').onclick=()=>advance(1);$('favorite').onclick=toggleFavorite;$('sound').onclick=()=>{muted=!muted;$('sound').textContent=muted?'♩':'♪';$('soundState').textContent=muted?'sound off':'sound on'};$('close').onclick=()=>{try{if(window.parent!==window&&window.parent.closePlayerColumn)return window.parent.closePlayerColumn()}catch(error){}history.length>1?history.back():window.close()};document.addEventListener('keydown',event=>{if(event.code==='Space'){event.preventDefault();$('play').click()}if(event.key==='ArrowRight')advance(1);if(event.key==='ArrowLeft')advance(-1);if(event.key==='Escape')$('close').click()});load();
+</script>
 </body>
 </html>
