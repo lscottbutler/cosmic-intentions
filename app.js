@@ -2343,6 +2343,44 @@ export function launchVisualization(idx, minutes, ev) {
   }
 }
 
+/* Quick Spark — packages the selected real goal and its DVB image for the
+   short-form CI player. The player reads one lightweight localStorage payload,
+   avoiding large data URLs and keeping private goal data in this browser. */
+export function launchQuickSpark(idx, seconds = 30, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!intentions.length) { toast('Choose or add an intention first.', 'error'); return; }
+  const intn = intentions[idx] || intentions[0];
+  const title = (intn?.title || '').replace(/^(i am)\s+/i, 'I AM ');
+  if (!title) { toast('This intention needs a title first.', 'error'); return; }
+  const m = intn.mindset || {};
+  const firstText = (...values) => {
+    for (const value of values) {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+      if (Array.isArray(value) && value.length) {
+        const item = value.find(Boolean);
+        if (typeof item === 'string') return item.trim();
+        if (item && typeof item === 'object') return String(item.text || item.title || item.body || '').trim();
+      }
+    }
+    return '';
+  };
+  const image = (intn.imageUrl && !String(intn.imageUrl).startsWith('data:')) ? intn.imageUrl : '';
+  const payload = {
+    id: intn.id || '',
+    title,
+    image,
+    why: firstText(intn.why, intn.meaning, intn.meaningAnchor, intn.meaning_anchor, m.whys, m.why),
+    feeling: firstText(intn.feelingAnchor, intn.feeling_anchor, m.feelingAnchors, m.feeling_anchors),
+    encouragement: firstText(m.encouragements, intn.encouragement)
+  };
+  localStorage.setItem('ci_goal_title', title);
+  if (image) localStorage.setItem('ci_goal_image', image); else localStorage.removeItem('ci_goal_image');
+  localStorage.setItem('ci_quick_spark_payload', JSON.stringify(payload));
+  const src = `players/quick-spark.html?t=${[15,30,60].includes(+seconds) ? +seconds : 30}&_=${Date.now()}`;
+  if (typeof window.openPlayerInColumn === 'function') window.openPlayerInColumn(src, ev);
+  else window.open(src, 'ci_player', 'width=1180,height=720');
+}
+
 /* Sidebar VISUALIZATION dropdown launcher — visualizes the currently-selected
    goal (or the first one if none selected) so the player shows its image and
    speaks it. */
@@ -2400,7 +2438,7 @@ function buildVizInline(idx, it) {
   const img = hasImg ? `<img src="${esc(it.imageUrl)}" alt="${esc(it.title || '')}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;display:block;margin:0 0 10px;">` : '';
   const timers = [['15 Seconds', 15], ['30 Seconds', 30], ['1 Minute', 60], ['2 Minutes', 120], ['3 Minutes', 180], ['5 Minutes', 300], ['10 Minutes', 600], ['15 Minutes', 900]]
     .map(([lbl, secs]) => `<div style="display:flex;align-items:stretch;gap:8px;">
-      <button onclick="launchCountdown(${idx},${secs})" title="${lbl} visualization" style="flex:1;min-width:0;box-sizing:border-box;padding:13px 16px;border-radius:10px;background:#fff;border:none;color:#1D3557;font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">${lbl}</button>
+      <button onclick="${secs <= 60 ? `launchQuickSpark(${idx},${secs},event)` : `launchCountdown(${idx},${secs})`}" title="${secs <= 60 ? 'Quick Spark · ' : ''}${lbl}" style="flex:1;min-width:0;box-sizing:border-box;padding:13px 16px;border-radius:10px;background:${secs <= 60 ? '#1BB3B3' : '#fff'};border:none;color:#1D3557;font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">${secs <= 60 ? 'QUICK SPARK · ' : ''}${lbl}</button>
       <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
       <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
       <div style="width:42px;flex-shrink:0;border-radius:8px;background:#fff;border:none;"></div>
