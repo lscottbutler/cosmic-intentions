@@ -2423,7 +2423,7 @@ function buildVizInline(idx, it) {
     </div>`).join('');
   return `<div style="padding:10px 6px 14px;">
     ${img}
-    <button onclick="launchDVB(${idx}, event)" title="Play this goal's Digital Vision Board" style="width:100%;box-sizing:border-box;margin:0 0 10px;padding:15px 16px;border-radius:10px;background:#087f9e;border:none;color:#fff;font-size:15px;font-weight:800;letter-spacing:.8px;cursor:pointer;text-align:center;line-height:1;">PLAY DIGITAL VISION BOARD</button>
+    <a href="/players/dvb.html" target="_blank" rel="noopener" title="Play Digital Vision Board" style="display:block;width:100%;box-sizing:border-box;margin:0 0 10px;padding:15px 16px;border-radius:10px;background:#087f9e;border:none;color:#fff;font-size:15px;font-weight:800;letter-spacing:.8px;cursor:pointer;text-align:center;line-height:1;text-decoration:none;">PLAY DIGITAL VISION BOARD</a>
     <div style="display:flex;flex-direction:column;gap:10px;background:#1a1a1a;border:none;border-radius:12px;padding:12px;">
       ${timers}
       <button onclick="openVizGoal(${idx})" title="Open the full visualization page" style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;background:#7C5CC4;border:none;color:#fff;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1;">Open full visualization page &#8599;</button>
