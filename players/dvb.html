@@ -19,7 +19,7 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .curve .bed{fill:#333;stroke:none}
 .curve .track,.curve .complete{fill:none;stroke-width:18px;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .curve .track{stroke:#6b6b6b}
-.curve .complete{stroke:#e7a51a;stroke-dasharray:100;stroke-dashoffset:100}
+.curve .complete{stroke:#e7a51a}
 .playhead{position:absolute;z-index:9;width:22px;height:22px;border-radius:50%;background:#e7a51a;transform:translate(-50%,-50%);pointer-events:none}
 .outro{position:absolute;z-index:20;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
 .outro.show{opacity:1;visibility:visible}
@@ -37,8 +37,8 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
   </div>
   <svg class="curve" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true">
    <path class="bed" d="M0 52 Q500 -20 1000 52 L1000 80 L0 80 Z"/>
-   <path class="track" id="track" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
-   <path class="complete" id="complete" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
+   <path class="track" id="track" d="M0 52 Q500 -20 1000 52"/>
+   <path class="complete" id="complete" d="M0 52 Q500 -20 1000 52"/>
   </svg>
   <div class="playhead" id="dot" aria-hidden="true"></div>
   <div class="lower"><span id="phaseText">See It</span></div>
@@ -72,8 +72,9 @@ function draw(progress){
  const value=Math.max(0,Math.min(1,progress));
  const phaseIndex=Math.min(PHASES.length-1,Math.floor(value*PHASES.length));
  if(phaseIndex!==activePhase){activePhase=phaseIndex;$('phaseText').textContent=PHASES[activePhase]}
- $('complete').style.strokeDashoffset=String(100-(value*100));
- const path=$('track'),point=path.getPointAtLength(path.getTotalLength()*value);
+ const path=$('track'),length=path.getTotalLength(),point=path.getPointAtLength(length*value);
+ $('complete').style.strokeDasharray=String(length);
+ $('complete').style.strokeDashoffset=String(length*(1-value));
  $('dot').style.left=(point.x/10)+'%';
  $('dot').style.top=(79+(point.y/80*7))+'%';
 }
