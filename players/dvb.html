@@ -1,33 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Digital Vision Board | Cosmic Intentions</title>
 <style>
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{display:grid;place-items:center;overflow:hidden;background:#111;font-family:'Arial Narrow','Roboto Condensed',Arial,sans-serif}.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#6b6b6b;padding:2.15%;overflow:hidden}.inside{position:relative;width:100%;height:100%;background:#050505;overflow:hidden}.image-field{position:absolute;inset:0 0 14% 0;background:#050505;overflow:hidden}.slide{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.25s ease;transform:scale(1)}.slide.on{opacity:1;animation:move 9s ease-in-out forwards}.lower{position:absolute;z-index:5;left:0;right:0;bottom:0;height:14%;background:#333;display:grid;place-items:center}.lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase}.curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);height:6%;pointer-events:none;overflow:visible}.curve path{fill:#333;stroke:#6b6b6b;stroke-width:17}.dot{fill:#e3a400}.empty{position:absolute;z-index:9;inset:0 0 14%;display:none;place-items:center;color:#aaa;background:#050505;font-size:clamp(16px,2vw,28px)}.empty.show{display:grid}.outro{position:absolute;z-index:20;inset:0;background:#11313e;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}.outro.show{opacity:1;visibility:visible}.seal{position:relative;width:clamp(70px,9vw,125px);aspect-ratio:1;border:1px solid #23848a;border-radius:50%;margin-bottom:5%}.seal:before{content:"";position:absolute;inset:15%;border:1px solid #ffae19;transform:rotate(45deg)}.seal:after{content:"";position:absolute;inset:32%;background:#ffae19;transform:rotate(45deg)}.outro p{margin:0;color:#59d1d0;font-size:clamp(17px,2.2vw,31px);font-weight:700;letter-spacing:.34em;text-transform:uppercase}@keyframes move{from{transform:scale(1)}to{transform:scale(1.045)}}@media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide{transition-duration:.01ms}}
-.curve .track{fill:none;stroke:#6b6b6b;stroke-width:17;stroke-linecap:round}.curve .complete{fill:none;stroke:#e3a400;stroke-width:17;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset 1.2s ease}.curve .bed{fill:#333;stroke:none}
-.curve{width:100%}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:grid;place-items:center;overflow:hidden;background:#111;font-family:'Arial Narrow','Roboto Condensed',Arial,sans-serif}
+.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#6b6b6b;padding:2.15%;overflow:hidden}
+.inside{position:relative;width:100%;height:100%;background:#050505;overflow:hidden}
+.image-field{position:absolute;inset:0 0 14% 0;background:#050505;overflow:hidden}
+.slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transition:opacity 1.2s ease;transform:scale(1)}
+.slide.on{opacity:1;animation:drift 7s ease-in-out forwards}
+.lower{position:absolute;z-index:5;left:0;right:0;bottom:0;height:14%;background:#333;display:grid;place-items:center}
+.lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase}
+.curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);width:100%;height:7%;pointer-events:none;overflow:visible}
+.curve .bed{fill:#333;stroke:none}
+.curve .track,.curve .complete{fill:none;stroke-width:14;stroke-linecap:round}
+.curve .track{stroke:#6b6b6b}
+.curve .complete{stroke:#e7a51a;stroke-dasharray:100;stroke-dashoffset:100}
+.dot{fill:#e7a51a}
+.outro{position:absolute;z-index:20;inset:0;background:#11313e;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
+.outro.show{opacity:1;visibility:visible}
+.seal{position:relative;width:clamp(70px,9vw,125px);aspect-ratio:1;border:1px solid #23848a;border-radius:50%;margin-bottom:5%}
+.seal:before{content:"";position:absolute;inset:15%;border:1px solid #ffae19;transform:rotate(45deg)}
+.seal:after{content:"";position:absolute;inset:32%;background:#ffae19;transform:rotate(45deg)}
+.outro p{margin:0;color:#59d1d0;font-size:clamp(17px,2.2vw,31px);font-weight:700;letter-spacing:.34em;text-transform:uppercase}
+@keyframes drift{from{transform:scale(1)}to{transform:scale(1.045)}}
+@media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide,.outro{transition-duration:.01ms}}
 </style>
 </head>
 <body>
-<main class="player" aria-label="Porsche Digital Vision Board"><div class="inside">
- <div class="image-field"><div class="slide" id="a"></div><div class="slide" id="b"></div><div class="empty" id="empty">Five Porsche images are required.</div></div>
- <svg class="curve" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true"><path class="bed" d="M0 38 Q500 -18 1000 38 L1000 80 L0 80 Z"/><path class="track" pathLength="100" d="M0 38 Q500 -18 1000 38"/><path class="complete" id="complete" pathLength="100" d="M0 38 Q500 -18 1000 38"/><circle class="dot" id="dot" cx="0" cy="38" r="9"/></svg>
- <div class="lower"><span>See It</span></div>
- <div class="outro" id="outro"><div class="seal"></div><p>Carry It With You</p></div>
-</div></main>
+<main class="player" aria-label="Porsche Digital Vision Board">
+ <div class="inside">
+  <div class="image-field">
+   <img class="slide" id="a" alt="Porsche 911 vision board image">
+   <img class="slide" id="b" alt="Porsche 911 vision board image">
+  </div>
+  <svg class="curve" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true">
+   <path class="bed" d="M0 52 Q500 -20 1000 52 L1000 80 L0 80 Z"/>
+   <path class="track" id="track" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
+   <path class="complete" id="complete" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
+   <circle class="dot" id="dot" cx="0" cy="52" r="9"/>
+  </svg>
+  <div class="lower"><span>See It</span></div>
+  <div class="outro" id="outro"><div class="seal"></div><p>Carry It With You</p></div>
+ </div>
+</main>
 <script>
-const $=id=>document.getElementById(id),q=new URLSearchParams(location.search),hold=7000;
-let images=[],index=0,front=true,playing=false,ended=false,timer=null;
-function parse(value){try{const data=JSON.parse(value);return Array.isArray(data)?data:[]}catch(error){return String(value||'').split('|').filter(Boolean)}}
-function porscheImages(){let goals=[];try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i)||'';if(/^ci_intentions(?:_|$)/.test(key)){const value=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(value))goals.push(...value)}}}catch(error){}const goal=goals.find(item=>/porsche/i.test(item?.title||''));if(!goal)return[];const five=Array.isArray(goal.imageOptions)?goal.imageOptions.filter(Boolean):[];return five.length>1?five:[goal.imageUrl,...five,...(Array.isArray(goal.images)?goal.images:[])].filter(Boolean)}
-function unique(list){return [...new Set(list.filter(src=>typeof src==='string'&&src.trim()).map(src=>src.trim()))].filter(src=>!/tesla/i.test(src)).slice(0,5)}
-function load(){images=unique(parse(q.get('images')||''));if(!images.length){try{images=unique(parse(localStorage.getItem('ci_dvb_images')||''))}catch(error){}}if(!images.length)images=unique(porscheImages());$('empty').classList.toggle('show',images.length!==5);if(images.length)show(0);images.forEach(src=>{const image=new Image();image.src=src});if(images.length)setTimeout(start,500)}
-function show(next){index=next;const incoming=front?$('a'):$('b'),outgoing=front?$('b'):$('a');incoming.style.backgroundImage='url("'+images[index].replace(/"/g,'')+'")';incoming.classList.add('on');outgoing.classList.remove('on');front=!front;const x=80+(840*(index/Math.max(1,images.length-1))),y=30-48*Math.sin(Math.PI*(x-80)/840);$('dot').setAttribute('cx',x);$('dot').setAttribute('cy',y)}
-const scrubberObserver=new MutationObserver(()=>{$('complete').style.strokeDashoffset=String(100-(8+84*index/Math.max(1,images.length-1)))});scrubberObserver.observe($('dot'),{attributes:true});
-function next(){if(!playing)return;if(index>=images.length-1){finish();return}show(index+1)}
-function start(){clearInterval(timer);ended=false;playing=true;index=0;$('outro').classList.remove('show');show(0);timer=setInterval(next,hold)}
-function finish(){clearInterval(timer);playing=false;ended=true;$('outro').classList.add('show');try{window.parent?.playerFinished?.()}catch(error){}}
-document.addEventListener('click',()=>ended?start():(playing=false,clearInterval(timer)),{passive:true});document.addEventListener('keydown',event=>{if(event.code==='Space'){event.preventDefault();if(ended)start();else if(playing){playing=false;clearInterval(timer)}else{playing=true;timer=setInterval(next,hold)}}if(event.key==='Escape'){try{if(window.parent!==window&&window.parent.closePlayerColumn)return window.parent.closePlayerColumn()}catch(error){}history.length>1?history.back():window.close()}});load();
+const IMAGES=[
+ 'https://images.unsplash.com/photo-1747641562813-2d230b791d4c?auto=format&fit=crop&w=1800&q=88',
+ 'https://images.unsplash.com/photo-1626847152035-cb3f14d8534b?auto=format&fit=crop&w=1800&q=88',
+ 'https://images.unsplash.com/photo-1766819755230-c98b557e33fe?auto=format&fit=crop&w=1800&q=88',
+ 'https://images.unsplash.com/photo-1772332196542-23b1c4e5202c?auto=format&fit=crop&w=1800&q=88',
+ 'https://images.unsplash.com/photo-1625762968079-57000eb254a1?auto=format&fit=crop&w=1800&q=88'
+];
+const SLIDE_MS=7000,TOTAL_MS=IMAGES.length*SLIDE_MS;
+const $=id=>document.getElementById(id);
+let index=-1,front=true,playing=true,ended=false,startedAt=0,pausedAt=0,raf=0;
+
+function show(next){
+ index=next;
+ const incoming=front?$('a'):$('b'),outgoing=front?$('b'):$('a');
+ incoming.src=IMAGES[index];
+ incoming.classList.remove('on');
+ void incoming.offsetWidth;
+ incoming.classList.add('on');
+ outgoing.classList.remove('on');
+ front=!front;
+}
+
+function draw(progress){
+ const value=Math.max(0,Math.min(1,progress));
+ $('complete').style.strokeDashoffset=String(100-(value*100));
+ const path=$('track'),point=path.getPointAtLength(path.getTotalLength()*value);
+ $('dot').setAttribute('cx',point.x);
+ $('dot').setAttribute('cy',point.y);
+}
+
+function tick(now){
+ if(!playing)return;
+ const elapsed=now-startedAt;
+ const nextIndex=Math.min(IMAGES.length-1,Math.floor(elapsed/SLIDE_MS));
+ if(nextIndex!==index)show(nextIndex);
+ draw(elapsed/TOTAL_MS);
+ if(elapsed>=TOTAL_MS){finish();return}
+ raf=requestAnimationFrame(tick);
+}
+
+function start(){
+ cancelAnimationFrame(raf);
+ ended=false;playing=true;index=-1;pausedAt=0;
+ $('outro').classList.remove('show');
+ draw(0);show(0);startedAt=performance.now();
+ raf=requestAnimationFrame(tick);
+}
+
+function pause(){playing=false;pausedAt=performance.now();cancelAnimationFrame(raf)}
+function resume(){playing=true;startedAt+=performance.now()-pausedAt;raf=requestAnimationFrame(tick)}
+function finish(){playing=false;ended=true;draw(1);$('outro').classList.add('show');try{window.parent?.playerFinished?.()}catch(error){}}
+
+document.addEventListener('click',()=>ended?start():(playing?pause():resume()),{passive:true});
+document.addEventListener('keydown',event=>{
+ if(event.code==='Space'){event.preventDefault();ended?start():(playing?pause():resume())}
+ if(event.key==='Escape'){try{if(window.parent!==window&&window.parent.closePlayerColumn)return window.parent.closePlayerColumn()}catch(error){}history.length>1?history.back():window.close()}
+});
+IMAGES.forEach(src=>{const image=new Image();image.src=src});
+start();
 </script>
-</body></html>
+</body>
+</html>
