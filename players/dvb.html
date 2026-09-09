@@ -14,8 +14,8 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transition:opacity 1.2s ease;transform:scale(1)}
 .slide.on{opacity:1;animation:drift 7s ease-in-out forwards}
 .lower{position:absolute;z-index:5;left:0;right:0;bottom:0;height:14%;background:#333;display:grid;place-items:center}
-.lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase}
-.curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);width:100%;height:7%;pointer-events:none;overflow:visible}
+.lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase;transition:opacity .22s ease}
+.curve{position:absolute;z-index:8;left:-2.25%;right:auto;bottom:calc(14% - 1px);display:block;width:104.5%;max-width:none;height:7%;pointer-events:none;overflow:visible}
 .curve .bed{fill:#333;stroke:none}
 .curve .track,.curve .complete{fill:none;stroke-width:14;stroke-linecap:round}
 .curve .track{stroke:#6b6b6b}
@@ -44,7 +44,7 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
    <path class="complete" id="complete" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
    <circle class="dot" id="dot" cx="0" cy="52" r="9"/>
   </svg>
-  <div class="lower"><span>See It</span></div>
+  <div class="lower"><span id="phaseText">See It</span></div>
   <div class="outro" id="outro"><div class="seal"></div><p>Carry It With You</p></div>
  </div>
 </main>
@@ -56,7 +56,7 @@ const IMAGES=[
  'https://images.unsplash.com/photo-1772332196542-23b1c4e5202c?auto=format&fit=crop&w=1800&q=88',
  'https://images.unsplash.com/photo-1625762968079-57000eb254a1?auto=format&fit=crop&w=1800&q=88'
 ];
-const SLIDE_MS=7000,TOTAL_MS=IMAGES.length*SLIDE_MS;
+const SLIDE_MS=7000,TOTAL_MS=IMAGES.length*SLIDE_MS,PHASES=['See It','Feel It','Hear It'];
 const $=id=>document.getElementById(id);
 let index=-1,front=true,playing=true,ended=false,startedAt=0,pausedAt=0,raf=0;
 
@@ -73,6 +73,8 @@ function show(next){
 
 function draw(progress){
  const value=Math.max(0,Math.min(1,progress));
+ const phase=PHASES[Math.min(PHASES.length-1,Math.floor(value*PHASES.length))];
+ if($('phaseText').textContent!==phase){$('phaseText').style.opacity='0';setTimeout(()=>{$('phaseText').textContent=phase;$('phaseText').style.opacity='1'},180)}
  $('complete').style.strokeDashoffset=String(100-(value*100));
  const path=$('track'),point=path.getPointAtLength(path.getTotalLength()*value);
  $('dot').setAttribute('cx',point.x);
@@ -91,7 +93,7 @@ function tick(now){
 
 function start(){
  cancelAnimationFrame(raf);
- ended=false;playing=true;index=-1;pausedAt=0;
+ ended=false;playing=true;index=-1;pausedAt=0;$('phaseText').textContent=PHASES[0];$('phaseText').style.opacity='1';
  $('outro').classList.remove('show');
  draw(0);show(0);startedAt=performance.now();
  raf=requestAnimationFrame(tick);
