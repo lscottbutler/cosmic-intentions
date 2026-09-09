@@ -15,18 +15,15 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .slide.on{opacity:1;animation:drift 7s ease-in-out forwards}
 .lower{position:absolute;z-index:5;left:0;right:0;bottom:0;height:14%;background:#333;display:grid;place-items:center}
 .lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase;transition:opacity .22s ease;transform:translateY(-10pt)}
-.curve{position:absolute;z-index:8;left:-2.25%;right:auto;bottom:calc(14% - 1px);display:block;width:104.5%;max-width:none;height:7%;pointer-events:none;overflow:visible}
+.curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);display:block;width:100%;height:7%;pointer-events:none;overflow:visible}
 .curve .bed{fill:#333;stroke:none}
-.curve .track,.curve .complete{fill:none;stroke-width:14;stroke-linecap:round}
+.curve .track,.curve .complete{fill:none;stroke-width:10;stroke-linecap:round}
 .curve .track{stroke:#6b6b6b}
 .curve .complete{stroke:#e7a51a;stroke-dasharray:100;stroke-dashoffset:100}
-.dot{fill:#e7a51a!important;stroke:#e7a51a;stroke-width:2}
-.outro{position:absolute;z-index:20;inset:0;background:#11313e;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
+.dot{fill:#e7a51a;stroke:#e7a51a;stroke-width:3}
+.outro{position:absolute;z-index:20;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
 .outro.show{opacity:1;visibility:visible}
-.seal{position:relative;width:clamp(70px,9vw,125px);aspect-ratio:1;border:1px solid #23848a;border-radius:50%;margin-bottom:5%}
-.seal:before{content:"";position:absolute;inset:15%;border:1px solid #ffae19;transform:rotate(45deg)}
-.seal:after{content:"";position:absolute;inset:32%;background:#ffae19;transform:rotate(45deg)}
-.outro p{margin:0;color:#59d1d0;font-size:clamp(17px,2.2vw,31px);font-weight:700;letter-spacing:.34em;text-transform:uppercase}
+.outro p{margin:0;color:#fff;font-size:clamp(17px,2.2vw,31px);font-weight:700;letter-spacing:.34em;text-transform:uppercase}
 @keyframes drift{from{transform:scale(1)}to{transform:scale(1.045)}}
 @media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide,.outro{transition-duration:.01ms}}
 </style>
@@ -42,10 +39,10 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
    <path class="bed" d="M0 52 Q500 -20 1000 52 L1000 80 L0 80 Z"/>
    <path class="track" id="track" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
    <path class="complete" id="complete" pathLength="100" d="M0 52 Q500 -20 1000 52"/>
-   <circle class="dot" id="dot" cx="0" cy="52" r="9"/>
+   <circle class="dot" id="dot" cx="0" cy="52" r="10"/>
   </svg>
   <div class="lower"><span id="phaseText">See It</span></div>
-  <div class="outro" id="outro"><div class="seal"></div><p>Carry It With You</p></div>
+  <div class="outro" id="outro"><p>Carry It With You</p></div>
  </div>
 </main>
 <script>
@@ -58,7 +55,7 @@ const IMAGES=[
 ];
 const SLIDE_MS=7000,TOTAL_MS=IMAGES.length*SLIDE_MS,PHASES=['See It','Feel It','Hear It'];
 const $=id=>document.getElementById(id);
-let index=-1,front=true,playing=true,ended=false,startedAt=0,pausedAt=0,raf=0;
+let index=-1,front=true,playing=true,ended=false,startedAt=0,pausedAt=0,raf=0,activePhase=0;
 
 function show(next){
  index=next;
@@ -73,8 +70,8 @@ function show(next){
 
 function draw(progress){
  const value=Math.max(0,Math.min(1,progress));
- const phase=PHASES[Math.min(PHASES.length-1,Math.floor(value*PHASES.length))];
- if($('phaseText').textContent!==phase){$('phaseText').style.opacity='0';setTimeout(()=>{$('phaseText').textContent=phase;$('phaseText').style.opacity='1'},180)}
+ const phaseIndex=Math.min(PHASES.length-1,Math.floor(value*PHASES.length));
+ if(phaseIndex!==activePhase){activePhase=phaseIndex;$('phaseText').textContent=PHASES[activePhase]}
  $('complete').style.strokeDashoffset=String(100-(value*100));
  const path=$('track'),point=path.getPointAtLength(path.getTotalLength()*value);
  $('dot').setAttribute('cx',point.x);
@@ -93,7 +90,7 @@ function tick(now){
 
 function start(){
  cancelAnimationFrame(raf);
- ended=false;playing=true;index=-1;pausedAt=0;$('phaseText').textContent=PHASES[0];$('phaseText').style.opacity='1';
+ ended=false;playing=true;index=-1;pausedAt=0;activePhase=0;$('phaseText').textContent=PHASES[0];$('phaseText').style.opacity='1';
  $('outro').classList.remove('show');
  draw(0);show(0);startedAt=performance.now();
  raf=requestAnimationFrame(tick);
