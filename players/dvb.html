@@ -20,11 +20,8 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .curve .track,.curve .complete{fill:none;stroke-width:18px;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .curve .track{stroke:#6b6b6b}
 .curve .complete{stroke:#e7a51a}
-.outro{position:absolute;z-index:20;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
-.outro.show{opacity:1;visibility:visible}
-.outro p{margin:0;color:#fff;font-size:clamp(17px,2.2vw,31px);font-weight:700;letter-spacing:.34em;text-transform:uppercase}
 @keyframes drift{from{transform:scale(1)}to{transform:scale(1.045)}}
-@media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide,.outro{transition-duration:.01ms}}
+@media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide{transition-duration:.01ms}}
 </style>
 </head>
 <body>
@@ -40,7 +37,6 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
    <path class="complete" id="complete" d="M0 52 Q500 -20 1000 52"/>
   </svg>
   <div class="lower"><span id="phaseText">See It</span></div>
-  <div class="outro" id="outro"><p>Carry It With You</p></div>
  </div>
 </main>
 <script>
@@ -88,14 +84,13 @@ function tick(now){
 function start(){
  cancelAnimationFrame(raf);
  ended=false;playing=true;index=-1;pausedAt=0;activePhase=0;$('phaseText').textContent=PHASES[0];$('phaseText').style.opacity='1';
- $('outro').classList.remove('show');
  draw(0);show(0);startedAt=performance.now();
  raf=requestAnimationFrame(tick);
 }
 
 function pause(){playing=false;pausedAt=performance.now();cancelAnimationFrame(raf)}
 function resume(){playing=true;startedAt+=performance.now()-pausedAt;raf=requestAnimationFrame(tick)}
-function finish(){playing=false;ended=true;draw(1);$('outro').classList.add('show');try{window.parent?.playerFinished?.()}catch(error){}}
+function finish(){playing=false;ended=true;draw(1);try{window.parent?.playerFinished?.()}catch(error){}}
 
 document.addEventListener('click',()=>ended?start():(playing?pause():resume()),{passive:true});
 document.addEventListener('keydown',event=>{
