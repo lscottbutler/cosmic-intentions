@@ -8,7 +8,7 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{display:grid;place-items:center;overflow:hidden;background:#111;font-family:'Arial Narrow','Roboto Condensed',Arial,sans-serif}
-.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#6b6b6b;padding:2.15%;overflow:hidden}
+.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#6b6b6b;padding:2.15%;overflow:hidden;border-radius:0}
 .inside{position:relative;width:100%;height:100%;background:#050505;overflow:hidden}
 .image-field{position:absolute;inset:0 0 14% 0;background:#050505;overflow:hidden}
 .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transition:opacity 1.2s ease;transform:scale(1)}
@@ -17,9 +17,8 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase;transition:opacity .22s ease;transform:translateY(-10pt)}
 .curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);display:block;width:100%;height:7%;pointer-events:none;overflow:visible}
 .curve .bed{fill:#333;stroke:none}
-.curve .track,.curve .complete{fill:none;stroke-width:18px;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.curve .track{stroke:#6b6b6b}
-.curve .complete{stroke:#e7a51a}
+.curve .track{fill:none;stroke:#6b6b6b;stroke-width:18px;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.scrubber-dot{--track-width:18px;position:absolute;z-index:9;width:calc(var(--track-width) - 4px);height:calc(var(--track-width) - 4px);border-radius:50%;background:#e7a51a;pointer-events:none;transform:translate(-50%,-50%)}
 @keyframes drift{from{transform:scale(1)}to{transform:scale(1.045)}}
 @media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide{transition-duration:.01ms}}
 </style>
@@ -34,8 +33,8 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
   <svg class="curve" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true">
    <path class="bed" d="M0 52 Q500 -20 1000 52 L1000 80 L0 80 Z"/>
    <path class="track" id="track" d="M0 52 Q500 -20 1000 52"/>
-   <path class="complete" id="complete" d="M0 52 Q500 -20 1000 52"/>
   </svg>
+  <span class="scrubber-dot" id="scrubberDot" aria-hidden="true"></span>
   <div class="lower"><span id="phaseText">See It</span></div>
  </div>
 </main>
@@ -66,9 +65,10 @@ function draw(progress){
  const value=Math.max(0,Math.min(1,progress));
  const phaseIndex=Math.min(PHASES.length-1,Math.floor(value*PHASES.length));
  if(phaseIndex!==activePhase){activePhase=phaseIndex;$('phaseText').textContent=PHASES[activePhase]}
- const path=$('track'),length=path.getTotalLength();
- $('complete').style.strokeDasharray=String(length);
- $('complete').style.strokeDashoffset=String(length*(1-value));
+ const path=$('track'),length=path.getTotalLength(),point=path.getPointAtLength(length*value);
+ const svg=path.ownerSVGElement,svgRect=svg.getBoundingClientRect(),insideRect=document.querySelector('.inside').getBoundingClientRect(),dot=$('scrubberDot');
+ dot.style.left=`${svgRect.left-insideRect.left+(point.x/1000)*svgRect.width}px`;
+ dot.style.top=`${svgRect.top-insideRect.top+(point.y/80)*svgRect.height}px`;
 }
 
 function tick(now){
