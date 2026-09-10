@@ -17,7 +17,7 @@ body{display:grid;place-items:center;overflow:hidden;background:#111;font-family
 .lower span{color:#fff;font-size:clamp(27px,4.1vw,68px);font-weight:700;letter-spacing:.23em;line-height:1;text-transform:uppercase;transition:opacity .22s ease;transform:translateY(-10pt)}
 .curve{position:absolute;z-index:8;left:0;right:0;bottom:calc(14% - 1px);display:block;width:100%;height:7%;pointer-events:none;overflow:visible}
 .curve .bed{fill:#333;stroke:none}
-.curve .track{fill:none;stroke:#6b6b6b;stroke-width:18px;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.curve .track{fill:none;stroke:#6b6b6b;stroke-width:18px;stroke-linecap:butt;vector-effect:non-scaling-stroke}
 .scrubber-dot{--track-width:18px;position:absolute;z-index:9;width:calc(var(--track-width) - 4px);height:calc(var(--track-width) - 4px);border-radius:50%;background:#e7a51a;pointer-events:none;transform:translate(-50%,-50%)}
 @keyframes drift{from{transform:scale(1)}to{transform:scale(1.045)}}
 @media(prefers-reduced-motion:reduce){.slide.on{animation:none}.slide{transition-duration:.01ms}}
