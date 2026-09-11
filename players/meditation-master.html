@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; media-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Meditation | Cosmic Intentions</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{background:#111;display:grid;place-items:center;overflow:hidden;font-family:'Arial Narrow','Roboto Condensed',Arial,sans-serif}
+.player{position:relative;isolation:isolate;width:min(100vw,calc(100vh * 16 / 9));width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9;overflow:hidden;border-radius:0;background:#107e8b;container-type:inline-size;touch-action:manipulation}
+.art{display:block;width:100%;height:100%;pointer-events:none}
+.control{position:absolute;z-index:2;left:50%;top:83.43%;transform:translate(-50%,-50%);width:10%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;color:#262626}
+.control::before{content:"";position:absolute;left:50%;top:50%;width:100%;height:100%;min-width:44px;min-height:44px;transform:translate(-50%,-50%);border-radius:50%}
+.control:focus{outline:none}
+.control:focus-visible{outline:3px solid white;outline-offset:4px}
+.control:disabled{cursor:wait}
+.control svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.readout{font-family:'Arial Narrow','Roboto Condensed',Arial,sans-serif;font-size:105.3px;font-weight:bold;letter-spacing:3.9px;fill:#262626;text-anchor:middle;dominant-baseline:central}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.error{position:fixed;bottom:1rem;left:1rem;right:1rem;padding:.75rem;color:#fff;background:#222;text-align:center}
+@media(forced-colors:active){.control:focus-visible{outline:3px solid Highlight}}
+.player{--ci-frame-inset:2.15cqw;--ci-crossbar-width:var(--ci-frame-inset);--ci-frame-radius:0px;border-radius:var(--ci-frame-radius)}
+.inside{position:absolute;inset:var(--ci-frame-inset);overflow:hidden;border-radius:0;border:0;outline:0;box-shadow:none;background:#82ad77}
+.curve{position:absolute;z-index:2;left:0;right:0;bottom:calc(14% - 1px);width:100%;height:7%;overflow:visible;pointer-events:none}
+.curve .bed{fill:#82ad77;stroke:none}
+.curve .track{fill:none;stroke:#107e8b;stroke-width:var(--ci-crossbar-width);stroke-linecap:round;vector-effect:non-scaling-stroke}
+.control{top:calc(78.0760888889% + 1px);z-index:3}
+</style>
+</head>
+<body>
+<main class="player" id="player" data-frame-master="dvb-uniform-v2" data-review="teal-border-frame" data-duration="15" data-state="ready" aria-label="Meditation player">
+ <div class="inside" aria-hidden="true">
+ <svg class="art" viewBox="34.4 34.4 1531.2 831.2" aria-hidden="true">
+  <defs>
+   <clipPath id="stageClip"><rect x="34.4" y="34.4" width="1531.2" height="831.2"/></clipPath>
+   <mask id="artworkControlMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900" style="mask-type:luminance">
+    <rect width="1600" height="900" fill="white"/>
+    <circle cx="800" cy="752" r="110" fill="black"/>
+    <path d="M27 775Q800 710 1575 775" fill="none" stroke="black" stroke-width="36"/>
+   </mask>
+  </defs>
+  <rect width="1600" height="900" fill="#82ad77"/>
+  <rect x="34.4" y="34.4" width="1531.2" height="831.2" fill="#282828"/>
+  <image id="referenceArtwork" href="" x="-4.908" y="-12.27" width="1609.816" height="920.245" preserveAspectRatio="none" clip-path="url(#stageClip)" mask="url(#artworkControlMask)"/>
+ </svg>
+  <svg class="curve" viewBox="0 0 1000 80" preserveAspectRatio="none">
+   <path class="bed" d="M-10 52 L0 52 Q500 -20 1000 52 L1010 52 L1010 1200 L-10 1200 Z"/>
+   <path class="track" d="M0 52 Q500 -20 1000 52"/>
+  </svg>
+ </div>
+ <button class="control" id="timerControl" type="button" aria-label="Start meditation" aria-describedby="timerHelp" disabled>
+  <svg viewBox="0 0 200 200" aria-hidden="true">
+   <circle cx="100" cy="100" r="100" fill="#107e8b"/>
+   <circle cx="100" cy="100" r="73" fill="#fff"/>
+   <path id="playIcon" d="M83 62L142 100L83 138Z" fill="#262626"/>
+   <g id="numberWrap" hidden transform="translate(100 99) scale(.65 1)"><text id="remainingNumber" class="readout" x="0" y="0"></text></g>
+  </svg>
+ </button>
+ <p id="timerHelp" class="sr-only">Click the circle or press Space to start, pause, or resume. The number is remaining minutes. At completion, click again to replay.</p>
+ <p id="status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+</main>
+<p id="error" class="error" role="alert" hidden>Reference artwork could not load. Playback has been stopped.</p>
+<script>
+(function(root) {
+ 'use strict';
+ const DURATIONS=Object.freeze([30,15,10,5,2]);
+ class Countdown {
+  constructor(minutes,options={}) {if(!DURATIONS.includes(minutes))throw new RangeError('Unsupported meditation duration');this.minutes=minutes;this.total=minutes*60000;this.remaining=this.total;this.state='ready';this.deadline=null;this.clock=options.now||(()=>performance.now());this.changed=options.onChange||(()=>{});this.completed=options.onComplete||(()=>{});}
+  snapshot(){return Object.freeze({state:this.state,minutes:this.minutes,remainingMs:this.remaining,display:Math.max(0,Math.round(this.remaining/60000))})}
+  emit(){this.changed(this.snapshot())}
+  tick(){if(this.state!=='running')return;this.remaining=Math.max(0,Math.min(this.remaining,this.deadline-this.clock()));if(this.remaining===0){this.state='completed';this.deadline=null;this.emit();this.completed(this.snapshot())}else this.emit();}
+  start(){if(this.state!=='ready'&&this.state!=='completed')return;this.remaining=this.total;this.deadline=this.clock()+this.remaining;this.state='running';this.emit();}
+  pause(){if(this.state!=='running')return;this.tick();if(this.state!=='running')return;this.deadline=null;this.state='paused';this.emit();}
+  resume(){if(this.state!=='paused')return;this.deadline=this.clock()+this.remaining;this.state='running';this.emit();}
+  toggle(){if(this.state==='running')this.pause();else if(this.state==='paused')this.resume();else this.start()}
+ }
+ if(typeof module!=='undefined'&&module.exports)module.exports={Countdown,DURATIONS};else root.CIMeditation={Countdown,DURATIONS};
+})(typeof window!=='undefined'?window:globalThis);
+</script>
+<script>
+(function(){
+ 'use strict';
+ const player=document.getElementById('player'),button=document.getElementById('timerControl');
+ const number=document.getElementById('remainingNumber'),wrap=document.getElementById('numberWrap');
+ const icon=document.getElementById('playIcon'),status=document.getElementById('status');
+ const raw=new URLSearchParams(location.search).get('t');
+ const configured=Number(player.dataset.duration),requested=raw===null?configured:Number(raw);
+ const minutes=window.CIMeditation.DURATIONS.includes(requested)?requested:15;
+ document.title=minutes+' Minute Meditation | Cosmic Intentions';player.dataset.duration=String(minutes);player.setAttribute('aria-label',minutes+' minute meditation player');
+ let pulse=null,lastAnnouncement='';
+ function draw(s){player.dataset.state=s.state;player.dataset.remainingMs=String(s.remainingMs);const ready=s.state==='ready';icon.toggleAttribute('hidden',!ready);icon.style.display=ready?'':'none';wrap.toggleAttribute('hidden',ready);wrap.style.display=ready?'none':'';number.textContent=String(s.display);const action=ready?'Start':s.state==='running'?'Pause':s.state==='paused'?'Resume':'Replay';button.setAttribute('aria-label',action+' '+minutes+' minute meditation'+(ready?'':'; '+s.display+' minutes remaining'));button.setAttribute('aria-pressed',String(s.state==='running'));const message=s.state==='completed'?'Meditation complete. Press the circle to replay.':s.state==='paused'?'Paused. '+s.display+' minutes remaining.':s.state==='running'?s.display+' minutes remaining.':minutes+' minute meditation ready.';if(message!==lastAnnouncement){status.textContent=message;lastAnnouncement=message}}
+ const timer=new window.CIMeditation.Countdown(minutes,{onChange:draw,onComplete:function(s){stopPulse();player.dispatchEvent(new CustomEvent('meditationcomplete',{bubbles:true,detail:{minutes:s.minutes}}));}});
+ function stopPulse(){if(pulse!==null){clearTimeout(pulse);pulse=null}}
+ function tick(){stopPulse();timer.tick();if(timer.state==='running')pulse=setTimeout(tick,250)}
+ function toggle(){if(button.disabled)return;stopPulse();timer.toggle();if(timer.state==='running')tick()}
+ button.addEventListener('click',toggle);button.addEventListener('keydown',function(e){if(e.repeat&&(e.code==='Space'||e.key==='Enter'))e.preventDefault()});
+ document.addEventListener('keydown',function(e){if(e.code!=='Space'||e.target===button||e.altKey||e.ctrlKey||e.metaKey)return;if(e.target!==document.body&&e.target!==document.documentElement)return;e.preventDefault();if(!e.repeat)toggle();});
+ document.addEventListener('visibilitychange',function(){if(timer.state==='running')tick()});window.addEventListener('pageshow',function(){if(timer.state==='running')tick()});window.addEventListener('pagehide',stopPulse);draw(timer.snapshot());
+ const art=document.getElementById('referenceArtwork');
+ const failArtwork=function(){stopPulse();if(timer.state==='running')timer.pause();button.disabled=true;document.getElementById('error').hidden=false};
+ Promise.all(['meditation-master-art/chunk-1.txt','meditation-master-art/chunk-2.txt','meditation-master-art/chunk-3.txt'].map(function(path){return fetch(path,{cache:'force-cache'}).then(function(response){if(!response.ok)throw new Error('Artwork chunk failed');return response.text()});})).then(function(parts){const src='data:image/webp;base64,'+parts.join('');art.setAttribute('href',src);const image=new Image();image.onload=function(){button.disabled=false};image.onerror=failArtwork;image.src=src;}).catch(failArtwork);
+})();
+</script>
+</body>
+</html>
