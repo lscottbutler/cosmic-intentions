@@ -5,7 +5,7 @@ export function mountCitadelPlayerSamples(root = document) {
   if (!masters || masters.querySelector('[data-ci-sample="meditation"]')) return false;
 
   const samples = [
-    { id: 'meditation', title: 'Meditation Frame Master', src: '/players/meditation-master.html?t=15', extraHeight: '0px' },
+    { id: 'meditation', title: 'Meditation Player Sample', src: '/players/meditation.html?t=15', extraHeight: '0px' },
     { id: 'gratitude', title: 'Gratitude Player Sample', src: '/players/gratitude.html', extraHeight: '64px' }
   ];
 
