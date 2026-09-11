@@ -1,13 +1,12 @@
 // Review-only Citadel placement. Do not change player internals here.
-// Locked order: Meditation, Gratitude, existing Quote Reveal, existing DVB.
-// Review deployment checkpoint: Meditation + Gratitude at the top of Citadel.
+// Locked order: Gratitude, Meditation, existing Quote Reveal, existing DVB.
 export function mountCitadelPlayerSamples(root = document) {
   const masters = root.getElementById('ciApprovedMasters');
-  if (!masters || masters.querySelector('[data-ci-sample="meditation"]')) return false;
+  if (!masters || masters.querySelector('[data-ci-sample="gratitude"]')) return false;
 
   const samples = [
-    { id: 'meditation', title: 'Meditation Player Sample', src: '/players/meditation.html?t=15', extraHeight: '0px' },
-    { id: 'gratitude', title: 'Gratitude Player Sample', src: '/players/gratitude.html', extraHeight: '64px' }
+    { id: 'gratitude', title: 'Gratitude Player Sample', src: '/players/gratitude.html', extraHeight: '64px' },
+    { id: 'meditation', title: 'Meditation Player Sample', src: '/players/meditation.html?t=15', extraHeight: '0px' }
   ];
 
   const fragment = root.createDocumentFragment();
