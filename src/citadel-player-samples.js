@@ -1,5 +1,6 @@
 // Review-only Citadel placement. Do not change player internals here.
 // Locked order: Meditation, Gratitude, existing Quote Reveal, existing DVB.
+// Review deployment checkpoint: Meditation + Gratitude at the top of Citadel.
 export function mountCitadelPlayerSamples(root = document) {
   const masters = root.getElementById('ciApprovedMasters');
   if (!masters || masters.querySelector('[data-ci-sample="meditation"]')) return false;
