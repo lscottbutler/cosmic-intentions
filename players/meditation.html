@@ -1,355 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meditation | Cosmic Intentions</title>
-  <script>(function(){var t;try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark';}catch(e){t='dark';}document.documentElement.setAttribute('data-theme',t);})();</script>
-  <style>
-    :root {
-      --frame-gray:  #8b8b8b;
-      --frame-width: 12px;
-      --frame-ratio: 5 / 6;
-      --bar:         #1c1c1c;     /* dark control pill */
-      --bg:          #1a1a1a;     /* surround (themed per group) */
-    }
-    [data-theme="light"] { --bg:#EEF0F2; }
-    [data-theme="kids"]  { --bg:#FFF6E0; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      background: var(--bg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      font-family: 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
-    }
-    .frame {
-      position: relative;
-      width: min(95vw, 95vh * 5 / 6, 560px);
-      aspect-ratio: var(--frame-ratio);
-      border: var(--frame-width) solid #e02020;
-      box-sizing: border-box;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .photo {
-      flex: 0 0 56%;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-color: #ffffff;
-    }
-    .panel {
-      flex: 1 1 auto;
-      position: relative;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    .label {
-      margin: 0;
-      padding: 16px 16px 10px;
-      text-align: center;
-      font-size: clamp(13px, 3.2vw, 17px);
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #222;
-    }
-    /* dark music-player control pill */
-    .bar {
-      background: #e02020;
-      border-radius: 0;
-      padding: 14px 18px;
-      box-shadow: none;
-    }
-    .row   { display: flex; align-items: center; justify-content: space-between; }
-    /* scrubber track — a real seek bar riding the image/panel seam */
-    .scrubtrack {
-      position: absolute;
-      top: 56%;                 /* the bottom of the image / top of the white panel */
-      left: 0; right: 0;
-      height: 8px;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.35);          /* dark rail = the part NOT played yet */
-      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-      z-index: 3;
-      cursor: pointer;
-      touch-action: none;       /* let us handle drag without the page scrolling */
-    }
-    /* a taller invisible hit area so it's easy to grab on touch */
-    .scrubtrack::before {
-      content: '';
-      position: absolute;
-      left: 0; right: 0;
-      top: -11px; bottom: -11px;
-    }
-    .scrubfill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 0%;
-      background: #ffdd00;                    /* bright yellow trail the dot leaves behind */
-      box-shadow: 0 0 8px rgba(255,221,0,0.85);
-      transition: width 1s linear;
-      pointer-events: none;
-    }
-    /* progress dot — straddles the image/panel seam, travels left→right with time */
-    .scrubdot {
-      position: absolute;
-      top: 56%;                 /* the bottom of the image / top of the white panel */
-      left: 0;
-      width: 16px; height: 16px;
-      background: radial-gradient(circle at center, #fff 0 3px, #000 3px 100%);
-      border: none;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.55);
-      z-index: 4;
-      pointer-events: none;
-      transition: left 1s linear;   /* glide between 1s ticks instead of jumping */
-    }
-    .cbtn  { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 4px; }
-    .cbtn:active { transform: scale(0.92); }
-    .play  { background: #fff; color: #111; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-    .fav.on { color: #ff5a7a; }
-    /* ≡ dropdown menu */
-    .menu { position: absolute; left: 18px; bottom: 92px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45); z-index: 5; }
-    .menu.hidden { display: none; }
-    .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 11px 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
-    .menu button:hover { background: #222; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Meditation | Cosmic Intentions</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
+body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
+.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
+.image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
+.timer{position:absolute;left:50%;top:84.7%;transform:translate(-50%,-50%);width:9.15%;aspect-ratio:1;border:0;border-radius:50%;padding:0;background:#285f0a;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.timer::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;background:#8aa41f}
+.timer:focus-visible{outline:4px solid #fff;outline-offset:4px}
+.value,.playicon{position:relative;z-index:1;color:#fff}
+.value{font-size:clamp(28px,5.1vw,78px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
+[hidden]{display:none!important}
+</style>
 </head>
 <body>
-  <div class="frame">
-    <div class="photo" id="photo"></div>
-    <div class="scrubtrack" id="track"><div class="scrubfill" id="fill"></div></div>
-    <div class="scrubdot" id="dot"></div>
-    <div class="panel">
-      <p class="label" id="label">meditation</p>
-
-      <div class="menu hidden" id="menu">
-        <button id="mHome">Home page</button>
-        <button id="mPeg">My Pegboard</button>
-      </div>
-
-      <div class="bar">
-        <div class="row">
-          <button class="cbtn" id="menuBtn" aria-label="Menu">&#9776;</button>
-          <button class="cbtn" id="rew" aria-label="Rewind">&#9198;</button>
-          <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
-          <button class="cbtn" id="fwd" aria-label="Forward">&#9197;</button>
-          <button class="cbtn fav" id="fav" aria-label="Favorite">&#9825;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    const PLAYER = 'meditation';
-    const LABEL  = (m) => `${m} minute unguided meditation`;
-
-    /* Background images — live in images/meditation/. One per day, rotating. */
-    const IMAGES = ['meditation.jpg', 'meditation-1.jpg', 'meditation-2.jpg', 'meditation-3.jpg'];
-    const photo = document.getElementById('photo');
-    (function showDailyImage() {
-      const url = `../images/meditation/${IMAGES[new Date().getDate() % IMAGES.length]}`;
-      const probe = new Image();
-      probe.onload = () => { photo.style.backgroundImage = `url('${url}')`; };
-      probe.src = url;
-    })();
-
-    const minutes = parseInt(new URLSearchParams(location.search).get('t')) || 5;
-    const total = minutes * 60;
-    let timeRemaining = total;
-    document.getElementById('label').textContent = LABEL(minutes);
-
-    const dot = document.getElementById('dot');
-    const track = document.getElementById('track');
-    const fill = document.getElementById('fill');
-    const playBtn = document.getElementById('play');
-
-    function render() {
-      const pct = total ? ((total - timeRemaining) / total) * 100 : 0;
-      dot.style.left = pct + '%';
-      fill.style.width = pct + '%';
-    }
-    render();
-
-    /* ── tap / drag the track to seek ── */
-    let scrubbing = false;
-    function seekTo(clientX) {
-      const r = track.getBoundingClientRect();
-      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-      timeRemaining = Math.round(total * (1 - pct));
-      // while actively dragging, don't glide — follow the finger 1:1
-      dot.style.transition = fill.style.transition = 'none';
-      render();
-    }
-    track.addEventListener('pointerdown', (e) => {
-      scrubbing = true;
-      track.setPointerCapture(e.pointerId);
-      seekTo(e.clientX);
-    });
-    track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
-    function endScrub() {
-      if (!scrubbing) return;
-      scrubbing = false;
-      dot.style.transition = fill.style.transition = '';   // restore the smooth glide
-      if (timeRemaining <= 0) endSession();
-    }
-    track.addEventListener('pointerup', endScrub);
-    track.addEventListener('pointercancel', endScrub);
-
-    /* ── close / parent navigation ── */
-    function closePlayer() {
-      try { if (window.parent && window.parent !== window && window.parent.closePlayerColumn) { window.parent.closePlayerColumn(); return; } } catch (e) {}
-      if (history.length > 1) history.back(); else window.close();
-    }
-    function nav(target) {
-      try {
-        if (window.parent && window.parent !== window) {
-          if (window.parent.closePlayerColumn) window.parent.closePlayerColumn();
-          if (window.parent.navTo) { window.parent.navTo(target); return; }
-        }
-      } catch (e) {}
-      window.location.href = '/';
-    }
-
-    /* Natural end → tell the parent so it can advance an auto-play queue;
-       falls back to a plain close when standalone. */
-    function finishPlayer() {
-      try { if (window.parent && window.parent !== window && window.parent.playerFinished) { window.parent.playerFinished(); return; } } catch (e) {}
-      closePlayer();
-    }
-
-    /* ── ≡ menu ── */
-    const menu = document.getElementById('menu');
-    const menuBtn = document.getElementById('menuBtn');
-    menuBtn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('hidden'); };
-    // Click anywhere else closes it.
-    document.addEventListener('click', (e) => {
-      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== menuBtn) {
-        menu.classList.add('hidden');
-      }
-    });
-    document.getElementById('mHome').onclick = () => { menu.classList.add('hidden'); nav('home'); };
-    document.getElementById('mPeg').onclick  = () => { menu.classList.add('hidden'); nav('setup'); };
-
-    /* ── ♥ favorite — add/remove this player+duration from the favorites list ── */
-    const favBtn = document.getElementById('fav');
-    const FAVS_KEY = 'ci_favorites';
-    const readFavs = () => { try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch (e) { return []; } };
-    const isFav = (a) => a.some(f => f.player === PLAYER && f.minutes === minutes);
-    function renderFav() { const on = isFav(readFavs()); favBtn.innerHTML = on ? '&#9829;' : '&#9825;'; favBtn.classList.toggle('on', on); }
-    favBtn.onclick = () => {
-      let a = readFavs();
-      if (isFav(a)) a = a.filter(f => !(f.player === PLAYER && f.minutes === minutes));
-      else a.push({ player: PLAYER, minutes });
-      localStorage.setItem(FAVS_KEY, JSON.stringify(a));
-      renderFav();
-    };
-    renderFav();
-
-    /* ── bell ── */
-    function playBell() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const now = ctx.currentTime;
-        [660, 990].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          const start = now + i * 0.18;
-          gain.gain.setValueAtTime(0.0001, start);
-          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
-          osc.connect(gain).connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + 2.3);
-        });
-      } catch (e) { console.log('Audio blocked:', e); }
-    }
-
-    /* ── voice-over cues (AI-generated MP3s in images/meditation/vo/) ──
-       Four cues: start, halfway, ~60s before the end, and the closing line.
-       Times auto-scale to the session length; cues too close together on very
-       short sessions are skipped. */
-    const VO = {
-      start: new Audio('../images/meditation/vo/cue-start.mp3'),
-      half:  new Audio('../images/meditation/vo/cue-half.mp3'),
-      near:  new Audio('../images/meditation/vo/cue-near.mp3'),
-      end:   new Audio('../images/meditation/vo/cue-end.mp3'),
-    };
-    Object.values(VO).forEach(a => { a.preload = 'auto'; });
-    const halfAt = Math.floor(total / 2);                 // elapsed sec for the halfway cue
-    const nearAt = (total - 60) > halfAt ? total - 60 : 0; // 0 = skip on short sessions
-    const fired  = new Set();
-    function playVO(a) { try { a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {} }
-    // Browsers block audio until a user gesture; prime the clips on first tap.
-    let unlocked = false;
-    function unlockAudio() {
-      if (unlocked) return; unlocked = true;
-      Object.values(VO).forEach(a => {
-        a.muted = true;
-        const p = a.play();
-        if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
-      });
-    }
-    document.addEventListener('pointerdown', unlockAudio, { once: true });
-
-    /* ── timer + play/pause ── */
-    let timer = null;
-    let playing = false;
-    let ended = false;
-    function endSession() {                 // closing cue → bell → close
-      if (ended) return;
-      ended = true;
-      timeRemaining = 0;
-      setPlaying(false);
-      render();
-      playVO(VO.end);
-      setTimeout(() => { playBell(); setTimeout(finishPlayer, 4000); }, 6000);
-    }
-    function tick() {
-      timeRemaining--;
-      if (timeRemaining <= 0) { endSession(); return; }
-      render();
-      const elapsed = total - timeRemaining;
-      if (!fired.has('half') && elapsed >= halfAt) { fired.add('half'); playVO(VO.half); }
-      if (nearAt && !fired.has('near') && elapsed >= nearAt) { fired.add('near'); playVO(VO.near); }
-    }
-    function setPlaying(p) {
-      playing = p;
-      playBtn.innerHTML = p ? '&#9208;' : '&#9654;';   // ⏸ / ▶
-      if (p && !timer) timer = setInterval(tick, 1000);
-      if (!p && timer) { clearInterval(timer); timer = null; }
-    }
-    playBtn.onclick = () => setPlaying(!playing);
-
-    /* |◀ rewind = +60s, ▶| forward = -60s (clamped) */
-    const STEP = 10;
-    function adjust(delta) {
-      timeRemaining = Math.max(0, Math.min(total, timeRemaining + delta));
-      render();
-      if (timeRemaining === 0) { endSession(); }
-    }
-    document.getElementById('rew').onclick = () => adjust(+STEP);
-    document.getElementById('fwd').onclick = () => adjust(-STEP);
-
-    // Auto-start after a brief beat; the opening cue plays as it begins.
-    setTimeout(() => {
-      setPlaying(true);
-      if (!fired.has('start')) { fired.add('start'); playVO(VO.start); }
-    }, 800);
-  </script>
+<main class="player" id="player" aria-label="Meditation player">
+  <div class="image" aria-hidden="true"></div>
+  <button class="timer" id="timer" type="button" aria-label="Start meditation">
+    <span class="playicon" id="playIcon" aria-hidden="true"></span>
+    <span class="value" id="value" hidden>15</span>
+  </button>
+</main>
+<script>
+(()=>{
+  const allowed=[30,15,10,5,2];
+  const requested=Number(new URLSearchParams(location.search).get('t'));
+  const minutes=allowed.includes(requested)?requested:15;
+  const totalMs=minutes*60000;
+  const player=document.getElementById('player');
+  const button=document.getElementById('timer');
+  const value=document.getElementById('value');
+  const playIcon=document.getElementById('playIcon');
+  let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
+  const shown=()=>Math.max(0,Math.round(remaining/60000));
+  function render(){
+    const ready=state==='ready';
+    playIcon.hidden=!ready; value.hidden=ready; value.textContent=String(shown());
+    const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;
+  }
+  function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
+  function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
+  function toggle(){
+    clearTick();
+    if(state==='ready'||state==='complete'){remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
+    if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
+    if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
+  }
+  button.addEventListener('click',toggle); render();
+})();
+</script>
 </body>
 </html>
