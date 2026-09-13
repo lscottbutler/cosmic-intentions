@@ -5442,3 +5442,93 @@ document.addEventListener('DOMContentLoaded', startEntSlideshow);
 
 document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); startAffirmationLoop(null); });
 
+
+
+/* ── MASTER PLAYER DESTINATIONS ─────────────────────────────────────────────
+   Keeps the six card icons contextual when the player is embedded, and accepts
+   the same hand-off from the standalone player page through sessionStorage. */
+function _masterGoalIndex(value) {
+  const idx = typeof value === 'number' ? value : Number.parseInt(value, 10);
+  return Number.isInteger(idx) && idx >= 0 && idx < (intentions || []).length ? idx : null;
+}
+
+function _masterRevealGoalTab(idx, which, findNextAction = false) {
+  window.setTimeout(() => {
+    const tab = document.getElementById(`wtab-${which}-${idx}`);
+    const details = tab && tab.closest('details');
+    if (details) details.open = true;
+    if (typeof window.wrapTab === 'function') window.wrapTab(idx, which);
+
+    window.setTimeout(() => {
+      const panel = document.getElementById(`wtab-panel-${which}-${idx}`);
+      const nextButton = findNextAction && panel
+        ? panel.querySelector('.wcard button[title="Mark done"]')
+        : null;
+      const target = (nextButton && nextButton.closest('.wcard')) || panel || details;
+      if (!target) return;
+      target.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'center',
+      });
+      if (nextButton && target.animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        target.animate(
+          [
+            { boxShadow: '0 0 0 0 rgba(245,166,35,0)' },
+            { boxShadow: '0 0 0 4px rgba(245,166,35,.55)' },
+            { boxShadow: '0 1px 2px rgba(0,0,0,.12)' },
+          ],
+          { duration: 1100, easing: 'ease-out' },
+        );
+      }
+    }, 40);
+  }, 80);
+}
+
+export function openMasterDestination(action, goalIndex = null) {
+  const idx = _masterGoalIndex(goalIndex);
+  switch (action) {
+    case 'meditation':
+      navTo('meditation');
+      break;
+    case 'roadmap':
+      openMyRoadmap();
+      if (idx !== null) _masterRevealGoalTab(idx, 'roadmap');
+      break;
+    case 'goals':
+      if (idx !== null) editGoalDirect(idx);
+      else navTo('setup');
+      break;
+    case 'visualization':
+      if (idx !== null) openVizGoal(idx);
+      else openVizLibrary();
+      break;
+    case 'action-plan':
+      openMyRoadmap();
+      if (idx !== null) _masterRevealGoalTab(idx, 'my', true);
+      break;
+    case 'cosmic-library':
+      navTo('cosmiclibrary');
+      break;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.openMasterDestination = openMasterDestination;
+  const _consumeMasterDestination = () => {
+    let pending = null;
+    try {
+      pending = JSON.parse(sessionStorage.getItem('ci_master_destination') || 'null');
+      sessionStorage.removeItem('ci_master_destination');
+    } catch (_) {
+      try { sessionStorage.removeItem('ci_master_destination'); } catch (_) {}
+    }
+    if (pending && typeof pending.action === 'string') {
+      openMasterDestination(pending.action, pending.goalIndex);
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => window.setTimeout(_consumeMasterDestination, 0), { once: true });
+  } else {
+    window.setTimeout(_consumeMasterDestination, 0);
+  }
+}
