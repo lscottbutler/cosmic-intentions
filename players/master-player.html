@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Master Player | Cosmic Intentions</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --surround: #050706;
+      --frame: #82ad77;
+      --header: #5f645e;
+      --paper: #f2ede7;
+      --footer: #2d332f;
+      --ink: #1f2724;
+      --muted: #aab1a6;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      display: grid;
+      place-items: center;
+      background: var(--surround);
+      font-family: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", Arial, sans-serif;
+    }
+    .master-player {
+      width: min(100vw, calc(100vh * 351 / 254));
+      aspect-ratio: 351 / 254;
+      display: block;
+      background: var(--frame);
+    }
+    .type,
+    .statement {
+      text-anchor: middle;
+      text-transform: uppercase;
+    }
+    .type {
+      fill: #dedbd2;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 1.9px;
+    }
+    .statement {
+      fill: var(--ink);
+      font-size: 20.5px;
+      font-weight: 700;
+      letter-spacing: 2.15px;
+    }
+    .action-icon {
+      color: var(--muted);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .master-player { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="master-player" id="masterPlayer" viewBox="0 0 351 254" role="img" aria-labelledby="playerTitle playerDescription">
+    <title id="playerTitle">Long Form Manifestation</title>
+    <desc id="playerDescription">I am the proud owner of a successful online training course.</desc>
+
+    <rect x="1" y="1" width="349" height="252" fill="#82ad77" stroke="#050706" stroke-width="2"/>
+
+    <path fill="#5f645e" d="M15 19 Q176 7 337 19 L337 51 Q176 48 15 51 Z"/>
+    <path fill="#f2ede7" d="M15 50 Q176 48 337 51 L337 185 Q176 189 15 185 Z"/>
+    <path fill="#2d332f" d="M15 187 Q176 190 337 187 L337 228 Q176 244 15 228 Z"/>
+
+    <text class="type" id="typeLabel" x="176" y="38">LONG FORM MANIFESTATION</text>
+    <text class="statement" id="statement" x="176" y="97" aria-hidden="true">
+      <tspan x="176" dy="0">I AM THE PROUD OWNER</tspan>
+      <tspan x="176" dy="30">OF A SUCCESSFUL ONLINE</tspan>
+      <tspan x="176" dy="30">TRAINING COURSE</tspan>
+    </text>
+
+    <g class="action-icon" aria-hidden="true">
+      <g transform="translate(61 210) scale(.84)">
+        <circle cx="-2" cy="-9" r="2.2" fill="currentColor" stroke="none"/>
+        <path d="M-2-5v7l-5 7m5-6 7 2m-7-5 5-4m-10 13h12"/>
+      </g>
+      <g transform="translate(105 210) scale(.84)">
+        <path d="M-7-9h14v18h-14zM-3-12h6v5h-6zM-3-3h6M-3 1h6M-3 5h5"/>
+      </g>
+      <g transform="translate(149 210) scale(.84)">
+        <circle r="10"/><circle r="6"/><circle r="2" fill="currentColor" stroke="none"/>
+        <path d="M2-2 11-11m-4 0h4v4"/>
+      </g>
+      <g transform="translate(193 210) scale(.84)">
+        <path d="M-11 0Q0-11 11 0Q0 11-11 0Z"/><circle r="3.4" fill="currentColor" stroke="none"/>
+      </g>
+      <g transform="translate(239 210) scale(.84)">
+        <ellipse cx="-2" cy="1" rx="4" ry="7" transform="rotate(-24 -2 1)"/>
+        <circle cx="-6" cy="-7" r="1.4" fill="currentColor" stroke="none"/>
+        <circle cx="-3" cy="-9" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="0" cy="-9" r="1.2" fill="currentColor" stroke="none"/>
+        <ellipse cx="6" cy="4" rx="3.5" ry="6" transform="rotate(24 6 4)"/>
+        <circle cx="2" cy="-3" r="1.25" fill="currentColor" stroke="none"/>
+        <circle cx="5" cy="-5" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="8" cy="-4" r="1.1" fill="currentColor" stroke="none"/>
+      </g>
+      <g transform="translate(287 210) scale(.84)">
+        <path d="M-2 4Q5-3 8-11Q0-10-7-3Z"/><circle cx="3" cy="-6" r="1.8"/>
+        <path d="M-5 0-10 2l5 2m5-6 2 5-4 1m-3 3-3 4"/>
+      </g>
+    </g>
+  </svg>
+
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const type = (params.get('type') || 'LONG FORM MANIFESTATION').trim().toUpperCase();
+      const statement = (params.get('text') || 'I AM THE PROUD OWNER OF A SUCCESSFUL ONLINE TRAINING COURSE').trim().toUpperCase();
+      const typeLabel = document.getElementById('typeLabel');
+      const statementNode = document.getElementById('statement');
+      const playerTitle = document.getElementById('playerTitle');
+      const playerDescription = document.getElementById('playerDescription');
+
+      function wrapWords(text, maxCharacters = 27, maxLines = 3) {
+        const words = text.split(/\s+/).filter(Boolean);
+        const lines = [];
+        let line = '';
+        for (const word of words) {
+          const candidate = line ? `${line} ${word}` : word;
+          if (candidate.length <= maxCharacters || !line) line = candidate;
+          else { lines.push(line); line = word; }
+        }
+        if (line) lines.push(line);
+        if (lines.length > maxLines) {
+          const kept = lines.slice(0, maxLines - 1);
+          kept.push(lines.slice(maxLines - 1).join(' '));
+          return kept;
+        }
+        return lines;
+      }
+
+      typeLabel.textContent = type;
+      playerTitle.textContent = type;
+      playerDescription.textContent = statement;
+      statementNode.replaceChildren();
+      const lines = wrapWords(statement);
+      const lineHeight = lines.length === 3 ? 30 : 33;
+      const startY = 127 - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((line, index) => {
+        const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', '176');
+        tspan.setAttribute('y', String(startY + index * lineHeight));
+        tspan.textContent = line;
+        statementNode.appendChild(tspan);
+      });
+      let fontSize = 20.5;
+      while ([...statementNode.children].some(line => line.getComputedTextLength() > 292) && fontSize > 15) {
+        fontSize -= 0.5;
+        statementNode.style.fontSize = `${fontSize}px`;
+      }
+    })();
+  </script>
+</body>
+</html>
