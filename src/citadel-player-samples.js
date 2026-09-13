@@ -1,8 +1,8 @@
-// Review-only Citadel placement. Do not change player internals here.
-// Locked order: Gratitude, Meditation, existing Quote Reveal, existing DVB.
-export function mountCitadelPlayerSamples(root = document) {
-  const masters = root.getElementById('ciApprovedMasters');
-  if (!masters || masters.querySelector('[data-ci-sample="gratitude"]')) return false;
+// Keep completed reference players in the Admin workspace.
+// Player internals remain separate and unchanged.
+export function mountAdminPlayerSamples(root = document) {
+  const samplesRoot = root.getElementById('ciAdminPlayerSamples');
+  if (!samplesRoot || samplesRoot.querySelector('[data-ci-sample="gratitude"]')) return false;
 
   const samples = [
     { id: 'gratitude', title: 'Gratitude Player Sample', src: '/players/gratitude.html', extraHeight: '64px' },
@@ -18,7 +18,7 @@ export function mountCitadelPlayerSamples(root = document) {
     const frame = root.createElement('iframe');
     frame.src = sample.src;
     frame.title = sample.title;
-    frame.loading = 'eager';
+    frame.loading = 'lazy';
     frame.allow = 'fullscreen';
     frame.allowFullscreen = true;
     frame.referrerPolicy = 'no-referrer';
@@ -27,12 +27,14 @@ export function mountCitadelPlayerSamples(root = document) {
     fragment.append(holder);
   }
 
-  masters.prepend(fragment);
+  // Preserve the approved reference order:
+  // Gratitude, Meditation, Quote Reveal, Digital Vision Board.
+  samplesRoot.prepend(fragment);
   return true;
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => mountCitadelPlayerSamples(), { once: true });
+  document.addEventListener('DOMContentLoaded', () => mountAdminPlayerSamples(), { once: true });
 } else {
-  mountCitadelPlayerSamples();
+  mountAdminPlayerSamples();
 }
