@@ -5138,10 +5138,25 @@ export async function init() {
   try { enhanceInfoBoxToolbars(); } catch (e) { console.error('[init] enhanceInfoBoxToolbars:', e); }
   try { addColsButtonToToolbars(); } catch (e) { console.error('[init] addColsButtonToToolbars:', e); }
 
-  // The standalone Master Player may have handed us a destination. Wait until
-  // session restoration above is complete before navigating, otherwise navTo()
-  // mistakes a returning member for a logged-out visitor and opens sign-in.
-  _consumeMasterDestination();
+  // Inline Master Player destinations run inside one reusable Column A frame.
+  // They share the production origin/session, but hide duplicate app chrome.
+  const _masterInlineAction = new URLSearchParams(location.search).get('masterInline');
+  if (_masterInlineLabels[_masterInlineAction]) {
+    document.documentElement.classList.add('master-inline-mode');
+    const _hdr = document.querySelector('header.hdr');
+    const _top = document.getElementById('topNav');
+    const _tabs = document.getElementById('tabBar');
+    if (_hdr) _hdr.style.setProperty('display', 'none', 'important');
+    if (_top) _top.style.setProperty('display', 'none', 'important');
+    if (_tabs) _tabs.style.setProperty('display', 'none', 'important');
+    const _inlineGoal = new URLSearchParams(location.search).get('goal');
+    openMasterDestination(_masterInlineAction, _inlineGoal);
+  } else {
+    // The standalone Master Player may have handed us a destination. Wait until
+    // session restoration above is complete before navigating, otherwise navTo()
+    // mistakes a returning member for a logged-out visitor and opens sign-in.
+    _consumeMasterDestination();
+  }
 }
 
 // Keyboard shortcuts
@@ -5489,7 +5504,52 @@ function _masterRevealGoalTab(idx, which, findNextAction = false) {
   }, 80);
 }
 
+const _masterInlineLabels = {
+  meditation: 'Meditation',
+  roadmap: 'Roadmap',
+  goals: 'Goals',
+  visualization: 'Visualization',
+  'action-plan': 'Action Plan',
+  'cosmic-library': 'Cosmic Library',
+};
+
+export function closeMasterInlineDestination() {
+  const workspace = document.getElementById('masterInlineWorkspace');
+  const frame = document.getElementById('masterInlineFrame');
+  if (frame) frame.src = 'about:blank';
+  if (workspace) workspace.hidden = true;
+}
+
+export function openMasterInlineDestination(action, goalIndex = null) {
+  if (!_masterInlineLabels[action]) return false;
+  const workspace = document.getElementById('masterInlineWorkspace');
+  const frame = document.getElementById('masterInlineFrame');
+  const title = document.getElementById('masterInlineTitle');
+  if (!workspace || !frame) return false;
+
+  const idx = _masterGoalIndex(goalIndex);
+  const url = new URL('/', location.origin);
+  url.searchParams.set('masterInline', action);
+  if (idx !== null) url.searchParams.set('goal', String(idx));
+
+  if (title) title.textContent = _masterInlineLabels[action];
+  workspace.hidden = false;
+  frame.src = url.pathname + url.search;
+  workspace.scrollIntoView({
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    block: 'start',
+  });
+  return true;
+}
+
 export function openMasterDestination(action, goalIndex = null) {
+  // When the Master Player lives at the top of the Citadel, keep every linked
+  // destination inside the reusable Column A workspace beneath it.
+  const dashboard = document.getElementById('page-dashboard');
+  if (window.self === window.top && dashboard && dashboard.classList.contains('active')) {
+    if (openMasterInlineDestination(action, goalIndex)) return;
+  }
+
   const idx = _masterGoalIndex(goalIndex);
   switch (action) {
     case 'meditation':
@@ -5532,4 +5592,6 @@ function _consumeMasterDestination() {
 
 if (typeof window !== 'undefined') {
   window.openMasterDestination = openMasterDestination;
+  window.openMasterInlineDestination = openMasterInlineDestination;
+  window.closeMasterInlineDestination = closeMasterInlineDestination;
 }
