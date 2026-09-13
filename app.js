@@ -5137,6 +5137,11 @@ export async function init() {
   try { numberContentBlocks(); } catch (e) { console.error('[init] numberContentBlocks:', e); }
   try { enhanceInfoBoxToolbars(); } catch (e) { console.error('[init] enhanceInfoBoxToolbars:', e); }
   try { addColsButtonToToolbars(); } catch (e) { console.error('[init] addColsButtonToToolbars:', e); }
+
+  // The standalone Master Player may have handed us a destination. Wait until
+  // session restoration above is complete before navigating, otherwise navTo()
+  // mistakes a returning member for a logged-out visitor and opens sign-in.
+  _consumeMasterDestination();
 }
 
 // Keyboard shortcuts
@@ -5512,23 +5517,19 @@ export function openMasterDestination(action, goalIndex = null) {
   }
 }
 
+function _consumeMasterDestination() {
+  let pending = null;
+  try {
+    pending = JSON.parse(sessionStorage.getItem('ci_master_destination') || 'null');
+    sessionStorage.removeItem('ci_master_destination');
+  } catch (_) {
+    try { sessionStorage.removeItem('ci_master_destination'); } catch (_) {}
+  }
+  if (pending && typeof pending.action === 'string') {
+    openMasterDestination(pending.action, pending.goalIndex);
+  }
+}
+
 if (typeof window !== 'undefined') {
   window.openMasterDestination = openMasterDestination;
-  const _consumeMasterDestination = () => {
-    let pending = null;
-    try {
-      pending = JSON.parse(sessionStorage.getItem('ci_master_destination') || 'null');
-      sessionStorage.removeItem('ci_master_destination');
-    } catch (_) {
-      try { sessionStorage.removeItem('ci_master_destination'); } catch (_) {}
-    }
-    if (pending && typeof pending.action === 'string') {
-      openMasterDestination(pending.action, pending.goalIndex);
-    }
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => window.setTimeout(_consumeMasterDestination, 0), { once: true });
-  } else {
-    window.setTimeout(_consumeMasterDestination, 0);
-  }
 }
