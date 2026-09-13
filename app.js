@@ -5528,13 +5528,22 @@ export function openMasterInlineDestination(action, goalIndex = null) {
   if (!workspace || !frame) return false;
 
   const idx = _masterGoalIndex(goalIndex);
-  const url = new URL('/', location.origin);
-  url.searchParams.set('masterInline', action);
-  if (idx !== null) url.searchParams.set('goal', String(idx));
+  let inlineSrc;
+
+  // Meditation is a standalone player. Loading the app root here nests the
+  // entire Citadel inside its own dropdown.
+  if (action === 'meditation') {
+    inlineSrc = '/players/meditation.html?t=15';
+  } else {
+    const url = new URL('/', location.origin);
+    url.searchParams.set('masterInline', action);
+    if (idx !== null) url.searchParams.set('goal', String(idx));
+    inlineSrc = url.pathname + url.search;
+  }
 
   if (title) title.textContent = _masterInlineLabels[action];
   workspace.hidden = false;
-  frame.src = url.pathname + url.search;
+  frame.src = inlineSrc;
   workspace.scrollIntoView({
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     block: 'start',
