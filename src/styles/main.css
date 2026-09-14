@@ -3100,6 +3100,20 @@ input, textarea, select {
   }
 }
 
+/* The full-bleed .pg-frame intentionally escapes its page wrapper, so the
+   responsive design canvas must be applied to the grid itself. At the approved
+   1050px desktop canvas the Master Player fills Column A; Chrome zoom then
+   scales the whole two-column system continuously instead of letting the
+   viewport expand underneath it. max-width keeps real narrow screens fluid. */
+@media (min-width: 768px) {
+  #page-dashboard .vault-layout {
+    width: 1050px !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
 /* ── MOBILE COLLAPSE FALLBACK (< 768px) ─────────────── */
 @media (max-width: 767px) {
   .vault-layout {
