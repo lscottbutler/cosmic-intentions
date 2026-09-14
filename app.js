@@ -5534,7 +5534,15 @@ export function openMasterInlineDestination(action, goalIndex = null) {
 
   if (title) title.textContent = _masterInlineLabels[action];
   workspace.hidden = false;
-  frame.src = url.pathname + url.search;
+
+  // Meditation is already a complete 16:9 player. Load it directly so the
+  // full Meditation page cannot add a tall black canvas around the player.
+  const isMeditation = action === 'meditation';
+  frame.style.height = isMeditation ? 'auto' : 'min(760px, 75vh)';
+  frame.style.minHeight = isMeditation ? '0' : '520px';
+  frame.style.aspectRatio = isMeditation ? '16 / 9' : 'auto';
+  frame.style.background = isMeditation ? '#4c812f' : 'var(--bg, #f5f5f5)';
+  frame.src = isMeditation ? '/players/meditation.html?t=15' : url.pathname + url.search;
   workspace.scrollIntoView({
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     block: 'start',
