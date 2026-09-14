@@ -894,11 +894,34 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
 .dash-greeting:empty { display: none; }
 .page.active { display: block; }
 
-#page-home,
-#page-dashboard {
+#page-home {
   max-width: 1280px;
   margin: 0 auto;
   background: var(--off);
+}
+
+/* Citadel must remain tied to the browser viewport at every desktop zoom level.
+   A 1280px cap made the dashboard change sizing systems as zoom crossed the cap,
+   so Column A—and therefore the Master Player—appeared to grow, shrink, then grow.
+   Keeping the dashboard fluid makes the 75/25 grid and its 16:9 player continuous. */
+#page-dashboard {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background: var(--off);
+}
+
+#ciApprovedMasters {
+  width: 100%;
+  min-width: 0;
+}
+
+#ciApprovedMasters > iframe {
+  display: block;
+  width: 100% !important;
+  min-width: 0;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
 }
 
 /* ── PAGE CONTENT PLACEHOLDER ─────────────────────────────── */
