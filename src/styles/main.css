@@ -1707,8 +1707,16 @@ textarea.field-input.tall { min-height: 110px; }
   .page-wrap { max-width: 640px; margin-left: auto; margin-right: auto; }
   /* Two-column pages must NOT be crushed to the 640px reading width */
   .page-wrap:has(#page-home.active),
-  .page-wrap:has(#page-entcard.active),
-  .page-wrap:has(#page-dashboard.active) { max-width: 1280px; }
+  .page-wrap:has(#page-entcard.active) { max-width: 1280px; }
+  /* The Citadel must not inherit either the 640px reading cap or the 1280px
+     two-column cap. Its 75/25 grid stays tied to the current viewport so
+     Column A and the Master Player remain one continuous responsive system. */
+  .page-wrap:has(#page-dashboard.active) {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
   /* Roadmap is single-column — widen it to its own 900px max (was crushed to 640px) */
   .page-wrap:has(#page-myroadmap.active) { max-width: 900px; }
 }
