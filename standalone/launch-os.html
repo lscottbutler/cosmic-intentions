@@ -112,7 +112,7 @@ const RUNWAY=[
   ['rw9','Wk 9 — "3 weeks out" countdown; film launch-week videos in advance; ~750 emails'],
   ['rw10','Wk 10 — Daily countdown; Product Hunt assets; retargeting ads on; ~900–1,000 emails'],
   ['rw11','Wk 11 — "Doors open Tuesday" everywhere; coaches primed; T-3 pricing-reveal email'],
-  ['rw12','LAUNCH WEEK — Product Hunt Tue, daily emails, 10 videos, Founding Member countdown → 100 paying'],
+  ['rw12','LAUNCH WEEK — controlled organic release, measured activation, retention, and paying users'],
 ];
 function homeV(){
   const modProg=[['social',SOCIAL_IDS],['email',EMAIL_IDS],['ads',ADS_IDS],['community',COMM_IDS]];
@@ -169,7 +169,7 @@ function emailV(){
       <div class="hint">${S.tr.emails}/1000 · ${Math.max(0,1000-S.tr.emails)} to go</div>
     </div>
     <h3>Launch-day post</h3>
-    ${tmpl('Launch announcement','DOORS ARE OPEN. 🌙 Six months ago I started building the app I couldn\'t find: one that takes YOUR goals, turns them into "I AM" statements in a calm AI voice, and loops them to your subconscious while you sleep. Today, Cosmic Intentions is live. 7-day free trial. First 200 only: Founding Member — lock in the lowest price for life. Link in bio. In the comments all day. 🚀')}
+    ${tmpl('Launch announcement','DOORS ARE OPEN. 🌙 Six months ago I started building the app I couldn\'t find: one that takes YOUR goals, turns them into "I AM" statements in a calm AI voice, and loops them to your subconscious while you sleep. Today, Cosmic Intentions is live. Map your goal free in approximately 60 seconds with no credit card. CI Personal is $9.99/month or $79/year with a 14-day free trial. Link in bio. In the comments all day. 🚀')}
   </div>`;
 }
 
@@ -184,7 +184,7 @@ function adsV(){
     ${checklist([['ad_conv','Landing page converts ≥25% of visitors to email (test with organic first)'],['ad_pixel','Meta Pixel installed on the site (do this Week 1 — builds audience while you wait)'],['ad_organic','You have ≥1 organic video clearly beating your average (that\'s your ad creative)']])}
     ${!ready?`<div class="box" style="border-color:var(--bad);"><span class="pill bad">🔒 LOCKED</span> <span class="muted">Don't run ads until all 3 above are checked. July ads = burning money to learn what organic teaches free.</span></div>`:`<div class="box" style="border-color:var(--ok);"><span class="pill ok">✅ GO</span> <span class="muted">You're ready. Launch the first campaign below.</span></div>`}
     <h3 class="${ready?'':'locked'}">First campaign ${ready?'':'(unlocks when ready)'}</h3>
-    <div class="${ready?'':'locked'}">${checklist([['ad_camp','Objective = Leads (email signups). 1 campaign → 1 ad set → 3 ads (best organic videos, no watermark). $15/day'],['ad_target','Advantage+ audience: Women 28–50, US/CA/UK/AU · interests: manifestation, law of attraction, Mel Robbins, Jay Shetty, Atomic Habits, Headspace · destination = /iam'],['ad_retarget','(Sept 1) Retargeting ad set $5/day → visitors + video-viewers + IG engagers · Founding Member scarcity creative']])}</div>
+    <div class="${ready?'':'locked'}">${checklist([['ad_camp','Objective = Leads (email signups). 1 campaign → 1 ad set → 3 ads (best organic videos, no watermark). $15/day'],['ad_target','Advantage+ audience: Women 28–50, US/CA/UK/AU · interests: manifestation, law of attraction, Mel Robbins, Jay Shetty, Atomic Habits, Headspace · destination = /iam'],['ad_retarget','(Sept 1) Retargeting ad set $5/day → visitors + video-viewers + IG engagers · benefit-led CI Personal creative']])}</div>
     <h3>Benchmarks & the 3 money-wasters</h3>
     <div class="box"><div style="font-size:13px;line-height:1.8;">✅ Cost per lead <b>$1.50–$3.50</b> = good (under $1.50 → scale to $25/day; over $5 after 300 clicks → swap creative).<br>❌ Don't touch it daily (editing restarts learning — wait 5–7 days).<br>❌ Don't "Boost Post" for vanity — always Ads Manager + Leads objective.<br>❌ Don't run cold ads to a Buy-Now page — cold → generator → email → nurture → launch.</div></div>
     <h3>Tracker</h3><div class="grid2">
