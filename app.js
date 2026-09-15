@@ -372,6 +372,9 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
+  // The Admin workspace is owner-only. A direct or stale navigation attempt by
+  // any member returns to the Citadel without exposing editor controls.
+  if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) id = 'dashboard';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
   const target = document.getElementById('page-' + id);
@@ -787,6 +790,11 @@ function updateUI(user) {
 
   // Admin + Notes nav — only for site owner
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
+  window.ciOwnerAccess = isOwner;
+  document.querySelectorAll('[data-owner-only]').forEach(el => {
+    if (el.classList.contains('colb-links-hd')) el.style.display = isOwner ? '' : 'none';
+    else if (!isOwner) el.style.display = 'none';
+  });
   const navAdmin = document.getElementById('nav-admin');
   const navNotes = document.getElementById('nav-notes');
   if (navAdmin) navAdmin.style.display = isOwner ? 'flex' : 'none';
@@ -4953,7 +4961,7 @@ function _seedPreviewDashboard() {
   });
   intentions = [
     mk('pv1', 'I AM LAUNCHING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER', 'Career',
-      ['Analyze the profiles of your first 200 Founder Subscription buyers.',
+      ['Analyze the profiles of your earliest subscription buyers.',
        'Ship the public landing page and start collecting emails.',
        'Record a 90-second launch teaser.'],
       [{ id: 1, text: 'Draft the launch announcement', done: false }]),
@@ -5131,9 +5139,9 @@ export async function init() {
   // Load content blocks for all users (public read)
   loadContentBlocks();
 
-  // Content-block number badges (refinement aid): number the Admin editors and
-  // stamp the matching #N onto each live box. Remove the 'cbnums' class to hide.
-  document.body.classList.add('cbnums');
+  // Keep Admin editor numbering available inside Admin, but never expose the
+  // matching #N refinement badges in the member experience.
+  document.body.classList.remove('cbnums');
   try { numberContentBlocks(); } catch (e) { console.error('[init] numberContentBlocks:', e); }
   try { enhanceInfoBoxToolbars(); } catch (e) { console.error('[init] enhanceInfoBoxToolbars:', e); }
   try { addColsButtonToToolbars(); } catch (e) { console.error('[init] addColsButtonToToolbars:', e); }
