@@ -1012,7 +1012,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="pg-hdr ci-page-lettermark" id="notesPageTitle" data-ci-lettermark="MY THOUGHTS" data-ci-subtitle="Words to Live By" role="img" aria-label="MY THOUGHTS"></div>
         <div class="pg-screen">
           <p class="pg-intro">Your own affirmations, beliefs, reminders, inspirations and quotes. They surface randomly around the site.</p>
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
+          <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:0 0 12px;">
             <button onclick="notesToggleQuickAdd()" style="flex-shrink:0;background:#e0102b;border:none;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;padding:10px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;">&#43; ADD A THOUGHT</button>
           </div>
           <div id="notesQuickAdd" style="display:none;"></div>
@@ -1038,8 +1038,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr">Proof</div>
         <div class="pg-screen">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
-          </div>
           <div class="pg-2col">
           <div class="pg-2col-main">
           <p class="pg-intro">People who reached the top and openly credit visualization and mental rehearsal. Fill your mind with proof of what's possible.</p>
@@ -1069,8 +1067,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="MY JOURNAL" role="img" aria-label="MY JOURNAL"></div>
         <div class="pg-screen">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;">
-          </div>
           <div class="pg-2col">
           <div class="pg-2col-main">
           <p class="pg-intro">Your notes — jot anything, and link a note to a goal so it shows on that goal's Visualize page.</p>
@@ -1694,7 +1690,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   </style>
   <div class="page" id="page-myroadmap">
     <!-- Full-bleed framed page (green/grey). Frame fills top→bottom, edge→edge;
-         duplicate "My Roadmap" title removed, BACK moved inside the white screen. -->
+         duplicate "My Roadmap" title removed. -->
     <div class="pg-frame">
       <div class="pg-bezel">
         <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="ROADMAP" role="img" aria-label="ROADMAP"></div>
@@ -1867,7 +1863,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="wins-bezel">
         <div class="wins-hdr ci-page-lettermark" data-ci-lettermark="COSMIC LIBRARY" role="img" aria-label="COSMIC LIBRARY"></div>
         <div class="wins-screen">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;justify-content:flex-end;">
             <button onclick="tabStep(1)" aria-label="Next" title="Next" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M9 4 L18 12 L9 20 Z" fill="#fff"/></svg></button>
           </div>
           <p class="wins-intro">Your libraries and courses — pick one to open.</p>
