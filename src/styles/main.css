@@ -3445,10 +3445,11 @@ input, textarea, select {
 }
 
 
-/* Citadel Welcome card: keep a visible 20px gutter outside the border.
+/* Citadel Welcome cards: keep a visible 20px gutter outside each border.
    The runtime content-block class sets width:100%!important, so margin alone
-   cannot create the inset; the width must shrink by both 20px gutters. */
-#page-dashboard .vault-main > .dash-note-block[data-block="dashboard-note-2"] {
+   cannot create the inset; each width must shrink by both 20px gutters. */
+#page-dashboard .vault-main > .dash-note-block[data-block="dashboard-note-2"],
+#page-dashboard .vault-main > .dash-note-block[data-block="dashboard-inspiration"] {
   width: calc(100% - 40px) !important;
   max-width: calc(100% - 40px) !important;
   margin: 20px !important;
