@@ -2716,25 +2716,28 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   ];
 
   function sizeLettermark(host) {
-    var row = host.querySelector('.ci-lettermark-row');
+    var isCitadel = host.classList.contains('citadel-lettermark');
+    var row = isCitadel ? host : host.querySelector('.ci-lettermark-row');
     if (!row) return;
-    var cards = row.querySelectorAll('.ci-letter-card');
+    var cards = row.querySelectorAll(isCitadel ? '.citadel-letter-card' : '.ci-letter-card');
     var count = cards.length;
     if (!count) return;
-    var sizingCount = parseInt(host.getAttribute('data-ci-sizing-count'), 10) || count;
-    var scale = parseFloat(host.getAttribute('data-ci-scale'));
-    if (!isFinite(scale) || scale <= 0) scale = 1;
-    var hostWidth = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth;
+    // One uniform responsive title size everywhere: the approved Favorites
+    // Autoplay dimensions (21-character sizing reference at 60% scale).
+    var sizingCount = 21;
+    var scale = 0.6;
+    var hostWidth = isCitadel
+      ? ((host.parentElement && host.parentElement.clientWidth) || window.innerWidth)
+      : (host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth);
     var sideRoom = window.innerWidth <= 767 ? 20 : 64;
     var available = Math.max(120, hostWidth - sideRoom);
-    var overlap = Math.min(5, available / Math.max(sizingCount, 1) * 0.09);
+    var overlap = Math.min(5, available / sizingCount * 0.09);
     var cardWidth = Math.min(76, (available + overlap * (sizingCount - 1)) / sizingCount);
-    cardWidth = Math.max(14, cardWidth);
-    cardWidth *= scale;
+    cardWidth = Math.max(14, cardWidth) * scale;
     overlap *= scale;
     var cardHeight = cardWidth * 1.6;
     var fontSize = cardWidth * 1.32;
-    row.style.width = (cardWidth * count - overlap * (count - 1)) + 'px';
+    if (!isCitadel) row.style.width = (cardWidth * count - overlap * (count - 1)) + 'px';
     cards.forEach(function (card, i) {
       card.style.width = cardWidth + 'px';
       card.style.height = cardHeight + 'px';
@@ -2774,8 +2777,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   }
 
   function initLettermarks() {
-    var hosts = document.querySelectorAll('[data-ci-lettermark]');
-    hosts.forEach(buildLettermark);
+    var builtHosts = document.querySelectorAll('[data-ci-lettermark]');
+    builtHosts.forEach(buildLettermark);
+    var hosts = document.querySelectorAll('[data-ci-lettermark], #page-dashboard .citadel-lettermark');
+    hosts.forEach(sizeLettermark);
     if ('ResizeObserver' in window) {
       var observer = new ResizeObserver(function (entries) {
         entries.forEach(function (entry) { sizeLettermark(entry.target); });
