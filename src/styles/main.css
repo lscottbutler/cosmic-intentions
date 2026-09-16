@@ -3504,6 +3504,11 @@ input, textarea, select {
   overflow: visible;
 }
 
+/* Favorites Autoplay: preserve a clean 20px visual inset from the left edge. */
+#page-dailyfocus .ci-lettermark-row {
+  margin-left: 20px;
+}
+
 .ci-letter-card {
   position: relative;
   display: inline-flex;
