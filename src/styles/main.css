@@ -3556,3 +3556,66 @@ input, textarea, select {
     padding-right: 10px !important;
   }
 }
+
+
+/* ── UNIVERSAL MEMBER-PAGE HAMBURGER ───────────────────────
+   One existing global menu trigger, positioned identically on every member page.
+   It sits below the black app bar in the white page area at every viewport width;
+   no per-page duplicates, and the existing shared #hamMenu remains the only menu. */
+.hdr #mobileHam.hdr-ham {
+  display: inline-flex !important;
+  position: absolute !important;
+  top: calc(100% + 18px) !important;
+  right: 20px !important;
+  left: auto !important;
+  width: 64px !important;
+  height: 64px !important;
+  flex: 0 0 64px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,.22) !important;
+  z-index: 550 !important;
+}
+
+.hdr #mobileHam.hdr-ham span {
+  display: block !important;
+  width: 28px !important;
+  height: 4px !important;
+  flex: 0 0 4px !important;
+  background: #000000 !important;
+  border-radius: 3px !important;
+}
+
+/* Reserve the hamburger's top-right footprint on the new letter-card headings so
+   even the longest titles cannot sit underneath it. */
+.page.active .ci-page-lettermark {
+  padding-right: 104px !important;
+}
+
+#page-dashboard.active .citadel-lettermark {
+  max-width: calc(100% - 104px) !important;
+}
+
+@media (max-width: 767px) {
+  .hdr #mobileHam.hdr-ham {
+    top: calc(100% + 14px) !important;
+    right: 14px !important;
+    width: 58px !important;
+    height: 58px !important;
+    flex-basis: 58px !important;
+  }
+
+  .page.active .ci-page-lettermark {
+    padding-right: 86px !important;
+  }
+
+  #page-dashboard.active .citadel-lettermark {
+    max-width: calc(100% - 86px) !important;
+  }
+}
