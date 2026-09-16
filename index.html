@@ -925,7 +925,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-dailyfocus">
     <div class="pg-frame pf-navy">
       <div class="pg-bezel">
-        <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="MY FAVORITES AUTOPLAY" role="img" aria-label="MY FAVORITES AUTOPLAY"></div>
+        <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="FAVORITES AUTOPLAY" data-ci-scale="0.6" data-ci-sizing-count="21" role="img" aria-label="FAVORITES AUTOPLAY"></div>
         <div class="pg-screen">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
             <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;margin-left:auto;">&#10022; My Goals</button>
@@ -1484,7 +1484,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <div class="setup-page-header">
         <button onclick="goMemberDashboard()" aria-label="Back" title="Back" style="width:40px;height:40px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" style="display:block;"><path d="M15 4 L6 12 L15 20 Z" fill="#fff"/></svg></button>
-        <h1 class="ci-page-lettermark" data-ci-lettermark="GOALS / INTENTIONS" role="img" aria-label="GOALS / INTENTIONS"></h1>
+        <h1 class="ci-page-lettermark" data-ci-lettermark="GOALS" role="img" aria-label="GOALS"></h1>
         <p>Your identity, purpose and goals. This context powers every AI output in the app. Take time to fill it in well.</p>
       </div>
 
@@ -2721,12 +2721,17 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var cards = row.querySelectorAll('.ci-letter-card');
     var count = cards.length;
     if (!count) return;
+    var sizingCount = parseInt(host.getAttribute('data-ci-sizing-count'), 10) || count;
+    var scale = parseFloat(host.getAttribute('data-ci-scale'));
+    if (!isFinite(scale) || scale <= 0) scale = 1;
     var hostWidth = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth;
     var sideRoom = window.innerWidth <= 767 ? 20 : 64;
     var available = Math.max(120, hostWidth - sideRoom);
-    var overlap = Math.min(5, available / Math.max(count, 1) * 0.09);
-    var cardWidth = Math.min(76, (available + overlap * (count - 1)) / count);
+    var overlap = Math.min(5, available / Math.max(sizingCount, 1) * 0.09);
+    var cardWidth = Math.min(76, (available + overlap * (sizingCount - 1)) / sizingCount);
     cardWidth = Math.max(14, cardWidth);
+    cardWidth *= scale;
+    overlap *= scale;
     var cardHeight = cardWidth * 1.6;
     var fontSize = cardWidth * 1.32;
     row.style.width = (cardWidth * count - overlap * (count - 1)) + 'px';
