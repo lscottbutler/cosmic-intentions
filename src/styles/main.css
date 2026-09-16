@@ -3457,3 +3457,97 @@ input, textarea, select {
   box-sizing: border-box !important;
   border: 2px solid #000000 !important;
 }
+
+
+/* ── SHARED RESPONSIVE LETTER-CARD PAGE HEADERS ────────────
+   Extends the approved CITADEL title treatment across the requested member pages.
+   JavaScript measures each real header width so every title remains single-line
+   and scales continuously through browser zoom and narrow screens. */
+.ci-page-lettermark {
+  display: flex !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 10px;
+  margin: 36px 0 22px !important;
+  padding: 0 32px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  text-align: left !important;
+  text-transform: none !important;
+  overflow: visible !important;
+}
+
+.ci-lettermark-row {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 100%;
+  line-height: 1;
+  overflow: visible;
+}
+
+.ci-letter-card {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-align: center;
+  transform-origin: 50% 50%;
+}
+
+.ci-letter-card--space {
+  background: transparent !important;
+  transform: none !important;
+  z-index: 0 !important;
+}
+
+.ci-lettermark-subtitle {
+  display: block;
+  color: var(--text, #111);
+  font-family: var(--font-head, "Roboto Condensed"), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+#page-setup .setup-page-header {
+  align-items: flex-start;
+}
+
+#page-setup .setup-page-header > .ci-page-lettermark {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+#page-admin .ci-admin-lettermark {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .ci-page-lettermark {
+    margin: 26px 0 18px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
