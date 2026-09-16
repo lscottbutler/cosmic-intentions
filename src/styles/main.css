@@ -3380,4 +3380,66 @@ input, textarea, select {
 @media(max-width:520px){.thought-card__box{margin:18px;}}
 
 /* White placeholder for the Log-A-Win inputs (dark #0d0d0d background). */
-#winInput::placeholder, #qwWinInput::placeholder { color: rgba(255,255,255,.85); }
+#winInput::placeholder, #qwWinInput::placeholder { color: rgba(255,255,255,.85); }
+
+/* ── APPROVED CITADEL LETTER-CARD TITLE ───────────────────
+   Scott-approved 2026-09-16: reproduce the colorful staggered card reference
+   as live HTML/CSS so the title remains crisp, accessible, and responsive. */
+#page-dashboard .citadel-lettermark {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: max-content;
+  max-width: calc(100% - 64px);
+  margin: 45px 0 18px;
+  padding: 0 8px 0 32px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: #fff !important;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: left;
+  text-transform: none;
+  overflow: visible;
+}
+
+#page-dashboard .citadel-letter-card {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: clamp(42px, 6.1vw, 76px);
+  height: clamp(68px, 9.8vw, 122px);
+  margin: 0;
+  color: #fff;
+  font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(58px, 8vw, 100px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-align: center;
+  transform-origin: 50% 50%;
+}
+
+#page-dashboard .citadel-letter-card + .citadel-letter-card { margin-left: -5px; }
+#page-dashboard .citadel-letter-card--c { background:#ed1c24; transform:rotate(-2deg) translateY(-1px); z-index:7; }
+#page-dashboard .citadel-letter-card--i { background:#f47a39; transform:rotate(1.8deg) translateY(5px); z-index:6; }
+#page-dashboard .citadel-letter-card--t { background:#ffc515; transform:rotate(-1.4deg) translateY(-4px); z-index:5; }
+#page-dashboard .citadel-letter-card--a { background:#9ac62c; transform:rotate(1.8deg) translateY(4px); z-index:4; }
+#page-dashboard .citadel-letter-card--d { background:#10a851; transform:rotate(-1.4deg) translateY(-3px); z-index:3; }
+#page-dashboard .citadel-letter-card--e { background:#2298d0; transform:rotate(1.2deg) translateY(1px); z-index:2; }
+#page-dashboard .citadel-letter-card--l { background:#1269a7; transform:rotate(-1deg) translateY(5px); z-index:1; }
+
+@media (max-width: 767px) {
+  #page-dashboard .citadel-lettermark {
+    max-width: calc(100% - 20px);
+    margin: 26px 0 16px;
+    padding-left: 10px;
+    padding-right: 0;
+  }
+}
