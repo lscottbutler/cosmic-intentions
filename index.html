@@ -1369,7 +1369,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               line-height:1; overflow:visible;
             }
             .citadel-section-lettermark .ci-lettermark-row { max-width:100%; }
-            .citadel-section-lettermark .ci-letter-card { border-radius:2px; }
+            .citadel-section-lettermark .ci-letter-card { border-radius:10%; }
             .dash-sec > summary .dsec-caret { flex-shrink:0; color:#1269a7; font-size:22px; transition:transform .25s ease; }
             .dash-sec[open] > summary .dsec-caret { transform:rotate(90deg); }
             .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
@@ -2757,7 +2757,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       : (host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth);
     var sideRoom = isSection ? 8 : (window.innerWidth <= 767 ? 20 : 64);
     var available = Math.max(120, hostWidth - sideRoom);
-    var sectionGap = isSection ? 3 : 0;
+    var sectionGap = isSection ? 8 : 0;
     var overlap = isSection ? 0 : Math.min(5, available / sizingCount * 0.09);
     var usableWidth = isSection ? Math.max(1, available - sectionGap * (sizingCount - 1)) : available;
     var cardWidth = Math.min(isSection ? 50 : 76, (usableWidth + overlap * (sizingCount - 1)) / sizingCount);
