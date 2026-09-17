@@ -1247,6 +1247,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <span class="citadel-section-lettermark" data-ci-lettermark="GOALS" role="img" aria-label="Goals"></span>
           <span class="goals-chev" style="flex-shrink:0;color:#1269a7;font-size:22px;">&#8964;</span>
         </button>
+        <span class="citadel-goals-grid-spacer" aria-hidden="true"></span>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
              #colb-selection-state), so it functions identically to its old location. -->
@@ -1328,6 +1329,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             /* Closed controls stay in the two-column grid. Their opened content becomes
                a full-width grid row, inset exactly 20px from every side of Column A. */
             #citadelNav { display:contents !important; }
+            .citadel-goals-grid-spacer { display:block; min-width:0; min-height:1px; }
             .dash-sec { display:contents; }
             #goalsBox,
             .dash-sec > .dash-sec-body {
@@ -1356,6 +1358,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
             @media (max-width:767px) {
               #citadelActionsGrid { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; padding:0 20px !important; }
+              .citadel-goals-grid-spacer { display:none !important; }
             }
           </style>
 
