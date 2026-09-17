@@ -2708,18 +2708,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var cards = row.querySelectorAll(isCitadel ? '.citadel-letter-card' : '.ci-letter-card');
     var count = cards.length;
     if (!count) return;
-    // One uniform responsive title size everywhere: the approved Favorites
-    // Autoplay dimensions (21-character sizing reference at 60% scale).
-    var sizingCount = 21;
-    var scale = 0.6;
+    // Page titles retain the approved 60% Favorites sizing. The five Citadel
+    // dashboard controls use the full CITADEL card treatment and size from their
+    // own label length so the cards are unmistakable inside the black bars.
+    var isSection = host.classList.contains('citadel-section-lettermark');
+    var sizingCount = isSection ? count : 21;
+    var scale = isSection ? 1 : 0.6;
     var hostWidth = isCitadel
       ? ((host.parentElement && host.parentElement.clientWidth) || window.innerWidth)
       : (host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth);
-    var sideRoom = window.innerWidth <= 767 ? 20 : 64;
+    var sideRoom = isSection ? 8 : (window.innerWidth <= 767 ? 20 : 64);
     var available = Math.max(120, hostWidth - sideRoom);
-    var overlap = Math.min(5, available / sizingCount * 0.09);
-    var cardWidth = Math.min(76, (available + overlap * (sizingCount - 1)) / sizingCount);
-    cardWidth = Math.max(14, cardWidth) * scale;
+    var overlap = Math.min(isSection ? 7 : 5, available / sizingCount * (isSection ? 0.16 : 0.09));
+    var cardWidth = Math.min(isSection ? 50 : 76, (available + overlap * (sizingCount - 1)) / sizingCount);
+    cardWidth = Math.max(isSection ? 18 : 14, cardWidth) * scale;
     overlap *= scale;
     var cardHeight = cardWidth * 1.6;
     var fontSize = cardWidth * 1.32;
