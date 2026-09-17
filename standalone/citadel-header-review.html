@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Citadel Header Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#111;font-family:Arial,sans-serif}
+main{width:min(1050px,100%);margin:0 auto;padding:24px 16px 40px}
+h1{font-size:16px;margin:0 0 18px;letter-spacing:.08em;text-transform:uppercase}
+.review-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:92px;background:#1c1c1c;border-radius:16px;padding:12px 18px;margin:0 0 16px;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.mark{display:flex;flex:1 1 auto;min-width:0;align-items:center;overflow:visible}
+.row{display:flex;align-items:center;justify-content:flex-start;line-height:1;overflow:visible}
+.card{position:relative;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;color:#fff;font-family:"Roboto Condensed","Arial Narrow",sans-serif;font-weight:700;line-height:1;overflow:hidden;transform-origin:50% 50%}
+.space{background:transparent!important;transform:none!important;z-index:0!important}
+.chev{flex:0 0 auto;color:#aadaf5;font-size:25px;margin-left:8px}
+.note{font-size:13px;color:#555;margin-top:20px}
+@media(max-width:600px){main{padding:16px 8px}.review-bar{min-height:72px;padding:10px 12px;border-radius:12px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Citadel dashboard header review</h1>
+<div class="review-bar"><div class="mark" data-label="GOALS / INTENTIONS" aria-label="Goals / Intentions"></div><span class="chev">›</span></div>
+<div class="review-bar"><div class="mark" data-label="DAILY HABITS" aria-label="Daily Habits"></div><span class="chev">›</span></div>
+<div class="review-bar"><div class="mark" data-label="ACTION PLAN" aria-label="Action Plan"></div><span class="chev">›</span></div>
+<div class="review-bar"><div class="mark" data-label="VISUALIZE" aria-label="Visualize"></div><span class="chev">›</span></div>
+<div class="review-bar"><div class="mark" data-label="MEDITATE" aria-label="Meditate"></div><span class="chev">›</span></div>
+<p class="note">Review-only page. No member information or Supabase data is loaded.</p>
+</main>
+<script>
+(function(){
+ const colors=['#ed1c24','#f47a39','#ffc515','#9ac62c','#10a851','#2298d0','#1269a7'];
+ const tilts=['rotate(-2deg) translateY(-1px)','rotate(1.8deg) translateY(5px)','rotate(-1.4deg) translateY(-4px)','rotate(1.8deg) translateY(4px)','rotate(-1.4deg) translateY(-3px)','rotate(1.2deg) translateY(1px)','rotate(-1deg) translateY(5px)'];
+ function build(host){
+   const label=host.dataset.label,row=document.createElement('span');row.className='row';
+   Array.from(label).forEach((ch,i)=>{const c=document.createElement('span');c.className='card'+(ch===' '?' space':'');c.textContent=ch===' '?'\u00a0':ch;c.setAttribute('aria-hidden','true');if(ch!==' '){c.style.background=colors[i%colors.length];c.style.transform=tilts[i%tilts.length];c.style.zIndex=String(label.length-i)}row.appendChild(c)});host.appendChild(row);size(host);
+ }
+ function size(host){
+   const cards=[...host.querySelectorAll('.card')],count=cards.length,row=host.querySelector('.row');if(!count||!row)return;
+   const available=Math.max(120,host.clientWidth-8),overlap=Math.min(7,available/count*.16);
+   const width=Math.max(18,Math.min(50,(available+overlap*(count-1))/count));
+   row.style.width=(width*count-overlap*(count-1))+'px';
+   cards.forEach((c,i)=>{c.style.width=width+'px';c.style.height=(width*1.6)+'px';c.style.fontSize=(width*1.32)+'px';c.style.marginLeft=i?(-overlap)+'px':'0'});
+ }
+ const hosts=[...document.querySelectorAll('.mark')];hosts.forEach(build);
+ new ResizeObserver(es=>es.forEach(e=>size(e.target))).observe(document.querySelector('main'));
+ window.addEventListener('resize',()=>hosts.forEach(size));
+})();
+</script>
+</body>
+</html>
