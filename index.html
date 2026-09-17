@@ -1214,7 +1214,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY TASK LIST moved to the TOP of Column B (vault-sidebar) -->
 
         <!-- Five primary Citadel controls: two-column system inside Column A. -->
-        <div id="citadelActionsGrid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;padding:0 15px;box-sizing:border-box;">
+        <div id="citadelActionsGrid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;padding:0 20px;box-sizing:border-box;">
         <div id="citadelNav" style="display:block;min-width:0;">
         <style>
           .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--brand);
@@ -1244,13 +1244,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
         <button onclick="calmExpand('goalsBox', this.querySelector('.goals-chev'))" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;background:transparent;border-radius:0;padding:8px 4px;margin-bottom:10px;box-shadow:none;">
-          <span class="citadel-section-lettermark" data-ci-lettermark="GOALS / INTENTIONS" role="img" aria-label="Goals / Intentions"></span>
+          <span class="citadel-section-lettermark" data-ci-lettermark="GOALS" role="img" aria-label="Goals"></span>
           <span class="goals-chev" style="flex-shrink:0;color:#1269a7;font-size:22px;">&#8964;</span>
         </button>
+        <span class="citadel-goals-grid-spacer" aria-hidden="true"></span>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
              #colb-selection-state), so it functions identically to its old location. -->
-        <div id="goalsBox" style="display:block; margin-bottom:16px;">
+        <div id="goalsBox" style="display:none; margin-bottom:16px;">
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
@@ -1324,11 +1325,39 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                the Column B nav. A small colored icon chip carries the section's accent. */
             /* DARK charcoal header (matches the ink goal buttons + black Add Intention bar),
                white body so the content stays readable. Colored icon chip = accent only. */
-            #citadelActionsGrid { width:100%; }
-            .dash-sec { margin:0; border:none; border-radius:0; overflow:visible;
-              background:transparent; box-shadow:none; min-width:0; }
+            #citadelActionsGrid { width:100%; background:#fff; }
+            /* Closed controls stay in the two-column grid. Their opened content becomes
+               a full-width grid row, inset exactly 20px from every side of Column A. */
+            #citadelNav {
+              display:block !important;
+              grid-column:1 / -1;
+              width:calc((100% - 16px) / 2);
+              min-width:0;
+            }
+            #citadelNav:has(#goalsBox:not([style*="display:none"])) { width:100%; }
+            .citadel-goals-grid-spacer { display:none !important; }
+            .dash-sec {
+              display:block;
+              min-width:0;
+              border:none;
+              background:transparent;
+              box-shadow:none;
+            }
+            .dash-sec[open] { grid-column:1 / -1; }
+            #goalsBox,
+            .dash-sec > .dash-sec-body {
+              margin:4px 0 20px !important;
+              min-width:0;
+              width:auto;
+              box-sizing:border-box;
+            }
+            #citadelNav > button,
+            .dash-sec > summary {
+              background:#fff !important;
+              border-radius:2px !important;
+            }
             .dash-sec > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-              gap:10px; padding:8px 4px; background:transparent; }
+              gap:10px; padding:8px 4px; }
             .dash-sec > summary::-webkit-details-marker { display:none; }
             .dash-sec > summary .dsec-title { display:flex; align-items:center; gap:12px; min-width:0;
               font-size:15px; font-weight:700; letter-spacing:.3px; color:#fff; }
@@ -1340,28 +1369,31 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               line-height:1; overflow:visible;
             }
             .citadel-section-lettermark .ci-lettermark-row { max-width:100%; }
+            .citadel-section-lettermark .ci-letter-card { border-radius:10%; }
             .dash-sec > summary .dsec-caret { flex-shrink:0; color:#1269a7; font-size:22px; transition:transform .25s ease; }
             .dash-sec[open] > summary .dsec-caret { transform:rotate(90deg); }
             .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
             @media (max-width:767px) {
-              #citadelActionsGrid { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; padding:0 10px !important; }
+              #citadelActionsGrid { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; padding:0 20px !important; }
+              #citadelNav { width:100% !important; }
+              .citadel-goals-grid-spacer { display:none !important; }
             }
           </style>
 
           <!-- DAILY HABITS -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="DAILY HABITS" role="img" aria-label="Daily Habits"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="dailyHabitsInlineBody"></div></div>
           </details>
 
           <!-- ACTION PLAN -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="ACTION PLAN" role="img" aria-label="Action Plan"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="actionPlanInlineBody"></div></div>
           </details>
 
           <!-- VISUALIZE — session lengths open the visualization player in this column -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="VISUALIZE" role="img" aria-label="Visualize"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
@@ -1375,7 +1407,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </details>
 
           <!-- MEDITATE — timer grid opens the meditation player in this column -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="MEDITATE" role="img" aria-label="Meditate"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
@@ -2718,25 +2750,29 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     // dashboard controls use the full CITADEL card treatment and size from their
     // own label length so the cards are unmistakable inside the black bars.
     var isSection = host.classList.contains('citadel-section-lettermark');
-    var sizingCount = isSection ? count : 21;
+    var sizingCount = isSection ? 18 : 21;
     var scale = isSection ? 1 : 0.6;
     var hostWidth = isCitadel
       ? ((host.parentElement && host.parentElement.clientWidth) || window.innerWidth)
       : (host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || window.innerWidth);
     var sideRoom = isSection ? 8 : (window.innerWidth <= 767 ? 20 : 64);
     var available = Math.max(120, hostWidth - sideRoom);
-    var overlap = Math.min(isSection ? 7 : 5, available / sizingCount * (isSection ? 0.16 : 0.09));
-    var cardWidth = Math.min(isSection ? 50 : 76, (available + overlap * (sizingCount - 1)) / sizingCount);
+    var sectionGap = isSection ? 8 : 0;
+    var overlap = isSection ? 0 : Math.min(5, available / sizingCount * 0.09);
+    var usableWidth = isSection ? Math.max(1, available - sectionGap * (sizingCount - 1)) : available;
+    var cardWidth = Math.min(isSection ? 50 : 76, (usableWidth + overlap * (sizingCount - 1)) / sizingCount);
     cardWidth = Math.max(isSection ? 18 : 14, cardWidth) * scale;
     overlap *= scale;
     var cardHeight = cardWidth * 1.6;
     var fontSize = cardWidth * 1.32;
-    if (!isCitadel) row.style.width = (cardWidth * count - overlap * (count - 1)) + 'px';
+    var extraWordSpacing = isSection ? 3 : 0;
+    var wordSpaceCount = isSection ? row.querySelectorAll('.ci-letter-card--space').length : 0;
+    if (!isCitadel) row.style.width = (cardWidth * count + (isSection ? sectionGap : -overlap) * (count - 1) + extraWordSpacing * wordSpaceCount) + 'px';
     cards.forEach(function (card, i) {
-      card.style.width = cardWidth + 'px';
+      card.style.width = (cardWidth + (card.classList.contains('ci-letter-card--space') ? extraWordSpacing : 0)) + 'px';
       card.style.height = cardHeight + 'px';
       card.style.fontSize = fontSize + 'px';
-      card.style.marginLeft = i ? (-overlap) + 'px' : '0';
+      card.style.marginLeft = i ? (isSection ? sectionGap : -overlap) + 'px' : '0';
     });
   }
 
@@ -2745,15 +2781,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var label = host.getAttribute('data-ci-lettermark') || '';
     var row = document.createElement('span');
     row.className = 'ci-lettermark-row';
+    var visibleLetterIndex = 0;
+    var letterPalette = host.classList.contains('citadel-section-lettermark')
+      ? ['#363636', '#777777']
+      : colors;
     Array.from(label).forEach(function (character, index) {
       var card = document.createElement('span');
       card.className = 'ci-letter-card' + (character === ' ' ? ' ci-letter-card--space' : '');
       card.setAttribute('aria-hidden', 'true');
       card.textContent = character === ' ' ? '\u00a0' : character;
       if (character !== ' ') {
-        card.style.background = colors[index % colors.length];
-        card.style.transform = tilts[index % tilts.length];
+        card.style.background = letterPalette[visibleLetterIndex % letterPalette.length];
+        card.style.transform = host.classList.contains('citadel-section-lettermark') ? 'none' : tilts[index % tilts.length];
         card.style.zIndex = String(label.length - index);
+        visibleLetterIndex += 1;
       }
       row.appendChild(card);
     });
