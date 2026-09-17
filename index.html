@@ -2745,15 +2745,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var label = host.getAttribute('data-ci-lettermark') || '';
     var row = document.createElement('span');
     row.className = 'ci-lettermark-row';
+    var visibleLetterIndex = 0;
+    var letterPalette = host.classList.contains('citadel-section-lettermark')
+      ? ['#363636', '#777777']
+      : colors;
     Array.from(label).forEach(function (character, index) {
       var card = document.createElement('span');
       card.className = 'ci-letter-card' + (character === ' ' ? ' ci-letter-card--space' : '');
       card.setAttribute('aria-hidden', 'true');
       card.textContent = character === ' ' ? '\u00a0' : character;
       if (character !== ' ') {
-        card.style.background = colors[index % colors.length];
+        card.style.background = letterPalette[visibleLetterIndex % letterPalette.length];
         card.style.transform = tilts[index % tilts.length];
         card.style.zIndex = String(label.length - index);
+        visibleLetterIndex += 1;
       }
       row.appendChild(card);
     });
