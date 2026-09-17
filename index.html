@@ -1328,18 +1328,29 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             #citadelActionsGrid { width:100%; }
             /* Closed controls stay in the two-column grid. Their opened content becomes
                a full-width grid row, inset exactly 20px from every side of Column A. */
-            #citadelNav { display:contents !important; }
-            .citadel-goals-grid-spacer { display:block; min-width:0; min-height:1px; }
-            .dash-sec { display:contents; }
+            #citadelNav {
+              display:block !important;
+              grid-column:1 / -1;
+              width:calc((100% - 16px) / 2);
+              min-width:0;
+            }
+            #citadelNav:has(#goalsBox:not([style*="display:none"])) { width:100%; }
+            .citadel-goals-grid-spacer { display:none !important; }
+            .dash-sec {
+              display:block;
+              min-width:0;
+              border:none;
+              background:transparent;
+              box-shadow:none;
+            }
+            .dash-sec[open] { grid-column:1 / -1; }
             #goalsBox,
             .dash-sec > .dash-sec-body {
-              grid-column:1 / -1;
               margin:4px 0 20px !important;
               min-width:0;
               width:auto;
               box-sizing:border-box;
             }
-            .dash-sec { border:none; background:transparent; box-shadow:none; }
             .dash-sec > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
               gap:10px; padding:8px 4px; background:transparent; }
             .dash-sec > summary::-webkit-details-marker { display:none; }
@@ -1358,6 +1369,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
             @media (max-width:767px) {
               #citadelActionsGrid { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; padding:0 20px !important; }
+              #citadelNav { width:100% !important; }
               .citadel-goals-grid-spacer { display:none !important; }
             }
           </style>
