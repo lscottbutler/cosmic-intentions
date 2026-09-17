@@ -1243,9 +1243,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </style>
 
         <!-- MY GOALS — inline dropdown: reveals your "I AM" goal cards (moved here from lower in Column B) -->
-        <button onclick="calmExpand('goalsBox', this.querySelector('.goals-chev'))" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;background:transparent;border-radius:0;padding:8px 4px;margin-bottom:10px;box-shadow:none;">
-          <span class="citadel-section-lettermark" data-ci-lettermark="GOALS / INTENTIONS" role="img" aria-label="Goals / Intentions"></span>
-          <span class="goals-chev" style="flex-shrink:0;color:#1269a7;font-size:22px;">&#8964;</span>
+        <button onclick="calmExpand('goalsBox', this.querySelector('.goals-chev'))" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border:none;cursor:pointer;background:#1c1c1c;border-radius:12px;padding:15px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.16);">
+          <span style="display:flex;align-items:center;gap:12px;min-width:0;font-size:15px;font-weight:700;letter-spacing:.3px;color:#fff;">
+            <span style="flex-shrink:0;width:28px;height:28px;border-radius:8px;background:#E8C830;display:inline-flex;align-items:center;justify-content:center;color:#1C2230;"><svg width="18" height="18" viewBox="0 0 64 64" fill="currentColor"><path d="M57.3638,25.8994c0,0,3.9517-7.0232-1.0266-8.9007c-4.9778-1.8776-10.6816,9.374-10.6816,9.374s-4.5-0.8711-7.8044-0.6693c-2.6404,0.1616-7.4351,0.2857-6.8716,5.3135l-7.0715,1.5822c-0.241-1.0858,0.3589-2.043,1.4001-2.3601l3.1392-0.981c-0.6309-2.8903-2.2117-5.0723-4.1306-5.278c-2.6692-0.2861-4.9714,3.3087-4.939,8.0306c0.0327,4.7212,2.3835,8.2842,5.0491,7.9614c1.9829-0.2401,3.5745-2.5919,4.1157-5.6406l3.0879-0.4242c-0.4485,6.9872-3.4888,13.0157-7.6606,14.0447c-5.2856,1.3044-10.2678-5.7123-10.3379-15.902C13.5615,21.861,18.447,14.7759,23.75,16.0073c3.2314,0.7501,5.8296,4.4891,7.0969,9.3668c1.1057-0.9022,2.467-1.356,3.7678-1.5991c-1.707-7.6962-5.6868-14.0198-10.8982-15.7642c-8.6936-2.9095-17.3977,7.546-17.2839,24.0887s8.9609,26.8776,17.6135,23.8487c5.9927-2.0977,10.2561-10.2845,11.2556-19.594c1.6926,0.0295,3.5103-0.8217,4.7942-1.3865c3.0303-1.3336,6.6418-4.1288,6.6418-4.1288s10.2219,7.3921,13.7886,3.4439C64.0923,30.3339,57.3638,25.8994,57.3638,25.8994z"/></svg></span>
+            Goals / Intentions
+          </span>
+          <span class="goals-chev" style="flex-shrink:0;color:rgba(255,255,255,.65);font-size:18px;">&#8964;</span>
         </button>
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
@@ -1312,37 +1315,31 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div id="layer-content-roadmap"></div>
         </div><!-- end colb-active-state -->
         </div><!-- end goalsBox -->
-        </div><!-- end citadelNav -->
+
 
         <!-- ── TOP SECTIONS shown EXPANDED in Column A so the Citadel has substance.
              Each is a <details open> (collapsible, opens by default). Real content:
              Daily Habits = today's checklist; Meditate/Visualize = play in-column;
              Action Plan = your goals -> open each plan. Column B is still the full nav. -->
-        <div id="dashSections" style="display:contents;">
+
           <style>
             /* Clean WHITE content cards — deliberately NOT the saturated colored bars of
                the Column B nav. A small colored icon chip carries the section's accent. */
             /* DARK charcoal header (matches the ink goal buttons + black Add Intention bar),
                white body so the content stays readable. Colored icon chip = accent only. */
-            #citadelActionsGrid { width:100%; }
-            .dash-sec { margin:0; border:none; border-radius:0; overflow:visible;
-              background:transparent; box-shadow:none; min-width:0; }
+            .dash-sec { margin:0 0 10px; border:none; border-radius:12px; overflow:hidden;
+              background:var(--card,#fff); box-shadow:0 2px 8px rgba(0,0,0,.16); }
             .dash-sec > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-              gap:10px; padding:8px 4px; background:transparent; }
+              gap:10px; padding:15px 16px; background:#1c1c1c; }
             .dash-sec > summary::-webkit-details-marker { display:none; }
             .dash-sec > summary .dsec-title { display:flex; align-items:center; gap:12px; min-width:0;
               font-size:15px; font-weight:700; letter-spacing:.3px; color:#fff; }
             .dash-sec > summary .dsec-ico { flex-shrink:0; width:28px; height:28px; border-radius:8px;
               display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:15px; line-height:1; }
-            #citadelNav .citadel-section-lettermark,
-            .dash-sec > summary .citadel-section-lettermark {
-              display:flex; flex:1 1 auto; min-width:0; align-items:center; justify-content:flex-start;
-              line-height:1; overflow:visible;
-            }
-            .citadel-section-lettermark .ci-lettermark-row { max-width:100%; }
-            .dash-sec > summary .dsec-caret { flex-shrink:0; color:#1269a7; font-size:22px; transition:transform .25s ease; }
+            .dash-sec > summary .dsec-caret { flex-shrink:0; color:rgba(255,255,255,.65); font-size:18px; transition:transform .25s ease; }
             .dash-sec[open] > summary .dsec-caret { transform:rotate(90deg); }
-            .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
+            .dash-sec-body { background:var(--card,#fff); padding:14px 15px 16px; max-height:280px; overflow-y:auto; }
+            #citadelRightActions { min-width:0; }
             @media (max-width:767px) {
               #citadelActionsGrid { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; padding:0 10px !important; }
             }
@@ -1350,19 +1347,21 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- DAILY HABITS -->
           <details open class="dash-sec">
-            <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="DAILY HABITS" role="img" aria-label="Daily Habits"></span><span class="dsec-caret">&#8250;</span></summary>
+            <summary><span class="dsec-title"><span class="dsec-ico" style="background:#E86030;">&#9672;</span>Daily Habits</span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="dailyHabitsInlineBody"></div></div>
           </details>
 
           <!-- ACTION PLAN -->
           <details open class="dash-sec">
-            <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="ACTION PLAN" role="img" aria-label="Action Plan"></span><span class="dsec-caret">&#8250;</span></summary>
+            <summary><span class="dsec-title"><span class="dsec-ico" style="background:#7888A8;">&#128506;</span>Action Plan</span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="actionPlanInlineBody"></div></div>
           </details>
 
+        </div><!-- end citadelNav: Goals, Daily Habits, Action Plan -->
+        <div id="citadelRightActions">
           <!-- VISUALIZE — session lengths open the visualization player in this column -->
           <details open class="dash-sec">
-            <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="VISUALIZE" role="img" aria-label="Visualize"></span><span class="dsec-caret">&#8250;</span></summary>
+            <summary><span class="dsec-title"><span class="dsec-ico" style="background:#3878A8;">&#128065;</span>Visualize</span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
                 <div class="time-row"><button class="time-play" onclick="launchViz(3,event)">3 Minutes</button></div>
@@ -1376,7 +1375,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- MEDITATE — timer grid opens the meditation player in this column -->
           <details open class="dash-sec">
-            <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="MEDITATE" role="img" aria-label="Meditate"></span><span class="dsec-caret">&#8250;</span></summary>
+            <summary><span class="dsec-title"><span class="dsec-ico" style="background:#A8C830;color:#1C2230;">&#9790;</span>Meditate</span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
                 <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button></div>
