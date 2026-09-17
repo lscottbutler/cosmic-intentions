@@ -3070,7 +3070,7 @@ input, textarea, select {
 @media (min-width: 768px) {
   .vault-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) !important;   /* My Thoughts .pg-body dimensions: Column A wide, Column B narrow */
+    grid-template-columns: minmax(0, calc(75% - 8px)) minmax(0, calc(25% - 8px)) !important;   /* exact 75% Column A / 25% Column B, accounting for the 16px gap */
     align-items: start !important;
     gap: 16px !important;
     width: 100% !important;
@@ -3078,7 +3078,7 @@ input, textarea, select {
     padding: 0 !important;
   }
 
-  /* Reset column containers to fill their respective 50% slot bounds dynamically */
+  /* Reset column containers to fill their exact 75% / 25% track bounds dynamically. */
   .vault-sidebar {
     width: 100% !important;
     max-width: 100% !important;
