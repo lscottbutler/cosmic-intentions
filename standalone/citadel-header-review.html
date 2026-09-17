@@ -7,26 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#111;font-family:Arial,sans-serif}
-main{width:min(1050px,100%);margin:0 auto;padding:24px 16px 40px}
+main{width:min(1050px,100%);margin:0 auto;padding:24px 16px 40px}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 24px;align-items:start}
 h1{font-size:16px;margin:0 0 18px;letter-spacing:.08em;text-transform:uppercase}
-.review-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:92px;background:#1c1c1c;border-radius:16px;padding:12px 18px;margin:0 0 16px;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.review-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:92px;background:transparent;border-radius:0;padding:8px 4px;margin:0;box-shadow:none}
 .mark{display:flex;flex:1 1 auto;min-width:0;align-items:center;overflow:visible}
 .row{display:flex;align-items:center;justify-content:flex-start;line-height:1;overflow:visible}
 .card{position:relative;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;color:#fff;font-family:"Roboto Condensed","Arial Narrow",sans-serif;font-weight:700;line-height:1;overflow:hidden;transform-origin:50% 50%}
 .space{background:transparent!important;transform:none!important;z-index:0!important}
 .chev{flex:0 0 auto;color:#aadaf5;font-size:25px;margin-left:8px}
 .note{font-size:13px;color:#555;margin-top:20px}
-@media(max-width:600px){main{padding:16px 8px}.review-bar{min-height:72px;padding:10px 12px;border-radius:12px}}
+@media(max-width:600px){main{padding:16px 8px}.grid{grid-template-columns:minmax(0,1fr);gap:12px}.review-bar{min-height:72px;padding:8px 4px}}
 </style>
 </head>
 <body>
 <main>
 <h1>Citadel dashboard header review</h1>
+<div class="grid">
 <div class="review-bar"><div class="mark" data-label="GOALS / INTENTIONS" aria-label="Goals / Intentions"></div><span class="chev">›</span></div>
 <div class="review-bar"><div class="mark" data-label="DAILY HABITS" aria-label="Daily Habits"></div><span class="chev">›</span></div>
 <div class="review-bar"><div class="mark" data-label="ACTION PLAN" aria-label="Action Plan"></div><span class="chev">›</span></div>
 <div class="review-bar"><div class="mark" data-label="VISUALIZE" aria-label="Visualize"></div><span class="chev">›</span></div>
 <div class="review-bar"><div class="mark" data-label="MEDITATE" aria-label="Meditate"></div><span class="chev">›</span></div>
+</div>
 <p class="note">Review-only page. No member information or Supabase data is loaded.</p>
 </main>
 <script>
