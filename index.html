@@ -1351,8 +1351,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               width:auto;
               box-sizing:border-box;
             }
+            #citadelNav > button,
+            .dash-sec > summary {
+              background:#fff !important;
+              border-radius:2px !important;
+            }
             .dash-sec > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-              gap:10px; padding:8px 4px; background:transparent; }
+              gap:10px; padding:8px 4px; }
             .dash-sec > summary::-webkit-details-marker { display:none; }
             .dash-sec > summary .dsec-title { display:flex; align-items:center; gap:12px; min-width:0;
               font-size:15px; font-weight:700; letter-spacing:.3px; color:#fff; }
