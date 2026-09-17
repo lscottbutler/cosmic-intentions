@@ -2733,9 +2733,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     overlap *= scale;
     var cardHeight = cardWidth * 1.6;
     var fontSize = cardWidth * 1.32;
-    if (!isCitadel) row.style.width = (cardWidth * count + (isSection ? sectionGap : -overlap) * (count - 1)) + 'px';
+    var extraWordSpacing = isSection ? 3 : 0;
+    var wordSpaceCount = isSection ? row.querySelectorAll('.ci-letter-card--space').length : 0;
+    if (!isCitadel) row.style.width = (cardWidth * count + (isSection ? sectionGap : -overlap) * (count - 1) + extraWordSpacing * wordSpaceCount) + 'px';
     cards.forEach(function (card, i) {
-      card.style.width = cardWidth + 'px';
+      card.style.width = (cardWidth + (card.classList.contains('ci-letter-card--space') ? extraWordSpacing : 0)) + 'px';
       card.style.height = cardHeight + 'px';
       card.style.fontSize = fontSize + 'px';
       card.style.marginLeft = i ? (isSection ? sectionGap : -overlap) + 'px' : '0';
