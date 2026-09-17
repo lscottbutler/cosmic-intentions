@@ -2718,7 +2718,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     // dashboard controls use the full CITADEL card treatment and size from their
     // own label length so the cards are unmistakable inside the black bars.
     var isSection = host.classList.contains('citadel-section-lettermark');
-    var sizingCount = isSection ? count : 21;
+    var sizingCount = isSection ? 18 : 21;
     var scale = isSection ? 1 : 0.6;
     var hostWidth = isCitadel
       ? ((host.parentElement && host.parentElement.clientWidth) || window.innerWidth)
