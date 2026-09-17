@@ -1250,7 +1250,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY GOALS panel — the goal cards + category filter + add form. Works by ID
              (renderVaultSidebar fills #vaultList/#vaultCats; selection logic toggles
              #colb-selection-state), so it functions identically to its old location. -->
-        <div id="goalsBox" style="display:block; margin-bottom:16px;">
+        <div id="goalsBox" style="display:none; margin-bottom:16px;">
 
         <!-- SELECTION STATE — visible until an intention is selected -->
         <div id="colb-selection-state">
@@ -1349,19 +1349,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </style>
 
           <!-- DAILY HABITS -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="DAILY HABITS" role="img" aria-label="Daily Habits"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="dailyHabitsInlineBody"></div></div>
           </details>
 
           <!-- ACTION PLAN -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="ACTION PLAN" role="img" aria-label="Action Plan"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body"><div id="actionPlanInlineBody"></div></div>
           </details>
 
           <!-- VISUALIZE — session lengths open the visualization player in this column -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="VISUALIZE" role="img" aria-label="Visualize"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
@@ -1375,7 +1375,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </details>
 
           <!-- MEDITATE — timer grid opens the meditation player in this column -->
-          <details open class="dash-sec">
+          <details class="dash-sec">
             <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="MEDITATE" role="img" aria-label="Meditate"></span><span class="dsec-caret">&#8250;</span></summary>
             <div class="dash-sec-body" data-player-box>
               <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
