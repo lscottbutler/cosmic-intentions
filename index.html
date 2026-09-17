@@ -1327,7 +1327,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             #citadelActionsGrid { width:100%; }
             /* Closed controls stay in the two-column grid. Their opened content becomes
                a full-width grid row, inset exactly 20px from every side of Column A. */
-            #citadelNav,
+            #citadelNav { display:contents !important; }
             .dash-sec { display:contents; }
             #goalsBox,
             .dash-sec > .dash-sec-body {
