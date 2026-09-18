@@ -915,7 +915,7 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
 }
 
 #ciApprovedMasters {
-  width: 100%;
+  width: calc(100% - 40px);
   min-width: 0;
 }
 
