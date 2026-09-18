@@ -11,7 +11,7 @@
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
     button{font:inherit}
-    .shell{width:100%;border:2px solid var(--line);background:var(--frame);overflow:hidden;transition:min-height .35s ease}
+    .shell{width:100%;border:0;background:var(--frame);overflow:hidden;transition:min-height .35s ease}
     .cap{margin:16px 14px 0;padding:14px 18px 13px;background:var(--header);color:#dedbd2;text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/12% 12% 3px 3px}
     .stage{position:relative;margin:0 14px;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
     .view{animation:fadeIn .24s ease both}
@@ -164,7 +164,7 @@
         if(!active)meditationMenu.hidden=true;
       }
       function homeMode(){
-        selected=null;setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');cap.textContent='Long Form Manifestation';show(home);
+        selected=null;setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Long Form Manifestation';show(home);
       }
       let experienceObserver=null;
       function fitExperience(){
@@ -216,6 +216,7 @@
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:'#82ad77');
+        shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         cap.textContent=item[1];
         experienceFrame.title=item[1];
