@@ -168,7 +168,11 @@
         deck.classList.toggle('meditation-mode',active);
         if(!active)meditationMenu.hidden=true;
       }
+      function notifyParentMode(action){
+        try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
+      }
       function homeMode(){
+        notifyParentMode('home');
         selected=null;shell.classList.remove('daily-habits-mode');setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Long Form Manifestation';show(home);
       }
       let experienceObserver=null;
@@ -215,6 +219,7 @@
       }
       function select(action){
         if(action==='citadel'){homeMode();return} // Safety: never embed Citadel inside its own LFM shell.
+        notifyParentMode(action);
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
