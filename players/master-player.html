@@ -235,7 +235,7 @@
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:'#82ad77');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
-        cap.textContent=item[1];
+        cap.textContent=action==='daily-habits'?'Habits':item[1];
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px':'600px';
         experienceFrame.src=destinationUrl(action);show(experience);
