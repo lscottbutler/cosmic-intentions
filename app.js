@@ -5151,6 +5151,7 @@ export async function init() {
   const _masterInlineAction = new URLSearchParams(location.search).get('masterInline');
   if (_masterInlineLabels[_masterInlineAction]) {
     document.documentElement.classList.add('master-inline-mode');
+    document.documentElement.classList.add('master-inline-' + _masterInlineAction);
     const _hdr = document.querySelector('header.hdr');
     const _top = document.getElementById('topNav');
     const _tabs = document.getElementById('tabBar');
