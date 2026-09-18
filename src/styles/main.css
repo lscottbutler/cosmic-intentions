@@ -3691,3 +3691,19 @@ html.master-inline-goals #page-setup .setup-page-header .ci-page-lettermark {
 html.master-inline-goals #page-setup .setup-page-header {
   padding-top: 0 !important;
 }
+
+
+/* CI V2 — the LFM is the Citadel dashboard. Remove visible Column B and let
+   Column A own the full canvas; navigation now lives in the LFM hamburger. */
+#page-dashboard .vault-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+}
+#page-dashboard .vault-sidebar {
+  display: none !important;
+}
+#page-dashboard .vault-main {
+  grid-column: 1 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
