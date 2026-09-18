@@ -3872,3 +3872,30 @@ html.master-inline-daily-habits #pbHabitList select {
 html.master-inline-daily-habits #page-habits > .setup-page > svg {
   display: none !important;
 }
+
+
+/* Daily Habits editor: two responsive columns with content-sized cards. */
+#pbHabitList .pb-habit-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: start !important;
+}
+#pbHabitList .pb-habit-card {
+  min-width: 0;
+  height: auto;
+  align-self: start;
+}
+#pbHabitList .pb-habit-card textarea {
+  width: 100%;
+  height: auto;
+  min-height: 62px;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  resize: none !important;
+  field-sizing: content;
+}
+@media (max-width: 680px) {
+  #pbHabitList .pb-habit-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
