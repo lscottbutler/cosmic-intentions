@@ -42,17 +42,9 @@
     .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.2);overflow:hidden}
     .med-progress-fill{display:block;width:0;height:100%;border-radius:inherit;background:#a7c526;transition:width .2s linear}
     .deck.meditation-mode .med-progress{display:block;animation:controlFadeIn .25s ease both}
-    .med-controls{grid-column:1/-1;display:none;grid-template-columns:minmax(54px,.75fr) minmax(164px,2.4fr) minmax(70px,1fr) minmax(54px,.75fr);align-items:end;gap:10px;padding:2px 6px 0}
+    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
     .deck.meditation-mode .med-controls{display:grid;animation:controlFadeIn .28s .14s ease both}
     .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer}
-    .med-nav-cluster{display:flex;align-items:center;justify-content:center;gap:10px;align-self:end}
-    .med-cluster-button{border:0;background:transparent;padding:0;cursor:pointer;border-radius:50%}
-    .med-cluster-circle{width:52px;height:52px;border:7px solid #929292;border-radius:50%;display:grid;place-items:center;background:#000;color:#fff;font-size:24px;font-weight:900;line-height:1;box-shadow:0 7px 12px rgba(0,0,0,.25);transition:transform .18s ease,background .18s ease}
-    .med-cluster-button:hover .med-cluster-circle,.med-cluster-button:focus-visible .med-cluster-circle{background:#171b18;transform:translateY(-2px);outline:2px solid #fff;outline-offset:2px}
-    .med-cluster-menu{display:grid;gap:4px}
-    .med-cluster-menu i{display:block;width:22px;height:3px;border-radius:2px;background:#fff}
-    .med-cluster-prev{transform:translateX(-2px)}
-    .med-cluster-next{transform:translateX(2px)}
     .med-circle{width:42px;height:42px;border:2px solid #a7c526;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:18px;font-weight:900;transition:transform .18s ease,background .18s ease}
     .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#86a41d;transform:translateY(-2px);outline:none}
     .med-control.play-control{position:relative;transform:translateY(10px)}
@@ -121,12 +113,10 @@
       <button class="med-progress" id="medProgress" type="button" aria-label="Meditation progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"></span></span></button>
       <div class="med-controls" id="meditationControls" aria-label="Meditation controls">
         <button class="med-control" type="button" data-med-command="back"><span class="med-circle">←</span><span>Back</span></button>
-        <div class="med-nav-cluster" role="group" aria-label="Meditation navigation">
-          <button class="med-cluster-button" type="button" data-med-command="shorter" aria-label="Previous meditation"><span class="med-cluster-circle med-cluster-prev">◀</span></button>
-          <button class="med-cluster-button" type="button" data-med-command="menu" aria-label="Open meditation menu"><span class="med-cluster-circle"><span class="med-cluster-menu" aria-hidden="true"><i></i><i></i><i></i></span></span></button>
-          <button class="med-cluster-button" type="button" data-med-command="longer" aria-label="Next meditation"><span class="med-cluster-circle med-cluster-next">▶</span></button>
-        </div>
+        <button class="med-control" type="button" data-med-command="shorter"><span class="med-circle">−</span><span>Shorter</span></button>
+        <button class="med-control" type="button" data-med-command="mode"><span class="med-circle" id="medModeIcon">U</span><span id="medModeLabel">Unguided</span></button>
         <button class="med-control play-control" type="button" data-med-command="toggle"><span class="med-countdown" id="medCountdown">15:00</span><span class="med-circle" id="medPlayIcon">▶</span><span id="medPlayLabel">Play</span></button>
+        <button class="med-control" type="button" data-med-command="longer"><span class="med-circle">＋</span><span>Longer</span></button>
         <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
       </div>
     </nav>
@@ -291,7 +281,6 @@
       document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',()=>select('everything')));
       addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
-      notifyParentMode('home');
       reportHeight();
     })();
   </script>
