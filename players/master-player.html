@@ -20,6 +20,8 @@
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .statement{min-height:80px;display:grid;place-items:center;text-align:center;text-transform:uppercase;font-size:clamp(19px,4.5vw,31px);font-weight:800;line-height:1.45;letter-spacing:2.2px}
+    .shell.home-mode .stage{min-height:268px}
+    .shell.home-mode .statement{min-height:212px}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
     .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
@@ -68,7 +70,7 @@
   </style>
 </head>
 <body>
-  <main class="shell" aria-label="Cosmic Intentions master dashboard">
+  <main class="shell home-mode" aria-label="Cosmic Intentions master dashboard">
     <header class="cap" id="capTitle">Long Form Manifestation</header>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
@@ -156,6 +158,7 @@
         });
       }
       function show(view){
+        shell.classList.toggle('home-mode',view===home);
         [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
         document.querySelectorAll('.nav[data-action]').forEach(n=>n.classList.toggle('active',n.dataset.action===selected));
         document.getElementById('lfmBack').hidden=view===home;
