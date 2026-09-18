@@ -3943,3 +3943,40 @@ html.master-inline-daily-habits #page-habits .setup-page-header h1 {
 .lfm-mini-nav button:nth-child(2) span {
   transform: translateY(-2px);
 }
+
+
+/* LFM Goals uses the original Citadel goal-card workspace without nesting the
+   member homepage or another LFM inside itself. */
+html.master-inline-goals #page-dashboard {
+  display: block !important;
+}
+html.master-inline-goals #page-dashboard .pg-hdr,
+html.master-inline-goals #page-dashboard .vault-sidebar,
+html.master-inline-goals #page-dashboard #dashGreeting,
+html.master-inline-goals #page-dashboard [data-block="dashboard-note-2"],
+html.master-inline-goals #page-dashboard #ciApprovedMasters,
+html.master-inline-goals #page-dashboard .page-intro-card,
+html.master-inline-goals #page-dashboard #dashSections,
+html.master-inline-goals #page-dashboard [data-note-key="dashboard"] {
+  display: none !important;
+}
+html.master-inline-goals #page-dashboard .vault-layout,
+html.master-inline-goals #page-dashboard .vault-main {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html.master-inline-goals #page-dashboard #citadelActionsGrid {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+html.master-inline-goals #page-dashboard #citadelNav,
+html.master-inline-goals #page-dashboard #goalsBox {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
