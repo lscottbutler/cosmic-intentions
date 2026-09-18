@@ -284,7 +284,7 @@ export function renderPBHabitList() {
     html += `<div style="display:grid;grid-template-columns:1fr;gap:8px;">`;
     items.forEach((h, gi) => {
       html += `
-      <div style="background:#2E2E2E;padding:11px 12px;border-radius:10px;">
+      <div style="background:#fff;padding:11px 12px;border:2px solid ${CAT_COLORS[cat]};border-radius:10px;">
         <textarea maxlength="160" rows="2" onchange="pbSaveHabitName('${h.id}',this.value)"
           style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:vertical;min-height:62px;margin-bottom:8px;">${esc(h.name)}</textarea>
         <div style="display:flex;gap:8px;align-items:center;">
