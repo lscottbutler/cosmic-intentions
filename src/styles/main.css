@@ -3905,3 +3905,41 @@ html.master-inline-daily-habits #page-habits > .setup-page > svg {
 html.master-inline-daily-habits #page-habits .setup-page-header h1 {
   display: none !important;
 }
+
+
+/* Habits LFM — centered three-button mini navigation above the first category. */
+.lfm-mini-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(14px, 4vw, 28px);
+  margin: 4px 0 18px;
+  padding: 6px 0;
+}
+.lfm-mini-nav button {
+  width: clamp(58px, 9vw, 76px);
+  height: clamp(58px, 9vw, 76px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: clamp(8px, 1.2vw, 11px) solid #9a9a9a;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  box-shadow: 0 10px 16px rgba(0,0,0,.22);
+  cursor: pointer;
+  font: 700 clamp(25px, 4vw, 34px)/1 Arial, sans-serif;
+}
+.lfm-mini-nav button:hover,
+.lfm-mini-nav button:focus-visible {
+  border-color: #b3b3b3;
+  transform: translateY(-1px);
+}
+.lfm-mini-nav button:active {
+  transform: translateY(1px);
+  box-shadow: 0 5px 9px rgba(0,0,0,.2);
+}
+.lfm-mini-nav button:nth-child(2) span {
+  transform: translateY(-2px);
+}
