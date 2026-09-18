@@ -150,10 +150,14 @@
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
       const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided';
       document.getElementById('statement').textContent=statement;
-      let selected=null;
+      let selected=null,lastReportedHeight=0,heightFrame=0;
       function reportHeight(){
-        requestAnimationFrame(()=>{
+        if(heightFrame)return;
+        heightFrame=requestAnimationFrame(()=>{
+          heightFrame=0;
           const height=Math.ceil(Math.max(shell.scrollHeight,shell.getBoundingClientRect().height));
+          if(Math.abs(height-lastReportedHeight)<12)return;
+          lastReportedHeight=height;
           parent.postMessage({type:'ci-lfm-height',height},location.origin);
         });
       }
@@ -198,16 +202,22 @@
               reportHeight();
             }
           }
-          if(experienceObserver)experienceObserver.disconnect();
-          if('ResizeObserver'in window&&doc.body){
-            experienceObserver=new ResizeObserver(fitExperience);
-            experienceObserver.observe(active||doc.body);
-          }
         }catch(_){}
       }
       experienceFrame.addEventListener('load',()=>{
+        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         window.setTimeout(fitExperience,80);
-        window.setTimeout(fitExperience,450);
+        window.setTimeout(()=>{
+          fitExperience();
+          try{
+            const doc=experienceFrame.contentDocument;
+            const active=doc&&doc.querySelector('.page.active, main, [role="main"]');
+            if('ResizeObserver'in window&&active){
+              experienceObserver=new ResizeObserver(()=>fitExperience());
+              experienceObserver.observe(active);
+            }
+          }catch(_){}
+        },450);
         window.setTimeout(fitExperience,1200);
       });
       function destinationUrl(action){
