@@ -3707,3 +3707,13 @@ html.master-inline-goals #page-setup .setup-page-header {
   width: 100% !important;
   max-width: none !important;
 }
+
+
+/* CI V2 — outline each complete Goal card as one black box. */
+html.master-inline-goals #page-setup .pb-goal-card {
+  border: 2px solid #000 !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
