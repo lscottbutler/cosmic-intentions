@@ -458,7 +458,7 @@ export function subnavForward() { history.forward(); }
 
 /* Step through the top tab bar in order (dir -1 = previous tab, +1 = next tab), wrapping
    around. The Column B nav cluster arrows use this — go to whichever tab is next/prev. */
-const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','runthroughs','meditation','gratitude','wins','cosmiclibrary','proof'];
+const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','meditation','gratitude','wins','cosmiclibrary','proof'];
 export function tabStep(dir) {
   const active = document.querySelector('.page.active');
   let cur = active ? active.id.replace(/^page-/, '') : 'dashboard';
@@ -486,8 +486,11 @@ window.addEventListener('popstate', (e) => {
 });
 
 export function navTo(id) {
+  // The old standalone Daily Habits/run-through page is retired. Habits now
+  // live inside the LFM; stale links return safely to the Citadel dashboard.
+  if (id === 'runthroughs') id = 'dashboard';
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','runthroughs','entcard'];
+  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
