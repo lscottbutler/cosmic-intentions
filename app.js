@@ -458,7 +458,7 @@ export function subnavForward() { history.forward(); }
 
 /* Step through the top tab bar in order (dir -1 = previous tab, +1 = next tab), wrapping
    around. The Column B nav cluster arrows use this — go to whichever tab is next/prev. */
-const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','dailyfocus','vizlibrary','meditation','gratitude','wins','cosmiclibrary','proof'];
+const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','vizlibrary','meditation','gratitude','wins','cosmiclibrary','proof'];
 export function tabStep(dir) {
   const active = document.querySelector('.page.active');
   let cur = active ? active.id.replace(/^page-/, '') : 'dashboard';
@@ -485,7 +485,37 @@ window.addEventListener('popstate', (e) => {
   _updateSubnav();
 });
 
+export function openFavoritesInLfm() {
+  if (!currentUser) {
+    closeDrawer();
+    openAuth('signin');
+    return;
+  }
+  closeDrawer();
+  const revealFavorites = () => {
+    const frame = document.getElementById('ciMasterPlayerFrame');
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage({ type: 'ci-lfm-select', action: 'favorites' }, location.origin);
+    frame.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  };
+  const dashboard = document.getElementById('page-dashboard');
+  if (!dashboard || !dashboard.classList.contains('active')) {
+    navTo('dashboard');
+    window.setTimeout(revealFavorites, 180);
+    window.setTimeout(revealFavorites, 550);
+  } else {
+    revealFavorites();
+  }
+}
+
 export function navTo(id) {
+  if (id === 'dailyfocus') {
+    openFavoritesInLfm();
+    return;
+  }
   // The old standalone Daily Habits/run-through page is retired. Habits now
   // live inside the LFM; stale links return safely to the Citadel dashboard.
   if (id === 'runthroughs') id = 'dashboard';
