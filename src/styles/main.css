@@ -3740,3 +3740,76 @@ html.master-inline-daily-habits .pg-frame {
 html.master-inline-daily-habits .pg-bezel {
   background: #5f645e !important;
 }
+
+
+/* CI V2 — universal LFM embedded-tool isolation.
+   Every destination loaded by the LFM contributes only its tool surface.
+   Never render the member-portal shell, a second Citadel, Column B, or duplicate
+   page framing inside the LFM dashboard. */
+html.master-inline-mode,
+html.master-inline-mode body {
+  width: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  background: #fff !important;
+}
+html.master-inline-mode .loading-screen,
+html.master-inline-mode body > header,
+html.master-inline-mode #topNav,
+html.master-inline-mode #tabBar,
+html.master-inline-mode .drawer,
+html.master-inline-mode .subnav,
+html.master-inline-mode .vault-sidebar,
+html.master-inline-mode .pg-2col-side,
+html.master-inline-mode .pg-side,
+html.master-inline-mode .viz-side,
+html.master-inline-mode .colb-nav,
+html.master-inline-mode .colb-links {
+  display: none !important;
+}
+html.master-inline-mode .page-wrap,
+html.master-inline-mode .page.active {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+}
+html.master-inline-mode .page:not(.active),
+html.master-inline-mode #page-dashboard {
+  display: none !important;
+}
+html.master-inline-mode .pg-frame,
+html.master-inline-mode .pg-bezel,
+html.master-inline-mode .pg-screen {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: #fff !important;
+}
+html.master-inline-mode .pg-hdr {
+  display: none !important;
+}
+html.master-inline-mode .pg-2col,
+html.master-inline-mode .vault-layout {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html.master-inline-mode .pg-2col-main,
+html.master-inline-mode .vault-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
