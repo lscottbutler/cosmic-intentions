@@ -33,6 +33,23 @@
     .nav:hover,.nav:focus-visible,.nav.active{color:#fff;outline:none}
     .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .nav span{font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap}
+    .deck.meditation-mode .normal-control{animation:controlFadeOut .18s ease both;pointer-events:none}
+    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
+    .deck.meditation-mode .med-controls{display:grid;animation:controlFadeIn .28s .14s ease both}
+    .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer}
+    .med-circle{width:42px;height:42px;border:2px solid #a7c526;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:18px;font-weight:900;transition:transform .18s ease,background .18s ease}
+    .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#86a41d;transform:translateY(-2px);outline:none}
+    .med-control.play-control{transform:translateY(10px)}
+    .med-control.play-control .med-circle{width:58px;height:58px;background:#85a620;border:5px solid #315f12;font-size:25px}
+    .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
+    .med-menu{margin:0 0 16px;padding:18px;border:1px solid #b8bcb8;border-radius:10px;background:#fff;color:#1f2724;animation:fadeIn .22s ease both}
+    .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 14px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
+    .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
+    .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
+    .med-option{border:1px solid #a9ada9;border-radius:999px;background:#fff;padding:9px 6px;font-weight:800;cursor:pointer}
+    .med-option.active{background:#171b18;color:#fff;border-color:#171b18}
+    .guided-note{margin:10px 0 0;font-size:12px;color:#59605b}
+    @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
       .cap{margin:10px 8px 0;padding:11px 8px;font-size:11px;letter-spacing:1.4px}
       .stage{margin:0 8px;padding:22px 14px}
@@ -55,18 +72,43 @@
         <div class="directory" id="directory"></div>
       </div>
       <div class="view" id="experienceView" hidden>
+        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
+          <h2>Meditation Menu</h2>
+          <div><strong>Style</strong></div>
+          <div class="med-menu-row mode" id="meditationModes">
+            <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
+            <button class="med-option" type="button" data-med-mode="guided">Guided</button>
+          </div>
+          <div style="margin-top:14px"><strong>Time</strong></div>
+          <div class="med-menu-row" id="meditationTimes">
+            <button class="med-option" type="button" data-med-time="2">2 min</button>
+            <button class="med-option" type="button" data-med-time="5">5 min</button>
+            <button class="med-option" type="button" data-med-time="10">10 min</button>
+            <button class="med-option active" type="button" data-med-time="15">15 min</button>
+            <button class="med-option" type="button" data-med-time="30">30 min</button>
+          </div>
+          <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
+        </section>
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
     <nav class="deck" aria-label="Master dashboard controls">
-      <button class="nav" data-action="meditation" aria-label="Meditate"><svg viewBox="0 0 28 28"><circle cx="12" cy="5" r="2"/><path d="M12 9v7l-6 7m6-6 7 2m-7-6 5-4M5 23h15"/></svg><span>Meditate</span></button>
-      <button class="nav" data-action="daily-habits" aria-label="Daily Habits"><svg viewBox="0 0 28 28"><path d="M7 5h14v19H7zM11 2h6v6h-6zM11 12h6m-6 4h6m-6 4h5"/></svg><span>Habits</span></button>
-      <button class="nav" data-action="goals" aria-label="Goals"><svg viewBox="0 0 28 28"><circle cx="13" cy="14" r="10"/><circle cx="13" cy="14" r="6"/><circle cx="13" cy="14" r="2"/><path d="m15 12 9-9m-4 0h4v4"/></svg><span>Goals</span></button>
-      <button class="nav" data-action="visualization" aria-label="Visualize"><svg viewBox="0 0 28 28"><path d="M2 14q12-12 24 0-12 12-24 0Z"/><circle cx="14" cy="14" r="4"/></svg><span>Visualize</span></button>
-      <button class="nav" data-action="action-plan" aria-label="Action Plan"><svg viewBox="0 0 28 28"><path d="M8 5c4 2 5 7 2 11s-7 3-8-1 2-8 6-10Zm12 7c4 2 6 7 3 10s-7 1-7-3 1-6 4-7Z"/></svg><span>Action Plan</span></button>
-      <button class="nav" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
-      <button class="nav" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
-      <button class="nav" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
+      <button class="nav normal-control" data-action="meditation" aria-label="Meditate"><svg viewBox="0 0 28 28"><circle cx="12" cy="5" r="2"/><path d="M12 9v7l-6 7m6-6 7 2m-7-6 5-4M5 23h15"/></svg><span>Meditate</span></button>
+      <button class="nav normal-control" data-action="daily-habits" aria-label="Daily Habits"><svg viewBox="0 0 28 28"><path d="M7 5h14v19H7zM11 2h6v6h-6zM11 12h6m-6 4h6m-6 4h5"/></svg><span>Habits</span></button>
+      <button class="nav normal-control" data-action="goals" aria-label="Goals"><svg viewBox="0 0 28 28"><circle cx="13" cy="14" r="10"/><circle cx="13" cy="14" r="6"/><circle cx="13" cy="14" r="2"/><path d="m15 12 9-9m-4 0h4v4"/></svg><span>Goals</span></button>
+      <button class="nav normal-control" data-action="visualization" aria-label="Visualize"><svg viewBox="0 0 28 28"><path d="M2 14q12-12 24 0-12 12-24 0Z"/><circle cx="14" cy="14" r="4"/></svg><span>Visualize</span></button>
+      <button class="nav normal-control" data-action="action-plan" aria-label="Action Plan"><svg viewBox="0 0 28 28"><path d="M8 5c4 2 5 7 2 11s-7 3-8-1 2-8 6-10Zm12 7c4 2 6 7 3 10s-7 1-7-3 1-6 4-7Z"/></svg><span>Action Plan</span></button>
+      <button class="nav normal-control" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
+      <button class="nav normal-control" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
+      <button class="nav normal-control" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
+      <div class="med-controls" id="meditationControls" aria-label="Meditation controls">
+        <button class="med-control" type="button" data-med-command="back"><span class="med-circle">←</span><span>Back</span></button>
+        <button class="med-control" type="button" data-med-command="shorter"><span class="med-circle">−</span><span>Shorter</span></button>
+        <button class="med-control" type="button" data-med-command="mode"><span class="med-circle" id="medModeIcon">U</span><span id="medModeLabel">Unguided</span></button>
+        <button class="med-control play-control" type="button" data-med-command="toggle"><span class="med-circle" id="medPlayIcon">▶</span><span id="medPlayLabel">Play</span></button>
+        <button class="med-control" type="button" data-med-command="longer"><span class="med-circle">＋</span><span>Longer</span></button>
+        <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
+      </div>
     </nav>
   </main>
   <script>
@@ -96,6 +138,8 @@
       const shell=document.querySelector('.shell');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
+      const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
+      const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided';
       document.getElementById('statement').textContent=statement;
       let selected=null;
       function reportHeight(){
@@ -110,8 +154,12 @@
         document.getElementById('lfmBack').hidden=view===home;
         reportHeight();
       }
+      function setMeditationMode(active){
+        deck.classList.toggle('meditation-mode',active);
+        if(!active)meditationMenu.hidden=true;
+      }
       function homeMode(){
-        selected=null;if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');cap.textContent='Long Form Manifestation';show(home);
+        selected=null;setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');cap.textContent='Long Form Manifestation';show(home);
       }
       let experienceObserver=null;
       function fitExperience(){
@@ -149,7 +197,7 @@
         window.setTimeout(fitExperience,1200);
       });
       function destinationUrl(action){
-        if(action==='meditation')return '/players/meditation.html?t=15';
+        if(action==='meditation')return '/players/meditation.html?t='+meditationMinutes+'&mode='+meditationMode+'&external=1';
         const url=new URL('/',location.origin);
         url.searchParams.set('masterInline',action);
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
@@ -160,6 +208,7 @@
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
+        setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:'#82ad77');
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
@@ -168,6 +217,35 @@
         experienceFrame.style.height=action==='meditation'?Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px':'600px';
         experienceFrame.src=destinationUrl(action);show(experience);
       }
+      function syncMeditationUI(){
+        document.querySelectorAll('[data-med-time]').forEach(b=>b.classList.toggle('active',Number(b.dataset.medTime)===meditationMinutes));
+        document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
+        document.getElementById('medModeIcon').textContent=meditationMode==='guided'?'G':'U';
+        document.getElementById('medModeLabel').textContent=meditationMode==='guided'?'Guided':'Unguided';
+        document.getElementById('guidedNote').hidden=meditationMode!=='guided';
+      }
+      function reloadMeditation(){experienceFrame.src=destinationUrl('meditation');syncMeditationUI()}
+      function sendMeditation(command){experienceFrame.contentWindow?.postMessage({type:'ci-meditation-command',command},location.origin)}
+      document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
+        const command=button.dataset.medCommand;
+        if(command==='back'){homeMode();return}
+        if(command==='menu'){meditationMenu.hidden=!meditationMenu.hidden;reportHeight();return}
+        if(command==='toggle'){sendMeditation('toggle');return}
+        if(command==='mode'){meditationMode=meditationMode==='guided'?'unguided':'guided';reloadMeditation();return}
+        const index=meditationTimes.indexOf(meditationMinutes);
+        if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
+        if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}
+      }));
+      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
+      document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
+      addEventListener('message',event=>{
+        if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
+        const data=event.data||{};if(data.type!=='ci-meditation-state')return;
+        const running=data.state==='running';
+        document.getElementById('medPlayIcon').textContent=running?'Ⅱ':'▶';
+        document.getElementById('medPlayLabel').textContent=running?'Pause':data.state==='paused'?'Resume':'Play';
+      });
+      syncMeditationUI();
       const grid=document.getElementById('directory');
       items.forEach(([key,label])=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span>'+label+'</span><span aria-hidden="true">›</span>';b.addEventListener('click',()=>select(key));grid.appendChild(b)});
       document.querySelectorAll('.nav[data-action]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.action)));
