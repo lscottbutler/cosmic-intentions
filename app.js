@@ -372,6 +372,14 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
+  // Favorites Autoplay is an LFM interface, never a standalone top-level page.
+  if (id === 'dailyfocus' && window.self === window.top) {
+    id = 'dashboard';
+    window.setTimeout(() => {
+      const frame = document.getElementById('ciMasterPlayerFrame');
+      frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'favorites' }, location.origin);
+    }, 220);
+  }
   // The Admin workspace is owner-only. A direct or stale navigation attempt by
   // any member returns to the Citadel without exposing editor controls.
   if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) id = 'dashboard';
@@ -402,7 +410,6 @@ export function showPage(id) {
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
 
   // Reusable right-hand column (clown + Big 3 stats) on these framed pages.
-  if (id === 'dailyfocus') ensurePageSideColumn('dailyfocus');
   if (id === 'notes') ensurePageSideColumn('notes');
   if (id === 'myroadmap') ensurePageSideColumn('myroadmap');
   if (id === 'wins') ensurePageSideColumn('wins');
