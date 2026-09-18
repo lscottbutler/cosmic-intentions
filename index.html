@@ -1414,6 +1414,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <!-- WORKSPACE CONTENT — the single 10-step AI roadmap -->
           <div id="layer-content-roadmap"></div>
         </div><!-- end colb-active-state -->
+
+        <!-- LFM GOALS MINI NAV — previous tool / full LFM menu / next tool -->
+        <nav class="lfm-mini-nav lfm-goals-mini-nav" aria-label="Long Form Manifestation navigation">
+          <button type="button" onclick="lfmMiniNav('back')" aria-label="Previous LFM tool" title="Previous"><span aria-hidden="true">&#9664;</span></button>
+          <button type="button" onclick="lfmMiniNav('menu')" aria-label="Open LFM menu" title="Menu"><span aria-hidden="true">&#9776;</span></button>
+          <button type="button" onclick="lfmMiniNav('forward')" aria-label="Next LFM tool" title="Next"><span aria-hidden="true">&#9654;</span></button>
+        </nav>
         </div><!-- end goalsBox -->
         </div><!-- end citadelNav -->
 
