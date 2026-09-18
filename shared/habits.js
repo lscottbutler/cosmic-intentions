@@ -281,12 +281,12 @@ export function renderPBHabitList() {
       html += `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 2px 6px;">No habits here yet — set a habit's category to "${cat}".</div>`;
       return;
     }
-    html += `<div style="display:grid;grid-template-columns:1fr;gap:8px;">`;
+    html += `<div class="pb-habit-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;">`;
     items.forEach((h, gi) => {
       html += `
-      <div style="background:#fff;padding:11px 12px;border:2px solid ${CAT_COLORS[cat]};border-radius:10px;">
-        <textarea maxlength="160" rows="2" onchange="pbSaveHabitName('${h.id}',this.value)"
-          style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:vertical;min-height:62px;margin-bottom:8px;">${esc(h.name)}</textarea>
+      <div class="pb-habit-card" style="background:#fff;padding:11px 12px;border:2px solid ${CAT_COLORS[cat]};border-radius:10px;">
+        <textarea maxlength="160" rows="1" onchange="pbSaveHabitName('${h.id}',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+          style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:none;field-sizing:content;min-height:62px;overflow:hidden;margin-bottom:8px;">${esc(h.name)}</textarea>
         <div style="display:flex;gap:8px;align-items:center;">
           <button onclick="pbMoveHabit('${h.id}',-1)" title="Move up"   style="${arrow}${gi === 0 ? 'opacity:.3;pointer-events:none;' : ''}">▲</button>
           <button onclick="pbMoveHabit('${h.id}',1)"  title="Move down" style="${arrow}${gi === items.length - 1 ? 'opacity:.3;pointer-events:none;' : ''}">▼</button>
