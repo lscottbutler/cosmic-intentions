@@ -18,10 +18,37 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
 (function(){
   try {
     var action = new URLSearchParams(location.search).get('masterInline');
-    if (action) {
-      document.documentElement.classList.add('master-inline-mode');
-      document.documentElement.classList.add('master-inline-' + action);
+    if (!action) return;
+    document.documentElement.classList.add('master-inline-mode');
+    document.documentElement.classList.add('master-inline-' + action);
+
+    var inlinePages = {
+      'goals':'page-setup',
+      'daily-habits':'page-habits',
+      'action-plan':'page-myroadmap',
+      'visualization':'page-vizlibrary',
+      'favorites':'page-dailyfocus',
+      'gratitude':'page-gratitude',
+      'journal':'page-notes',
+      'thoughts':'page-mynotes',
+      'wins':'page-wins',
+      'proof':'page-proof',
+      'cosmic-library':'page-cosmiclibrary',
+      'quickie-move':'page-entcard',
+      'admin':'page-admin'
+    };
+    function forceInlineDestination(){
+      var targetId = inlinePages[action];
+      var target = targetId && document.getElementById(targetId);
+      if (!target) return;
+      document.querySelectorAll('.page').forEach(function(page){page.classList.toggle('active',page===target)});
     }
+    document.addEventListener('DOMContentLoaded',function(){
+      forceInlineDestination();
+      requestAnimationFrame(forceInlineDestination);
+      setTimeout(forceInlineDestination,80);
+      setTimeout(forceInlineDestination,400);
+    });
   } catch (e) {}
 })();
 </script>
@@ -1224,17 +1251,35 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
             function setLfmContextTitle(action) {
               if (!titleHost) return;
-              var showHabits = action === 'daily-habits';
-              if (!showHabits) {
-                if (titleHost.classList.contains('citadel-context-lettermark')) {
-                  titleHost.innerHTML = citadelTitleMarkup;
-                  titleHost.classList.remove('citadel-context-lettermark');
-                  titleHost.setAttribute('aria-label', 'CITADEL');
-                }
-                return;
-              }
+              var titles = {
+                'home':'CITADEL',
+                'citadel':'CITADEL',
+                'goals':'GOALS',
+                'daily-habits':'HABITS',
+                'action-plan':'ACTION PLAN',
+                'visualization':'VISUALIZE',
+                'meditation':'MEDITATE',
+                'favorites':'FAVORITES',
+                'gratitude':'GRATITUDE',
+                'journal':'JOURNAL',
+                'thoughts':'THOUGHTS',
+                'wins':'WINS',
+                'proof':'PROOF',
+                'cosmic-library':'LIBRARY',
+                'quickie-move':'QUICKIE MOVE',
+                'admin':'ADMIN',
+                'everything':'MENU'
+              };
+              var title = titles[action] || String(action || 'CITADEL').replace(/-/g,' ').toUpperCase();
               titleHost.innerHTML = '';
-              Array.from('HABITS').forEach(function (letter, index) {
+              Array.from(title).forEach(function (letter, index) {
+                if (letter === ' ') {
+                  var spacer = document.createElement('span');
+                  spacer.className = 'citadel-context-space';
+                  spacer.setAttribute('aria-hidden', 'true');
+                  titleHost.appendChild(spacer);
+                  return;
+                }
                 var card = document.createElement('span');
                 card.className = 'citadel-letter-card';
                 card.setAttribute('aria-hidden', 'true');
@@ -1244,7 +1289,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 titleHost.appendChild(card);
               });
               titleHost.classList.add('citadel-context-lettermark');
-              titleHost.setAttribute('aria-label', 'HABITS');
+              titleHost.setAttribute('aria-label', title);
             }
 
             window.addEventListener('message', function (event) {
