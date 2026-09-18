@@ -218,7 +218,13 @@
         return url.pathname+url.search;
       }
       function select(action){
-        if(action==='citadel'){homeMode();return} // Safety: never embed Citadel inside its own LFM shell.
+        if(action==='citadel'){
+          homeMode();
+          cap.textContent='Citadel';
+          notifyParentMode('citadel');
+          reportHeight();
+          return;
+        } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
