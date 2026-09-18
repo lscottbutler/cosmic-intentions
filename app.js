@@ -372,6 +372,27 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
+  // An LFM destination is authoritative inside its embedded iframe. App startup,
+  // auth restoration, and stale history must never switch the frame back home.
+  if (window.self !== window.top) {
+    const inlineAction = new URLSearchParams(location.search).get('masterInline');
+    const inlinePages = {
+      goals: 'setup',
+      'daily-habits': 'habits',
+      'action-plan': 'myroadmap',
+      visualization: 'vizlibrary',
+      favorites: 'dailyfocus',
+      gratitude: 'gratitude',
+      journal: 'notes',
+      thoughts: 'mynotes',
+      wins: 'wins',
+      proof: 'proof',
+      'cosmic-library': 'cosmiclibrary',
+      'quickie-move': 'entcard',
+      admin: 'admin',
+    };
+    if (inlineAction && inlinePages[inlineAction]) id = inlinePages[inlineAction];
+  }
   // Favorites Autoplay is an LFM interface, never a standalone top-level page.
   if (id === 'dailyfocus' && window.self === window.top) {
     id = 'dashboard';
