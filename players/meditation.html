@@ -59,8 +59,20 @@ body.external .timer{display:none}
     if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
     if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
   }
+  function seek(ratio){
+    const progress=Math.max(0,Math.min(1,Number(ratio)||0));
+    remaining=totalMs*(1-progress);
+    if(state==='running')deadline=performance.now()+remaining;
+    else if(remaining<=0)state='complete';
+    else if(state==='ready')state='paused';
+    render();
+  }
   button.addEventListener('click',toggle);
-  addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='ci-meditation-command'&&event.data.command==='toggle')toggle()});
+  addEventListener('message',event=>{
+    if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
+    if(event.data.command==='toggle')toggle();
+    if(event.data.command==='seek')seek(event.data.ratio);
+  });
   render();
 })();
 </script>
