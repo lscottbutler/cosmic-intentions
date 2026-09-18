@@ -377,7 +377,7 @@ export function showPage(id) {
   if (window.self !== window.top) {
     const inlineAction = new URLSearchParams(location.search).get('masterInline');
     const inlinePages = {
-      goals: 'setup',
+      goals: 'dashboard',
       'daily-habits': 'habits',
       'action-plan': 'myroadmap',
       visualization: 'vizlibrary',
@@ -415,28 +415,33 @@ export function showPage(id) {
     renderDashboard();
     applyUserCitadelWelcome();
 
-    // Restore the approved Citadel: colored goal cards first, with each goal's
-    // Roadmap and Visualize workspace, while keeping the LFM directly below.
     const goalsGrid = document.getElementById('citadelActionsGrid');
     const goalsBox = document.getElementById('goalsBox');
     const extraLegacySections = document.getElementById('dashSections');
-    const lfm = document.getElementById('ciApprovedMasters');
+    const embeddedGoals = window.self !== window.top
+      && new URLSearchParams(location.search).get('masterInline') === 'goals';
+
+    // Citadel is the member homepage. Its full colored Goals workspace appears
+    // only inside the LFM when Goals is selected—never duplicated above the LFM.
     if (goalsGrid) {
-      goalsGrid.removeAttribute('aria-hidden');
-      goalsGrid.style.setProperty('display', 'grid', 'important');
-      goalsGrid.style.gridTemplateColumns = 'minmax(0,1fr)';
-      goalsGrid.style.width = '100%';
-      goalsGrid.style.padding = '0 20px';
-      goalsGrid.style.boxSizing = 'border-box';
-      if (lfm && lfm.parentNode) lfm.parentNode.insertBefore(goalsGrid, lfm);
+      goalsGrid.setAttribute('aria-hidden', embeddedGoals ? 'false' : 'true');
+      goalsGrid.style.setProperty('display', embeddedGoals ? 'grid' : 'none', 'important');
+      if (embeddedGoals) {
+        goalsGrid.style.gridTemplateColumns = 'minmax(0,1fr)';
+        goalsGrid.style.width = '100%';
+        goalsGrid.style.padding = '0';
+        goalsGrid.style.boxSizing = 'border-box';
+      }
     }
-    if (goalsBox) goalsBox.style.display = 'block';
+    if (goalsBox) goalsBox.style.display = embeddedGoals ? 'block' : 'none';
     if (extraLegacySections) extraLegacySections.style.display = 'none';
 
-    window.setTimeout(() => {
-      const frame = document.getElementById('ciMasterPlayerFrame');
-      frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'home' }, location.origin);
-    }, 80);
+    if (!embeddedGoals) {
+      window.setTimeout(() => {
+        const frame = document.getElementById('ciMasterPlayerFrame');
+        frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'home' }, location.origin);
+      }, 80);
+    }
   }
   if (id === 'dailyfocus') {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
