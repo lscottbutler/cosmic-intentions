@@ -1197,7 +1197,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MASTER PLAYER — BELOW WELCOME IN CITADEL COLUMN A -->
         <section id="ciApprovedMasters" aria-label="Cosmic Intentions Master Player" style="display:grid;gap:14px;width:calc(100% - 40px);margin:0 20px 18px;box-sizing:border-box;">
-          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-1" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen style="display:block;width:100%;height:auto;min-height:254px;border:0;background:transparent;transition:height .35s ease;"></iframe>
+          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-2" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
           <div id="masterInlineWorkspace" hidden style="background:var(--card,#fff);border:1px solid var(--border,#d8dce2);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.14);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;">
               <span id="masterInlineTitle" style="font-weight:800;font-size:14px;letter-spacing:.6px;text-transform:uppercase;">Master Player</span>
@@ -1208,11 +1208,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </section>
         <script>
           window.addEventListener('message', function (event) {
-            if (event.origin !== window.location.origin || !event.data || event.data.type !== 'ci-lfm-height') return;
             var frame = document.getElementById('ciMasterPlayerFrame');
+            if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin) return;
+            if (!event.data || event.data.type !== 'ci-lfm-height') return;
             var height = Number(event.data.height);
-            if (!frame || !Number.isFinite(height)) return;
-            frame.style.height = Math.max(254, Math.min(height, 1600)) + 'px';
+            if (!Number.isFinite(height)) return;
+            frame.style.height = Math.max(300, Math.min(Math.ceil(height), 1800)) + 'px';
           });
         </script>
         <!-- Edit My Citadel Welcome Text lives on the My Thoughts page (edited there; the dashboard welcome shows it with a pencil badge that jumps there). -->
@@ -1223,7 +1224,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- MY TASK LIST moved to the TOP of Column B (vault-sidebar) -->
 
         <!-- Five primary Citadel controls: two-column system inside Column A. -->
-        <div id="citadelActionsGrid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;padding:0 20px;box-sizing:border-box;">
+        <div id="citadelActionsGrid" aria-hidden="true" style="display:none!important;">
         <div id="citadelNav" style="display:block;min-width:0;">
         <style>
           .med-dot { width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--brand);
