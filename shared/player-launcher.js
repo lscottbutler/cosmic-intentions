@@ -23,6 +23,20 @@ let _currentPillar = null;
    column (#playerColumn / #playerColumnFrame in index.html) instead
    of spawning a popup window. Falls back to a popup if the panel
    isn't on the page (e.g. launched from the logged-out home). */
+let _movedMeditateHeading = null;
+
+function restoreMeditateHeading() {
+  if (!_movedMeditateHeading) return;
+  const { title, parent, nextSibling, summary, toolbar, toolbarHTML, toolbarStyle } = _movedMeditateHeading;
+  if (parent) parent.insertBefore(title, nextSibling && nextSibling.parentNode === parent ? nextSibling : null);
+  if (summary) summary.style.display = '';
+  if (toolbar) {
+    toolbar.innerHTML = toolbarHTML;
+    toolbar.setAttribute('style', toolbarStyle);
+  }
+  _movedMeditateHeading = null;
+}
+
 export function openPlayerInColumn(src, ev) {
   if (typeof closeDrawer === 'function') closeDrawer();
   const panel = document.getElementById('playerColumn');
@@ -37,7 +51,34 @@ export function openPlayerInColumn(src, ev) {
   // wrapper instead — the player opens right under the meditation banner, not page-bottom.
   // (Per-goal play buttons use the inline player in the vault list instead — see playGoalInline.)
   const anchor = ev && ev.target && ev.target.closest ? ev.target.closest('.player-times-grid, [data-player-box]') : null;
+  restoreMeditateHeading();
   if (anchor) anchor.insertAdjacentElement('afterend', panel);
+
+  // For the Citadel meditation player, move the existing MEDITATE letter-card
+  // heading into the black player bar. Restore it when the player closes.
+  const isMeditation = /(?:^|\/)meditation\.html(?:\?|$)/i.test(src);
+  const details = anchor && anchor.closest ? anchor.closest('.dash-sec') : null;
+  const summary = details && details.querySelector ? details.querySelector(':scope > summary') : null;
+  const title = summary && summary.querySelector ? summary.querySelector('.citadel-section-lettermark') : null;
+  const toolbar = panel.firstElementChild;
+  if (isMeditation && title && toolbar) {
+    const parent = title.parentNode;
+    const nextSibling = title.nextSibling;
+    const toolbarHTML = toolbar.innerHTML;
+    const toolbarStyle = toolbar.getAttribute('style') || '';
+    toolbar.innerHTML = '';
+    toolbar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;background:#1c1c1c;padding:8px 10px;border-radius:8px 8px 0 0;';
+    toolbar.appendChild(title);
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close meditation');
+    close.textContent = '×';
+    close.style.cssText = 'flex-shrink:0;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.55);background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer;';
+    close.addEventListener('click', closePlayerColumn);
+    toolbar.appendChild(close);
+    summary.style.display = 'none';
+    _movedMeditateHeading = { title, parent, nextSibling, summary, toolbar, toolbarHTML, toolbarStyle };
+  }
   _currentPillar = pillarForSrc(src);   // remember which ring a natural finish should close
   frame.src = src;
   panel.style.display = '';
@@ -56,6 +97,7 @@ export function closePlayerColumn() {
   const frame = document.getElementById('playerColumnFrame');
   if (frame) frame.src = 'about:blank';
   if (panel) panel.style.display = 'none';
+  restoreMeditateHeading();
   // Roll every time grid back up when the player closes — but NOT the favorites
   // playlist (it shares this class yet must stay visible so you can replay it).
   document.querySelectorAll('.player-times-grid:not(#favorites-list)').forEach(g => g.classList.add('hidden'));
