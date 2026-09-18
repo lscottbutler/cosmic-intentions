@@ -1208,7 +1208,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MASTER PLAYER — BELOW WELCOME IN CITADEL COLUMN A -->
         <section id="ciApprovedMasters" aria-label="Cosmic Intentions Master Player" style="display:grid;gap:14px;width:calc(100% - 40px);margin:0 20px 18px;box-sizing:border-box;">
-          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-17" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:760px!important;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-18" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
           <div id="masterInlineWorkspace" hidden style="background:var(--card,#fff);border:1px solid var(--border,#d8dce2);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.14);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;">
               <span id="masterInlineTitle" style="font-weight:800;font-size:14px;letter-spacing:.6px;text-transform:uppercase;">Master Player</span>
@@ -1221,25 +1221,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           (function () {
             var titleHost = document.querySelector('#page-dashboard .citadel-lettermark');
             var citadelTitleMarkup = titleHost ? titleHost.innerHTML : '';
-            var activeLfmMode = 'home';
-            var masterFrame = document.getElementById('ciMasterPlayerFrame');
-
-            function applyMasterHeight(height) {
-              if (!masterFrame || !Number.isFinite(height)) return;
-              var modeLimit = activeLfmMode === 'home' ? 760 : activeLfmMode === 'everything' ? 1200 : 6000;
-              var fullHeight = Math.max(300, Math.min(Math.ceil(height), modeLimit)) + 'px';
-              masterFrame.style.setProperty('--ci-lfm-height', fullHeight);
-              masterFrame.style.setProperty('height', fullHeight, 'important');
-              masterFrame.style.setProperty('aspect-ratio', 'auto', 'important');
-            }
-
-            function syncMasterHeightFromDocument() {
-              if (!masterFrame) return;
-              try {
-                var shell = masterFrame.contentDocument && masterFrame.contentDocument.querySelector('.shell');
-                if (shell) applyMasterHeight(Math.max(shell.scrollHeight, shell.getBoundingClientRect().height));
-              } catch (_) {}
-            }
 
             function setLfmContextTitle(action) {
               if (!titleHost) return;
@@ -1270,24 +1251,17 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               var frame = document.getElementById('ciMasterPlayerFrame');
               if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
               if (event.data.type === 'ci-lfm-mode') {
-                activeLfmMode = event.data.action || 'home';
-                setLfmContextTitle(activeLfmMode);
+                setLfmContextTitle(event.data.action);
                 return;
               }
               if (event.data.type !== 'ci-lfm-height') return;
-              applyMasterHeight(Number(event.data.height));
+              var height = Number(event.data.height);
+              if (!Number.isFinite(height)) return;
+              var fullHeight = Math.max(300, Math.min(Math.ceil(height), 6000)) + 'px';
+              frame.style.setProperty('--ci-lfm-height', fullHeight);
+              frame.style.setProperty('height', fullHeight, 'important');
+              frame.style.setProperty('aspect-ratio', 'auto', 'important');
             });
-
-            if (masterFrame) {
-              applyMasterHeight(760);
-              masterFrame.addEventListener('load', function () {
-                syncMasterHeightFromDocument();
-                window.setTimeout(syncMasterHeightFromDocument, 100);
-                window.setTimeout(syncMasterHeightFromDocument, 500);
-              });
-              window.setTimeout(syncMasterHeightFromDocument, 0);
-              window.setTimeout(syncMasterHeightFromDocument, 250);
-            }
           })();
         </script>
         <!-- Edit My Citadel Welcome Text lives on the My Thoughts page (edited there; the dashboard welcome shows it with a pencil badge that jumps there). -->
