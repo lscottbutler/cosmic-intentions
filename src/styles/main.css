@@ -3675,3 +3675,19 @@ html.master-inline-goals #page-setup select {
   border: none !important;
   box-shadow: none !important;
 }
+
+
+/* CI V2 — the LFM supplies the destination title and navigation.
+   Suppress duplicate application chrome inside the embedded Goals tool. */
+html.master-inline-mode header.hdr,
+html.master-inline-mode #topNav,
+html.master-inline-mode #tabBar {
+  display: none !important;
+}
+html.master-inline-goals #page-setup .setup-page-header h1,
+html.master-inline-goals #page-setup .setup-page-header .ci-page-lettermark {
+  display: none !important;
+}
+html.master-inline-goals #page-setup .setup-page-header {
+  padding-top: 0 !important;
+}
