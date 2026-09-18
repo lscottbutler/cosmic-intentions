@@ -3717,3 +3717,11 @@ html.master-inline-goals #page-setup .pb-goal-card {
   overflow: hidden !important;
   margin-bottom: 16px !important;
 }
+
+
+/* CI V2 — an LFM embedded destination must never render the Citadel dashboard
+   inside itself. If destination routing ever fails, remain blank instead of
+   recursively displaying Citadel within Citadel. */
+html.master-inline-mode #page-dashboard {
+  display: none !important;
+}
