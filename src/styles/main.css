@@ -923,8 +923,10 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
   display: block;
   width: 100% !important;
   min-width: 0;
-  height: auto !important;
-  aspect-ratio: 16 / 9;
+  height: var(--ci-lfm-height, 340px) !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  overflow: hidden !important;
 }
 
 /* ── PAGE CONTENT PLACEHOLDER ─────────────────────────────── */
