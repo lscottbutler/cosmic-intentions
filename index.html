@@ -1292,6 +1292,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               titleHost.setAttribute('aria-label', title);
             }
 
+            setLfmContextTitle('home');
+
             window.addEventListener('message', function (event) {
               var frame = document.getElementById('ciMasterPlayerFrame');
               if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
