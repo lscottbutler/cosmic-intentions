@@ -8,7 +8,7 @@
   <style>
     :root{color-scheme:light;--frame:#82ad77;--header:#5f645e;--paper:#f2ede7;--deck:#171b18;--ink:#1f2724;--muted:#aab1a6;--line:#050706}
     *{box-sizing:border-box}
-    html,body{width:100%;margin:0;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
+    html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
     button{font:inherit}
     .shell{width:100%;border:2px solid var(--line);background:var(--frame);overflow:hidden;transition:min-height .35s ease}
@@ -94,8 +94,12 @@
       const title=document.getElementById('experienceTitle'),copy=document.getElementById('experienceCopy'),launch=document.getElementById('launchButton'),cap=document.getElementById('capTitle');
       document.getElementById('statement').textContent=statement;
       let selected=null;
+      const shell=document.querySelector('.shell');
       function reportHeight(){
-        requestAnimationFrame(()=>parent.postMessage({type:'ci-lfm-height',height:document.documentElement.scrollHeight},location.origin));
+        requestAnimationFrame(()=>{
+          const height=Math.ceil(Math.max(shell.scrollHeight,shell.getBoundingClientRect().height));
+          parent.postMessage({type:'ci-lfm-height',height},location.origin);
+        });
       }
       function show(view){
         [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
@@ -120,7 +124,7 @@
       document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',homeMode));
       launch.addEventListener('click',()=>selected&&openDestination(selected));
       addEventListener('resize',reportHeight);
-      if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(document.body);
+      if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       reportHeight();
     })();
   </script>
