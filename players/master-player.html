@@ -73,6 +73,7 @@
       const statement=(params.get('text')||'I AM THE PROUD OWNER OF A SUCCESSFUL ONLINE TRAINING COURSE').trim().toUpperCase();
       const goalRaw=params.get('goal')??params.get('idx');
       const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
+      const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
       const items=[
         ['goals','Goals','Review and work with your active intentions.'],
         ['daily-habits','Daily Habits','Build the repeatable actions that support your goals.'],
@@ -89,11 +90,11 @@
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
+      const shell=document.querySelector('.shell');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const title=document.getElementById('experienceTitle'),experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
       document.getElementById('statement').textContent=statement;
       let selected=null;
-      const shell=document.querySelector('.shell');
       function reportHeight(){
         requestAnimationFrame(()=>{
           const height=Math.ceil(Math.max(shell.scrollHeight,shell.getBoundingClientRect().height));
@@ -106,7 +107,7 @@
         reportHeight();
       }
       function homeMode(){
-        selected=null;if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';cap.textContent='Long Form Manifestation';show(home);
+        selected=null;if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');cap.textContent='Long Form Manifestation';show(home);
       }
       let experienceObserver=null;
       function fitExperience(){
@@ -154,6 +155,8 @@
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
+        const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
+        shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:'#82ad77');
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         title.textContent=item[1];cap.textContent=item[1];
         experienceFrame.title=item[1];
