@@ -110,6 +110,11 @@
       }
       let experienceObserver=null;
       function fitExperience(){
+        if(selected==='meditation'){
+          experienceFrame.style.height=Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px';
+          reportHeight();
+          return;
+        }
         try{
           const doc=experienceFrame.contentDocument;
           if(!doc)return;
@@ -120,8 +125,11 @@
             doc.documentElement?doc.documentElement.scrollHeight:0
           ));
           if(height>0){
-            experienceFrame.style.height=Math.max(520,height+8)+'px';
-            reportHeight();
+            const next=Math.max(520,height);
+            if(Math.abs(next-experienceFrame.offsetHeight)>12){
+              experienceFrame.style.height=next+'px';
+              reportHeight();
+            }
           }
           if(experienceObserver)experienceObserver.disconnect();
           if('ResizeObserver'in window&&doc.body){
@@ -145,14 +153,18 @@
       function select(action){
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
-        selected=action;title.textContent=item[1];cap.textContent=item[1];
-        experienceFrame.title=item[1];experienceFrame.src=destinationUrl(action);show(experience);
+        selected=action;
+        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
+        title.textContent=item[1];cap.textContent=item[1];
+        experienceFrame.title=item[1];
+        experienceFrame.style.height=action==='meditation'?Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px':'600px';
+        experienceFrame.src=destinationUrl(action);show(experience);
       }
       const grid=document.getElementById('directory');
       items.forEach(([key,label])=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span>'+label+'</span><span aria-hidden="true">›</span>';b.addEventListener('click',()=>select(key));grid.appendChild(b)});
       document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>select(b.dataset.action)));
       document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',homeMode));
-      addEventListener('resize',reportHeight);
+      addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       reportHeight();
     })();
