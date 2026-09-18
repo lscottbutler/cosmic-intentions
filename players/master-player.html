@@ -269,7 +269,7 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
         const data=event.data||{};
-        if(data.type==='ci-lfm-select'&&data.action)select(data.action);
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='home')homeMode();else select(data.action)}
       });
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
