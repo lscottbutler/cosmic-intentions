@@ -267,6 +267,11 @@
       document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
       document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
       addEventListener('message',event=>{
+        if(event.origin!==location.origin||event.source!==parent)return;
+        const data=event.data||{};
+        if(data.type==='ci-lfm-select'&&data.action)select(data.action);
+      });
+      addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
         const data=event.data||{};if(data.type!=='ci-meditation-state')return;
         const running=data.state==='running';
