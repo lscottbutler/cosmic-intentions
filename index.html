@@ -1208,7 +1208,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MASTER PLAYER — BELOW WELCOME IN CITADEL COLUMN A -->
         <section id="ciApprovedMasters" aria-label="Cosmic Intentions Master Player" style="display:grid;gap:14px;width:calc(100% - 40px);margin:0 20px 18px;box-sizing:border-box;">
-          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-13" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-14" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
           <div id="masterInlineWorkspace" hidden style="background:var(--card,#fff);border:1px solid var(--border,#d8dce2);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.14);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;">
               <span id="masterInlineTitle" style="font-weight:800;font-size:14px;letter-spacing:.6px;text-transform:uppercase;">Master Player</span>
@@ -1218,17 +1218,51 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           </div>
         </section>
         <script>
-          window.addEventListener('message', function (event) {
-            var frame = document.getElementById('ciMasterPlayerFrame');
-            if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin) return;
-            if (!event.data || event.data.type !== 'ci-lfm-height') return;
-            var height = Number(event.data.height);
-            if (!Number.isFinite(height)) return;
-            var fullHeight = Math.max(300, Math.min(Math.ceil(height), 6000)) + 'px';
-            frame.style.setProperty('--ci-lfm-height', fullHeight);
-            frame.style.setProperty('height', fullHeight, 'important');
-            frame.style.setProperty('aspect-ratio', 'auto', 'important');
-          });
+          (function () {
+            var titleHost = document.querySelector('#page-dashboard .citadel-lettermark');
+            var citadelTitleMarkup = titleHost ? titleHost.innerHTML : '';
+
+            function setLfmContextTitle(action) {
+              if (!titleHost) return;
+              var showHabits = action === 'daily-habits';
+              if (!showHabits) {
+                if (titleHost.classList.contains('citadel-context-lettermark')) {
+                  titleHost.innerHTML = citadelTitleMarkup;
+                  titleHost.classList.remove('citadel-context-lettermark');
+                  titleHost.setAttribute('aria-label', 'CITADEL');
+                }
+                return;
+              }
+              titleHost.innerHTML = '';
+              Array.from('HABITS').forEach(function (letter, index) {
+                var card = document.createElement('span');
+                card.className = 'citadel-letter-card';
+                card.setAttribute('aria-hidden', 'true');
+                card.textContent = letter;
+                card.style.background = index % 2 ? '#777777' : '#363636';
+                card.style.color = '#ffffff';
+                titleHost.appendChild(card);
+              });
+              titleHost.classList.add('citadel-context-lettermark');
+              titleHost.setAttribute('aria-label', 'HABITS');
+            }
+
+            window.addEventListener('message', function (event) {
+              var frame = document.getElementById('ciMasterPlayerFrame');
+              if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
+              if (event.data.type === 'ci-lfm-mode') {
+                setLfmContextTitle(event.data.action);
+                return;
+              }
+              if (event.data.type !== 'ci-lfm-height') return;
+              var height = Number(event.data.height);
+              if (!Number.isFinite(height)) return;
+              var fullHeight = Math.max(300, Math.min(Math.ceil(height), 6000)) + 'px';
+              frame.style.setProperty('--ci-lfm-height', fullHeight);
+              frame.style.setProperty('height', fullHeight, 'important');
+              frame.style.setProperty('aspect-ratio', 'auto', 'important');
+            });
+          })();
         </script>
         <!-- Edit My Citadel Welcome Text lives on the My Thoughts page (edited there; the dashboard welcome shows it with a pencil badge that jumps there). -->
         <!-- 🏆 INSPIRATION — admin-curated champion (photo + story) who uses meditation/visualization. Hidden until filled from the Admin page (slug: dashboard-inspiration). -->
