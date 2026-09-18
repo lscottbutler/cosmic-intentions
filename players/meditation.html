@@ -18,6 +18,7 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .value{font-size:clamp(28px,5.1vw,78px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
 [hidden]{display:none!important}
+body.external .timer{display:none}
 </style>
 </head>
 <body>
@@ -31,7 +32,10 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 <script>
 (()=>{
   const allowed=[30,15,10,5,2];
-  const requested=Number(new URLSearchParams(location.search).get('t'));
+  const search=new URLSearchParams(location.search);
+  const requested=Number(search.get('t'));
+  const external=search.get('external')==='1';
+  if(external)document.body.classList.add('external');
   const minutes=allowed.includes(requested)?requested:15;
   const totalMs=minutes*60000;
   const player=document.getElementById('player');
@@ -40,11 +44,12 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
   const playIcon=document.getElementById('playIcon');
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
   const shown=()=>Math.max(0,Math.round(remaining/60000));
+  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
   function render(){
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=String(shown());
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
@@ -54,7 +59,9 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
     if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
     if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
   }
-  button.addEventListener('click',toggle); render();
+  button.addEventListener('click',toggle);
+  addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='ci-meditation-command'&&event.data.command==='toggle')toggle()});
+  render();
 })();
 </script>
 </body>
