@@ -20,13 +20,15 @@
     .statement{min-height:80px;display:grid;place-items:center;text-align:center;text-transform:uppercase;font-size:clamp(19px,4.5vw,31px);font-weight:800;line-height:1.45;letter-spacing:2.2px}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
-    .back{border:1px solid #8b918c;border-radius:999px;background:#fff;color:#1f2724;padding:8px 13px;font-weight:800;cursor:pointer}
+    .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
+    .nav[hidden]{display:none}
+    .hamb-lines{display:grid;gap:3px;width:22px}.hamb-lines i{display:block;height:3px;background:currentColor;border-radius:2px}
     .directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .directory button,.launch{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;border:1px solid #bdc1bc;border-radius:8px;background:#fff;color:#202622;padding:11px 14px;text-align:left;font-weight:800;letter-spacing:.45px;cursor:pointer}
     .directory button:hover,.directory button:focus-visible,.launch:hover,.launch:focus-visible{outline:2px solid #1f2724;outline-offset:2px}
     .experience-frame{display:block;width:100%;height:600px;border:0;background:#fff;border-radius:8px;overflow:hidden;transition:height .3s ease}
     .experience-copy,.launch{display:none}
-    .deck{margin:0 14px 16px;padding:14px 10px 17px;background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 14% 14%;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+    .deck{margin:0 14px 16px;padding:14px 10px 17px;background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 14% 14%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .nav{min-width:0;border:0;background:transparent;color:var(--muted);padding:4px 2px;cursor:pointer;display:grid;justify-items:center;gap:5px}
     .nav:hover,.nav:focus-visible,.nav.active{color:#fff;outline:none}
     .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -49,11 +51,10 @@
         <div class="statement" id="statement">I AM THE PROUD OWNER OF A SUCCESSFUL ONLINE TRAINING COURSE</div>
       </div>
       <div class="view" id="directoryView" hidden>
-        <div class="view-head"><h1 class="view-title">Everything</h1><button class="back" data-home>Back</button></div>
+        <div class="view-head"><h1 class="view-title">Menu</h1></div>
         <div class="directory" id="directory"></div>
       </div>
       <div class="view" id="experienceView" hidden>
-        <div class="view-head experience-toolbar"><button class="back" data-home>Back</button></div>
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
@@ -64,7 +65,8 @@
       <button class="nav" data-action="visualization" aria-label="Visualize"><svg viewBox="0 0 28 28"><path d="M2 14q12-12 24 0-12 12-24 0Z"/><circle cx="14" cy="14" r="4"/></svg><span>Visualize</span></button>
       <button class="nav" data-action="action-plan" aria-label="Action Plan"><svg viewBox="0 0 28 28"><path d="M8 5c4 2 5 7 2 11s-7 3-8-1 2-8 6-10Zm12 7c4 2 6 7 3 10s-7 1-7-3 1-6 4-7Z"/></svg><span>Action Plan</span></button>
       <button class="nav" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
-      <button class="nav" data-action="everything" aria-label="Everything"><svg viewBox="0 0 28 28"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="17" y="3" width="8" height="8" rx="1"/><rect x="3" y="17" width="8" height="8" rx="1"/><rect x="17" y="17" width="8" height="8" rx="1"/></svg><span>Everything</span></button>
+      <button class="nav" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
+      <button class="nav" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
     </nav>
   </main>
   <script>
@@ -75,6 +77,7 @@
       const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
       const items=[
+        ['citadel','Citadel','Return to your Long Form Manifestation home.'],
         ['goals','Goals','Review and work with your active intentions.'],
         ['daily-habits','Daily Habits','Build the repeatable actions that support your goals.'],
         ['action-plan','Action Plan','Turn intentions into clear next steps.'],
@@ -103,7 +106,8 @@
       }
       function show(view){
         [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
-        document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.action===selected));
+        document.querySelectorAll('.nav[data-action]').forEach(n=>n.classList.toggle('active',n.dataset.action===selected));
+        document.getElementById('lfmBack').hidden=view===home;
         reportHeight();
       }
       function homeMode(){
@@ -152,6 +156,7 @@
         return url.pathname+url.search;
       }
       function select(action){
+        if(action==='citadel'){homeMode();return}
         if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
@@ -165,8 +170,9 @@
       }
       const grid=document.getElementById('directory');
       items.forEach(([key,label])=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span>'+label+'</span><span aria-hidden="true">›</span>';b.addEventListener('click',()=>select(key));grid.appendChild(b)});
-      document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>select(b.dataset.action)));
+      document.querySelectorAll('.nav[data-action]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.action)));
       document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',homeMode));
+      document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',()=>select('everything')));
       addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       reportHeight();
