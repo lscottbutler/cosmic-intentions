@@ -5516,9 +5516,18 @@ const _masterInlineLabels = {
   meditation: 'Meditation',
   roadmap: 'Roadmap',
   goals: 'Goals',
+  'daily-habits': 'Daily Habits',
   visualization: 'Visualization',
   'action-plan': 'Action Plan',
+  favorites: 'Favorites Autoplay',
+  gratitude: 'Gratitude',
+  journal: 'Journal',
+  thoughts: 'My Thoughts',
+  wins: 'Wins',
+  proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
+  'quickie-move': 'Quickie Move',
+  admin: 'Admin',
 };
 
 export function closeMasterInlineDestination() {
@@ -5570,6 +5579,33 @@ export function openMasterDestination(action, goalIndex = null) {
   switch (action) {
     case 'meditation':
       navTo('meditation');
+      break;
+    case 'daily-habits':
+      navTo('habits');
+      break;
+    case 'favorites':
+      navTo('dailyfocus');
+      break;
+    case 'gratitude':
+      navTo('gratitude');
+      break;
+    case 'journal':
+      navTo('notes');
+      break;
+    case 'thoughts':
+      navTo('mynotes');
+      break;
+    case 'wins':
+      navTo('wins');
+      break;
+    case 'proof':
+      navTo('proof');
+      break;
+    case 'quickie-move':
+      navTo('myroadmap');
+      break;
+    case 'admin':
+      navTo('admin');
       break;
     case 'roadmap':
       openMyRoadmap();
