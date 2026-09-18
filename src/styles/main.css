@@ -3824,3 +3824,10 @@ html.master-inline-mode .vault-main {
 #page-dashboard .citadel-lettermark.citadel-context-lettermark .citadel-letter-card:first-child {
   margin-left: 0 !important;
 }
+
+
+#page-dashboard .citadel-lettermark.citadel-context-lettermark .citadel-context-space {
+  display: inline-block;
+  width: 16px;
+  flex: 0 0 16px;
+}
