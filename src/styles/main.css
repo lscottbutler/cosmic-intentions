@@ -3831,3 +3831,29 @@ html.master-inline-mode .vault-main {
   width: 16px;
   flex: 0 0 16px;
 }
+
+
+/* CI V2 — lighten Daily Habits editor cards inside the LFM. */
+html.master-inline-daily-habits #pbHabitList [style*="background:#2E2E2E"],
+html.master-inline-daily-habits #pbHabitList [style*="background: #2E2E2E"],
+html.master-inline-daily-habits #pbHabitList [style*="background:#2e2e2e"],
+html.master-inline-daily-habits #pbHabitList [style*="background: #2e2e2e"] {
+  background: #fff !important;
+  border: 1px solid #111 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+html.master-inline-daily-habits #pbHabitList [style*="background:#2E2E2E"] :not(button):not(input):not(textarea):not(select),
+html.master-inline-daily-habits #pbHabitList [style*="background: #2E2E2E"] :not(button):not(input):not(textarea):not(select),
+html.master-inline-daily-habits #pbHabitList [style*="background:#2e2e2e"] :not(button):not(input):not(textarea):not(select),
+html.master-inline-daily-habits #pbHabitList [style*="background: #2e2e2e"] :not(button):not(input):not(textarea):not(select) {
+  color: #111 !important;
+}
+html.master-inline-daily-habits #pbHabitList input,
+html.master-inline-daily-habits #pbHabitList textarea,
+html.master-inline-daily-habits #pbHabitList select {
+  background: #fff !important;
+  color: #111 !important;
+  border: 1px solid #a9a9a9 !important;
+  box-shadow: none !important;
+}
