@@ -411,7 +411,33 @@ export function showPage(id) {
 
   document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
 
-  if (id === 'dashboard') { renderDashboard(); applyUserCitadelWelcome(); }
+  if (id === 'dashboard') {
+    renderDashboard();
+    applyUserCitadelWelcome();
+
+    // Restore the approved Citadel: colored goal cards first, with each goal's
+    // Roadmap and Visualize workspace, while keeping the LFM directly below.
+    const goalsGrid = document.getElementById('citadelActionsGrid');
+    const goalsBox = document.getElementById('goalsBox');
+    const extraLegacySections = document.getElementById('dashSections');
+    const lfm = document.getElementById('ciApprovedMasters');
+    if (goalsGrid) {
+      goalsGrid.removeAttribute('aria-hidden');
+      goalsGrid.style.setProperty('display', 'grid', 'important');
+      goalsGrid.style.gridTemplateColumns = 'minmax(0,1fr)';
+      goalsGrid.style.width = '100%';
+      goalsGrid.style.padding = '0 20px';
+      goalsGrid.style.boxSizing = 'border-box';
+      if (lfm && lfm.parentNode) lfm.parentNode.insertBefore(goalsGrid, lfm);
+    }
+    if (goalsBox) goalsBox.style.display = 'block';
+    if (extraLegacySections) extraLegacySections.style.display = 'none';
+
+    window.setTimeout(() => {
+      const frame = document.getElementById('ciMasterPlayerFrame');
+      frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'home' }, location.origin);
+    }, 80);
+  }
   if (id === 'dailyfocus') {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
