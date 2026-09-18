@@ -3725,3 +3725,18 @@ html.master-inline-goals #page-setup .pb-goal-card {
 html.master-inline-mode #page-dashboard {
   display: none !important;
 }
+
+
+/* CI V2 — Daily Habits embedded-frame cleanup.
+   The LFM owns the green exterior; the embedded tool must not add another
+   black outline. Its inner bezel matches the Daily Habits dark-grey title bar. */
+html.master-inline-daily-habits .pg-frame {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  --pf-bezel: #5f645e !important;
+  --pf-bezelDk: #5f645e !important;
+}
+html.master-inline-daily-habits .pg-bezel {
+  background: #5f645e !important;
+}
