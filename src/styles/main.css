@@ -3813,3 +3813,14 @@ html.master-inline-mode .vault-main {
   max-width: none !important;
   margin: 0 !important;
 }
+
+
+/* Active LFM context title: yesterday's alternating charcoal letter boxes. */
+#page-dashboard .citadel-lettermark.citadel-context-lettermark .citadel-letter-card {
+  transform: none !important;
+  margin-left: 5px !important;
+  border-radius: 10% / 6% !important;
+}
+#page-dashboard .citadel-lettermark.citadel-context-lettermark .citadel-letter-card:first-child {
+  margin-left: 0 !important;
+}
