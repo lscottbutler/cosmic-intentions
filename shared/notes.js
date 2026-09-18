@@ -245,7 +245,7 @@ export function sprinkleNotes() {
 export function renderNotesPage(cats, hostId, capId) {
   const host = document.getElementById(hostId || 'notesSections');
   if (!host) return;
-  const catList = cats || NOTE_CATS.filter(c => c.key !== 'note');   // My Thoughts = everything except Notes (its own page now)
+  const catList = cats || NOTE_CATS;   // My Thoughts includes Journal as the final expandable header
   const notes = readNotes();
   const total = notes.length;
 
