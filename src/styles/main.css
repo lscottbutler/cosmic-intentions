@@ -3980,3 +3980,34 @@ html.master-inline-goals #page-dashboard #goalsBox {
   width: 100% !important;
   margin: 0 !important;
 }
+
+
+/* LFM Goals — keep goal information and its three controls in two distinct
+   columns even though the embedded iframe is narrower than the mobile breakpoint. */
+html.master-inline-goals #vaultList .vault-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 25%) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+html.master-inline-goals #vaultList .vault-row > .vault-item {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+html.master-inline-goals #vaultList .vault-row > .vault-actions {
+  width: 100% !important;
+  min-width: 132px !important;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  gap: 6px !important;
+  background: #e6e8ec !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+html.master-inline-goals #vaultList .vault-act {
+  width: 36px !important;
+  height: 36px !important;
+}
