@@ -3857,3 +3857,18 @@ html.master-inline-daily-habits #pbHabitList select {
   border: 1px solid #a9a9a9 !important;
   box-shadow: none !important;
 }
+
+
+/* CI V2 — lighter global menu button treatment requested for member pages. */
+.hdr #mobileHam.hdr-ham {
+  background: #4a4a4a !important;
+  border: 0 !important;
+}
+.hdr #mobileHam.hdr-ham span {
+  background: #ffffff !important;
+}
+
+/* The LFM already supplies the HABITS context title; remove the duplicate giant word. */
+html.master-inline-daily-habits #page-habits > .setup-page > svg {
+  display: none !important;
+}
