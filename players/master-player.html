@@ -273,7 +273,15 @@
       });
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
-        const data=event.data||{};if(data.type!=='ci-meditation-state')return;
+        const data=event.data||{};
+        if(data.type==='ci-lfm-mini-nav'){
+          if(data.command==='menu'){select('everything');return}
+          const current=Math.max(0,items.findIndex(item=>item[0]===selected));
+          const step=data.command==='back'?-1:1;
+          select(items[(current+step+items.length)%items.length][0]);
+          return;
+        }
+        if(data.type!=='ci-meditation-state')return;
         const running=data.state==='running';
         const remaining=Math.max(0,Number(data.remaining)||0);
         const total=Math.max(1,(Number(data.minutes)||meditationMinutes)*60000);
