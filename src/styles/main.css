@@ -3899,3 +3899,9 @@ html.master-inline-daily-habits #page-habits > .setup-page > svg {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+
+/* LFM Habits already has two context headers; remove the third duplicate heading. */
+html.master-inline-daily-habits #page-habits .setup-page-header h1 {
+  display: none !important;
+}
