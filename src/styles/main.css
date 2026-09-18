@@ -3629,3 +3629,49 @@ input, textarea, select {
     max-width: calc(100% - 86px) !important;
   }
 }
+
+
+/* CI V2 — Goals inside the LFM is a clean white working surface.
+   Remove the legacy dark setup panels without affecting standalone pages. */
+html.master-inline-goals,
+html.master-inline-goals body,
+html.master-inline-goals #page-setup,
+html.master-inline-goals #page-setup .setup-page {
+  background: #fff !important;
+  color: #000 !important;
+}
+html.master-inline-goals #page-setup [style*="background:#2E2E2E"],
+html.master-inline-goals #page-setup [style*="background:#2e2e2e"],
+html.master-inline-goals #page-setup [style*="background:#1f1f1f"],
+html.master-inline-goals #page-setup [style*="background:#1F1F1F"],
+html.master-inline-goals #page-setup [style*="background:#1a1a1a"],
+html.master-inline-goals #page-setup [style*="background:#5E5E5E"],
+html.master-inline-goals #page-setup [style*="background:var(--ink)"],
+html.master-inline-goals #page-setup .setup-section,
+html.master-inline-goals #page-setup .pb-goal-card {
+  background: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+html.master-inline-goals #page-setup button,
+html.master-inline-goals #page-setup [style*="border:1px"],
+html.master-inline-goals #page-setup [style*="border: 1px"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+html.master-inline-goals #page-setup [style*="color:#fff"],
+html.master-inline-goals #page-setup [style*="color: #fff"],
+html.master-inline-goals #page-setup [style*="color:#cfcfcf"],
+html.master-inline-goals #page-setup [style*="color:var(--muted)"],
+html.master-inline-goals #page-setup label,
+html.master-inline-goals #page-setup p {
+  color: #000 !important;
+}
+html.master-inline-goals #page-setup input,
+html.master-inline-goals #page-setup textarea,
+html.master-inline-goals #page-setup select {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
