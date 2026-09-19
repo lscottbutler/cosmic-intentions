@@ -163,14 +163,12 @@
       const inspirationAuthor=document.getElementById('inspirationAuthor');
       inspirationAuthor.hidden=!inspiration.author;
       inspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
-      let selected=null,lastReportedHeight=0,heightFrame=0;
+      let selected=null,heightFrame=0;
       function reportHeight(){
         if(heightFrame)return;
         heightFrame=requestAnimationFrame(()=>{
           heightFrame=0;
           const height=Math.ceil(shell.getBoundingClientRect().height);
-          if(Math.abs(height-lastReportedHeight)<12)return;
-          lastReportedHeight=height;
           parent.postMessage({type:'ci-lfm-height',height},location.origin);
         });
       }
@@ -324,6 +322,8 @@
       addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       reportHeight();
+      window.setTimeout(reportHeight,120);
+      window.setTimeout(reportHeight,600);
     })();
   </script>
 </body>
