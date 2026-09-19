@@ -3753,6 +3753,7 @@ html.master-inline-mode body {
   margin: 0 !important;
   padding: 0 !important;
   overflow-x: hidden !important;
+  overflow-y: hidden !important;
   background: #fff !important;
 }
 html.master-inline-mode .loading-screen,
@@ -3858,6 +3859,18 @@ html.master-inline-mode .vault-main {
 #page-wins .pg-2col-main {
   width: 100% !important;
   max-width: none !important;
+}
+
+/* LFM tools grow to their full natural height. Remove nested scroll wells so
+   the tool → LFM → Citadel height handshake owns all vertical expansion. */
+html.master-inline-mode .page.active [style*="overflow:auto"],
+html.master-inline-mode .page.active [style*="overflow: auto"],
+html.master-inline-mode .page.active [style*="overflow-y:auto"],
+html.master-inline-mode .page.active [style*="overflow-y: auto"],
+html.master-inline-mode .page.active .dash-sec-body,
+html.master-inline-mode .page.active .acc-panel.acc-panel-tall.open {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 

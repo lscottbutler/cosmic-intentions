@@ -115,7 +115,7 @@
           </div>
           <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
         </section>
-        <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="auto"></iframe>
+        <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
     <nav class="deck" aria-label="Master dashboard controls">
@@ -247,13 +247,39 @@
       let experienceObserver=null;
       function fitExperience(){
         if(!selected)return;
-        experienceFrame.style.height=(experienceFrame.clientWidth*9/16)+'px';
+        if(selected==='meditation'){
+          experienceFrame.style.height=(experienceFrame.clientWidth*9/16)+'px';
+          reportHeight();
+          return;
+        }
+        try{
+          const doc=experienceFrame.contentDocument;
+          if(!doc)return;
+          const active=doc.querySelector('.page.active, main, [role="main"]');
+          if(!active)return;
+          const activeRect=active.getBoundingClientRect();
+          const height=Math.ceil(Math.max(active.scrollHeight,activeRect.height));
+          if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
+            experienceFrame.style.height=height+'px';
+          }
+        }catch(_){}
         reportHeight();
       }
       experienceFrame.addEventListener('load',()=>{
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         window.setTimeout(fitExperience,80);
-        window.setTimeout(fitExperience,450);
+        window.setTimeout(()=>{
+          fitExperience();
+          if(selected==='meditation')return;
+          try{
+            const doc=experienceFrame.contentDocument;
+            const active=doc&&doc.querySelector('.page.active, main, [role="main"]');
+            if('ResizeObserver'in window&&active){
+              experienceObserver=new ResizeObserver(()=>fitExperience());
+              experienceObserver.observe(active);
+            }
+          }catch(_){}
+        },450);
         window.setTimeout(fitExperience,1200);
       });
       function destinationUrl(action){
@@ -283,7 +309,7 @@
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         cap.textContent=action==='daily-habits'?'Habits':item[1];
         experienceFrame.title=item[1];
-        experienceFrame.style.height=(experienceFrame.clientWidth*9/16)+'px';
+        experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
         experienceFrame.src=destinationUrl(action);show(experience);
       }
       function syncMeditationUI(){
