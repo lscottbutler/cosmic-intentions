@@ -5154,6 +5154,12 @@ export async function init() {
       if (_qaDashboard) {
         _qaDashboard.style.setProperty('width', _qaWidth + 'px', 'important');
         _qaDashboard.style.setProperty('max-width', _qaWidth + 'px', 'important');
+        _qaDashboard.querySelectorAll('.pg-frame, .pg-bezel, .pg-screen, .vault-layout, .vault-main').forEach((el) => {
+          el.style.setProperty('width', _qaWidth + 'px', 'important');
+          el.style.setProperty('max-width', _qaWidth + 'px', 'important');
+          el.style.setProperty('margin-left', '0', 'important');
+          el.style.setProperty('margin-right', '0', 'important');
+        });
       }
     }
     _seedPreviewDashboard();
