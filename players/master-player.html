@@ -244,7 +244,7 @@
       let experienceObserver=null;
       function fitExperience(){
         if(selected==='meditation'){
-          experienceFrame.style.height=Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px';
+          experienceFrame.style.height=(experienceFrame.clientWidth*9/16)+'px';
           reportHeight();
           return;
         }
@@ -309,7 +309,7 @@
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         cap.textContent=action==='daily-habits'?'Habits':item[1];
         experienceFrame.title=item[1];
-        experienceFrame.style.height=action==='meditation'?Math.max(260,Math.ceil(experienceFrame.clientWidth*9/16))+'px':'600px';
+        experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
         experienceFrame.src=destinationUrl(action);show(experience);
       }
       function syncMeditationUI(){
