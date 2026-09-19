@@ -306,7 +306,7 @@
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
-        shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:'#82ad77');
+        shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
         cap.textContent=action==='daily-habits'?'Habits':item[1];
