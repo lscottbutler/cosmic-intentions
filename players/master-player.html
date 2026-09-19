@@ -23,7 +23,7 @@
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
     .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
-    .shell.home-mode .stage{height:auto;min-height:0;aspect-ratio:16/9;padding:clamp(16px,4vw,28px);display:grid}
+    .shell.home-mode .stage{height:calc(56.25vw - 15.75px);min-height:0;max-height:calc(56.25vw - 15.75px);aspect-ratio:auto;padding:clamp(16px,4vw,28px);display:grid}
     .shell.home-mode #homeView{width:100%;min-height:0;align-self:stretch;display:grid}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
@@ -65,6 +65,7 @@
     @media(max-width:620px){
       .cap{margin:10px 8px 0;padding:11px 8px;font-size:11px;letter-spacing:1.4px}
       .stage{margin:0 8px;padding:22px 14px}
+      .shell.home-mode .stage{height:calc(56.25vw - 9px);max-height:calc(56.25vw - 9px)}
       .directory{grid-template-columns:1fr}
       .deck{margin:0 8px 10px;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:3px 3px 22px 22px}
       .nav span{font-size:8px}
