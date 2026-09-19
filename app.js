@@ -383,8 +383,8 @@ export function showPage(id) {
       visualization: 'vizlibrary',
       favorites: 'dailyfocus',
       gratitude: 'gratitude',
-      journal: 'notes',
-      thoughts: 'mynotes',
+      journal: 'mynotes',
+      thoughts: 'notes',
       wins: 'wins',
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
@@ -460,11 +460,6 @@ export function showPage(id) {
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
   if (id === 'meditation') renderMeditationStats();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
-
-  // Reusable right-hand column (clown + Big 3 stats) on these framed pages.
-  if (id === 'notes') ensurePageSideColumn('notes');
-  if (id === 'myroadmap') ensurePageSideColumn('myroadmap');
-  if (id === 'wins') ensurePageSideColumn('wins');
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
@@ -578,6 +573,46 @@ export function navTo(id) {
   // The old standalone Daily Habits/run-through page is retired. Habits now
   // live inside the LFM; stale links return safely to the Citadel dashboard.
   if (id === 'runthroughs') id = 'dashboard';
+  // CI V2: all core member tools live inside the persistent LFM. Legacy links,
+  // top tabs, and stale page URLs now reopen the Citadel and select the matching
+  // LFM destination instead of exposing a standalone page or Column B.
+  const lfmRoutes = {
+    notes: 'thoughts',
+    mynotes: 'journal',
+    setup: 'goals',
+    myroadmap: 'action-plan',
+    vizlibrary: 'visualization',
+    meditation: 'meditation',
+    gratitude: 'gratitude',
+    wins: 'wins',
+    cosmiclibrary: 'cosmic-library',
+  };
+  if (window.self === window.top && lfmRoutes[id]) {
+    if (!currentUser) {
+      closeDrawer();
+      openAuth('signin');
+      return;
+    }
+    const action = lfmRoutes[id];
+    const revealInLfm = () => {
+      const frame = document.getElementById('ciMasterPlayerFrame');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({ type: 'ci-lfm-select', action }, location.origin);
+      frame.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    };
+    const dashboard = document.getElementById('page-dashboard');
+    if (!dashboard || !dashboard.classList.contains('active')) {
+      navTo('dashboard');
+      window.setTimeout(revealInLfm, 180);
+      window.setTimeout(revealInLfm, 550);
+    } else {
+      revealInLfm();
+    }
+    return;
+  }
   // Must be logged in for any non-home page
   const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard'];
   if (auth_required.includes(id) && !currentUser) {
@@ -5677,11 +5712,27 @@ export function openMasterInlineDestination(action, goalIndex = null) {
 }
 
 export function openMasterDestination(action, goalIndex = null) {
-  // When the Master Player lives at the top of the Citadel, keep every linked
-  // destination inside the reusable Column A workspace beneath it.
-  const dashboard = document.getElementById('page-dashboard');
-  if (window.self === window.top && dashboard && dashboard.classList.contains('active')) {
-    if (openMasterInlineDestination(action, goalIndex)) return;
+  // The Citadel's persistent LFM is the only top-level destination workspace.
+  // Never open a second inline frame beneath it or a legacy standalone page.
+  if (window.self === window.top) {
+    const revealInLfm = () => {
+      const frame = document.getElementById('ciMasterPlayerFrame');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({ type: 'ci-lfm-select', action, goalIndex }, location.origin);
+      frame.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    };
+    const dashboard = document.getElementById('page-dashboard');
+    if (!dashboard || !dashboard.classList.contains('active')) {
+      navTo('dashboard');
+      window.setTimeout(revealInLfm, 180);
+      window.setTimeout(revealInLfm, 550);
+    } else {
+      revealInLfm();
+    }
+    return;
   }
 
   const idx = _masterGoalIndex(goalIndex);
@@ -5699,10 +5750,10 @@ export function openMasterDestination(action, goalIndex = null) {
       navTo('gratitude');
       break;
     case 'journal':
-      navTo('notes');
+      navTo('mynotes');
       break;
     case 'thoughts':
-      navTo('mynotes');
+      navTo('notes');
       break;
     case 'wins':
       navTo('wins');

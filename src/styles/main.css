@@ -3784,7 +3784,10 @@ html.master-inline-mode #page-dashboard {
 }
 html.master-inline-mode .pg-frame,
 html.master-inline-mode .pg-bezel,
-html.master-inline-mode .pg-screen {
+html.master-inline-mode .pg-screen,
+html.master-inline-mode .wins-frame,
+html.master-inline-mode .wins-bezel,
+html.master-inline-mode .wins-screen {
   width: 100% !important;
   max-width: none !important;
   min-height: 0 !important;
@@ -3796,7 +3799,8 @@ html.master-inline-mode .pg-screen {
   box-shadow: none !important;
   background: #fff !important;
 }
-html.master-inline-mode .pg-hdr {
+html.master-inline-mode .pg-hdr,
+html.master-inline-mode .wins-hdr {
   display: none !important;
 }
 html.master-inline-mode .pg-2col,
@@ -3812,6 +3816,43 @@ html.master-inline-mode .vault-main {
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
+}
+
+/* CI V2 — Column B is retired on every core member tool. The LFM menu and
+   Back control are the sole navigation system, including stale/direct routes. */
+#page-notes .pg-side,
+#page-notes .pg-2col-side,
+#page-mynotes .pg-side,
+#page-mynotes .pg-2col-side,
+#page-myroadmap .pg-side,
+#page-myroadmap .pg-2col-side,
+#page-vizlibrary .viz-side,
+#page-vizlibrary .pg-2col-side,
+#page-gratitude .pg-2col-side,
+#page-cosmiclibrary .pg-2col-side,
+#page-wins .pg-side,
+#page-wins .pg-2col-side {
+  display: none !important;
+}
+#page-notes .pg-2col,
+#page-mynotes .pg-2col,
+#page-myroadmap .pg-2col,
+#page-vizlibrary .viz-layout,
+#page-gratitude .pg-2col,
+#page-cosmiclibrary .pg-2col,
+#page-wins .pg-2col {
+  display: block !important;
+  grid-template-columns: minmax(0,1fr) !important;
+}
+#page-notes .pg-2col-main,
+#page-mynotes .pg-2col-main,
+#page-myroadmap .pg-2col-main,
+#page-vizlibrary .viz-main,
+#page-gratitude .pg-2col-main,
+#page-cosmiclibrary .pg-2col-main,
+#page-wins .pg-2col-main {
+  width: 100% !important;
+  max-width: none !important;
 }
 
 
