@@ -246,14 +246,16 @@
       }
       let experienceObserver=null;
       function visibleContentHeight(root){
-        const rootTop=root.getBoundingClientRect().top;
+        const view=root.ownerDocument.defaultView;
+        const scrollTop=view?view.scrollY:0;
+        const rootTop=root.getBoundingClientRect().top+scrollTop;
         let bottom=rootTop;
         root.querySelectorAll('*').forEach(el=>{
           const style=getComputedStyle(el);
           if(style.display==='none'||style.visibility==='hidden'||style.opacity==='0'||style.position==='fixed')return;
           const rect=el.getBoundingClientRect();
           if(rect.width<=0||rect.height<=0)return;
-          bottom=Math.max(bottom,rect.bottom);
+          bottom=Math.max(bottom,rect.bottom+scrollTop);
         });
         const paddingBottom=parseFloat(getComputedStyle(root).paddingBottom)||0;
         return Math.ceil(Math.max(1,bottom-rootTop+paddingBottom));
