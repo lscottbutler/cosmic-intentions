@@ -19,11 +19,14 @@
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-    .inspiration{width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
+    .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;opacity:0;transition:opacity .22s ease}
+    .inspiration.has-card .inspiration-card{opacity:1}
+    .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
     .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
-    .shell.home-mode .stage{height:calc(56.25vw - 15.75px);min-height:0;max-height:calc(56.25vw - 15.75px);aspect-ratio:auto;padding:clamp(16px,4vw,28px);display:grid}
+    .shell.home-mode .stage{height:calc(56.25vw - 15.75px);min-height:0;max-height:calc(56.25vw - 15.75px);aspect-ratio:auto;padding:0;display:grid}
     .shell.home-mode #homeView{width:100%;min-height:0;align-self:stretch;display:grid}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
@@ -79,6 +82,7 @@
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration">
+          <img class="inspiration-card" id="inspirationCard" alt="" decoding="async" fetchpriority="high">
           <div class="inspiration-kind" id="inspirationKind">Affirmation</div>
           <blockquote class="statement" id="statement">I AM BECOMING THE PERSON MY FUTURE SELF ALREADY IS.</blockquote>
           <div class="inspiration-author" id="inspirationAuthor" hidden></div>
@@ -134,6 +138,39 @@
     (() => {
       const params=new URLSearchParams(location.search);
       const inspiration=getDailyInspiration();
+      const entrepreneurCards=[
+        'ENT - FAIRNESS.PNG',
+        'ENT - GOOD LISTENER.PNG',
+        'ENT - METICULOUS PLANNER.PNG',
+        'ENT AWARE OF LIMITATIONS.PNG',
+        'ENT BALANCE IN LIFE.PNG',
+        'ENT CHARMING copy.PNG',
+        'ENT COMFORTABLE DELEGATING.PNG',
+        'ENT COMPETITIVE.PNG',
+        'ENT DETERMINED TO SUCCEED.PNG',
+        'ENT DISCIPLINED.PNG',
+        'ENT EMPATHETIC.PNG',
+        'ENT EXECUTING CONCEPT.PNG',
+        'ENT EXECUTING STRATEGY.PNG',
+        'ENT FACILITATOR.PNG',
+        'ENT GREAT SALES PERSON.PNG',
+        'ENT LIVING THE BRAND.PNG',
+        'ENT MANAGING TIME WISELY.PNG',
+        'ENT OUTSIDE BOX.PNG',
+        'ENT PASSIONATE.PNG',
+        'ENT PROFITABLE.PNG',
+        'ENT QUALITY PEOPLE.PNG',
+        'ENT RESPECTED MANAGER.PNG',
+        'ENT RISK TAKER.PNG',
+        'ENT SELF CONFIDENT.PNG',
+        'ENT SELF PROMOTER.PNG',
+        'ENT SELF STARTER.PNG',
+        'ENT SKILLFUL COMMUNICATOR.PNG',
+        'ENT STRATEGIC THINKER.PNG',
+        'ENT STRONG WORK ETHIC.PNG',
+        'ENT SUCCESSFUL NEGOTIATOR.PNG',
+        'ORGANIZATIONAL SKILLS.JPG'
+      ];
       const goalRaw=params.get('goal')??params.get('idx');
       const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
@@ -158,6 +195,17 @@
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
       const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided';
+      const now=new Date();
+      const dailyCardIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%entrepreneurCards.length;
+      const requestedCard=Number.parseInt(params.get('card'),10);
+      const cardIndex=Number.isInteger(requestedCard)?((requestedCard%entrepreneurCards.length)+entrepreneurCards.length)%entrepreneurCards.length:dailyCardIndex;
+      const cardFile=entrepreneurCards[cardIndex];
+      const inspirationCard=document.getElementById('inspirationCard');
+      const inspirationPanel=document.getElementById('dailyInspiration');
+      inspirationCard.alt=cardFile.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
+      inspirationCard.addEventListener('load',()=>inspirationPanel.classList.add('has-card'),{once:true});
+      inspirationCard.addEventListener('error',()=>{inspirationCard.hidden=true},{once:true});
+      inspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(cardFile);
       document.getElementById('inspirationKind').textContent=inspiration.label;
       document.getElementById('statement').textContent=inspiration.text;
       const inspirationAuthor=document.getElementById('inspirationAuthor');
