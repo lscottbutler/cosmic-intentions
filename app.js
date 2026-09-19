@@ -5033,7 +5033,7 @@ function buildBSPegboardPanel(intent) {
 function _previewActive() {
   const host = location.hostname;
   const local = host === 'localhost' || host === '127.0.0.1';
-  const netlifyReview = /^deploy-preview-\\d+--gilded-profiterole-47a2eb\\.netlify\\.app$/.test(host);
+  const netlifyReview = /^deploy-preview-\d+--gilded-profiterole-47a2eb\.netlify\.app$/.test(host);
   const flag = new URLSearchParams(location.search).has('preview');
   return (local || netlifyReview) && flag;
 }
