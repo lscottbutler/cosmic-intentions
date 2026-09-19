@@ -46,10 +46,13 @@
     .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .nav span{font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap}
     .deck.meditation-mode .normal-control{position:absolute;opacity:0;pointer-events:none}
-    .med-progress{grid-column:1/-1;display:none;width:100%;height:14px;border:0;background:transparent;padding:5px 7px;cursor:pointer}
-    .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.2);overflow:hidden}
-    .med-progress-fill{display:block;width:0;height:100%;border-radius:inherit;background:#a7c526;transition:width .2s linear}
-    .deck.meditation-mode .med-progress{display:block;animation:controlFadeIn .25s ease both}
+    .deck.meditation-mode{padding-top:31px}
+    .med-progress{position:absolute;z-index:3;top:0;left:0;right:0;display:none;width:auto;height:30px;border:0;background:transparent;padding:0 25px;cursor:pointer;transform:translateY(-50%);-webkit-tap-highlight-color:transparent}
+    .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.28);overflow:visible}
+    .med-progress-fill{position:relative;display:block;width:0;height:100%;border-radius:inherit;background:#a7c526;transition:width .2s linear}
+    .med-progress-fill::after{content:"";position:absolute;top:50%;right:-15px;width:30px;height:30px;border:3px solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:translateY(-50%)}
+    .med-progress:focus-visible{outline:2px solid #fff;outline-offset:2px}
+    .deck.meditation-mode .med-progress{display:block}
     .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
     .deck.meditation-mode .med-controls{display:grid;animation:controlFadeIn .28s .14s ease both}
     .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer}
@@ -322,7 +325,7 @@
       function reloadMeditation(){experienceFrame.src=destinationUrl('meditation');syncMeditationUI()}
       function sendMeditation(command,extra={}){experienceFrame.contentWindow?.postMessage({type:'ci-meditation-command',command,...extra},location.origin)}
       document.getElementById('medProgress').addEventListener('click',event=>{
-        const rect=event.currentTarget.getBoundingClientRect();
+        const rect=event.currentTarget.querySelector('.med-progress-track').getBoundingClientRect();
         const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
         sendMeditation('seek',{ratio});
       });
