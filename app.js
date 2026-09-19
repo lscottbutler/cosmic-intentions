@@ -5145,9 +5145,15 @@ export async function init() {
 
   const _preview = _previewActive();
   if (_preview) {
+    const _previewParams = new URLSearchParams(location.search);
+    const _qaWidth = Number.parseInt(_previewParams.get('qaWidth') || '', 10);
+    if (Number.isInteger(_qaWidth) && _qaWidth >= 320 && _qaWidth <= 1400) {
+      document.documentElement.style.width = _qaWidth + 'px';
+      document.documentElement.style.margin = '0 auto';
+    }
     _seedPreviewDashboard();
-    // Deep-link to any page for local verification: ?preview=1&page=vizlibrary
-    const _pg = new URLSearchParams(location.search).get('page');
+    // Deep-link to any page for review verification: ?preview=1&page=vizlibrary
+    const _pg = _previewParams.get('page');
     if (_pg) setTimeout(() => { try { (window.navTo || showPage)(_pg); } catch (e) { try { showPage(_pg); } catch (e2) {} } }, 200);
   }
 
