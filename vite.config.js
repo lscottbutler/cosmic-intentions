@@ -23,10 +23,7 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        // app.js + shared/*.js are bundled via src/main.js. The Master Player is
-        // copied as static HTML, so its one direct module dependency must also
-        // be published at the same /shared/ URL used in development.
-        { src: 'shared/daily-inspiration.js', dest: 'shared' },
+        // app.js + shared/*.js are now ES modules bundled via src/main.js — not copied.
         { src: 'player', dest: '.' },
         { src: 'players', dest: '.' },
         { src: 'standalone', dest: '.' },
