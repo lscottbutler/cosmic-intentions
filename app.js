@@ -5150,6 +5150,11 @@ export async function init() {
     if (Number.isInteger(_qaWidth) && _qaWidth >= 320 && _qaWidth <= 1400) {
       document.documentElement.style.width = _qaWidth + 'px';
       document.documentElement.style.margin = '0 auto';
+      const _qaDashboard = document.getElementById('page-dashboard');
+      if (_qaDashboard) {
+        _qaDashboard.style.setProperty('width', _qaWidth + 'px', 'important');
+        _qaDashboard.style.setProperty('max-width', _qaWidth + 'px', 'important');
+      }
     }
     _seedPreviewDashboard();
     // Deep-link to any page for review verification: ?preview=1&page=vizlibrary
