@@ -305,6 +305,7 @@
         if(action==='meditation')return '/players/meditation.html?v=lfm-16x9-1&t='+meditationMinutes+'&mode='+meditationMode+'&external=1';
         const url=new URL('/',location.origin);
         url.searchParams.set('masterInline',action);
+        url.searchParams.set('lfm','fullheight-1');
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
         return url.pathname+url.search;
       }

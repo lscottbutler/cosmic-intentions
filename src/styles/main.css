@@ -3814,6 +3814,7 @@ html.master-inline-mode .vault-layout {
   display: block !important;
   width: 100% !important;
   max-width: none !important;
+  min-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -3822,6 +3823,7 @@ html.master-inline-mode .vault-main {
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
+  overflow: visible !important;
 }
 
 /* CI V2 — Column B is retired on every core member tool. The LFM menu and
