@@ -5024,19 +5024,18 @@ function buildBSPegboardPanel(intent) {
 /* activity.js */
 
 /* ─────────────────────────────────────────────────────────
-   LOCALHOST-ONLY DASHBOARD PREVIEW
-   Lets us load the auth-gated dashboard WITHOUT logging in — purely to
-   eyeball / screenshot layout changes. HARD-GUARDED two ways so it can NEVER
-   activate on cosmicintentions.com:
-     1) only on localhost / 127.0.0.1  (a live domain never matches)
-     2) only when the URL has ?preview=1
-   Open http://127.0.0.1:5173/?preview=1 to use it.
+   REVIEW-ONLY DASHBOARD PREVIEW
+   Lets us load the auth-gated dashboard with sample data for visual QA.
+   It can activate only on localhost or this site's password-protected Netlify
+   deploy-preview host, and only when the URL includes ?preview=1.
+   Production cosmicintentions.com can never match this guard.
 ───────────────────────────────────────────────────────── */
 function _previewActive() {
-  const host  = location.hostname;
+  const host = location.hostname;
   const local = host === 'localhost' || host === '127.0.0.1';
-  const flag  = new URLSearchParams(location.search).has('preview');
-  return local && flag;
+  const netlifyReview = /^deploy-preview-\\d+--gilded-profiterole-47a2eb\\.netlify\\.app$/.test(host);
+  const flag = new URLSearchParams(location.search).has('preview');
+  return (local || netlifyReview) && flag;
 }
 
 function _seedPreviewDashboard() {
