@@ -19,9 +19,12 @@
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-    .statement{min-height:80px;display:grid;place-items:center;text-align:center;text-transform:uppercase;font-size:clamp(19px,4.5vw,31px);font-weight:800;line-height:1.45;letter-spacing:2.2px}
-    .shell.home-mode .stage{min-height:268px}
-    .shell.home-mode .statement{min-height:212px}
+    .inspiration{width:100%;height:100%;display:grid;grid-template-rows:auto 1fr auto;align-items:center;text-align:center;text-transform:uppercase}
+    .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
+    .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
+    .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
+    .shell.home-mode .stage{min-height:0;aspect-ratio:16/9;padding:clamp(16px,4vw,28px);display:grid}
+    .shell.home-mode #homeView{width:100%;height:100%}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
     .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
@@ -74,7 +77,11 @@
     <header class="cap" id="capTitle">Citadel</header>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
-        <div class="statement" id="statement">I AM THE PROUD OWNER OF A SUCCESSFUL ONLINE TRAINING COURSE</div>
+        <div class="inspiration" id="dailyInspiration">
+          <div class="inspiration-kind" id="inspirationKind">Affirmation</div>
+          <blockquote class="statement" id="statement">I AM BECOMING THE PERSON MY FUTURE SELF ALREADY IS.</blockquote>
+          <div class="inspiration-author" id="inspirationAuthor" hidden></div>
+        </div>
       </div>
       <div class="view" id="directoryView" hidden>
         <div class="view-head"><h1 class="view-title">Menu</h1></div>
@@ -121,10 +128,11 @@
       </div>
     </nav>
   </main>
-  <script>
+  <script type="module">
+    import { getDailyInspiration } from '../shared/daily-inspiration.js';
     (() => {
       const params=new URLSearchParams(location.search);
-      const statement=(params.get('text')||'I AM THE PROUD OWNER OF A SUCCESSFUL ONLINE TRAINING COURSE').trim().toUpperCase();
+      const inspiration=getDailyInspiration();
       const goalRaw=params.get('goal')??params.get('idx');
       const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
@@ -149,7 +157,11 @@
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
       const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided';
-      document.getElementById('statement').textContent=statement;
+      document.getElementById('inspirationKind').textContent=inspiration.label;
+      document.getElementById('statement').textContent=inspiration.text;
+      const inspirationAuthor=document.getElementById('inspirationAuthor');
+      inspirationAuthor.hidden=!inspiration.author;
+      inspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
       let selected=null,lastReportedHeight=0,heightFrame=0;
       function reportHeight(){
         if(heightFrame)return;
