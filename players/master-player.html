@@ -245,6 +245,19 @@
         selected=null;shell.classList.remove('daily-habits-mode');setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
       }
       let experienceObserver=null;
+      function visibleContentHeight(root){
+        const rootTop=root.getBoundingClientRect().top;
+        let bottom=rootTop;
+        root.querySelectorAll('*').forEach(el=>{
+          const style=getComputedStyle(el);
+          if(style.display==='none'||style.visibility==='hidden'||style.opacity==='0'||style.position==='fixed')return;
+          const rect=el.getBoundingClientRect();
+          if(rect.width<=0||rect.height<=0)return;
+          bottom=Math.max(bottom,rect.bottom);
+        });
+        const paddingBottom=parseFloat(getComputedStyle(root).paddingBottom)||0;
+        return Math.ceil(Math.max(1,bottom-rootTop+paddingBottom));
+      }
       function fitExperience(){
         if(!selected)return;
         if(selected==='meditation'){
@@ -257,8 +270,7 @@
           if(!doc)return;
           const active=doc.querySelector('.page.active, main, [role="main"]');
           if(!active)return;
-          const activeRect=active.getBoundingClientRect();
-          const height=Math.ceil(Math.max(active.scrollHeight,activeRect.height));
+          const height=visibleContentHeight(active);
           if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
             experienceFrame.style.height=height+'px';
           }
