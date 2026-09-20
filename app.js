@@ -586,6 +586,7 @@ export function navTo(id) {
   // top tabs, and stale page URLs now reopen the Citadel and select the matching
   // LFM destination instead of exposing a standalone page or Column B.
   const lfmRoutes = {
+    habits: 'daily-habits',
     notes: 'thoughts',
     mynotes: 'journal',
     setup: 'goals',
