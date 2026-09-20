@@ -240,11 +240,16 @@
       function notifyParentMode(action){
         try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
       }
+      let experienceObserver=null,experienceMutationObserver=null,settleTimer=0;
+      function clearExperienceObservers(){
+        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
+        if(experienceMutationObserver){experienceMutationObserver.disconnect();experienceMutationObserver=null}
+        if(settleTimer){window.clearTimeout(settleTimer);settleTimer=0}
+      }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode');setMeditationMode(false);if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
+        selected=null;shell.classList.remove('daily-habits-mode');setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
       }
-      let experienceObserver=null;
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
         const scrollTop=view?view.scrollY:0;
@@ -277,7 +282,12 @@
             if(doc.body)doc.body.scrollTop=0;
             doc.defaultView?.scrollTo(0,0);
           }catch(_){}
-          const height=Math.max(180,visibleContentHeight(active));
+          const height=Math.max(
+            180,
+            visibleContentHeight(active),
+            doc.body?doc.body.scrollHeight:0,
+            doc.documentElement?doc.documentElement.scrollHeight:0
+          );
           if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
             experienceFrame.style.height=height+'px';
           }
@@ -285,21 +295,29 @@
         reportHeight();
       }
       experienceFrame.addEventListener('load',()=>{
-        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
-        window.setTimeout(fitExperience,80);
+        clearExperienceObservers();
+        [80,250,600,1200,2500,5000].forEach(delay=>window.setTimeout(fitExperience,delay));
         window.setTimeout(()=>{
           fitExperience();
           if(selected==='meditation')return;
           try{
             const doc=experienceFrame.contentDocument;
             const active=doc&&doc.querySelector('.page.active, main, [role="main"]');
-            if('ResizeObserver'in window&&active){
+            if(!active)return;
+            if('ResizeObserver'in window){
               experienceObserver=new ResizeObserver(()=>fitExperience());
-              experienceObserver.observe(active);
+              [active,doc.body,doc.getElementById('vaultList')].filter(Boolean).forEach(node=>experienceObserver.observe(node));
+            }
+            if('MutationObserver'in window){
+              experienceMutationObserver=new MutationObserver(()=>{
+                fitExperience();
+                if(settleTimer)window.clearTimeout(settleTimer);
+                settleTimer=window.setTimeout(fitExperience,120);
+              });
+              experienceMutationObserver.observe(active,{subtree:true,childList:true,characterData:true,attributes:true});
             }
           }catch(_){}
-        },450);
-        window.setTimeout(fitExperience,1200);
+        },350);
       });
       function destinationUrl(action){
         if(action==='meditation')return '/players/meditation.html?v=lfm-16x9-1&t='+meditationMinutes+'&mode='+meditationMode+'&external=1';
@@ -326,7 +344,7 @@
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
-        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
+        clearExperienceObservers();
         cap.textContent=action==='daily-habits'?'Habits':item[1];
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
