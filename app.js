@@ -510,6 +510,14 @@ if (typeof history !== 'undefined' &&
 export function subnavBack()    { history.back();    }
 export function subnavForward() { history.forward(); }
 
+// Shared three-button mini nav used by LFM tools. The embedded tool sends one
+// same-origin command to the master player, which owns Back / Menu / Forward.
+export function lfmMiniNav(command) {
+  if (!['back', 'menu', 'forward'].includes(command)) return;
+  if (window.parent === window) return;
+  window.parent.postMessage({ type: 'ci-lfm-mini-nav', command }, location.origin);
+}
+
 /* Step through the top tab bar in order (dir -1 = previous tab, +1 = next tab), wrapping
    around. The Column B nav cluster arrows use this — go to whichever tab is next/prev. */
 const _TAB_ORDER = ['dashboard','notes','mynotes','myroadmap','vizlibrary','meditation','gratitude','wins','cosmiclibrary','proof'];
