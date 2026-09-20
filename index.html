@@ -1292,6 +1292,28 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- WELCOME — TOP OF CITADEL COLUMN A -->
         <div id="dashGreeting" class="dash-greeting">Welcome back</div>
 
+        <section id="lfmGuideCard" class="lfm-guide-card" aria-label="Player guide and navigation" hidden>
+          <div class="lfm-guide-grid">
+            <article class="lfm-guide-section">
+              <h2>How It Works</h2>
+              <p id="lfmGuideHow"></p>
+            </article>
+            <article class="lfm-guide-section">
+              <h2>The Reasoning Behind the Concept</h2>
+              <p id="lfmGuideReason"></p>
+            </article>
+            <article class="lfm-guide-section">
+              <h2>Instructions &amp; Features</h2>
+              <p id="lfmGuideInstructions"></p>
+            </article>
+          </div>
+          <nav class="lfm-guide-3bmn" aria-label="Player navigation">
+            <button type="button" data-lfm-guide-command="back" aria-label="Back to Citadel"><span aria-hidden="true">&#9664;</span><b>Back</b></button>
+            <button type="button" data-lfm-guide-command="menu" aria-label="Open LFM menu"><span aria-hidden="true">&#9776;</span><b>LFM Menu</b></button>
+            <button type="button" data-lfm-guide-command="forward" aria-label="Next player"><span aria-hidden="true">&#9654;</span><b>Next</b></button>
+          </nav>
+        </section>
+
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
         <div class="dash-note-block" data-block="dashboard-note-2" style="display:none;position:relative;background:#ffffff;border:2px solid #e9edf2;border-radius:12px;box-shadow:0 8px 26px rgba(20,40,80,.07);padding:22px 26px;margin:20px;font-size:16px;line-height:1.72;letter-spacing:.1px;color:#3a4a63;"></div>
@@ -1311,6 +1333,94 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           (function () {
             var titleHost = document.querySelector('#page-dashboard .citadel-lettermark');
             var citadelTitleMarkup = titleHost ? titleHost.innerHTML : '';
+            var greetingHost = document.getElementById('dashGreeting');
+            var guideCard = document.getElementById('lfmGuideCard');
+            var guideHow = document.getElementById('lfmGuideHow');
+            var guideReason = document.getElementById('lfmGuideReason');
+            var guideInstructions = document.getElementById('lfmGuideInstructions');
+            var lfmGuides = {
+              'goals': {
+                how: 'Create, organize and review the goals you are actively pursuing in one focused workspace.',
+                reason: 'Clear written goals turn broad intentions into visible commitments that can guide daily decisions.',
+                instructions: 'Add or edit a goal, set dates, open its details and use the player navigation to continue through your LFM tools.'
+              },
+              'daily-habits': {
+                how: 'Build repeatable actions, group them by time of day and track the habits that support your goals.',
+                reason: 'Small repeated behaviors make progress easier to sustain and help reinforce the identity behind each goal.',
+                instructions: 'Add, rename, reorder or remove habits, choose a category and return daily to review and complete them.'
+              },
+              'action-plan': {
+                how: 'Turn a selected goal into a practical roadmap of ordered steps and immediate next actions.',
+                reason: 'Breaking a large outcome into smaller actions reduces uncertainty and makes momentum easier to maintain.',
+                instructions: 'Choose a goal, review its roadmap, open any step for detail and update progress as work is completed.'
+              },
+              'visualization': {
+                how: 'Choose a goal and rehearse its successful outcome through focused images, details and guided attention.',
+                reason: 'Mental rehearsal strengthens familiarity, emotional connection and awareness of goal-relevant opportunities.',
+                instructions: 'Select a goal, open its visualization experience and use the available sessions and saved material as needed.'
+              },
+              'meditation': {
+                how: 'Select a meditation style and duration, then use the player and curved progress control for the session.',
+                reason: 'Deliberate attention practice can create mental space, regulate emotion and improve focus before purposeful action.',
+                instructions: 'Choose guided or unguided, select a time, press Play, pause or seek when needed and use Next to continue.'
+              },
+              'favorites': {
+                how: 'Collect preferred CI tools and play them as one ordered personal sequence.',
+                reason: 'A ready-made sequence reduces decision fatigue and makes a consistent practice faster to begin.',
+                instructions: 'Favorite useful items, arrange their order and start autoplay; return here whenever you want to revise the sequence.'
+              },
+              'gratitude': {
+                how: 'Record and revisit specific people, experiences and progress for which you feel grateful.',
+                reason: 'Directing attention toward what is working can balance threat-focused thinking and reinforce meaningful progress.',
+                instructions: 'Use the prompts, write specific entries, save them and revisit earlier gratitude whenever you need perspective.'
+              },
+              'journal': {
+                how: 'Capture private reflections, experiences, decisions and lessons in dated entries.',
+                reason: 'Writing slows thought down, reveals patterns and creates a record that supports clearer self-reflection.',
+                instructions: 'Create an entry, write freely, save it and return to previous entries to review or continue your thinking.'
+              },
+              'thoughts': {
+                how: 'Store your personal foundation, beliefs, affirmations, reminders, quotations and words to live by.',
+                reason: 'Language that is personally meaningful is more useful than generic inspiration and can keep priorities visible.',
+                instructions: 'Complete your foundation fields, add or edit thoughts and save changes so they can surface throughout CI.'
+              },
+              'wins': {
+                how: 'Record completed actions, breakthroughs and evidence of progress—large or small.',
+                reason: 'Visible evidence of progress builds confidence, counters all-or-nothing thinking and supports continued effort.',
+                instructions: 'Add a win when it happens, include useful detail and review the collection whenever you need proof of momentum.'
+              },
+              'proof': {
+                how: 'Collect concrete evidence that your intentions, habits and actions are producing movement.',
+                reason: 'A proof record gives the mind specific counter-evidence when doubt or discouragement appears.',
+                instructions: 'Add each useful result or observation, connect it to the relevant goal and review the evidence regularly.'
+              },
+              'cosmic-library': {
+                how: 'Browse the complete collection of Cosmic Intentions resources from one organized library.',
+                reason: 'A central library makes relevant tools easier to find without breaking focus across disconnected pages.',
+                instructions: 'Browse or search the collection, open an item and favorite the resources you want in your regular sequence.'
+              },
+              'quickie-move': {
+                how: 'Choose one small action that can be completed immediately to create forward motion.',
+                reason: 'A concrete action interrupts hesitation and turns intention into evidence that the goal is already underway.',
+                instructions: 'Select the clearest available move, complete it now and record the result before choosing another.'
+              },
+              'admin': {
+                how: 'Manage the content and controls that shape the member experience.',
+                reason: 'Central administration keeps the public experience consistent while separating editorial controls from member tools.',
+                instructions: 'Use the available sections carefully, review changes before saving and return to the Citadel to verify the result.'
+              }
+            };
+
+            function setLfmGuide(action) {
+              var guide = lfmGuides[action];
+              if (greetingHost) greetingHost.hidden = action !== 'home' && action !== 'citadel';
+              if (!guideCard) return;
+              guideCard.hidden = !guide;
+              if (!guide) return;
+              guideHow.textContent = guide.how;
+              guideReason.textContent = guide.reason;
+              guideInstructions.textContent = guide.instructions;
+            }
 
             function setLfmContextTitle(action) {
               if (!titleHost) return;
@@ -1356,8 +1466,20 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             }
 
             setLfmContextTitle('home');
+            setLfmGuide('home');
 
             var frame = document.getElementById('ciMasterPlayerFrame');
+            if (guideCard) {
+              guideCard.querySelectorAll('[data-lfm-guide-command]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                  if (!frame || !frame.contentWindow) return;
+                  frame.contentWindow.postMessage({
+                    type: 'ci-lfm-guide-command',
+                    command: button.getAttribute('data-lfm-guide-command')
+                  }, window.location.origin);
+                });
+              });
+            }
 
             function applyLfmHeight(height) {
               if (!frame) return;
@@ -1382,6 +1504,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               if (!frame || event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
               if (event.data.type === 'ci-lfm-mode') {
                 setLfmContextTitle(event.data.action);
+                setLfmGuide(event.data.action);
                 return;
               }
               if (event.data.type === 'ci-lfm-height') applyLfmHeight(event.data.height);
