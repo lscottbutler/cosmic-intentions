@@ -455,7 +455,15 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
         const data=event.data||{};
-        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='home')homeMode();else select(data.action)}
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='home')homeMode();else select(data.action);return}
+        if(data.type==='ci-lfm-guide-command'){
+          if(data.command==='back'){homeMode();return}
+          if(data.command==='menu'){select('everything');return}
+          if(data.command==='forward'){
+            const current=Math.max(0,items.findIndex(item=>item[0]===selected));
+            select(items[(current+1)%items.length][0]);
+          }
+        }
       });
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
