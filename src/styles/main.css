@@ -4119,8 +4119,14 @@ html.master-inline-goals #page-setup {
 }
 
 
-/* My Thoughts LFM — keep working cards 10px inside the green frame. */
-html.master-inline-thoughts #page-notes .pg-screen {
+/* Shared LFM working surface — keep every core tool 10px inside its frame. */
+html.master-inline-goals #page-setup,
+html.master-inline-favorites #page-dailyfocus,
+html.master-inline-thoughts #page-notes,
+html.master-inline-journal #page-mynotes,
+html.master-inline-action-plan #page-myroadmap,
+html.master-inline-gratitude #page-gratitude,
+html.master-inline-wins #page-wins {
   padding-left: 10px !important;
   padding-right: 10px !important;
   box-sizing: border-box !important;
