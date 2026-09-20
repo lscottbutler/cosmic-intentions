@@ -207,6 +207,23 @@
         'ENT SUCCESSFUL NEGOTIATOR.PNG',
         'ORGANIZATIONAL SKILLS.JPG'
       ];
+      const toolCardByAction={
+        goals:'ENT STRATEGIC THINKER.PNG',
+        'daily-habits':'ENT DISCIPLINED.PNG',
+        'action-plan':'ENT - METICULOUS PLANNER.PNG',
+        visualization:'ENT OUTSIDE BOX.PNG',
+        meditation:'ENT BALANCE IN LIFE.PNG',
+        favorites:'ENT MANAGING TIME WISELY.PNG',
+        gratitude:'ENT EMPATHETIC.PNG',
+        journal:'ENT - GOOD LISTENER.PNG',
+        thoughts:'ENT SKILLFUL COMMUNICATOR.PNG',
+        wins:'ENT SELF CONFIDENT.PNG',
+        proof:'ENT LIVING THE BRAND.PNG',
+        'cosmic-library':'ENT QUALITY PEOPLE.PNG',
+        'quickie-move':'ENT SELF STARTER.PNG',
+        admin:'ORGANIZATIONAL SKILLS.JPG'
+      };
+      const cardAlt=file=>file.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
       const goalRaw=params.get('goal')??params.get('idx');
       const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
@@ -226,7 +243,7 @@
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','favorites','thoughts','journal','action-plan','gratitude','wins']);
+      const lfmTemplateActions=new Set(['goals','favorites','thoughts','journal','action-plan','visualization','gratitude','wins']);
       const shell=document.querySelector('.shell');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
@@ -240,7 +257,7 @@
       const cardFile=entrepreneurCards[cardIndex];
       const inspirationCard=document.getElementById('inspirationCard');
       const inspirationPanel=document.getElementById('dailyInspiration');
-      inspirationCard.alt=cardFile.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
+      inspirationCard.alt=cardAlt(cardFile);
       inspirationCard.addEventListener('load',()=>inspirationPanel.classList.add('has-card'),{once:true});
       inspirationCard.addEventListener('error',()=>{inspirationCard.hidden=true},{once:true});
       inspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(cardFile);
@@ -251,10 +268,16 @@
       inspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
       const toolInspirationCard=document.getElementById('toolInspirationCard');
       const toolInspirationPanel=document.getElementById('toolDailyInspiration');
-      toolInspirationCard.alt=inspirationCard.alt;
-      toolInspirationCard.addEventListener('load',()=>toolInspirationPanel.classList.add('has-card'),{once:true});
-      toolInspirationCard.addEventListener('error',()=>{toolInspirationCard.hidden=true},{once:true});
-      toolInspirationCard.src=inspirationCard.src;
+      function setToolCard(action){
+        const itemIndex=Math.max(0,items.findIndex(item=>item[0]===action));
+        const file=toolCardByAction[action]||entrepreneurCards[(cardIndex+itemIndex+1)%entrepreneurCards.length];
+        toolInspirationPanel.classList.remove('has-card');
+        toolInspirationCard.hidden=false;
+        toolInspirationCard.alt=cardAlt(file);
+        toolInspirationCard.onload=()=>toolInspirationPanel.classList.add('has-card');
+        toolInspirationCard.onerror=()=>{toolInspirationCard.hidden=true;toolInspirationPanel.classList.remove('has-card')};
+        toolInspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(file);
+      }
       document.getElementById('toolInspirationKind').textContent=inspiration.label;
       document.getElementById('toolStatement').textContent=inspiration.text;
       const toolInspirationAuthor=document.getElementById('toolInspirationAuthor');
@@ -383,6 +406,7 @@
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
         toolRotation.hidden=!usesLfmTemplate;
+        if(usesLfmTemplate)setToolCard(action);
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
