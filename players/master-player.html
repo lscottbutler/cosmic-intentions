@@ -277,17 +277,10 @@
           if(!doc)return;
           const active=doc.querySelector('.page.active, main, [role="main"]');
           if(!active)return;
-          try{
-            doc.documentElement.scrollTop=0;
-            if(doc.body)doc.body.scrollTop=0;
-            doc.defaultView?.scrollTo(0,0);
-          }catch(_){}
-          const height=Math.max(
-            180,
-            visibleContentHeight(active),
-            doc.body?doc.body.scrollHeight:0,
-            doc.documentElement?doc.documentElement.scrollHeight:0
-          );
+          const goalsEnd=selected==='goals'?doc.querySelector('.lfm-goals-mini-nav'):null;
+          const height=goalsEnd
+            ? Math.max(180,Math.ceil(goalsEnd.getBoundingClientRect().bottom-active.getBoundingClientRect().top+24))
+            : Math.max(180,visibleContentHeight(active));
           if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
             experienceFrame.style.height=height+'px';
           }
@@ -306,7 +299,10 @@
             if(!active)return;
             if('ResizeObserver'in window){
               experienceObserver=new ResizeObserver(()=>fitExperience());
-              [active,doc.body,doc.getElementById('vaultList')].filter(Boolean).forEach(node=>experienceObserver.observe(node));
+              const resizeTargets=selected==='goals'
+                ? [doc.getElementById('vaultList'),doc.querySelector('.lfm-goals-mini-nav')]
+                : [active];
+              resizeTargets.filter(Boolean).forEach(node=>experienceObserver.observe(node));
             }
             if('MutationObserver'in window){
               experienceMutationObserver=new MutationObserver(()=>{
