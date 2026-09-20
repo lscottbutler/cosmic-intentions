@@ -43,6 +43,8 @@
     .experience-frame{display:block;width:100%;height:600px;border:0;background:#fff;border-radius:8px;overflow:hidden;transition:height .3s ease}
     .shell.experience-mode .stage{padding:0}
     .shell.experience-mode .experience-frame{border-radius:0}
+    .shell.thoughts-frame-mode #experienceView{background:var(--frame);padding-bottom:14px}
+    .shell.thoughts-frame-mode .experience-frame{width:calc(100% - 28px);margin:0 14px}
     .experience-copy,.launch{display:none}
     .deck{position:relative;margin:0 14px 16px;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 32% 32%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .shell.home-mode .deck{padding-bottom:17px}
@@ -289,7 +291,7 @@
       }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
+        selected=null;shell.classList.remove('daily-habits-mode','thoughts-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
       }
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
@@ -371,10 +373,11 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';shell.classList.remove('thoughts-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
+        shell.classList.toggle('thoughts-frame-mode',action==='thoughts');
         const usesLfmTemplate=lfmTemplateActions.has(action);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
