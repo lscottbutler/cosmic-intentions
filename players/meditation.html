@@ -11,18 +11,17 @@ html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
 body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
-.dvb-curve{position:absolute;z-index:2;left:0;right:0;bottom:0;width:100%;height:18%;display:block;pointer-events:none}
-.dvb-curve-badge{position:absolute;z-index:3;left:50%;bottom:2%;width:9%;aspect-ratio:1;transform:translateX(-50%);border:clamp(4px,.7vw,8px) solid #315f12;border-radius:50%;background:#a7c526;pointer-events:none}
-.timer{position:absolute;left:50%;top:84.7%;transform:translate(-50%,-50%);width:9.15%;aspect-ratio:1;border:0;border-radius:50%;padding:0;background:#285f0a;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.timer::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;background:#8aa41f}
+.dvb-curve{position:absolute;z-index:2;left:0;right:0;bottom:0;width:100%;height:18%;display:block;pointer-events:auto;cursor:pointer}
+.dvb-scrubber{position:absolute;z-index:3;left:1.8%;bottom:6.3%;width:3%;aspect-ratio:1;transform:translate(-50%,50%);border:clamp(3px,.45vw,6px) solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
+.timer{position:absolute;z-index:4;left:50%;top:89.2%;transform:translate(-50%,-50%);width:9.15%;aspect-ratio:1;border:0;border-radius:50%;padding:0;background:#315f12;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.timer::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;background:#a7c526}
 .timer:focus-visible{outline:4px solid #fff;outline-offset:4px}
 .value,.playicon{position:relative;z-index:1;color:#fff}
-.value{font-size:clamp(28px,5.1vw,78px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.2px}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
 [hidden]{display:none!important}
 body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:clamp(8px,1.4vw,16px) solid #82ad77}
 body.external .image{inset:0}
-body.external .timer{display:none}
 </style>
 </head>
 <body>
@@ -31,7 +30,7 @@ body.external .timer{display:none}
   <svg class="dvb-curve" viewBox="0 0 685 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <path d="M0 78 Q342.5 18 685 78 L685 120 L0 120 Z" fill="#315f12" stroke="#a7c526" stroke-width="7" vector-effect="non-scaling-stroke"/>
   </svg>
-  <span class="dvb-curve-badge" aria-hidden="true"></span>
+  <span class="dvb-scrubber" id="dvbScrubber" aria-hidden="true"></span>
   <button class="timer" id="timer" type="button" aria-label="Start meditation">
     <span class="playicon" id="playIcon" aria-hidden="true"></span>
     <span class="value" id="value" hidden>15</span>
@@ -50,12 +49,20 @@ body.external .timer{display:none}
   const button=document.getElementById('timer');
   const value=document.getElementById('value');
   const playIcon=document.getElementById('playIcon');
+  const curve=document.querySelector('.dvb-curve');
+  const scrubber=document.getElementById('dvbScrubber');
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
-  const shown=()=>Math.max(0,Math.round(remaining/60000));
+  const shown=()=>{const seconds=Math.max(0,Math.ceil(remaining/1000));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')};
+  function renderScrubber(){
+    const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
+    const y=78-120*progress*(1-progress);
+    scrubber.style.left=(1.8+progress*96.4)+'%';
+    scrubber.style.bottom=(18*(120-y)/120)+'%';
+  }
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
   function render(){
     const ready=state==='ready';
-    playIcon.hidden=!ready; value.hidden=ready; value.textContent=String(shown());
+    playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
     button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;notify();
   }
@@ -76,6 +83,10 @@ body.external .timer{display:none}
     render();
   }
   button.addEventListener('click',toggle);
+  curve.addEventListener('click',event=>{
+    const rect=curve.getBoundingClientRect();
+    seek((event.clientX-rect.left)/rect.width);
+  });
   addEventListener('message',event=>{
     if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
     if(event.data.command==='toggle')toggle();
