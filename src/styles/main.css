@@ -4131,3 +4131,10 @@ html.master-inline-wins #page-wins {
   padding-right: 10px !important;
   box-sizing: border-box !important;
 }
+
+
+/* Goals LFM — show the real goals workspace immediately, not placeholder copy. */
+html.master-inline-goals #page-setup .ci-ph-card,
+html.master-inline-goals #page-setup .page-intro-card {
+  display: none !important;
+}
