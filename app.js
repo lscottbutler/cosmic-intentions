@@ -607,7 +607,7 @@ export function navTo(id) {
       const frame = document.getElementById('ciMasterPlayerFrame');
       if (!frame || !frame.contentWindow) return;
       frame.contentWindow.postMessage({ type: 'ci-lfm-select', action }, location.origin);
-      if (!['goals','favorites','thoughts','journal','action-plan','gratitude','wins'].includes(action)) {
+      if (!['goals','favorites','thoughts','journal','action-plan','visualization','gratitude','wins'].includes(action)) {
         frame.scrollIntoView({
           behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
           block: 'start',
@@ -5751,7 +5751,7 @@ export function openMasterDestination(action, goalIndex = null) {
       const frame = document.getElementById('ciMasterPlayerFrame');
       if (!frame || !frame.contentWindow) return;
       frame.contentWindow.postMessage({ type: 'ci-lfm-select', action, goalIndex }, location.origin);
-      if (!['goals','favorites','thoughts','journal','action-plan','gratitude','wins'].includes(action)) {
+      if (!['goals','favorites','thoughts','journal','action-plan','visualization','gratitude','wins'].includes(action)) {
         frame.scrollIntoView({
           behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
           block: 'start',
