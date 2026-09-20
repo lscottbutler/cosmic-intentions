@@ -917,10 +917,12 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
 #ciApprovedMasters {
   width: 100%;
   min-width: 0;
+  overflow-anchor: none;
 }
 
 #ciApprovedMasters > iframe {
   display: block;
+  overflow-anchor: none;
   width: 100% !important;
   min-width: 0;
   height: var(--ci-lfm-height, 340px) !important;
