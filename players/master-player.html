@@ -62,7 +62,7 @@
     .med-countdown{position:absolute;left:100%;bottom:calc(100% + 13px);transform:translateX(-50%);min-width:54px;text-align:center;font-size:14px!important;font-weight:800!important;letter-spacing:1px!important;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;pointer-events:none}
     .med-control.play-control .med-circle{width:58px;height:58px;background:#85a620;border:5px solid #315f12;font-size:25px}
     .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
-    .med-menu{margin:0 0 16px;padding:18px;border:1px solid #b8bcb8;border-radius:10px;background:#fff;color:#1f2724;animation:fadeIn .22s ease both}
+    .med-menu{grid-column:1/-1;margin:24px 14px 0;padding:18px;border:1px solid #b8bcb8;border-radius:10px;background:#fff;color:#1f2724;animation:fadeIn .22s ease both}
     .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 14px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
     .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
     .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
@@ -98,23 +98,6 @@
         <div class="directory" id="directory"></div>
       </div>
       <div class="view" id="experienceView" hidden>
-        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
-          <h2>Meditation Menu</h2>
-          <div><strong>Style</strong></div>
-          <div class="med-menu-row mode" id="meditationModes">
-            <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
-            <button class="med-option" type="button" data-med-mode="guided">Guided</button>
-          </div>
-          <div style="margin-top:14px"><strong>Time</strong></div>
-          <div class="med-menu-row" id="meditationTimes">
-            <button class="med-option" type="button" data-med-time="2">2 min</button>
-            <button class="med-option" type="button" data-med-time="5">5 min</button>
-            <button class="med-option" type="button" data-med-time="10">10 min</button>
-            <button class="med-option active" type="button" data-med-time="15">15 min</button>
-            <button class="med-option" type="button" data-med-time="30">30 min</button>
-          </div>
-          <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
-        </section>
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
@@ -135,6 +118,23 @@
         <button class="med-control" type="button" data-med-command="longer"><span class="med-circle">＋</span><span>Longer</span></button>
         <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
       </div>
+        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
+          <h2>Meditation Menu</h2>
+          <div><strong>Style</strong></div>
+          <div class="med-menu-row mode" id="meditationModes">
+            <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
+            <button class="med-option" type="button" data-med-mode="guided">Guided</button>
+          </div>
+          <div style="margin-top:14px"><strong>Time</strong></div>
+          <div class="med-menu-row" id="meditationTimes">
+            <button class="med-option" type="button" data-med-time="2">2 min</button>
+            <button class="med-option" type="button" data-med-time="5">5 min</button>
+            <button class="med-option" type="button" data-med-time="10">10 min</button>
+            <button class="med-option active" type="button" data-med-time="15">15 min</button>
+            <button class="med-option" type="button" data-med-time="30">30 min</button>
+          </div>
+          <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
+        </section>
     </nav>
   </main>
   <script type="module">
