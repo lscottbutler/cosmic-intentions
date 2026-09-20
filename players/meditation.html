@@ -11,10 +11,10 @@ html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
 body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
-.dvb-curve{position:absolute;z-index:2;left:0;right:0;bottom:0;width:100%;height:18%;display:block;pointer-events:auto;cursor:pointer}
-.dvb-scrubber{position:absolute;z-index:3;left:1.8%;bottom:6.3%;width:3%;aspect-ratio:1;transform:translate(-50%,50%);border:clamp(3px,.45vw,6px) solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
-.timer{position:absolute;z-index:4;left:50%;top:89.2%;transform:translate(-50%,-50%);width:9.15%;aspect-ratio:1;border:0;border-radius:50%;padding:0;background:#315f12;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.timer::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;background:#a7c526}
+.dvb-curve{position:absolute;z-index:2;inset:0;width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}
+.dvb-scrubber{position:absolute;z-index:3;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:clamp(2px,.26vw,5px) solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
+.timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #315f12;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.timer::before{display:none}
 .timer:focus-visible{outline:4px solid #fff;outline-offset:4px}
 .value,.playicon{position:relative;z-index:1;color:#fff}
 .value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.2px}
@@ -27,8 +27,9 @@ body.external .image{inset:0}
 <body>
 <main class="player" id="player" aria-label="Meditation player">
   <div class="image" aria-hidden="true"></div>
-  <svg class="dvb-curve" viewBox="0 0 685 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <path d="M0 78 Q342.5 18 685 78 L685 120 L0 120 Z" fill="#315f12" stroke="#a7c526" stroke-width="7" vector-effect="non-scaling-stroke"/>
+  <svg class="dvb-curve" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#315f12" stroke="#a7c526" stroke-width="30"/>
+    <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#82ad77" stroke-width="35"/>
   </svg>
   <span class="dvb-scrubber" id="dvbScrubber" aria-hidden="true"></span>
   <button class="timer" id="timer" type="button" aria-label="Start meditation">
@@ -55,9 +56,11 @@ body.external .image{inset:0}
   const shown=()=>{const seconds=Math.max(0,Math.ceil(remaining/1000));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')};
   function renderScrubber(){
     const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
-    const y=78-120*progress*(1-progress);
-    scrubber.style.left=(1.8+progress*96.4)+'%';
-    scrubber.style.bottom=(18*(120-y)/120)+'%';
+    const x=35+progress*1850;
+    const dx=(x-960)/1379;
+    const y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
+    scrubber.style.left=(x/19.2)+'%';
+    scrubber.style.top=(y/10.8)+'%';
   }
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
   function render(){
@@ -85,7 +88,8 @@ body.external .image{inset:0}
   button.addEventListener('click',toggle);
   curve.addEventListener('click',event=>{
     const rect=curve.getBoundingClientRect();
-    seek((event.clientX-rect.left)/rect.width);
+    const x=(event.clientX-rect.left)/rect.width*1920;
+    seek((x-35)/1850);
   });
   addEventListener('message',event=>{
     if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
