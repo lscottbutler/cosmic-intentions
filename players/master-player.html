@@ -283,7 +283,7 @@
           if(!doc)return;
           const active=doc.querySelector('.page.active, main, [role="main"]');
           if(!active)return;
-          const goalsEnd=selected==='goals'?doc.querySelector('.lfm-goals-mini-nav'):null;
+          const goalsEnd=selected==='goals'?active.querySelector('.lfm-goals-mini-nav'):null;
           const height=goalsEnd
             ? Math.max(180,Math.ceil(goalsEnd.getBoundingClientRect().bottom-active.getBoundingClientRect().top+24))
             : Math.max(180,visibleContentHeight(active));
@@ -305,9 +305,7 @@
             if(!active)return;
             if('ResizeObserver'in window){
               experienceObserver=new ResizeObserver(()=>fitExperience());
-              const resizeTargets=selected==='goals'
-                ? [doc.getElementById('vaultList'),doc.querySelector('.lfm-goals-mini-nav')]
-                : [active];
+              const resizeTargets=[active];
               resizeTargets.filter(Boolean).forEach(node=>experienceObserver.observe(node));
             }
             if('MutationObserver'in window){
