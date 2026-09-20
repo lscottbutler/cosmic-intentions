@@ -4107,6 +4107,7 @@ html.master-inline-favorites #page-dailyfocus,
 html.master-inline-thoughts #page-notes,
 html.master-inline-journal #page-mynotes,
 html.master-inline-action-plan #page-myroadmap,
+html.master-inline-visualization #page-vizlibrary,
 html.master-inline-gratitude #page-gratitude,
 html.master-inline-wins #page-wins,
 html.master-inline-goals #page-setup {
@@ -4125,6 +4126,7 @@ html.master-inline-favorites #page-dailyfocus,
 html.master-inline-thoughts #page-notes,
 html.master-inline-journal #page-mynotes,
 html.master-inline-action-plan #page-myroadmap,
+html.master-inline-visualization #page-vizlibrary,
 html.master-inline-gratitude #page-gratitude,
 html.master-inline-wins #page-wins {
   padding-left: 10px !important;
