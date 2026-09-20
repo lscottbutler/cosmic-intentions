@@ -53,7 +53,10 @@ body.external .image{inset:0}
   const curve=document.querySelector('.ccb-curve');
   const scrubber=document.getElementById('ccbScrubber');
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
-  const shown=()=>{const seconds=Math.max(0,Math.ceil(remaining/1000));return String(seconds%60).padStart(2,'0')};
+  const shown=()=>{
+    const seconds=Math.max(0,Math.ceil(remaining/1000));
+    return String(seconds<=60?seconds:Math.ceil(seconds/60));
+  };
   function renderScrubber(){
     const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
     const x=35+progress*1850;
