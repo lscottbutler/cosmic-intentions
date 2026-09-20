@@ -4103,6 +4103,7 @@ html.master-inline-mode .save-bar {
 html.master-inline-favorites .lfm-legacy-page-nav {
   display: none !important;
 }
+html.master-inline-daily-habits #page-habits,
 html.master-inline-favorites #page-dailyfocus,
 html.master-inline-thoughts #page-notes,
 html.master-inline-journal #page-mynotes,
@@ -4122,6 +4123,7 @@ html.master-inline-goals #page-setup {
 
 /* Shared LFM working surface — keep every core tool 10px inside its frame. */
 html.master-inline-goals #page-setup,
+html.master-inline-daily-habits #page-habits,
 html.master-inline-favorites #page-dailyfocus,
 html.master-inline-thoughts #page-notes,
 html.master-inline-journal #page-mynotes,
