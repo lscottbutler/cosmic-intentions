@@ -448,6 +448,7 @@ export function showPage(id) {
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
   if (id === 'notes') {   // My Thoughts — its own page
+    loadPegboard();             // personal foundation + legacy thought boxes now live here
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
@@ -1151,6 +1152,22 @@ export async function saveSetup() {
   }
 }
 
+export async function saveThoughtsProfile() {
+  const pb = readFormToPB();
+  LS.set('ci_pegboard', pb);
+  LS.set('ci_spirituality', pb['spirituality'] || '');
+  setBtnLoading('btn-save-thoughts', true);
+  try {
+    await syncProfileToSupabase(pb);
+    toast('My Thoughts saved ✓', 'success');
+  } catch(e) {
+    console.error('[Save] My Thoughts sync failed:', e);
+    toast('Saved locally. Sync failed: ' + e.message, 'error');
+  } finally {
+    setBtnLoading('btn-save-thoughts', false);
+  }
+}
+
 async function saveBTS() {
   const pb = readFormToPB();
   LS.set('ci_pegboard', pb);
@@ -1171,7 +1188,12 @@ function setBtnLoading(id, loading) {
   const btn = document.getElementById(id);
   if (!btn) return;
   btn.disabled = loading;
-  btn.textContent = loading ? 'Saving…' : (id === 'btn-save-setup' ? 'Save My Pegboard' : 'Save BTS');
+  const labels = {
+    'btn-save-setup': 'Save My Goals',
+    'btn-save-thoughts': 'Save My Thoughts',
+    'btn-save-bts': 'Save BTS',
+  };
+  btn.textContent = loading ? 'Saving…' : (labels[id] || 'Save');
 }
 
 /* ─────────────────────────────────────────────────────────
