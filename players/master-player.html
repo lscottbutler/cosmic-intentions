@@ -49,6 +49,10 @@
     .deck.meditation-mode .normal-control{position:absolute;opacity:0;pointer-events:none}
     .deck.meditation-mode{padding-top:31px;padding-bottom:20px}
     .deck.compact-trough-mode{padding-bottom:20px}
+    .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:0 6px}
+    .deck.lfm-tool-mode{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
+    .deck.lfm-tool-mode .normal-control{display:none}
+    .deck.lfm-tool-mode .lfm-tool-controls{display:grid;animation:controlFadeIn .28s .08s ease both}
     .deck.meditation-mode.meditation-session-active{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
     .deck.meditation-mode.meditation-session-active .med-controls{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 6px}
     .deck.meditation-mode.meditation-session-active [data-med-command="menu"],.deck.meditation-mode.meditation-session-active .med-menu{display:none}
@@ -116,6 +120,11 @@
       <button class="nav normal-control" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
       <button class="nav normal-control" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
       <button class="nav normal-control" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
+      <div class="lfm-tool-controls" id="lfmToolControls" aria-label="Long Form Manifestation controls">
+        <button class="med-control" type="button" data-home><span class="med-circle">◀</span><span>Back</span></button>
+        <button class="med-control" type="button" data-lfm-mini-command="menu"><span class="med-circle">☰</span><span>LFM Menu</span></button>
+        <button class="med-control" type="button" data-lfm-mini-command="forward"><span class="med-circle">▶</span><span>Next</span></button>
+      </div>
       <button class="med-progress" id="medProgress" type="button" aria-label="Meditation progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"><span class="med-countdown" id="medCountdown">15:00</span></span></span></button>
       <div class="med-controls" id="meditationControls" aria-label="Meditation controls">
         <button class="med-control" type="button" data-med-command="back"><span class="med-circle">◀</span><span>Back</span></button>
@@ -189,7 +198,7 @@
         ['action-plan','Roadmap','Turn intentions into clear next steps.'],
         ['visualization','Visualize','Enter the visual manifestation experience.'],
         ['meditation','Meditate','Choose and play a meditation session.'],
-        ['favorites','Favorites Autoplay','Build and play your saved daily sequence.'],
+        ['favorites','My Favorites Autoplay','Build and play your saved daily sequence.'],
         ['gratitude','Gratitude','Practice gratitude and guided reflection.'],
         ['journal','My Journal','Write and revisit your journal entries.'],
         ['thoughts','My Thoughts','Capture ideas, notes and reflections.'],
@@ -199,6 +208,7 @@
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
+      const lfmTemplateActions=new Set(['goals','favorites','thoughts','journal','action-plan','gratitude','wins']);
       const shell=document.querySelector('.shell');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
@@ -255,7 +265,7 @@
       }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode');deck.classList.remove('compact-trough-mode');setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
+        selected=null;shell.classList.remove('daily-habits-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
       }
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
@@ -270,7 +280,7 @@
           bottom=Math.max(bottom,rect.bottom+scrollTop);
         });
         const paddingBottom=parseFloat(getComputedStyle(root).paddingBottom)||0;
-        return Math.ceil(Math.max(1,bottom-rootTop+paddingBottom));
+        return Math.ceil(Math.max(1,root.scrollHeight,bottom-rootTop+paddingBottom));
       }
       function fitExperience(){
         if(!selected)return;
@@ -337,11 +347,13 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';deck.classList.remove('compact-trough-mode');cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';deck.classList.remove('compact-trough-mode','lfm-tool-mode');cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
-        deck.classList.toggle('compact-trough-mode',['goals','journal','action-plan','gratitude','wins'].includes(action));
+        const usesLfmTemplate=lfmTemplateActions.has(action);
+        deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
+        deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
