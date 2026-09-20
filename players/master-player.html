@@ -48,6 +48,7 @@
     .nav span{font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap}
     .deck.meditation-mode .normal-control{position:absolute;opacity:0;pointer-events:none}
     .deck.meditation-mode{padding-top:31px;padding-bottom:20px}
+    .deck.compact-trough-mode{padding-bottom:20px}
     .deck.meditation-mode.meditation-session-active{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
     .deck.meditation-mode.meditation-session-active .med-controls{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 6px}
     .deck.meditation-mode.meditation-session-active [data-med-command="menu"],.deck.meditation-mode.meditation-session-active .med-menu{display:none}
@@ -254,7 +255,7 @@
       }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode');setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
+        selected=null;shell.classList.remove('daily-habits-mode');deck.classList.remove('compact-trough-mode');setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');cap.textContent='Citadel';show(home);
       }
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
@@ -336,10 +337,11 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';deck.classList.remove('compact-trough-mode');cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
+        deck.classList.toggle('compact-trough-mode',['goals','journal','action-plan','gratitude','wins'].includes(action));
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
