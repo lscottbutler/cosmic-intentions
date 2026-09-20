@@ -4234,3 +4234,105 @@ html.master-inline-goals #page-setup .page-intro-card {
     gap: 14px;
   }
 }
+
+
+/* Player guide: integrated three-tab top box */
+.lfm-guide-card {
+  position: relative;
+  margin-top: 74px;
+  padding: 0 26px 22px;
+  border-radius: 0 0 18px 18px;
+}
+
+.lfm-guide-tabs {
+  position: absolute;
+  top: -56px;
+  right: -2px;
+  left: -2px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  height: 56px;
+}
+
+.lfm-guide-tabs button {
+  min-width: 0;
+  padding: 9px 12px;
+  border: 2px solid #111;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: #eceeeb;
+  color: #111;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.lfm-guide-tabs button + button {
+  margin-left: -2px;
+}
+
+.lfm-guide-tabs button[aria-selected="true"] {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  color: #111;
+}
+
+.lfm-guide-tabs button:focus-visible {
+  outline: 3px solid #a7c526;
+  outline-offset: -4px;
+}
+
+.lfm-guide-panel {
+  display: grid;
+  min-height: 118px;
+  align-content: center;
+  padding: 24px 2px 18px;
+}
+
+.lfm-guide-panel p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.lfm-guide-panel p[hidden] {
+  display: none !important;
+}
+
+.lfm-guide-card .lfm-guide-3bmn {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .lfm-guide-card {
+    margin-top: 86px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .lfm-guide-tabs {
+    top: -68px;
+    height: 68px;
+  }
+
+  .lfm-guide-tabs button {
+    padding: 7px 5px;
+    border-radius: 13px 13px 0 0;
+    font-size: 9px;
+    letter-spacing: .15px;
+  }
+
+  .lfm-guide-panel {
+    min-height: 132px;
+    padding-top: 20px;
+  }
+
+  .lfm-guide-panel p {
+    font-size: 14px;
+  }
+}
