@@ -348,8 +348,10 @@
       function syncMeditationUI(){
         document.querySelectorAll('[data-med-time]').forEach(b=>b.classList.toggle('active',Number(b.dataset.medTime)===meditationMinutes));
         document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
-        document.getElementById('medModeIcon').textContent=meditationMode==='guided'?'G':'U';
-        document.getElementById('medModeLabel').textContent=meditationMode==='guided'?'Guided':'Unguided';
+        const modeIcon=document.getElementById('medModeIcon');
+        const modeLabel=document.getElementById('medModeLabel');
+        if(modeIcon)modeIcon.textContent=meditationMode==='guided'?'G':'U';
+        if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':'Unguided';
         document.getElementById('guidedNote').hidden=meditationMode!=='guided';
       }
       function reloadMeditation(){experienceFrame.src=destinationUrl('meditation');syncMeditationUI()}
@@ -401,8 +403,10 @@
         const mm=Math.floor(wholeSeconds/60),ss=wholeSeconds%60;
         document.getElementById('medCountdown').textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
         document.getElementById('medProgressFill').style.width=(Math.max(0,Math.min(1,1-remaining/total))*100)+'%';
-        document.getElementById('medPlayIcon').textContent=running?'Ⅱ':'▶';
-        document.getElementById('medPlayLabel').textContent=running?'Pause':data.state==='paused'?'Resume':'Play';
+        const playIcon=document.getElementById('medPlayIcon');
+        const playLabel=document.getElementById('medPlayLabel');
+        if(playIcon)playIcon.textContent=running?'Ⅱ':'▶';
+        if(playLabel)playLabel.textContent=running?'Pause':data.state==='paused'?'Resume':'Play';
       });
       syncMeditationUI();
       const grid=document.getElementById('directory');
