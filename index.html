@@ -1293,19 +1293,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div id="dashGreeting" class="dash-greeting">Welcome back</div>
 
         <section id="lfmGuideCard" class="lfm-guide-card" aria-label="Player guide and navigation" hidden>
-          <div class="lfm-guide-grid">
-            <article class="lfm-guide-section">
-              <h2>How It Works</h2>
-              <p id="lfmGuideHow"></p>
-            </article>
-            <article class="lfm-guide-section">
-              <h2>The Reasoning Behind the Concept</h2>
-              <p id="lfmGuideReason"></p>
-            </article>
-            <article class="lfm-guide-section">
-              <h2>Instructions &amp; Features</h2>
-              <p id="lfmGuideInstructions"></p>
-            </article>
+          <div class="lfm-guide-tabs" role="tablist" aria-label="Player information">
+            <button type="button" id="lfmGuideTabHow" role="tab" aria-selected="true" aria-controls="lfmGuideHow" data-lfm-guide-tab="how">How It Works</button>
+            <button type="button" id="lfmGuideTabReason" role="tab" aria-selected="false" aria-controls="lfmGuideReason" data-lfm-guide-tab="reason">The Reasoning Behind the Concept</button>
+            <button type="button" id="lfmGuideTabInstructions" role="tab" aria-selected="false" aria-controls="lfmGuideInstructions" data-lfm-guide-tab="instructions">Instructions &amp; Features</button>
+          </div>
+          <div class="lfm-guide-panel">
+            <p id="lfmGuideHow" role="tabpanel" aria-labelledby="lfmGuideTabHow" data-lfm-guide-panel="how"></p>
+            <p id="lfmGuideReason" role="tabpanel" aria-labelledby="lfmGuideTabReason" data-lfm-guide-panel="reason" hidden></p>
+            <p id="lfmGuideInstructions" role="tabpanel" aria-labelledby="lfmGuideTabInstructions" data-lfm-guide-panel="instructions" hidden></p>
           </div>
           <nav class="lfm-guide-3bmn" aria-label="Player navigation">
             <button type="button" data-lfm-guide-command="back" aria-label="Back to Citadel"><span aria-hidden="true">&#9664;</span><b>Back</b></button>
@@ -1420,6 +1416,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
               guideHow.textContent = guide.how;
               guideReason.textContent = guide.reason;
               guideInstructions.textContent = guide.instructions;
+              setActiveGuideTab('how');
+            }
+
+            function setActiveGuideTab(name) {
+              if (!guideCard) return;
+              guideCard.querySelectorAll('[data-lfm-guide-tab]').forEach(function (tab) {
+                var selected = tab.getAttribute('data-lfm-guide-tab') === name;
+                tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+                tab.tabIndex = selected ? 0 : -1;
+              });
+              guideCard.querySelectorAll('[data-lfm-guide-panel]').forEach(function (panel) {
+                panel.hidden = panel.getAttribute('data-lfm-guide-panel') !== name;
+              });
             }
 
             function setLfmContextTitle(action) {
@@ -1470,6 +1479,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
             var frame = document.getElementById('ciMasterPlayerFrame');
             if (guideCard) {
+              guideCard.querySelectorAll('[data-lfm-guide-tab]').forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                  setActiveGuideTab(tab.getAttribute('data-lfm-guide-tab'));
+                });
+              });
               guideCard.querySelectorAll('[data-lfm-guide-command]').forEach(function (button) {
                 button.addEventListener('click', function () {
                   if (!frame || !frame.contentWindow) return;
