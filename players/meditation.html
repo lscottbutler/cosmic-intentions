@@ -13,14 +13,14 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
 .ccb-curve{position:absolute;z-index:2;inset:0;width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}
 .ccb-scrubber{position:absolute;z-index:3;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:clamp(2px,.26vw,5px) solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
-.timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #315f12;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #82ad77;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .timer::before{display:none}
 .timer:focus-visible{outline:4px solid #fff;outline-offset:4px}
 .value,.playicon{position:relative;z-index:1;color:#fff}
 .value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.2px}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
 [hidden]{display:none!important}
-body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:clamp(8px,1.4vw,16px) solid #82ad77}
+body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0}
 body.external .image{inset:0}
 </style>
 </head>
@@ -28,7 +28,7 @@ body.external .image{inset:0}
 <main class="player" id="player" aria-label="Meditation player">
   <div class="image" aria-hidden="true"></div>
   <svg class="ccb-curve" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#315f12" stroke="#a7c526" stroke-width="30"/>
+    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#315f12" stroke="#82ad77" stroke-width="30"/>
     <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#82ad77" stroke-width="35"/>
   </svg>
   <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true"></span>
