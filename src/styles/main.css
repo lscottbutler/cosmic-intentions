@@ -4117,3 +4117,11 @@ html.master-inline-goals #page-setup {
   margin: 0 !important;
   overflow: visible !important;
 }
+
+
+/* My Thoughts LFM — keep working cards 10px inside the green frame. */
+html.master-inline-thoughts #page-notes .pg-screen {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  box-sizing: border-box !important;
+}
