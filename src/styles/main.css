@@ -4075,3 +4075,45 @@ html.master-inline-goals #vaultList .vault-act {
   width: 36px !important;
   height: 36px !important;
 }
+
+
+/* ── EXPANDABLE LFM TOOL TEMPLATE ───────────────────────────
+   Goals, Favorites, Thoughts, Journal, Roadmap, Gratitude and Wins contribute
+   only their working content. The master player owns the title and 3-button
+   trough, while the iframe grows to the tool's natural height without scrolling. */
+html.master-inline-goals #page-dashboard {
+  display: none !important;
+}
+html.master-inline-goals #page-setup {
+  display: block !important;
+}
+html.master-inline-mode,
+html.master-inline-mode body,
+html.master-inline-mode .page.active {
+  overflow-anchor: none !important;
+  scroll-behavior: auto !important;
+}
+html.master-inline-mode .save-bar {
+  position: static !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+html.master-inline-favorites .lfm-legacy-page-nav {
+  display: none !important;
+}
+html.master-inline-favorites #page-dailyfocus,
+html.master-inline-thoughts #page-notes,
+html.master-inline-journal #page-mynotes,
+html.master-inline-action-plan #page-myroadmap,
+html.master-inline-gratitude #page-gratitude,
+html.master-inline-wins #page-wins,
+html.master-inline-goals #page-setup {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
