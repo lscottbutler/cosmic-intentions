@@ -324,10 +324,7 @@
           if(!doc)return;
           const active=doc.querySelector('.page.active, main, [role="main"]');
           if(!active)return;
-          const goalsEnd=selected==='goals'?active.querySelector('.lfm-goals-mini-nav'):null;
-          const height=goalsEnd
-            ? Math.max(180,Math.ceil(goalsEnd.getBoundingClientRect().bottom-active.getBoundingClientRect().top+24))
-            : Math.max(180,visibleContentHeight(active));
+          const height=Math.max(180,visibleContentHeight(active));
           if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
             experienceFrame.style.height=height+'px';
           }
