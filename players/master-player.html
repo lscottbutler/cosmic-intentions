@@ -118,7 +118,7 @@
         <button class="med-control" type="button" data-med-command="longer"><span class="med-circle">＋</span><span>Longer</span></button>
         <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
       </div>
-        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
+        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices">
           <h2>Meditation Menu</h2>
           <div><strong>Style</strong></div>
           <div class="med-menu-row mode" id="meditationModes">
@@ -235,7 +235,7 @@
       function setMeditationMode(active){
         deck.classList.toggle('meditation-mode',active);
         shell.classList.toggle('meditation-player-mode',active);
-        if(!active)meditationMenu.hidden=true;
+        meditationMenu.hidden=!active;
       }
       function notifyParentMode(action){
         try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
