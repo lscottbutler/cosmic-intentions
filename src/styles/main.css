@@ -920,15 +920,6 @@ body.cbnums [data-block="goal-viz-note"]:empty::before {
   overflow-anchor: none;
 }
 
-/* Citadel is full-width at 100% browser zoom, but its maximum canvas is tied
-   to the physical screen width so zooming out shrinks it instead of making it
-   grow inversely. Working LFM tools remain full-width after selection. */
-#ciApprovedMasters.lfm-home-active {
-  width: calc(100% - 40px) !important;
-  max-width: var(--ci-home-canvas-max, calc(100% - 40px)) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
 
 #ciApprovedMasters > iframe {
   display: block;
