@@ -961,7 +961,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div class="pg-bezel">
         <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="FAVORITES AUTOPLAY" data-ci-scale="0.6" data-ci-sizing-count="21" role="img" aria-label="FAVORITES AUTOPLAY"></div>
         <div class="pg-screen">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div class="lfm-legacy-page-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
             <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;margin-left:auto;">&#10022; My Goals</button>
           </div>
           <p style="font-size:14px;color:#1a1a1a;margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
@@ -971,7 +971,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       <div id="favorites-list" class="player-times-grid" style="margin-bottom:18px;"></div>
 
       <!-- 3-circle nav (matches the header hamburger): back to Citadel · menu · next -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 30px;">
+      <div class="lfm-legacy-page-nav" style="display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 30px;">
         <button onclick="goMemberDashboard()" title="Back to My Goals" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.28);">&#9664;</button>
         <div class="ham-wrap" style="position:relative;">
           <button title="Menu" onclick="this.parentElement.querySelector('.ham-menu').classList.toggle('open');" style="width:76px;height:76px;border-radius:50%;background:#000;border:10px solid #8f8f8f;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;padding:0;box-shadow:0 3px 12px rgba(0,0,0,.28);">
