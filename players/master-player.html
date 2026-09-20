@@ -67,6 +67,7 @@
     .med-control.play-control .med-circle{width:58px;height:58px;background:#85a620;border:5px solid #315f12;font-size:25px}
     .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
     .med-menu{grid-column:1/-1;margin:24px 14px 0;padding:18px;border:1px solid #b8bcb8;border-radius:10px;background:#fff;color:#1f2724;animation:fadeIn .22s ease both}
+    .deck:not(.meditation-mode) .med-menu{display:none}
     .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 14px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
     .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
     .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
@@ -121,7 +122,7 @@
         <button class="med-control" type="button" data-lfm-mini-command="forward"><span class="med-circle">▶</span><span>Next</span></button>
         <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
       </div>
-        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices">
+        <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
           <h2>Meditation Menu</h2>
           <div><strong>Style</strong></div>
           <div class="med-menu-row mode" id="meditationModes">
