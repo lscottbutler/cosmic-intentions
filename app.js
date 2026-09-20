@@ -607,10 +607,12 @@ export function navTo(id) {
       const frame = document.getElementById('ciMasterPlayerFrame');
       if (!frame || !frame.contentWindow) return;
       frame.contentWindow.postMessage({ type: 'ci-lfm-select', action }, location.origin);
-      frame.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
-      });
+      if (!['goals','journal','action-plan','gratitude','wins'].includes(action)) {
+        frame.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      }
     };
     const dashboard = document.getElementById('page-dashboard');
     if (!dashboard || !dashboard.classList.contains('active')) {
@@ -5749,10 +5751,12 @@ export function openMasterDestination(action, goalIndex = null) {
       const frame = document.getElementById('ciMasterPlayerFrame');
       if (!frame || !frame.contentWindow) return;
       frame.contentWindow.postMessage({ type: 'ci-lfm-select', action, goalIndex }, location.origin);
-      frame.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
-      });
+      if (!['goals','journal','action-plan','gratitude','wins'].includes(action)) {
+        frame.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      }
     };
     const dashboard = document.getElementById('page-dashboard');
     if (!dashboard || !dashboard.classList.contains('active')) {
