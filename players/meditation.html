@@ -11,6 +11,7 @@ html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
 body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
+.dvb-curve{position:absolute;z-index:2;left:0;right:0;bottom:0;width:100%;height:18%;display:block;pointer-events:none}
 .timer{position:absolute;left:50%;top:84.7%;transform:translate(-50%,-50%);width:9.15%;aspect-ratio:1;border:0;border-radius:50%;padding:0;background:#285f0a;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .timer::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;background:#8aa41f}
 .timer:focus-visible{outline:4px solid #fff;outline-offset:4px}
@@ -26,6 +27,10 @@ body.external .timer{display:none}
 <body>
 <main class="player" id="player" aria-label="Meditation player">
   <div class="image" aria-hidden="true"></div>
+  <svg class="dvb-curve" viewBox="0 0 685 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d="M0 78 Q342.5 18 685 78 L685 120 L0 120 Z" fill="#005886" stroke="#08bfd8" stroke-width="7" vector-effect="non-scaling-stroke"/>
+    <circle cx="342.5" cy="53" r="31" fill="#25aae3" stroke="#08bfd8" stroke-width="7" vector-effect="non-scaling-stroke"/>
+  </svg>
   <button class="timer" id="timer" type="button" aria-label="Start meditation">
     <span class="playicon" id="playIcon" aria-hidden="true"></span>
     <span class="value" id="value" hidden>15</span>
