@@ -4699,8 +4699,13 @@ function wireAdminPageBoxes() {
     stack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
     stack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
+    const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
     const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
-    if (anchor && anchor.parentNode) {
+    if (pageTitle && pageTitle.parentNode) {
+      // Citadel: the reusable admin boxes belong immediately under the title,
+      // before the LFM stage and all dashboard content.
+      pageTitle.insertAdjacentElement('afterend', stack);
+    } else if (anchor && anchor.parentNode) {
       anchor.insertAdjacentElement('afterend', stack);
     } else {
       const root = _pageBoxRoot(active);
