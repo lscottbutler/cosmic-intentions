@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Cosmic Intentions Dashboard</title>
   <style>
-    :root{color-scheme:light;--frame:#82ad77;--header:#000;--paper:#f2ede7;--deck:#000;--trough-fill:#000;--trough-ink:#fff;--frame-border:35px;--frame-bottom-border:clamp(6px,1.823vw,18px);--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#82ad77;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:35px;--frame-bottom-border:clamp(6px,1.823vw,18px);--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -279,14 +279,11 @@
         const channel=value=>Math.round(value/entry.count).toString(16).padStart(2,'0');
         return '#'+channel(entry.r)+channel(entry.g)+channel(entry.b);
       }
-      function applyTroughColors(outerColor,innerColor){
-        const outer=outerColor||'#000',inner=innerColor||outer;
-        shell.style.setProperty('--header',outer);
-        shell.style.setProperty('--deck',outer);
-        shell.style.setProperty('--trough-fill',inner);
-        const rgb=inner.match(/[a-f\d]{2}/gi)?.map(part=>parseInt(part,16))||[0,0,0];
-        const luminance=(rgb[0]*299+rgb[1]*587+rgb[2]*114)/1000;
-        shell.style.setProperty('--trough-ink',luminance>155?'#111':'#fff');
+      function applyTroughColors(){
+        shell.style.setProperty('--header','#292929');
+        shell.style.setProperty('--deck','#292929');
+        shell.style.setProperty('--trough-fill','#747474');
+        shell.style.setProperty('--trough-ink','#fff');
       }
       function matchTroughsToCard(img,rememberHome=false){
         try{
