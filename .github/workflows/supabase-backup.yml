@@ -66,32 +66,31 @@ jobs:
               exit 1
             fi
           else
-            echo "::warning::Set SUPABASE_DB_PASSWORD (or SUPABASE_DB_URL) in repo Settings → Secrets → Actions — skipping."
-            exit 0
+            echo "::error::Set SUPABASE_DB_PASSWORD (or SUPABASE_DB_URL) in repo Settings → Secrets → Actions."
+            exit 1
           fi
           echo "Dumped $(wc -l < "$DUMP") lines, $(du -h "$DUMP" | cut -f1)"
 
-      - name: Backup vision-images storage bucket
+      - name: Backup Supabase storage buckets
         # pg_dump only captures the DATABASE, not the files users upload to
-        # Supabase Storage. This mirrors the whole `vision-images` bucket to
+        # Supabase Storage. This mirrors all member/editor media buckets to
         # /tmp so the commit step can snapshot it next to the SQL dump.
         #
         # SETUP (one time): add repo secret SUPABASE_SERVICE_ROLE_KEY =
         #   Supabase dashboard → Settings → API → "service_role" secret key.
-        #   Missing secret → this step warns and skips; the DB backup is untouched.
+        #   Missing secret fails the workflow so a partial backup is never reported as healthy.
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -uo pipefail
           REF=wbqzwbubbeorcknevips
-          BUCKET=vision-images
           KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
           if [ -z "$KEY" ]; then
-            echo "::warning::SUPABASE_SERVICE_ROLE_KEY not set — skipping storage backup (DB backup still runs)."
-            exit 0
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY not set — storage backup cannot run."
+            exit 1
           fi
           BASE="https://$REF.supabase.co/storage/v1"
-          OUT=/tmp/vision-images
+          OUT=/tmp/storage
           rm -rf "$OUT"; mkdir -p "$OUT"
 
           # List one bucket "folder" level (empty prefix = bucket root).
@@ -104,7 +103,8 @@ jobs:
 
           # Recurse: items with a null id are folders (prefixes); others are files.
           walk() {
-            local prefix="$1" json n i name id full
+            local bucket="$1" prefix="$2" bucket_out="$OUT/$1" json n i name id full
+            BUCKET="$bucket"
             json=$(list "$prefix")
             n=$(echo "$json" | jq 'length' 2>/dev/null || echo 0)
             i=0
@@ -113,18 +113,22 @@ jobs:
               id=$(echo "$json" | jq -r ".[$i].id")
               full="${prefix}${name}"
               if [ "$id" = "null" ]; then
-                walk "${full}/"
+                walk "$bucket" "${full}/"
               else
-                mkdir -p "$OUT/$(dirname "$full")"
-                # bucket is public → download via public URL (no auth needed)
-                curl -s -f "$BASE/object/public/$BUCKET/$full" -o "$OUT/$full" \
-                  && echo "  ↓ $full" || echo "  ✗ failed: $full"
+                mkdir -p "$bucket_out/$(dirname "$full")"
+                # Authenticated download supports private buckets.
+                curl -s -f "$BASE/object/authenticated/$BUCKET/$full" \
+                  -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -o "$bucket_out/$full"
+                echo "  ↓ $BUCKET/$full"
               fi
               i=$((i+1))
             done
           }
 
-          walk ""
+          for BUCKET in vision-images goal-audio content-images; do
+            mkdir -p "$OUT/$BUCKET"
+            walk "$BUCKET" ""
+          done
           echo "Storage: $(find "$OUT" -type f | wc -l) file(s), $(du -sh "$OUT" 2>/dev/null | cut -f1)"
 
       - name: Commit to db-backups branch (isolated from main / Netlify)
@@ -141,10 +145,10 @@ jobs:
           mkdir -p backups
           cp /tmp/cosmic-intentions.sql backups/cosmic-intentions.sql
           # Mirror the storage snapshot (only if the storage step produced files).
-          if [ -d /tmp/vision-images ]; then
-            rm -rf backups/vision-images
-            mkdir -p backups/vision-images
-            cp -r /tmp/vision-images/. backups/vision-images/ 2>/dev/null || true
+          if [ -d /tmp/storage ]; then
+            rm -rf backups/storage
+            mkdir -p backups/storage
+            cp -r /tmp/storage/. backups/storage/
           fi
           git add backups/
           if git diff --cached --quiet; then

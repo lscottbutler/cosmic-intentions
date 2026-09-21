@@ -1,6 +1,6 @@
 import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
-import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey } from '../app.js';
+import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey, currentUser } from '../app.js';
 import { setTaskWin } from './wins.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
@@ -828,7 +828,12 @@ export function renderWrapup() {
   if (_looksLikeAiError(aiPara)) { LS.remove(_aiKey()); aiPara = null; }   // drop a cached API error, fall back to the standard recap
   // No cached recap yet for today → generate it for them automatically (once per
   // day per session). Fires and re-renders when it lands; falls back silently.
-  if (!aiPara && _aiAutoKey !== _aiKey()) { _aiAutoKey = _aiKey(); wrapupPersonalize(); }
+  // The member dashboard exists in the landing-page DOM even while signed out.
+  // Do not spend quota or emit an auth warning until a real member is present.
+  if (currentUser && !aiPara && _aiAutoKey !== _aiKey()) {
+    _aiAutoKey = _aiKey();
+    wrapupPersonalize();
+  }
   // The day's story (AI-personalized once written; templated fallback before then).
   // The AI version already weaves the week in, so no separate weekly line here.
   const daily = aiPara ? esc(aiPara) : _dailyStory(ringsSummary(), w.today);

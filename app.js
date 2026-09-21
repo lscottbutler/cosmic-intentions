@@ -1494,7 +1494,9 @@ async function syncFromSupabase() {
 ───────────────────────────────────────────────────────── */
 export async function syncIntentionsToSupabase() {
   if (!currentUser || !intentions.length) return;
-  const rows = intentions.map(intention => ({
+  const rows = intentions.map(intention => {
+    const storedImage = intention.imageStorageRef || intention.imageUrl;
+    return ({
     id:          intention.id,
     user_id:     currentUser.id,
     title:       intention.title       || '',
@@ -1507,12 +1509,13 @@ export async function syncIntentionsToSupabase() {
     ai_enabled:  intention.aiEnabled !== false,
     the_map:     intention.theMap      || null,
     bbfw:        intention.bbfw        || null,
-    // Only persist a lightweight Storage URL — never a base64 data: URL.
-    image_url:   (intention.imageUrl && !intention.imageUrl.startsWith('data:')) ? intention.imageUrl : null,
+    // Persist the private Storage reference, never an expiring signed URL or base64.
+    image_url:   (storedImage && !storedImage.startsWith('data:')) ? storedImage : null,
     roadmap_ai:  intention.roadmapAI   || null,
     active_danger_zone: intention.activeDangerZone || null,
     updated_at:  new Date().toISOString()
-  }));
+    });
+  });
   // Resilient upsert: if an optional column doesn't exist yet, drop it and retry.
   const OPTIONAL_COLS = ['image_url', 'roadmap_ai', 'active_danger_zone', 'category', 'ai_enabled'];
   let payload = rows;
@@ -1527,8 +1530,26 @@ export async function syncIntentionsToSupabase() {
   if (error) throw new Error(error.message);
 }
 
-/* Upload a generated vision image to Supabase Storage; returns the public
-   URL (small, cross-device) or null if Storage isn't set up yet. */
+const VISION_STORAGE_PREFIX = 'storage://vision-images/';
+
+function _visionStoragePath(ref) {
+  if (!ref || typeof ref !== 'string') return '';
+  if (ref.startsWith(VISION_STORAGE_PREFIX)) return ref.slice(VISION_STORAGE_PREFIX.length);
+  const marker = '/storage/v1/object/public/vision-images/';
+  const pos = ref.indexOf(marker);
+  return pos >= 0 ? decodeURIComponent(ref.slice(pos + marker.length)) : '';
+}
+
+async function _signedVisionUrl(ref) {
+  const path = _visionStoragePath(ref);
+  if (!path || !sb) return ref || null;
+  const { data, error } = await sb.storage.from('vision-images').createSignedUrl(path, 6 * 60 * 60);
+  if (error) throw error;
+  return data?.signedUrl || null;
+}
+
+/* Upload a generated vision image to private Supabase Storage. The stable
+   storage reference is saved; the signed URL is only used for this session. */
 export async function uploadVisionImage(intentionId, b64) {
   if (!currentUser || !sb || !b64 || !intentionId) return null;
   try {
@@ -1537,8 +1558,9 @@ export async function uploadVisionImage(intentionId, b64) {
     const { error } = await sb.storage.from('vision-images')
       .upload(path, bytes, { contentType: 'image/png', upsert: true });
     if (error) throw error;
-    const { data } = sb.storage.from('vision-images').getPublicUrl(path);
-    return data?.publicUrl || null;
+    const storageRef = VISION_STORAGE_PREFIX + path;
+    const url = await _signedVisionUrl(storageRef);
+    return url ? { url, storageRef } : null;
   } catch(e) {
     console.warn('Vision image upload failed:', e.message);
     return null;
@@ -1573,8 +1595,9 @@ async function syncIntentionsFromSupabase() {
           category:     row.category    ?? prev.category   ?? '',
           aiEnabled:    (typeof row.ai_enabled === 'boolean') ? row.ai_enabled
                           : (typeof prev.aiEnabled === 'boolean' ? prev.aiEnabled : true),
-          imageUrl:     row.image_url     || prev.imageUrl || null,
-          imageOptions: prev.imageOptions || ((row.image_url || prev.imageUrl) ? [row.image_url || prev.imageUrl] : null),
+          imageStorageRef: _visionStoragePath(row.image_url) ? row.image_url : (prev.imageStorageRef || null),
+          imageUrl:     _visionStoragePath(row.image_url) ? null : (row.image_url || prev.imageUrl || null),
+          imageOptions: prev.imageOptions || ((!_visionStoragePath(row.image_url) && (row.image_url || prev.imageUrl)) ? [row.image_url || prev.imageUrl] : null),
           imageIdx:     prev.imageIdx     || 0,
           roadmapAI:        _parseJsonField(row.roadmap_ai) || prev.roadmapAI || null,
           activeDangerZone: row.active_danger_zone || prev.activeDangerZone || '',
@@ -1582,6 +1605,18 @@ async function syncIntentionsFromSupabase() {
           bbfw:         _hasBbfw(rowBbfw) ? rowBbfw : (_hasBbfw(prevBbfw) ? _parseJsonField(prevBbfw) : null),
         });
       });
+      await Promise.all(intentions.map(async (intention) => {
+        if (!intention.imageStorageRef) return;
+        try {
+          const signed = await _signedVisionUrl(intention.imageStorageRef);
+          if (signed) {
+            intention.imageUrl = signed;
+            intention.imageOptions = [signed];
+          }
+        } catch (e) {
+          console.warn('Vision image download failed:', e.message);
+        }
+      }));
       // Supabase returns rows UNORDERED, which scrambles the goal list on every
       // reload (a goal promoted to the top would drift away). Re-apply the local
       // order so goals stay exactly where the user put them; ids we've never seen
@@ -4859,7 +4894,7 @@ export async function saveContentBlock(slug) {
 
 /* ── ADMIN PHOTO UPLOAD ─────────────────────────────────────────
    Upload a photo for a content block (e.g. the Inspiration champion).
-   Reuses the existing 'vision-images' Storage bucket. Inserts the <img>
+   Uses the public 'content-images' bucket for owner-authored editorial media. Inserts the <img>
    at the top of the block's editor; the admin then writes the story
    below and hits Save (saveContentBlock persists the whole HTML). */
 export function adminUploadPhoto(slug) {
@@ -4880,9 +4915,9 @@ export async function adminPhotoSelected(slug, inputEl) {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
     const path = `${currentUser.id}/${slug}-${Date.now()}.${ext}`;
-    const { error } = await sb.storage.from('vision-images').upload(path, bytes, { contentType: file.type, upsert: true });
+    const { error } = await sb.storage.from('content-images').upload(path, bytes, { contentType: file.type, upsert: true });
     if (error) throw error;
-    const { data } = sb.storage.from('vision-images').getPublicUrl(path);
+    const { data } = sb.storage.from('content-images').getPublicUrl(path);
     const url = data && data.publicUrl;
     if (!url) throw new Error('no public URL');
     if (ed) ed.innerHTML = `<img src="${url}" alt="" style="max-width:100%;border-radius:10px;display:block;margin:0 0 10px;">` + ed.innerHTML;
@@ -5140,7 +5175,7 @@ function _seedPreviewDashboard() {
 /* ─────────────────────────────────────────────────────────
    INIT
 ───────────────────────────────────────────────────────── */
-/* Placeholder intro/outro copy card — added at the TOP (under the title) and
+/* Shared orientation card — added at the TOP (under the title) on
    BOTTOM of the listed member pages. Same soft-card style as My Roadmap. The
    copy lives here in one place; injected additively so no page markup changes. */
 function _makePhCard() {
@@ -5148,10 +5183,10 @@ function _makePhCard() {
   card.className = 'ci-ph-card';
   card.style.cssText = 'background:var(--off,#F5F5F5);border:1px solid var(--border,#E6E8EB);border-radius:14px;padding:22px 24px;margin:18px 0;';
   card.innerHTML =
-    '<p style="margin:0 0 14px;max-width:680px;color:var(--text);font-size:15px;line-height:1.6;opacity:.9;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>' +
+    '<p style="margin:0 0 14px;max-width:680px;color:var(--text);font-size:15px;line-height:1.6;opacity:.9;">Use this workspace to capture what matters, work with it inside the LFM player, and return to it as your direction evolves.</p>' +
     '<div style="display:flex;gap:24px;flex-wrap:wrap;">' +
-      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li><li>Ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam</li></ul></div>' +
-      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Quis nostrud exercitation ullamco</li><li>Laboris nisi ut aliquip ex ea</li><li>Duis aute irure dolor in reprehenderit</li><li>Voluptate velit esse cillum dolore</li><li>Excepteur sint occaecat cupidatat</li></ul></div>' +
+      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Add or edit your own entries</li><li>Keep your language personal</li><li>Use the player to review it</li><li>Save changes before leaving</li><li>Return as your priorities change</li></ul></div>' +
+      '<div style="flex:1;min-width:240px;"><ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.9;"><li>Back returns to the Citadel</li><li>LFM Menu opens every workspace</li><li>Next moves forward</li><li>AI assistance is optional</li><li>Your words remain the source</li></ul></div>' +
     '</div>';
   return card;
 }

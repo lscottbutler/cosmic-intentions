@@ -10,10 +10,8 @@
                                   eleven_multilingual_v2 (1 credit/char, richest).
                                   Set to eleven_turbo_v2_5 to HALVE cost
                                   (0.5 credit/char, faster, near-identical).)
-   Global cache: Supabase Storage bucket `goal-audio` (public). On a hit we
-   return the stored URL with NO ElevenLabs call. Uploads use the PUBLIC anon
-   key (safe — already exposed client-side); needs a storage INSERT policy for
-   the anon role. Falls back to inline audio if the bucket/policy isn't set up.
+   Per-member cache: private Supabase Storage bucket `goal-audio`. Audio is
+   returned inline, so no personal goal recording is exposed through a public URL.
 ─────────────────────────────────────────────────────────────────────────── */
 const crypto   = require('crypto');
 const { guard } = require('./_guard');
@@ -23,7 +21,7 @@ const BUCKET   = 'goal-audio';
 const ALLOWED_MODELS = ['eleven_multilingual_v2', 'eleven_turbo_v2_5', 'eleven_flash_v2_5'];
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: true });
+  const g = await guard(event, { requireAuth: true, dailyLimit: 60, action: 'tts_elevenlabs' });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST')   return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
@@ -45,15 +43,22 @@ exports.handler = async (event) => {
 
   // Cache key includes the model + voice so each model caches separately (clean A/B).
   const hash       = crypto.createHash('sha1').update(voiceId + '|' + model + '|' + text).digest('hex');
-  const objectPath = `${voiceId}/${model}/${hash}.mp3`;
-  const publicUrl  = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${objectPath}`;
+  const objectPath = `${g.user.id}/${voiceId}/${model}/${hash}.mp3`;
+  const storageHeaders = {
+    apikey: SUPA_ANON,
+    Authorization: `Bearer ${g.accessToken}`,
+  };
 
   try {
-    // 1. GLOBAL CACHE HIT — already in Supabase Storage → return URL, NO ElevenLabs bill.
-    //    (public bucket → readable without auth; works even if upload policy is missing)
+    // 1. PRIVATE CACHE HIT — return bytes only to the authenticated owner.
     try {
-      const head = await fetch(publicUrl, { method: 'HEAD' });
-      if (head.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: true }) };
+      const cached = await fetch(`${SUPA_URL}/storage/v1/object/authenticated/${BUCKET}/${objectPath}`, {
+        headers: storageHeaders,
+      });
+      if (cached.ok) {
+        const cachedBuf = Buffer.from(await cached.arrayBuffer());
+        return { statusCode: 200, headers, body: JSON.stringify({ audio: cachedBuf.toString('base64'), mime: 'audio/mpeg', cached: true }) };
+      }
     } catch (e) { /* fall through to generate */ }
 
     // 2. GENERATE via ElevenLabs (the only path that bills).
@@ -72,18 +77,17 @@ exports.handler = async (event) => {
     }
     const buf = Buffer.from(await res.arrayBuffer());
 
-    // 3. STORE for everyone (best-effort, anon key) → return the cached URL.
+    // 3. Store inside the member's private folder (best effort).
     try {
       const up = await fetch(`${SUPA_URL}/storage/v1/object/${BUCKET}/${objectPath}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${SUPA_ANON}`, 'apikey': SUPA_ANON, 'Content-Type': 'audio/mpeg' },
+        headers: { ...storageHeaders, 'Content-Type': 'audio/mpeg' },
         body: buf,
       });
-      if (up.ok) return { statusCode: 200, headers, body: JSON.stringify({ url: publicUrl, cached: false }) };
+      if (!up.ok) console.warn('[tts-elevenlabs] private cache upload failed:', up.status);
     } catch (e) { /* fall through to inline */ }
 
-    // 4. FALLBACK — bucket/policy not set up yet: return audio inline (client caches per-device).
-    return { statusCode: 200, headers, body: JSON.stringify({ audio: buf.toString('base64'), mime: 'audio/mpeg' }) };
+    return { statusCode: 200, headers, body: JSON.stringify({ audio: buf.toString('base64'), mime: 'audio/mpeg', cached: false }) };
   } catch (e) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: String(e.message || e) }) };
   }

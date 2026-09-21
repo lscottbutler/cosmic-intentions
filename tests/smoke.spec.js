@@ -8,7 +8,7 @@ test.describe('Cosmic Intentions — smoke', () => {
   test('home page loads and titles correctly', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Cosmic Intentions/i);
-    await expect(page.locator('.home-hero h1')).toContainText(/Live your vision/i);
+    await expect(page.locator('.home-hero h1')).toContainText(/Become who you intend to be/i);
   });
 
   test('boots with no real console errors or page crashes', async ({ page }) => {
@@ -31,13 +31,13 @@ test.describe('Cosmic Intentions — smoke', () => {
 
   test('hero call-to-action buttons are present', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('button', { name: /Get Started Free/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Member Log In/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /MAP MY GOAL/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /MEMBER PORTAL/i }).first()).toBeVisible();
   });
 
   test('Member Log In opens the auth modal', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: /Member Log In/i }).click();
+    await page.getByRole('link', { name: /MEMBER PORTAL/i }).first().click();
     await expect(page.locator('#authModal')).toBeVisible();
   });
 

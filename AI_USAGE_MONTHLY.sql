@@ -26,7 +26,8 @@ alter table public.ai_usage_monthly enable row level security;
 
 -- 2) Atomic bump-and-check. Increments this user's count for this action in the
 --    current month and returns TRUE while they are still at/under the limit.
---    SECURITY DEFINER so it can write past RLS; callable by anon/authenticated.
+--    SECURITY DEFINER so it can write past RLS. The JWT owner check prevents
+--    callers from changing another member's counter.
 create or replace function public.bump_ai_usage_monthly(
   p_user  uuid,
   p_action text,
@@ -34,12 +35,19 @@ create or replace function public.bump_ai_usage_monthly(
 ) returns boolean
   language plpgsql
   security definer
-  set search_path = public
+  set search_path = ''
 as $$
 declare
   v_period text := to_char(now() at time zone 'utc', 'YYYY-MM');
   v_count  int;
 begin
+  if (select auth.uid()) is null or p_user <> (select auth.uid()) then
+    raise exception 'not authorized' using errcode = '42501';
+  end if;
+  if p_action !~ '^[a-z0-9_-]{1,50}$' or p_limit < 1 or p_limit > 1000 then
+    raise exception 'invalid quota request' using errcode = '22023';
+  end if;
+
   insert into public.ai_usage_monthly (user_id, action, period, count, updated_at)
     values (p_user, p_action, v_period, 1, now())
   on conflict (user_id, action, period)
@@ -51,5 +59,7 @@ begin
 end;
 $$;
 
+revoke all on function public.bump_ai_usage_monthly(uuid, text, int)
+  from public, anon;
 grant execute on function public.bump_ai_usage_monthly(uuid, text, int)
-  to anon, authenticated;
+  to authenticated;

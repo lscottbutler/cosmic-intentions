@@ -757,8 +757,12 @@ export async function backfillGoalImages() {
         await new Promise(r => setTimeout(r, 500)); // gentle throttle between generations
       } else if (intn.imageUrl.startsWith('data:') && typeof uploadVisionImage === 'function') {
         // Existing local-only image — migrate it to Storage for cross-device.
-        const url = await uploadVisionImage(intn.id, intn.imageUrl.split(',')[1]);
-        if (url) { intn.imageUrl = url; await saveIntentions(); }
+        const uploaded = await uploadVisionImage(intn.id, intn.imageUrl.split(',')[1]);
+        if (uploaded?.url) {
+          intn.imageUrl = uploaded.url;
+          intn.imageStorageRef = uploaded.storageRef;
+          await saveIntentions();
+        }
         await new Promise(r => setTimeout(r, 150));
       }
     }

@@ -44,7 +44,8 @@ jobs:
         run: |
           if [ -z "$P1" ] || [ -z "$P2" ] || [ -z "$P3" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Off-site backup not configured yet — skipping. Add SUPABASE_DB_PASSWORD, BACKUP_PASSPHRASE, RCLONE_CONF."
+            echo "::error::Off-site backup is not configured. Add SUPABASE_DB_PASSWORD, BACKUP_PASSPHRASE, and RCLONE_CONF."
+            exit 1
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
@@ -98,7 +99,7 @@ jobs:
         run: |
           for REMOTE in gdrive onedrive; do
             echo "Uploading to $REMOTE:CI-Backups ..."
-            rclone copy "$ENC" "$REMOTE:CI-Backups/" --no-traverse || echo "::warning::upload to $REMOTE failed"
+            rclone copy "$ENC" "$REMOTE:CI-Backups/" --no-traverse
           done
 
       - name: Prune backups older than 30 days
