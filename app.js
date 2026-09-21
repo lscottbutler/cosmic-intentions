@@ -4812,6 +4812,10 @@ function ensureAdminPageBoxStyles() {
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
     .ci-page-box-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
+    .ci-page-box-admin-grid .admin-editor{background:#242424!important;color:#fff!important;caret-color:#fff!important}
+    .ci-page-box-admin-grid .admin-editor *{color:inherit!important}
+    .ci-page-box-admin-grid .ib-preview-body{background:#fff!important;color:#111!important}
+    .ci-page-box-admin-grid .ib-preview-body *{color:#111!important}
     @media(max-width:700px){
       .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
       .ci-admin-page-box-content{min-height:44px;padding:13px 14px;font-size:14px}
