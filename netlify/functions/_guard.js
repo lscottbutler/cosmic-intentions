@@ -34,6 +34,10 @@ const ALLOWED_HOSTS = [
 ];
 
 function _hostOf(u) { try { return new URL(u).hostname; } catch { return ''; } }
+function _hostAllowed(host) {
+  return ALLOWED_HOSTS.includes(host)
+    || host.endsWith('--gilded-profiterole-47a2eb.netlify.app');
+}
 function _hdr(event, name) {
   const h = event.headers || {};
   return h[name] || h[name.toLowerCase()] || h[name.toUpperCase()] || '';
@@ -42,7 +46,7 @@ function _hdr(event, name) {
 /* CORS headers echoing the caller's origin when it's on the allow-list,
    otherwise pinned to the production site. */
 function corsHeaders(origin) {
-  const allow = origin && ALLOWED_HOSTS.includes(_hostOf(origin)) ? origin : 'https://cosmicintentions.com';
+  const allow = origin && _hostAllowed(_hostOf(origin)) ? origin : 'https://cosmicintentions.com';
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -58,8 +62,8 @@ function corsHeaders(origin) {
 function originAllowed(event) {
   const origin  = _hdr(event, 'origin');
   const referer = _hdr(event, 'referer');
-  if (origin)  return ALLOWED_HOSTS.includes(_hostOf(origin));
-  if (referer) return ALLOWED_HOSTS.includes(_hostOf(referer));
+  if (origin)  return _hostAllowed(_hostOf(origin));
+  if (referer) return _hostAllowed(_hostOf(referer));
   return true;
 }
 

@@ -13,9 +13,14 @@ function hostOf(value) {
   try { return new URL(value).hostname; } catch { return ''; }
 }
 
+function hostAllowed(host) {
+  return ALLOWED_HOSTS.has(host)
+    || host.endsWith('--gilded-profiterole-47a2eb.netlify.app');
+}
+
 export function publicHeaders(request) {
   const origin = request.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_HOSTS.has(hostOf(origin))
+  const allowedOrigin = hostAllowed(hostOf(origin))
     ? origin
     : 'https://cosmicintentions.com';
   return {
@@ -32,8 +37,8 @@ export function isAllowedPublicRequest(request) {
   const origin = request.headers.get('origin');
   const referer = request.headers.get('referer');
   return Boolean(
-    (origin && ALLOWED_HOSTS.has(hostOf(origin))) ||
-    (!origin && referer && ALLOWED_HOSTS.has(hostOf(referer)))
+    (origin && hostAllowed(hostOf(origin))) ||
+    (!origin && referer && hostAllowed(hostOf(referer)))
   );
 }
 
