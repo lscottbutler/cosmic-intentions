@@ -43,16 +43,32 @@
   to = "/standalone/launch-os.html"
   status = 200
 
-# Legal pages
+# Legal pages are intentionally private until the operating entity and
+# governing jurisdiction have been confirmed. Keep both the pretty routes and
+# direct static-file paths inaccessible so a guessed URL cannot expose drafts.
 [[redirects]]
   from = "/terms"
-  to = "/standalone/terms.html"
-  status = 200
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/privacy"
-  to = "/standalone/privacy.html"
-  status = 200
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/standalone/terms.html"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/standalone/privacy.html"
+  to = "/"
+  status = 302
+  force = true
 
 # About Us — company story / personal-development lineage
 [[redirects]]
