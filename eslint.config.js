@@ -33,7 +33,7 @@ export default [
     files: ['shared/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'script',
+      sourceType: 'module',
     },
     rules: {
       ...sharedRules,

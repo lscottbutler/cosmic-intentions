@@ -4,7 +4,7 @@
 const { guard } = require('./_guard');
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: false });
+  const g = await guard(event, { requireAuth: true, dailyLimit: 40, action: 'structured_ai' });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST') {
@@ -20,8 +20,14 @@ exports.handler = async (event) => {
   try { body = JSON.parse(event.body || '{}'); }
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
-  const { system, user, maxTokens = 1800 } = body;
+  const { system, user } = body;
   if (!user) return { statusCode: 400, headers, body: JSON.stringify({ error: 'user is required' }) };
+  const safeSystem = String(system || '').slice(0, 8000);
+  const safeUser = String(user).slice(0, 12000);
+  const requestedMax = Number(body.maxTokens);
+  const maxTokens = Number.isFinite(requestedMax)
+    ? Math.max(100, Math.min(2000, Math.trunc(requestedMax)))
+    : 1200;
 
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -36,8 +42,8 @@ exports.handler = async (event) => {
         temperature: 0.7,
         response_format: { type: 'json_object' },
         messages: [
-          ...(system ? [{ role: 'system', content: system }] : []),
-          { role: 'user', content: user }
+          ...(safeSystem ? [{ role: 'system', content: safeSystem }] : []),
+          { role: 'user', content: safeUser }
         ]
       })
     });

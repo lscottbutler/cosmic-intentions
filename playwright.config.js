@@ -1,7 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-// Smoke tests run against the PRODUCTION build (dist via vite preview), using the
-// Edge browser already on this machine (no extra browser download).
+// Smoke tests run against the production build through Vite Preview.
 export default defineConfig({
   testDir: 'tests',
   timeout: 30000,
@@ -9,9 +8,9 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: 'http://localhost:8090',
-    channel: 'msedge',
     headless: true,
     screenshot: 'only-on-failure',
+    trace: 'retain-on-failure',
   },
   webServer: {
     command: 'npm run build && npm run preview',

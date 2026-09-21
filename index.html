@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cosmic Intentions turns your goals into a personal daily practice using planning, visualization, reflection, and repetition.">
+<meta property="og:title" content="Cosmic Intentions">
+<meta property="og:description" content="Turn your goals into a personal daily practice.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cosmicintentions.com/">
+<meta property="og:image" content="https://cosmicintentions.com/images/home-welcome-languages.jpg">
 <title>Cosmic Intentions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lora:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -356,20 +362,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     if (injected && typeof window.sprinkleNotes === 'function') { try { window.sprinkleNotes(); } catch (e) {} }
   };
 
-  // ── COLUMN A INTRO CARD — an editable info card at the top of the main column on
-  // selected pages. Placeholder copy for now; give Scott real text per page later.
+  // ── COLUMN A INTRO CARD — shared orientation card for member workspaces.
   window.PAGE_INTRO_CARD =
     '<div class="page-intro-card">' +
-      '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>' +
+      '<p>Use this workspace to keep what matters visible and turn it into a practice you can return to.</p>' +
       '<div class="page-intro-cols">' +
-        '<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li><li>Ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam</li></ul>' +
-        '<ul><li>Quis nostrud exercitation ullamco</li><li>Laboris nisi ut aliquip ex ea</li><li>Duis aute irure dolor in reprehenderit</li><li>Voluptate velit esse cillum dolore</li><li>Excepteur sint occaecat cupidatat</li></ul>' +
+        '<ul><li>Add or edit your own entries</li><li>Keep personal material inside your account</li><li>Use the player to review what you saved</li><li>Return whenever your direction changes</li><li>Save before leaving the workspace</li></ul>' +
+        '<ul><li>Back returns to the Citadel</li><li>LFM Menu opens every player</li><li>Next moves to the following workspace</li><li>AI features are optional</li><li>Your words remain the source material</li></ul>' +
       '</div>' +
     '</div>';
   window.injectPageIntro = function () {
     var active = document.querySelector('.page.active'); if (!active) return;
     var id = active.id.replace('page-', '');
-    // Pages that need a Lorem intro card of their OWN. Pages NOT listed here
+    // Pages that need an intro card of their own. Pages not listed here
     // (wins / vizlibrary / runthroughs / setup / habits) already get one from
     // injectPlaceholderCards (.ci-ph-card) — don't add a second and duplicate it.
     var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
@@ -670,7 +675,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="eyebrow">The one principle everything is built on</div>
           <h2 style="font-size:40px;font-weight:900;letter-spacing:-.01em;line-height:1.08;margin:14px 0 24px">You move toward<br>what you think about most.</h2>
           <p style="color:var(--muted);font-size:18px;line-height:1.7;max-width:720px;margin:0 auto 18px">It’s the oldest law in personal development — and the reason it’s called <em style="color:var(--text);font-style:normal;font-weight:700">personal</em>. You don’t become someone else’s affirmations. You become the thoughts you repeat, in your own words.</p>
-          <p style="color:var(--muted);font-size:18px;line-height:1.7;max-width:720px;margin:0 auto">So instead of piping you a stranger’s calm, Cosmic Intentions takes <em style="color:var(--text);font-style:normal;font-weight:700">your</em> goals, in <em style="color:var(--text);font-style:normal;font-weight:700">your</em> voice, and keeps them in front of your mind through creative visualization — because that’s the only thing that ever actually moves a person.</p>
+          <p style="color:var(--muted);font-size:18px;line-height:1.7;max-width:720px;margin:0 auto">Instead of giving you someone else’s generic routine, Cosmic Intentions takes <em style="color:var(--text);font-style:normal;font-weight:700">your</em> goals, in <em style="color:var(--text);font-style:normal;font-weight:700">your</em> voice, and keeps them visible through planning, repetition, and creative visualization.</p>
           <div style="margin-top:32px;font-family:'Dancing Script',cursive;font-size:32px;color:var(--gold);line-height:1.3">One size has never fit all.<br>This is built for a size of one.</div>
         </div></section>
 
@@ -683,7 +688,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="steps">
             <div class="step"><div class="k">✍️</div><h3>Set</h3><p>Write your goal as an “I AM” intention.</p></div>
             <div class="step"><div class="k">🗺</div><h3>Plan</h3><p>AI builds your roadmap — drill down as deep as you want.</p></div>
-            <div class="step"><div class="k">✦</div><h3>Rewire</h3><p>Hear it, see it, visualize it — your voice, on loop.</p></div>
+            <div class="step"><div class="k">✦</div><h3>Reinforce</h3><p>Hear it, see it, visualize it — your voice, on loop.</p></div>
             <div class="step"><div class="k">◎</div><h3>Practice</h3><p>Close your daily rings and log the wins.</p></div>
             <div class="step"><div class="k">🌙</div><h3>Reflect</h3><p>Your day, written back to you as a story.</p></div>
           </div>
@@ -693,7 +698,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="sec-head"><div class="eyebrow">Everything inside</div><h2>Six ways it moves you forward</h2></div>
           <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--mint)">01 · Set</span><h3>Write &amp; Track Your Goals</h3><p>Turn any dream into a precise “I AM” intention with a date and a category — then watch it live on your dashboard.</p><ul><li><b>“I AM” intentions</b> — unlimited goals, with start &amp; target dates</li><li><b>Digital Vision Boards</b> — AI turns each goal into a vivid picture</li><li><b>Your Goal Deck</b> — color-coded cards, progress at a glance</li></ul></div><div class="pillar-art"><div><span class="ico">✍️</span>Goal cards &amp; vision board</div></div></div>
           <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--gold)">02 · Plan</span><h3>Your AI roadmap — with drill-down</h3><p>Every goal gets a concrete plan. Stuck on a step? Break it down into sharper and sharper sub-steps, as far as you need to go.</p><ul><li><b>10-step AI roadmap</b> — expert-level, specific to your goal</li><li><b>Break It Down</b> — drill any step into granular sub-steps, infinitely</li><li><b>Learn From the Greats</b> — real videos &amp; sources from people who did it</li></ul></div><div class="pillar-art"><div><span class="ico">🗺</span>Roadmap → drill-down tree</div></div></div>
-          <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--rose)">03 · Rewire</span><h3>The Mind Loop</h3><p>Your differentiator: your own “I AM” statements spoken in a calm voice and looped — through the day and as you fall asleep. Belief is built by repetition.</p><ul><li><b>Day &amp; sleep modes</b> — from 20 minutes to all night</li><li><b>Impressions counter</b> — every rep your mind banks</li><li><b>Mindset library</b> — affirmations, beliefs, stoic principles, quotes</li></ul></div><div class="pillar-art"><div><span class="ico">✦</span>Mind Loop player</div></div></div>
+          <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--rose)">03 · Reinforce</span><h3>The Mind Loop</h3><p>Your own “I AM” statements are spoken in a calm voice and repeated through the day or as you fall asleep, helping you keep your chosen direction top of mind.</p><ul><li><b>Day &amp; sleep modes</b> — from 20 minutes to all night</li><li><b>Impressions counter</b> — track each repetition</li><li><b>Mindset library</b> — affirmations, beliefs, stoic principles, quotes</li></ul></div><div class="pillar-art"><div><span class="ico">✦</span>Mind Loop player</div></div></div>
           <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--violet)">04 · See it</span><h3>Visualization &amp; meditation</h3><p>Beautiful guided sessions that put you inside the goal — your words, your art, your voice-over.</p><ul><li><b>3, 10 &amp; open-ended visualizations</b> — goal + art + narration</li><li><b>Meditation &amp; countdown timers</b> — 1 to 60 minutes</li><li><b>Recitation players</b> — loop your affirmations, values &amp; quotes</li></ul></div><div class="pillar-art"><div><span class="ico">🎬</span>Visualization player</div></div></div>
           <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--mint)">05 · Practice</span><h3>Live it every day</h3><p>Small, satisfying daily reps that stack into a streak — and proof you’re becoming the person.</p><ul><li><b>Daily Rings</b> — Review · Visualize · Meditate → a Perfect Day</li><li><b>Habits &amp; Today-I-Will</b> — your rituals, grouped by time of day</li><li><b>Wins Wall</b> — log every micro-win and watch momentum build</li></ul></div><div class="pillar-art"><div><span class="ico">◎</span>Rings, habits &amp; wins</div></div></div>
           <div class="pillar"><div class="pillar-txt"><span class="lbl" style="color:var(--gold)">06 · Reflect</span><h3>Your evening wrap-up</h3><p>At day’s end, AI writes your progress back to you as a warm short story — the receipt that you moved.</p><ul><li><b>AI story recap</b> — personal, not a dashboard</li><li><b>Shareable</b> — turn a good day into a card worth posting</li><li><b>Closes the loop</b> — motivation for tomorrow</li></ul></div><div class="pillar-art"><div><span class="ico">🌙</span>Evening story recap</div></div></div>
@@ -701,9 +706,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <section class="loopband"><div class="wrap sec-head" style="margin-bottom:0">
           <div class="eyebrow">Why it works when apps you quit didn’t</div>
-          <h2 style="font-size:32px">Nothing else loops <em style="font-family:'Dancing Script',cursive;color:var(--gold);font-style:normal">your</em> goals in a voice</h2>
+          <h2 style="font-size:32px">A daily practice built from <em style="font-family:'Dancing Script',cursive;color:var(--gold);font-style:normal">your</em> goals and your voice</h2>
           <p>Calm and Headspace hand you a library. Cosmic Intentions manufactures a personal practice from your own stated identity — then keeps score.</p>
-          <div class="counter"><div class="n">14,208</div><div class="l">affirmations looped back to you this month</div></div>
+          <div class="counter"><div class="n">YOUR GOAL</div><div class="l">planned, practiced, visualized, and reviewed</div></div>
         </div></section>
 
         <section id="lp1-pricing" class="pricing"><div class="wrap">
@@ -780,14 +785,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- INFO BLOCK — paragraph + 5 bullets + one rotating thought from My Thoughts -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:12px;">
-            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">MAKE THE GOAL VISIBLE</div>
+            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">A clear intention is easier to act on. Keep the words, imagery, and next action for your most important goal in one place.</p>
             <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Adipiscing elit sed do eiusmod tempor</li>
-              <li>Incididunt ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam quis nostrud</li>
-              <li>Exercitation ullamco laboris nisi aliquip</li>
+              <li>Write the outcome in your own language</li>
+              <li>Choose an image that makes it concrete</li>
+              <li>Give it a meaningful target date</li>
+              <li>Identify the next physical action</li>
+              <li>Review it consistently</li>
             </ul>
             <div data-random-note="affirmation" data-home-thought data-note-key="home1" class="redblob-note" style="display:flex;align-items:center;justify-content:center;text-align:center;gap:10px;background:url('images/home-row/home-red-blob.webp') center/100% 100% no-repeat;border:none;padding:36px 52px;min-height:120px;"></div>
           </div>
@@ -800,14 +805,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- INFO BLOCK 2 — paragraph + 5 bullets + rotating thought -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:12px;">
-            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">BUILD THE BELIEF</div>
+            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Use statements you can connect with—not generic slogans—to reinforce the identity and actions behind your goal.</p>
             <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Adipiscing elit sed do eiusmod tempor</li>
-              <li>Incididunt ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam quis nostrud</li>
-              <li>Exercitation ullamco laboris nisi aliquip</li>
+              <li>Use first-person language</li>
+              <li>Keep statements specific and credible</li>
+              <li>Connect identity to action</li>
+              <li>Favor repetition over intensity</li>
+              <li>Edit anything that no longer feels true</li>
             </ul>
             <div data-random-note="belief" data-home-thought data-note-key="home2" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;"></div>
           </div>
@@ -819,29 +824,25 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <iframe src="https://iframe.cloudflarestream.com/f7b2cf9e57a6b29c97bdee0c99dcb3ec"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
-              <div class="home-vid-label">Video B</div>
-              <div class="home-vid-caption">Short caption here.</div>
             </div>
             <div>
               <div class="home-vid-block">
                 <iframe src="https://iframe.cloudflarestream.com/5c2e75172bfcfddf618c3715b332b6be"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
-              <div class="home-vid-label">Video C</div>
-              <div class="home-vid-caption">Short caption here.</div>
             </div>
           </div>
 
           <!-- INFO BLOCK 3 — paragraph + 5 bullets + rotating thought -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:12px;">
-            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">TURN INTENTION INTO ACTION</div>
+            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Momentum comes from knowing what matters today and completing a step small enough to begin.</p>
             <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Adipiscing elit sed do eiusmod tempor</li>
-              <li>Incididunt ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam quis nostrud</li>
-              <li>Exercitation ullamco laboris nisi aliquip</li>
+              <li>Break the goal into visible steps</li>
+              <li>Choose today’s smallest useful move</li>
+              <li>Remove one point of friction</li>
+              <li>Record the work you complete</li>
+              <li>Adjust the plan when reality changes</li>
             </ul>
             <div data-random-note="reminder" data-home-thought data-note-key="home3" class="redblob-note" style="display:flex;align-items:center;justify-content:center;text-align:center;gap:10px;background:url('images/home-row/home-red-blob.webp') center/100% 100% no-repeat;border:none;padding:36px 52px;min-height:120px;"></div>
           </div>
@@ -856,29 +857,25 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 <iframe src="https://iframe.cloudflarestream.com/3b456ab7735aa0e8aed6633e2385961d"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
-              <div class="home-vid-label">Video D</div>
-              <div class="home-vid-caption">Short caption here.</div>
             </div>
             <div>
               <div class="home-vid-block">
                 <iframe src="https://iframe.cloudflarestream.com/43813e0e2c419930e548850a9101cf6b"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
-              <div class="home-vid-label">Video E</div>
-              <div class="home-vid-caption">Short caption here.</div>
             </div>
           </div>
 
           <!-- INFO BLOCK 4 — paragraph + 5 bullets + rotating thought -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:12px;">
-            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+            <div style="font-weight:800;font-size:18px;color:var(--text);letter-spacing:.3px;">COLLECT THE EVIDENCE</div>
+            <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Progress becomes easier to trust when you record the actions, lessons, and wins that prove you are moving.</p>
             <ul style="margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Adipiscing elit sed do eiusmod tempor</li>
-              <li>Incididunt ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam quis nostrud</li>
-              <li>Exercitation ullamco laboris nisi aliquip</li>
+              <li>Capture wins while they are fresh</li>
+              <li>Notice what created momentum</li>
+              <li>Learn from missed commitments</li>
+              <li>Keep useful reminders close</li>
+              <li>Use the evidence to choose tomorrow’s move</li>
             </ul>
             <div data-random-note="inspiration" data-home-thought data-note-key="home4" style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;"></div>
           </div>
@@ -895,33 +892,33 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <h2>Welcome back ✦</h2>
             <p style="margin-bottom:0;">Your Personal Development Arsenal is ready.</p>
           </div>
-          <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;opacity:.85;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;opacity:.85;">Open the Citadel to review your goals, practices, thoughts, journal, gratitude, and wins from one place.</p>
           <div class="home-member-hero">
 
             <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
             <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;margin:6px 0 14px;">
-              <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+              <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">START WITH DIRECTION</div>
+              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Choose the goal that matters most and make the next move obvious.</p>
               <ul style="margin:0;padding-left:18px;color:var(--text);font-size:14px;line-height:1.7;">
-                <li>Lorem ipsum dolor sit amet</li>
-                <li>Consectetur adipiscing elit</li>
-                <li>Sed do eiusmod tempor incididunt</li>
-                <li>Ut labore et dolore magna</li>
-                <li>Aliqua ut enim ad minim</li>
+                <li>Review your active goals</li>
+                <li>Open the current roadmap</li>
+                <li>Choose today’s action</li>
+                <li>Remove one obstacle</li>
+                <li>Begin before refining</li>
               </ul>
             </div>
           </div>
 
           <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;">
-            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">PRACTICE THE PERSON</div>
+              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Use the players to rehearse the words, images, and behaviors connected to your goal.</p>
             <ul style="margin:0;padding-left:18px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet</li>
-              <li>Consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt</li>
-              <li>Ut labore et dolore magna</li>
-              <li>Aliqua ut enim ad minim</li>
+              <li>Visualize the finished outcome</li>
+              <li>Repeat your chosen statements</li>
+              <li>Meditate without distraction</li>
+              <li>Review your personal beliefs</li>
+              <li>Keep the practice consistent</li>
             </ul>
           </div>
 
@@ -934,14 +931,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;">
-            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">RECORD WHAT CHANGES</div>
+              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Your journal, gratitude, and wins preserve the evidence that progress is happening.</p>
             <ul style="margin:0;padding-left:18px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet</li>
-              <li>Consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt</li>
-              <li>Ut labore et dolore magna</li>
-              <li>Aliqua ut enim ad minim</li>
+              <li>Write the lesson</li>
+              <li>Capture a meaningful win</li>
+              <li>Name what you appreciate</li>
+              <li>Notice repeating patterns</li>
+              <li>Carry the useful insight forward</li>
             </ul>
           </div>
 
@@ -949,14 +946,14 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
           <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;margin-top:14px;">
-            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">INSERT TITLE HERE</div>
-              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">RETURN TO WHAT MATTERS</div>
+              <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">The system works as a loop: decide, practice, act, reflect, and begin again with better information.</p>
             <ul style="margin:0;padding-left:18px;color:var(--text);font-size:14px;line-height:1.7;">
-              <li>Lorem ipsum dolor sit amet</li>
-              <li>Consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt</li>
-              <li>Ut labore et dolore magna</li>
-              <li>Aliqua ut enim ad minim</li>
+              <li>Keep your direction visible</li>
+              <li>Use the menu to move between tools</li>
+              <li>Save changes before leaving</li>
+              <li>Review the evidence regularly</li>
+              <li>Update the plan when needed</li>
             </ul>
           </div>
         </div>

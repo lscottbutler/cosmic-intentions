@@ -3,15 +3,15 @@
 const { guard } = require('./_guard');
 
 exports.handler = async (event) => {
-  const g = await guard(event, { requireAuth: false });
+  const g = await guard(event, { requireAuth: true, dailyLimit: 60, action: 'tts' });
   if (!g.ok) return g.response;
   const headers = g.headers;
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
   try {
     const { text, voice } = JSON.parse(event.body || '{}');
-    if (!text) return { statusCode: 400, body: 'Missing text' };
+    if (!text) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing text' }) };
     const clean = text.trim().substring(0, 600);
 
     // ── 1) ElevenLabs (preferred) ──────────────────────────────────────────
@@ -35,7 +35,7 @@ exports.handler = async (event) => {
         });
         if (r.ok) {
           const audio = Buffer.from(await r.arrayBuffer()).toString('base64');
-          return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+          return { statusCode: 200, headers,
                    body: JSON.stringify({ audio, provider: 'elevenlabs' }) };
         }
         console.log('ElevenLabs failed', r.status, (await r.text()).slice(0, 300)); // fall through
@@ -53,12 +53,12 @@ exports.handler = async (event) => {
       body: JSON.stringify({ model: 'tts-1', input: clean, voice: oaVoice })
     });
     if (!res.ok) {
-      return { statusCode: res.status, body: await res.text() };
+      return { statusCode: res.status, headers, body: JSON.stringify({ error: await res.text() }) };
     }
     const audio = Buffer.from(await res.arrayBuffer()).toString('base64');
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+    return { statusCode: 200, headers,
              body: JSON.stringify({ audio, provider: 'openai' }) };
   } catch (e) {
-    return { statusCode: 500, body: e.message };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
 };
