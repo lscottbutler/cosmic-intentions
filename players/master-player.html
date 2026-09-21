@@ -6,13 +6,13 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Cosmic Intentions Dashboard</title>
   <style>
-    :root{color-scheme:light;--frame:#82ad77;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:35px;--frame-bottom-border:clamp(6px,1.823vw,18px);--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#82ad77;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
     button{font:inherit}
     .shell{width:100%;border:0;background:transparent;overflow:hidden;transition:min-height .35s ease}
-    .shell.home-mode{background:var(--header);padding:0 0 70px}
+    .shell.home-mode{background:var(--header);padding:0 0 35px}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
     .shell.daily-habits-mode .stage{background:#5f645e!important}
     .cap{position:relative;isolation:isolate;margin:0;padding:29px 18px 28px;background:var(--header);color:var(--trough-ink);text-align:center;font-size:14px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/58% 58% 3px 3px;transition:background-color .25s ease}
@@ -28,7 +28,7 @@
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
     .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
-    .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:35px;background:var(--header);display:grid}
+    .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:17.5px;background:var(--header);display:grid}
     .shell.home-mode #homeView{width:100%;min-height:0;aspect-ratio:16/9;align-self:stretch;display:grid}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
@@ -98,7 +98,7 @@
     @media(max-width:620px){
       .cap{margin:0;padding:26px 8px;font-size:11px;letter-spacing:2px}
       .stage{margin:0;padding:22px 14px}
-      .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:35px}
+      .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:17.5px}
       .directory{grid-template-columns:1fr}
       .deck{margin:0 0 10px;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:3px 3px 50% 50%/3px 3px 32% 32%}
       .shell.home-mode .deck{min-height:292px;padding:22px 10px 88px;column-gap:7px;row-gap:18px}
