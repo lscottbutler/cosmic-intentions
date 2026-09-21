@@ -1,6 +1,5 @@
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
-import { ENT_CARDS } from './shared/ent-library-content.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
 import { _wfLoadChecks } from './shared/weekly-focus.js';
@@ -2673,6 +2672,7 @@ export async function pbSharpenSkills(idx) {
   const btn = document.getElementById(`pbSharpenBtn-${idx}`);
   if (btn) { btn.disabled = true; btn.innerHTML = '&#8942; MATCHING…'; }
   try {
+    const { ENT_CARDS } = await import('./shared/ent-library-content.js');
     const keys = ENT_CARDS.map(c => c.key);
     // The 'claude' endpoint is locked to JSON-object output, so ask for JSON.
     const system = 'You map a personal goal to the entrepreneur skills it most depends on. Given the GOAL and the SKILLS list, respond with ONLY a JSON object of the form {"skills":["SKILL","SKILL",...]} listing the 3 to 5 most relevant skill names, each copied EXACTLY as written in the SKILLS list.';
