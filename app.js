@@ -4867,11 +4867,14 @@ function numberContentBlocks() {
     const slug = el.id.replace('adminBlock-', '');
     map[slug] = n;
     const hd = el.querySelector('.admin-block-hd');
-    if (hd && !hd.querySelector('.admin-block-num')) {
-      const chip = document.createElement('span');
-      chip.className = 'admin-block-num';
+    if (hd) {
+      let chip = hd.querySelector('.admin-block-num');
+      if (!chip) {
+        chip = document.createElement('span');
+        chip.className = 'admin-block-num';
+      }
       chip.textContent = n;
-      hd.insertBefore(chip, hd.firstChild);
+      if (hd.firstChild !== chip) hd.insertBefore(chip, hd.firstChild);
     }
     // Make the header a link to where the block appears (if it's placed).
     if (hd && !hd.dataset.linked && _blockPage(slug)) {
