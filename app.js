@@ -4691,36 +4691,47 @@ function wireAdminPageBoxes() {
   const label = ADMIN_PAGE_BOXES[pageId];
   if (!label) return;
 
-  let stack = active.querySelector(':scope .ci-admin-page-box-stack');
-  if (!stack) {
-    stack = document.createElement('div');
-    stack.className = 'ci-admin-page-box-stack';
-    stack.setAttribute('aria-label', label + ' administrator text boxes');
-    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
-    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
+  let topStack = active.querySelector(':scope .ci-admin-page-box-stack--top');
+  if (!topStack) {
+    // Box 1 is the opening message at the top of the workspace.
+    topStack = document.createElement('div');
+    topStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--top';
+    topStack.setAttribute('aria-label', label + ' administrator text box 1');
+    topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
     const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
     const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
     if (pageTitle && pageTitle.parentNode) {
-      // Citadel: the reusable admin boxes belong immediately under the title,
-      // before the LFM stage and all dashboard content.
-      pageTitle.insertAdjacentElement('afterend', stack);
+      // Citadel Box 1 sits directly beneath the CITADEL title.
+      pageTitle.insertAdjacentElement('afterend', topStack);
     } else if (anchor && anchor.parentNode) {
-      anchor.insertAdjacentElement('afterend', stack);
+      anchor.insertAdjacentElement('afterend', topStack);
     } else {
       const root = _pageBoxRoot(active);
       const intro = root.querySelector(':scope > .pg-intro, :scope > .wins-intro, :scope > .setup-page-header');
       const first = root.firstElementChild;
-      if (intro) intro.insertAdjacentElement('afterend', stack);
-      else if (first) first.insertAdjacentElement('afterend', stack);
-      else root.appendChild(stack);
+      if (intro) intro.insertAdjacentElement('afterend', topStack);
+      else if (first) first.insertAdjacentElement('afterend', topStack);
+      else root.appendChild(topStack);
     }
-  } else {
-    stack.querySelectorAll('[data-block]').forEach(el => {
+  }
+
+  let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
+  if (!bottomStack) {
+    // Box 2 is the closing message at the bottom of the workspace.
+    bottomStack = document.createElement('div');
+    bottomStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--bottom';
+    bottomStack.setAttribute('aria-label', label + ' administrator text box 2');
+    bottomStack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
+    _pageBoxRoot(active).appendChild(bottomStack);
+  }
+
+  [topStack, bottomStack].forEach(group => {
+    group.querySelectorAll('[data-block]').forEach(el => {
       const slug = el.getAttribute('data-block');
       _fillBlockEl(el, _blockCache[slug] || '');
     });
-  }
+  });
   if (typeof stampContentBlockNums === 'function') stampContentBlockNums();
 }
 
@@ -4752,7 +4763,7 @@ function ensureAdminPageBoxEditors() {
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
       '<div class="ci-page-box-admin-title">PAGE TEMPLATE BOXES</div>' +
-      '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace. The pen on a live page opens its matching editor here. Blank boxes stay hidden from members.</p>' +
+      '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace: Box 1 at the top and Box 2 at the bottom. The pen opens its matching editor here. Blank boxes stay hidden from members.</p>' +
       '<div class="ci-page-box-admin-grid"></div>';
     const firstBlock = adminPage.querySelector('.admin-block');
     if (firstBlock) firstBlock.insertAdjacentElement('beforebegin', section);
@@ -4787,6 +4798,7 @@ function ensureAdminPageBoxStyles() {
   style.id = 'ciAdminPageBoxStyles';
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
+    .ci-admin-page-box-stack--bottom{margin:18px 0 0}
     .ci-admin-page-box{position:relative;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box-ownerbar{display:none;align-items:center;justify-content:space-between;gap:12px;min-height:38px;padding:6px 7px 6px 13px;background:#151515;color:#fff;font-size:11px;font-weight:900;letter-spacing:.11em}
     .ci-admin-page-box.is-owner .ci-admin-page-box-ownerbar{display:flex}
