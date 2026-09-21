@@ -4696,8 +4696,8 @@ function wireAdminPageBoxes() {
     stack = document.createElement('div');
     stack.className = 'ci-admin-page-box-stack';
     stack.setAttribute('aria-label', label + ' administrator text boxes');
-    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
     stack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
+    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
     const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
     if (anchor && anchor.parentNode) {
