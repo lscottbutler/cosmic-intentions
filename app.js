@@ -454,7 +454,10 @@ export function showPage(id) {
   if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
   if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
-  if (id === 'admin') loadAIPrompts();
+  if (id === 'admin') {
+    ensureAdminPageBoxEditors();
+    loadAIPrompts();
+  }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
@@ -4592,11 +4595,16 @@ if (typeof window !== 'undefined') {
   };
 }
 function _fillBlockEl(el, content) {
-  if (content && content.trim() && !_isJunkBlock(content)) {
+  const hasContent = !!(content && content.trim() && !_isJunkBlock(content));
+  if (hasContent) {
     if (CARD_BLOCKS.has(el.getAttribute('data-block')) && typeof window.renderBlockCard === 'function') window.renderBlockCard(el, content);
     else el.innerHTML = _expandBlockTokens(content);
     el.style.display = '';
-  } else { el.style.display = 'none'; }
+  } else {
+    el.innerHTML = '';
+    el.style.display = 'none';
+  }
+  _syncAdminPageBox(el, hasContent);
 }
 if (typeof window !== 'undefined') {
   window.injectContentBlocks = function () {
@@ -4606,6 +4614,203 @@ if (typeof window !== 'undefined') {
     });
     if (typeof stampContentBlockNums === 'function') stampContentBlockNums();
   };
+}
+
+/* ── PERMANENT TWO-BOX ADMIN PAGE TEMPLATE ──────────────────────────────────
+   Every member workspace receives two owner-authored content boxes. Box 1 keeps
+   the existing intro-note slug so previously written copy is preserved. Box 2
+   uses page-note-<page>-2. Empty boxes are visible only to the owner. */
+const ADMIN_PAGE_BOXES = {
+  dashboard:     'CITADEL',
+  setup:         'GOALS',
+  habits:        'HABITS',
+  myroadmap:     'ACTION PLAN',
+  vizlibrary:    'VISUALIZE',
+  vizgoal:       'GOAL VISUALIZATION',
+  meditation:    'MEDITATE',
+  dailyfocus:    'FAVORITES',
+  notes:         'THOUGHTS',
+  mynotes:       'JOURNAL',
+  gratitude:     'GRATITUDE',
+  wins:          'WINS',
+  cosmiclibrary: 'COSMIC LIBRARY',
+  entcard:       'ENTREPRENEUR LIBRARY',
+  proof:         'PROOF',
+  runthroughs:   'DAILY RUN-THROUGHS',
+};
+
+function _adminPageBoxSlug(pageId, boxNumber) {
+  return boxNumber === 1 ? 'intro-note-' + pageId : 'page-note-' + pageId + '-2';
+}
+
+function _adminPenIcon() {
+  return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+}
+
+function _syncAdminPageBox(contentEl, hasContent) {
+  const shell = contentEl && contentEl.closest('.ci-admin-page-box');
+  if (!shell) return;
+  const owner = !!window.ciOwnerAccess;
+  shell.classList.toggle('is-empty', !hasContent);
+  shell.classList.toggle('is-owner', owner);
+  shell.style.display = (hasContent || owner) ? '' : 'none';
+  if (!hasContent && owner) {
+    contentEl.innerHTML = '<span class="ci-admin-page-box-placeholder">Empty — click the pen to add text.</span>';
+    contentEl.style.display = '';
+  }
+}
+
+function _buildLiveAdminPageBox(pageId, label, boxNumber) {
+  const slug = _adminPageBoxSlug(pageId, boxNumber);
+  const shell = document.createElement('section');
+  shell.className = 'ci-admin-page-box';
+  shell.dataset.pageBox = String(boxNumber);
+  shell.innerHTML =
+    '<div class="ci-admin-page-box-ownerbar" data-owner-only>' +
+      '<span>' + label + ' BOX ' + boxNumber + '</span>' +
+      '<button type="button" class="ci-admin-page-box-edit" onclick="adminEditBlock(\'' + slug + '\');event.stopPropagation()" aria-label="Edit ' + label + ' Box ' + boxNumber + '" title="Edit ' + label + ' Box ' + boxNumber + '">' +
+        _adminPenIcon() +
+      '</button>' +
+    '</div>' +
+    '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>';
+  const content = shell.querySelector('[data-block]');
+  _fillBlockEl(content, _blockCache[slug] || '');
+  return shell;
+}
+
+function _pageBoxRoot(active) {
+  return active.querySelector('.pg-screen, .wins-screen, .setup-page, .pg-2col-main, .pg-body-main') ||
+    active.firstElementChild || active;
+}
+
+function wireAdminPageBoxes() {
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const pageId = active.id.replace('page-', '');
+  const label = ADMIN_PAGE_BOXES[pageId];
+  if (!label) return;
+
+  let stack = active.querySelector(':scope .ci-admin-page-box-stack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.className = 'ci-admin-page-box-stack';
+    stack.setAttribute('aria-label', label + ' administrator text boxes');
+    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
+    stack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
+
+    const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
+    if (anchor && anchor.parentNode) {
+      anchor.insertAdjacentElement('afterend', stack);
+    } else {
+      const root = _pageBoxRoot(active);
+      const intro = root.querySelector(':scope > .pg-intro, :scope > .wins-intro, :scope > .setup-page-header');
+      const first = root.firstElementChild;
+      if (intro) intro.insertAdjacentElement('afterend', stack);
+      else if (first) first.insertAdjacentElement('afterend', stack);
+      else root.appendChild(stack);
+    }
+  } else {
+    stack.querySelectorAll('[data-block]').forEach(el => {
+      const slug = el.getAttribute('data-block');
+      _fillBlockEl(el, _blockCache[slug] || '');
+    });
+  }
+  if (typeof stampContentBlockNums === 'function') stampContentBlockNums();
+}
+
+function _adminEditorMarkup(pageId, label, boxNumber) {
+  const slug = _adminPageBoxSlug(pageId, boxNumber);
+  return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
+    '<div class="admin-block-hd">📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span></div>' +
+    '<div class="admin-toolbar">' +
+      '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
+      '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
+      '<button class="admin-tb-btn" onclick="adminLink(\'' + slug + '\')">🔗</button>' +
+      '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'removeFormat\')">✕</button>' +
+    '</div>' +
+    '<div class="admin-editor" id="admin-editor-' + slug + '" contenteditable="true" data-slug="' + slug + '"></div>' +
+    '<div class="admin-block-foot">' +
+      '<button class="admin-save-btn" id="admin-save-' + slug + '" onclick="saveContentBlock(\'' + slug + '\')">Save</button>' +
+      '<span class="admin-save-status" id="admin-status-' + slug + '"></span>' +
+    '</div>' +
+  '</div>';
+}
+
+function ensureAdminPageBoxEditors() {
+  const adminPage = document.querySelector('#page-admin .admin-page');
+  if (!adminPage) return;
+  let section = document.getElementById('adminPageBoxEditors');
+  if (!section) {
+    section = document.createElement('section');
+    section.id = 'adminPageBoxEditors';
+    section.className = 'ci-page-box-admin-section';
+    section.innerHTML =
+      '<div class="ci-page-box-admin-title">PAGE TEMPLATE BOXES</div>' +
+      '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace. The pen on a live page opens its matching editor here. Blank boxes stay hidden from members.</p>' +
+      '<div class="ci-page-box-admin-grid"></div>';
+    const firstBlock = adminPage.querySelector('.admin-block');
+    if (firstBlock) firstBlock.insertAdjacentElement('beforebegin', section);
+    else adminPage.appendChild(section);
+  }
+
+  const grid = section.querySelector('.ci-page-box-admin-grid');
+  Object.entries(ADMIN_PAGE_BOXES).forEach(([pageId, label]) => {
+    for (let boxNumber = 1; boxNumber <= 2; boxNumber += 1) {
+      const slug = _adminPageBoxSlug(pageId, boxNumber);
+      let entry = document.getElementById('adminBlock-' + slug);
+      if (!entry) {
+        const holder = document.createElement('div');
+        holder.innerHTML = _adminEditorMarkup(pageId, label, boxNumber);
+        entry = holder.firstElementChild;
+      } else {
+        const header = entry.querySelector('.admin-block-hd');
+        if (header) header.innerHTML = '📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span>';
+      }
+      grid.appendChild(entry);
+      const editor = document.getElementById('admin-editor-' + slug);
+      if (editor && !editor.dataset.dirty) editor.innerHTML = _blockCache[slug] || '';
+    }
+  });
+
+  if (typeof numberContentBlocks === 'function') numberContentBlocks();
+}
+
+function ensureAdminPageBoxStyles() {
+  if (document.getElementById('ciAdminPageBoxStyles')) return;
+  const style = document.createElement('style');
+  style.id = 'ciAdminPageBoxStyles';
+  style.textContent = `
+    .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
+    .ci-admin-page-box{position:relative;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box-ownerbar{display:none;align-items:center;justify-content:space-between;gap:12px;min-height:38px;padding:6px 7px 6px 13px;background:#151515;color:#fff;font-size:11px;font-weight:900;letter-spacing:.11em}
+    .ci-admin-page-box.is-owner .ci-admin-page-box-ownerbar{display:flex}
+    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.4);border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
+    .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
+    .ci-admin-page-box-content{min-height:48px;padding:15px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+    .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
+    .ci-admin-page-box.is-empty{border-style:dashed}
+    .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
+    .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
+    .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
+    .ci-page-box-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
+    @media(max-width:700px){
+      .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
+      .ci-admin-page-box-content{min-height:44px;padding:13px 14px;font-size:14px}
+      .ci-admin-page-box-ownerbar{min-height:44px;padding-left:11px}
+      .ci-admin-page-box-edit{width:34px;height:34px}
+      .ci-page-box-admin-section{padding:12px}
+      .ci-page-box-admin-grid{grid-template-columns:1fr}
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+if (typeof window !== 'undefined') {
+  ensureAdminPageBoxStyles();
+  // Preserve the existing showPage hook name while upgrading it to two boxes.
+  window.wireInfoBoxAdmin = wireAdminPageBoxes;
+  window.ensureAdminPageBoxEditors = ensureAdminPageBoxEditors;
 }
 
 /* ── CONTENT-BLOCK NUMBERING (refinement aid) ─────────────────────────────────
@@ -4618,6 +4823,8 @@ if (typeof window !== 'undefined') {
 // intro-note-<page> maps to its page automatically; the rest are listed here.
 function _blockPage(slug) {
   if (slug.indexOf('intro-note-') === 0) return slug.slice('intro-note-'.length);
+  const pageBoxMatch = slug.match(/^page-note-(.+)-2$/);
+  if (pageBoxMatch) return pageBoxMatch[1];
   const M = {
     'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
     'home-video-1': 'dashboard', 'dashboard-note-2': 'dashboard',
@@ -4889,10 +5096,10 @@ export async function saveContentBlock(slug) {
   btn.textContent = 'Save'; btn.disabled = false;
   st.textContent = '✓ Saved';
   setTimeout(() => { st.textContent = ''; }, 3000);
-  // Push live immediately to any display elements on page
+  // Push live immediately to any display elements on page.
+  // _fillBlockEl also keeps the reusable two-box page template in sync.
   document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => {
-    if (body) { el.innerHTML = _expandBlockTokens(body); el.style.display = ''; }
-    else el.style.display = 'none';
+    _fillBlockEl(el, body);
   });
 }
 
