@@ -378,7 +378,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     // Pages that need an intro card of their own. Pages not listed here
     // (wins / vizlibrary / runthroughs / setup / habits) already get one from
     // injectPlaceholderCards (.ci-ph-card) — don't add a second and duplicate it.
-    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
+    var WANT = ['notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
     if (WANT.indexOf(id) < 0) return;
     if (active.querySelector('.page-intro-card, .ci-ph-card')) return;   // never duplicate an existing intro card
     // entcard draws into a dynamic host — insert BEFORE it so we're not wiped.
