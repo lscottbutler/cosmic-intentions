@@ -376,7 +376,7 @@ export function showPage(id) {
   if (window.self !== window.top) {
     const inlineAction = new URLSearchParams(location.search).get('masterInline');
     const inlinePages = {
-      goals: 'dashboard',
+      goals: 'setup',
       'daily-habits': 'habits',
       'action-plan': 'myroadmap',
       visualization: 'vizlibrary',
@@ -1635,6 +1635,10 @@ async function syncIntentionsFromSupabase() {
         showVaultBuildSheet(selectedVaultIdx);
       }
       renderVaultSidebar();
+      // Keep the dedicated Goals workspace in sync with the same data used by
+      // Roadmap. This matters when Supabase finishes after the inline Goals
+      // destination first renders.
+      renderPBIntentionList();
     }
   } catch(e) {
     console.warn('syncIntentionsFromSupabase failed:', e);
