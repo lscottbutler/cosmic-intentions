@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Cosmic Intentions Dashboard</title>
   <style>
-    :root{color-scheme:light;--frame:#82ad77;--header:#000;--paper:#f2ede7;--deck:#000;--trough-fill:#000;--trough-ink:#fff;--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#82ad77;--header:#000;--paper:#f2ede7;--deck:#000;--trough-fill:#000;--trough-ink:#fff;--frame-border:35px;--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -14,8 +14,8 @@
     .shell{width:100%;border:0;background:transparent;overflow:hidden;transition:min-height .35s ease}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
     .shell.daily-habits-mode .stage{background:#5f645e!important}
-    .cap{position:relative;isolation:isolate;margin:16px 14px 0;padding:29px 18px 28px;background:var(--header);color:var(--trough-ink);text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/58% 58% 3px 3px;transition:background-color .25s ease}
-    .cap::before{content:"";position:absolute;z-index:-1;inset:11px 13px 7px;background:var(--trough-fill);border-radius:50% 50% 3px 3px/62% 62% 3px 3px;pointer-events:none;transition:background-color .25s ease}
+    .cap{position:relative;isolation:isolate;display:grid;place-items:center;min-height:132px;margin:16px 14px 0;padding:35px 42px;background:var(--header);color:var(--trough-ink);text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/58% 58% 3px 3px;transition:background-color .25s ease}
+    .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border);background:var(--trough-fill);border-radius:50% 50% 3px 3px/62% 62% 3px 3px;pointer-events:none;transition:background-color .25s ease}
     .stage{position:relative;margin:0 14px;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
@@ -27,13 +27,13 @@
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
     .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
-    .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:16/9;padding:0;display:grid}
-    .shell.home-mode #homeView{width:100%;min-height:0;align-self:stretch;display:grid}
+    .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:0 var(--frame-border) var(--frame-border);background:var(--header);display:grid}
+    .shell.home-mode #homeView{width:100%;min-height:0;aspect-ratio:16/9;align-self:stretch;display:grid}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
     .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
     .nav[hidden]{display:none}
-    .hamb-lines{display:grid;gap:3px;width:22px}.hamb-lines i{display:block;height:3px;background:currentColor;border-radius:2px}
+    .hamb-lines{display:grid;gap:4.2px;width:30.8px}.hamb-lines i{display:block;height:4.2px;background:currentColor;border-radius:2px}
     .directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .directory button,.launch{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;border:1px solid #bdc1bc;border-radius:8px;background:#fff;color:#202622;padding:11px 14px;text-align:left;font-weight:800;letter-spacing:.45px;cursor:pointer}
     .directory button:hover,.directory button:focus-visible,.launch:hover,.launch:focus-visible{outline:2px solid #1f2724;outline-offset:2px}
@@ -52,11 +52,11 @@
     .shell.lfm-shared-frame-mode .experience-frame{width:calc(100% - 30px);margin:0 15px}
     .experience-copy,.launch{display:none}
     .deck{position:relative;isolation:isolate;margin:0 14px 16px;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 32% 32%;display:grid;transition:background-color .25s ease;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
-    .deck::before{content:"";position:absolute;z-index:-1;inset:10px 12px 12px;background:var(--trough-fill);border-radius:8px 8px 50% 50%/8px 8px 34% 34%;pointer-events:none;transition:background-color .25s ease}
-    .shell.home-mode .deck{min-height:150px;padding:18px 14px 38px;row-gap:14px;align-content:start}
+    .deck::before{content:"";position:absolute;z-index:-1;inset:0 var(--frame-border) var(--frame-border);background:var(--trough-fill);border-radius:8px 8px 50% 50%/8px 8px 34% 34%;pointer-events:none;transition:background-color .25s ease}
+    .shell.home-mode .deck{min-height:225px;padding:24px 48px 66px;row-gap:18px;align-content:start}
     .nav{min-width:0;border:0;background:transparent;color:var(--trough-ink);padding:4px 2px;cursor:pointer;display:grid;justify-items:center;gap:5px}
     .nav:hover,.nav:focus-visible,.nav.active{color:var(--trough-ink);outline:none}
-    .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav svg{width:36.4px;height:36.4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .nav span{font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap}
     .deck.meditation-mode .normal-control{position:absolute;opacity:0;pointer-events:none}
     .deck.meditation-mode{padding-top:31px;padding-bottom:20px}
@@ -93,12 +93,12 @@
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
-      .cap{margin:10px 8px 0;padding:26px 8px;font-size:11px;letter-spacing:1.4px}
+      .cap{min-height:124px;margin:10px 8px 0;padding:35px 38px;font-size:11px;letter-spacing:1.4px}
       .stage{margin:0 8px;padding:22px 14px}
-      .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:16/9}
+      .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:0 var(--frame-border) var(--frame-border)}
       .directory{grid-template-columns:1fr}
       .deck{margin:0 8px 10px;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:3px 3px 50% 50%/3px 3px 32% 32%}
-      .shell.home-mode .deck{min-height:142px;padding:16px 8px 36px;row-gap:12px}
+      .shell.home-mode .deck{min-height:220px;padding:22px 43px 64px;row-gap:16px}
       .nav span{font-size:8px}
     }
     @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}}
