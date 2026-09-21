@@ -22,7 +22,8 @@
     .shell.daily-habits-mode .stage{background:#292929!important}
     .cap{position:relative;isolation:isolate;margin:0;padding:38px 18px 19px;background:var(--header);color:var(--trough-ink);display:grid;place-items:center;text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
-    .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
+    .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .42s ease}
+    .stage.ci-stage-fade-out{opacity:0}
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
@@ -110,7 +111,7 @@
       .shell.home-mode .deck{min-height:317px;padding:22px 10px 113px;column-gap:7px;row-gap:18px}
       .nav span:last-child{font-size:16px;letter-spacing:1px}
     }
-    @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}}
+    @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}.stage.ci-stage-fade-out{opacity:1}}
   </style>
 </head>
 <body>
@@ -392,10 +393,37 @@
         if(experienceMutationObserver){experienceMutationObserver.disconnect();experienceMutationObserver=null}
         if(settleTimer){window.clearTimeout(settleTimer);settleTimer=0}
       }
-      function homeMode(){
+      let stageTransitionId=0;
+      function transitionStage(commit){
+        const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const transitionId=++stageTransitionId;
+        if(reduced){
+          const result=commit();
+          Promise.resolve(result).finally(reportHeight);
+          return;
+        }
+        stage.classList.add('ci-stage-fade-out');
+        window.setTimeout(()=>{
+          if(transitionId!==stageTransitionId)return;
+          let result;
+          try{result=commit()}catch(error){stage.classList.remove('ci-stage-fade-out');throw error}
+          const timeout=new Promise(resolve=>window.setTimeout(resolve,700));
+          Promise.race([Promise.resolve(result),timeout]).finally(()=>{
+            if(transitionId!==stageTransitionId)return;
+            requestAnimationFrame(()=>{
+              requestAnimationFrame(()=>{
+                stage.classList.remove('ci-stage-fade-out');
+                reportHeight();
+              });
+            });
+          });
+        },260);
+      }
+      function applyHomeMode(){
         notifyParentMode('home');
         selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
       }
+      function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
         const scrollTop=view?view.scrollY:0;
@@ -464,9 +492,9 @@
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
         return url.pathname+url.search;
       }
-      function select(action){
+      function applySelection(action){
         if(action==='citadel'){
-          homeMode();
+          applyHomeMode();
           cap.textContent=inspiration.label;
           notifyParentMode('citadel');
           reportHeight();
@@ -491,8 +519,17 @@
         cap.textContent=usesLfmTemplate?inspiration.label:(action==='daily-habits'?'Habits':item[1]);
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
-        experienceFrame.src=destinationUrl(action);show(experience);
+        const nextUrl=destinationUrl(action);
+        const frameReady=new Promise(resolve=>{
+          let settled=false;
+          const done=()=>{if(settled)return;settled=true;resolve()};
+          experienceFrame.addEventListener('load',done,{once:true});
+          window.setTimeout(done,650);
+        });
+        experienceFrame.src=nextUrl;show(experience);
+        return frameReady;
       }
+      function select(action){transitionStage(()=>applySelection(action))}
       function syncMeditationUI(){
         document.querySelectorAll('[data-med-time]').forEach(b=>b.classList.toggle('active',Number(b.dataset.medTime)===meditationMinutes));
         document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
