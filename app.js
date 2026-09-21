@@ -4664,16 +4664,21 @@ function _syncAdminPageBox(contentEl, hasContent) {
 function _buildLiveAdminPageBox(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   const shell = document.createElement('section');
-  shell.className = 'ci-admin-page-box';
+  const isCitadelPrimary = pageId === 'dashboard' && boxNumber === 1;
+  shell.className = 'ci-admin-page-box' + (isCitadelPrimary ? ' ci-admin-page-box--citadel-primary' : '');
   shell.dataset.pageBox = String(boxNumber);
-  shell.innerHTML =
-    '<div class="ci-admin-page-box-ownerbar" data-owner-only>' +
-      '<span>' + label + ' BOX ' + boxNumber + '</span>' +
-      '<button type="button" class="ci-admin-page-box-edit" onclick="adminEditBlock(\'' + slug + '\');event.stopPropagation()" aria-label="Edit ' + label + ' Box ' + boxNumber + '" title="Edit ' + label + ' Box ' + boxNumber + '">' +
-        _adminPenIcon() +
-      '</button>' +
-    '</div>' +
-    '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>';
+  const editButton =
+    '<button type="button" class="ci-admin-page-box-edit" onclick="adminEditBlock(\'' + slug + '\');event.stopPropagation()" aria-label="Edit ' + label + ' Box ' + boxNumber + '" title="Edit ' + label + ' Box ' + boxNumber + '">' +
+      _adminPenIcon() +
+    '</button>';
+  shell.innerHTML = isCitadelPrimary
+    ? '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>' +
+      '<span class="ci-admin-page-box-citadel-edit" data-owner-only>' + editButton + '</span>'
+    : '<div class="ci-admin-page-box-ownerbar" data-owner-only>' +
+        '<span>' + label + ' BOX ' + boxNumber + '</span>' +
+        editButton +
+      '</div>' +
+      '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>';
   const content = shell.querySelector('[data-block]');
   _fillBlockEl(content, _blockCache[slug] || '');
   return shell;
@@ -4805,6 +4810,10 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.4);border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+    .ci-admin-page-box--citadel-primary .ci-admin-page-box-content{padding:15px 18px 52px}
+    .ci-admin-page-box-citadel-edit{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
+    .ci-admin-page-box--citadel-primary.is-owner .ci-admin-page-box-citadel-edit{display:block}
+    .ci-admin-page-box--citadel-primary .ci-admin-page-box-edit{border-color:#111}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
     .ci-admin-page-box.is-empty{border-style:dashed}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
@@ -4819,6 +4828,8 @@ function ensureAdminPageBoxStyles() {
     @media(max-width:700px){
       .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
       .ci-admin-page-box-content{min-height:44px;padding:13px 14px;font-size:14px}
+      .ci-admin-page-box--citadel-primary .ci-admin-page-box-content{padding:13px 14px 56px}
+      .ci-admin-page-box-citadel-edit{right:10px;bottom:10px}
       .ci-admin-page-box-ownerbar{min-height:44px;padding-left:11px}
       .ci-admin-page-box-edit{width:34px;height:34px}
       .ci-page-box-admin-section{padding:12px}
