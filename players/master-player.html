@@ -617,6 +617,8 @@
       document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',()=>select('everything')));
       addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
+      const initialAction=params.get('start');
+      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);
       reportHeight();
       window.setTimeout(reportHeight,120);
       window.setTimeout(reportHeight,600);
