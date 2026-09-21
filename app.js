@@ -4616,6 +4616,7 @@ if (typeof window !== 'undefined') {
   };
 }
 
+/* Preview checkpoint: CI admin page-box template v1. */
 /* ── PERMANENT TWO-BOX ADMIN PAGE TEMPLATE ──────────────────────────────────
    Every member workspace receives two owner-authored content boxes. Box 1 keeps
    the existing intro-note slug so previously written copy is preserved. Box 2
