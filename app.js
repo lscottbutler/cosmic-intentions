@@ -4664,21 +4664,17 @@ function _syncAdminPageBox(contentEl, hasContent) {
 function _buildLiveAdminPageBox(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   const shell = document.createElement('section');
-  const isCitadelPrimary = pageId === 'dashboard' && boxNumber === 1;
-  shell.className = 'ci-admin-page-box' + (isCitadelPrimary ? ' ci-admin-page-box--citadel-primary' : '');
+  shell.className = 'ci-admin-page-box';
   shell.dataset.pageBox = String(boxNumber);
   const editButton =
     '<button type="button" class="ci-admin-page-box-edit" onclick="adminEditBlock(\'' + slug + '\');event.stopPropagation()" aria-label="Edit ' + label + ' Box ' + boxNumber + '" title="Edit ' + label + ' Box ' + boxNumber + '">' +
       _adminPenIcon() +
     '</button>';
-  shell.innerHTML = isCitadelPrimary
-    ? '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>' +
-      '<span class="ci-admin-page-box-citadel-edit" data-owner-only>' + editButton + '</span>'
-    : '<div class="ci-admin-page-box-ownerbar" data-owner-only>' +
-        '<span>' + label + ' BOX ' + boxNumber + '</span>' +
-        editButton +
-      '</div>' +
-      '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>';
+  // Permanent Block 1/2 display template: a clean white content box with no
+  // title strip. Owners get the edit pen inside the lower-right border.
+  shell.innerHTML =
+    '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>' +
+    '<span class="ci-admin-page-box-edit-slot" data-owner-only>' + editButton + '</span>';
   const content = shell.querySelector('[data-block]');
   _fillBlockEl(content, _blockCache[slug] || '');
   return shell;
@@ -4804,18 +4800,13 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
-    .ci-admin-page-box{position:relative;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
-    .ci-admin-page-box-ownerbar{display:none;align-items:center;justify-content:space-between;gap:12px;min-height:38px;padding:6px 7px 6px 13px;background:#151515;color:#fff;font-size:11px;font-weight:900;letter-spacing:.11em}
-    .ci-admin-page-box.is-owner .ci-admin-page-box-ownerbar{display:flex}
-    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.4);border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
-    .ci-admin-page-box-content{min-height:48px;padding:15px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
-    .ci-admin-page-box--citadel-primary .ci-admin-page-box-content{padding:15px 18px 52px}
-    .ci-admin-page-box-citadel-edit{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
-    .ci-admin-page-box--citadel-primary.is-owner .ci-admin-page-box-citadel-edit{display:block}
-    .ci-admin-page-box--citadel-primary .ci-admin-page-box-edit{border-color:#111}
+    .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+    .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
+    .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
-    .ci-admin-page-box.is-empty{border-style:dashed}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
     .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
@@ -4827,10 +4818,8 @@ function ensureAdminPageBoxStyles() {
     .ci-page-box-admin-grid .ib-preview-body *{color:#111!important}
     @media(max-width:700px){
       .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
-      .ci-admin-page-box-content{min-height:44px;padding:13px 14px;font-size:14px}
-      .ci-admin-page-box--citadel-primary .ci-admin-page-box-content{padding:13px 14px 56px}
-      .ci-admin-page-box-citadel-edit{right:10px;bottom:10px}
-      .ci-admin-page-box-ownerbar{min-height:44px;padding-left:11px}
+      .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14px}
+      .ci-admin-page-box-edit-slot{right:10px;bottom:10px}
       .ci-admin-page-box-edit{width:34px;height:34px}
       .ci-page-box-admin-section{padding:12px}
       .ci-page-box-admin-grid{grid-template-columns:1fr}
