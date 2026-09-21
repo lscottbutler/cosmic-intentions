@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Cosmic Intentions Dashboard</title>
   <style>
-    :root{color-scheme:light;--frame:#82ad77;--header:#5f645e;--paper:#f2ede7;--deck:#5f645e;--ink:#1f2724;--muted:#aab1a6;--line:#050706}
+    :root{color-scheme:light;--frame:#82ad77;--header:#000;--paper:#f2ede7;--deck:#000;--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -14,7 +14,7 @@
     .shell{width:100%;border:0;background:transparent;overflow:hidden;transition:min-height .35s ease}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
     .shell.daily-habits-mode .stage{background:#5f645e!important}
-    .cap{margin:16px 14px 0;padding:29px 18px 28px;background:var(--header);color:#dedbd2;text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/30% 30% 3px 3px}
+    .cap{margin:16px 14px 0;padding:29px 18px 28px;background:var(--header);color:#fff;text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/30% 30% 3px 3px}
     .stage{position:relative;margin:0 14px;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
@@ -51,8 +51,8 @@
     .shell.lfm-shared-frame-mode .experience-frame{width:calc(100% - 30px);margin:0 15px}
     .experience-copy,.launch{display:none}
     .deck{position:relative;margin:0 14px 16px;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 32% 32%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
-    .shell.home-mode .deck{padding-bottom:17px}
-    .nav{min-width:0;border:0;background:transparent;color:var(--muted);padding:4px 2px;cursor:pointer;display:grid;justify-items:center;gap:5px}
+    .shell.home-mode .deck{min-height:150px;padding:18px 14px 38px;row-gap:14px;align-content:start}
+    .nav{min-width:0;border:0;background:transparent;color:#fff;padding:4px 2px;cursor:pointer;display:grid;justify-items:center;gap:5px}
     .nav:hover,.nav:focus-visible,.nav.active{color:#fff;outline:none}
     .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .nav span{font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap}
@@ -96,6 +96,7 @@
       .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:16/9}
       .directory{grid-template-columns:1fr}
       .deck{margin:0 8px 10px;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:3px 3px 50% 50%/3px 3px 32% 32%}
+      .shell.home-mode .deck{min-height:142px;padding:16px 8px 36px;row-gap:12px}
       .nav span{font-size:8px}
     }
     @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}}
