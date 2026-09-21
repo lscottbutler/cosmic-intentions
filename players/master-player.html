@@ -15,7 +15,7 @@
     .shell.home-mode{background:var(--header)}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
     .shell.daily-habits-mode .stage{background:#5f645e!important}
-    .cap{position:relative;isolation:isolate;margin:16px 14px 0;padding:29px 18px 28px;background:var(--header);color:var(--trough-ink);text-align:center;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/58% 58% 3px 3px;transition:background-color .25s ease}
+    .cap{position:relative;isolation:isolate;margin:16px 14px 0;padding:29px 18px 28px;background:var(--header);color:var(--trough-ink);text-align:center;font-size:14px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 3px 3px/58% 58% 3px 3px;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 3px 3px/62% 62% 3px 3px;pointer-events:none;transition:background-color .25s ease}
     .stage{position:relative;margin:0 14px;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
     .view{animation:fadeIn .24s ease both}
@@ -96,7 +96,7 @@
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
-      .cap{margin:10px 8px 0;padding:26px 8px;font-size:11px;letter-spacing:1.4px}
+      .cap{margin:10px 8px 0;padding:26px 8px;font-size:11px;letter-spacing:2px}
       .stage{margin:0 8px;padding:22px 14px}
       .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:16/9;padding:0}
       .directory{grid-template-columns:1fr}
@@ -109,7 +109,7 @@
 </head>
 <body>
   <main class="shell home-mode" aria-label="Cosmic Intentions master dashboard">
-    <header class="cap" id="capTitle">Citadel</header>
+    <header class="cap" id="capTitle">Affirmation</header>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration">
@@ -253,6 +253,7 @@
       const shell=document.querySelector('.shell');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
+      cap.textContent=inspiration.label;
       const toolRotation=document.getElementById('lfmToolRotation');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
       const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false;
@@ -390,7 +391,7 @@
       }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent='Citadel';show(home);
+        selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
       }
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
@@ -463,7 +464,7 @@
       function select(action){
         if(action==='citadel'){
           homeMode();
-          cap.textContent='Citadel';
+          cap.textContent=inspiration.label;
           notifyParentMode('citadel');
           reportHeight();
           return;
@@ -484,7 +485,7 @@
         shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
-        cap.textContent=action==='daily-habits'?'Habits':item[1];
+        cap.textContent=usesLfmTemplate?inspiration.label:(action==='daily-habits'?'Habits':item[1]);
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
         experienceFrame.src=destinationUrl(action);show(experience);
