@@ -2076,27 +2076,37 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <p class="pg-intro">Quiet the mind before you begin.</p>
           <div class="pg-2col">
           <div class="pg-2col-main">
-            <!-- MEDITATION TIMER GRID — pick a length; each launches the meditation player. -->
-            <div style="background:var(--teal-ui,#0F9AA0); border-radius:12px; padding:18px 14px 16px; margin-bottom:12px;">
-              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button><button class="dot-fav" data-player="meditation" data-min="1" onclick="favSession('meditation',1,event)" title="Favorite the 1-minute meditation" aria-label="Favorite the 1-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3 Minutes</button><button class="dot-fav" data-player="meditation" data-min="3" onclick="favSession('meditation',3,event)" title="Favorite the 3-minute meditation" aria-label="Favorite the 3-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5 Minutes</button><button class="dot-fav" data-player="meditation" data-min="5" onclick="favSession('meditation',5,event)" title="Favorite the 5-minute meditation" aria-label="Favorite the 5-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10 Minutes</button><button class="dot-fav" data-player="meditation" data-min="10" onclick="favSession('meditation',10,event)" title="Favorite the 10-minute meditation" aria-label="Favorite the 10-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15 Minutes</button><button class="dot-fav" data-player="meditation" data-min="15" onclick="favSession('meditation',15,event)" title="Favorite the 15-minute meditation" aria-label="Favorite the 15-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20 Minutes</button><button class="dot-fav" data-player="meditation" data-min="20" onclick="favSession('meditation',20,event)" title="Favorite the 20-minute meditation" aria-label="Favorite the 20-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30 Minutes</button><button class="dot-fav" data-player="meditation" data-min="30" onclick="favSession('meditation',30,event)" title="Favorite the 30-minute meditation" aria-label="Favorite the 30-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button><button class="dot-fav" data-player="meditation" data-min="45" onclick="favSession('meditation',45,event)" title="Favorite the 45-minute meditation" aria-label="Favorite the 45-minute meditation">&#9825;</button></div>
-              </div>
-            </div>
-            <!-- MEDITATIONS stats -->
-            <div class="med-stats">
-              <div class="med-stats-hd">Meditations</div>
-              <div class="med-stat"><span>This Week</span><b id="medStatWeek">0</b></div>
-              <div class="med-stat"><span>This Month</span><b id="medStatMonth">0</b></div>
-              <div class="med-stat"><span>This Year</span><b id="medStatYear">0</b></div>
-              <div class="med-stat med-stat--streak"><span>Daily Streak</span><b id="medStatStreak">365</b></div>
-            </div>
+            <!-- APPROVED CITADEL MASTER PLAYER — Meditate uses the same locked shell as every LFM destination. -->
+            <section class="ci-meditation-master" aria-label="Cosmic Intentions Meditation Master Player" style="width:100%;margin:0 0 16px;">
+              <iframe id="ciMeditationMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-76&amp;start=meditation" title="Cosmic Intentions Meditation Master Player" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:900px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+            </section>
+            <script>
+              (function () {
+                var frame = document.getElementById('ciMeditationMasterPlayerFrame');
+                if (!frame) return;
+                function applyMeditationMasterHeight(height) {
+                  var nextHeight = Math.max(300, Math.ceil(Number(height)));
+                  if (!Number.isFinite(nextHeight)) return;
+                  frame.style.setProperty('height', nextHeight + 'px', 'important');
+                  frame.style.setProperty('aspect-ratio', 'auto', 'important');
+                }
+                function measureMeditationMaster() {
+                  try {
+                    var shell = frame.contentDocument && frame.contentDocument.querySelector('.shell');
+                    if (shell) applyMeditationMasterHeight(shell.getBoundingClientRect().height);
+                  } catch (_) {}
+                }
+                window.addEventListener('message', function (event) {
+                  if (event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
+                  if (event.data.type === 'ci-lfm-height') applyMeditationMasterHeight(event.data.height);
+                });
+                frame.addEventListener('load', function () {
+                  requestAnimationFrame(measureMeditationMaster);
+                  window.setTimeout(measureMeditationMaster, 150);
+                  window.setTimeout(measureMeditationMaster, 700);
+                });
+              })();
+            </script>
           </div>
           <aside class="pg-2col-side">
             <div class="colb-nav">
