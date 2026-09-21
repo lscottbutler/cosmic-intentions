@@ -6,7 +6,12 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Cosmic Intentions Dashboard</title>
   <style>
-    :root{color-scheme:light;--frame:#82ad77;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--ink:#1f2724;--muted:#fff;--line:#050706}
+    /* APPROVED MASTER PLAYER — LOCKED 2026-09-21
+       Permanent shared shell for all member players.
+       Outer shell: #292929. Title/icon troughs: #747474.
+       Preserve the approved spacing, curves, typography and icon layout.
+       Page-specific content may change; this shared chrome must remain consistent. */
+    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -14,7 +19,7 @@
     .shell{width:100%;border:0;background:transparent;overflow:hidden;transition:min-height .35s ease}
     .shell.home-mode{background:var(--header);padding:0 0 27px}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
-    .shell.daily-habits-mode .stage{background:#5f645e!important}
+    .shell.daily-habits-mode .stage{background:#292929!important}
     .cap{position:relative;isolation:isolate;margin:0;padding:38px 18px 19px;background:var(--header);color:var(--trough-ink);display:grid;place-items:center;text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;transition:min-height .35s ease,padding .35s ease}
@@ -45,12 +50,12 @@
     .experience-frame{display:block;width:100%;height:600px;border:0;background:#fff;border-radius:8px;overflow:hidden;transition:height .3s ease}
     .shell.experience-mode .stage{padding:0}
     .shell.experience-mode .experience-frame{border-radius:0}
-    .shell.lfm-shared-frame-mode{background:var(--frame)}
-    .shell.lfm-shared-frame-mode #experienceView{background:var(--frame);padding-bottom:10px}
+    .shell.lfm-shared-frame-mode{background:var(--header)}
+    .shell.lfm-shared-frame-mode #experienceView{background:var(--header);padding-bottom:17.5px}
     .shell.lfm-shared-frame-mode .stage{margin-left:0;margin-right:0}
-    .shell.lfm-shared-frame-mode .lfm-tool-rotation{padding:10px}
-    .shell.lfm-shared-frame-mode .lfm-tool-rotation .inspiration{background:var(--frame)}
-    .shell.lfm-shared-frame-mode .experience-frame{width:calc(100% - 30px);margin:0 15px}
+    .shell.lfm-shared-frame-mode .lfm-tool-rotation{padding:17.5px;background:var(--header)}
+    .shell.lfm-shared-frame-mode .lfm-tool-rotation .inspiration{background:var(--paper)}
+    .shell.lfm-shared-frame-mode .experience-frame{width:calc(100% - 35px);margin:0 17.5px}
     .experience-copy,.launch{display:none}
     .deck{position:relative;isolation:isolate;margin:0 0 16px;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:3px 3px 50% 50%/3px 3px 32% 32%;display:grid;transition:background-color .25s ease;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .deck::before{content:"";position:absolute;z-index:-1;inset:0 var(--frame-border) var(--frame-bottom-border);background:var(--trough-fill);border-radius:8px 8px 50% 50%/8px 8px 34% 34%;pointer-events:none;transition:background-color .25s ease}
@@ -389,7 +394,7 @@
       }
       function homeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#82ad77');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
+        selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
       }
       function visibleContentHeight(root){
         const view=root.ownerDocument.defaultView;
@@ -480,7 +485,7 @@
         if(usesLfmTemplate)setToolCard(action);
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
-        shell.style.setProperty('--frame',action==='goals'?goalColors[paletteIndex%goalColors.length]:action==='meditation'?'#5f645e':'#82ad77');
+        shell.style.setProperty('--frame','#292929');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
         cap.textContent=usesLfmTemplate?inspiration.label:(action==='daily-habits'?'Habits':item[1]);
