@@ -112,13 +112,13 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
   await page.waitForTimeout(1800);
   await expect(card).toHaveAttribute('alt', /DISCIPLINED/i);
 
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(500);
   const fadeIn = await card.evaluate((el) => ({
     opacity: Number(getComputedStyle(el).opacity),
     duration: getComputedStyle(el).transitionDuration,
   }));
-  expect(fadeIn.opacity).toBeGreaterThan(0.05);
-  expect(fadeIn.opacity).toBeLessThan(0.99);
+  expect(fadeIn.opacity).toBeGreaterThan(0);
+  expect(fadeIn.opacity).toBeLessThan(0.95);
   expect(fadeIn.duration).toBe('3s');
   await expect(stage).toHaveCSS('opacity', '1');
 
