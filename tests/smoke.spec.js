@@ -8,7 +8,7 @@ test.describe('Cosmic Intentions — smoke', () => {
   test('home page loads and titles correctly', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Cosmic Intentions/i);
-    await expect(page.locator('.home-hero h1')).toContainText(/Become who you intend to be/i);
+    await expect(page.locator('#lp1 .hero h1')).toContainText(/Become who you intend to be/i);
   });
 
   test('boots with no real console errors or page crashes', async ({ page }) => {
@@ -41,8 +41,8 @@ test.describe('Cosmic Intentions — smoke', () => {
     await expect(page.locator('#authModal')).toBeVisible();
   });
 
-  test('affirmation slideshow renders on the hero', async ({ page }) => {
+  test('landing-page feature strip renders', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.ent-slideshow-hero')).toBeAttached();
+    await expect(page.locator('#lp1 .pills')).toBeAttached();
   });
 });
