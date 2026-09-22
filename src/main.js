@@ -1,6 +1,5 @@
 import './sentry.js';   // error monitoring — must init first
 import './styles/main.css';
-import './citadel-player-samples.js';
 import * as _shared_api_js from '../shared/api.js';
 import * as _shared_content_bank_js from '../shared/content-bank.js';
 import * as _shared_activity_js from '../shared/activity.js';
