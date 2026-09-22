@@ -130,6 +130,20 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
 });
 
 
+test('Cosmic Library frame height follows its visible workspace', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=cosmic-library&card=0', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+  await waitForCard(page, /QUALITY PEOPLE/i);
+
+  const frame = page.locator('#experienceFrame');
+  await expect.poll(async () => frame.evaluate((el) => {
+    const active = el.contentDocument?.querySelector('.page.active');
+    return active ? Math.abs(el.offsetHeight - active.scrollHeight) : 9999;
+  }), { timeout: 10000 }).toBeLessThanOrEqual(3);
+});
+
 test('Meditate opens with its options menu collapsed', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
