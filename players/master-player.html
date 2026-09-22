@@ -263,7 +263,7 @@
       cap.textContent=inspiration.label;
       const toolRotation=document.getElementById('lfmToolRotation');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
-      const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false;
+      const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
       if(Number.isInteger(requestedCard)){
@@ -400,10 +400,11 @@
       }
       function setMeditationMode(active){
         if(!active)meditationSessionActive=false;
+        meditationMenuOpen=false;
         deck.classList.toggle('meditation-mode',active);
         deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
         shell.classList.toggle('meditation-player-mode',active);
-        meditationMenu.hidden=!active||meditationSessionActive;
+        meditationMenu.hidden=true;
       }
       function notifyParentMode(action){
         try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
@@ -556,7 +557,7 @@
       document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
         const command=button.dataset.medCommand;
         if(command==='back'){homeMode();return}
-        if(command==='menu'){meditationMenu.hidden=!meditationMenu.hidden;reportHeight();return}
+        if(command==='menu'){meditationMenuOpen=!meditationMenuOpen;meditationMenu.hidden=!meditationMenuOpen;reportHeight();return}
         if(command==='toggle'){sendMeditation('toggle');return}
         if(command==='mode'){meditationMode=meditationMode==='guided'?'unguided':'guided';reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);
@@ -593,7 +594,7 @@
         if(sessionActive!==meditationSessionActive){
           meditationSessionActive=sessionActive;
           deck.classList.toggle('meditation-session-active',sessionActive);
-          meditationMenu.hidden=sessionActive;
+          meditationMenu.hidden=sessionActive||!meditationMenuOpen;
           reportHeight();
         }
         const running=data.state==='running';
