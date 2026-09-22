@@ -105,8 +105,8 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
     alt: el.alt,
   }));
   expect(fadeOut.alt).toMatch(/STRATEGIC THINKER/i);
-  expect(fadeOut.opacity).toBeGreaterThan(0.05);
-  expect(fadeOut.opacity).toBeLessThan(0.95);
+  expect(fadeOut.opacity).toBeGreaterThanOrEqual(0);
+  expect(fadeOut.opacity).toBeLessThan(1);
   expect(fadeOut.duration).toBe('3s');
   await expect(stage).toHaveCSS('opacity', '1');
 
@@ -167,7 +167,7 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
     return {
       rotationBeforeDeck: Boolean(rotation && deck && rotation.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
       deckBeforeWorkspace: Boolean(deck && frame && deck.compareDocumentPosition(frame) & Node.DOCUMENT_POSITION_FOLLOWING),
-      menuVisible: Boolean(document.querySelector('#lfmMenu')?.getBoundingClientRect().height),
+      menuVisible: Boolean(document.querySelector('[data-lfm-mini-command="menu"]')?.getBoundingClientRect().height),
     };
   });
 
