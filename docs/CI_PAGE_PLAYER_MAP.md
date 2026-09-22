@@ -59,11 +59,22 @@ These files provide a specific experience inside the master or an approved inlin
 | `players/note-card.html` | Saved-note playback |
 | `players/roadmap.html` | Roadmap playback |
 | `players/art-frame.html` | Automatic art-frame visualization |
-| `players/quote-reveal.html` | Admin review/reference utility |
 
 ### 3. Archived legacy players
 
 Unreferenced prototypes and superseded templates live in `archive/legacy-players/`. They are excluded from the active player vocabulary and must not be linked from member pages.
+
+Archived on 2026-09-22:
+
+- `3min-manifest.html`
+- `countdown.html`
+- `letterbox-template.html`
+- `manifest.html`
+- `quick-spark.html`
+- `viz-editor.html`
+- `viz-player.html`
+- `quote-reveal.html`
+- `citadel-player-samples.js`
 
 ## Permanent rules
 
