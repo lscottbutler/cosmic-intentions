@@ -4076,6 +4076,37 @@ html.master-inline-goals #vaultList .vault-act {
   height: 36px !important;
 }
 
+/* LFM Visualize — match the approved Goals two-column row: goal information
+   on the left and the heart/play/edit control strip on the right. Keep this
+   layout inside the narrow embedded frame instead of stacking the controls. */
+html.master-inline-visualization #vizLibList .vault-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 25%) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+html.master-inline-visualization #vizLibList .vault-row > .vault-item {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+html.master-inline-visualization #vizLibList .vault-row > .vault-actions {
+  width: 100% !important;
+  min-width: 132px !important;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  gap: 6px !important;
+  background: #e6e8ec !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+html.master-inline-visualization #vizLibList .vault-act {
+  width: 36px !important;
+  height: 36px !important;
+}
+
 
 /* ── EXPANDABLE LFM TOOL TEMPLATE ───────────────────────────
    Goals, Favorites, Thoughts, Journal, Roadmap, Gratitude and Wins contribute
