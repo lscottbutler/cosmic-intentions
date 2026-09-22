@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3-Min Viz · Timeline Editor</title>
+  <style>
+    :root { --red:#e02020; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#141414; color:#eee; font-family:'Arial Narrow','Roboto Condensed',system-ui,sans-serif; }
+    .wrap { max-width: 1100px; margin:0 auto; padding:18px; display:grid; grid-template-columns:1fr 360px; gap:18px; }
+    @media(max-width:900px){ .wrap{ grid-template-columns:1fr; } }
+    h1 { font-size:20px; letter-spacing:2px; text-transform:uppercase; margin:0; }
+    .sub { color:#888; font-size:12px; margin:2px 0 14px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; align-items:center; }
+    .btn { background:#1f1f1f; border:1px solid #3a3a3a; color:#eee; border-radius:6px; padding:8px 12px; font-size:13px; cursor:pointer; }
+    .btn:hover{ background:#2a2a2a; }
+    .btn.red{ background:var(--red); border-color:var(--red); color:#fff; font-weight:700; }
+    .btn.ghost{ background:#000; }
+    select, input { background:#0d0d0d; color:#eee; border:1px solid #333; border-radius:5px; padding:7px 8px; font-size:13px; }
+    input[type=number]{ width:64px; text-align:center; }
+    .voice-row{ display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#aaa; font-size:12px; }
+
+    .rows { display:flex; flex-direction:column; gap:8px; }
+    .row { display:grid; grid-template-columns: 118px 70px 70px 1fr auto; gap:8px; align-items:center;
+           background:#1c1c1c; border:1px solid #333; border-left:4px solid #555; border-radius:8px; padding:8px 10px; }
+    .row.vo{ border-left-color:#e02020; } .row.fade{ border-left-color:#3a86ff; }
+    .row.hold{ border-left-color:#8a8a8a; } .row.bell{ border-left-color:#ffbe0b; }
+    .row.image{ border-left-color:#3ddc84; }
+    .row .thumb{ height:42px; border-radius:4px; border:1px solid #333; }
+    .row .type { font-weight:700; }
+    .row .clock { color:#888; font-size:11px; }
+    .row .detail { display:flex; gap:6px; align-items:center; }
+    .row .detail input[type=text]{ flex:1 1 auto; width:100%; }
+    .row .ops { display:flex; gap:4px; }
+    .row .ops button{ background:none;border:none;color:#999;cursor:pointer;font-size:15px;padding:2px 5px; }
+    .row .ops button:hover{ color:#fff; }
+    .lbl { font-size:9px; color:#777; text-transform:uppercase; letter-spacing:1px; display:block; }
+    .warn { color:#ff6b6b; font-size:12px; min-height:16px; margin-top:8px; }
+
+    .side { position:sticky; top:18px; align-self:start; }
+    .side h2 { font-size:13px; letter-spacing:2px; text-transform:uppercase; color:#aaa; margin:0 0 8px; }
+    iframe { width:100%; aspect-ratio:5/6; border:0; background:#000; border-radius:8px; }
+    textarea { width:100%; height:120px; background:#0d0d0d; color:#bbb; border:1px solid #333; border-radius:6px; font-size:11px; padding:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div>
+      <h1>3-Min Viz · Timeline Editor</h1>
+      <p class="sub">Time out every element of the 3-minute visualization. Session length = <b>180s (3:00)</b>. Saved locally → drives the player. <b>{GOAL}</b> in VO text is replaced with the user's goal.</p>
+
+      <div class="voice-row">VOICE
+        <select id="voice">
+          <option>shimmer</option><option>nova</option><option>alloy</option>
+          <option>echo</option><option>fable</option><option>onyx</option>
+        </select>
+        <span style="margin-left:auto;color:#666;">3:00 total</span>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn" id="addImg">+ Image</button>
+        <button class="btn" data-add="vo">+ VO</button>
+        <button class="btn" data-add="fade">+ Fade</button>
+        <button class="btn" data-add="hold">+ Hold</button>
+        <button class="btn" data-add="bell">+ Bell</button>
+        <span style="flex:1"></span>
+        <button class="btn ghost" id="clear">Clear</button>
+        <button class="btn ghost" id="defaults">Defaults</button>
+        <button class="btn red" id="save">Save</button>
+      </div>
+      <input type="file" id="imgFile" accept="image/*" multiple style="display:none">
+      <input type="file" id="imgReplace" accept="image/*" style="display:none">
+
+      <div class="rows" id="rows"></div>
+      <div class="warn" id="warn"></div>
+    </div>
+
+    <div class="side">
+      <h2>Preview</h2>
+      <button class="btn red" id="preview" style="width:100%;margin-bottom:8px;">▶ Save &amp; Preview</button>
+      <iframe id="frame" title="preview"></iframe>
+      <h2 style="margin-top:16px;">Scene JSON</h2>
+      <textarea id="json" spellcheck="false"></textarea>
+      <button class="btn" id="applyJson" style="width:100%;margin-top:6px;">Apply JSON</button>
+    </div>
+  </div>
+
+  <script>
+    const SCENE_KEY = 'ci_viz_scene';
+    const DEFAULT = {
+      settings: { voice: 'shimmer' },
+      events: [
+        { type:'vo',   start:0,   dur:6, text:'Close your eyes. For the next few minutes, your only job is to see what you want as if it is already yours.' },
+        { type:'vo',   start:8,   dur:6, text:'Take a slow breath in... and let it go. With each breath, let your body soften and sink down.' },
+        { type:'vo',   start:20,  dur:5, text:'One more deep breath in. And out. Feel yourself dropping into a calm, focused state.' },
+        { type:'vo',   start:34,  dur:6, text:'Picture it now, already real. {GOAL}.' },
+        { type:'vo',   start:76,  dur:7, text:'Step inside the picture. Feel it on your skin, hear the sounds around you. Notice how good it feels to be here.' },
+        { type:'vo',   start:118, dur:6, text:'This is yours. Feel the gratitude of already having it. Say silently to yourself: this is who I am.' },
+        { type:'vo',   start:158, dur:6, text:'Hold that feeling. Slowly begin to return. When you are ready, open your eyes, and carry it with you.' },
+      ],
+    };
+    const TOTAL = 180;
+    const mmss = (s) => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+    let scene;
+    function load() {
+      try { scene = JSON.parse(localStorage.getItem(SCENE_KEY)); } catch (e) { scene = null; }
+      if (!scene || !Array.isArray(scene.events)) scene = JSON.parse(JSON.stringify(DEFAULT));
+      if (!scene.settings) scene.settings = { voice:'shimmer' };
+    }
+
+    const rowsEl = document.getElementById('rows');
+    const warnEl = document.getElementById('warn');
+    const voiceEl = document.getElementById('voice');
+    const jsonEl = document.getElementById('json');
+
+    function detailFields(ev, i) {
+      if (ev.type === 'image')
+        return (ev.image ? `<img class="thumb" src="${ev.image}">` : `<span style="color:#888;font-size:12px;">no image</span>`) +
+          `<button class="btn" data-replace="${i}" style="padding:5px 10px;font-size:12px;">${ev.image?'replace':'pick image'}</button>`;
+      if (ev.type === 'vo')
+        return `<input type="text" data-i="${i}" data-k="text" placeholder="What is spoken (use {GOAL})" value="${(ev.text||'').replace(/"/g,'&quot;')}">`;
+      if (ev.type === 'fade')
+        return `<select data-i="${i}" data-k="to">
+            <option value="black"${ev.to==='black'?' selected':''}>fade → black</option>
+            <option value="reveal"${ev.to==='reveal'?' selected':''}>fade → reveal (clear)</option>
+            <option value="image"${ev.to==='image'?' selected':''}>crossfade → image</option>
+          </select>
+          <input type="text" data-i="${i}" data-k="image" placeholder="image URL (for crossfade)" value="${(ev.image||'').replace(/"/g,'&quot;')}" style="${ev.to==='image'?'':'display:none'}">`;
+      if (ev.type === 'hold')
+        return `<span style="color:#888;font-size:12px;">silence — let them breathe</span>`;
+      if (ev.type === 'bell')
+        return `<span style="color:#888;font-size:12px;">bell / chime</span>`;
+      return '';
+    }
+
+    function render() {
+      voiceEl.value = scene.settings.voice || 'shimmer';
+      rowsEl.innerHTML = '';
+      scene.events.forEach((ev, i) => {
+        const row = document.createElement('div');
+        row.className = 'row ' + ev.type;
+        row.innerHTML =
+          `<div><span class="type">${ev.type.toUpperCase()}</span><span class="clock"> ${mmss(ev.start)}</span></div>
+           <div><span class="lbl">start s</span><input type="number" min="0" max="${TOTAL}" data-i="${i}" data-k="start" value="${ev.start}"></div>
+           <div><span class="lbl">len s</span><input type="number" min="0" max="${TOTAL}" data-i="${i}" data-k="dur" value="${ev.dur||0}"></div>
+           <div class="detail">${detailFields(ev, i)}</div>
+           <div class="ops">
+             <button data-up="${i}" title="up">▲</button>
+             <button data-down="${i}" title="down">▼</button>
+             <button data-del="${i}" title="delete">🗑</button>
+           </div>`;
+        rowsEl.appendChild(row);
+      });
+      jsonEl.value = JSON.stringify(scene, null, 2);
+      validate();
+    }
+
+    function validate() {
+      const bad = scene.events.filter(e => e.start >= TOTAL);
+      warnEl.textContent = bad.length ? `⚠ ${bad.length} element(s) start at/after ${TOTAL}s and won't fire.` : '';
+    }
+
+    // edits
+    rowsEl.addEventListener('input', (e) => {
+      const t = e.target; const i = +t.dataset.i; const k = t.dataset.k;
+      if (i == null || !k) return;
+      let v = t.value;
+      if (k === 'start' || k === 'dur') v = Number(v) || 0;
+      scene.events[i][k] = v;
+      if (k === 'start') { const r = t.closest('.row'); r.querySelector('.clock').textContent = ' ' + mmss(v); }
+      if (k === 'to') render();            // toggle image field
+      jsonEl.value = JSON.stringify(scene, null, 2);
+      validate();
+    });
+    let _replaceIdx = -1;
+    rowsEl.addEventListener('click', (e) => {
+      const up = e.target.dataset.up, dn = e.target.dataset.down, del = e.target.dataset.del, rep = e.target.dataset.replace;
+      if (up != null) { const i=+up; if(i>0){ [scene.events[i-1],scene.events[i]]=[scene.events[i],scene.events[i-1]]; render(); } }
+      else if (dn != null) { const i=+dn; if(i<scene.events.length-1){ [scene.events[i+1],scene.events[i]]=[scene.events[i],scene.events[i+1]]; render(); } }
+      else if (del != null) { scene.events.splice(+del,1); render(); }
+      else if (rep != null) { _replaceIdx = +rep; document.getElementById('imgReplace').click(); }
+    });
+
+    /* downscale an image file to a compact data URL so the scene saves cleanly */
+    function loadImageScaled(file, maxW = 1280) {
+      return new Promise(res => {
+        const img = new Image(), url = URL.createObjectURL(file);
+        img.onload = () => {
+          const sc = Math.min(1, maxW / img.width), w = Math.round(img.width*sc), h = Math.round(img.height*sc);
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); res(''); };
+        img.src = url;
+      });
+    }
+    function nextStart() { const last = scene.events[scene.events.length-1]; return last ? Math.min(TOTAL-1, (last.start||0)+4) : 0; }
+
+    // + Image → pick one or many; each becomes a slide 4s apart
+    document.getElementById('addImg').addEventListener('click', () => document.getElementById('imgFile').click());
+    document.getElementById('imgFile').addEventListener('change', async (e) => {
+      let start = nextStart();
+      for (const f of e.target.files) {
+        const data = await loadImageScaled(f);
+        if (data) { scene.events.push({ type:'image', start, dur:4, image:data }); start = Math.min(TOTAL-1, start+4); }
+      }
+      e.target.value = ''; render(); flash('Images added ✓');
+    });
+    document.getElementById('imgReplace').addEventListener('change', async (e) => {
+      if (_replaceIdx < 0 || !e.target.files[0]) return;
+      const data = await loadImageScaled(e.target.files[0]);
+      if (data) { scene.events[_replaceIdx].image = data; render(); }
+      _replaceIdx = -1; e.target.value = '';
+    });
+    voiceEl.addEventListener('change', () => { scene.settings.voice = voiceEl.value; jsonEl.value = JSON.stringify(scene,null,2); });
+
+    document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+      const type = b.dataset.add;
+      const last = scene.events[scene.events.length-1];
+      const start = last ? Math.min(TOTAL-2, (last.start||0)+10) : 0;
+      const base = { vo:{text:''}, fade:{to:'black'}, hold:{}, bell:{} }[type];
+      scene.events.push({ type, start, dur: type==='bell'?0:(type==='hold'?10:4), ...base });
+      render();
+    }));
+
+    document.getElementById('clear').addEventListener('click', () => {
+      if (confirm('Clear the timeline to a blank slate?')) { scene.events = []; render(); }
+    });
+    document.getElementById('defaults').addEventListener('click', () => {
+      if (confirm('Load the default 7 VO lines?')) { scene = JSON.parse(JSON.stringify(DEFAULT)); render(); }
+    });
+    function save() {
+      scene.settings.voice = voiceEl.value;
+      localStorage.setItem(SCENE_KEY, JSON.stringify(scene));
+    }
+    document.getElementById('save').addEventListener('click', () => { save(); flash('Saved ✓'); });
+    document.getElementById('applyJson').addEventListener('click', () => {
+      try { const s = JSON.parse(jsonEl.value); if (!Array.isArray(s.events)) throw 0; scene = s; render(); flash('Applied'); }
+      catch (e) { flash('Invalid JSON', true); }
+    });
+    document.getElementById('preview').addEventListener('click', () => {
+      save();
+      if (!localStorage.getItem('ci_goal_title')) localStorage.setItem('ci_goal_title', 'I am living my vision');
+      document.getElementById('frame').src = 'manifest.html?_=' + Date.now();
+    });
+    function flash(msg, bad) { warnEl.style.color = bad?'#ff6b6b':'#7CFC9B'; warnEl.textContent = msg; setTimeout(()=>{ warnEl.style.color='#ff6b6b'; validate(); }, 1800); }
+
+    load(); render();
+  </script>
+</body>
+</html>
