@@ -11,6 +11,7 @@ const CORE_DESTINATIONS = [
   { action: 'visualization', label: 'Visualize', card: /OUTSIDE BOX/i },
   { action: 'gratitude', label: 'Gratitude', card: /EMPATHETIC/i },
   { action: 'wins', label: 'Wins', card: /SELF CONFIDENT/i },
+  { action: 'cosmic-library', label: 'Cosmic Library', card: /QUALITY PEOPLE/i },
 ];
 
 async function waitForCard(page, expectedCard = /STRATEGIC THINKER/i) {
