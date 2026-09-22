@@ -142,6 +142,14 @@ test('Cosmic Library frame height follows its visible workspace', async ({ page 
     const active = el.contentDocument?.querySelector('.page.active');
     return active ? Math.abs(el.offsetHeight - active.scrollHeight) : 9999;
   }), { timeout: 10000 }).toBeLessThanOrEqual(3);
+
+  const duplicateBoxesHidden = await frame.evaluate((el) => {
+    const doc = el.contentDocument;
+    if (!doc) return false;
+    return [...doc.querySelectorAll('.page-intro-card, .ci-admin-page-box-stack')]
+      .every((node) => getComputedStyle(node).display === 'none');
+  });
+  expect(duplicateBoxesHidden).toBe(true);
 });
 
 test('Meditate opens with its options menu collapsed', async ({ page }) => {

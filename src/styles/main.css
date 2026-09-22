@@ -3812,6 +3812,12 @@ html.master-inline-mode .pg-hdr,
 html.master-inline-mode .wins-hdr {
   display: none !important;
 }
+/* Page-level administrator boxes live outside the Master Player. Never repeat
+   them or the retired generic guide card inside an embedded workspace. */
+html.master-inline-mode .page-intro-card,
+html.master-inline-mode .ci-admin-page-box-stack {
+  display: none !important;
+}
 html.master-inline-mode .pg-2col,
 html.master-inline-mode .vault-layout {
   display: block !important;
