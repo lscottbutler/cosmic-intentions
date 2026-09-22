@@ -41,6 +41,20 @@ It owns:
 - responsive height reporting;
 - direct startup modes such as `?start=meditation`.
 
+### Locked eight-destination regression set
+
+The permanent Master Player shell is verified on these eight original shared workspaces: **Goals, Favorites, Thoughts, Journal, Roadmap, Visualize, Gratitude, and Wins**.
+
+Every destination must preserve:
+
+- outer frame `#292929`;
+- title and icon troughs `#747474`;
+- a true 16:9 card with zero gaps on every side;
+- exactly 3 seconds fading the old card out, followed by exactly 3 seconds fading the new card in;
+- full opacity on the title, frame, workspace, borders, and controls throughout the card transition.
+
+These requirements are enforced in `tests/master-player.spec.js`.
+
 ### 2. Active content engines
 
 These files provide a specific experience inside the master or an approved inline launcher. They are not alternate shells:
