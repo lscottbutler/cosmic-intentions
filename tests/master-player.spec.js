@@ -127,3 +127,18 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
     timeout: 4000,
   }).toBeGreaterThan(0.99);
 });
+
+
+test('Meditate opens with its menu collapsed and opens on request', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=meditation', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+
+  const menu = page.locator('#meditationMenu');
+  await expect(menu).toBeHidden();
+  await page.locator('.med-controls [data-lfm-mini-command="menu"]').click();
+  await expect(menu).toBeVisible();
+  await page.waitForTimeout(500);
+  await expect(menu).toBeVisible();
+});
