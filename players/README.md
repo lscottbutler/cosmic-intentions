@@ -20,12 +20,13 @@ This directory contains the approved Cosmic Intentions player system.
 - `note-card.html`
 - `roadmap.html`
 - `art-frame.html`
-- `quote-reveal.html`
 
 These engines provide specialized content. They do not replace the Master Player frame, title trough, icon trough, navigation, sizing, or transitions.
 
 ## Source-of-truth rule
 
 All shared visual corrections belong in `master-player.html`. Do not copy its shell CSS into an engine or create another page-specific player frame.
+
+Retired prototypes and the old Admin sample loader are preserved in `archive/legacy-players/`.
 
 See `docs/CI_PAGE_PLAYER_MAP.md` for the canonical member page names, internal IDs, actions, and cleanup rules.
