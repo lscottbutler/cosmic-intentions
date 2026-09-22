@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letterbox Frame | Cosmic Intentions</title>
+  <style>
+    :root {
+      /* ───────────────────────────────────────────────────────────────
+         SWAP YOUR IMAGE HERE — change just this one line.
+         Use any landscape image; it is cropped to fill (cover).
+         ─────────────────────────────────────────────────────────────── */
+      --bg-image: url('../images/trough/trough005.jpg');
+
+      /* Frame look (tweak if you want) */
+      --frame-green:  #5f9e3e;             /* the green border + badge ring  */
+      --frame-width:  16px;                /* border thickness                */
+      --frame-ratio:  16 / 9;              /* letterbox aspect ratio          */
+      --badge-fill:   rgba(26,44,30,0.62); /* dark translucent badge centre   */
+      --badge-text:   #ffffff;             /* the number colour               */
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Roboto Condensed', system-ui, sans-serif;
+    }
+
+    /* The letterbox frame: green border, image behind it (cover) */
+    .lb-frame {
+      position: relative;
+      width: min(95vw, 1100px);
+      aspect-ratio: var(--frame-ratio);
+      border: var(--frame-width) solid var(--frame-green);
+      box-sizing: border-box;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-color: #000;
+      /* thin dark line on the very outer edge, like the reference */
+      outline: 2px solid #2c3b1c;
+    }
+
+    /* Numbered badge — green ring, dark translucent centre, near the bottom */
+    .lb-badge {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: var(--badge-fill);
+      border: 6px solid var(--frame-green);
+      color: var(--badge-text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.7rem;
+      font-weight: 700;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="lb-frame">
+    <!-- Change the number here -->
+    <div class="lb-badge">15</div>
+  </div>
+</body>
+</html>
