@@ -2,9 +2,20 @@ import { test, expect } from '@playwright/test';
 
 const PLAYER = '/players/master-player.html?start=goals&card=0';
 
-async function waitForCard(page) {
+const CORE_DESTINATIONS = [
+  { action: 'goals', label: 'Goals', card: /STRATEGIC THINKER/i },
+  { action: 'favorites', label: 'Favorites', card: /MANAGING TIME WISELY/i },
+  { action: 'thoughts', label: 'Thoughts', card: /SKILLFUL COMMUNICATOR/i },
+  { action: 'journal', label: 'Journal', card: /GOOD LISTENER/i },
+  { action: 'action-plan', label: 'Action Plan', card: /METICULOUS PLANNER/i },
+  { action: 'visualization', label: 'Visualize', card: /OUTSIDE BOX/i },
+  { action: 'gratitude', label: 'Gratitude', card: /EMPATHETIC/i },
+  { action: 'wins', label: 'Wins', card: /SELF CONFIDENT/i },
+];
+
+async function waitForCard(page, expectedCard = /STRATEGIC THINKER/i) {
   const card = page.locator('#toolInspirationCard');
-  await expect(card).toHaveAttribute('src', /ENT%20STRATEGIC%20THINKER\.PNG/i, { timeout: 5000 });
+  await expect(card).toHaveAttribute('alt', expectedCard, { timeout: 5000 });
   await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
     timeout: 7000,
   }).toBeGreaterThan(0.99);
@@ -37,6 +48,44 @@ for (const viewport of [
 
     expect(geometry.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of Object.values(geometry.gaps)) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
+  });
+}
+
+
+for (const destination of CORE_DESTINATIONS) {
+  test(`locked Master Player shell is consistent on ${destination.label}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/players/master-player.html?start=${destination.action}&card=0`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 15000,
+    });
+    const card = await waitForCard(page, destination.card);
+
+    const state = await page.evaluate(() => {
+      const shell = document.querySelector('.shell');
+      const frame = document.querySelector('#toolDailyInspiration').getBoundingClientRect();
+      const image = document.querySelector('#toolInspirationCard').getBoundingClientRect();
+      const style = getComputedStyle(shell);
+      return {
+        classes: [...shell.classList],
+        frameColor: style.getPropertyValue('--header').trim(),
+        troughColor: style.getPropertyValue('--trough-fill').trim(),
+        ratio: image.width / image.height,
+        gaps: [
+          image.left - frame.left,
+          frame.right - image.right,
+          image.top - frame.top,
+          frame.bottom - image.bottom,
+        ],
+      };
+    });
+
+    expect(state.classes).toContain('lfm-shared-frame-mode');
+    expect(state.frameColor).toBe('#292929');
+    expect(state.troughColor).toBe('#747474');
+    expect(state.ratio).toBeCloseTo(16 / 9, 3);
+    for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
+    await expect(card).toHaveCSS('transition-duration', '3s');
   });
 }
 
