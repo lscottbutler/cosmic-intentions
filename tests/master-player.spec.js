@@ -18,7 +18,7 @@ for (const viewport of [
 ]) {
   test(`Master Player card fills its 16:9 frame — ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await page.goto(PLAYER);
+    await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
     await waitForCard(page);
 
     const geometry = await page.evaluate(() => {
@@ -41,7 +41,7 @@ for (const viewport of [
 }
 
 test('player change fades only the card for 3 seconds out and 3 seconds in', async ({ page }) => {
-  await page.goto(PLAYER);
+  await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
   const card = await waitForCard(page);
   const stage = page.locator('#stage');
   const next = page.getByRole('button', { name: /Next/i });
