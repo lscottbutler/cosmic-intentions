@@ -263,6 +263,13 @@
       cap.textContent=inspiration.label;
       const toolRotation=document.getElementById('lfmToolRotation');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
+      function dockDeck(insideExperience){
+        if(insideExperience){
+          if(deck.parentElement!==experience||deck.nextElementSibling!==experienceFrame)experience.insertBefore(deck,experienceFrame);
+        }else if(deck.parentElement!==shell||deck.previousElementSibling!==stage){
+          stage.insertAdjacentElement('afterend',deck);
+        }
+      }
       const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
@@ -422,7 +429,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
+        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -502,10 +509,11 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';shell.classList.remove('lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';dockDeck(false);shell.classList.remove('lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         const usesLfmTemplate=lfmTemplateActions.has(action);
+        dockDeck(usesLfmTemplate);
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);

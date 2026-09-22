@@ -152,6 +152,30 @@ test('Cosmic Library frame height follows its visible workspace', async ({ page 
   expect(duplicateBoxesHidden).toBe(true);
 });
 
+test('long workspaces keep the navigation trough directly below the 16:9 card', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/players/master-player.html?start=action-plan&card=0', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+  await waitForCard(page, /METICULOUS PLANNER/i);
+
+  const order = await page.evaluate(() => {
+    const rotation = document.querySelector('#lfmToolRotation');
+    const deck = document.querySelector('.deck');
+    const frame = document.querySelector('#experienceFrame');
+    return {
+      rotationBeforeDeck: Boolean(rotation && deck && rotation.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
+      deckBeforeWorkspace: Boolean(deck && frame && deck.compareDocumentPosition(frame) & Node.DOCUMENT_POSITION_FOLLOWING),
+      menuVisible: Boolean(document.querySelector('#lfmMenu')?.getBoundingClientRect().height),
+    };
+  });
+
+  expect(order.rotationBeforeDeck).toBe(true);
+  expect(order.deckBeforeWorkspace).toBe(true);
+  expect(order.menuVisible).toBe(true);
+});
+
 test('Meditate opens with its options menu collapsed', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
