@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Quick Spark | Cosmic Intentions</title>
+  <script>
+    (function(){var t='dark';try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('ci_theme')||'dark'}catch(e){}document.documentElement.dataset.theme=t})();
+  </script>
+  <style>
+    :root{--ink:#f8f5ee;--muted:#c9c4b9;--panel:#121714;--accent:#88ad7b;--teal:#087d91;--gold:#e6bd45;--line:rgba(255,255,255,.18);--shadow:rgba(0,0,0,.48)}
+    [data-theme="light"]{--ink:#18201c;--muted:#59645e;--panel:#f4f0e7;--line:rgba(0,0,0,.16);--shadow:rgba(30,45,36,.2)}
+    [data-theme="kids"]{--ink:#241742;--muted:#574873;--panel:#fff4dc;--accent:#8cc778;--teal:#087f9a;--gold:#f3bf21;--line:rgba(36,23,66,.15);--shadow:rgba(66,38,95,.25)}
+    *{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#090c0b;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+    button{font:inherit}.player{position:relative;height:100%;min-height:520px;display:grid;place-items:center;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));isolation:isolate}
+    .ambient{position:absolute;inset:-8%;z-index:-3;background:radial-gradient(circle at 22% 18%,rgba(8,125,145,.55),transparent 38%),radial-gradient(circle at 78% 74%,rgba(136,173,123,.42),transparent 42%),linear-gradient(135deg,#081113,#17130d);transform:scale(1.06);animation:breathe 14s ease-in-out infinite alternate}
+    .ambient:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.55))}
+    .shell{width:min(1040px,100%);height:min(720px,94vh);display:grid;grid-template-rows:1fr auto;border:1px solid var(--line);border-radius:30px;overflow:hidden;background:rgba(10,14,12,.58);box-shadow:0 28px 80px var(--shadow);backdrop-filter:blur(18px)}
+    .stage{position:relative;display:grid;place-items:center;overflow:hidden;background:var(--panel)}
+    .hero{position:absolute;inset:0;background-position:center;background-size:cover;opacity:.72;transform:scale(1.03);transition:opacity 1s ease,transform 12s ease}.hero.has-image:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.66))}
+    .hero.running{transform:scale(1.1)}.veil{position:absolute;inset:0;background:radial-gradient(circle at center,transparent 10%,rgba(0,0,0,.44) 90%)}
+    .content{position:relative;z-index:2;width:min(790px,88%);text-align:center;text-wrap:balance}.eyebrow{margin:0 0 18px;color:var(--accent);font-size:clamp(.72rem,1.5vw,.9rem);font-weight:800;letter-spacing:.28em;text-transform:uppercase}
+    h1{margin:0;font-family:"Roboto Condensed",Impact,sans-serif;font-size:clamp(2.4rem,7vw,5.8rem);font-weight:750;line-height:.95;letter-spacing:.025em;text-transform:uppercase;text-shadow:0 5px 28px rgba(0,0,0,.5)}
+    .prompt{min-height:3.2em;margin:22px auto 0;max-width:720px;color:#fff;font-family:Georgia,serif;font-size:clamp(1.15rem,3vw,2rem);line-height:1.4;text-shadow:0 3px 18px #000;opacity:0;transform:translateY(12px);transition:.7s ease}.prompt.show{opacity:1;transform:none}
+    .brand{display:inline-flex;align-items:center;gap:10px}.star{color:var(--gold)}
+    .rail{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:15px 18px;background:rgba(16,21,18,.96);border-top:1px solid var(--line)}
+    .controls{display:flex;gap:8px}.icon{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;background:transparent;color:var(--ink);cursor:pointer;transition:.2s}.icon:hover,.icon:focus-visible{border-color:var(--accent);color:var(--accent);outline:none;transform:translateY(-1px)}
+    .play{width:50px;height:50px;background:var(--ink);color:#111;border-color:transparent}.progress-wrap{display:grid;gap:7px}.progress{height:5px;border-radius:10px;background:rgba(255,255,255,.16);overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--accent),var(--gold));transition:width .15s linear}.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.durations{display:flex;gap:6px}.duration{border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:transparent;color:var(--muted);cursor:pointer;font-size:.75rem}.duration.active{background:var(--accent);border-color:var(--accent);color:#101710;font-weight:800}
+    .close{position:absolute;z-index:6;top:18px;right:18px}.info{position:absolute;z-index:6;top:18px;left:18px;font-family:Georgia,serif;font-weight:700;font-size:1.05rem}
+    .modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.72);opacity:0;pointer-events:none;transition:.25s}.modal.open{opacity:1;pointer-events:auto}.card{width:min(520px,100%);border:1px solid var(--line);border-radius:24px;padding:30px;background:#121714;color:#fff;box-shadow:0 30px 80px #000}.card h2{margin:0 0 10px;font-size:1.7rem}.card p{color:#cbcfc9;line-height:1.55}.card ul{padding-left:20px;color:#e5e6e3;line-height:1.7}.primary{width:100%;border:0;border-radius:999px;padding:14px 18px;background:var(--accent);color:#101710;font-weight:850;cursor:pointer}.safety{font-size:.78rem!important;color:#9fa69e!important}
+    .complete h1{font-size:clamp(2.1rem,6vw,4.9rem)}.complete .prompt{opacity:1;transform:none}.hidden{display:none!important}
+    @keyframes breathe{to{transform:scale(1.14) rotate(.5deg)}}
+    @media(max-width:640px){.player{padding:0}.shell{height:100%;border:0;border-radius:0}.rail{grid-template-columns:1fr auto}.progress-wrap{grid-column:1/-1;grid-row:1}.controls{grid-row:2}.durations{grid-row:2}.duration{padding:7px 9px}.close,.info{top:max(14px,env(safe-area-inset-top))}h1{font-size:clamp(2.2rem,13vw,4.6rem)}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}.hero{transform:none!important}}
+  </style>
+</head>
+<body>
+  <main class="player" aria-label="Quick Spark visualization player">
+    <div class="ambient"></div>
+    <section class="shell">
+      <div class="stage" id="stage">
+        <div class="hero" id="hero"></div><div class="veil"></div>
+        <button class="icon info" id="info" aria-label="Instructions">i</button>
+        <button class="icon close" id="close" aria-label="Close">×</button>
+        <div class="content" id="content" aria-live="polite">
+          <p class="eyebrow" id="eyebrow"><span class="brand"><span class="star">✦</span> Cosmic Intentions</span></p>
+          <h1 id="title">Quick Spark</h1>
+          <p class="prompt" id="prompt"></p>
+        </div>
+      </div>
+      <footer class="rail">
+        <div class="controls">
+          <button class="icon play" id="play" aria-label="Play">▶</button>
+          <button class="icon" id="sound" aria-label="Sound off">♩</button>
+          <button class="icon" id="restart" aria-label="Restart">↻</button>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div></div>
+          <div class="meta"><span id="phase">Ready</span><span id="clock">0:30</span></div>
+        </div>
+        <div class="durations" aria-label="Duration">
+          <button class="duration" data-seconds="15">15s</button><button class="duration active" data-seconds="30">30s</button><button class="duration" data-seconds="60">60s</button>
+        </div>
+      </footer>
+    </section>
+  </main>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="card">
+      <h2 id="helpTitle">A small pause with purpose.</h2>
+      <p>Quick Spark gives one intention your full attention for 15, 30, or 60 seconds.</p>
+      <ul><li>Keep your eyes open.</li><li>Let the image and feeling become present.</li><li>Carry that feeling into what you do next.</li></ul>
+      <p class="safety">Use only when safely stopped—never while driving or operating equipment.</p>
+      <button class="primary" id="gotIt">Begin Quick Spark</button>
+    </div>
+  </div>
+  <script>
+    const $=s=>document.querySelector(s), q=new URLSearchParams(location.search);
+    const data={title:q.get('title')||'The life I am creating',feeling:q.get('feeling')||'Recall a feeling of genuine joy, gratitude, love, or pride.',image:q.get('image')||'',encouragement:q.get('encouragement')||'Carry this feeling forward.'};
+    let total=[15,30,60].includes(+q.get('t'))?+q.get('t'):30,elapsed=0,playing=false,finished=false,last=0,raf=0,soundOn=false,audioCtx=null;
+    const title=$('#title'),prompt=$('#prompt'),hero=$('#hero'),phase=$('#phase'),clock=$('#clock'),fill=$('#fill'),play=$('#play'),sound=$('#sound'),modal=$('#modal');
+    title.textContent=data.title;if(data.image){hero.style.backgroundImage=`url("${data.image.replace(/"/g,'')}")`;hero.classList.add('has-image')}
+    function visits(){try{return +(localStorage.getItem('ci_quick_spark_plays')||0)}catch(e){return 0}}
+    function setVisits(n){try{localStorage.setItem('ci_quick_spark_plays',String(n))}catch(e){}}
+    function tone(freq,d=.35,vol=.08){if(!soundOn)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain(),n=audioCtx.currentTime;o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(vol,n+.025);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g).connect(audioCtx.destination);o.start(n);o.stop(n+d+.03)}catch(e){}}
+    function segment(){const p=elapsed/total;if(finished)return'end';if(p<.08)return'open';if(p<.28)return'feel';if(p<.84)return'hold';if(p<.94)return'carry';return'close'}
+    let shown='';function render(){const seg=segment(),pct=Math.min(100,elapsed/total*100);fill.style.width=pct+'%';fill.parentElement.setAttribute('aria-valuenow',Math.round(pct));clock.textContent='0:'+String(Math.max(0,Math.ceil(total-elapsed))).padStart(2,'0');if(seg===shown)return;shown=seg;prompt.classList.remove('show');setTimeout(()=>{if(seg==='open'){phase.textContent='Arrive';title.textContent=data.title;prompt.textContent='Bring your attention to what you are moving toward.'}if(seg==='feel'){phase.textContent='Feel';prompt.textContent=data.feeling}if(seg==='hold'){phase.textContent='See it · Feel it';prompt.textContent='Hold that feeling—and see yourself here.'}if(seg==='carry'){phase.textContent='Carry it forward';prompt.textContent=data.encouragement}if(seg==='close'){phase.textContent='Complete';prompt.textContent='';tone(660,.5)}if(seg==='end'){phase.textContent='Complete';title.textContent='The vision is yours.';prompt.textContent='Return to your day—and let your next choice carry it forward.';$('#content').classList.add('complete')}requestAnimationFrame(()=>prompt.classList.toggle('show',!!prompt.textContent))},180)}
+    function frame(now){if(!playing)return;if(!last)last=now;elapsed+=(now-last)/1000;last=now;if(elapsed>=total){elapsed=total;playing=false;finished=true;play.textContent='▶';hero.classList.remove('running');render();tone(880,.9,.1);setVisits(visits()+1);notifyFinish();return}render();raf=requestAnimationFrame(frame)}
+    function start(){if(finished){elapsed=0;finished=false;shown='';$('#content').classList.remove('complete')}playing=true;last=0;play.textContent='Ⅱ';play.setAttribute('aria-label','Pause');hero.classList.add('running');tone(520,.4);raf=requestAnimationFrame(frame)}
+    function pause(){playing=false;cancelAnimationFrame(raf);play.textContent='▶';play.setAttribute('aria-label','Play');hero.classList.remove('running')}
+    function restart(){pause();elapsed=0;finished=false;shown='';$('#content').classList.remove('complete');title.textContent=data.title;render()}
+    function closePlayer(){try{if(parent!==window&&parent.closePlayerColumn){parent.closePlayerColumn();return}}catch(e){}history.length>1?history.back():window.close()}
+    function notifyFinish(){try{if(parent!==window&&parent.playerFinished)parent.playerFinished()}catch(e){}}
+    play.onclick=()=>playing?pause():start();$('#restart').onclick=restart;$('#close').onclick=closePlayer;$('#info').onclick=()=>modal.classList.add('open');$('#gotIt').onclick=()=>{modal.classList.remove('open');start()};
+    sound.onclick=()=>{soundOn=!soundOn;sound.textContent=soundOn?'♪':'♩';sound.setAttribute('aria-label',soundOn?'Sound on':'Sound off');if(soundOn)tone(660,.25)};
+    document.querySelectorAll('.duration').forEach(b=>{b.onclick=()=>{total=+b.dataset.seconds;document.querySelectorAll('.duration').forEach(x=>x.classList.toggle('active',x===b));restart()}});
+    document.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();playing?pause():start()}if(e.key==='Escape')modal.classList.contains('open')?modal.classList.remove('open'):closePlayer()});
+    render();if(visits()<2)modal.classList.add('open');else setTimeout(start,500);
+  </script>
+</body>
+<!-- Netlify deployment trigger: Quick Spark -->
+</html>
