@@ -84,9 +84,9 @@
     .med-progress-fill::after{content:"";position:absolute;top:50%;right:-15px;width:30px;height:30px;border:3px solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:translateY(-50%)}
     .med-progress:focus-visible{outline:2px solid #fff;outline-offset:2px}
     .deck.meditation-mode .med-progress{display:none}
-    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
+    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
     .deck.meditation-mode .med-controls{display:grid;animation:controlFadeIn .28s .14s ease both}
-    .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer}
+    .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer;outline:none}
     .med-circle{width:42px;height:42px;border:2px solid #a7c526;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:18px;font-weight:900;transition:transform .18s ease,background .18s ease}
     .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#86a41d;transform:translateY(-2px);outline:none}
     .med-control.play-control{position:relative;transform:translateY(10px)}
@@ -161,7 +161,6 @@
         <button class="med-control" type="button" data-med-command="back"><span class="med-circle">◀</span><span>Back</span></button>
         <button class="med-control" type="button" data-lfm-mini-command="menu"><span class="med-circle">☰</span><span>LFM Menu</span></button>
         <button class="med-control" type="button" data-lfm-mini-command="forward"><span class="med-circle">▶</span><span>Next</span></button>
-        <button class="med-control" type="button" data-med-command="menu"><span class="med-circle">☰</span><span>Menu</span></button>
       </div>
         <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
           <h2>Meditation Menu</h2>
