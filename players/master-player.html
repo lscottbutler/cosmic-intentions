@@ -23,13 +23,13 @@
     .cap{position:relative;isolation:isolate;margin:0;padding:38px 18px 19px;background:var(--header);color:var(--trough-ink);display:grid;place-items:center;text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
-    .stage.ci-stage-fade-out{opacity:.45;transition-duration:.35s,.35s,.26s}
+    .stage.ci-stage-fade-out{opacity:1}
     .view{animation:fadeIn .24s ease both}
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
-    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity .22s ease}
-    .inspiration.has-card .inspiration-card{opacity:1}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity .34s ease}
+    .inspiration.has-card .inspiration-card{opacity:1;transition-duration:.64s}
     .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
@@ -345,15 +345,36 @@
       inspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
       const toolInspirationCard=document.getElementById('toolInspirationCard');
       const toolInspirationPanel=document.getElementById('toolDailyInspiration');
+      let toolCardTransitionId=0;
       function setToolCard(action){
+        const transitionId=++toolCardTransitionId;
         const itemIndex=Math.max(0,items.findIndex(item=>item[0]===action));
         const file=toolCardByAction[action]||entrepreneurCards[(cardIndex+itemIndex+1)%entrepreneurCards.length];
+        const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         toolInspirationPanel.classList.remove('has-card');
-        toolInspirationCard.hidden=false;
-        toolInspirationCard.alt=cardAlt(file);
-        toolInspirationCard.onload=()=>{toolInspirationPanel.classList.add('has-card');matchTroughsToCard(toolInspirationCard)};
-        toolInspirationCard.onerror=()=>{toolInspirationCard.hidden=true;toolInspirationPanel.classList.remove('has-card')};
-        toolInspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(file);
+        return new Promise(resolve=>{
+          const swapCard=()=>{
+            if(transitionId!==toolCardTransitionId){resolve();return}
+            toolInspirationCard.hidden=false;
+            toolInspirationCard.alt=cardAlt(file);
+            toolInspirationCard.onload=()=>{
+              if(transitionId!==toolCardTransitionId){resolve();return}
+              matchTroughsToCard(toolInspirationCard);
+              requestAnimationFrame(()=>requestAnimationFrame(()=>{
+                toolInspirationPanel.classList.add('has-card');
+                resolve();
+              }));
+            };
+            toolInspirationCard.onerror=()=>{
+              toolInspirationCard.hidden=true;
+              toolInspirationPanel.classList.remove('has-card');
+              resolve();
+            };
+            toolInspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(file);
+          };
+          if(reduced)swapCard();
+          else window.setTimeout(swapCard,340);
+        });
       }
       document.getElementById('toolInspirationKind').textContent=inspiration.label;
       document.getElementById('toolStatement').textContent=inspiration.text;
@@ -393,31 +414,10 @@
         if(experienceMutationObserver){experienceMutationObserver.disconnect();experienceMutationObserver=null}
         if(settleTimer){window.clearTimeout(settleTimer);settleTimer=0}
       }
-      let stageTransitionId=0;
       function transitionStage(commit){
-        const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const transitionId=++stageTransitionId;
-        if(reduced){
-          const result=commit();
-          Promise.resolve(result).finally(reportHeight);
-          return;
-        }
-        stage.classList.add('ci-stage-fade-out');
-        window.setTimeout(()=>{
-          if(transitionId!==stageTransitionId)return;
-          let result;
-          try{result=commit()}catch(error){stage.classList.remove('ci-stage-fade-out');throw error}
-          const timeout=new Promise(resolve=>window.setTimeout(resolve,700));
-          Promise.race([Promise.resolve(result),timeout]).finally(()=>{
-            if(transitionId!==stageTransitionId)return;
-            requestAnimationFrame(()=>{
-              requestAnimationFrame(()=>{
-                stage.classList.remove('ci-stage-fade-out');
-                reportHeight();
-              });
-            });
-          });
-        },260);
+        let result;
+        try{result=commit()}catch(error){throw error}
+        Promise.resolve(result).finally(reportHeight);
       }
       function applyHomeMode(){
         notifyParentMode('home');
