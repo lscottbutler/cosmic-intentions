@@ -102,19 +102,19 @@
     .shell.three-button-nav-mode .lfm-tool-controls .med-control:hover .med-circle,
     .shell.three-button-nav-mode .lfm-tool-controls .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
     .shell.three-button-nav-mode .lfm-tool-controls .med-control>span:last-child{display:none}
-    .med-menu{grid-column:1/-1;margin:24px 14px 0;padding:18px;border:1px solid #7f847e;border-radius:10px;background:var(--deck);color:#fff;animation:fadeIn .22s ease both}
+    .med-menu{grid-column:1/-1;margin:12px 14px 0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:var(--deck);color:#fff;animation:fadeIn .22s ease both}
     .deck:not(.meditation-mode) .med-menu{display:none}
-    .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 14px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
-    .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
+    .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 7px;font-size:14px;letter-spacing:1px;text-transform:uppercase}
+    .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:5px}
     .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
-    .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:9px 6px;font-weight:800;cursor:pointer}
+    .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:5px 4px;font-size:13px;font-weight:800;cursor:pointer}
     .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
-    .med-play-banner{width:100%;margin:0 0 14px;border:0;border-radius:12px;background:#118aa5;color:#fff;padding:15px 12px;font-size:20px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
-    .med-time-stack{display:grid;gap:10px;margin-top:10px;padding:12px;background:#191919;border-radius:14px}
-    .med-time-choice{display:grid;grid-template-columns:minmax(0,4fr) repeat(3,minmax(44px,.76fr));gap:10px;align-items:stretch}
-    .med-time-choice .med-time-option{min-height:54px;border:0;border-radius:12px;background:#fff;color:#12345b;padding:12px;font-size:18px;font-weight:900}
+    .med-play-banner{width:100%;margin:0 0 7px;border:0;border-radius:7px;background:#118aa5;color:#fff;padding:8px 6px;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+    .med-time-stack{display:grid;gap:5px;margin-top:5px;padding:6px;background:#191919;border-radius:8px}
+    .med-time-choice{display:grid;grid-template-columns:minmax(0,4fr) repeat(3,minmax(30px,.76fr));gap:5px;align-items:stretch}
+    .med-time-choice .med-time-option{min-height:30px;border:0;border-radius:7px;background:#fff;color:#12345b;padding:5px;font-size:14px;font-weight:900}
     .med-time-choice .med-time-option.active{background:#85a620;color:#fff;box-shadow:inset 0 0 0 2px #b8d449}
-    .med-time-slot{display:block;min-height:54px;border-radius:12px;background:#fff}
+    .med-time-slot{display:block;min-height:30px;border-radius:7px;background:#fff}
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
@@ -426,11 +426,12 @@
       }
       function setMeditationMode(active){
         if(!active)meditationSessionActive=false;
-        meditationMenuOpen=false;
+        meditationMenuOpen=active;
         deck.classList.toggle('meditation-mode',active);
         deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
         shell.classList.toggle('meditation-player-mode',active);
-        meditationMenu.hidden=true;
+        meditationMenu.hidden=!active;
+        document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(active));
       }
       function notifyParentMode(action){
         try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
