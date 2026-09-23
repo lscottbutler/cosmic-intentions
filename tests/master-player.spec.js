@@ -53,6 +53,26 @@ for (const viewport of [
 }
 
 
+test('Citadel 16:9 surfaces contain cards only', async ({ page }) => {
+  await page.goto('/players/master-player.html?card=0', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+
+  const contents = await page.evaluate(() => ({
+    homeChildren: [...document.querySelector('#dailyInspiration').children].map((node) => node.tagName),
+    toolChildren: [...document.querySelector('#toolDailyInspiration').children].map((node) => node.tagName),
+    generatedText: document.querySelectorAll(
+      '#dailyInspiration .inspiration-kind, #dailyInspiration .statement, #dailyInspiration .inspiration-author, ' +
+      '#toolDailyInspiration .inspiration-kind, #toolDailyInspiration .statement, #toolDailyInspiration .inspiration-author'
+    ).length,
+  }));
+
+  expect(contents.homeChildren).toEqual(['IMG']);
+  expect(contents.toolChildren).toEqual(['IMG']);
+  expect(contents.generatedText).toBe(0);
+});
+
 for (const destination of CORE_DESTINATIONS) {
   test(`locked Master Player shell is consistent on ${destination.label}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
