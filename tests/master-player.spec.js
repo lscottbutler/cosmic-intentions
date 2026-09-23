@@ -179,6 +179,33 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
   expect(order.menuVisible).toBe(true);
 });
 
+test('Meditation image stays behind the visible grey frame', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=meditation', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+
+  const meditation = page.frameLocator('#experienceFrame');
+  const frameRect = meditation.locator('.ccb-curve rect');
+  await expect(frameRect).toBeVisible();
+  await expect(frameRect).toHaveAttribute('stroke', '#82ad77');
+
+  const layers = await meditation.locator('.player').evaluate((player) => {
+    const image = player.querySelector('.image');
+    const frame = player.querySelector('.ccb-curve');
+    const rect = player.querySelector('.ccb-curve rect');
+    return {
+      imageZ: Number(getComputedStyle(image).zIndex) || 0,
+      frameZ: Number(getComputedStyle(frame).zIndex) || 0,
+      rectDisplay: getComputedStyle(rect).display,
+      rectStroke: getComputedStyle(rect).stroke,
+    };
+  });
+  expect(layers.frameZ).toBeGreaterThan(layers.imageZ);
+  expect(layers.rectDisplay).not.toBe('none');
+  expect(layers.rectStroke).toBe('rgb(116, 116, 116)');
+});
+
 test('Meditate opens with its compact options menu visible', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
