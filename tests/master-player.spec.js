@@ -96,8 +96,13 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
   const stage = page.locator('#stage');
   const next = page.getByRole('button', { name: /Next/i });
 
-  const clickPromise = next.click();
-  await page.waitForTimeout(1500);
+  // Await the click so a busy CI runner cannot delay the transition until after
+  // the fixed sampling window. Then wait for the fade to begin before measuring.
+  await next.click();
+  await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
+    timeout: 1500,
+  }).toBeLessThan(0.99);
+  await page.waitForTimeout(900);
 
   const fadeOut = await card.evaluate((el) => ({
     opacity: Number(getComputedStyle(el).opacity),
@@ -110,8 +115,7 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
   expect(fadeOut.duration).toBe('3s');
   await expect(stage).toHaveCSS('opacity', '1');
 
-  await page.waitForTimeout(1800);
-  await expect(card).toHaveAttribute('alt', /DISCIPLINED/i);
+  await expect(card).toHaveAttribute('alt', /DISCIPLINED/i, { timeout: 4000 });
 
   await page.waitForTimeout(500);
   const fadeIn = await card.evaluate((el) => ({
@@ -123,7 +127,6 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
   expect(fadeIn.duration).toBe('3s');
   await expect(stage).toHaveCSS('opacity', '1');
 
-  await clickPromise;
   await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
     timeout: 4000,
   }).toBeGreaterThan(0.99);
