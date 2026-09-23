@@ -93,15 +93,15 @@
     .med-countdown{position:absolute;left:100%;bottom:calc(100% + 13px);transform:translateX(-50%);min-width:54px;text-align:center;font-size:14px!important;font-weight:800!important;letter-spacing:1px!important;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;pointer-events:none}
     .med-control.play-control .med-circle{width:58px;height:58px;background:#85a620;border:5px solid #315f12;font-size:25px}
     .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
-    /* HABITS PLAYER NAV — Scott's approved centered three-button cluster.
-       This replaces the small labeled controls only in the Habits trough. */
-    .shell.daily-habits-mode .lfm-tool-controls{grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
-    .shell.daily-habits-mode .deck.lfm-tool-mode{padding-top:16px;padding-bottom:22px}
-    .shell.daily-habits-mode .lfm-tool-controls .med-control{display:grid;place-items:center}
-    .shell.daily-habits-mode .lfm-tool-controls .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;background:#000;color:#fff;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
-    .shell.daily-habits-mode .lfm-tool-controls .med-control:hover .med-circle,
-    .shell.daily-habits-mode .lfm-tool-controls .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
-    .shell.daily-habits-mode .lfm-tool-controls .med-control>span:last-child{display:none}
+    /* GOALS + HABITS PLAYER NAV — Scott's approved centered three-button cluster.
+       This replaces the small labeled controls only in the Goals and Habits troughs. */
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls{grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
+    .shell:is(.daily-habits-mode,.goals-mode) .deck.lfm-tool-mode{padding-top:16px;padding-bottom:22px}
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls .med-control{display:grid;place-items:center}
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;background:#000;color:#fff;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls .med-control:hover .med-circle,
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
+    .shell:is(.daily-habits-mode,.goals-mode) .lfm-tool-controls .med-control>span:last-child{display:none}
     .med-menu{grid-column:1/-1;margin:24px 14px 0;padding:18px;border:1px solid #7f847e;border-radius:10px;background:var(--deck);color:#fff;animation:fadeIn .22s ease both}
     .deck:not(.meditation-mode) .med-menu{display:none}
     .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 14px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
@@ -438,7 +438,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
+        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -518,12 +518,13 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';dockDeck(false);shell.classList.remove('lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         const usesLfmTemplate=lfmTemplateActions.has(action);
         dockDeck(usesLfmTemplate);
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
+        shell.classList.toggle('goals-mode',action==='goals');
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
