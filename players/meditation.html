@@ -43,7 +43,7 @@ body.external .timer{background:#747474;border-color:#292929}
 </main>
 <script>
 (()=>{
-  const allowed=[30,15,10,5,2];
+  const allowed=[15,10,5,3,2,1,0.5,0.25];
   const search=new URLSearchParams(location.search);
   const requested=Number(search.get('t'));
   const external=search.get('external')==='1';
