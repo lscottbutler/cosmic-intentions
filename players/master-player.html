@@ -174,7 +174,7 @@
       <button class="med-progress" id="medProgress" type="button" aria-label="Meditation progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"><span class="med-countdown" id="medCountdown">15:00</span></span></span></button>
       <div class="med-controls" id="meditationControls" aria-label="Meditation controls">
         <button class="med-control" type="button" data-med-command="back"><span class="med-circle">◀</span><span>Back</span></button>
-        <button class="med-control" type="button" data-lfm-mini-command="menu" aria-label="LFM Menu"><span class="med-circle">☰</span><span>LFM Menu</span></button>
+        <button class="med-control" type="button" data-med-command="menu" aria-label="Meditation Menu" aria-controls="meditationMenu" aria-expanded="false"><span class="med-circle">☰</span><span>Meditation Menu</span></button>
         <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
       </div>
         <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
@@ -586,7 +586,7 @@
       document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
         const command=button.dataset.medCommand;
         if(command==='back'){homeMode();return}
-        if(command==='menu'){meditationMenuOpen=!meditationMenuOpen;meditationMenu.hidden=!meditationMenuOpen;reportHeight();return}
+        if(command==='menu'){meditationMenuOpen=!meditationMenuOpen;meditationMenu.hidden=!meditationMenuOpen;button.setAttribute('aria-expanded',String(meditationMenuOpen));reportHeight();return}
         if(command==='toggle'){sendMeditation('toggle');return}
         if(command==='mode'){meditationMode=meditationMode==='guided'?'unguided':'guided';reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);
