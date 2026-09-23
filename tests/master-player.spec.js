@@ -190,6 +190,21 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   await expect(menu).toBeVisible();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 
+  const containment = await page.evaluate(() => {
+    const deckRect = document.querySelector('.deck')?.getBoundingClientRect();
+    const menuRect = document.querySelector('#meditationMenu')?.getBoundingClientRect();
+    if (!deckRect || !menuRect) return null;
+    return {
+      left: menuRect.left >= deckRect.left,
+      right: menuRect.right <= deckRect.right,
+      bottomClearance: deckRect.bottom - menuRect.bottom,
+    };
+  });
+  expect(containment).not.toBeNull();
+  expect(containment.left).toBe(true);
+  expect(containment.right).toBe(true);
+  expect(containment.bottomClearance).toBeGreaterThanOrEqual(28);
+
   await menuButton.click();
   await expect(menu).toBeHidden();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
