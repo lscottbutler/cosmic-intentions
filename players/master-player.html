@@ -135,11 +135,8 @@
     <header class="cap" id="capTitle">Affirmation</header>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
-        <div class="inspiration" id="dailyInspiration">
+        <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
           <img class="inspiration-card" id="inspirationCard" alt="" decoding="async" fetchpriority="high">
-          <div class="inspiration-kind" id="inspirationKind">Affirmation</div>
-          <blockquote class="statement" id="statement">I AM BECOMING THE PERSON MY FUTURE SELF ALREADY IS.</blockquote>
-          <div class="inspiration-author" id="inspirationAuthor" hidden></div>
         </div>
       </div>
       <div class="view" id="directoryView" hidden>
@@ -147,12 +144,9 @@
         <div class="directory" id="directory"></div>
       </div>
       <div class="view" id="experienceView" hidden>
-        <section class="lfm-tool-rotation" id="lfmToolRotation" aria-label="Daily rotating affirmation, belief or quote" hidden>
+        <section class="lfm-tool-rotation" id="lfmToolRotation" aria-label="16:9 inspiration card" hidden>
           <div class="inspiration" id="toolDailyInspiration">
             <img class="inspiration-card" id="toolInspirationCard" alt="" decoding="async">
-            <div class="inspiration-kind" id="toolInspirationKind">Affirmation</div>
-            <blockquote class="statement" id="toolStatement">I AM BECOMING THE PERSON MY FUTURE SELF ALREADY IS.</blockquote>
-            <div class="inspiration-author" id="toolInspirationAuthor" hidden></div>
           </div>
         </section>
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
@@ -202,10 +196,8 @@
     </nav>
   </main>
   <script type="module">
-    import { getDailyInspiration } from './daily-inspiration.js';
     (() => {
       const params=new URLSearchParams(location.search);
-      const inspiration=getDailyInspiration();
       const entrepreneurCards=[
         'ENT - FAIRNESS.PNG',
         'ENT - GOOD LISTENER.PNG',
@@ -365,11 +357,6 @@
       inspirationCard.addEventListener('load',()=>{inspirationPanel.classList.add('has-card');matchTroughsToCard(inspirationCard,true)},{once:true});
       inspirationCard.addEventListener('error',()=>{inspirationCard.hidden=true},{once:true});
       inspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(cardFile);
-      document.getElementById('inspirationKind').textContent=inspiration.label;
-      document.getElementById('statement').textContent=inspiration.text;
-      const inspirationAuthor=document.getElementById('inspirationAuthor');
-      inspirationAuthor.hidden=!inspiration.author;
-      inspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
       const toolInspirationCard=document.getElementById('toolInspirationCard');
       const toolInspirationPanel=document.getElementById('toolDailyInspiration');
       let toolCardTransitionId=0;
@@ -403,11 +390,6 @@
           else window.setTimeout(swapCard,3000);
         });
       }
-      document.getElementById('toolInspirationKind').textContent=inspiration.label;
-      document.getElementById('toolStatement').textContent=inspiration.text;
-      const toolInspirationAuthor=document.getElementById('toolInspirationAuthor');
-      toolInspirationAuthor.hidden=!inspiration.author;
-      toolInspirationAuthor.textContent=inspiration.author?'— '+inspiration.author:'';
       let selected=null,heightFrame=0;
       function reportHeight(){
         if(heightFrame)return;
