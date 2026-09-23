@@ -196,8 +196,10 @@
     </nav>
   </main>
   <script type="module">
+    import { getDailyInspiration } from './daily-inspiration.js';
     (() => {
       const params=new URLSearchParams(location.search);
+      const inspiration=getDailyInspiration();
       const entrepreneurCards=[
         'ENT - FAIRNESS.PNG',
         'ENT - GOOD LISTENER.PNG',
