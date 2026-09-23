@@ -179,14 +179,21 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
   expect(order.menuVisible).toBe(true);
 });
 
-test('Meditate opens with its options menu collapsed', async ({ page }) => {
+test('Meditate opens with its compact options menu visible', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
     timeout: 15000,
   });
 
   const menu = page.locator('#meditationMenu');
+  const menuButton = page.locator('[data-med-command="menu"]');
+  await expect(menu).toBeVisible();
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+
+  await menuButton.click();
   await expect(menu).toBeHidden();
-  await page.waitForTimeout(500);
-  await expect(menu).toBeHidden();
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+
+  await menuButton.click();
+  await expect(menu).toBeVisible();
 });
