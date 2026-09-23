@@ -109,6 +109,12 @@
     .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
     .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:9px 6px;font-weight:800;cursor:pointer}
     .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
+    .med-play-banner{width:100%;margin:0 0 14px;border:0;border-radius:12px;background:#118aa5;color:#fff;padding:15px 12px;font-size:20px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+    .med-time-stack{display:grid;gap:10px;margin-top:10px;padding:12px;background:#191919;border-radius:14px}
+    .med-time-choice{display:grid;grid-template-columns:minmax(0,4fr) repeat(3,minmax(44px,.76fr));gap:10px;align-items:stretch}
+    .med-time-choice .med-time-option{min-height:54px;border:0;border-radius:12px;background:#fff;color:#12345b;padding:12px;font-size:18px;font-weight:900}
+    .med-time-choice .med-time-option.active{background:#85a620;color:#fff;box-shadow:inset 0 0 0 2px #b8d449}
+    .med-time-slot{display:block;min-height:54px;border-radius:12px;background:#fff}
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
@@ -173,18 +179,22 @@
       </div>
         <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
           <h2>Meditation Menu</h2>
+          <button class="med-play-banner" type="button" data-med-play>Play Meditation</button>
           <div><strong>Style</strong></div>
           <div class="med-menu-row mode" id="meditationModes">
             <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
             <button class="med-option" type="button" data-med-mode="guided">Guided</button>
           </div>
           <div style="margin-top:14px"><strong>Time</strong></div>
-          <div class="med-menu-row" id="meditationTimes">
-            <button class="med-option" type="button" data-med-time="2">2 min</button>
-            <button class="med-option" type="button" data-med-time="5">5 min</button>
-            <button class="med-option" type="button" data-med-time="10">10 min</button>
-            <button class="med-option active" type="button" data-med-time="15">15 min</button>
-            <button class="med-option" type="button" data-med-time="30">30 min</button>
+          <div class="med-time-stack" id="meditationTimes">
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.25">15 Seconds</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.5">30 Seconds</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1">1 Minute</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2">2 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3">3 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5">5 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10">10 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15">15 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
           </div>
           <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
         </section>
@@ -279,7 +289,7 @@
           stage.insertAdjacentElement('afterend',deck);
         }
       }
-      const meditationTimes=[2,5,10,15,30];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      const meditationTimes=[0.25,0.5,1,2,3,5,10,15];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
       if(Number.isInteger(requestedCard)){
@@ -583,7 +593,7 @@
         if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
         if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}
       }));
-      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
+      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));\n      document.querySelector('[data-med-play]')?.addEventListener('click',()=>sendMeditation('toggle'));
       document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
