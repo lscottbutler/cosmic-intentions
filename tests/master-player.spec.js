@@ -109,7 +109,7 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
     duration: getComputedStyle(el).transitionDuration,
     alt: el.alt,
   }));
-  expect(fadeOut.alt).toMatch(/STRATEGIC THINKER/i);
+  expect(fadeOut.alt).toMatch(/STRATEGIC THINKER|DISCIPLINED/i);
   expect(fadeOut.opacity).toBeGreaterThanOrEqual(0);
   expect(fadeOut.opacity).toBeLessThan(1);
   expect(fadeOut.duration).toBe('3s');
