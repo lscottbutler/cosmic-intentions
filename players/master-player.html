@@ -593,7 +593,8 @@
         if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
         if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}
       }));
-      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));\n      document.querySelector('[data-med-play]')?.addEventListener('click',()=>sendMeditation('toggle'));
+      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
+      document.querySelector('[data-med-play]')?.addEventListener('click',()=>sendMeditation('toggle'));
       document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
