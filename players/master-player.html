@@ -11,7 +11,7 @@
        Outer shell: #292929. Title/icon troughs: #747474.
        Preserve the approved spacing, curves, typography and icon layout.
        Page-specific content may change; this shared chrome must remain consistent. */
-    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:clamp(78px,9.5vw,96px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -20,9 +20,11 @@
     .shell.home-mode{background:var(--header);padding:0 0 27px}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
     .shell.daily-habits-mode .stage{background:#292929!important}
-    .cap{position:relative;isolation:isolate;margin:0;padding:38px 18px 19px;background:var(--header);color:var(--trough-ink);display:grid;place-items:center;text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
+    /* LOCKED UPPER TROUGH GEOMETRY — title and site menu share one immutable centerline. */
+    .cap{position:relative;isolation:isolate;width:100%;height:var(--cap-height);margin:0;padding:0;background:var(--header);color:var(--trough-ink);text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
-    .site-menu-button{position:absolute;z-index:2;right:calc(var(--frame-border) + 16px);top:calc(50% + 9px);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    #capTitleText{position:absolute;z-index:1;left:calc(var(--frame-border) + 72px);right:calc(var(--frame-border) + 72px);top:var(--cap-center-y);transform:translateY(-50%);display:block;line-height:1.05;text-align:center;white-space:nowrap}
+    .site-menu-button{position:absolute;z-index:2;right:calc(var(--frame-border) + 16px);top:var(--cap-center-y);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
     .site-menu-button span{display:block;width:100%;height:4px;border-radius:3px;background:currentColor}
     .site-menu-button:hover,.site-menu-button:focus-visible{background:rgba(255,255,255,.26);outline:2px solid rgba(255,255,255,.72);outline-offset:2px}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
@@ -140,7 +142,8 @@
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
-      .cap{margin:0;padding:35px 8px 17px;font-size:22px;letter-spacing:2px}
+      .cap{font-size:22px;letter-spacing:2px}
+      #capTitleText{left:calc(var(--frame-border) + 62px);right:calc(var(--frame-border) + 62px)}
       .site-menu-button{right:calc(var(--frame-border) + 9px);width:42px;height:42px;padding:9px;gap:4px}
       .stage{margin:0;padding:22px 14px}
       .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:17.5px}
