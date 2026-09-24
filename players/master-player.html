@@ -82,7 +82,7 @@
     /* Meditation sides match the upper player's 35-unit stroke on its 1920-unit canvas.
        The bottom border and its existing curve remain unchanged. */
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
-    .deck.meditation-mode{background:#fff;border:35px solid #1e90ff;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
+    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #1e90ff;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
     .deck.meditation-mode::before{display:none}
     /* Fill only the outside lower corners; retain the curved white controls area. */
     .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
