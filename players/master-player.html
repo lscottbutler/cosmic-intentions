@@ -118,10 +118,15 @@
     .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
     .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon::after{content:"✓";font-size:24px;font-weight:900}
     .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-glyph{display:none}
-    .med-time-stack{display:grid;gap:5px;margin-top:5px;padding:6px;background:#191919;border-radius:8px}
-    .med-time-choice{display:block}
-    .med-time-choice .med-time-option{width:100%;min-height:30px;border:1px solid rgba(255,255,255,.42);border-radius:7px;background:rgba(255,255,255,.14);color:#fff;padding:5px;font-size:14px;font-weight:900;letter-spacing:.4px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
-    .med-time-choice .med-time-option.active{background:rgba(255,255,255,.30);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.72)}
+    .med-time-stack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px;margin-top:7px;padding:8px 0 4px;background:transparent}
+    .med-time-choice{display:block;min-width:0}
+    .med-time-choice .med-time-option{width:100%;min-width:0;border:0;border-radius:0;background:transparent;color:#fff;padding:0;display:grid;justify-items:center;gap:7px;cursor:pointer}
+    .med-time-circle{width:56px;height:56px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:18px;font-weight:900;transition:background .2s ease,box-shadow .2s ease,transform .2s ease}
+    .med-time-label{font-size:12px;line-height:1.05;font-weight:900;letter-spacing:.8px;text-transform:uppercase;text-align:center}
+    .med-time-choice .med-time-option:hover .med-time-circle,.med-time-choice .med-time-option:focus-visible .med-time-circle{background:rgba(255,255,255,.23);transform:translateY(-1px)}
+    .med-time-choice .med-time-option:focus-visible{outline:none}
+    .med-time-choice .med-time-option.active{background:transparent;color:#fff;box-shadow:none}
+    .med-time-choice .med-time-option.active .med-time-circle{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
@@ -194,14 +199,12 @@
           </div>
           <div><strong>Time</strong></div>
           <div class="med-time-stack" id="meditationTimes">
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.25">15 Seconds</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.5">30 Seconds</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1">1 Minute</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2">2 Minutes</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3">3 Minutes</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5">5 Minutes</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10">10 Minutes</button></div>
-            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15">15 Minutes</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1" aria-label="1 Minute"><span class="med-time-circle" aria-hidden="true">1</span><span class="med-time-label">Minute</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2" aria-label="2 Minutes"><span class="med-time-circle" aria-hidden="true">2</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3" aria-label="3 Minutes"><span class="med-time-circle" aria-hidden="true">3</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5" aria-label="5 Minutes"><span class="med-time-circle" aria-hidden="true">5</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10" aria-label="10 Minutes"><span class="med-time-circle" aria-hidden="true">10</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15" aria-label="15 Minutes"><span class="med-time-circle" aria-hidden="true">15</span><span class="med-time-label">Minutes</span></button></div>
           </div>
           <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
         </section>
@@ -294,7 +297,7 @@
           stage.insertAdjacentElement('afterend',deck);
         }
       }
-      const meditationTimes=[0.25,0.5,1,2,3,5,10,15];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      const meditationTimes=[1,2,3,5,10,15];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       let relaxationModuleEnabled=sessionStorage.getItem('ci-relaxation-module')==='on',relaxationThenVisualization=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
