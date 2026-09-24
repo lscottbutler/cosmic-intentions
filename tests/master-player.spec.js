@@ -132,7 +132,7 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
     'cosmic-library',
     'menu',
   ]);
-  expect(state.outerColor).toBe('rgb(41, 41, 41)');
+  expect(state.outerColor).toBe('rgb(30, 144, 255)');
   expect(state.innerColor).toBe('rgb(116, 116, 116)');
   expect(state.upperCurve).not.toBe('0px');
   expect(state.lowerCurve).not.toBe('0px');
@@ -188,7 +188,7 @@ for (const destination of CORE_DESTINATIONS) {
     });
 
     expect(state.classes).toContain('lfm-shared-frame-mode');
-    expect(state.frameColor).toBe('#292929');
+    expect(state.frameColor).toBe('#1e90ff');
     expect(state.troughColor).toBe('#747474');
     expect(state.upperTroughText).not.toMatch(/affirmation/i);
     expect(state.siteMenuVisible).toBe(true);
@@ -197,7 +197,7 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.upperTrough.height).toBeCloseTo(108, 1);
     expect(state.upperTrough.titleCenterX).toBeCloseTo(state.upperTrough.centerX, 1);
     expect(state.upperTrough.titleCenterY).toBeCloseTo(state.upperTrough.menuCenterY, 1);
-    expect(state.upperTrough.outerColor).toBe('rgb(41, 41, 41)');
+    expect(state.upperTrough.outerColor).toBe('rgb(30, 144, 255)');
     expect(state.upperTrough.innerColor).toBe('rgb(116, 116, 116)');
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
