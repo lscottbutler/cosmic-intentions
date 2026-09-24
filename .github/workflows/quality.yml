@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Preserve approved player template
+        run: npm run check:template
       - name: Install dependencies
         run: npm ci
       - name: Install Chromium
