@@ -385,10 +385,10 @@ details.rm-drop[open]::details-content { height: auto; }
 /* My Actions / Roadmap tabs sit together above the goal's right edge. */
 .wgoal > .wtabs { display: none; }
 .wgoal:has(> .rm-drop[open]) > .wtabs { display: flex; }
-.wtabs { justify-content: flex-end; gap: 4px; padding: 0 10px; margin-bottom: -1px; position: relative; z-index: 1; }
+.wtabs { justify-content: flex-end; align-items: flex-end; gap: 8px; padding: 0 10px; margin-bottom: -1px; position: relative; z-index: 1; }
 .wtab {
   flex: 0 1 auto;
-  max-width: calc(50% - 2px);
+  max-width: calc(50% - 23px);
   min-width: 0;
   box-sizing: border-box;
   border: 1px solid #ffffff;
@@ -407,7 +407,22 @@ details.rm-drop[open]::details-content { height: auto; }
   text-overflow: ellipsis;
 }
 .wtab.wtab-active { text-decoration: underline; text-underline-offset: 3px; }
-.wtab-connect { display: flex; justify-content: center; margin-top: -12px; position: relative; z-index: 1; }
+.wtab-combine {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+}
 
 /* Wrap-up code-cards (Phase 1): quiet card + ⋯ overflow menu hover states */
 .wcard-more { transition: background .12s, color .12s; }
