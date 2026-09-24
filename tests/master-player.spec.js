@@ -210,7 +210,7 @@ test('Meditation choices use one full-width column and expose the relaxation tog
   });
 
   const choices = page.locator('.med-time-choice');
-  const toggle = page.getByRole('button', { name: 'Relaxation Module off' });
+  const toggle = page.locator('[data-relaxation-toggle]');
   await expect(choices).toHaveCount(8);
   await expect(page.locator('.med-time-slot')).toHaveCount(0);
   await expect(toggle).toBeVisible();
