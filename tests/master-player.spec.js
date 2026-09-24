@@ -290,6 +290,13 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   await expect(controls).toBeHidden();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 
+  const playerControlGap = await page.evaluate(() => {
+    const stageRect = document.querySelector('#stage')?.getBoundingClientRect();
+    const deckRect = document.querySelector('.deck')?.getBoundingClientRect();
+    return stageRect && deckRect ? Math.round(deckRect.top - stageRect.bottom) : -1;
+  });
+  expect(playerControlGap).toBeGreaterThanOrEqual(18);
+
   const containment = await page.evaluate(() => {
     const deckRect = document.querySelector('.deck')?.getBoundingClientRect();
     const menuRect = document.querySelector('#meditationMenu')?.getBoundingClientRect();
