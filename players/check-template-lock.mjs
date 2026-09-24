@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 // his explicit instruction to change the locked template.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "a88db164d1dbfe16f7b3e3f7a90881302f6ab986",
+  "players/master-player.html": "0c605c0d4c0ff79e5da8bfcec62bef259bb760b7",
   "players/meditation.html": "bd2382e679595927bc525f9c81871794c07c89ea"
 };
 const root = new URL('../', import.meta.url);
