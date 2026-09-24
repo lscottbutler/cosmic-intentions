@@ -308,6 +308,7 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   const meditation = page.frameLocator('#experienceFrame');
   await meditation.locator('#timer').click();
   await expect(controls).toBeVisible();
+  await expect(controls).toHaveCSS('animation-duration', '3s');
   await expect(menu).toBeHidden();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
 
