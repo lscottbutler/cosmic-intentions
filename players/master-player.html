@@ -84,6 +84,8 @@
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
     .deck.meditation-mode{background:#fff;border:35px solid #1e90ff;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
     .deck.meditation-mode::before{display:none}
+    /* Fill only the outside lower corners; retain the curved white controls area. */
+    .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:0 6px}
     .deck.lfm-tool-mode{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
