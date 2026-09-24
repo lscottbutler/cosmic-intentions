@@ -203,6 +203,34 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
   expect(order.menuVisible).toBe(true);
 });
 
+test('Meditation choices use one full-width column and expose the relaxation toggle', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=meditation', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+
+  const choices = page.locator('.med-time-choice');
+  const toggle = page.getByRole('button', { name: 'Relaxation Module off' });
+  await expect(choices).toHaveCount(8);
+  await expect(page.locator('.med-time-slot')).toHaveCount(0);
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+  const widths = await choices.evaluateAll((rows) => rows.map((row) => {
+    const button = row.querySelector('button');
+    return {
+      children: row.children.length,
+      row: Math.round(row.getBoundingClientRect().width),
+      button: Math.round(button.getBoundingClientRect().width),
+    };
+  }));
+  expect(widths.every(({ children, row, button }) => children === 1 && Math.abs(row - button) <= 1)).toBe(true);
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(toggle).toHaveAttribute('aria-label', 'Relaxation Module on');
+});
+
 test('Meditation image stays behind the visible grey frame', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
