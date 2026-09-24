@@ -127,7 +127,7 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.siteMenuVisible).toBe(true);
     // Locked master geometry: fixed mobile height, exact horizontal centering,
     // one shared vertical centerline, and the approved two-tone colors.
-    expect(state.upperTrough.height).toBeCloseTo(78, 1);
+    expect(state.upperTrough.height).toBeCloseTo(108, 1);
     expect(state.upperTrough.titleCenterX).toBeCloseTo(state.upperTrough.centerX, 1);
     expect(state.upperTrough.titleCenterY).toBeCloseTo(state.upperTrough.menuCenterY, 1);
     expect(state.upperTrough.outerColor).toBe('rgb(41, 41, 41)');
