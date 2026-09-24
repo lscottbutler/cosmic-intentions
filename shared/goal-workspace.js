@@ -8,12 +8,19 @@ let initialSelectionRead = false;
 
 export function goalWorkspaceRecords(goalId, records = readNotes()) {
   const matches = n => String(n.cat === 'task' ? linkedGoalId(n.task || {}, n) : n.goal || '') === String(goalId);
-  const linked = records.filter(n => n && n.text && matches(n))
+  const linked = records.filter(n => n && typeof n.text === 'string' && n.text.trim() && matches(n))
     .sort((a, b) => (b.updatedAt || b.ts || 0) - (a.updatedAt || a.ts || 0));
   return {
     notes: linked.filter(n => n.cat === 'goal-note' || (n.cat === 'task' && n.task)),
     journal: linked.filter(n => n.cat === 'note'),
   };
+}
+
+export function goalWorkspaceGoals(records = readNotes()) {
+  return intentions.map((goal, index) => ({ goal, index })).filter(({ goal }) => {
+    const linked = goalWorkspaceRecords(goal.id, records);
+    return linked.notes.length > 0 || linked.journal.length > 0;
+  });
 }
 
 // Writes to the existing note collection: Journal uses its established `note`
@@ -99,21 +106,26 @@ export function goalWorkspaceSelect(select) {
 export function renderGoalWorkspace() {
   if (!activeWorkspace()) return;
   const select = document.getElementById('goalWorkspaceSelect');
+  const eligibleGoals = goalWorkspaceGoals();
   if (!initialSelectionRead) {
     initialSelectionRead = true;
     const raw = new URLSearchParams(location.search).get('goal');
     const idx = raw === null ? 0 : Number(raw);
     selectedGoalId = intentions[idx] ? String(intentions[idx].id) : null;
+    if (!eligibleGoals.some(({ goal }) => String(goal.id) === selectedGoalId)) {
+      selectedGoalId = eligibleGoals.length ? String(eligibleGoals[0].goal.id) : null;
+    }
   }
-  select.innerHTML = '<option value="">— Choose a goal —</option>' + intentions.map((g, i) =>
-    `<option value="${esc(String(g.id))}">${esc(goalLetter(g, i) + ' · ' + (g.title || 'Untitled goal'))}</option>`).join('');
+  if (selectedGoalId && !eligibleGoals.some(({ goal }) => String(goal.id) === selectedGoalId)) selectedGoalId = null;
+  select.innerHTML = '<option value="">— Choose a goal —</option>' + eligibleGoals.map(({ goal: g, index }) =>
+    `<option value="${esc(String(g.id))}">${esc(goalLetter(g, index) + ' · ' + (g.title || 'Untitled goal'))}</option>`).join('');
   const goal = selectedGoal();
   select.value = goal ? selectedGoalId : '';
-  select.disabled = !intentions.length;
+  select.disabled = !eligibleGoals.length;
   document.getElementById('goalWorkspaceContent').hidden = !goal;
   const empty = document.getElementById('goalWorkspaceEmpty');
   empty.hidden = !!goal;
-  empty.textContent = intentions.length ? 'Choose a goal to see its notes, to-dos, and journal entries.' : 'Your goals will appear here when you are signed in and have added a goal.';
+  empty.textContent = eligibleGoals.length ? 'Choose a goal to see its notes, to-dos, and journal entries.' : 'No goals with saved notes or journal entries yet. Link a note or journal entry to a goal in Roadmap or Journal to see it here.';
   if (!goal) return;
   document.getElementById('goalWorkspaceGoal').textContent = goal.title || 'Untitled goal';
   document.getElementById('goalWorkspaceNoteComposer').innerHTML = entryForm('goal-note');
@@ -139,7 +151,21 @@ export function goalWorkspaceAddTask(form) {
 }
 
 export function renderGoalWorkspaceNotes(source) {
-  if (!activeWorkspace() || !selectedGoal()) return;
+  if (!activeWorkspace()) return;
+  const eligibleGoals = goalWorkspaceGoals();
+  const select = document.getElementById('goalWorkspaceSelect');
+  // Refresh membership after relinking/deleting a note, while retaining any
+  // unsaved text until the member saves it or changes their selection.
+  select.innerHTML = '<option value="">— Choose a goal —</option>' + eligibleGoals.map(({ goal: g, index }) =>
+    `<option value="${esc(String(g.id))}">${esc(goalLetter(g, index) + ' · ' + (g.title || 'Untitled goal'))}</option>`).join('');
+  select.disabled = !eligibleGoals.length;
+  select.value = eligibleGoals.some(({ goal }) => String(goal.id) === selectedGoalId) ? selectedGoalId : '';
+  if (!select.value && !document.querySelector('#page-goalworkspace [data-dirty="true"]')) {
+    selectedGoalId = null;
+    renderGoalWorkspace();
+    return;
+  }
+  if (!selectedGoal()) return;
   const records = goalWorkspaceRecords(selectedGoalId);
   const host = document.getElementById('goalWorkspaceNotes');
   // Keep an editor stable while it is being edited. If its goal changes,

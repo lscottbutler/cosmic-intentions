@@ -46,6 +46,12 @@ const seed = [
   { id: 'affirmation', cat: 'affirmation', goal: 'g1', text: 'A thought' },
 ];
 storage.set('ci_notes', JSON.stringify(seed));
+assert.deepEqual(Array.from(workspace.goalWorkspaceGoals(), x => x.goal.id), ['g1', 'g2']);
+assert.deepEqual(Array.from(workspace.goalWorkspaceGoals([seed[0]]), x => x.goal.id), ['g1'], 'a saved task note qualifies its linked goal');
+assert.deepEqual(Array.from(workspace.goalWorkspaceGoals([seed[4]]), x => [x.goal.id, x.index]), [['g2', 1]], 'a Journal entry alone qualifies, preserving the original goal index');
+assert.deepEqual(Array.from(workspace.goalWorkspaceGoals([seed[1]]), x => x.goal.id), ['g2'], 'relinked notes qualify the selected goal, not the source task goal');
+assert.equal(workspace.goalWorkspaceGoals([seed[2], seed[5], { cat: 'note', goal: 'g1', text: '   ' }]).length, 0, 'unlinked notes, thoughts, blank entries, and to-dos alone do not qualify');
+assert.deepEqual(Array.from(workspace.goalWorkspaceGoals([{ cat: 'goal-note', goal: 'g1', text: 'A saved goal note' }]), x => x.goal.id), ['g1']);
 assert.deepEqual(Array.from(workspace.goalWorkspaceRecords('g1').notes, n => n.id), ['legacy']);
 assert.deepEqual(Array.from(workspace.goalWorkspaceRecords('g1').journal, n => n.id), ['journal1']);
 assert.deepEqual(Array.from(workspace.goalWorkspaceRecords('g2').notes, n => n.id), ['relinked']);

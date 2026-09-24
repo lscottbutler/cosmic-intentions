@@ -4,6 +4,10 @@ Scott requested one page for a goal's notes, to-dos, and Journal entries.
 The workspace lives in the existing Master Player at `?start=goal-workspace`.
 Open it from the site menu, the Notes page, or the button inside a Roadmap goal.
 The Roadmap button selects that goal; the page also has a goal selector.
+The selector shows only goals with at least one nonempty saved goal/task note
+or linked Journal entry. Goals with to-dos alone stay out of this list. An
+initial link to an ineligible goal falls back to the first eligible goal, and
+an empty list explains where to link the first note or Journal entry.
 
 The page shows My Actions and Roadmap tasks, linked notes, then Journal entries.
 It uses the existing task cards, completion handlers, task notes, and saves.
