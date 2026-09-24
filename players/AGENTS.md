@@ -21,3 +21,9 @@ Preserve all of the following unless Scott explicitly requests changing that fea
 4. Preserve the existing bottom-border thickness, controls and spacing during tasks targeting something else.
 
 For unrelated edits, leave these geometry rules and the side-width calculation untouched. If an authorized change to shared styling could affect this frame, compare just this affected border region with the reference before handoff. Do not claim that this instruction file is an automated regression test or a technical write lock.
+
+## Approved template integrity gate
+
+Scott explicitly locked the complete approved template on 2026-09-24. `players/check-template-lock.mjs` protects `players/master-player.html` and `players/meditation.html` using their approved Git blob identities. It runs before builds and as an early CI step. The approved version remains recoverable at commit `9b56b51fffbd208445be3eb8270be87a8a0e55ad`.
+
+Do not remove, skip or weaken the guard, replace its hashes, or change these protected files to complete unrelated revisions. A failed check means stop the affected change and preserve the approved template. Scott's explicit request to change a protected template feature authorizes only that requested feature; visually verify it before recording a new approved baseline. Other player engines and page content remain editable within the user's stated scope.
