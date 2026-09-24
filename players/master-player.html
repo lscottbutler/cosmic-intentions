@@ -36,8 +36,9 @@
     #standaloneSiteMenu button,#standaloneSiteMenu a{display:block;width:100%;padding:10px 14px;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}
     #standaloneSiteMenu button:hover,#standaloneSiteMenu a:hover,#standaloneSiteMenu button:focus-visible,#standaloneSiteMenu a:focus-visible{background:#747474;outline:2px solid #fff;outline-offset:-2px}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
-    .stage.ci-stage-fade-out{opacity:1}
-    .view{animation:fadeIn .24s ease both}
+    .ci-visual-transition{will-change:opacity}
+    .ci-visual-transition .inspiration-card{transition:none}
+    .view{animation:none}
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
@@ -414,7 +415,6 @@
         const transitionId=++toolCardTransitionId;
         const itemIndex=Math.max(0,items.findIndex(item=>item[0]===action));
         const file=toolCardByAction[action]||entrepreneurCards[(cardIndex+itemIndex+1)%entrepreneurCards.length];
-        const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         toolInspirationPanel.classList.remove('has-card');
         return new Promise(resolve=>{
           const swapCard=()=>{
@@ -436,8 +436,7 @@
             };
             toolInspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(file);
           };
-          if(reduced)swapCard();
-          else window.setTimeout(swapCard,3000);
+          swapCard();
         });
       }
       let selected=null,heightFrame=0;
@@ -476,10 +475,54 @@
         if(experienceMutationObserver){experienceMutationObserver.disconnect();experienceMutationObserver=null}
         if(settleTimer){window.clearTimeout(settleTimer);settleTimer=0}
       }
-      function transitionStage(commit){
-        let result;
-        try{result=commit()}catch(error){throw error}
-        Promise.resolve(result).finally(reportHeight);
+      let stageTransitionId=0,stageAnimation=null,stageSurface=null;
+      function currentVisualSurface(){
+        if(!home.hidden)return home;
+        if(!experience.hidden)return toolRotation.hidden?experienceFrame:toolRotation;
+        return directoryView;
+      }
+      async function transitionStage(commit){
+        const transitionId=++stageTransitionId;
+        if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
+        if(stageSurface){
+          stageSurface.style.opacity='';
+          stageSurface.classList.remove('ci-visual-transition');
+        }
+        const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const fade=async(surface,from,to,duration)=>{
+          stageSurface=surface;
+          surface.classList.add('ci-visual-transition');
+          stageAnimation=surface.animate([{opacity:from},{opacity:to}],{duration,easing:'ease',fill:'both'});
+          try{await stageAnimation.finished}catch(_){return false}
+          return transitionId===stageTransitionId;
+        };
+        try{
+          if(!reduced&&!await fade(currentVisualSurface(),1,0,250))return;
+          const outgoing=stageSurface;
+          const ready=commit();
+          const incoming=currentVisualSurface();
+          if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
+          if(outgoing&&outgoing!==incoming)outgoing.classList.remove('ci-visual-transition');
+          stageSurface=incoming;
+          incoming.classList.add('ci-visual-transition');
+          incoming.style.opacity=reduced?'1':'0';
+          let readyTimeout;
+          try{await Promise.race([Promise.resolve(ready),new Promise(resolve=>{readyTimeout=window.setTimeout(resolve,8000)})])}
+          finally{window.clearTimeout(readyTimeout)}
+          if(transitionId!==stageTransitionId)return;
+          fitExperience();
+          if(!reduced)await fade(incoming,0,1,580);
+        }finally{
+          if(transitionId===stageTransitionId){
+            if(stageSurface){
+              stageSurface.style.opacity='';
+              stageSurface.classList.remove('ci-visual-transition');
+            }
+            if(stageAnimation)stageAnimation.cancel();
+            stageAnimation=null;stageSurface=null;
+            reportHeight();
+          }
+        }
       }
       function applyHomeMode(){
         notifyParentMode('home');
@@ -576,7 +619,7 @@
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
         toolRotation.hidden=!usesLfmTemplate;
-        if(usesLfmTemplate)setToolCard(action);
+        const cardReady=usesLfmTemplate?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame','#1e90ff');
@@ -584,16 +627,22 @@
         clearExperienceObservers();
         cap.textContent=usesLfmTemplate?'':(action==='daily-habits'?'Habits':item[1]);
         experienceFrame.title=item[1];
-        experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
+        experienceFrame.style.height=action==='meditation'?(stage.clientWidth*9/16)+'px':'600px';
         const nextUrl=destinationUrl(action);
         const frameReady=new Promise(resolve=>{
           let settled=false;
-          const done=()=>{if(settled)return;settled=true;resolve()};
+          const done=()=>{
+            if(settled)return;
+            settled=true;
+            window.clearTimeout(timeout);
+            experienceFrame.removeEventListener('load',done);
+            resolve();
+          };
+          const timeout=window.setTimeout(done,8000);
           experienceFrame.addEventListener('load',done,{once:true});
-          window.setTimeout(done,650);
         });
         experienceFrame.src=nextUrl;show(experience);
-        return frameReady;
+        return Promise.all([frameReady,cardReady]);
       }
       function select(action){
         if(action==='visualization'&&relaxationModuleEnabled&&!relaxationThenVisualization){
