@@ -211,7 +211,9 @@ test('Meditation choices use one full-width column and expose the relaxation tog
 
   const choices = page.locator('.med-time-choice');
   const toggle = page.locator('[data-relaxation-toggle]');
-  await expect(choices).toHaveCount(8);
+  await expect(choices).toHaveCount(6);
+  await expect(page.locator('[data-med-time="0.25"], [data-med-time="0.5"]')).toHaveCount(0);
+  await expect(page.locator('.med-time-circle')).toHaveCount(6);
   await expect(page.locator('.med-time-slot')).toHaveCount(0);
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
