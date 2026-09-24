@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
   "players/master-player.html": "4a6d6fe7620568335aa447f4b798fef88385d130",
-  "players/meditation.html": "1aa947de3ca42cd7734df2dd5a0fd5103267f96b"
+  "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
