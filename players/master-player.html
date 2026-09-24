@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>MASTER PLAYER TEMPLATE | Cosmic Intentions</title>
+  <script>if(window.parent!==window)document.documentElement.classList.add('embedded-player')</script>
   <style>
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
        Permanent shared shell for all member players.
@@ -13,7 +14,8 @@
        Page-specific content may change; this shared chrome must remain consistent. */
     :root{color-scheme:light;--frame:#1e90ff;--header:#1e90ff;--paper:#f2ede7;--deck:#1e90ff;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
-    html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
+    html,body{width:100%;margin:0;overflow-x:hidden;overflow-y:auto;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
+    html.embedded-player,html.embedded-player body{overflow:hidden}
     body{padding:0}
     button{font:inherit}
     .shell{width:100%;border:0;background:transparent;overflow:hidden;transition:min-height .35s ease}
