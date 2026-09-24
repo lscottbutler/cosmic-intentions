@@ -409,14 +409,21 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     return {
       borderDisplay: getComputedStyle(deck, '::before').display,
       frameColor: getComputedStyle(deck).backgroundColor,
-      sideStrips: getComputedStyle(deck, '::after').backgroundImage,
+      borderTop: getComputedStyle(deck).borderTopWidth,
+      borderLeft: getComputedStyle(deck).borderLeftWidth,
+      borderRight: getComputedStyle(deck).borderRightWidth,
+      borderBottom: getComputedStyle(deck).borderBottomWidth,
+      borderColor: getComputedStyle(deck).borderLeftColor,
       menuColor: getComputedStyle(document.querySelector('#meditationMenu')).backgroundColor,
     };
   });
   expect(lowerTrough.borderDisplay).toBe('none');
   expect(lowerTrough.frameColor).toBe('rgb(34, 139, 34)');
-  expect(lowerTrough.sideStrips).toContain('70px');
-  expect(lowerTrough.sideStrips).toContain('rgb(30, 144, 255)');
+  expect(lowerTrough.borderTop).toBe('35px');
+  expect(lowerTrough.borderLeft).toBe('35px');
+  expect(lowerTrough.borderRight).toBe('35px');
+  expect(lowerTrough.borderBottom).toBe('35px');
+  expect(lowerTrough.borderColor).toBe('rgb(30, 144, 255)');
   expect(lowerTrough.menuColor).toBe('rgba(0, 0, 0, 0)');
 
   const meditation = page.frameLocator('#experienceFrame');
