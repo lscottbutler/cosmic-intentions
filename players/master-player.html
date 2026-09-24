@@ -92,38 +92,38 @@
     /* Fill only the outside lower corners; retain the curved white controls area. */
     .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
-    .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:0 6px}
+    .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
     .deck.lfm-tool-mode{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
     .deck.lfm-tool-mode .normal-control{display:none}
     .deck.lfm-tool-mode .lfm-tool-controls{display:grid;animation:controlFadeIn .28s .08s ease both}
     .deck.meditation-mode.meditation-session-active{padding:18px 10px 55px}
-    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0 6px}
+    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;grid-template-columns:repeat(3,58px);padding:0}
     .med-progress{position:absolute;z-index:3;top:0;left:0;right:0;display:none;width:auto;height:30px;border:0;background:transparent;padding:0 25px;cursor:pointer;transform:translateY(-50%);-webkit-tap-highlight-color:transparent}
     .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.28);overflow:visible}
     .med-progress-fill{position:relative;display:block;width:0;height:100%;border-radius:inherit;background:#a7c526;transition:width .2s linear}
     .med-progress-fill::after{content:"";position:absolute;top:50%;right:-15px;width:30px;height:30px;border:3px solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:translateY(-50%)}
     .med-progress:focus-visible{outline:2px solid #fff;outline-offset:2px}
     .deck.meditation-mode .med-progress{display:none}
-    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
+    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
     .med-controls[hidden]{display:none!important}
     .deck.meditation-mode .med-controls{display:none}
     .deck.meditation-mode.meditation-session-active .med-controls{display:grid;animation:controlFadeIn 3s ease both}
     .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer;outline:none}
-    .med-circle{width:42px;height:42px;border:2px solid #a7c526;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:18px;font-weight:900;transition:transform .18s ease,background .18s ease}
-    .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#86a41d;transform:translateY(-2px);outline:none}
+    .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;border-radius:50%;display:grid;place-items:center;background:#000;color:#fff;font-size:24px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.28);transition:transform .18s ease,background .18s ease}
+    .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
     .med-control.play-control{position:relative;transform:translateY(10px)}
     .med-countdown{position:absolute;left:100%;bottom:calc(100% + 13px);transform:translateX(-50%);min-width:54px;text-align:center;font-size:14px!important;font-weight:800!important;letter-spacing:1px!important;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;pointer-events:none}
-    .med-control.play-control .med-circle{width:58px;height:58px;background:#85a620;border:5px solid #315f12;font-size:25px}
+    .med-control.play-control .med-circle{width:58px;height:58px;background:#000;border:7px solid #8f8f8f;font-size:24px}
     .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
-    /* APPROVED WORKSPACE PLAYER NAV — Scott's centered three-button cluster.
-       Used by Goals, Habits, Visualize, Action Plan and Library. */
-    .shell.three-button-nav-mode .lfm-tool-controls{grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
-    .shell.three-button-nav-mode .deck.lfm-tool-mode{padding-top:16px;padding-bottom:22px}
-    .shell.three-button-nav-mode .lfm-tool-controls .med-control{display:grid;place-items:center}
-    .shell.three-button-nav-mode .lfm-tool-controls .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;background:#000;color:#fff;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
-    .shell.three-button-nav-mode .lfm-tool-controls .med-control:hover .med-circle,
-    .shell.three-button-nav-mode .lfm-tool-controls .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
-    .shell.three-button-nav-mode .lfm-tool-controls .med-control>span:last-child{display:none}
+    /* APPROVED SHARED PLAYER NAV — Scott's centered black/grey three-button cluster.
+       Used by every workspace and Meditation; labels stay accessible but are not displayed. */
+    .shell :is(.lfm-tool-controls,.med-controls){grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
+    .shell .deck.lfm-tool-mode{padding-top:16px;padding-bottom:22px}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control{display:grid;place-items:center}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;background:#000;color:#fff;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control:hover .med-circle,
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control>span:last-child{display:none}
     .med-menu{grid-column:1/-1;margin:0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:#292929;color:#fff;animation:fadeIn .22s ease both}
     .deck.meditation-mode .med-menu{background:transparent;border:0}
     .deck.meditation-mode .med-menu{color:#292929}
@@ -213,7 +213,7 @@
       </div>
       <button class="med-progress" id="medProgress" type="button" aria-label="Meditation progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"><span class="med-countdown" id="medCountdown">15:00</span></span></span></button>
       <div class="med-controls" id="meditationControls" aria-label="Meditation controls" hidden>
-        <button class="med-control" type="button" data-med-command="back"><span class="med-circle">◀</span><span>Back</span></button>
+        <button class="med-control" type="button" data-med-command="back" aria-label="Back"><span class="med-circle">◀</span><span>Back</span></button>
         <button class="med-control" type="button" data-med-command="menu" aria-label="Meditation Menu" aria-controls="meditationMenu" aria-expanded="false"><span class="med-circle">☰</span><span>Meditation Menu</span></button>
         <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
       </div>
