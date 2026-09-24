@@ -105,12 +105,18 @@
     .shell.three-button-nav-mode .lfm-tool-controls .med-control>span:last-child{display:none}
     .med-menu{grid-column:1/-1;margin:12px 14px 0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:var(--deck);color:#fff;animation:fadeIn .22s ease both}
     .deck:not(.meditation-mode) .med-menu{display:none}
-    .med-menu[hidden]{display:none}.med-menu h2{margin:0 0 7px;font-size:14px;letter-spacing:1px;text-transform:uppercase}
-    .med-menu-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:5px}
-    .med-menu-row.mode{grid-template-columns:repeat(2,1fr)}
+    .med-menu[hidden]{display:none}
+    .med-menu-row{display:grid;gap:5px;margin-top:5px}
+    .med-menu-row.mode{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:320px;margin:0 auto 4px}
     .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:5px 4px;font-size:13px;font-weight:800;cursor:pointer}
     .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
-    .med-play-banner{width:100%;margin:0 0 7px;border:0;border-radius:7px;background:#118aa5;color:#fff;padding:8px 6px;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+    .med-mode-option{min-width:0;border:0;border-radius:0;background:transparent;padding:0;display:grid;justify-items:center;gap:7px;color:#fff}
+    .med-mode-circle{width:56px;height:56px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:18px;font-weight:900;transition:background .2s ease,box-shadow .2s ease,transform .2s ease}
+    .med-mode-label{font-size:12px;line-height:1.05;font-weight:900;letter-spacing:.8px;text-transform:uppercase}
+    .med-mode-option:hover .med-mode-circle,.med-mode-option:focus-visible .med-mode-circle{background:rgba(255,255,255,.23);transform:translateY(-1px)}
+    .med-mode-option:focus-visible{outline:none}
+    .med-mode-option.active{border:0;background:transparent;color:#fff}
+    .med-mode-option.active .med-mode-circle{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
     .relaxation-toggle-row{display:flex;justify-content:center;margin:12px 0 10px}
     .relaxation-toggle{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:6px;padding:2px 12px;cursor:pointer}
     .relaxation-toggle-icon{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:25px;line-height:1;transition:background .2s ease,box-shadow .2s ease}
@@ -184,12 +190,9 @@
         <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
       </div>
         <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
-          <h2>Meditation Menu</h2>
-          <button class="med-play-banner" type="button" data-med-play>Play Meditation</button>
-          <div><strong>Style</strong></div>
           <div class="med-menu-row mode" id="meditationModes">
-            <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
-            <button class="med-option" type="button" data-med-mode="guided">Guided</button>
+            <button class="med-option med-mode-option active" type="button" data-med-mode="unguided" aria-label="Unguided"><span class="med-mode-circle" aria-hidden="true">U</span><span class="med-mode-label">Unguided</span></button>
+            <button class="med-option med-mode-option" type="button" data-med-mode="guided" aria-label="Guided"><span class="med-mode-circle" aria-hidden="true">G</span><span class="med-mode-label">Guided</span></button>
           </div>
           <div class="relaxation-toggle-row">
             <button class="relaxation-toggle" type="button" data-relaxation-toggle aria-pressed="false" aria-label="Relaxation Module off">
@@ -197,7 +200,6 @@
               <span class="relaxation-toggle-label">Relaxation Module</span>
             </button>
           </div>
-          <div><strong>Time</strong></div>
           <div class="med-time-stack" id="meditationTimes">
             <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1" aria-label="1 Minute"><span class="med-time-circle" aria-hidden="true">1</span><span class="med-time-label">Minute</span></button></div>
             <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2" aria-label="2 Minutes"><span class="med-time-circle" aria-hidden="true">2</span><span class="med-time-label">Minutes</span></button></div>
@@ -606,7 +608,6 @@
         if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}
       }));
       document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
-      document.querySelector('[data-med-play]')?.addEventListener('click',()=>sendMeditation('toggle'));
       document.querySelector('[data-relaxation-toggle]')?.addEventListener('click',event=>{
         relaxationModuleEnabled=!relaxationModuleEnabled;
         sessionStorage.setItem('ci-relaxation-module',relaxationModuleEnabled?'on':'off');
