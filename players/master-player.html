@@ -84,7 +84,7 @@
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
     .deck.meditation-mode:not(.meditation-session-active)::before{inset:35px}
     .deck.meditation-mode::before{border-radius:8px 8px 50% 50%/8px 8px var(--trough-curve) var(--trough-curve)}
-    .deck.meditation-mode{background:#228b22;border-left:35px solid #1e90ff;border-right:35px solid #1e90ff;border-top:0;border-bottom:0;margin-top:18px;margin-left:0;margin-right:0;margin-bottom:0}
+    .deck.meditation-mode{background:transparent;border:0;border-radius:0;margin-top:18px;margin-left:0;margin-right:0;margin-bottom:0}
     .deck.meditation-mode::before{display:none}
     .deck.compact-trough-mode{padding-bottom:20px}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:0 6px}
@@ -121,6 +121,10 @@
     .shell.three-button-nav-mode .lfm-tool-controls .med-control>span:last-child{display:none}
     .med-menu{grid-column:1/-1;margin:0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:#292929;color:#fff;animation:fadeIn .22s ease both}
     .deck.meditation-mode .med-menu{background:transparent;border:0}
+    .deck.meditation-mode .med-menu{color:#292929}
+    .deck.meditation-mode .med-mode-option,.deck.meditation-mode .med-mode-option.active,.deck.meditation-mode .med-time-choice .med-time-option,.deck.meditation-mode .med-time-choice .med-time-option.active,.deck.meditation-mode .relaxation-toggle{color:#292929}
+    .deck.meditation-mode .med-mode-circle,.deck.meditation-mode .med-time-circle,.deck.meditation-mode .relaxation-toggle-icon{background:#e5e5e5;border-color:#777;box-shadow:none}
+    .deck.meditation-mode .med-mode-option.active .med-mode-circle,.deck.meditation-mode .med-time-choice .med-time-option.active .med-time-circle,.deck.meditation-mode .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon{background:#c4c4c4;box-shadow:0 0 0 2px #555}
     .deck:not(.meditation-mode) .med-menu{display:none}
     .med-menu[hidden]{display:none}
     .med-menu-row{display:grid;gap:5px;margin-top:5px}
