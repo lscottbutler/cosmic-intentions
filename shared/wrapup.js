@@ -186,7 +186,7 @@ export function wrapupTaskGoalToggle(idx) {
   }
 }
 
-// Per-goal active tab ("my" | "roadmap") for the two tabs hanging off the goal box. Survives re-renders.
+// Per-goal active tab ("my" | "roadmap") for the two tabs above the goal box. Survives re-renders.
 const _activeTab = new Map();
 export function wrapTab(idx, which) {
   _activeTab.set(idx, which);
@@ -651,18 +651,21 @@ function _todayChecklist() {
     </div>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
-    rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
+    rows += `<div class="wgoal">
+      <div class="wtabs">
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+      </div>
+      <details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(goalCase(it.title))}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
       </summary>
-      <div class="wtabs">
-        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+      <div class="wtab-connect">
         <button id="wtab-both-${idx}" onclick="wrapTab(${idx},'${activeTab === 'both' ? 'my' : 'both'}')" title="${activeTab === 'both' ? 'Connected — tap to view My Actions & Roadmap separately' : 'Tap to connect My Actions + Roadmap into one view'}" style="flex:0 0 auto;align-self:stretch;display:flex;align-items:flex-end;justify-content:center;background:none;border:none;padding:0 0 6px;cursor:pointer;">
           <span style="width:34px;height:34px;border-radius:50%;background:#000;border:2px solid #fff;display:inline-flex;align-items:center;justify-content:center;line-height:0;">${activeTab === 'both'
             ? '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
             : '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.84 12.25l1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="2" y1="8" x2="5" y2="8"/><line x1="16" y1="19" x2="16" y2="22"/><line x1="19" y1="16" x2="22" y2="16"/></svg>'}</span>
         </button>
-        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${ROADMAP_COLOR};color:#fff;opacity:1;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
@@ -674,7 +677,8 @@ function _todayChecklist() {
         </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
       </div>
-    </details>`;
+      </details>
+    </div>`;
 
     // MY TASK LIST — group each goal's tasks under its OWN collapsible bar
     // (single-open accordion via wrapupTaskGoalToggle). Tap a goal to reveal

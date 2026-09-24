@@ -382,28 +382,32 @@ details.rm-drop[open]::details-content { height: auto; }
 .wcard-menu { height: 0; overflow: hidden; transition: height .92s ease, content-visibility .92s allow-discrete; content-visibility: hidden; }
 .wcard-menu.open { height: auto; content-visibility: visible; }
 
-/* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
-.wtabs { display: flex; justify-content: space-between; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
+/* My Actions / Roadmap tabs sit together above the goal's right edge. */
+.wgoal > .wtabs { display: none; }
+.wgoal:has(> .rm-drop[open]) > .wtabs { display: flex; }
+.wtabs { justify-content: flex-end; gap: 4px; padding: 0 10px; margin-bottom: -1px; position: relative; z-index: 1; }
 .wtab {
-  flex: 0 1 auto;      /* content-sized so the two tabs sit at the outer edges */
-  max-width: 44%;
+  flex: 0 1 auto;
+  max-width: calc(50% - 2px);
   min-width: 0;
   box-sizing: border-box;
-  border: 1px solid #ffffff;      /* thin white outline */
-  border-radius: 0 0 10px 10px;
-  padding: 18px 8px 8px;          /* extra top padding: label sits below the pill overlap */
+  border: 1px solid #ffffff;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  background: #000;
+  color: #fff;
   font-family: var(--vault-mono);
-  font-size: 11px;                /* ~20% bigger */
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: opacity .15s;
 }
-.wtab.wtab-active { opacity: 1; }
+.wtab.wtab-active { text-decoration: underline; text-underline-offset: 3px; }
+.wtab-connect { display: flex; justify-content: center; margin-top: -12px; position: relative; z-index: 1; }
 
 /* Wrap-up code-cards (Phase 1): quiet card + ⋯ overflow menu hover states */
 .wcard-more { transition: background .12s, color .12s; }
