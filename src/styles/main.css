@@ -2653,6 +2653,7 @@ input, textarea, select {
 .pb-habit-chevron { flex-shrink: 0; transition: transform .15s ease; }
 .pb-habit-section[open] > summary .pb-habit-chevron { transform: rotate(180deg); }
 .pb-habit-section .pb-habit-grid { margin-top: 8px; }
+.pb-habit-section:not([open]) > :not(summary) { display: none !important; }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
