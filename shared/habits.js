@@ -268,6 +268,8 @@ export function lfmMiniNav(command) {
 export function renderPBHabitList() {
   const el = document.getElementById('pbHabitList');
   if (!el) return;
+  // Keep sections the user opened while editing; a fresh page starts closed.
+  const openCats = new Set(Array.from(el.querySelectorAll('details[data-habit-category][open]'), section => section.dataset.habitCategory));
   const list = getHabitList();
   const groups = _grouped(list);
   const arrow = 'width:30px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#454545;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:10px;line-height:1;';
@@ -287,9 +289,12 @@ export function renderPBHabitList() {
   [...HABIT_CATS, ''].forEach(cat => {
     const items = groups[cat];
     if (cat === '' && !items.length) return;   // hide empty Unsorted; always show the 5 named banners
-    html += `<div id="pbcat-${CAT_LABEL(cat)}" style="background:${CAT_COLORS[cat]};color:#fff;font-weight:800;font-size:12px;letter-spacing:1.5px;padding:8px 12px;border-radius:8px;margin:16px 0 8px;scroll-margin-top:76px;">${CAT_LABEL(cat)}</div>`;
+    html += `<details class="pb-habit-section" id="pbcat-${CAT_LABEL(cat)}" data-habit-category="${cat}"${openCats.has(cat) ? ' open' : ''}>
+      <summary style="background:${CAT_COLORS[cat]};color:#fff;font-weight:800;font-size:12px;letter-spacing:1.5px;padding:8px 12px;border-radius:8px;">
+        <span>${CAT_LABEL(cat)}</span><svg class="pb-habit-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>`;
     if (!items.length) {
-      html += `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 2px 6px;">No habits here yet — set a habit's category to "${cat}".</div>`;
+      html += `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:10px 2px 6px;">No habits here yet — set a habit's category to "${cat}".</div></details>`;
       return;
     }
     html += `<div class="pb-habit-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;">`;
@@ -313,7 +318,7 @@ export function renderPBHabitList() {
         </div>
       </div>`;
     });
-    html += `</div>`;
+    html += `</div></details>`;
   });
   el.innerHTML = html || `<div style="color:var(--muted);font-size:12px;font-style:italic;padding:6px 0;">No habits yet — add one below.</div>`;
 }
@@ -327,7 +332,7 @@ export function openHabitsAt(cat) {
   if (typeof window !== 'undefined' && typeof window.navTo === 'function') window.navTo('habits');
   setTimeout(() => {
     const el = document.getElementById('pbcat-' + label);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }, 170);
 }
 
