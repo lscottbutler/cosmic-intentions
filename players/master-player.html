@@ -126,14 +126,14 @@
     .shell :is(.lfm-tool-controls,.med-controls) .med-control:hover .med-circle,
     .shell :is(.lfm-tool-controls,.med-controls) .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
     .shell :is(.lfm-tool-controls,.med-controls) .med-control>span:last-child{display:none}
-    /* Shared lower-trough navigation: 2.5x arrows, 2x menu beneath them. */
-    :is(#meditationControls,#lfmToolControls){grid-template-columns:repeat(2,minmax(0,145px));column-gap:18px;row-gap:12px}
+    /* Shared lower-trough navigation: reduced by 55%; menu centered beneath arrows. */
+    :is(#meditationControls,#lfmToolControls){grid-template-columns:repeat(2,minmax(0,65.25px));column-gap:18px;row-gap:12px}
     :is(#meditationControls,#lfmToolControls) .med-control{min-width:0}
     :is(#meditationControls,#lfmToolControls) :is([data-med-command="back"],[data-home]){grid-column:1;grid-row:1}
     :is(#meditationControls,#lfmToolControls) [data-lfm-mini-command="forward"]{grid-column:2;grid-row:1}
-    :is(#meditationControls,#lfmToolControls) .med-circle{width:100%;max-width:145px;height:auto;aspect-ratio:1;border-width:17.5px;font-size:60px}
-    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]){grid-column:1/-1;grid-row:2;justify-self:center;width:116px}
-    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]) .med-circle{border-width:14px;font-size:48px}
+    :is(#meditationControls,#lfmToolControls) .med-circle{width:100%;max-width:65.25px;height:auto;aspect-ratio:1;border-width:7.875px;font-size:27px}
+    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]){grid-column:1/-1;grid-row:2;justify-self:center;width:52.2px}
+    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]) .med-circle{border-width:6.3px;font-size:21.6px}
     .med-menu{grid-column:1/-1;margin:0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:#292929;color:#fff;animation:fadeIn .22s ease both}
     .deck.meditation-mode .med-menu{background:transparent;border:0}
     .deck.meditation-mode .med-menu{color:#292929}
