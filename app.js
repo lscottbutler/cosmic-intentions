@@ -385,6 +385,7 @@ export function showPage(id) {
       journal: 'mynotes',
       thoughts: 'notes',
       'task-notes': 'tasknotes',
+      'goal-workspace': 'goalworkspace',
       wins: 'wins',
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
@@ -465,6 +466,7 @@ export function showPage(id) {
   if (id === 'meditation') renderMeditationStats();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
   if (id === 'tasknotes' && typeof window.renderTaskNotesList === 'function') window.renderTaskNotesList();
+  if (id === 'goalworkspace' && typeof window.renderGoalWorkspace === 'function') window.renderGoalWorkspace();
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
@@ -594,6 +596,7 @@ export function navTo(id) {
     notes: 'thoughts',
     mynotes: 'journal',
     tasknotes: 'task-notes',
+    goalworkspace: 'goal-workspace',
     setup: 'goals',
     myroadmap: 'action-plan',
     vizlibrary: 'visualization',
@@ -4636,6 +4639,7 @@ const ADMIN_PAGE_BOXES = {
   notes:         'THOUGHTS',
   mynotes:       'JOURNAL',
   tasknotes:     'NOTES',
+  goalworkspace: 'GOAL WORKSPACE',
   gratitude:     'GRATITUDE',
   wins:          'WINS',
   cosmiclibrary: 'COSMIC LIBRARY',
@@ -5972,6 +5976,7 @@ const _masterInlineLabels = {
   journal: 'Journal',
   thoughts: 'My Thoughts',
   'task-notes': 'Notes',
+  'goal-workspace': 'Goal Workspace',
   wins: 'Wins',
   proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
@@ -6064,6 +6069,9 @@ export function openMasterDestination(action, goalIndex = null) {
       break;
     case 'task-notes':
       navTo('tasknotes');
+      break;
+    case 'goal-workspace':
+      navTo('goalworkspace');
       break;
     case 'wins':
       navTo('wins');

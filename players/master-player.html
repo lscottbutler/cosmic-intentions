@@ -316,7 +316,7 @@
       };
       const cardAlt=file=>file.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
       const goalRaw=params.get('goal')??params.get('idx');
-      const goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
+      let goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
       const items=[
         ['goals','Goals','Review and work with your active intentions.'],
@@ -329,14 +329,15 @@
         ['journal','My Journal','Write and revisit your journal entries.'],
         ['thoughts','My Thoughts','Capture ideas, notes and reflections.'],
         ['task-notes','Notes','Review your notes from My Actions and Roadmap tasks.'],
+        ['goal-workspace','Goal Workspace','Manage a goal with its notes, to-dos, and journal entries.'],
         ['wins','My Wins','Record and review progress worth celebrating.'],
         ['proof','Proof','Collect evidence that your intentions are becoming real.'],
         ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes']);
-      const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins']);
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes','goal-workspace']);
+      const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins','goal-workspace']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
@@ -672,8 +673,8 @@
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
-        toolRotation.hidden=!usesLfmTemplate||action==='task-notes';
-        const cardReady=usesLfmTemplate&&action!=='task-notes'?setToolCard(action):Promise.resolve();
+        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace'].includes(action);
+        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace'].includes(action)?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame','#1e90ff');
@@ -732,7 +733,7 @@
           ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
           ['journal','My Journal'],['action-plan','Roadmap'],
           ['visualization','Visualization Library'],['meditation','Meditation'],
-          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes']
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace']
         ];
         siteChoices.forEach(([action,label])=>{
           const button=document.createElement('button');
@@ -795,7 +796,7 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
         const data=event.data||{};
-        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='home')homeMode();else select(data.action);return}
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='home')homeMode();else select(data.action);return}
         if(data.type==='ci-lfm-guide-command'){
           if(data.command==='back'){homeMode();return}
           if(data.command==='menu'){select('everything');return}
@@ -808,6 +809,10 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
         const data=event.data||{};
+        if(data.type==='ci-open-goal-workspace'){
+          goalIndex=Number.isInteger(data.goalIndex)&&data.goalIndex>=0?data.goalIndex:null;
+          select('goal-workspace');return;
+        }
         if(data.type==='ci-lfm-mini-nav'){
           if(data.command==='menu'){select('everything');return}
           const current=Math.max(0,items.findIndex(item=>item[0]===selected));

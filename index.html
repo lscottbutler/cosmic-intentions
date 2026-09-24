@@ -39,6 +39,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       'journal':'page-mynotes',
       'thoughts':'page-notes',
       'task-notes':'page-tasknotes',
+      'goal-workspace':'page-goalworkspace',
       'wins':'page-wins',
       'proof':'page-proof',
       'cosmic-library':'page-cosmiclibrary',
@@ -1207,12 +1208,43 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-tasknotes">
     <section class="task-notes-page" aria-labelledby="taskNotesTitle">
       <div class="task-notes-heading"><h1 id="taskNotesTitle">Notes</h1><span id="taskNotesCount"></span></div>
-      <p>Your notes from My Actions and Roadmap tasks.</p>
+      <p>Your goal notes and notes from My Actions and Roadmap tasks.</p>
+      <button type="button" class="goal-workspace-link" onclick="openGoalWorkspace()">Open goal workspace · Notes / To-do / Journal</button>
       <div id="taskNotesList"></div>
     </section>
   </div>
 
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
+  <div class="page" id="page-goalworkspace">
+    <section class="goal-workspace-page" aria-labelledby="goalWorkspaceTitle">
+      <h1 id="goalWorkspaceTitle">Goal Workspace</h1>
+      <p>Manage one goal: your notes, your to-dos, and your journal entries.</p>
+      <label class="goal-workspace-selector">Choose a goal<select id="goalWorkspaceSelect" onchange="goalWorkspaceSelect(this)" disabled><option value="">— Choose a goal —</option></select></label>
+      <p id="goalWorkspaceEmpty" class="goal-workspace-empty">Your goals will appear here when you are signed in and have added a goal.</p>
+      <div id="goalWorkspaceContent" hidden>
+        <h2 id="goalWorkspaceGoal" class="goal-workspace-goal"></h2>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceTodoHeading">
+          <h2 id="goalWorkspaceTodoHeading">To-do <span id="goalWorkspaceTaskCount"></span></h2>
+          <h3 class="goal-workspace-task-label">My Actions</h3>
+          <div id="goalWorkspaceMyTasks"></div>
+          <form class="goal-workspace-add-task" onsubmit="event.preventDefault();goalWorkspaceAddTask(this)"><input aria-label="Add a to-do for this goal" placeholder="Add your own action…" maxlength="160" required><button type="submit">+ Add</button></form>
+          <h3 class="goal-workspace-task-label goal-workspace-roadmap-label">Roadmap</h3>
+          <div id="goalWorkspaceRoadmapTasks"></div>
+        </section>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceNotesHeading">
+          <h2 id="goalWorkspaceNotesHeading">Notes <span id="goalWorkspaceNoteCount"></span></h2>
+          <div id="goalWorkspaceNotes"></div>
+          <div id="goalWorkspaceNoteComposer"></div>
+        </section>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceJournalHeading">
+          <h2 id="goalWorkspaceJournalHeading">Journal entries <span id="goalWorkspaceJournalCount"></span></h2>
+          <div id="goalWorkspaceJournal"></div>
+          <div id="goalWorkspaceJournalComposer"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
   <div class="page" id="page-dashboard">
     <div class="pg-frame pf-black">
       <div class="pg-bezel">

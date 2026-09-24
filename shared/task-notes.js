@@ -19,7 +19,7 @@ function savedTaskNote(context) {
   return readNotes().find(n => n && n.cat === 'task' && n.taskKey === key);
 }
 
-function linkedGoalId(context, note) {
+export function linkedGoalId(context, note) {
   // Older task notes inherit their source goal. Keep an explicit empty choice
   // distinct from that fallback so unlinking survives closing and reopening.
   return String(note && Object.hasOwn(note, 'goal') ? note.goal || '' : context.goalId);
@@ -45,7 +45,7 @@ export function taskNoteButton(context) {
   return `<button type="button" class="task-note-pencil" onclick="taskNoteToggle(this)" aria-label="Notes for ${esc(context.code)}" title="Task notes" aria-expanded="false">${TASK_NOTE_PENCIL}</button>`;
 }
 
-function editorHTML(context, note) {
+export function editorHTML(context, note) {
   return `<div class="task-note-editor" data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
     <label class="task-note-label">Your note<textarea rows="3" maxlength="10000" placeholder="Write a note about this task…" oninput="taskNoteChanged(this)" onchange="taskNoteSave(this)">${esc(note?.text || '')}</textarea></label>
     <label class="task-note-goal-label">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
@@ -122,15 +122,21 @@ export function taskNoteSave(source) {
   const goalHeading = editor.closest('.master-task-note')?.querySelector('.master-task-note-goal');
   if (goalHeading) goalHeading.textContent = goalTitle;
   if (!editor.closest('#taskNotesList')) renderTaskNotesList();
+  if (typeof window.renderGoalWorkspaceNotes === 'function') window.renderGoalWorkspaceNotes(editor);
   return true;
 }
 
 export function renderTaskNotesList() {
   const host = document.getElementById('taskNotesList');
   if (!host) return;
-  const notes = readNotes().filter(n => n && n.cat === 'task' && n.task && n.text)
+  const notes = readNotes().filter(n => n && n.text && ((n.cat === 'task' && n.task) || n.cat === 'goal-note'))
     .sort((a, b) => (b.updatedAt || b.ts || 0) - (a.updatedAt || a.ts || 0));
-  host.innerHTML = notes.length ? notes.map(note => `<article class="master-task-note">
+  host.innerHTML = notes.length ? notes.map(note => note.cat === 'goal-note' ? `<article class="master-task-note">
+    <div class="master-task-note-source"><strong>Note</strong></div>
+    <p class="master-task-note-goal">${esc(intentions.find(g => String(g.id) === String(note.goal))?.title || note.goalTitle || 'Unavailable goal')}</p>
+    <p class="goal-note-text">${esc(note.text)}</p>
+    <button type="button" class="goal-workspace-link" data-goal-id="${esc(String(note.goal))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open goal workspace</button>
+  </article>` : `<article class="master-task-note">
     <div class="master-task-note-source"><strong>${esc(note.task.code)}</strong><span>${note.task.kind === 'roadmap' ? 'Roadmap' : 'My Actions'}</span></div>
     <p class="master-task-note-goal">${esc(linkedGoalTitle(note.task, note))}</p>
     <h2>${esc(note.task.taskText)}</h2>${editorHTML(note.task, note)}
