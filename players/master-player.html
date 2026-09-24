@@ -88,8 +88,9 @@
     .med-progress:focus-visible{outline:2px solid #fff;outline-offset:2px}
     .deck.meditation-mode .med-progress{display:none}
     .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:2px 6px 0}
+    .med-controls[hidden]{display:none!important}
     .deck.meditation-mode .med-controls{display:none}
-    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;animation:controlFadeIn .28s .14s ease both}
+    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;animation:controlFadeIn 3s ease both}
     .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer;outline:none}
     .med-circle{width:42px;height:42px;border:2px solid #a7c526;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:18px;font-weight:900;transition:transform .18s ease,background .18s ease}
     .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#86a41d;transform:translateY(-2px);outline:none}
@@ -188,7 +189,7 @@
         <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
       </div>
       <button class="med-progress" id="medProgress" type="button" aria-label="Meditation progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"><span class="med-countdown" id="medCountdown">15:00</span></span></span></button>
-      <div class="med-controls" id="meditationControls" aria-label="Meditation controls">
+      <div class="med-controls" id="meditationControls" aria-label="Meditation controls" hidden>
         <button class="med-control" type="button" data-med-command="back"><span class="med-circle">◀</span><span>Back</span></button>
         <button class="med-control" type="button" data-med-command="menu" aria-label="Meditation Menu" aria-controls="meditationMenu" aria-expanded="false"><span class="med-circle">☰</span><span>Meditation Menu</span></button>
         <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
@@ -295,7 +296,7 @@
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitleText');
       cap.textContent="";
       const toolRotation=document.getElementById('lfmToolRotation');
-      const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
+      const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu'),meditationControls=document.getElementById('meditationControls');
       function dockDeck(insideExperience){
         if(insideExperience){
           if(deck.parentElement!==experience||deck.nextElementSibling!==experienceFrame)experience.insertBefore(deck,experienceFrame);
@@ -435,6 +436,7 @@
         deck.classList.toggle('meditation-mode',active);
         deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
         shell.classList.toggle('meditation-player-mode',active);
+        meditationControls.hidden=!active||!meditationSessionActive;
         meditationMenu.hidden=!active;
         document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(active));
       }
@@ -656,6 +658,7 @@
         if(sessionActive!==meditationSessionActive){
           meditationSessionActive=sessionActive;
           deck.classList.toggle('meditation-session-active',sessionActive);
+          meditationControls.hidden=!sessionActive;
           if(sessionActive)meditationMenuOpen=false;
           meditationMenu.hidden=!meditationMenuOpen;
           document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(meditationMenuOpen));
