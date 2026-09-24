@@ -41,6 +41,16 @@ test.describe('Cosmic Intentions — smoke', () => {
     await expect(page.locator('#authModal')).toBeVisible();
   });
 
+  test('Master Player command opens the global site menu', async ({ page }) => {
+    await page.goto('/');
+    const menu = page.locator('#hamMenu');
+    await page.evaluate(() => {
+      document.querySelector('#hamMenu')?.classList.remove('open');
+      window.postMessage({ type: 'ci-site-menu-toggle' }, window.location.origin);
+    });
+    await expect(menu).toHaveClass(/open/);
+  });
+
   test('landing-page feature strip renders', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#lp1 .pills')).toBeAttached();
