@@ -96,6 +96,7 @@
     /* Fill only the outside lower corners; retain the curved white controls area. */
     .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
+    .deck.workspace-trough-hidden{display:none}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
     .deck.lfm-tool-mode{padding:18px 10px 90px;border-radius:0}
     .deck.lfm-tool-mode .normal-control{display:none}
@@ -332,6 +333,7 @@
         ['admin','Admin','Manage content and site controls.']
       ];
       const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library']);
+      const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
@@ -574,7 +576,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -655,10 +657,11 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         const usesLfmTemplate=lfmTemplateActions.has(action);
+        deck.classList.toggle('workspace-trough-hidden',pagesWithoutLowerTrough.has(action));
         dockDeck();
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
         shell.classList.toggle('goals-mode',action==='goals');
