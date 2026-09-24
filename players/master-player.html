@@ -132,7 +132,7 @@
 </head>
 <body>
   <main class="shell home-mode" aria-label="Cosmic Intentions master dashboard">
-    <header class="cap" id="capTitle">Affirmation</header>
+    <header class="cap" id="capTitle" aria-label="Player title"></header>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
@@ -196,10 +196,8 @@
     </nav>
   </main>
   <script type="module">
-    import { getDailyInspiration } from './daily-inspiration.js';
     (() => {
       const params=new URLSearchParams(location.search);
-      const inspiration=getDailyInspiration();
       const entrepreneurCards=[
         'ENT - FAIRNESS.PNG',
         'ENT - GOOD LISTENER.PNG',
@@ -274,7 +272,7 @@
       const stage=document.getElementById('stage');
       const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
       const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitle');
-      cap.textContent=inspiration.label;
+      cap.textContent="";
       const toolRotation=document.getElementById('lfmToolRotation');
       const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu');
       function dockDeck(insideExperience){
@@ -434,7 +432,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent=inspiration.label;show(home);
+        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -508,7 +506,7 @@
       function applySelection(action){
         if(action==='citadel'){
           applyHomeMode();
-          cap.textContent=inspiration.label;
+          cap.textContent="";
           notifyParentMode('citadel');
           reportHeight();
           return;
@@ -532,7 +530,7 @@
         shell.style.setProperty('--frame','#292929');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
-        cap.textContent=usesLfmTemplate?inspiration.label:(action==='daily-habits'?'Habits':item[1]);
+        cap.textContent=usesLfmTemplate?'':(action==='daily-habits'?'Habits':item[1]);
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(experienceFrame.clientWidth*9/16)+'px':'600px';
         const nextUrl=destinationUrl(action);
