@@ -92,12 +92,15 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
     const capRect = cap.getBoundingClientRect();
     const stageRect = document.querySelector('#stage').getBoundingClientRect();
     const deckRect = deck.getBoundingClientRect();
+    const menuRect = document.querySelector('#siteMenuButton').getBoundingClientRect();
+    const rightIconRect = deck.querySelector('[data-action="visualization"] svg').getBoundingClientRect();
     return {
       name: shell.dataset.templateName,
       status: shell.dataset.templateStatus,
       upperTroughText: document.querySelector('#capTitleText').textContent.trim(),
       upperTroughHeight: cap.getBoundingClientRect().height,
       siteMenuVisible: getComputedStyle(document.querySelector('#siteMenuButton')).display !== 'none',
+      hamburgerAlignment: Math.abs((menuRect.left + menuRect.width / 2) - (rightIconRect.left + rightIconRect.width / 2)),
       cardRatio: cardRect.width / cardRect.height,
       deckRegion: deck.dataset.templateRegion,
       actions: [...deck.querySelectorAll(':scope > .normal-control:not([hidden])')].map((button) => button.dataset.action || (button.hasAttribute('data-menu') ? 'menu' : undefined)),
@@ -117,6 +120,7 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
   expect(state.upperTroughText).toBe('');
   expect(state.upperTroughHeight).toBeCloseTo(108, 1);
   expect(state.siteMenuVisible).toBe(true);
+  expect(state.hamburgerAlignment).toBeLessThanOrEqual(6);
   expect(state.cardRatio).toBeCloseTo(16 / 9, 3);
   expect(state.deckRegion).toBe('lower-icon-trough');
   expect(state.actions).toEqual([
