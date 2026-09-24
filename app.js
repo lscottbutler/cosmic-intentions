@@ -4631,10 +4631,11 @@ const ADMIN_PAGE_BOXES = {
   myroadmap:     'ACTION PLAN',
   vizlibrary:    'VISUALIZE',
   vizgoal:       'GOAL VISUALIZATION',
-  meditation:    'MEDITATE',
+  meditation:    'MEDITATION',
   dailyfocus:    'FAVORITES',
   notes:         'THOUGHTS',
   mynotes:       'JOURNAL',
+  tasknotes:     'NOTES',
   gratitude:     'GRATITUDE',
   wins:          'WINS',
   cosmiclibrary: 'COSMIC LIBRARY',
@@ -4712,11 +4713,7 @@ function wireAdminPageBoxes() {
       anchor.insertAdjacentElement('afterend', topStack);
     } else {
       const root = _pageBoxRoot(active);
-      const intro = root.querySelector(':scope > .pg-intro, :scope > .wins-intro, :scope > .setup-page-header');
-      const first = root.firstElementChild;
-      if (intro) intro.insertAdjacentElement('afterend', topStack);
-      else if (first) first.insertAdjacentElement('afterend', topStack);
-      else root.appendChild(topStack);
+      root.prepend(topStack);
     }
   }
 

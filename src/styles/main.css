@@ -2603,7 +2603,7 @@ input, textarea, select {
 #vizLibList,
 #todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
 /* Roadmap introduction aligns with the Your Steps section below. */
-#page-myroadmap .pg-screen > p:first-child { padding: 20px 16px; box-sizing: border-box; }
+#page-myroadmap .pg-screen > p:first-of-type { padding: 20px 16px; box-sizing: border-box; }
 /* My Favorites Autoplay: the autoplay button + cards are indented 20px (via
    .player-times-grid). Indent the intro line the same so the whole block is
    clearly inset, matching the other pages. */
@@ -3867,10 +3867,9 @@ html.master-inline-mode .pg-hdr,
 html.master-inline-mode .wins-hdr {
   display: none !important;
 }
-/* Page-level administrator boxes live outside the Master Player. Never repeat
-   them or the retired generic guide card inside an embedded workspace. */
-html.master-inline-mode .page-intro-card,
-html.master-inline-mode .ci-admin-page-box-stack {
+/* Keep the retired generic guide card hidden. The two administrator boxes
+   belong to each workspace, including when it opens inside the Master Player. */
+html.master-inline-mode .page-intro-card {
   display: none !important;
 }
 html.master-inline-mode .pg-2col,
