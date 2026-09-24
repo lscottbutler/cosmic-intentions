@@ -43,6 +43,8 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
     .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity 3s ease}
+    .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+    .player-word-card{pointer-events:none}
     /* The visible 16:9 frame sits above the image so the image cannot cover it. */
     .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #1e90ff;pointer-events:none}
     .inspiration.has-card .inspiration-card{opacity:1;transition-duration:3s}
@@ -191,7 +193,10 @@
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
-          <img class="inspiration-card" id="inspirationCard" alt="" decoding="async" fetchpriority="high">
+          <div class="inspiration-card">
+            <img class="player-card-background" id="inspirationCard" alt="" decoding="async" fetchpriority="high">
+            <img class="player-word-card" id="inspirationWords" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+          </div>
         </div>
       </div>
       <div class="view" id="directoryView" hidden>
@@ -201,7 +206,10 @@
       <div class="view" id="experienceView" hidden>
         <section class="lfm-tool-rotation" id="lfmToolRotation" aria-label="16:9 inspiration card" hidden>
           <div class="inspiration" id="toolDailyInspiration">
-            <img class="inspiration-card" id="toolInspirationCard" alt="" decoding="async">
+            <div class="inspiration-card">
+              <img class="player-card-background" id="toolInspirationCard" alt="" decoding="async">
+              <img class="player-word-card" id="toolInspirationWords" alt="" aria-hidden="true" decoding="async">
+            </div>
           </div>
         </section>
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
@@ -407,40 +415,45 @@
           applyTroughColors(colors.outer,colors.inner);
         }
       }
-      inspirationCard.alt=cardAlt(cardFile);
-      inspirationCard.addEventListener('load',()=>{inspirationPanel.classList.add('has-card');matchTroughsToCard(inspirationCard,true)},{once:true});
-      inspirationCard.addEventListener('error',()=>{inspirationCard.hidden=true},{once:true});
-      inspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(cardFile);
+      const cardTitles={citadel:'Citadel',goals:'Goals','daily-habits':'Habits','action-plan':'Roadmap',visualization:'Visualize',meditation:'Meditate',favorites:'Favorites',gratitude:'Gratitude',journal:'Journal',thoughts:'Thoughts',wins:'Wins',proof:'Proof','cosmic-library':'Cosmic Library','quickie-move':'Quickie Move',admin:'Admin'};
+      function loadCardLayer(image,src){
+        return new Promise(resolve=>{
+          image.onload=()=>resolve(true);
+          image.onerror=()=>resolve(false);
+          image.src=src;
+        });
+      }
+      function loadPlayerCard(background,words,file,action){
+        background.alt=cardTitles[action]+' word collage';
+        return Promise.all([
+          loadCardLayer(background,'/images/entrepreneur-library/'+encodeURIComponent(file)),
+          loadCardLayer(words,'/images/player-word-cards/'+action+'.svg')
+        ]).then(loaded=>loaded.every(Boolean));
+      }
+      const inspirationWords=document.getElementById('inspirationWords');
+      inspirationPanel.setAttribute('aria-label','16:9 Citadel home card');
+      loadPlayerCard(inspirationCard,inspirationWords,cardFile,'citadel').then(loaded=>{
+        if(!loaded)return;
+        inspirationPanel.classList.add('has-card');
+        matchTroughsToCard(inspirationCard,true);
+      });
       const toolInspirationCard=document.getElementById('toolInspirationCard');
+      const toolInspirationWords=document.getElementById('toolInspirationWords');
       const toolInspirationPanel=document.getElementById('toolDailyInspiration');
       let toolCardTransitionId=0;
-      function setToolCard(action){
+      async function setToolCard(action){
         const transitionId=++toolCardTransitionId;
         const itemIndex=Math.max(0,items.findIndex(item=>item[0]===action));
         const file=toolCardByAction[action]||entrepreneurCards[(cardIndex+itemIndex+1)%entrepreneurCards.length];
         toolInspirationPanel.classList.remove('has-card');
-        return new Promise(resolve=>{
-          const swapCard=()=>{
-            if(transitionId!==toolCardTransitionId){resolve();return}
-            toolInspirationCard.hidden=false;
-            toolInspirationCard.alt=cardAlt(file);
-            toolInspirationCard.onload=()=>{
-              if(transitionId!==toolCardTransitionId){resolve();return}
-              matchTroughsToCard(toolInspirationCard);
-              requestAnimationFrame(()=>requestAnimationFrame(()=>{
-                toolInspirationPanel.classList.add('has-card');
-                resolve();
-              }));
-            };
-            toolInspirationCard.onerror=()=>{
-              toolInspirationCard.hidden=true;
-              toolInspirationPanel.classList.remove('has-card');
-              resolve();
-            };
-            toolInspirationCard.src='/images/entrepreneur-library/'+encodeURIComponent(file);
-          };
-          swapCard();
-        });
+        toolRotation.setAttribute('aria-label','16:9 '+cardTitles[action]+' home card');
+        const loaded=await loadPlayerCard(toolInspirationCard,toolInspirationWords,file,action);
+        if(transitionId!==toolCardTransitionId||!loaded)return;
+        matchTroughsToCard(toolInspirationCard);
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(transitionId===toolCardTransitionId)toolInspirationPanel.classList.add('has-card');
+          resolve();
+        })));
       }
       let selected=null,heightFrame=0;
       function reportHeight(){
