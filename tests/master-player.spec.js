@@ -419,11 +419,11 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     };
   });
   expect(lowerTrough.borderDisplay).toBe('none');
-  expect(lowerTrough.frameColor).toBe('rgba(0, 0, 0, 0)');
-  expect(lowerTrough.borderWidth).toBe('0px');
-  expect(lowerTrough.rightBorderWidth).toBe('0px');
+  expect(lowerTrough.frameColor).toBe('rgb(255, 255, 255)');
+  expect(lowerTrough.borderWidth).toBe('35px');
+  expect(lowerTrough.rightBorderWidth).toBe('35px');
   expect(lowerTrough.topBorderWidth).toBe('0px');
-  expect(lowerTrough.bottomBorderWidth).toBe('0px');
+  expect(lowerTrough.bottomBorderWidth).toBe('35px');
   expect(lowerTrough.leftMargin).toBe('0px');
   expect(lowerTrough.rightMargin).toBe('0px');
   expect(lowerTrough.menuColor).toBe('rgba(0, 0, 0, 0)');
