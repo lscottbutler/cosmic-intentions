@@ -214,6 +214,11 @@ test('Meditation choices use one full-width column and expose the relaxation tog
   await expect(choices).toHaveCount(6);
   await expect(page.locator('[data-med-time="0.25"], [data-med-time="0.5"]')).toHaveCount(0);
   await expect(page.locator('.med-time-circle')).toHaveCount(6);
+  await expect(page.locator('.med-mode-circle')).toHaveCount(2);
+  await expect(page.locator('[data-med-play]')).toHaveCount(0);
+  await expect(page.getByText('Meditation Menu', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Style', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Time', { exact: true })).toHaveCount(0);
   await expect(page.locator('.med-time-slot')).toHaveCount(0);
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
