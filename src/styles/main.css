@@ -2645,6 +2645,15 @@ input, textarea, select {
 .habit-drop .habit-caret { display: inline-block; transition: transform .15s; }
 .habit-drop[open] .habit-caret { transform: rotate(90deg); }
 
+/* Habits editor category headers start closed and reveal their own contents. */
+.pb-habit-section { margin: 16px 0 8px; scroll-margin-top: 76px; }
+.pb-habit-section > summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; list-style: none; cursor: pointer; }
+.pb-habit-section > summary::-webkit-details-marker { display: none; }
+.pb-habit-section > summary:focus-visible { outline: 2px solid #292929; outline-offset: 3px; }
+.pb-habit-chevron { flex-shrink: 0; transition: transform .15s ease; }
+.pb-habit-section[open] > summary .pb-habit-chevron { transform: rotate(180deg); }
+.pb-habit-section .pb-habit-grid { margin-top: 8px; }
+
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
   display: flex;
