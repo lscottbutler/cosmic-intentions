@@ -66,11 +66,13 @@ test('Citadel 16:9 surfaces contain cards only', async ({ page }) => {
       '#dailyInspiration .inspiration-kind, #dailyInspiration .statement, #dailyInspiration .inspiration-author, ' +
       '#toolDailyInspiration .inspiration-kind, #toolDailyInspiration .statement, #toolDailyInspiration .inspiration-author'
     ).length,
+    upperTroughText: document.querySelector('#capTitle').textContent.trim(),
   }));
 
   expect(contents.homeChildren).toEqual(['IMG']);
   expect(contents.toolChildren).toEqual(['IMG']);
   expect(contents.generatedText).toBe(0);
+  expect(contents.upperTroughText).toBe('');
 });
 
 for (const destination of CORE_DESTINATIONS) {
@@ -91,6 +93,7 @@ for (const destination of CORE_DESTINATIONS) {
         classes: [...shell.classList],
         frameColor: style.getPropertyValue('--header').trim(),
         troughColor: style.getPropertyValue('--trough-fill').trim(),
+        upperTroughText: document.querySelector('#capTitle').textContent.trim(),
         ratio: image.width / image.height,
         gaps: [
           image.left - frame.left,
@@ -104,6 +107,7 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.classes).toContain('lfm-shared-frame-mode');
     expect(state.frameColor).toBe('#292929');
     expect(state.troughColor).toBe('#747474');
+    expect(state.upperTroughText).not.toMatch(/affirmation/i);
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
     await expect(card).toHaveCSS('transition-duration', '3s');
