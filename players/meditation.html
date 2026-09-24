@@ -17,7 +17,7 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .timer::before{display:none}
 .timer:focus-visible{outline:none}
 .value,.playicon{position:relative;z-index:1;color:#fff}
-.value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:pre-line;text-align:center}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
 [hidden]{display:none!important}
 body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0;background:#1e90ff}
@@ -38,7 +38,8 @@ body.external .timer{background:#747474;border-color:#292929}
   <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true"></span>
   <button class="timer" id="timer" type="button" aria-label="Start meditation">
     <span class="playicon" id="playIcon" aria-hidden="true"></span>
-    <span class="value" id="value" hidden>15</span>
+    <span class="value" id="value" hidden>15
+00</span>
   </button>
 </main>
 <script>
@@ -59,7 +60,7 @@ body.external .timer{background:#747474;border-color:#292929}
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
-    return String(seconds<=60?seconds:Math.ceil(seconds/60));
+    return `${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
   };
   function renderScrubber(){
     const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
