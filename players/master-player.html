@@ -84,14 +84,14 @@
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
     .deck.meditation-mode:not(.meditation-session-active)::before{inset:35px}
     .deck.meditation-mode::before{border-radius:8px 8px 50% 50%/8px 8px var(--trough-curve) var(--trough-curve)}
-    .deck.meditation-mode{background:transparent;border:0;border-radius:0;margin-top:18px;margin-left:0;margin-right:0;margin-bottom:0}
+    .deck.meditation-mode{background:#fff;border-left:35px solid #1e90ff;border-right:35px solid #1e90ff;border-bottom:35px solid #1e90ff;border-top:0;border-radius:0;margin-top:0;margin-left:0;margin-right:0;margin-bottom:0}
     .deck.meditation-mode::before{display:none}
     .deck.compact-trough-mode{padding-bottom:20px}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;padding:0 6px}
     .deck.lfm-tool-mode{padding:18px 10px 20px;border-radius:3px 3px 14px 14px}
     .deck.lfm-tool-mode .normal-control{display:none}
     .deck.lfm-tool-mode .lfm-tool-controls{display:grid;animation:controlFadeIn .28s .08s ease both}
-    .deck.meditation-mode.meditation-session-active{padding:18px 10px 20px;border-radius:0 0 14px 14px}
+    .deck.meditation-mode.meditation-session-active{padding:18px 10px 20px;border-radius:0}
     .deck.meditation-mode.meditation-session-active .med-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0 6px}
     .med-progress{position:absolute;z-index:3;top:0;left:0;right:0;display:none;width:auto;height:30px;border:0;background:transparent;padding:0 25px;cursor:pointer;transform:translateY(-50%);-webkit-tap-highlight-color:transparent}
     .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.28);overflow:visible}
