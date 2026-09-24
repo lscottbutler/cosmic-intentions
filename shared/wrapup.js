@@ -2,7 +2,7 @@ import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey, currentUser } from '../app.js';
 import { setTaskWin } from './wins.js';
-import { taskNoteContext, taskNoteButton, taskNotePanel } from './task-notes.js';
+import { taskNoteContext, taskNoteButton, taskNotePanel, taskLinkedEntriesHTML } from './task-notes.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -78,7 +78,7 @@ function _shade(hex, f) {
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false }) {
   // White card, black text. Wide, rounded left rail: BLACK for My Actions
   // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
   // The code chip retains the goal's shade.
@@ -97,6 +97,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
     ${taskNotePanel(noteContext)}
+    ${showLinkedEntries && noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
   </div>`;
 }
 
@@ -511,7 +512,7 @@ function _ensureCodes(it) {
    sub-steps (recursive). Top level keeps the win-logging toggle + promote;
    nested steps use lightweight path-based toggle/delete. codePrefix carries
    the parent card's STABLE code down the tree (e.g. "D2" → "D2.1"). */
-function _renderUserTree(tasks, path, idx, codePrefix) {
+function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
   const letter = _goalLetter(idx);
@@ -536,8 +537,8 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
-    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext })
-         + _renderUserTree(u.children, p, idx, code);
+    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries })
+         + _renderUserTree(u.children, p, idx, code, showLinkedEntries);
   }).join('');
 }
 
@@ -556,7 +557,7 @@ function _countTree(nodes) {
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
-function _roadmapCards(it, idx) {
+function _roadmapCards(it, idx, showLinkedEntries = false) {
     const rai = it.roadmapAI || {};
     const _raiTasksOK = !rai.intention || String(rai.intention).trim() === String(it.title || "").trim();
     const dones = rai.done || {};
@@ -578,7 +579,7 @@ function _roadmapCards(it, idx) {
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
       const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext });
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext, showLinkedEntries });
     });
 }
 
@@ -726,10 +727,34 @@ export function goalWorkspaceTaskMarkup(idx) {
   const rai = it.roadmapAI || {};
   const userTasks = Array.isArray(rai.userTasks) ? rai.userTasks : [];
   const counts = _countTree(userTasks);
-  const roadmap = _roadmapCards(it, idx);
-  return { my: _renderUserTree(userTasks, [], idx), roadmap: roadmap.join(''),
+  const roadmap = _roadmapCards(it, idx, true);
+  return { my: _renderUserTree(userTasks, [], idx, undefined, true), roadmap: roadmap.join(''),
     total: counts.total + roadmap.length,
     done: counts.done + roadmap.reduce((n, _row, i) => n + (rai.done?.[i] ? 1 : 0), 0) };
+}
+
+export function goalWorkspaceTaskContexts(idx) {
+  const goal = intentions[idx];
+  if (!goal) return [];
+  _ensureGoalLetters();
+  if (_ensureCodes(goal)) saveIntentions();
+  const rai = goal.roadmapAI || {};
+  const letter = _goalLetter(idx);
+  const contexts = [];
+  const walk = (tasks, prefix = '') => (tasks || []).forEach((task, i) => {
+    const num = typeof task.code === 'number' ? task.code : i + 1;
+    const code = prefix ? `${prefix}.${num}` : `${letter}${num}`;
+    contexts.push(taskNoteContext(goal, 'my', task.id ?? code, code, task.text));
+    walk(task.children, code);
+  });
+  walk(rai.userTasks);
+  if (!rai.intention || String(rai.intention).trim() === String(goal.title || '').trim()) {
+    (rai.tasks || []).forEach((text, i) => {
+      const num = typeof rai.codes?.[i] === 'number' ? rai.codes[i] : i + 1;
+      contexts.push(taskNoteContext(goal, 'roadmap', JSON.stringify([num, text]), letter + num, text));
+    });
+  }
+  return contexts;
 }
 
 /* Join labels into natural prose: "Review and Visualize",

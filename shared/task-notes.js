@@ -14,6 +14,20 @@ export function taskNoteKey(context) {
   return JSON.stringify([context.goalId, context.kind, context.taskId]);
 }
 
+export function taskLinkedRecords(context, records = readNotes()) {
+  const key = taskNoteKey(context);
+  return records.filter(n => n && typeof n.text === 'string' && n.text.trim() && n.taskKey === key &&
+    (n.cat === 'task' || (['goal-note', 'note'].includes(n.cat) && String(n.goal) === context.goalId)))
+    .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+}
+
+export function taskLinkedEntriesHTML(context, records = readNotes()) {
+  return taskLinkedRecords(context, records).map(n => `<section class="goal-action-entry">
+    <h4>${n.cat === 'note' ? 'Journal entry' : 'Note'}</h4>
+    <p>${esc(n.text)}</p>
+  </section>`).join('');
+}
+
 function savedTaskNote(context) {
   const key = taskNoteKey(context);
   return readNotes().find(n => n && n.cat === 'task' && n.taskKey === key);

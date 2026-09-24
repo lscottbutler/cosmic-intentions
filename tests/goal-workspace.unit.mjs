@@ -37,6 +37,7 @@ await module.evaluate();
 const workspace = module.namespace;
 const notes = modules.get('notes.js').namespace;
 const wrap = modules.get('wrapup.js').namespace;
+const taskNotes = modules.get('task-notes.js').namespace;
 const seed = [
   { id: 'legacy', cat: 'task', task: { goalId: 'g1' }, text: 'Legacy task note' },
   { id: 'relinked', cat: 'task', task: { goalId: 'g1' }, goal: 'g2', text: 'Relinked note' },
@@ -92,10 +93,44 @@ assert.equal(intentions[0].roadmapAI.userTasks.at(-1).text, 'Water the seeds');
 assert.equal(input.value, '');
 assert.ok(taskSaves > 0);
 assert.equal(wrap.goalWorkspaceTaskMarkup(1).total, 0, 'tasks must never leak across goals');
+
+const contexts = wrap.goalWorkspaceTaskContexts(0);
+const myAction = contexts.find(t => t.kind === 'my' && t.taskId === '1');
+const roadmapAction = contexts.find(t => t.kind === 'roadmap');
+const myKey = taskNotes.taskNoteKey(myAction), roadmapKey = taskNotes.taskNoteKey(roadmapAction);
+assert.equal(myAction.code, roadmapAction.code, 'fixture covers the same visible code in two task lists');
+assert.notEqual(myKey, roadmapKey);
+const fixtureTaskNote = { id: 'action-note', cat: 'task', task: myAction, taskKey: myKey, goal: 'g1', text: 'Existing note for My Actions A1' };
+storage.set('ci_notes', JSON.stringify([...notes.readNotes(), fixtureTaskNote]));
+assert.ok(workspace.saveGoalWorkspaceRecord({ id: 'journal1', cat: 'note', goalId: 'g1', text: 'Journal for My Actions A1', taskKey: myKey }).record);
+assert.ok(workspace.saveGoalWorkspaceRecord({ id: added.record.id, cat: 'goal-note', goalId: 'g1', text: 'Note for Roadmap A1', taskKey: roadmapKey }).record);
+assert.deepEqual(Array.from(taskNotes.taskLinkedRecords(myAction), n => n.id).sort(), ['action-note', 'journal1']);
+assert.deepEqual(Array.from(taskNotes.taskLinkedRecords(roadmapAction), n => n.id), [added.record.id]);
+const linkedMarkup = wrap.goalWorkspaceTaskMarkup(0);
+assert.match(linkedMarkup.my, /class="goal-action-records"/);
+assert.match(linkedMarkup.my, /<h4>Journal entry<\/h4>\s*<p>Journal for My Actions A1<\/p>/);
+assert.doesNotMatch(linkedMarkup.roadmap, /Journal for My Actions A1/);
+assert.match(linkedMarkup.roadmap, /<h4>Note<\/h4>\s*<p>Note for Roadmap A1<\/p>/);
+assert.equal(taskNotes.taskLinkedRecords({ ...myAction, goalId: 'g2' }).length, 0);
+assert.ok(workspace.saveGoalWorkspaceRecord({ cat: 'note', goalId: 'g2', text: 'Wrong goal action', taskKey: myKey }).error);
+const countBeforeRelink = notes.readNotes().length;
+workspace.saveGoalWorkspaceRecord({ id: 'journal1', cat: 'note', goalId: 'g1', text: 'Journal moved to Roadmap A1', taskKey: roadmapKey });
+assert.equal(notes.readNotes().length, countBeforeRelink);
+assert.ok(!taskNotes.taskLinkedRecords(myAction).some(n => n.id === 'journal1'));
+assert.ok(taskNotes.taskLinkedRecords(roadmapAction).some(n => n.id === 'journal1'));
+workspace.saveGoalWorkspaceRecord({ id: 'journal1', cat: 'note', goalId: 'g1', text: 'Updated journal, same action' });
+assert.equal(notes.readNotes().find(n => n.id === 'journal1').taskKey, roadmapKey, 'ordinary text edits retain the action link');
+notes.notesSaveGoal('journal1', 'g2');
+assert.equal(notes.readNotes().find(n => n.id === 'journal1').taskKey, undefined, 'moving to another goal clears the old action link');
+assert.ok(!taskNotes.taskLinkedRecords(roadmapAction).some(n => n.id === 'journal1'));
+assert.match(taskNotes.taskLinkedEntriesHTML(myAction, [{ ...fixtureTaskNote, text: '<script>private note</script>' }]), /&lt;script&gt;/);
+workspace.saveGoalWorkspaceRecord({ id: added.record.id, cat: 'goal-note', goalId: 'g1', text: 'Whole-goal note', taskKey: '' });
+assert.equal(notes.readNotes().find(n => n.id === added.record.id).taskKey, undefined);
+
 intentions[0].roadmapAI.intention = 'Different goal';
 assert.equal(wrap.goalWorkspaceTaskMarkup(0).roadmap, '', 'preserve the stale-roadmap guard');
 
 storage.set('ci_notes', JSON.stringify([added.record, seed[0]]));
 assert.equal(notes.randomNote(), null, 'private goal notes never surface as random thoughts');
 assert.equal(notes.dailyNote(), null);
-console.log('PASS: linked-goal isolation, shared Journal records, edit/reload persistence, save failure, task creation/counts, shared toggle wiring, and private-note isolation.');
+console.log('PASS: goal and action isolation, inline notes/Journal placement, relinking, shared-record persistence, save failures, task counts, and private-note isolation.');

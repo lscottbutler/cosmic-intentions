@@ -22,6 +22,17 @@ random thoughts pool and thoughts quota. Task notes follow their selected
 linked goal, with legacy notes falling back to their originating goal.
 Nothing copies tasks or journal entries into a second collection.
 
+Action detail revision: existing task notes render visibly under their matching
+action in Goal Workspace. Independent notes and Journal entries have a Related
+action selector, including the whole-goal option. Their optional `taskKey` and
+task snapshot use the same stable goal/list/task identity as task notes. My
+Actions A1 and Roadmap A1 therefore remain distinct. Entries with no action
+link stay at goal level; text similarity never assigns an action. Changing a
+Journal entry's goal clears its old action link. The inline text reads the same
+record and refreshes after saving without replacing an active editor. This
+display extension is limited to Goal Workspace; ordinary Roadmap cards keep
+their existing layout.
+
 Storage continues through the existing signed-in intentions and `profiles.notes`
 adapters. No schema, RLS, authentication, hosting configuration, or production
 branch change. Notes and goal titles are not placed in URLs. Navigation passes

@@ -1,7 +1,7 @@
 import { esc, intentions, goalLetter, openMasterDestination } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
-import { linkedGoalId, editorHTML } from './task-notes.js';
-import { goalWorkspaceTaskMarkup, wrapGoalAddAction } from './wrapup.js';
+import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
+import { goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
 
 let selectedGoalId = null;
 let initialSelectionRead = false;
@@ -25,7 +25,7 @@ export function goalWorkspaceGoals(records = readNotes()) {
 
 // Writes to the existing note collection: Journal uses its established `note`
 // category; independent goal notes are separate from thoughts and task notes.
-export function saveGoalWorkspaceRecord({ id, cat, goalId, text }) {
+export function saveGoalWorkspaceRecord({ id, cat, goalId, text, taskKey }) {
   const goal = intentions.find(g => String(g.id) === String(goalId));
   if (!goal) return { error: 'This goal is no longer available.' };
   if (!['goal-note', 'note'].includes(cat)) return { error: 'This entry cannot be saved here.' };
@@ -39,6 +39,12 @@ export function saveGoalWorkspaceRecord({ id, cat, goalId, text }) {
   }
   const now = Date.now();
   const record = existing || { id: 'goal-entry-' + crypto.randomUUID(), cat, goal: goal.id, ts: now };
+  if (taskKey !== undefined) {
+    const action = taskKey ? goalWorkspaceTaskContexts(intentions.indexOf(goal)).find(task => taskNoteKey(task) === taskKey) : null;
+    if (taskKey && !action && existing?.taskKey !== taskKey) return { error: 'This action is no longer available. Choose another action.' };
+    if (action) Object.assign(record, { taskKey, task: action });
+    else if (!taskKey) { delete record.taskKey; delete record.task; }
+  }
   Object.assign(record, { text, goalTitle: goal.title || '', updatedAt: now });
   if (!existing) records.push(record);
   if (!_saveNotes(records)) return { error: 'Could not save. Your text is still here; please try again.' };
@@ -56,6 +62,15 @@ export function openGoalWorkspace(goalId) {
 function selectedGoal() { return intentions.find(g => String(g.id) === selectedGoalId); }
 function activeWorkspace() { return document.getElementById('page-goalworkspace')?.classList.contains('active'); }
 
+function actionOptions(note) {
+  const actions = goalWorkspaceTaskContexts(intentions.findIndex(g => String(g.id) === selectedGoalId));
+  const key = note?.taskKey || '';
+  const missing = key && !actions.some(task => taskNoteKey(task) === key);
+  return `<option value=""${!key ? ' selected' : ''}>Whole goal — no specific action</option>` +
+    (missing ? `<option value="${esc(key)}" selected>${esc(note.task?.code || 'Saved action')} (no longer available)</option>` : '') +
+    actions.map(task => `<option value="${esc(taskNoteKey(task))}"${taskNoteKey(task) === key ? ' selected' : ''}>${esc((task.kind === 'my' ? 'My Actions' : 'Roadmap') + ' · ' + task.code + ' · ' + task.taskText)}</option>`).join('');
+}
+
 function entryForm(cat, note) {
   const journal = cat === 'note';
   const title = journal ? 'Journal entry' : 'Note';
@@ -63,6 +78,7 @@ function entryForm(cat, note) {
   return `<form class="goal-entry-form" data-cat="${cat}" data-entry-id="${esc(note?.id || '')}" data-goal-id="${esc(selectedGoalId)}" onsubmit="event.preventDefault();goalWorkspaceSaveEntry(this)">
     ${stamp ? `<p class="goal-entry-date">${esc(stamp)}</p>` : ''}
     <label>${note ? title : journal ? 'Add a journal entry' : 'Add a note'}<textarea rows="3" maxlength="10000" placeholder="${journal ? 'Reflect on this goal…' : 'Capture a note for this goal…'}" oninput="goalWorkspaceEntryChanged(this)" ${note ? 'onchange="goalWorkspaceSaveEntry(this.form)"' : ''}>${esc(note?.text || '')}</textarea></label>
+    <label class="goal-entry-action-label">Related action<select class="goal-entry-action" onchange="goalWorkspaceEntryChanged(this);${note ? 'goalWorkspaceSaveEntry(this.form)' : ''}">${actionOptions(note)}</select></label>
     <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="submit">${note ? 'Save changes' : journal ? 'Save journal entry' : 'Save note'}</button></div>
   </form>`;
 }
@@ -74,15 +90,18 @@ export function goalWorkspaceEntryChanged(input) {
 
 export function goalWorkspaceSaveEntry(form) {
   const { record, error } = saveGoalWorkspaceRecord({ id: form.dataset.entryId, cat: form.dataset.cat,
-    goalId: form.dataset.goalId, text: form.querySelector('textarea').value });
+    goalId: form.dataset.goalId, text: form.querySelector('textarea').value,
+    taskKey: form.querySelector('.goal-entry-action').value });
   const status = form.querySelector('.task-note-status');
   if (error) { status.textContent = error; return false; }
   delete form.dataset.dirty;
   status.textContent = 'Saved';
   if (!form.dataset.entryId) {
     form.querySelector('textarea').value = '';
+    form.querySelector('.goal-entry-action').value = '';
     renderGoalWorkspaceNotes();
   }
+  refreshGoalActionEntries();
   window.renderTaskNotesList?.();
   return !!record;
 }
@@ -152,6 +171,7 @@ export function goalWorkspaceAddTask(form) {
 
 export function renderGoalWorkspaceNotes(source) {
   if (!activeWorkspace()) return;
+  refreshGoalActionEntries();
   const eligibleGoals = goalWorkspaceGoals();
   const select = document.getElementById('goalWorkspaceSelect');
   // Refresh membership after relinking/deleting a note, while retaining any
@@ -185,6 +205,13 @@ export function renderGoalWorkspaceNotes(source) {
   }
   document.getElementById('goalWorkspaceNoteCount').textContent = String(records.notes.length);
   document.getElementById('goalWorkspaceJournalCount').textContent = String(records.journal.length);
+}
+
+function refreshGoalActionEntries() {
+  const records = readNotes();
+  document.querySelectorAll('#page-goalworkspace .goal-action-records').forEach(host => {
+    host.innerHTML = taskLinkedEntriesHTML(JSON.parse(host.dataset.taskContext), records);
+  });
 }
 
 if (typeof window !== 'undefined') {

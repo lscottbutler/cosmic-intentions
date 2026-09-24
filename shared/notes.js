@@ -432,6 +432,7 @@ export function notesSaveGoal(id, goalId) {
   const notes = readNotes();
   const n = notes.find(x => x.id === id);
   if (!n) return;
+  if (String(n.goal || '') !== String(goalId || '')) { delete n.taskKey; delete n.task; }
   if (goalId) n.goal = goalId; else delete n.goal;
   _saveNotes(notes);
 }
