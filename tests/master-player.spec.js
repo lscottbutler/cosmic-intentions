@@ -75,6 +75,54 @@ test('Citadel 16:9 surfaces contain cards only', async ({ page }) => {
   expect(contents.upperTroughText).toBe('');
 });
 
+
+test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/players/master-player.html?card=0', {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  });
+
+  const state = await page.evaluate(() => {
+    const shell = document.querySelector('.shell');
+    const cap = document.querySelector('#capTitle');
+    const card = document.querySelector('#dailyInspiration');
+    const deck = document.querySelector('.deck');
+    const cardRect = card.getBoundingClientRect();
+    return {
+      name: shell.dataset.templateName,
+      status: shell.dataset.templateStatus,
+      upperTroughText: document.querySelector('#capTitleText').textContent.trim(),
+      upperTroughHeight: cap.getBoundingClientRect().height,
+      siteMenuVisible: getComputedStyle(document.querySelector('#siteMenuButton')).display !== 'none',
+      cardRatio: cardRect.width / cardRect.height,
+      deckRegion: deck.dataset.templateRegion,
+      actions: [...deck.querySelectorAll(':scope > button')].map((button) => button.dataset.action),
+      outerColor: getComputedStyle(cap).backgroundColor,
+      innerColor: getComputedStyle(cap, '::before').backgroundColor,
+    };
+  });
+
+  expect(state.name).toBe('MASTER PLAYER TEMPLATE');
+  expect(state.status).toBe('locked');
+  expect(state.upperTroughText).toBe('');
+  expect(state.upperTroughHeight).toBeCloseTo(108, 1);
+  expect(state.siteMenuVisible).toBe(true);
+  expect(state.cardRatio).toBeCloseTo(16 / 9, 3);
+  expect(state.deckRegion).toBe('lower-icon-trough');
+  expect(state.actions).toEqual([
+    'meditation',
+    'daily-habits',
+    'goals',
+    'visualization',
+    'action-plan',
+    'cosmic-library',
+    'menu',
+  ]);
+  expect(state.outerColor).toBe('rgb(41, 41, 41)');
+  expect(state.innerColor).toBe('rgb(116, 116, 116)');
+});
+
 for (const destination of CORE_DESTINATIONS) {
   test(`locked Master Player shell is consistent on ${destination.label}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
