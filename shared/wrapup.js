@@ -11,6 +11,7 @@ import { setTaskWin } from './wins.js';
 
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
+const ROADMAP_COLOR = '#D62828';
 
 /* ── CODE-CARD SYSTEM (Phase 1) ───────────────────────────────────────────
    Every action row is a quiet white card: a thin goal-color rail, one visible
@@ -78,9 +79,9 @@ function _shade(hex, f) {
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
   // White card, black text. Wide, rounded left rail: BLACK for My Actions
-  // (matches the black MY ACTIONS tab), goal-colour for Roadmap — so the two
-  // groups read apart at a glance. Goal-colour code chip.
-  const rail = variant === 'roadmap' ? shade.bg : '#000';
+  // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
+  // The code chip retains the goal's shade.
+  const rail = variant === 'roadmap' ? ROADMAP_COLOR : '#000';
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
@@ -661,14 +662,14 @@ function _todayChecklist() {
             ? '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
             : '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.84 12.25l1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="2" y1="8" x2="5" y2="8"/><line x1="16" y1="19" x2="16" y2="22"/><line x1="19" y1="16" x2="22" y2="16"/></svg>'}</span>
         </button>
-        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${ROADMAP_COLOR};color:#fff;opacity:1;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
       <div style="padding:10px 2px 4px;">
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
           <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:#000;border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
           ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
-          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#3a3f47;background:#e9ecef;border:1px solid #cfd3d8;border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:${ROADMAP_COLOR};border:1px solid ${ROADMAP_COLOR};border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
           ${roadmapBox}
         </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
