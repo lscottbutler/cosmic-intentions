@@ -111,11 +111,17 @@
     .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:5px 4px;font-size:13px;font-weight:800;cursor:pointer}
     .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
     .med-play-banner{width:100%;margin:0 0 7px;border:0;border-radius:7px;background:#118aa5;color:#fff;padding:8px 6px;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+    .relaxation-toggle-row{display:flex;justify-content:center;margin:12px 0 10px}
+    .relaxation-toggle{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:6px;padding:2px 12px;cursor:pointer}
+    .relaxation-toggle-icon{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:25px;line-height:1;transition:background .2s ease,box-shadow .2s ease}
+    .relaxation-toggle-label{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon::after{content:"✓";font-size:24px;font-weight:900}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-glyph{display:none}
     .med-time-stack{display:grid;gap:5px;margin-top:5px;padding:6px;background:#191919;border-radius:8px}
-    .med-time-choice{display:grid;grid-template-columns:minmax(0,4fr) repeat(3,minmax(30px,.76fr));gap:5px;align-items:stretch}
-    .med-time-choice .med-time-option{min-height:30px;border:0;border-radius:7px;background:#fff;color:#12345b;padding:5px;font-size:14px;font-weight:900}
-    .med-time-choice .med-time-option.active{background:#85a620;color:#fff;box-shadow:inset 0 0 0 2px #b8d449}
-    .med-time-slot{display:block;min-height:30px;border-radius:7px;background:#fff}
+    .med-time-choice{display:block}
+    .med-time-choice .med-time-option{width:100%;min-height:30px;border:1px solid rgba(255,255,255,.42);border-radius:7px;background:rgba(255,255,255,.14);color:#fff;padding:5px;font-size:14px;font-weight:900;letter-spacing:.4px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    .med-time-choice .med-time-option.active{background:rgba(255,255,255,.30);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.72)}
     .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
     @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     @media(max-width:620px){
@@ -180,16 +186,22 @@
             <button class="med-option active" type="button" data-med-mode="unguided">Unguided</button>
             <button class="med-option" type="button" data-med-mode="guided">Guided</button>
           </div>
-          <div style="margin-top:14px"><strong>Time</strong></div>
+          <div class="relaxation-toggle-row">
+            <button class="relaxation-toggle" type="button" data-relaxation-toggle aria-pressed="false" aria-label="Relaxation Module off">
+              <span class="relaxation-toggle-icon" aria-hidden="true"><span class="relaxation-toggle-glyph">☾</span></span>
+              <span class="relaxation-toggle-label">Relaxation Module</span>
+            </button>
+          </div>
+          <div><strong>Time</strong></div>
           <div class="med-time-stack" id="meditationTimes">
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.25">15 Seconds</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.5">30 Seconds</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1">1 Minute</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2">2 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3">3 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5">5 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10">10 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
-            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15">15 Minutes</button><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span><span class="med-time-slot" aria-hidden="true"></span></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.25">15 Seconds</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="0.5">30 Seconds</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1">1 Minute</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2">2 Minutes</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3">3 Minutes</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5">5 Minutes</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10">10 Minutes</button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15">15 Minutes</button></div>
           </div>
           <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
         </section>
@@ -283,6 +295,7 @@
         }
       }
       const meditationTimes=[0.25,0.5,1,2,3,5,10,15];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      let relaxationModuleEnabled=sessionStorage.getItem('ci-relaxation-module')==='on',relaxationThenVisualization=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
       if(Number.isInteger(requestedCard)){
@@ -543,7 +556,14 @@
         experienceFrame.src=nextUrl;show(experience);
         return frameReady;
       }
-      function select(action){transitionStage(()=>applySelection(action))}
+      function select(action){
+        if(action==='visualization'&&relaxationModuleEnabled&&!relaxationThenVisualization){
+          relaxationThenVisualization=true;
+          transitionStage(()=>Promise.resolve(applySelection('meditation')).then(()=>sendMeditation('toggle')));
+          return;
+        }
+        transitionStage(()=>applySelection(action));
+      }
       function syncMeditationUI(){
         document.querySelectorAll('[data-med-time]').forEach(b=>b.classList.toggle('active',Number(b.dataset.medTime)===meditationMinutes));
         document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
@@ -552,6 +572,11 @@
         if(modeIcon)modeIcon.textContent=meditationMode==='guided'?'G':'U';
         if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':'Unguided';
         document.getElementById('guidedNote').hidden=meditationMode!=='guided';
+        const relaxationToggle=document.querySelector('[data-relaxation-toggle]');
+        if(relaxationToggle){
+          relaxationToggle.setAttribute('aria-pressed',String(relaxationModuleEnabled));
+          relaxationToggle.setAttribute('aria-label','Relaxation Module '+(relaxationModuleEnabled?'on':'off'));
+        }
       }
       function reloadMeditation(){experienceFrame.src=destinationUrl('meditation');syncMeditationUI()}
       function sendMeditation(command,extra={}){experienceFrame.contentWindow?.postMessage({type:'ci-meditation-command',command,...extra},location.origin)}
@@ -579,6 +604,12 @@
       }));
       document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
       document.querySelector('[data-med-play]')?.addEventListener('click',()=>sendMeditation('toggle'));
+      document.querySelector('[data-relaxation-toggle]')?.addEventListener('click',event=>{
+        relaxationModuleEnabled=!relaxationModuleEnabled;
+        sessionStorage.setItem('ci-relaxation-module',relaxationModuleEnabled?'on':'off');
+        syncMeditationUI();
+        event.currentTarget.focus();
+      });
       document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
@@ -604,6 +635,11 @@
           return;
         }
         if(data.type!=='ci-meditation-state')return;
+        if(data.state==='complete'&&relaxationThenVisualization){
+          relaxationThenVisualization=false;
+          transitionStage(()=>applySelection('visualization'));
+          return;
+        }
         const sessionActive=data.state!=='ready';
         if(sessionActive!==meditationSessionActive){
           meditationSessionActive=sessionActive;
