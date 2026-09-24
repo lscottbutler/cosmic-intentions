@@ -258,8 +258,11 @@ test('Meditation image stays behind the uniform dark 35px frame', async ({ page 
 
   const meditation = page.frameLocator('#experienceFrame');
   const frameRect = meditation.locator('.ccb-curve rect');
+  const curveDivider = meditation.locator('.ccb-curve ellipse');
   await expect(frameRect).toBeVisible();
   await expect(frameRect).toHaveAttribute('stroke', '#292929');
+  await expect(curveDivider).toHaveAttribute('stroke', '#747474');
+  await expect(curveDivider).toHaveCSS('stroke', 'rgb(116, 116, 116)');
 
   const layers = await meditation.locator('.player').evaluate((player) => {
     const image = player.querySelector('.image');
