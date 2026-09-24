@@ -237,7 +237,7 @@ test('Meditation choices use one full-width column and expose the relaxation tog
   await expect(toggle).toHaveAttribute('aria-label', 'Relaxation Module on');
 });
 
-test('Meditation image stays behind the visible grey frame', async ({ page }) => {
+test('Meditation image stays behind the uniform dark 35px frame', async ({ page }) => {
   await page.goto('/players/master-player.html?start=meditation', {
     waitUntil: 'domcontentloaded',
     timeout: 15000,
@@ -246,7 +246,7 @@ test('Meditation image stays behind the visible grey frame', async ({ page }) =>
   const meditation = page.frameLocator('#experienceFrame');
   const frameRect = meditation.locator('.ccb-curve rect');
   await expect(frameRect).toBeVisible();
-  await expect(frameRect).toHaveAttribute('stroke', '#82ad77');
+  await expect(frameRect).toHaveAttribute('stroke', '#292929');
 
   const layers = await meditation.locator('.player').evaluate((player) => {
     const image = player.querySelector('.image');
@@ -261,7 +261,7 @@ test('Meditation image stays behind the visible grey frame', async ({ page }) =>
   });
   expect(layers.frameZ).toBeGreaterThan(layers.imageZ);
   expect(layers.rectDisplay).not.toBe('none');
-  expect(layers.rectStroke).toBe('rgb(116, 116, 116)');
+  expect(layers.rectStroke).toBe('rgb(41, 41, 41)');
 });
 
 test('Meditate opens with its compact options menu visible', async ({ page }) => {
@@ -271,8 +271,10 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   });
 
   const menu = page.locator('#meditationMenu');
+  const controls = page.locator('#meditationControls');
   const menuButton = page.locator('[data-med-command="menu"]');
   await expect(menu).toBeVisible();
+  await expect(controls).toBeHidden();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 
   const containment = await page.evaluate(() => {
@@ -290,10 +292,13 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   expect(containment.right).toBe(true);
   expect(containment.bottomClearance).toBeGreaterThanOrEqual(28);
 
-  await menuButton.click();
+  const meditation = page.frameLocator('#experienceFrame');
+  await meditation.locator('#timer').click();
+  await expect(controls).toBeVisible();
   await expect(menu).toBeHidden();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
 
   await menuButton.click();
   await expect(menu).toBeVisible();
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 });
