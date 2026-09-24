@@ -1,4 +1,4 @@
-import { esc } from '../app.js';
+import { esc, intentions, goalLetter } from '../app.js';
 import { readNotes, _saveNotes } from './notes.js';
 
 // Task notes share the existing private notes library. They are not thoughts
@@ -19,6 +19,27 @@ function savedTaskNote(context) {
   return readNotes().find(n => n && n.cat === 'task' && n.taskKey === key);
 }
 
+function linkedGoalId(context, note) {
+  // Older task notes inherit their source goal. Keep an explicit empty choice
+  // distinct from that fallback so unlinking survives closing and reopening.
+  return String(note && Object.hasOwn(note, 'goal') ? note.goal || '' : context.goalId);
+}
+
+function linkedGoalTitle(context, note) {
+  const id = linkedGoalId(context, note);
+  if (!id) return 'No goal linked';
+  return intentions.find(g => String(g.id) === id)?.title || note?.goalTitle ||
+    (id === context.goalId ? context.goalTitle : '') || 'Unavailable goal';
+}
+
+function goalOptions(context, note) {
+  const selected = linkedGoalId(context, note);
+  const unavailable = selected && !intentions.some(g => String(g.id) === selected);
+  return `<option value=""${!selected ? ' selected' : ''}>— Link to a goal —</option>` +
+    (unavailable ? `<option value="${esc(selected)}" selected>${esc(linkedGoalTitle(context, note))} (unavailable)</option>` : '') +
+    intentions.map((g, i) => `<option value="${esc(String(g.id))}"${String(g.id) === selected ? ' selected' : ''}>${esc(goalLetter(g, i) + ' · ' + (g.title || '').replace(/^i am\s+/i, ''))}</option>`).join('');
+}
+
 export function taskNoteButton(context) {
   if (!context) return '';
   return `<button type="button" class="task-note-pencil" onclick="taskNoteToggle(this)" aria-label="Notes for ${esc(context.code)}" title="Task notes" aria-expanded="false">${TASK_NOTE_PENCIL}</button>`;
@@ -27,6 +48,7 @@ export function taskNoteButton(context) {
 function editorHTML(context, note) {
   return `<div class="task-note-editor" data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
     <label class="task-note-label">Your note<textarea rows="3" maxlength="10000" placeholder="Write a note about this task…" oninput="taskNoteChanged(this)" onchange="taskNoteSave(this)">${esc(note?.text || '')}</textarea></label>
+    <label class="task-note-goal-label">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
     <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="button" onclick="taskNoteSave(this)">Save note</button></div>
   </div>`;
 }
@@ -43,8 +65,10 @@ export function taskNoteToggle(button) {
   const open = !panel.classList.contains('is-open');
   if (!open && editor.dataset.dirty === 'true' && !taskNoteSave(editor)) return;
   if (open && editor.dataset.dirty !== 'true') {
-    const note = savedTaskNote(JSON.parse(editor.dataset.taskContext));
+    const context = JSON.parse(editor.dataset.taskContext);
+    const note = savedTaskNote(context);
     editor.querySelector('textarea').value = note?.text || '';
+    editor.querySelector('.task-note-goal').innerHTML = goalOptions(context, note);
     editor.querySelector('.task-note-status').textContent = note ? 'Saved' : '';
   }
   panel.classList.toggle('is-open', open);
@@ -66,6 +90,7 @@ export function taskNoteSave(source) {
   const status = editor.querySelector('.task-note-status');
   const text = editor.querySelector('textarea').value.trim();
   const context = JSON.parse(editor.dataset.taskContext);
+  const goal = editor.querySelector('.task-note-goal').value;
   const key = taskNoteKey(context);
   const notes = readNotes();
   const existing = notes.find(n => n && n.cat === 'task' && n.taskKey === key);
@@ -75,9 +100,11 @@ export function taskNoteSave(source) {
     return !existing;
   }
   const now = Date.now();
-  if (existing) Object.assign(existing, { text, task: context, updatedAt: now });
+  const goalTitle = linkedGoalTitle(context, { goal,
+    goalTitle: existing && linkedGoalId(context, existing) === goal ? existing.goalTitle : '' });
+  if (existing) Object.assign(existing, { text, task: context, goal, goalTitle, updatedAt: now });
   else notes.push({ id: 'task-' + crypto.randomUUID(), cat: 'task', taskKey: key,
-    task: context, text, ts: now, updatedAt: now });
+    task: context, text, goal, goalTitle, ts: now, updatedAt: now });
   if (!_saveNotes(notes)) {
     status.textContent = 'Could not save. Keep this box open and try again.';
     return false;
@@ -89,8 +116,11 @@ export function taskNoteSave(source) {
   document.querySelectorAll('.task-note-editor').forEach(other => {
     if (other === editor || other.dataset.taskKey !== key || other.dataset.dirty === 'true') return;
     other.querySelector('textarea').value = text;
+    other.querySelector('.task-note-goal').innerHTML = goalOptions(context, { goal, goalTitle });
     other.querySelector('.task-note-status').textContent = 'Saved';
   });
+  const goalHeading = editor.closest('.master-task-note')?.querySelector('.master-task-note-goal');
+  if (goalHeading) goalHeading.textContent = goalTitle;
   if (!editor.closest('#taskNotesList')) renderTaskNotesList();
   return true;
 }
@@ -102,7 +132,7 @@ export function renderTaskNotesList() {
     .sort((a, b) => (b.updatedAt || b.ts || 0) - (a.updatedAt || a.ts || 0));
   host.innerHTML = notes.length ? notes.map(note => `<article class="master-task-note">
     <div class="master-task-note-source"><strong>${esc(note.task.code)}</strong><span>${note.task.kind === 'roadmap' ? 'Roadmap' : 'My Actions'}</span></div>
-    <p class="master-task-note-goal">${esc(note.task.goalTitle)}</p>
+    <p class="master-task-note-goal">${esc(linkedGoalTitle(note.task, note))}</p>
     <h2>${esc(note.task.taskText)}</h2>${editorHTML(note.task, note)}
   </article>`).join('') : '<p class="task-notes-empty">No task notes yet. Tap the pencil beside any task to add one.</p>';
   const count = document.getElementById('taskNotesCount');

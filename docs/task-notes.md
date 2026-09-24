@@ -8,6 +8,13 @@ combined view, nested actions, and the all-tasks list. Saving or leaving the
 field updates one note. Opening the pencil again reads the latest saved text.
 The master list shows the task code, list, goal, task text, and editable note.
 
+Each editor also has the Journal-style goal dropdown, defaulting to the task's
+source goal. Changing it saves `goal` and its title separately from the stable
+task identity, so the note stays attached to the task. The Notes list displays
+the selected goal and offers the same dropdown. An explicit unlinked choice
+persists; older notes default to their original goal, and a removed goal retains
+its saved label until another goal is selected.
+
 Storage reuses `ci_notes` and the existing signed-in `profiles.notes` JSONB
 sync. Task notes use category `task`, separate from journal entries and personal
 thoughts. They are excluded from random thought display and the thoughts cap.
