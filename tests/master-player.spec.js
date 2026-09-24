@@ -349,7 +349,7 @@ test('Meditation image stays behind the uniform dark 35px frame', async ({ page 
   const frameRect = meditation.locator('.ccb-curve rect');
   const curveDivider = meditation.locator('.ccb-curve ellipse');
   await expect(frameRect).toBeVisible();
-  await expect(frameRect).toHaveAttribute('stroke', '#1e90ff');
+  await expect(frameRect).toHaveAttribute('stroke', '#ff1493');
   await expect(curveDivider).toHaveAttribute('stroke', '#747474');
   await expect(curveDivider).toHaveCSS('stroke', 'rgb(116, 116, 116)');
 
@@ -366,7 +366,7 @@ test('Meditation image stays behind the uniform dark 35px frame', async ({ page 
   });
   expect(layers.frameZ).toBeGreaterThan(layers.imageZ);
   expect(layers.rectDisplay).not.toBe('none');
-  expect(layers.rectStroke).toBe('rgb(30, 144, 255)');
+  expect(layers.rectStroke).toBe('rgb(255, 20, 147)');
 });
 
 test('Meditate opens with its compact options menu visible', async ({ page }) => {
