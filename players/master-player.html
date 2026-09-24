@@ -459,15 +459,47 @@
         document.getElementById('lfmBack').hidden=view===home;
         reportHeight();
       }
+      let meditationMenuAnimation=null;
+      function setMeditationMenuOpen(open,fadeOut=false){
+        const opacity=Number.parseFloat(getComputedStyle(meditationMenu).opacity);
+        if(meditationMenuAnimation){
+          meditationMenuAnimation.cancel();
+          meditationMenuAnimation=null;
+        }
+        meditationMenuOpen=open;
+        meditationMenu.inert=!open;
+        document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(open));
+        if(open){
+          meditationMenu.hidden=false;
+          reportHeight();
+          return;
+        }
+        if(!fadeOut||meditationMenu.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          meditationMenu.hidden=true;
+          reportHeight();
+          return;
+        }
+        // Keep the options in place until the five-second fade has finished.
+        const animation=meditationMenu.animate(
+          [{opacity:Number.isFinite(opacity)?opacity:1},{opacity:0}],
+          {duration:5000,easing:'linear',fill:'forwards'}
+        );
+        meditationMenuAnimation=animation;
+        animation.finished.then(()=>{
+          if(meditationMenuAnimation!==animation)return;
+          meditationMenu.hidden=true;
+          animation.cancel();
+          meditationMenuAnimation=null;
+          reportHeight();
+        },()=>{});
+      }
       function setMeditationMode(active){
         if(!active)meditationSessionActive=false;
-        meditationMenuOpen=active;
         deck.classList.toggle('meditation-mode',active);
         deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
         shell.classList.toggle('meditation-player-mode',active);
         meditationControls.hidden=!active||!meditationSessionActive;
-        meditationMenu.hidden=!active;
-        document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(active));
+        setMeditationMenuOpen(active);
       }
       function notifyParentMode(action){
         try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
@@ -726,7 +758,7 @@
       document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
         const command=button.dataset.medCommand;
         if(command==='back'){homeMode();return}
-        if(command==='menu'){meditationMenuOpen=!meditationMenuOpen;meditationMenu.hidden=!meditationMenuOpen;button.setAttribute('aria-expanded',String(meditationMenuOpen));reportHeight();return}
+        if(command==='menu'){setMeditationMenuOpen(!meditationMenuOpen,true);return}
         if(command==='toggle'){sendMeditation('toggle');return}
         if(command==='mode'){meditationMode=meditationMode==='guided'?'unguided':'guided';reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);
@@ -775,10 +807,7 @@
           meditationSessionActive=sessionActive;
           deck.classList.toggle('meditation-session-active',sessionActive);
           meditationControls.hidden=!sessionActive;
-          if(sessionActive)meditationMenuOpen=false;
-          meditationMenu.hidden=!meditationMenuOpen;
-          document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(meditationMenuOpen));
-          reportHeight();
+          setMeditationMenuOpen(sessionActive?false:meditationMenuOpen);
         }
         const running=data.state==='running';
         const remaining=Math.max(0,Number(data.remaining)||0);
