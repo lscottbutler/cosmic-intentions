@@ -30,6 +30,11 @@
     .site-menu-button{position:absolute;z-index:2;right:calc(12.5% - 13px);top:var(--cap-center-y);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
     .site-menu-button span{display:block;width:100%;height:4px;border-radius:3px;background:currentColor}
     .site-menu-button:hover,.site-menu-button:focus-visible{background:rgba(255,255,255,.26);outline:2px solid rgba(255,255,255,.72);outline-offset:2px}
+
+    /* Standalone player navigation uses the top layer, preserving the frame geometry. */
+    #standaloneSiteMenu{position:fixed;inset:calc(var(--cap-height) - 8px) max(12px,8vw) auto auto;width:min(280px,calc(100vw - 24px));max-height:calc(100dvh - var(--cap-height) - 12px);margin:0;padding:8px;overflow-y:auto;border:1px solid #747474;border-radius:8px;background:#292929;color:#fff;box-shadow:0 8px 24px #0006}
+    #standaloneSiteMenu button,#standaloneSiteMenu a{display:block;width:100%;padding:10px 14px;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}
+    #standaloneSiteMenu button:hover,#standaloneSiteMenu a:hover,#standaloneSiteMenu button:focus-visible,#standaloneSiteMenu a:focus-visible{background:#747474;outline:2px solid #fff;outline-offset:-2px}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
     .stage.ci-stage-fade-out{opacity:1}
     .view{animation:fadeIn .24s ease both}
@@ -235,6 +240,7 @@
         </section>
     </nav>
   </main>
+  <nav id="standaloneSiteMenu" popover aria-label="Site menu"></nav>
   <script type="module">
     (() => {
       const params=new URLSearchParams(location.search);
@@ -610,8 +616,44 @@
       }
       function reloadMeditation(){experienceFrame.src=destinationUrl('meditation');syncMeditationUI()}
       function sendMeditation(command,extra={}){experienceFrame.contentWindow?.postMessage({type:'ci-meditation-command',command,...extra},location.origin)}
-      document.getElementById('siteMenuButton').addEventListener('click',event=>{
+      const siteMenuButton=document.getElementById('siteMenuButton');
+      const standaloneSiteMenu=document.getElementById('standaloneSiteMenu');
+      if(parent===window){
+        siteMenuButton.setAttribute('aria-controls','standaloneSiteMenu');
+        siteMenuButton.setAttribute('aria-expanded','false');
+        const siteChoices=[
+          ['citadel','Citadel'],['goals','Goals'],['daily-habits','Habits'],
+          ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
+          ['journal','My Journal'],['action-plan','Roadmap'],
+          ['visualization','Visualization Library'],['meditation','Meditation'],
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins']
+        ];
+        siteChoices.forEach(([action,label])=>{
+          const button=document.createElement('button');
+          button.type='button';
+          button.textContent=label;
+          button.addEventListener('click',()=>{
+            standaloneSiteMenu.hidePopover();
+            siteMenuButton.focus();
+            select(action);
+          });
+          standaloneSiteMenu.appendChild(button);
+        });
+        [['/landing','Landing Page 1'],['/landing-v2','Landing Page 2'],['/landing-v3','Landing Page 3'],['/about','About Us']].forEach(([href,label])=>{
+          const link=document.createElement('a');
+          link.href=href;link.textContent=label;link.target='_blank';link.rel='noopener';
+          link.addEventListener('click',()=>standaloneSiteMenu.hidePopover());
+          standaloneSiteMenu.appendChild(link);
+        });
+        standaloneSiteMenu.addEventListener('toggle',event=>{
+          const open=event.newState==='open';
+          siteMenuButton.setAttribute('aria-expanded',String(open));
+          siteMenuButton.setAttribute('aria-label',open?'Close site menu':'Open site menu');
+        });
+      }
+      siteMenuButton.addEventListener('click',event=>{
         event.stopPropagation();
+        if(parent===window){standaloneSiteMenu.togglePopover();return}
         try{parent.postMessage({type:'ci-site-menu-toggle'},location.origin)}catch(_){}
       });
       document.getElementById('medProgress').addEventListener('click',event=>{
