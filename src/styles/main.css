@@ -379,31 +379,107 @@ details.rm-drop::details-content {
 details.rm-drop[open]::details-content { height: auto; }
 
 /* Card overflow (⋯) menu — same slow open/close as .rm-drop above. */
+.task-note-pencil { flex:0 0 30px; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:50%; padding:0; background:#000; color:#fff; cursor:pointer; }
+.task-note-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease; }
+.task-note-panel.is-open { grid-template-rows:1fr; }
+.task-note-panel-inner { min-height:0; overflow:hidden; }
+.task-note-editor { padding-top:14px; color:#15161a; }
+.task-note-label { display:block; font-size:13px; font-weight:700; }
+.task-note-label textarea { display:block; width:100%; box-sizing:border-box; min-height:96px; margin-top:6px; padding:10px 12px; resize:vertical; border:1px solid #c9ccd1; border-radius:8px; background:#fff; color:#15161a; font-size:15px; line-height:1.5; font-weight:400; font-family:inherit; }
+.task-note-goal-label { display:block; margin-top:10px; font-size:13px; font-weight:700; }
+.task-note-goal { display:block; width:100%; box-sizing:border-box; margin-top:6px; padding:9px 11px; border:1px solid #c9ccd1; border-radius:9px; font-size:13px; font-weight:400; font-family:inherit; color:#1a1a1a; background:#fff; cursor:pointer; }
+.task-note-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:8px; }
+.task-note-status { font-size:12px; color:#535b64; }
+.task-note-footer button { flex-shrink:0; background:#000; color:#fff; border:0; border-radius:7px; padding:9px 13px; font-size:13px; line-height:1.2; font-weight:700; font-family:inherit; cursor:pointer; }
+.task-note-pencil:focus-visible, .task-note-footer button:focus-visible { outline:3px solid #1e90ff; outline-offset:3px; }
+.task-notes-page { padding:20px 16px; background:#fff; color:#15161a; }
+.task-notes-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.task-notes-heading h1 { margin:0; font-size:24px; }
+.task-notes-heading > span { color:#535b64; font-size:13px; }
+.task-notes-page > p { margin:10px 0 20px; }
+.master-task-note { border:1px solid #d8dce2; border-radius:12px; padding:16px; margin-bottom:14px; }
+.master-task-note-source { display:flex; align-items:center; gap:8px; font-size:12px; }
+.master-task-note-source strong { padding:5px 8px; border-radius:5px; background:#000; color:#fff; }
+.master-task-note-goal { margin:10px 0 6px; color:#535b64; font-size:13px; }
+.master-task-note h2 { margin:0; font-size:17px; line-height:1.4; }
+.task-notes-empty { padding:18px 0; color:#535b64; }
+@media(prefers-reduced-motion:reduce) { .task-note-panel { transition:none; } }
+
+.goal-workspace-page { padding:20px 16px; background:#fff; color:#15161a; }
+.goal-workspace-page h1 { margin:0; font-size:26px; }
+.goal-workspace-page > p { margin:10px 0 20px; line-height:1.6; }
+.goal-workspace-selector, .goal-entry-form label { display:block; font-size:14px; font-weight:700; }
+.goal-workspace-selector select, .goal-entry-form textarea, .goal-workspace-add-task input { display:block; width:100%; box-sizing:border-box; padding:12px; margin-top:7px; color:#15161a; background:#fff; border:1px solid #c9ccd1; border-radius:8px; font:inherit; font-weight:400; }
+.goal-workspace-selector select { white-space:normal; }
+.goal-workspace-goal { margin:24px 0 0; padding:16px; background:#f2f3f5; border-radius:10px; font-size:22px; line-height:1.4; overflow-wrap:anywhere; }
+.goal-workspace-section { margin-top:28px; }
+.goal-workspace-section > h2 { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:12px 16px; margin:0 0 16px; background:#1d3557; color:#fff; font-size:20px; border-radius:10px; }
+.goal-workspace-section > h2 span { font-size:13px; font-weight:400; }
+.goal-workspace-task-label { display:inline-block; margin:0 0 12px; padding:7px 12px; background:#000; color:#fff; border-radius:7px; font-size:14px; }
+.goal-workspace-roadmap-label { background:#d62828; margin-top:20px; }
+.goal-workspace-add-task { display:flex; gap:8px; margin:12px 0; }
+.goal-workspace-add-task input { flex:1; min-width:0; margin:0; }
+.goal-workspace-add-task button, .goal-workspace-link { background:#000; color:#fff; border:0; border-radius:7px; padding:10px 13px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+.goal-workspace-link { display:inline-block; margin:0 0 12px; text-align:left; }
+.goal-entry-form { padding:16px; margin-bottom:14px; border:1px solid #d8dce2; border-radius:10px; }
+.goal-entry-form textarea { min-height:100px; resize:vertical; line-height:1.5; }
+.goal-entry-date { margin:0 0 10px; color:#535b64; font-size:12px; }
+.goal-workspace-empty { color:#535b64; line-height:1.6; }
+.goal-note-text { white-space:pre-wrap; overflow-wrap:anywhere; }
+.goal-workspace-page h3 { overflow-wrap:anywhere; }
+.goal-action-records:empty { display:none; }
+.goal-action-entry { margin-top:12px; padding-top:12px; border-top:1px solid #e1e4e8; }
+.goal-action-entry h4 { margin:0 0 5px; color:#1d3557; font-size:13px; font-weight:700; }
+.goal-action-entry p { margin:0; color:#15161a; font-size:15px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+.goal-entry-action-label { margin-top:12px; }
+.goal-entry-action { display:block; width:100%; min-width:0; box-sizing:border-box; margin-top:6px; padding:10px; border:1px solid #c9ccd1; border-radius:8px; color:#15161a; background:#fff; font:inherit; font-weight:400; }
+.goal-workspace-page [hidden] { display:none!important; }
+.goal-workspace-page button:focus-visible, .goal-workspace-link:focus-visible { outline:3px solid #1e90ff; outline-offset:3px; }
+
 .wcard-menu { height: 0; overflow: hidden; transition: height .92s ease, content-visibility .92s allow-discrete; content-visibility: hidden; }
 .wcard-menu.open { height: auto; content-visibility: visible; }
 
-/* Two tabs tucked BEHIND the bottom of a goal box (My Actions / Roadmap Tasks) */
-.wtabs { display: flex; justify-content: space-between; gap: 6px; padding: 0 10px; margin-top: -12px; position: relative; z-index: 1; }
+/* My Actions / Roadmap tabs sit together above the goal's right edge. */
+.wgoal > .wtabs { display: none; }
+.wgoal:has(> .rm-drop[open]) > .wtabs { display: flex; }
+.wtabs { justify-content: flex-end; align-items: flex-end; gap: 8px; padding: 0 10px; margin-bottom: -1px; position: relative; z-index: 1; }
 .wtab {
-  flex: 0 1 auto;      /* content-sized so the two tabs sit at the outer edges */
-  max-width: 44%;
+  flex: 0 1 auto;
+  max-width: calc(50% - 23px);
   min-width: 0;
   box-sizing: border-box;
-  border: 1px solid #ffffff;      /* thin white outline */
-  border-radius: 0 0 10px 10px;
-  padding: 18px 8px 8px;          /* extra top padding: label sits below the pill overlap */
+  border: 1px solid #ffffff;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  background: #000;
+  color: #fff;
   font-family: var(--vault-mono);
-  font-size: 11px;                /* ~20% bigger */
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: opacity .15s;
 }
-.wtab.wtab-active { opacity: 1; }
+.wtab.wtab-active { text-decoration: underline; text-underline-offset: 3px; }
+.wtab-combine {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+}
 
 /* Wrap-up code-cards (Phase 1): quiet card + ⋯ overflow menu hover states */
 .wcard-more { transition: background .12s, color .12s; }
@@ -2559,6 +2635,8 @@ input, textarea, select {
 #notesSections,
 #vizLibList,
 #todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
+/* Roadmap introduction aligns with the Your Steps section below. */
+#page-myroadmap .pg-screen > p:first-of-type { padding: 20px 16px; box-sizing: border-box; }
 /* My Favorites Autoplay: the autoplay button + cards are indented 20px (via
    .player-times-grid). Indent the intro line the same so the whole block is
    clearly inset, matching the other pages. */
@@ -2644,6 +2722,16 @@ input, textarea, select {
 .habit-drop summary::-webkit-details-marker { display: none; }
 .habit-drop .habit-caret { display: inline-block; transition: transform .15s; }
 .habit-drop[open] .habit-caret { transform: rotate(90deg); }
+
+/* Habits editor category headers start closed and reveal their own contents. */
+.pb-habit-section { margin: 16px 0 8px; scroll-margin-top: 76px; }
+.pb-habit-section > summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; list-style: none; cursor: pointer; }
+.pb-habit-section > summary::-webkit-details-marker { display: none; }
+.pb-habit-section > summary:focus-visible { outline: 2px solid #292929; outline-offset: 3px; }
+.pb-habit-chevron { flex-shrink: 0; transition: transform .15s ease; }
+.pb-habit-section[open] > summary .pb-habit-chevron { transform: rotate(180deg); }
+.pb-habit-section .pb-habit-grid { margin-top: 8px; }
+.pb-habit-section:not([open]) > :not(summary) { display: none !important; }
 
 /* ── INLINE PLAYER NAV (accordion) ────────────────────── */
 .vault-item-nav {
@@ -3812,6 +3900,11 @@ html.master-inline-mode .pg-hdr,
 html.master-inline-mode .wins-hdr {
   display: none !important;
 }
+/* Keep the retired generic guide card hidden. The two administrator boxes
+   belong to each workspace, including when it opens inside the Master Player. */
+html.master-inline-mode .page-intro-card {
+  display: none !important;
+}
 html.master-inline-mode .pg-2col,
 html.master-inline-mode .vault-layout {
   display: block !important;
@@ -4076,6 +4169,37 @@ html.master-inline-goals #vaultList .vault-act {
   height: 36px !important;
 }
 
+/* LFM Visualize — match the approved Goals two-column row: goal information
+   on the left and the heart/play/edit control strip on the right. Keep this
+   layout inside the narrow embedded frame instead of stacking the controls. */
+html.master-inline-visualization #vizLibList .vault-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 25%) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+html.master-inline-visualization #vizLibList .vault-row > .vault-item {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+html.master-inline-visualization #vizLibList .vault-row > .vault-actions {
+  width: 100% !important;
+  min-width: 132px !important;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  gap: 6px !important;
+  background: #e6e8ec !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+html.master-inline-visualization #vizLibList .vault-act {
+  width: 36px !important;
+  height: 36px !important;
+}
+
 
 /* ── EXPANDABLE LFM TOOL TEMPLATE ───────────────────────────
    Goals, Favorites, Thoughts, Journal, Roadmap, Gratitude and Wins contribute
@@ -4186,8 +4310,9 @@ html.master-inline-goals #page-setup .page-intro-card {
 
 .lfm-guide-3bmn {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, 58px);
+  justify-content: center;
+  gap: 18px;
   align-items: center;
   margin-top: 20px;
   padding-top: 18px;
@@ -4195,32 +4320,48 @@ html.master-inline-goals #page-setup .page-intro-card {
 }
 
 .lfm-guide-3bmn button {
+  position: relative;
   display: grid;
-  gap: 5px;
-  justify-items: center;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: #111;
+  color: #fff;
   cursor: pointer;
 }
 
 .lfm-guide-3bmn button span {
+  box-sizing: border-box;
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 58px;
+  height: 58px;
   place-items: center;
-  border: 2px solid #a7c526;
+  border: 7px solid #8f8f8f;
   border-radius: 50%;
-  background: #111;
+  background: #000;
   color: #fff;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 900;
+  box-shadow: 0 3px 10px rgba(0,0,0,.28);
+  transition: transform .18s ease;
+}
+
+.lfm-guide-3bmn button:hover span,
+.lfm-guide-3bmn button:focus-visible span {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
 }
 
 .lfm-guide-3bmn button b {
-  font-size: 9px;
-  letter-spacing: .45px;
-  text-transform: uppercase;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @media (max-width: 760px) {

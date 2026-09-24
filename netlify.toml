@@ -116,6 +116,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# Vite fingerprints these files in their names, so browsers can safely keep
+# them for a year. Repeat visits avoid downloading unchanged JavaScript, CSS,
+# and imported artwork again.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[headers]]
   for = "/*"
   [headers.values]

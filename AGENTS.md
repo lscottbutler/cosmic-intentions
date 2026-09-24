@@ -48,6 +48,19 @@ When reporting completed work, state: what changed; what was verified; what rema
 8. Use a dedicated `review/<feature>` branch. Never experiment on `main`.
 9. Check for unrelated user changes and preserve them.
 
+## Approved player template — Scott's direction, 2026-09-24
+
+The only approved player template for every page is the current Master Player shown at:
+https://deploy-preview-41--gilded-profiterole-47a2eb.netlify.app/players/master-player.html?start=meditation
+
+Canonical implementation: `players/master-player.html`. Approved recovery checkpoint: `9303e792da586df777e06a7c9347c61c3148bc8d`.
+
+Every page that displays a player must use this shared template. Do not introduce, restore, substitute, or show a different player template on another page. Keep page-specific content and behavior inside the canonical template instead of duplicating or redesigning its shell.
+
+Preserve the approved square outer blue top corners, square outer blue bottom, aligned blue side borders, curved grey inner troughs, matching grey meditation controls area, and working hamburger menu. A request to change page content does not authorize a template change. Scott must explicitly request the particular template feature to be changed; preserve the rest and retain the integrity guard.
+
+Work one requested revision at a time. For a focused edit, inspect and verify the affected component and necessary dependencies; do not restart a whole-site audit or rework unrelated pages. This is Scott's later, specific scope direction for incremental revisions.
+
 ## Product and player architecture
 
 Keep every player separate. Shared foundations do not authorize mixing player content, stages, instructions, timing, or behavior.

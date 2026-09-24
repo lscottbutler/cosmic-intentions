@@ -11,7 +11,8 @@
 <meta property="og:image" content="https://cosmicintentions.com/images/home-welcome-languages.jpg">
 <title>Cosmic Intentions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lora:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;600;800;900&family=Lora:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>/* DEV-ONLY error surface — only on localhost; inert in production. Surfaces any
    runtime error as a visible red overlay so nothing fails silently while testing. */
@@ -37,6 +38,8 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       'gratitude':'page-gratitude',
       'journal':'page-mynotes',
       'thoughts':'page-notes',
+      'task-notes':'page-tasknotes',
+      'goal-workspace':'page-goalworkspace',
       'wins':'page-wins',
       'proof':'page-proof',
       'cosmic-library':'page-cosmiclibrary',
@@ -136,6 +139,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
   <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
   <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
+  <button class="tnav-btn" onclick="openGoalWorkspace()">Goal Workspace</button>
   <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
   <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
   <button class="tnav-btn" onclick="navTo('meditation')">Meditation</button>
@@ -168,6 +172,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var m = document.getElementById('hamMenu');
     if (m) m.classList.toggle('open');
   }
+  // Master Player upper-trough hamburger opens this same global site menu.
+  window.addEventListener('message', function (event) {
+    if (event.origin !== window.location.origin || !event.data) return;
+    if (event.data.type === 'ci-site-menu-toggle') toggleHamMenu();
+  });
   // Close the menu after picking an item.
   document.addEventListener('click', function (e) {
     if (e.target.closest('.tnav-btn')) { var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open'); }
@@ -377,7 +386,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     // Pages that need an intro card of their own. Pages not listed here
     // (wins / vizlibrary / runthroughs / setup / habits) already get one from
     // injectPlaceholderCards (.ci-ph-card) — don't add a second and duplicate it.
-    var WANT = ['dashboard', 'notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
+    var WANT = ['notes', 'mynotes', 'myroadmap', 'dailyfocus', 'meditation', 'gratitude', 'cosmiclibrary', 'entcard', 'proof'];
     if (WANT.indexOf(id) < 0) return;
     if (active.querySelector('.page-intro-card, .ci-ph-card')) return;   // never duplicate an existing intro card
     // entcard draws into a dynamic host — insert BEFORE it so we're not wiped.
@@ -567,7 +576,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div id="homeLoggedOut">
       <!-- LANDING PAGE 1 — styles scoped under #lp1 so they never touch the app -->
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;600;800;900&display=swap');
         #lp1{--bg:#fff;--bg2:#f4f8ff;--card:#fff;--line:#e2e8f2;--text:#0f1b2d;--muted:#5c6b80;--gold:#1E90FF;--mint:#1E90FF;--rose:#38bdf8;--violet:#1565d8;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
         #lp1 *{box-sizing:border-box;margin:0;padding:0}
         #lp1 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
@@ -750,34 +758,34 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <!-- Sticker band (home-row webp images) — each image is an ENCOURAGEMENT BUTTON:
                tap any sticker to hear + see a warm, personalized line (playEncouragement). -->
           <div class="encourage-band" onclick="if(event.target.tagName==='IMG')playEncouragement()" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 16px;margin:20px 0 6px;">
-            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-tiger.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-panda.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dino.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dog.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-flowers.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-ship.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-baloon.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" style="height:70px;width:auto;display:none;">
-            <img src="images/home-row/home-record-player.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-paint-brush.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-bullhorn.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-lungs.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-bug.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-messenger.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-doll.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dunk.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-batter.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-hand-bird.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-hand-puppet.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-pidgeon.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-pink-skull.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-poster.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-respect.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-splat.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-travel.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-box.webp" alt="" loading="lazy" style="height:70px;width:auto;">
-            <img src="images/home-row/home-clocks-trash.webp" alt="" loading="lazy" style="height:70px;width:auto;">
+            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-tiger.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-panda.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-dino.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-dog.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-flowers.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-ship.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-baloon.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;display:none;">
+            <img src="images/home-row/home-record-player.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-paint-brush.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-bullhorn.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-lungs.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-bug.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-messenger.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-doll.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-dunk.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-batter.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-hand-bird.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-hand-puppet.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-pidgeon.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-pink-skull.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-poster.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-respect.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-splat.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-travel.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-box.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
+            <img src="images/home-row/home-clocks-trash.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
           </div>
 
           <!-- Entrepreneur Library Slideshow -->
@@ -993,6 +1001,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
       <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
+  <button class="tnav-btn" onclick="openGoalWorkspace()">Goal Workspace</button>
             <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
             <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
             <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
@@ -1197,7 +1206,47 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     </div>
   </div>
 
+  <!-- Task notes use the same private notes library, opened from the Citadel. -->
+  <div class="page" id="page-tasknotes">
+    <section class="task-notes-page" aria-labelledby="taskNotesTitle">
+      <div class="task-notes-heading"><h1 id="taskNotesTitle">Notes</h1><span id="taskNotesCount"></span></div>
+      <p>Your goal notes and notes from My Actions and Roadmap tasks.</p>
+      <button type="button" class="goal-workspace-link" onclick="openGoalWorkspace()">Open goal workspace · Notes / To-do / Journal</button>
+      <div id="taskNotesList"></div>
+    </section>
+  </div>
+
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
+  <div class="page" id="page-goalworkspace">
+    <section class="goal-workspace-page" aria-labelledby="goalWorkspaceTitle">
+      <h1 id="goalWorkspaceTitle">Goal Workspace</h1>
+      <p>Manage one goal: your notes, your to-dos, and your journal entries.</p>
+      <label class="goal-workspace-selector">Choose a goal<select id="goalWorkspaceSelect" onchange="goalWorkspaceSelect(this)" disabled><option value="">— Choose a goal —</option></select></label>
+      <p id="goalWorkspaceEmpty" class="goal-workspace-empty">No goals with saved notes or journal entries yet. Link a note or journal entry to a goal in Roadmap or Journal to see it here.</p>
+      <div id="goalWorkspaceContent" hidden>
+        <h2 id="goalWorkspaceGoal" class="goal-workspace-goal"></h2>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceTodoHeading">
+          <h2 id="goalWorkspaceTodoHeading">To-do <span id="goalWorkspaceTaskCount"></span></h2>
+          <h3 class="goal-workspace-task-label">My Actions</h3>
+          <div id="goalWorkspaceMyTasks"></div>
+          <form class="goal-workspace-add-task" onsubmit="event.preventDefault();goalWorkspaceAddTask(this)"><input aria-label="Add a to-do for this goal" placeholder="Add your own action…" maxlength="160" required><button type="submit">+ Add</button></form>
+          <h3 class="goal-workspace-task-label goal-workspace-roadmap-label">Roadmap</h3>
+          <div id="goalWorkspaceRoadmapTasks"></div>
+        </section>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceNotesHeading">
+          <h2 id="goalWorkspaceNotesHeading">Notes <span id="goalWorkspaceNoteCount"></span></h2>
+          <div id="goalWorkspaceNotes"></div>
+          <div id="goalWorkspaceNoteComposer"></div>
+        </section>
+        <section class="goal-workspace-section" aria-labelledby="goalWorkspaceJournalHeading">
+          <h2 id="goalWorkspaceJournalHeading">Journal entries <span id="goalWorkspaceJournalCount"></span></h2>
+          <div id="goalWorkspaceJournal"></div>
+          <div id="goalWorkspaceJournalComposer"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
   <div class="page" id="page-dashboard">
     <div class="pg-frame pf-black">
       <div class="pg-bezel">
@@ -1298,23 +1347,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <!-- WELCOME — TOP OF CITADEL COLUMN A -->
         <div id="dashGreeting" class="dash-greeting">Welcome back</div>
 
-        <section id="lfmGuideCard" class="lfm-guide-card" aria-label="Player guide and navigation" hidden>
-          <div class="lfm-guide-tabs" role="tablist" aria-label="Player information">
-            <button type="button" id="lfmGuideTabHow" role="tab" aria-selected="true" aria-controls="lfmGuideHow" data-lfm-guide-tab="how">How It Works</button>
-            <button type="button" id="lfmGuideTabReason" role="tab" aria-selected="false" aria-controls="lfmGuideReason" data-lfm-guide-tab="reason">The Reasoning Behind the Concept</button>
-            <button type="button" id="lfmGuideTabInstructions" role="tab" aria-selected="false" aria-controls="lfmGuideInstructions" data-lfm-guide-tab="instructions">Instructions &amp; Features</button>
-          </div>
-          <div class="lfm-guide-panel">
-            <p id="lfmGuideHow" role="tabpanel" aria-labelledby="lfmGuideTabHow" data-lfm-guide-panel="how"></p>
-            <p id="lfmGuideReason" role="tabpanel" aria-labelledby="lfmGuideTabReason" data-lfm-guide-panel="reason" hidden></p>
-            <p id="lfmGuideInstructions" role="tabpanel" aria-labelledby="lfmGuideTabInstructions" data-lfm-guide-panel="instructions" hidden></p>
-          </div>
-          <nav class="lfm-guide-3bmn" aria-label="Player navigation">
-            <button type="button" data-lfm-guide-command="back" aria-label="Back to Citadel"><span aria-hidden="true">&#9664;</span><b>Back</b></button>
-            <button type="button" data-lfm-guide-command="menu" aria-label="Open LFM menu"><span aria-hidden="true">&#9776;</span><b>LFM Menu</b></button>
-            <button type="button" data-lfm-guide-command="forward" aria-label="Next player"><span aria-hidden="true">&#9654;</span><b>Next</b></button>
-          </nav>
-        </section>
+        <!-- Legacy LFM guide/tabs/3-button panel removed globally; navigation now lives in the approved Master Player. -->
 
         <!-- ◆ DAILY TRACKER stack — top of Column A -->
         <!-- Admin-editable note (slug: dashboard-note-2) — hidden until filled in from the Admin page -->
@@ -1322,7 +1355,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MASTER PLAYER — BELOW WELCOME IN CITADEL COLUMN A -->
         <section id="ciApprovedMasters" aria-label="Cosmic Intentions Master Player" style="display:grid;gap:14px;width:calc(100% - 40px);margin:0 20px 18px;box-sizing:border-box;">
-          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=v2-dashboard-shell-52" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=approved-fade-20260924-1" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
           <div id="masterInlineWorkspace" hidden style="background:var(--card,#fff);border:1px solid var(--border,#d8dce2);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.14);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;">
               <span id="masterInlineTitle" style="font-weight:800;font-size:14px;letter-spacing:.6px;text-transform:uppercase;">Master Player</span>
@@ -1747,22 +1780,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             </div>
           </details>
 
-          <!-- MEDITATE — timer grid opens the meditation player in this column -->
-          <details class="dash-sec">
-            <summary><span class="dsec-title citadel-section-lettermark" data-ci-lettermark="MEDITATE" role="img" aria-label="Meditate"></span><span class="dsec-caret">&#8250;</span></summary>
-            <div class="dash-sec-body" data-player-box>
-              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30 Minutes</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button></div>
-              </div>
-            </div>
-          </details>
+          <!-- Meditation is owned by the approved Master Player; legacy timer launcher removed. -->
         </div>
         </div><!-- end citadelActionsGrid -->
 
@@ -1795,7 +1813,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <button onclick="launchCreativeViz(event)" style="grid-column: 1 / -1; padding: 12px; background: #E8743B; border: none; color: #fff; cursor: pointer; border-radius: 999px; font-weight: 700; letter-spacing: 1px;">CREATIVE VISUALIZATION</button>
           <button onclick="launchViz(3, event)" style="grid-column: 1 / -1; padding: 12px; background: #4A90D9; border: none; color: #fff; cursor: pointer; border-radius: 999px; font-weight: 700; letter-spacing: 1px;">3 MIN VISUALIZATION</button>
           <button onclick="openPlayerInColumn('players/art-frame.html', event)" style="grid-column: 1 / -1; padding: 12px; background: #48B860; border: none; color: #fff; cursor: pointer; border-radius: 999px; font-weight: 700; letter-spacing: 1px;">ART FRAME &mdash; AUTO BORDER</button>
-          <!-- ✎ EDIT TIMELINE (players/viz-editor.html) removed 2026-07-12 — legacy: the 3-min player no longer reads its ci_viz_scene. File kept on disk. -->
+          <!-- Timeline editor retired; archived under archive/legacy-players/. -->
         </div>
 
         <div id="recite-grid" class="hidden player-times-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
@@ -2092,27 +2110,37 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <p class="pg-intro">Quiet the mind before you begin.</p>
           <div class="pg-2col">
           <div class="pg-2col-main">
-            <!-- MEDITATION TIMER GRID — pick a length; each launches the meditation player. -->
-            <div style="background:var(--teal-ui,#0F9AA0); border-radius:12px; padding:18px 14px 16px; margin-bottom:12px;">
-              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=1', event)">1 Minute</button><button class="dot-fav" data-player="meditation" data-min="1" onclick="favSession('meditation',1,event)" title="Favorite the 1-minute meditation" aria-label="Favorite the 1-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=3', event)">3 Minutes</button><button class="dot-fav" data-player="meditation" data-min="3" onclick="favSession('meditation',3,event)" title="Favorite the 3-minute meditation" aria-label="Favorite the 3-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=5', event)">5 Minutes</button><button class="dot-fav" data-player="meditation" data-min="5" onclick="favSession('meditation',5,event)" title="Favorite the 5-minute meditation" aria-label="Favorite the 5-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=10', event)">10 Minutes</button><button class="dot-fav" data-player="meditation" data-min="10" onclick="favSession('meditation',10,event)" title="Favorite the 10-minute meditation" aria-label="Favorite the 10-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=15', event)">15 Minutes</button><button class="dot-fav" data-player="meditation" data-min="15" onclick="favSession('meditation',15,event)" title="Favorite the 15-minute meditation" aria-label="Favorite the 15-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=20', event)">20 Minutes</button><button class="dot-fav" data-player="meditation" data-min="20" onclick="favSession('meditation',20,event)" title="Favorite the 20-minute meditation" aria-label="Favorite the 20-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=30', event)">30 Minutes</button><button class="dot-fav" data-player="meditation" data-min="30" onclick="favSession('meditation',30,event)" title="Favorite the 30-minute meditation" aria-label="Favorite the 30-minute meditation">&#9825;</button></div>
-                <div class="time-row"><button class="time-play" onclick="openPlayerInColumn('players/meditation.html?t=45', event)">45 Minutes</button><button class="dot-fav" data-player="meditation" data-min="45" onclick="favSession('meditation',45,event)" title="Favorite the 45-minute meditation" aria-label="Favorite the 45-minute meditation">&#9825;</button></div>
-              </div>
-            </div>
-            <!-- MEDITATIONS stats -->
-            <div class="med-stats">
-              <div class="med-stats-hd">Meditations</div>
-              <div class="med-stat"><span>This Week</span><b id="medStatWeek">0</b></div>
-              <div class="med-stat"><span>This Month</span><b id="medStatMonth">0</b></div>
-              <div class="med-stat"><span>This Year</span><b id="medStatYear">0</b></div>
-              <div class="med-stat med-stat--streak"><span>Daily Streak</span><b id="medStatStreak">365</b></div>
-            </div>
+            <!-- APPROVED CITADEL MASTER PLAYER — Meditate uses the same locked shell as every LFM destination. -->
+            <section class="ci-meditation-master" aria-label="Cosmic Intentions Meditation Master Player" style="width:100%;margin:0 0 16px;">
+              <iframe id="ciMeditationMasterPlayerFrame" src="/players/master-player.html?v=approved-fade-20260924-1&amp;start=meditation" title="Cosmic Intentions Meditation Master Player" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:900px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+            </section>
+            <script>
+              (function () {
+                var frame = document.getElementById('ciMeditationMasterPlayerFrame');
+                if (!frame) return;
+                function applyMeditationMasterHeight(height) {
+                  var nextHeight = Math.max(300, Math.ceil(Number(height)));
+                  if (!Number.isFinite(nextHeight)) return;
+                  frame.style.setProperty('height', nextHeight + 'px', 'important');
+                  frame.style.setProperty('aspect-ratio', 'auto', 'important');
+                }
+                function measureMeditationMaster() {
+                  try {
+                    var shell = frame.contentDocument && frame.contentDocument.querySelector('.shell');
+                    if (shell) applyMeditationMasterHeight(shell.getBoundingClientRect().height);
+                  } catch (_) {}
+                }
+                window.addEventListener('message', function (event) {
+                  if (event.source !== frame.contentWindow || event.origin !== window.location.origin || !event.data) return;
+                  if (event.data.type === 'ci-lfm-height') applyMeditationMasterHeight(event.data.height);
+                });
+                frame.addEventListener('load', function () {
+                  requestAnimationFrame(measureMeditationMaster);
+                  window.setTimeout(measureMeditationMaster, 150);
+                  window.setTimeout(measureMeditationMaster, 700);
+                });
+              })();
+            </script>
           </div>
           <aside class="pg-2col-side">
             <div class="colb-nav">
@@ -2913,15 +2941,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
 
-      <!-- PLAYER MASTER WORKSPACE — kept at the bottom of Admin so Citadel stays focused on the Master Player. -->
-      <section id="ciAdminPlayerWorkspace" aria-label="Player Master Workspace" style="margin-top:32px;padding-top:24px;border-top:2px solid var(--border,#d8dce2);">
-        <h2 style="margin:0 0 8px;font-size:22px;letter-spacing:.8px;text-transform:uppercase;">Player Master Workspace</h2>
-        <p class="admin-page-sub" style="margin:0 0 16px;">Gratitude, Meditation, Quote Reveal, and Digital Vision Board reference players.</p>
-        <div id="ciAdminPlayerSamples" style="display:grid;gap:14px;">
-          <iframe src="/players/quote-reveal.html?paused" title="Quote Reveal Master" loading="lazy" allow="autoplay; fullscreen" allowfullscreen style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#05070b;"></iframe>
-          <iframe src="/players/dvb.html" title="Digital Vision Board Master" loading="lazy" allow="autoplay; fullscreen" allowfullscreen style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#111;"></iframe>
-        </div>
-      </section>
+      <!-- Legacy standalone player samples removed; the Citadel Master Player is canonical. -->
 
     </div>
   </div>

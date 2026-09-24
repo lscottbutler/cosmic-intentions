@@ -2,6 +2,7 @@ import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey, currentUser } from '../app.js';
 import { setTaskWin } from './wins.js';
+import { taskNoteContext, taskNoteButton, taskNotePanel, taskLinkedEntriesHTML } from './task-notes.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -11,6 +12,7 @@ import { setTaskWin } from './wins.js';
 
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
+const ROADMAP_COLOR = '#D62828';
 
 /* ── CODE-CARD SYSTEM (Phase 1) ───────────────────────────────────────────
    Every action row is a quiet white card: a thin goal-color rail, one visible
@@ -76,23 +78,26 @@ function _shade(hex, f) {
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false }) {
   // White card, black text. Wide, rounded left rail: BLACK for My Actions
-  // (matches the black MY ACTIONS tab), goal-colour for Roadmap — so the two
-  // groups read apart at a glance. Goal-colour code chip.
-  const rail = variant === 'roadmap' ? shade.bg : '#000';
+  // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
+  // The code chip retains the goal's shade.
+  const rail = variant === 'roadmap' ? ROADMAP_COLOR : '#000';
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex:1;min-width:0;font-size:15px;line-height:1.45;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
       <!-- Goal-code box: code on top, ⋯ overflow menu in the lower half. -->
+      ${taskNoteButton(noteContext)}
       <div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
         <span style="display:flex;align-items:center;justify-content:center;padding:7px 4px 5px;color:${shade.text};font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:.4px;line-height:1;">${esc(code)}</span>
         <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;border-top:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:16px;line-height:1;padding:3px 0 5px;">⋯</button>
       </div>
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
+    ${taskNotePanel(noteContext)}
+    ${showLinkedEntries && noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
   </div>`;
 }
 
@@ -185,7 +190,7 @@ export function wrapupTaskGoalToggle(idx) {
   }
 }
 
-// Per-goal active tab ("my" | "roadmap") for the two tabs hanging off the goal box. Survives re-renders.
+// Per-goal view ("my" | "both" | "roadmap") for the tabs and + button above the goal box. Survives re-renders.
 const _activeTab = new Map();
 export function wrapTab(idx, which) {
   _activeTab.set(idx, which);
@@ -193,7 +198,10 @@ export function wrapTab(idx, which) {
     const p = document.getElementById(`wtab-panel-${t}-${idx}`);
     const b = document.getElementById(`wtab-${t}-${idx}`);
     if (p) p.style.display = (t === which) ? 'block' : 'none';
-    if (b) b.classList.toggle('wtab-active', t === which);
+    if (b) {
+      b.classList.toggle('wtab-active', t === which);
+      b.setAttribute('aria-pressed', String(t === which));
+    }
   });
 }
 
@@ -387,8 +395,7 @@ export function wrapDeleteAction(id) {
 /* Add a custom action to a specific goal FROM the "Today I Will" card.
    Writes to that goal's roadmapAI.userTasks (same store the Pegboard uses),
    then re-renders the wrap-up so it shows immediately. */
-export function wrapGoalAddAction(idx) {
-  const input = document.getElementById(`wrapGoalInput-${idx}`);
+export function wrapGoalAddAction(idx, input = document.getElementById(`wrapGoalInput-${idx}`)) {
   const text = (input?.value || '').trim();
   if (!text) return;
   const it = intentions[idx];
@@ -398,10 +405,11 @@ export function wrapGoalAddAction(idx) {
   if (!Array.isArray(r.userTasks)) r.userTasks = [];
   if (r.userTasks.length >= 25) { toast('Max 25 of your own actions per goal.', 'error'); return; }
   r.userTasks.push({ id: Date.now(), text: text.slice(0, 160), done: false });
+  input.value = "";
   saveIntentions();
   renderWrapup();
   // Re-focus the add box so you can keep typing actions in quick succession.
-  const box = document.getElementById(`wrapGoalInput-${idx}`);
+  const box = input.id ? document.getElementById(input.id) : input;
   if (box) box.focus();
 }
 
@@ -504,7 +512,7 @@ function _ensureCodes(it) {
    sub-steps (recursive). Top level keeps the win-logging toggle + promote;
    nested steps use lightweight path-based toggle/delete. codePrefix carries
    the parent card's STABLE code down the tree (e.g. "D2" → "D2.1"). */
-function _renderUserTree(tasks, path, idx, codePrefix) {
+function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
   const letter = _goalLetter(idx);
@@ -528,8 +536,9 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
       _mSep(),
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
-    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0 })
-         + _renderUserTree(u.children, p, idx, code);
+    const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
+    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries })
+         + _renderUserTree(u.children, p, idx, code, showLinkedEntries);
   }).join('');
 }
 
@@ -548,6 +557,32 @@ function _countTree(nodes) {
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
+function _roadmapCards(it, idx, showLinkedEntries = false) {
+    const rai = it.roadmapAI || {};
+    const _raiTasksOK = !rai.intention || String(rai.intention).trim() === String(it.title || "").trim();
+    const dones = rai.done || {};
+    const shade = GREY_SHADES[idx % GREY_SHADES.length];
+    const letter = _goalLetter(idx);
+    const locks = rai.locks || {};
+    return (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
+      const d = !!dones[i]; const locked = !!locks[i];
+      // Phase 2b — STABLE roadmap code from the sidecar map (rides on move/
+      // delete); falls back to position pre-migration.
+      const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (i + 1);
+      const code = letter + cnum;
+      const items = [
+        i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
+        i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
+        _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
+        _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
+        _mSep(),
+        _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
+      ].join('');
+      const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext, showLinkedEntries });
+    });
+}
+
 function _todayChecklist() {
   // Show EVERY real goal — even ones with no roadmap yet (e.g. a goal just
   // promoted from an action). Empty goals still get an add-action box so you
@@ -598,23 +633,7 @@ function _todayChecklist() {
     // roadmap task increments total/done, same as your own actions.
     const dones = rai.done || {};
     if (_raiTasksOK) (rai.tasks || []).forEach((t, i) => { total++; if (dones[i]) done++; });
-    const locks = rai.locks || {};
-    const _aiRowArr = (_raiTasksOK ? (rai.tasks || []) : []).map((t, i, _arr) => {
-      const d = !!dones[i]; const locked = !!locks[i];
-      // Phase 2b — STABLE roadmap code from the sidecar map (rides on move/
-      // delete); falls back to position pre-migration.
-      const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (i + 1);
-      const code = letter + cnum;
-      const items = [
-        i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
-        i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
-        _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
-        _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
-        _mSep(),
-        _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
-      ].join('');
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap' });
-    });
+    const _aiRowArr = _roadmapCards(it, idx);
     // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
     const hasAi     = _aiRowArr.length > 0;
     const aiHead    = _aiRowArr.slice(0, 5).join('');
@@ -650,30 +669,31 @@ function _todayChecklist() {
     </div>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
-    rows += `<details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
+    rows += `<div class="wgoal">
+      <div class="wtabs">
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-both-${idx}" class="wtab-combine${activeTab === 'both' ? ' wtab-active' : ''}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" aria-label="Show My Actions and Roadmap together" aria-pressed="${activeTab === 'both'}">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${ROADMAP_COLOR};color:#fff;" aria-pressed="${activeTab === 'roadmap'}" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
+      </div>
+      <details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
         <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(goalCase(it.title))}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
       </summary>
-      <div class="wtabs">
-        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
-        <button id="wtab-both-${idx}" onclick="wrapTab(${idx},'${activeTab === 'both' ? 'my' : 'both'}')" title="${activeTab === 'both' ? 'Connected — tap to view My Actions & Roadmap separately' : 'Tap to connect My Actions + Roadmap into one view'}" style="flex:0 0 auto;align-self:stretch;display:flex;align-items:flex-end;justify-content:center;background:none;border:none;padding:0 0 6px;cursor:pointer;">
-          <span style="width:34px;height:34px;border-radius:50%;background:#000;border:2px solid #fff;display:inline-flex;align-items:center;justify-content:center;line-height:0;">${activeTab === 'both'
-            ? '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
-            : '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.84 12.25l1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="2" y1="8" x2="5" y2="8"/><line x1="16" y1="19" x2="16" y2="22"/><line x1="19" y1="16" x2="22" y2="16"/></svg>'}</span>
-        </button>
-        <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
-      </div>
       <div style="padding:10px 2px 4px;">
+        <button type="button" class="goal-workspace-link" data-goal-id="${esc(String(it.id))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open goal workspace · Notes / To-do / Journal</button>
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
           <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:#000;border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
           ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
-          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#3a3f47;background:#e9ecef;border:1px solid #cfd3d8;border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:${ROADMAP_COLOR};border:1px solid ${ROADMAP_COLOR};border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
           ${roadmapBox}
         </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
       </div>
-    </details>`;
+      </details>
+    </div>`;
 
     // MY TASK LIST — group each goal's tasks under its OWN collapsible bar
     // (single-open accordion via wrapupTaskGoalToggle). Tap a goal to reveal
@@ -696,6 +716,45 @@ function _todayChecklist() {
   // in the loop above); tasks still show their goal-colour rail + code.
   fullRows = allTaskCards;
   return { rows, total, done, fullRows };
+}
+
+// Both pages render the same task cards and call the same save/toggle handlers.
+export function goalWorkspaceTaskMarkup(idx) {
+  const it = intentions[idx];
+  if (!it) return { my: '', roadmap: '', done: 0, total: 0 };
+  _ensureGoalLetters();
+  if (_ensureCodes(it)) saveIntentions();
+  const rai = it.roadmapAI || {};
+  const userTasks = Array.isArray(rai.userTasks) ? rai.userTasks : [];
+  const counts = _countTree(userTasks);
+  const roadmap = _roadmapCards(it, idx, true);
+  return { my: _renderUserTree(userTasks, [], idx, undefined, true), roadmap: roadmap.join(''),
+    total: counts.total + roadmap.length,
+    done: counts.done + roadmap.reduce((n, _row, i) => n + (rai.done?.[i] ? 1 : 0), 0) };
+}
+
+export function goalWorkspaceTaskContexts(idx) {
+  const goal = intentions[idx];
+  if (!goal) return [];
+  _ensureGoalLetters();
+  if (_ensureCodes(goal)) saveIntentions();
+  const rai = goal.roadmapAI || {};
+  const letter = _goalLetter(idx);
+  const contexts = [];
+  const walk = (tasks, prefix = '') => (tasks || []).forEach((task, i) => {
+    const num = typeof task.code === 'number' ? task.code : i + 1;
+    const code = prefix ? `${prefix}.${num}` : `${letter}${num}`;
+    contexts.push(taskNoteContext(goal, 'my', task.id ?? code, code, task.text));
+    walk(task.children, code);
+  });
+  walk(rai.userTasks);
+  if (!rai.intention || String(rai.intention).trim() === String(goal.title || '').trim()) {
+    (rai.tasks || []).forEach((text, i) => {
+      const num = typeof rai.codes?.[i] === 'number' ? rai.codes[i] : i + 1;
+      contexts.push(taskNoteContext(goal, 'roadmap', JSON.stringify([num, text]), letter + num, text));
+    });
+  }
+  return contexts;
 }
 
 /* Join labels into natural prose: "Review and Visualize",
@@ -820,6 +879,7 @@ export async function wrapupRegenerate(btn) {
 }
 
 export function renderWrapup() {
+  if (typeof window.renderGoalWorkspaceTasks === "function") window.renderGoalWorkspaceTasks();
   const el = document.getElementById('wrapupWidget');
   if (!el) return;
 

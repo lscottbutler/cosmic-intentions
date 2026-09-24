@@ -41,9 +41,10 @@ export function readNotes() {
   try { const a = JSON.parse(localStorage.getItem('ci_notes') || '[]'); return Array.isArray(a) ? a : []; }
   catch (e) { return []; }
 }
-function _saveNotes(a) {
-  try { localStorage.setItem('ci_notes', JSON.stringify(a)); } catch (e) {}
+export function _saveNotes(a) {
+  try { localStorage.setItem('ci_notes', JSON.stringify(a)); } catch (e) { return false; }
   try { syncNotesToSupabase && syncNotesToSupabase(); } catch (e) {}   // fire-and-forget cloud sync
+  return true;
 }
 function _readFavs() {
   try { const a = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); return Array.isArray(a) ? a : []; }
@@ -60,7 +61,7 @@ function _id() { return 'n' + Date.now().toString(36) + Math.random().toString(3
    object or null. Kept for ad-hoc callers; the on-page surfacing uses the
    daily-stable dailyNote() below instead. */
 export function randomNote(cat) {
-  const pool = readNotes().filter(n => n && n.text && (!cat || n.cat === cat));
+  const pool = readNotes().filter(n => n && !['task', 'goal-note'].includes(n.cat) && n.text && (!cat || n.cat === cat));
   if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -75,7 +76,7 @@ function _todayKey() { const d = new Date(); return d.getFullYear() + '-' + (d.g
    whole day, rotating tomorrow. Different slots get different thoughts because
    slotKey feeds the seed. Returns a note object or null. */
 export function dailyNote(cat, slotKey) {
-  const pool = readNotes().filter(n => n && n.text && (!cat || n.cat === cat));
+  const pool = readNotes().filter(n => n && !['task', 'goal-note'].includes(n.cat) && n.text && (!cat || n.cat === cat));
   if (!pool.length) return null;
   const idx = _hash(_todayKey() + '|' + (cat || '') + '|' + (slotKey || '')) % pool.length;
   return pool[idx];
@@ -247,7 +248,7 @@ export function renderNotesPage(cats, hostId, capId) {
   if (!host) return;
   const catList = cats || NOTE_CATS;   // My Thoughts includes Journal as the final expandable header
   const notes = readNotes();
-  const total = notes.length;
+  const total = notes.filter(n => n && !['task', 'goal-note'].includes(n.cat)).length;
 
   // Section-header colors, borrowed from the goal-card palette.
   const NOTE_HDR = {
@@ -376,7 +377,7 @@ export function notesSaveField(el) {
   }
   if (addCat) {
     if (!v) return;
-    if (notes.length >= NOTES_CAP) { if (typeof toast === 'function') toast(`You've hit the ${NOTES_CAP}-note limit.`, 'info'); return; }
+    if (notes.filter(n => n && !['task', 'goal-note'].includes(n.cat)).length >= NOTES_CAP) { if (typeof toast === 'function') toast(`You've hit the ${NOTES_CAP}-note limit.`, 'info'); return; }
     notes.push({ id: _id(), cat: addCat, text: v, ts: Date.now() });
     _saveNotes(notes);
     // Keep this section open across the re-render.
@@ -431,6 +432,7 @@ export function notesSaveGoal(id, goalId) {
   const notes = readNotes();
   const n = notes.find(x => x.id === id);
   if (!n) return;
+  if (String(n.goal || '') !== String(goalId || '')) { delete n.taskKey; delete n.task; }
   if (goalId) n.goal = goalId; else delete n.goal;
   _saveNotes(notes);
 }

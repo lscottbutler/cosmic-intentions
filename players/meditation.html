@@ -12,34 +12,39 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
 .ccb-curve{position:absolute;z-index:2;inset:0;width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}
-.ccb-scrubber{position:absolute;z-index:3;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
+.ccb-scrubber{position:absolute;z-index:5;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
 .timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #82ad77;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .timer::before{display:none}
 .timer:focus-visible{outline:none}
 .value,.playicon{position:relative;z-index:1;color:#fff}
-.value{font-size:clamp(11px,1.55vw,22px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.value{font-size:clamp(22px,3.1vw,44px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:pre-line;text-align:center}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
 [hidden]{display:none!important}
-body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0}
+body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0;background:#1e90ff}
 body.external .image{inset:0}
+body.external .ccb-curve rect{display:block;fill:none;stroke:#1e90ff}
+body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
+body.external .ccb-scrubber{background:#f2f2f2}
+body.external .timer{background:#747474;border-color:#292929}
 </style>
 </head>
 <body>
 <main class="player" id="player" aria-label="Meditation player">
   <div class="image" aria-hidden="true"></div>
   <svg class="ccb-curve" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#315f12" stroke="#82ad77" stroke-width="30"/>
-    <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#82ad77" stroke-width="35"/>
+    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#292929" stroke="#747474" stroke-width="30"/>
+    <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#1e90ff" stroke-width="35"/>
   </svg>
   <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true"></span>
   <button class="timer" id="timer" type="button" aria-label="Start meditation">
     <span class="playicon" id="playIcon" aria-hidden="true"></span>
-    <span class="value" id="value" hidden>15</span>
+    <span class="value" id="value" hidden>15
+00</span>
   </button>
 </main>
 <script>
 (()=>{
-  const allowed=[30,15,10,5,2];
+  const allowed=[15,10,5,3,2,1,0.5,0.25];
   const search=new URLSearchParams(location.search);
   const requested=Number(search.get('t'));
   const external=search.get('external')==='1';
@@ -55,13 +60,27 @@ body.external .image{inset:0}
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
-    return String(seconds<=60?seconds:Math.ceil(seconds/60));
+    return `${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
   };
   function renderScrubber(){
     const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
     const x=35+progress*1850;
     const dx=(x-960)/1379;
-    const y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
+    let y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
+    // Follow the center of the timer rim where it rises above the lower curve.
+    const curveBox=curve.getBoundingClientRect();
+    const timerBox=button.getBoundingClientRect();
+    if(curveBox.width&&curveBox.height){
+      const scaleX=1920/curveBox.width,scaleY=1080/curveBox.height;
+      const radius=timerBox.width/2-parseFloat(getComputedStyle(button).borderTopWidth)/2;
+      const centerX=(timerBox.left+timerBox.width/2-curveBox.left)*scaleX;
+      const centerY=(timerBox.top+timerBox.height/2-curveBox.top)*scaleY;
+      const circleX=(x-centerX)/(radius*scaleX);
+      if(Math.abs(circleX)<=1){
+        const rimY=centerY-radius*scaleY*Math.sqrt(Math.max(0,1-circleX*circleX));
+        y=Math.min(y,rimY);
+      }
+    }
     scrubber.style.left=(x/19.2)+'%';
     scrubber.style.top=(y/10.8)+'%';
   }
@@ -99,6 +118,7 @@ body.external .image{inset:0}
     if(event.data.command==='toggle')toggle();
     if(event.data.command==='seek')seek(event.data.ratio);
   });
+  addEventListener('resize',renderScrubber);
   render();
 })();
 </script>

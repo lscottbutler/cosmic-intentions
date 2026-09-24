@@ -5,7 +5,9 @@
     "preview": "vite preview --port 8090",
     "test": "playwright test",
     "lint": "eslint shared netlify scripts",
-    "health": "node scripts/healthcheck.mjs"
+    "health": "node scripts/healthcheck.mjs",
+    "prebuild": "node players/check-template-lock.mjs",
+    "check:template": "node players/check-template-lock.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "11.1.0",
