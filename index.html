@@ -169,6 +169,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     var m = document.getElementById('hamMenu');
     if (m) m.classList.toggle('open');
   }
+  // Master Player upper-trough hamburger opens this same global site menu.
+  window.addEventListener('message', function (event) {
+    if (event.origin !== window.location.origin || !event.data) return;
+    if (event.data.type === 'ci-site-menu-toggle') toggleHamMenu();
+  });
   // Close the menu after picking an item.
   document.addEventListener('click', function (e) {
     if (e.target.closest('.tnav-btn')) { var m = document.getElementById('hamMenu'); if (m) m.classList.remove('open'); }
