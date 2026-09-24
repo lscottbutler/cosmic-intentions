@@ -2560,7 +2560,7 @@ input, textarea, select {
 #vizLibList,
 #todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
 /* Roadmap introduction aligns with the Your Steps section below. */
-#page-myroadmap .pg-screen > p:first-child { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
+#page-myroadmap .pg-screen > p:first-child { padding: 20px 16px; box-sizing: border-box; }
 /* My Favorites Autoplay: the autoplay button + cards are indented 20px (via
    .player-times-grid). Indent the intro line the same so the whole block is
    clearly inset, matching the other pages. */
