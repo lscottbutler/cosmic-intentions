@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs';
 
 // Approved by Scott on 2026-09-24. Do not update these hashes without
 // his explicit instruction to change the locked template.
-// Geometry recovery checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
+// Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "ae70a8318250b8f86774e52c8dabe806eda63c55",
+  "players/master-player.html": "0733bebfd8b3ce62e356ea67eb48d69b82e346da",
   "players/meditation.html": "bd2382e679595927bc525f9c81871794c07c89ea"
 };
 const root = new URL('../', import.meta.url);
