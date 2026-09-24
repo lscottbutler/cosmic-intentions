@@ -8,10 +8,10 @@
   <style>
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
        Permanent shared shell for all member players.
-       Outer shell: #292929. Title/icon troughs: #747474.
+       Outer shell: #1e90ff. Title/icon troughs: #747474.
        Preserve the approved spacing, curves, typography and icon layout.
        Page-specific content may change; this shared chrome must remain consistent. */
-    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#1e90ff;--header:#1e90ff;--paper:#f2ede7;--deck:#1e90ff;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow:hidden;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     body{padding:0}
@@ -20,7 +20,7 @@
     /* MASTER PLAYER TEMPLATE: only the upper and lower troughs curve; the 16:9 stage stays between them. */
     .shell.home-mode{background:var(--header);padding:0 0 27px}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
-    .shell.daily-habits-mode .stage{background:#292929!important}
+    .shell.daily-habits-mode .stage{background:#1e90ff!important}
     /* LOCKED UPPER TROUGH GEOMETRY — title and site menu share one immutable centerline. */
     .cap{position:relative;isolation:isolate;width:100%;height:var(--cap-height);margin:0;padding:0;background:var(--header);color:var(--trough-ink);text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
@@ -333,8 +333,8 @@
         return '#'+channel(entry.r)+channel(entry.g)+channel(entry.b);
       }
       function applyTroughColors(){
-        shell.style.setProperty('--header','#292929');
-        shell.style.setProperty('--deck','#292929');
+        shell.style.setProperty('--header','#1e90ff');
+        shell.style.setProperty('--deck','#1e90ff');
         shell.style.setProperty('--trough-fill','#747474');
         shell.style.setProperty('--trough-ink','#fff');
       }
@@ -460,7 +460,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck(false);shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -555,7 +555,7 @@
         if(usesLfmTemplate)setToolCard(action);
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
-        shell.style.setProperty('--frame','#292929');
+        shell.style.setProperty('--frame','#1e90ff');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
         cap.textContent=usesLfmTemplate?'':(action==='daily-habits'?'Habits':item[1]);
