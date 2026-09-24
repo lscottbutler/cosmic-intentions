@@ -93,7 +93,8 @@ for (const destination of CORE_DESTINATIONS) {
         classes: [...shell.classList],
         frameColor: style.getPropertyValue('--header').trim(),
         troughColor: style.getPropertyValue('--trough-fill').trim(),
-        upperTroughText: document.querySelector('#capTitle').textContent.trim(),
+        upperTroughText: document.querySelector('#capTitleText').textContent.trim(),
+        siteMenuVisible: getComputedStyle(document.querySelector('#siteMenuButton')).display !== 'none',
         ratio: image.width / image.height,
         gaps: [
           image.left - frame.left,
@@ -108,11 +109,23 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.frameColor).toBe('#292929');
     expect(state.troughColor).toBe('#747474');
     expect(state.upperTroughText).not.toMatch(/affirmation/i);
+    expect(state.siteMenuVisible).toBe(true);
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
     await expect(card).toHaveCSS('transition-duration', '3s');
   });
 }
+
+test('upper-trough site menu button emits the global menu command', async ({ page }) => {
+  await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  const messageType = await page.evaluate(() => new Promise((resolve) => {
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'ci-site-menu-toggle') resolve(event.data.type);
+    }, { once: true });
+    document.querySelector('#siteMenuButton').click();
+  }));
+  expect(messageType).toBe('ci-site-menu-toggle');
+});
 
 test('player change fades only the card for 3 seconds out and 3 seconds in', async ({ page }) => {
   await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
