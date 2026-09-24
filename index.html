@@ -38,6 +38,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       'gratitude':'page-gratitude',
       'journal':'page-mynotes',
       'thoughts':'page-notes',
+      'task-notes':'page-tasknotes',
       'wins':'page-wins',
       'proof':'page-proof',
       'cosmic-library':'page-cosmiclibrary',
@@ -1200,6 +1201,15 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Task notes use the same private notes library, opened from the Citadel. -->
+  <div class="page" id="page-tasknotes">
+    <section class="task-notes-page" aria-labelledby="taskNotesTitle">
+      <div class="task-notes-heading"><h1 id="taskNotesTitle">Notes</h1><span id="taskNotesCount"></span></div>
+      <p>Your notes from My Actions and Roadmap tasks.</p>
+      <div id="taskNotesList"></div>
+    </section>
   </div>
 
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->

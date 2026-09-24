@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 // his explicit instruction to change the locked template.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "ee29e441a2fab8c2a13ca20d275d9d385a22fc81",
+  "players/master-player.html": "99ea46595269dd0a3930dcf969867c92323c46be",
   "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
 };
 const root = new URL('../', import.meta.url);
@@ -31,3 +31,4 @@ if (changed.length) {
 } else {
   console.log('Approved Master Player and meditation frame are unchanged.');
 }
+

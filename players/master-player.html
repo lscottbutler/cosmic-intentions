@@ -223,6 +223,7 @@
       <button class="nav normal-control" data-action="visualization" aria-label="Visualize"><svg viewBox="0 0 28 28"><path d="M2 14q12-12 24 0-12 12-24 0Z"/><circle cx="14" cy="14" r="4"/></svg><span>Visualize</span></button>
       <button class="nav normal-control" data-action="action-plan" aria-label="Action Plan"><svg viewBox="0 0 28 28"><path d="M8 5c4 2 5 7 2 11s-7 3-8-1 2-8 6-10Zm12 7c4 2 6 7 3 10s-7 1-7-3 1-6 4-7Z"/></svg><span>Action Plan</span></button>
       <button class="nav normal-control" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
+      <button class="nav normal-control" data-action="task-notes" aria-label="Notes"><svg viewBox="0 0 28 28"><path d="m18 3 6 6-13 13-7 2 2-7Z"/><path d="m16 5 6 6"/></svg><span>Notes</span></button>
       <button class="nav normal-control" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
       <button class="nav normal-control" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
       <div class="lfm-tool-controls" id="lfmToolControls" aria-label="Long Form Manifestation controls">
@@ -326,13 +327,14 @@
         ['gratitude','Gratitude','Practice gratitude and guided reflection.'],
         ['journal','My Journal','Write and revisit your journal entries.'],
         ['thoughts','My Thoughts','Capture ideas, notes and reflections.'],
+        ['task-notes','Notes','Review your notes from My Actions and Roadmap tasks.'],
         ['wins','My Wins','Record and review progress worth celebrating.'],
         ['proof','Proof','Collect evidence that your intentions are becoming real.'],
         ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library']);
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes']);
       const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
@@ -669,8 +671,8 @@
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
-        toolRotation.hidden=!usesLfmTemplate;
-        const cardReady=usesLfmTemplate?setToolCard(action):Promise.resolve();
+        toolRotation.hidden=!usesLfmTemplate||action==='task-notes';
+        const cardReady=usesLfmTemplate&&action!=='task-notes'?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame','#1e90ff');
@@ -729,7 +731,7 @@
           ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
           ['journal','My Journal'],['action-plan','Roadmap'],
           ['visualization','Visualization Library'],['meditation','Meditation'],
-          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins']
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes']
         ];
         siteChoices.forEach(([action,label])=>{
           const button=document.createElement('button');

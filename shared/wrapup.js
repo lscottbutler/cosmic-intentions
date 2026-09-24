@@ -2,6 +2,7 @@ import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey, currentUser } from '../app.js';
 import { setTaskWin } from './wins.js';
+import { taskNoteContext, taskNoteButton, taskNotePanel } from './task-notes.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -77,7 +78,7 @@ function _shade(hex, f) {
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my' }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext }) {
   // White card, black text. Wide, rounded left rail: BLACK for My Actions
   // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
   // The code chip retains the goal's shade.
@@ -88,12 +89,14 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex:1;min-width:0;font-size:15px;line-height:1.45;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
       <!-- Goal-code box: code on top, ⋯ overflow menu in the lower half. -->
+      ${taskNoteButton(noteContext)}
       <div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
         <span style="display:flex;align-items:center;justify-content:center;padding:7px 4px 5px;color:${shade.text};font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:.4px;line-height:1;">${esc(code)}</span>
         <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;border-top:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:16px;line-height:1;padding:3px 0 5px;">⋯</button>
       </div>
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
+    ${taskNotePanel(noteContext)}
   </div>`;
 }
 
@@ -532,7 +535,8 @@ function _renderUserTree(tasks, path, idx, codePrefix) {
       _mSep(),
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
-    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0 })
+    const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
+    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext })
          + _renderUserTree(u.children, p, idx, code);
   }).join('');
 }
@@ -617,7 +621,8 @@ function _todayChecklist() {
         _mSep(),
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap' });
+      const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
+      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext });
     });
     // Show the first 5 proven actions; the rest live behind a "Show N more" dropdown.
     const hasAi     = _aiRowArr.length > 0;
