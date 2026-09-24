@@ -89,8 +89,9 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
     const card = document.querySelector('#dailyInspiration');
     const deck = document.querySelector('.deck');
     const cardRect = card.getBoundingClientRect();
-    const shellRect = shell.getBoundingClientRect();
-    const belongsToShell = (x, y) => shell.contains(document.elementFromPoint(x, y));
+    const capRect = cap.getBoundingClientRect();
+    const stageRect = document.querySelector('#stage').getBoundingClientRect();
+    const deckRect = deck.getBoundingClientRect();
     return {
       name: shell.dataset.templateName,
       status: shell.dataset.templateStatus,
@@ -99,15 +100,14 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
       siteMenuVisible: getComputedStyle(document.querySelector('#siteMenuButton')).display !== 'none',
       cardRatio: cardRect.width / cardRect.height,
       deckRegion: deck.dataset.templateRegion,
-      actions: [...deck.querySelectorAll(':scope > button')].map((button) => button.dataset.action),
+      actions: [...deck.querySelectorAll(':scope > .normal-control:not([hidden])')].map((button) => button.dataset.action || (button.hasAttribute('data-menu') ? 'menu' : undefined)),
       outerColor: getComputedStyle(cap).backgroundColor,
       innerColor: getComputedStyle(cap, '::before').backgroundColor,
-      outerRadius: getComputedStyle(shell).borderRadius,
-      silhouette: {
-        topLeftClipped: !belongsToShell(shellRect.left + 1, shellRect.top + 1),
-        topCenterFilled: belongsToShell(shellRect.left + (shellRect.width / 2), shellRect.top + 1),
-        bottomLeftClipped: !belongsToShell(shellRect.left + 1, shellRect.bottom - 1),
-        bottomCenterFilled: belongsToShell(shellRect.left + (shellRect.width / 2), shellRect.bottom - 1),
+      upperCurve: getComputedStyle(cap).borderTopLeftRadius,
+      lowerCurve: getComputedStyle(deck).borderBottomLeftRadius,
+      regions: {
+        upperEndsAtStage: Math.abs(capRect.bottom - stageRect.top) <= 1,
+        cardEndsAtLower: Math.abs(stageRect.bottom - deckRect.top) <= 1,
       },
     };
   });
@@ -130,12 +130,11 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
   ]);
   expect(state.outerColor).toBe('rgb(41, 41, 41)');
   expect(state.innerColor).toBe('rgb(116, 116, 116)');
-  expect(state.outerRadius).not.toBe('0px');
-  expect(state.silhouette).toEqual({
-    topLeftClipped: true,
-    topCenterFilled: true,
-    bottomLeftClipped: true,
-    bottomCenterFilled: true,
+  expect(state.upperCurve).not.toBe('0px');
+  expect(state.lowerCurve).not.toBe('0px');
+  expect(state.regions).toEqual({
+    upperEndsAtStage: true,
+    cardEndsAtLower: true,
   });
 });
 
