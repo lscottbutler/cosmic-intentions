@@ -86,15 +86,30 @@ for (const destination of CORE_DESTINATIONS) {
 
     const state = await page.evaluate(() => {
       const shell = document.querySelector('.shell');
+      const capElement = document.querySelector('#capTitle');
+      const titleElement = document.querySelector('#capTitleText');
+      const menuElement = document.querySelector('#siteMenuButton');
       const frame = document.querySelector('#toolDailyInspiration').getBoundingClientRect();
       const image = document.querySelector('#toolInspirationCard').getBoundingClientRect();
+      const cap = capElement.getBoundingClientRect();
+      const title = titleElement.getBoundingClientRect();
+      const siteMenu = menuElement.getBoundingClientRect();
       const style = getComputedStyle(shell);
       return {
         classes: [...shell.classList],
         frameColor: style.getPropertyValue('--header').trim(),
         troughColor: style.getPropertyValue('--trough-fill').trim(),
-        upperTroughText: document.querySelector('#capTitleText').textContent.trim(),
-        siteMenuVisible: getComputedStyle(document.querySelector('#siteMenuButton')).display !== 'none',
+        upperTroughText: titleElement.textContent.trim(),
+        siteMenuVisible: getComputedStyle(menuElement).display !== 'none',
+        upperTrough: {
+          height: cap.height,
+          centerX: cap.left + (cap.width / 2),
+          titleCenterX: title.left + (title.width / 2),
+          titleCenterY: title.top + (title.height / 2),
+          menuCenterY: siteMenu.top + (siteMenu.height / 2),
+          outerColor: getComputedStyle(capElement).backgroundColor,
+          innerColor: getComputedStyle(capElement, '::before').backgroundColor,
+        },
         ratio: image.width / image.height,
         gaps: [
           image.left - frame.left,
@@ -110,6 +125,13 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.troughColor).toBe('#747474');
     expect(state.upperTroughText).not.toMatch(/affirmation/i);
     expect(state.siteMenuVisible).toBe(true);
+    // Locked master geometry: fixed mobile height, exact horizontal centering,
+    // one shared vertical centerline, and the approved two-tone colors.
+    expect(state.upperTrough.height).toBeCloseTo(78, 1);
+    expect(state.upperTrough.titleCenterX).toBeCloseTo(state.upperTrough.centerX, 1);
+    expect(state.upperTrough.titleCenterY).toBeCloseTo(state.upperTrough.menuCenterY, 1);
+    expect(state.upperTrough.outerColor).toBe('rgb(41, 41, 41)');
+    expect(state.upperTrough.innerColor).toBe('rgb(116, 116, 116)');
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
     await expect(card).toHaveCSS('transition-duration', '3s');
