@@ -13,6 +13,7 @@ Status: In review on `review/goal-workspace-note-save`, PR42. Production remains
 - Page references follow the supplied Autoplay example: topic introduction, named teacher, linked source, paraphrased perspective, and practical application tips. Existing Favorites Autoplay reference remains. New references cover the other member pages, including the standalone Meditation and Citadel player views. Multi-perspective pages rotate at UTC midnight on load and offer Another perspective.
 - Entrepreneur is restored as a named navigation destination, using its existing skills, resources, notes, roadmap, affirmations, beliefs, and learning material. The page presents information within the canonical Master Player; the old duplicate monitor is removed from the content renderer. Legacy Quickie Move master links resolve to Entrepreneur.
 - Both Meditation countdown numbers use half their former font size and regular weight. White text, stacked minutes/seconds, and all rail/frame geometry remain unchanged.
+- Page title cards appear at full opacity when their two artwork layers load. Their three-second image fade and page-navigation fade are removed; the colored backgrounds, word collage, and curved text box remain. Playback surfaces keep their existing transition.
 
 ## Source and recovery
 
@@ -29,8 +30,9 @@ The template integrity gate remains enabled. Its review baseline changes only fo
 - Browser: daily Habits and its editor are both reachable; checkmarks can be set and undone. Habit up/down/delete rendered black and white.
 - Reference mappings and source links checked for every configured page. JavaScript syntax and template integrity checks pass.
 - Browser: the smaller countdown rendered at regular weight with white stacked minutes and seconds; play and pause worked. Meditation's Another perspective control switched the displayed teacher.
-- Browser after owner sign-in: Entrepreneur opens from the site menu, displays its information, and changing the selected skill updates resources and the roadmap. Its new heading needed an explicit dark text color on the white player surface.
+- Browser after owner sign-in: Entrepreneur opens from the site menu, displays its information, and changing the selected skill updates resources and the roadmap. Its heading contrast correction was verified as dark text on the white player surface.
 - Browser: both owner admin boxes rendered light purple with white text; the top and bottom stacks were the first and last children of the Entrepreneur page. The Goal Workspace also displayed both boxes and its reference section.
 - Browser limitation: the available signed-in Goal Workspace had no eligible saved notes or Journal entries, so its empty state was verified. Populated inline note saving is covered by the focused tests; an account-backed saved-note edit and cross-device synchronization remain unverified. No real member notes or goals were changed for verification.
 - The existing broad browser suite is not being claimed as passing; this revision used focused checks. Mobile redesign remains deferred at Scott's request.
+- Browser: Thoughts initial load and navigation between Thoughts and Habits display the title container at full opacity. Loaded artwork is fully opaque with a zero-second transition. The title-card change is checkpoint `5ae6e92c207cb681f0d79ada29c5cc477e4d6a9a`; its exact Netlify preview build succeeded.
 - No Supabase schema, Netlify settings, site privacy, or production changes.
