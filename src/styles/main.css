@@ -3411,6 +3411,25 @@ input, textarea, select {
 ─────────────────────────────────────────────────────────────────────────── */
 
 .dashboard-note-container{width:100%;margin-top:30px;margin-bottom:1rem;display:flex;justify-content:center;}
+
+/* Focused member-page controls: preserve white icons against their black circles. */
+html #page-setup button.pb-goal-delete,
+html.master-inline-goals #page-setup button.pb-goal-delete,
+html #page-habits button.pb-habit-circle {
+  color:#fff !important;background:#000 !important;border:0 !important;
+  border-radius:50% !important;display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;padding:0;line-height:1;
+}
+html #page-habits button.pb-habit-circle {width:34px;height:34px;font-size:15px;cursor:pointer;}
+html #page-habits button.pb-habit-circle:disabled {opacity:1;cursor:not-allowed;}
+html #page-habits button.pb-habit-circle:focus-visible,
+html #page-setup button.pb-goal-delete:focus-visible {outline:2px solid #000;outline-offset:3px;}
+.pb-goal-summary {cursor:pointer;list-style:none;}
+.pb-goal-summary::-webkit-details-marker {display:none;}
+.pb-goal-chevron {font-size:22px;transition:transform .15s;}
+.pb-goal-details[open] .pb-goal-chevron {transform:rotate(180deg);}
+.habits-view-button {display:block;margin:0 0 18px;padding:10px 16px;border:0;border-radius:8px;background:#000;color:#fff;cursor:pointer;font:inherit;font-weight:700;}
+#habitsDailyView[hidden],#habitsEditorView[hidden] {display:none!important;}
 .dashboard-note-box{width:100%;background:var(--card);border-left:4px solid var(--brand);border-top:1px solid var(--border-2);border-right:1px solid var(--border-2);border-bottom:1px solid var(--border-2);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;border-radius:0 4px 4px 0;}
 .note-pin-icon{font-size:1.1rem;line-height:1.4;}
 .dashboard-note-text{font-family:inherit;font-size:1rem;font-weight:500;line-height:1.5;color:var(--mid);margin:0;}

@@ -454,7 +454,7 @@ export function showPage(id) {
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
   if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
-  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
+  if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {
     ensureAdminPageBoxEditors();
@@ -585,9 +585,8 @@ export function navTo(id) {
     openFavoritesInLfm();
     return;
   }
-  // The old standalone Daily Habits/run-through page is retired. Habits now
-  // live inside the LFM; stale links return safely to the Citadel dashboard.
-  if (id === 'runthroughs') id = 'dashboard';
+  // Restore old Daily Habits links through the canonical Habits player.
+  if (id === 'runthroughs') id = 'habits';
   // CI V2: all core member tools live inside the persistent LFM. Legacy links,
   // top tabs, and stale page URLs now reopen the Citadel and select the matching
   // LFM destination instead of exposing a standalone page or Column B.
@@ -4708,17 +4707,6 @@ function wireAdminPageBoxes() {
     topStack.setAttribute('aria-label', label + ' administrator text box 1');
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
-    const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
-    const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
-    if (pageTitle && pageTitle.parentNode) {
-      // Citadel Box 1 sits directly beneath the CITADEL title.
-      pageTitle.insertAdjacentElement('afterend', topStack);
-    } else if (anchor && anchor.parentNode) {
-      anchor.insertAdjacentElement('afterend', topStack);
-    } else {
-      const root = _pageBoxRoot(active);
-      root.prepend(topStack);
-    }
   }
 
   let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
@@ -4728,8 +4716,12 @@ function wireAdminPageBoxes() {
     bottomStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--bottom';
     bottomStack.setAttribute('aria-label', label + ' administrator text box 2');
     bottomStack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
-    _pageBoxRoot(active).appendChild(bottomStack);
   }
+
+  // Keep the two boxes at the boundaries of the complete page content,
+  // outside intro cards and nested columns. Reuse the existing content slugs.
+  if (active.firstElementChild !== topStack) active.prepend(topStack);
+  if (active.lastElementChild !== bottomStack) active.appendChild(bottomStack);
 
   [topStack, bottomStack].forEach(group => {
     group.querySelectorAll('[data-block]').forEach(el => {
@@ -4804,13 +4796,14 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
-    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
-    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
-    .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#ac8dcc;border:1px solid #ac8dcc;border-radius:12px;color:#fff;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box .ci-admin-page-box-content,.ci-admin-page-box .ci-admin-page-box-content *,html.master-inline-goals #page-setup .ci-admin-page-box .ci-admin-page-box-content *{color:#fff!important}
+    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:8px;background:transparent;color:#fff;cursor:pointer;padding:0}
+    .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#8b69aa;outline:2px solid #fff;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
-    .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
+    .ci-admin-page-box-placeholder{color:#fff;font-style:italic}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
     .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}

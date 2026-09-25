@@ -1940,9 +1940,16 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-habits">
     <div class="setup-page">
       <div class="setup-page-header">
-        <h1>My Habits</h1>
-        <p>Your daily habits — rename, reorder, add or delete. They show as a checklist on your dashboard and reset every morning. Changes save automatically.</p>
+        <h1>Daily Habits</h1>
+        <p>Check off your habits as you complete them today. Your checklist starts fresh each day.</p>
       </div>
+      <section id="habitsDailyView" aria-label="Daily habit checklist">
+        <button type="button" class="habits-view-button" onclick="showHabitView('editor')">Edit habits</button>
+        <div id="habitsWidget"></div>
+      </section>
+      <section id="habitsEditorView" aria-label="Edit habits" hidden>
+      <button type="button" class="habits-view-button" onclick="showHabitView('daily')">Back to daily checklist</button>
+      <p>Rename, reorder, add or delete your habits. Changes save automatically.</p>
       <svg viewBox="0 0 100 24" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;margin:2px 0 12px;">
         <text x="50" y="19.5" text-anchor="middle" textLength="99" lengthAdjust="spacingAndGlyphs"
           style="fill:var(--text);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:20px;letter-spacing:-0.5px;">HABITS</text>
@@ -1967,6 +1974,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         </div>
       </div>
       <div style="height: 20px;"></div>
+      </section>
     </div>
   </div>
 
@@ -2075,7 +2083,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
            (wrapupWidget moved to the dashboard, under The Big 3.) -->
       <!-- EDIT HABITS — jumps to the My Habits editor (add / rename / reorder / delete) -->
       <button onclick="navTo('habits')" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#111;color:#fff;border:none;cursor:pointer;font-weight:800;font-size:13px;letter-spacing:.5px;padding:9px 16px;border-radius:8px;margin:0 auto 14px;width:fit-content;">&#9998; EDIT HABITS</button>
-      <div id="habitsWidget"></div>
 
       <!-- RUN-THROUGH CARDS removed per Scott (Visualization/Recitations/Meditation/
            Gratitude/Stoic) — those live in Column B / their own pages. -->
