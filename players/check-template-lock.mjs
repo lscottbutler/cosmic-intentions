@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs';
 
 // Frame approved by Scott on 2026-09-24. Review revision 2026-09-25 implements
 // his requested teacher references, Entrepreneur menu, half-size regular timer,
-// and stationary page title cards without a fade.
+// stationary page title cards without a fade, and uncropped 16:9 card scaling.
 // Do not update these hashes for unrelated changes.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "e5645bd612e11f6514c93f2a832ef84f9c7f0ac0",
+  "players/master-player.html": "5b9f66d7042900705e46d117956926da5891333c",
   "players/meditation.html": "074cf51d930fbb1d34d11f485be277f39835523e"
 };
 const root = new URL('../', import.meta.url);
