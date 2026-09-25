@@ -453,7 +453,7 @@ export function showPage(id) {
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
-  if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
+  if (id === 'setup') renderPBIntentionList(true);   // My Goals — each visit starts with closed goal rows
   if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');   // Today's checklist first; editor remains one tap away.
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {

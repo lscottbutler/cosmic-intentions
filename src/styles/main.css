@@ -4487,3 +4487,10 @@ html.master-inline-goals #page-setup .page-intro-card {
     font-size: 14px;
   }
 }
+
+/* Goal rows open only when their chevron is selected. */
+.pb-goal-summary { cursor: pointer; list-style: none; }
+.pb-goal-summary::-webkit-details-marker { display: none; }
+.pb-goal-summary::marker { content: ''; }
+.pb-goal-chevron { display: inline-block; font-size: 28px; line-height: 1; transform: rotate(0deg); transition: transform .15s; }
+.pb-goal-details[open] .pb-goal-chevron { transform: rotate(90deg); }

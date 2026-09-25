@@ -779,9 +779,12 @@ async function regenerateGoalImage(idx, ev) {
   await fetchGoalImage(idx, intn.title);
 }
 
-export function renderPBIntentionList() {
+export function renderPBIntentionList(resetOpen = false) {
   const el = document.getElementById('pbIntentionList');
   if (!el) return;
+  const openGoals = resetOpen ? new Set() : new Set(
+    Array.from(el.querySelectorAll('details[data-goal-id][open]'), card => card.dataset.goalId)
+  );
   if (intentions.length === 0) {
     el.innerHTML = '<div style="font-size:12px;color:#AAAAAA;padding:4px 0;">No intentions yet.</div>';
     return;
@@ -819,6 +822,7 @@ export function renderPBIntentionList() {
   // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
   const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
   el.innerHTML = intentions.map((i, idx) => {
+    const goalId = String(i.id ?? idx);
     const optHtml = catOptions.map(o =>
       `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
     ).join('');
@@ -828,22 +832,23 @@ export function renderPBIntentionList() {
     const _lci  = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : idx;
     const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };   // same colored letter badge as the Citadel cards
     return `
-    <div id="pb-goal-${idx}" style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
+    <details id="pb-goal-${idx}" class="pb-goal-details" data-goal-id="${esc(goalId)}"${openGoals.has(goalId) ? ' open' : ''} style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
+      <summary class="pb-goal-summary" style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <div style="display:flex;align-items:center;gap:11px;min-width:0;">
           ${goalBadge(_letr, gc.bg, gc.text, 36)}
           <span style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${_letr}</span>
+          <span class="pb-goal-chevron" aria-hidden="true" style="color:${shade.text};">›</span>
         </div>
         <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
           <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
-          <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
+          <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
             style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#111' : '#bbb'};transition:background .2s;">
             <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
           </button>
-          <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
+          <button type="button" onclick="event.stopPropagation();pbDeleteIntention(${idx})" title="Remove goal" aria-label="Remove Goal ${_letr}"
             style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;line-height:1;padding:0;">✕</button>
         </div>
-      </div>
+      </summary>
       <div style="background:#2E2E2E;padding:12px 14px;">
         <textarea maxlength="150" rows="2"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
@@ -864,7 +869,7 @@ export function renderPBIntentionList() {
           </div>
         </div>
       </div>
-    </div>`;
+    </details>`;
   }).join('');
 }
 
