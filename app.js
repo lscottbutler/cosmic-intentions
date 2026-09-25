@@ -454,7 +454,7 @@ export function showPage(id) {
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
   if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
-  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
+  if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');   // Today's checklist first; editor remains one tap away.
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {
     ensureAdminPageBoxEditors();
@@ -585,9 +585,8 @@ export function navTo(id) {
     openFavoritesInLfm();
     return;
   }
-  // The old standalone Daily Habits/run-through page is retired. Habits now
-  // live inside the LFM; stale links return safely to the Citadel dashboard.
-  if (id === 'runthroughs') id = 'dashboard';
+  // Old routine links open the daily checklist inside the canonical Habits player.
+  if (id === 'runthroughs') id = 'habits';
   // CI V2: all core member tools live inside the persistent LFM. Legacy links,
   // top tabs, and stale page URLs now reopen the Citadel and select the matching
   // LFM destination instead of exposing a standalone page or Column B.

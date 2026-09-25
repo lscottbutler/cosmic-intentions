@@ -230,6 +230,16 @@ export function renderRunThroughs() { renderMorningRun(); renderDayRun(); render
 /* ── Daily Tracker widget — a master list of EVERY habit, grouped by category
    (Morning/Day/Evening/Bedtime/Health/Unsorted). Ticks share the same per-day
    done state as the run-through cards, so checking here or there stays in sync. ── */
+export function showHabitView(view = 'daily') {
+  const editing = view === 'editor';
+  const daily = document.getElementById('habitsDailyView');
+  const editor = document.getElementById('habitsEditorView');
+  if (daily) daily.hidden = editing;
+  if (editor) editor.hidden = !editing;
+  if (editing) renderPBHabitList();
+  else renderHabits();
+}
+
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
@@ -254,7 +264,7 @@ export function renderHabits() {
       </div>
     </details>`;
   });
-  el.innerHTML = html +
+  el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
     `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
 }
 
@@ -338,6 +348,7 @@ export function openHabitsAt(cat) {
 
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
+  window.showHabitView = showHabitView;
   window.openHabitsAt = openHabitsAt;
   window.renderMorningRun = renderMorningRun;
   window.renderRunThroughs = renderRunThroughs;
