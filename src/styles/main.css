@@ -3901,8 +3901,12 @@ html.master-inline-mode .page.active {
    Reserve enough frame height for the form instead of hiding it behind an
    apparently empty destination. */
 html.master-inline-mode #authModal {
+  display: none;
   align-items: flex-start;
   overflow-y: auto;
+}
+html.master-inline-mode #authModal.open {
+  display: flex;
 }
 html.master-inline-mode #authModal .auth-sheet {
   margin: 16px 10px;
