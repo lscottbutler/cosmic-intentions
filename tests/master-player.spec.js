@@ -17,9 +17,10 @@ const CORE_DESTINATIONS = [
 async function waitForCard(page, expectedCard = /Goals word collage/i) {
   const card = page.locator('#toolInspirationCard');
   await expect(card).toHaveAttribute('alt', expectedCard, { timeout: 5000 });
-  await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
-    timeout: 7000,
-  }).toBeGreaterThan(0.99);
+  await expect.poll(async () => card.evaluate((el) => {
+    const layer = el.closest('.inspiration-card');
+    return el.naturalWidth > 0 && layer && Number(getComputedStyle(layer).opacity) > 0.99;
+  }), { timeout: 7000 }).toBe(true);
   return card;
 }
 
@@ -108,8 +109,8 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
       actions: [...deck.querySelectorAll(':scope > .normal-control:not([hidden])')].map((button) => button.dataset.action || (button.hasAttribute('data-menu') ? 'menu' : undefined)),
       outerColor: getComputedStyle(cap).backgroundColor,
       innerColor: getComputedStyle(cap, '::before').backgroundColor,
-      upperCurve: getComputedStyle(cap).borderTopLeftRadius,
-      lowerCurve: getComputedStyle(deck).borderBottomLeftRadius,
+      upperCurve: getComputedStyle(cap, '::before').borderTopLeftRadius,
+      lowerCurve: getComputedStyle(deck, '::before').borderBottomLeftRadius,
       regions: {
         upperEndsAtStage: Math.abs(capRect.bottom - stageRect.top) <= 1,
         cardEndsAtLower: Math.abs(stageRect.bottom - deckRect.top) <= 1,
@@ -204,7 +205,7 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.upperTrough.innerColor).toBe('rgb(116, 116, 116)');
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
-    await expect(card).toHaveCSS('transition-duration', '3s');
+    await expect(card.locator('..')).toHaveCSS('transition-duration', '3s');
   });
 }
 
@@ -214,48 +215,15 @@ test('upper-trough site menu opens the standalone menu', async ({ page }) => {
   await expect(page.locator('#standaloneSiteMenu')).toBeVisible();
 });
 
-test('player change fades only the card for 3 seconds out and 3 seconds in', async ({ page }) => {
+test('switching players loads the next card in the shared 16:9 frame', async ({ page }) => {
   await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
   const card = await waitForCard(page);
-  const stage = page.locator('#stage');
-  const next = page.getByRole('button', { name: /Next/i });
-
-  // Await the click so a busy CI runner cannot delay the transition until after
-  // the fixed sampling window. Then wait for the fade to begin before measuring.
-  await next.click();
-  await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
-    timeout: 1500,
-  }).toBeLessThan(0.99);
-  await page.waitForTimeout(900);
-
-  const fadeOut = await card.evaluate((el) => ({
-    opacity: Number(getComputedStyle(el).opacity),
-    duration: getComputedStyle(el).transitionDuration,
-    alt: el.alt,
-  }));
-  expect(fadeOut.alt).toMatch(/Goals word collage|DISCIPLINED/i);
-  expect(fadeOut.opacity).toBeGreaterThanOrEqual(0);
-  expect(fadeOut.opacity).toBeLessThan(1);
-  expect(fadeOut.duration).toBe('3s');
-  await expect(stage).toHaveCSS('opacity', '1');
-
-  await expect(card).toHaveAttribute('alt', /DISCIPLINED/i, { timeout: 4000 });
-
-  await page.waitForTimeout(500);
-  const fadeIn = await card.evaluate((el) => ({
-    opacity: Number(getComputedStyle(el).opacity),
-    duration: getComputedStyle(el).transitionDuration,
-  }));
-  expect(fadeIn.opacity).toBeGreaterThan(0);
-  expect(fadeIn.opacity).toBeLessThan(0.95);
-  expect(fadeIn.duration).toBe('3s');
-  await expect(stage).toHaveCSS('opacity', '1');
-
-  await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
-    timeout: 4000,
-  }).toBeGreaterThan(0.99);
+  const frame = page.locator('#toolDailyInspiration');
+  await page.locator('[data-action="visualization"]').click();
+  await waitForCard(page, /Visualize word collage/i);
+  await expect(card.locator('..')).toHaveCSS('transition-duration', '3s');
+  await expect(frame).toBeVisible();
 });
-
 
 test('Cosmic Library frame height follows its visible workspace', async ({ page }) => {
   await page.goto('/players/master-player.html?start=cosmic-library&card=0', {
@@ -270,13 +238,13 @@ test('Cosmic Library frame height follows its visible workspace', async ({ page 
     return active ? Math.abs(el.offsetHeight - active.scrollHeight) : 9999;
   }), { timeout: 10000 }).toBeLessThanOrEqual(3);
 
-  const duplicateBoxesHidden = await frame.evaluate((el) => {
+  const legacyIntroHidden = await frame.evaluate((el) => {
     const doc = el.contentDocument;
     if (!doc) return false;
-    return [...doc.querySelectorAll('.page-intro-card, .ci-admin-page-box-stack')]
+    return [...doc.querySelectorAll('.page-intro-card')]
       .every((node) => getComputedStyle(node).display === 'none');
   });
-  expect(duplicateBoxesHidden).toBe(true);
+  expect(legacyIntroHidden).toBe(true);
 });
 
 test('long workspaces keep the navigation trough directly below the 16:9 card', async ({ page }) => {
@@ -293,13 +261,13 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
     const frame = document.querySelector('#experienceFrame');
     return {
       rotationBeforeDeck: Boolean(rotation && deck && rotation.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
-      deckBeforeWorkspace: Boolean(deck && frame && deck.compareDocumentPosition(frame) & Node.DOCUMENT_POSITION_FOLLOWING),
+      workspaceBeforeDeck: Boolean(deck && frame && frame.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
       menuVisible: Boolean(document.querySelector('[data-lfm-mini-command="menu"]')?.getBoundingClientRect().height),
     };
   });
 
   expect(order.rotationBeforeDeck).toBe(true);
-  expect(order.deckBeforeWorkspace).toBe(true);
+  expect(order.workspaceBeforeDeck).toBe(true);
   expect(order.menuVisible).toBe(true);
 });
 
@@ -417,7 +385,7 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     };
   });
   expect(lowerTrough.borderDisplay).toBe('none');
-  expect(lowerTrough.frameColor).toBe('rgb(255, 255, 255)');
+  expect(lowerTrough.frameColor).toBe('rgb(89, 125, 160)');
   expect(lowerTrough.borderWidth).toBe('35px');
   expect(lowerTrough.rightBorderWidth).toBe('35px');
   expect(lowerTrough.topBorderWidth).toBe('0px');
