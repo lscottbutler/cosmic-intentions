@@ -4014,6 +4014,15 @@ html.master-inline-mode .page.active .acc-panel.acc-panel-tall.open {
 
 
 /* CI V2 — lighten Daily Habits editor cards inside the LFM. */
+/* This workspace has a white surface even when the surrounding app uses its
+   dark theme. Keep inherited copy and daily checklist labels readable. */
+html.master-inline-daily-habits #page-habits {
+  color: #111;
+  --text: #111;
+  --widget-text: #111;
+  --muted: #666;
+  --widget-border: #ccc;
+}
 html.master-inline-daily-habits #pbHabitList [style*="background:#2E2E2E"],
 html.master-inline-daily-habits #pbHabitList [style*="background: #2E2E2E"],
 html.master-inline-daily-habits #pbHabitList [style*="background:#2e2e2e"],
