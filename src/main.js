@@ -25,7 +25,7 @@ import * as _shared_encourage_js from '../shared/encourage.js';
 import * as _app_js from '../app.js';
 
 // Expose inline-handler functions on window (inline onclick=... still used this phase).
-for (const name of ['taskNoteToggle', 'taskNoteChanged', 'taskNoteSave', 'taskInlineNoteChanged', 'taskInlineNoteSave', 'renderTaskNotesList']) {
+for (const name of ['taskNoteToggle', 'taskNoteChanged', 'taskNoteSave', 'renderTaskNotesList']) {
   window[name] = _shared_task_notes_js[name];
 }
 for (const name of ['openGoalWorkspace', 'renderGoalWorkspace', 'renderGoalWorkspaceTasks', 'renderGoalWorkspaceNotes', 'goalWorkspaceSelect', 'goalWorkspaceEntryChanged', 'goalWorkspaceSaveEntry', 'goalWorkspaceAddTask']) {

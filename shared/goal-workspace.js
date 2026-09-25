@@ -107,9 +107,6 @@ export function goalWorkspaceSaveEntry(form) {
 }
 
 function savePendingEntries() {
-  for (const editor of document.querySelectorAll('#page-goalworkspace .goal-action-note[data-dirty="true"]')) {
-    if (!window.taskInlineNoteSave(editor)) return false;
-  }
   for (const form of document.querySelectorAll('#page-goalworkspace .goal-entry-form[data-dirty="true"]')) {
     if (!goalWorkspaceSaveEntry(form)) return false;
   }
@@ -158,18 +155,11 @@ export function renderGoalWorkspace() {
 
 export function renderGoalWorkspaceTasks() {
   if (!activeWorkspace() || !selectedGoal()) return;
-  // Completing/adding another task must not discard a note being edited.
-  const drafts = Array.from(document.querySelectorAll('#page-goalworkspace .goal-action-note[data-dirty="true"]'));
   const idx = intentions.findIndex(g => String(g.id) === selectedGoalId);
   const tasks = goalWorkspaceTaskMarkup(idx);
   document.getElementById('goalWorkspaceMyTasks').innerHTML = tasks.my || '<p class="goal-workspace-empty">No to-dos yet. Add your first action below.</p>';
   document.getElementById('goalWorkspaceRoadmapTasks').innerHTML = tasks.roadmap || '<p class="goal-workspace-empty">No Roadmap tasks for this goal yet.</p>';
   document.getElementById('goalWorkspaceTaskCount').textContent = `${tasks.done}/${tasks.total} done`;
-  const renderedNotes = Array.from(document.querySelectorAll('#page-goalworkspace .goal-action-note'));
-  drafts.forEach(draft => {
-    const replacement = renderedNotes.find(note => note.dataset.noteId === draft.dataset.noteId);
-    if (replacement) replacement.replaceWith(draft);
-  });
 }
 
 export function goalWorkspaceAddTask(form) {
@@ -181,7 +171,7 @@ export function goalWorkspaceAddTask(form) {
 
 export function renderGoalWorkspaceNotes(source) {
   if (!activeWorkspace()) return;
-  refreshGoalActionEntries(source);
+  refreshGoalActionEntries();
   const eligibleGoals = goalWorkspaceGoals();
   const select = document.getElementById('goalWorkspaceSelect');
   // Refresh membership after relinking/deleting a note, while retaining any
@@ -217,10 +207,9 @@ export function renderGoalWorkspaceNotes(source) {
   document.getElementById('goalWorkspaceJournalCount').textContent = String(records.journal.length);
 }
 
-function refreshGoalActionEntries(source) {
+function refreshGoalActionEntries() {
   const records = readNotes();
   document.querySelectorAll('#page-goalworkspace .goal-action-records').forEach(host => {
-    if ((source && host.contains(source)) || host.querySelector('[data-dirty="true"]')) return;
     host.innerHTML = taskLinkedEntriesHTML(JSON.parse(host.dataset.taskContext), records);
   });
 }

@@ -1,4 +1,3 @@
-import { mountPageReference } from './players/page-reference.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
@@ -391,7 +390,6 @@ export function showPage(id) {
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
       'quickie-move': 'entcard',
-      entrepreneur: 'entcard',
       admin: 'admin',
     };
     if (inlineAction && inlinePages[inlineAction]) id = inlinePages[inlineAction];
@@ -450,14 +448,13 @@ export function showPage(id) {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
-  if (id === 'myroadmap') renderWrapup();
   if (id === 'notes') {   // My Thoughts — its own page
     loadPegboard();             // personal foundation + legacy thought boxes now live here
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
   if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
-  if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');
+  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {
     ensureAdminPageBoxEditors();
@@ -473,10 +470,10 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
-  // Keep references within the page and the admin boxes at its content boundaries.
+  // Intro card at the top of Column A on selected pages, then the admin-editable
+  // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
   if (typeof window.wireInfoBoxAdmin === 'function') window.wireInfoBoxAdmin();
-  mountPageReference(document.querySelector('.page.active'), id);
   if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
   if (typeof window.sprinkleEncouragements === 'function') window.sprinkleEncouragements();
 
@@ -588,8 +585,9 @@ export function navTo(id) {
     openFavoritesInLfm();
     return;
   }
-  // Restore old Daily Habits links through the canonical Habits player.
-  if (id === 'runthroughs') id = 'habits';
+  // The old standalone Daily Habits/run-through page is retired. Habits now
+  // live inside the LFM; stale links return safely to the Citadel dashboard.
+  if (id === 'runthroughs') id = 'dashboard';
   // CI V2: all core member tools live inside the persistent LFM. Legacy links,
   // top tabs, and stale page URLs now reopen the Citadel and select the matching
   // LFM destination instead of exposing a standalone page or Column B.
@@ -606,7 +604,6 @@ export function navTo(id) {
     gratitude: 'gratitude',
     wins: 'wins',
     cosmiclibrary: 'cosmic-library',
-    entcard: 'entrepreneur',
   };
   if (window.self === window.top && lfmRoutes[id]) {
     if (!currentUser) {
@@ -4711,6 +4708,17 @@ function wireAdminPageBoxes() {
     topStack.setAttribute('aria-label', label + ' administrator text box 1');
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
+    const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
+    const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
+    if (pageTitle && pageTitle.parentNode) {
+      // Citadel Box 1 sits directly beneath the CITADEL title.
+      pageTitle.insertAdjacentElement('afterend', topStack);
+    } else if (anchor && anchor.parentNode) {
+      anchor.insertAdjacentElement('afterend', topStack);
+    } else {
+      const root = _pageBoxRoot(active);
+      root.prepend(topStack);
+    }
   }
 
   let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
@@ -4720,12 +4728,8 @@ function wireAdminPageBoxes() {
     bottomStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--bottom';
     bottomStack.setAttribute('aria-label', label + ' administrator text box 2');
     bottomStack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
+    _pageBoxRoot(active).appendChild(bottomStack);
   }
-
-  // Keep the two boxes at the boundaries of the complete page content,
-  // outside intro cards and nested columns. Reuse the existing content slugs.
-  if (active.firstElementChild !== topStack) active.prepend(topStack);
-  if (active.lastElementChild !== bottomStack) active.appendChild(bottomStack);
 
   [topStack, bottomStack].forEach(group => {
     group.querySelectorAll('[data-block]').forEach(el => {
@@ -4800,14 +4804,13 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
-    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#ac8dcc;border:1px solid #ac8dcc;border-radius:12px;color:#fff;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
-    .ci-admin-page-box .ci-admin-page-box-content,.ci-admin-page-box .ci-admin-page-box-content *,html.master-inline-goals #page-setup .ci-admin-page-box .ci-admin-page-box-content *{color:#fff!important}
-    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:8px;background:transparent;color:#fff;cursor:pointer;padding:0}
-    .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#8b69aa;outline:2px solid #fff;outline-offset:2px}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
+    .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
-    .ci-admin-page-box-placeholder{color:#fff;font-style:italic}
+    .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
     .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
@@ -5451,25 +5454,6 @@ function injectPlaceholderCards() {
   });
 }
 
-let _masterInlineWaitingForAuth = false;
-function _resumeMasterInlineDestination() {
-  const params = new URLSearchParams(location.search);
-  const action = params.get('masterInline');
-  if (!_masterInlineLabels[action]) return false;
-  document.documentElement.classList.add('master-inline-mode', 'master-inline-' + action);
-  for (const el of [document.querySelector('header.hdr'), document.getElementById('topNav'), document.getElementById('tabBar')]) {
-    if (el) el.style.setProperty('display', 'none', 'important');
-  }
-  _masterInlineWaitingForAuth = !currentUser;
-  if (currentUser) closeAuth();
-  openMasterDestination(action, params.get('goal'));
-  return true;
-}
-
-function _startupRender(label, render) {
-  try { render(); } catch (e) { console.error('[init] ' + label + ' failed:', e); }
-}
-
 export async function init() {
   // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
   // stop normal boot. No auth, no data stored server-side (the roadmap rides in the link).
@@ -5503,10 +5487,6 @@ export async function init() {
   try { selectPlan('annual'); } catch (e) { console.error('[init] selectPlan:', e); }
 
   const _preview = _previewActive();
-  // Public reference copy must not depend on restoring a member session.
-  if (new URLSearchParams(location.search).get('masterInline') === 'favorites') {
-    _startupRender('Favorites reference', () => window.renderDailyGuru?.());
-  }
   if (_preview) {
     const _previewParams = new URLSearchParams(location.search);
     const _qaWidth = Number.parseInt(_previewParams.get('qaWidth') || '', 10);
@@ -5535,29 +5515,15 @@ export async function init() {
   if (!_preview) sb.auth.onAuthStateChange((event, session) => {
     const user = session?.user || null;
     updateUI(user);
-    if (user && (event === 'SIGNED_IN' || _masterInlineWaitingForAuth)) {
-      // Supabase holds its auth lock while notifying listeners. Start network
-      // work in a later task so it cannot deadlock session restoration.
-      setTimeout(async () => {
-        if (currentUser?.id !== user.id) return;
-        try {
-          if (_masterInlineWaitingForAuth) {
-            loadIntentionsFromLS();
-            _resumeMasterInlineDestination();
-          }
-          if (event === 'SIGNED_IN') localStorage.removeItem('ci_intentions');
-          await Promise.all([syncFromSupabase(), syncIntentionsFromSupabase()]);
-          if (currentUser?.id !== user.id) return;
-          _startupRender('dashboard', renderDashboard);
-          logDailyLogin();
-          injectPersonalContent();
-          renderTodayView();
-        } catch (e) {
-          console.error('[auth] account refresh failed:', e);
-        } finally {
-          if (currentUser?.id === user.id && _masterInlineWaitingForAuth) _resumeMasterInlineDestination();
-        }
-      }, 0);
+    if (event === 'SIGNED_IN') {
+      localStorage.removeItem('ci_intentions');
+      syncFromSupabase(); // also pulls is_member
+      syncIntentionsFromSupabase().then(() => {
+        renderDashboard();
+        logDailyLogin();
+        injectPersonalContent();
+        renderTodayView();
+      });
     }
     if (event === 'SIGNED_OUT') {
       currentMember = false;
@@ -5579,13 +5545,10 @@ export async function init() {
     setTimeout(() => loader.remove(), 500);
   };
   const _loaderFailsafe = setTimeout(hideLoader, 8000);
-  const withTimeout = (p, ms, label) => {
-    let timer;
-    return Promise.race([
-      p,
-      new Promise((_, rej) => { timer = setTimeout(() => rej(new Error((label || 'op') + ' timed out after ' + ms + 'ms')), ms); }),
-    ]).finally(() => clearTimeout(timer));
-  };
+  const withTimeout = (p, ms, label) => Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() => rej(new Error((label || 'op') + ' timed out after ' + ms + 'ms')), ms)),
+  ]);
 
   // Check existing session (skipped in localhost preview mode)
   try {
@@ -5593,16 +5556,8 @@ export async function init() {
       const { data: { session } } = await withTimeout(sb.auth.getSession(), 6000, 'getSession');
       if (session?.user) {
         updateUI(session.user);
-        loadIntentionsFromLS();
-        // Profile and goal loading are independent. A slow request must not
-        // discard the valid session or prevent the other request from running.
-        const syncResults = await Promise.allSettled([
-          withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase'),
-          withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase'),
-        ]);
-        syncResults.forEach(result => {
-          if (result.status === 'rejected') console.warn('[init] account data still loading:', result.reason);
-        });
+        await withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase');
+        await withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase');
         logDailyLogin();
         injectPersonalContent();
         renderTodayView();
@@ -5617,29 +5572,23 @@ export async function init() {
     // Network/auth failure — fall through and show the dashboard from local data
     // rather than hanging. The auth listener will re-sync if the session recovers.
     console.error('[init] session/sync failed — rendering from local data:', e);
-    // An auth listener may already have restored a valid session. A timeout or
-    // secondary renderer failure is not a sign-out event.
-    if (!currentUser) updateUI(null);
+    updateUI(null);
   }
 
-  _startupRender('dashboard', renderDashboard);
+  renderDashboard();
 
   // Backfill vision images for any goals that don't have one yet.
-  _startupRender('goal images', () => {
-    if (typeof backfillGoalImages === 'function') backfillGoalImages();
-  });
+  if (typeof backfillGoalImages === 'function') backfillGoalImages();
 
   // Hide loading (whatever happened above, clear the failsafe and drop the spinner)
   clearTimeout(_loaderFailsafe);
   hideLoader();
 
   // Populate Setup/BTS forms
-  _startupRender('setup forms', loadPegboard);
+  loadPegboard();
 
   // Load content blocks for all users (public read)
-  _startupRender('content blocks', () => {
-    Promise.resolve(loadContentBlocks()).catch(e => console.error('[init] content blocks failed:', e));
-  });
+  loadContentBlocks();
 
   // Keep Admin editor numbering available inside Admin, but never expose the
   // matching #N refinement badges in the member experience.
@@ -5650,7 +5599,19 @@ export async function init() {
 
   // Inline Master Player destinations run inside one reusable Column A frame.
   // They share the production origin/session, but hide duplicate app chrome.
-  if (!_resumeMasterInlineDestination()) {
+  const _masterInlineAction = new URLSearchParams(location.search).get('masterInline');
+  if (_masterInlineLabels[_masterInlineAction]) {
+    document.documentElement.classList.add('master-inline-mode');
+    document.documentElement.classList.add('master-inline-' + _masterInlineAction);
+    const _hdr = document.querySelector('header.hdr');
+    const _top = document.getElementById('topNav');
+    const _tabs = document.getElementById('tabBar');
+    if (_hdr) _hdr.style.setProperty('display', 'none', 'important');
+    if (_top) _top.style.setProperty('display', 'none', 'important');
+    if (_tabs) _tabs.style.setProperty('display', 'none', 'important');
+    const _inlineGoal = new URLSearchParams(location.search).get('goal');
+    openMasterDestination(_masterInlineAction, _inlineGoal);
+  } else {
     // The standalone Master Player may have handed us a destination. Wait until
     // session restoration above is complete before navigating, otherwise navTo()
     // mistakes a returning member for a logged-out visitor and opens sign-in.
@@ -6020,7 +5981,6 @@ const _masterInlineLabels = {
   proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
   'quickie-move': 'Quickie Move',
-  entrepreneur: 'Entrepreneur',
   admin: 'Admin',
 };
 
@@ -6120,8 +6080,7 @@ export function openMasterDestination(action, goalIndex = null) {
       navTo('proof');
       break;
     case 'quickie-move':
-    case 'entrepreneur':
-      navTo('entcard');
+      navTo('myroadmap');
       break;
     case 'admin':
       navTo('admin');

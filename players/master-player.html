@@ -42,19 +42,18 @@
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
-    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:none}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity 3s ease}
     .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
     .player-word-card{pointer-events:none}
-    /* Keep the blue frame outside the true 16:9 artwork area. An inset overlay
-       cropped the image by a different proportion at each player width. */
-    .shell.home-mode .inspiration{aspect-ratio:16/9;min-width:0}
-    .inspiration.has-card .inspiration-card{opacity:1}
+    /* The visible 16:9 frame sits above the image so the image cannot cover it. */
+    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #1e90ff;pointer-events:none}
+    .inspiration.has-card .inspiration-card{opacity:1;transition-duration:3s}
     .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
     .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
     .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:0;background:transparent;display:grid}
-    .shell.home-mode #homeView{width:100%;min-width:0;min-height:0;aspect-ratio:auto;align-self:stretch;display:grid;padding:var(--frame-border);background:var(--header)}
+    .shell.home-mode #homeView{width:100%;min-height:0;aspect-ratio:16/9;align-self:stretch;display:grid}
     .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
     .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
     .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
@@ -64,16 +63,16 @@
     .directory button,.launch{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;border:1px solid #bdc1bc;border-radius:8px;background:#fff;color:#202622;padding:11px 14px;text-align:left;font-weight:800;letter-spacing:.45px;cursor:pointer}
     .directory button:hover,.directory button:focus-visible,.launch:hover,.launch:focus-visible{outline:2px solid #1f2724;outline-offset:2px}
     #experienceView{width:100%;min-height:0}
-    .lfm-tool-rotation{width:100%;min-width:0;min-height:0;padding:var(--frame-border);background:var(--frame);display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;transition:background .25s ease}
+    .lfm-tool-rotation{width:100%;min-height:0;padding:14px;background:var(--frame);display:grid;overflow:hidden;transition:background .25s ease}
     .lfm-tool-rotation[hidden]{display:none}
-    .lfm-tool-rotation .inspiration{width:100%;min-width:0;height:auto;aspect-ratio:16/9;padding:0;background:var(--paper)}
+    .lfm-tool-rotation .inspiration{width:100%;height:auto;aspect-ratio:16/9;padding:0;background:var(--paper)}
     .experience-frame{display:block;width:100%;height:600px;border:0;background:#fff;border-radius:8px;overflow:hidden;transition:height .3s ease}
     .shell.experience-mode .stage{padding:0;background:var(--header)}
     .shell.experience-mode .experience-frame{border-radius:0}
     .shell.lfm-shared-frame-mode{background:var(--header)}
     .shell.lfm-shared-frame-mode #experienceView{background:var(--header);padding-bottom:17.5px}
     .shell.lfm-shared-frame-mode .stage{margin-left:0;margin-right:0}
-    .shell.lfm-shared-frame-mode .lfm-tool-rotation{padding:var(--frame-border);background:var(--header)}
+    .shell.lfm-shared-frame-mode .lfm-tool-rotation{padding:0;background:transparent}
     .shell.lfm-shared-frame-mode .lfm-tool-rotation .inspiration{background:var(--paper)}
     .shell.experience-mode:not(.meditation-player-mode) .experience-frame{width:calc(100% - 2 * var(--frame-border));margin:0 var(--frame-border)}
     .shell:not(.home-mode):not(.experience-mode) .stage{border-inline:var(--frame-border) solid var(--header)}
@@ -264,7 +263,6 @@
   </main>
   <nav id="standaloneSiteMenu" popover aria-label="Site menu"></nav>
   <script type="module">
-    import { renderMasterReference } from './page-reference.js';
     (() => {
       const params=new URLSearchParams(location.search);
       const entrepreneurCards=[
@@ -335,10 +333,10 @@
         ['wins','My Wins','Record and review progress worth celebrating.'],
         ['proof','Proof','Collect evidence that your intentions are becoming real.'],
         ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
-        ['entrepreneur','Entrepreneur','Explore entrepreneur skills, learning resources, and practical actions.'],
+        ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes','goal-workspace','entrepreneur']);
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes','goal-workspace']);
       const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins','goal-workspace']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
@@ -458,7 +456,10 @@
         const loaded=await loadPlayerCard(toolInspirationCard,toolInspirationWords,file,action);
         if(transitionId!==toolCardTransitionId||!loaded)return;
         matchTroughsToCard(toolInspirationCard);
-        toolInspirationPanel.classList.add('has-card');
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(transitionId===toolCardTransitionId)toolInspirationPanel.classList.add('has-card');
+          resolve();
+        })));
       }
       let selected=null,heightFrame=0;
       function reportHeight(){
@@ -534,8 +535,6 @@
         if(!experience.hidden)return toolRotation.hidden?experienceFrame:toolRotation;
         return directoryView;
       }
-      // Page title cards appear at full opacity; playback transitions remain separate.
-      function isTitleCardSurface(surface){return surface===home||surface===toolRotation}
       async function transitionStage(commit){
         const transitionId=++stageTransitionId;
         if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
@@ -552,8 +551,7 @@
           return transitionId===stageTransitionId;
         };
         try{
-          const current=currentVisualSurface();
-          if(!reduced&&!isTitleCardSurface(current)&&!await fade(current,1,0,250))return;
+          if(!reduced&&!await fade(currentVisualSurface(),1,0,250))return;
           const outgoing=stageSurface;
           const ready=commit();
           const incoming=currentVisualSurface();
@@ -561,14 +559,13 @@
           if(outgoing&&outgoing!==incoming)outgoing.classList.remove('ci-visual-transition');
           stageSurface=incoming;
           incoming.classList.add('ci-visual-transition');
-          const fadeIncoming=!reduced&&!isTitleCardSurface(incoming);
-          incoming.style.opacity=fadeIncoming?'0':'1';
+          incoming.style.opacity=reduced?'1':'0';
           let readyTimeout;
           try{await Promise.race([Promise.resolve(ready),new Promise(resolve=>{readyTimeout=window.setTimeout(resolve,8000)})])}
           finally{window.clearTimeout(readyTimeout)}
           if(transitionId!==stageTransitionId)return;
           fitExperience();
-          if(fadeIncoming)await fade(incoming,0,1,580);
+          if(!reduced)await fade(incoming,0,1,580);
         }finally{
           if(transitionId===stageTransitionId){
             if(stageSurface){
@@ -582,7 +579,6 @@
         }
       }
       function applyHomeMode(){
-        renderMasterReference(deck,parent===window?'home':'embedded-home');
         notifyParentMode('home');
         selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
@@ -657,7 +653,6 @@
         return url.pathname+url.search;
       }
       function applySelection(action){
-        if(action==='quickie-move')action='entrepreneur';
         if(action==='citadel'){
           applyHomeMode();
           cap.textContent="";
@@ -666,7 +661,6 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        renderMasterReference(deck,action);
         if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
@@ -679,8 +673,8 @@
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
-        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace','entrepreneur'].includes(action);
-        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace','entrepreneur'].includes(action)?setToolCard(action):Promise.resolve();
+        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace'].includes(action);
+        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace'].includes(action)?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame','#1e90ff');
@@ -739,7 +733,7 @@
           ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
           ['journal','My Journal'],['action-plan','Roadmap'],
           ['visualization','Visualization Library'],['meditation','Meditation'],
-          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['entrepreneur','Entrepreneur'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace']
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace']
         ];
         siteChoices.forEach(([action,label])=>{
           const button=document.createElement('button');
@@ -859,9 +853,8 @@
       document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',()=>select('everything')));
       addEventListener('resize',()=>{fitExperience();reportHeight()});
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
-      const initialAction=params.get('start')==='quickie-move'?'entrepreneur':params.get('start');
+      const initialAction=params.get('start');
       if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);
-      else renderMasterReference(deck,parent===window?'home':'embedded-home');
       reportHeight();
       window.setTimeout(reportHeight,120);
       window.setTimeout(reportHeight,600);

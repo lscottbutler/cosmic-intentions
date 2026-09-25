@@ -1,23 +1,5 @@
 # Goal Workspace — review, 2026-09-24
 
-## Inline Save note revision — 2026-09-25
-
-Scott requested a visible Save button inside the note displayed beneath each
-action. Those note summaries now contain an editable note field, a black
-Save note button, and Saved / Unsaved changes feedback. Journal summaries and
-the player template are unchanged. The button updates the same note ID and
-retains its category, linked goal, and action identity. Refreshes preserve dirty
-inline editors, and a failed save keeps the draft visible. Saved confirms the
-existing local persistence operation; the existing cloud adapter remains
-asynchronous and is not separately confirmed by this label.
-
-Recovery source: production `116525cae867405337935df1d39ca232e4e8a0a9`.
-Review branch: `review/goal-workspace-note-save`. The focused tests cover both
-task and independent goal notes, no duplication, blank/wrong-action rejection,
-and save failure recovery. This revision does not change production settings.
-
-## Original implementation record
-
 Scott requested one page for a goal's notes, to-dos, and Journal entries.
 The workspace lives in the existing Master Player at `?start=goal-workspace`.
 Open it from the site menu, the Notes page, or the button inside a Roadmap goal.

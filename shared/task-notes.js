@@ -22,47 +22,10 @@ export function taskLinkedRecords(context, records = readNotes()) {
 }
 
 export function taskLinkedEntriesHTML(context, records = readNotes()) {
-  return taskLinkedRecords(context, records).map(n => n.cat === 'note' ? `<section class="goal-action-entry">
-    <h4>Journal entry</h4><p>${esc(n.text)}</p>
-  </section>` : `<section class="goal-action-entry goal-action-note" data-note-id="${esc(n.id)}">
-    <label class="goal-action-note-label">Note<textarea rows="2" maxlength="10000" oninput="taskInlineNoteChanged(this)">${esc(n.text)}</textarea></label>
-    <div class="task-note-footer"><span class="task-note-status" role="status">Saved</span><button type="button" onclick="taskInlineNoteSave(this)">Save note</button></div>
+  return taskLinkedRecords(context, records).map(n => `<section class="goal-action-entry">
+    <h4>${n.cat === 'note' ? 'Journal entry' : 'Note'}</h4>
+    <p>${esc(n.text)}</p>
   </section>`).join('');
-}
-
-export function taskInlineNoteChanged(input) {
-  const editor = input.closest('.goal-action-note');
-  editor.dataset.dirty = 'true';
-  editor.querySelector('.task-note-status').textContent = 'Unsaved changes';
-}
-
-export function taskInlineNoteSave(source) {
-  const editor = source.closest('.goal-action-note');
-  const host = editor?.closest('.goal-action-records');
-  if (!host) return false;
-  const status = editor.querySelector('.task-note-status');
-  const text = editor.querySelector('textarea').value.trim();
-  if (!text) { status.textContent = 'Write a note before saving.'; return false; }
-  const context = JSON.parse(host.dataset.taskContext);
-  const notes = readNotes();
-  const note = taskLinkedRecords(context, notes).find(n => n.id === editor.dataset.noteId && ['task', 'goal-note'].includes(n.cat));
-  if (!note) { status.textContent = 'This note has changed. Reopen the workspace before saving.'; return false; }
-  Object.assign(note, { text, updatedAt: Date.now() });
-  if (!_saveNotes(notes)) {
-    status.textContent = 'Could not save. Your text is still here; please try again.';
-    return false;
-  }
-  editor.querySelector('textarea').value = text;
-  delete editor.dataset.dirty;
-  status.textContent = 'Saved';
-  if (note.cat === 'task') document.querySelectorAll('.task-note-editor').forEach(other => {
-    if (other.dataset.taskKey !== note.taskKey || other.dataset.dirty === 'true') return;
-    other.querySelector('textarea').value = text;
-    other.querySelector('.task-note-status').textContent = 'Saved';
-  });
-  renderTaskNotesList();
-  window.renderGoalWorkspaceNotes?.(editor);
-  return true;
 }
 
 function savedTaskNote(context) {

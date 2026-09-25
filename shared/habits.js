@@ -230,16 +230,6 @@ export function renderRunThroughs() { renderMorningRun(); renderDayRun(); render
 /* ── Daily Tracker widget — a master list of EVERY habit, grouped by category
    (Morning/Day/Evening/Bedtime/Health/Unsorted). Ticks share the same per-day
    done state as the run-through cards, so checking here or there stays in sync. ── */
-export function showHabitView(view = 'daily') {
-  const editing = view === 'editor';
-  const daily = document.getElementById('habitsDailyView');
-  const editor = document.getElementById('habitsEditorView');
-  if (daily) daily.hidden = editing;
-  if (editor) editor.hidden = !editing;
-  if (editing) renderPBHabitList();
-  else renderHabits();
-}
-
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
@@ -264,7 +254,7 @@ export function renderHabits() {
       </div>
     </details>`;
   });
-  el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
+  el.innerHTML = html +
     `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
 }
 
@@ -282,6 +272,7 @@ export function renderPBHabitList() {
   const openCats = new Set(Array.from(el.querySelectorAll('details[data-habit-category][open]'), section => section.dataset.habitCategory));
   const list = getHabitList();
   const groups = _grouped(list);
+  const arrow = 'width:30px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#454545;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:10px;line-height:1;';
   const catOpts = (cur) => ['<option value=""' + (cur === '' ? ' selected' : '') + '>— Unsorted —</option>']
     .concat(HABIT_CATS.map(c => `<option value="${c}"${cur === c ? ' selected' : ''}>${c}</option>`)).join('');
   const domainOpts = (cur) => '<option value=""' + (cur === '' ? ' selected' : '') + '>— No category —</option>'
@@ -313,11 +304,12 @@ export function renderPBHabitList() {
         <textarea maxlength="160" rows="1" onchange="pbSaveHabitName('${h.id}',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
           style="width:100%;box-sizing:border-box;padding:13px 14px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.5;font-family:inherit;resize:none;field-sizing:content;min-height:62px;overflow:hidden;margin-bottom:8px;">${esc(h.name)}</textarea>
         <div style="display:flex;gap:8px;align-items:center;">
-          <button type="button" class="pb-habit-circle" onclick="pbMoveHabit('${h.id}',-1)" title="Move up" aria-label="Move habit up"${gi === 0 ? ' disabled' : ''}>▲</button>
-          <button type="button" class="pb-habit-circle" onclick="pbMoveHabit('${h.id}',1)" title="Move down" aria-label="Move habit down"${gi === items.length - 1 ? ' disabled' : ''}>▼</button>
+          <button onclick="pbMoveHabit('${h.id}',-1)" title="Move up"   style="${arrow}${gi === 0 ? 'opacity:.3;pointer-events:none;' : ''}">▲</button>
+          <button onclick="pbMoveHabit('${h.id}',1)"  title="Move down" style="${arrow}${gi === items.length - 1 ? 'opacity:.3;pointer-events:none;' : ''}">▼</button>
           <select onchange="pbSetHabitCat('${h.id}',this.value)"
             style="flex:1;min-width:0;box-sizing:border-box;padding:9px 8px;border:none;border-radius:7px;background:#fff;color:#1a1a1a;font-size:12px;">${catOpts(_cat(h))}</select>
-          <button type="button" class="pb-habit-circle" onclick="pbDeleteHabit('${h.id}')" title="Delete habit" aria-label="Delete habit">✕</button>
+          <button onclick="pbDeleteHabit('${h.id}')" title="Delete habit"
+            style="flex-shrink:0;width:34px;height:34px;background:#3a1010;border:1px solid #5a1a1a;color:#ff8a8a;border-radius:8px;cursor:pointer;font-size:15px;">✕</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
           <span style="flex-shrink:0;font-size:9px;font-weight:800;letter-spacing:1px;color:#9a9a9a;">CATEGORY</span>
@@ -339,7 +331,6 @@ export function openHabitsAt(cat) {
   const label = HABIT_CATS.includes(cat) ? cat : 'UNSORTED';
   if (typeof window !== 'undefined' && typeof window.navTo === 'function') window.navTo('habits');
   setTimeout(() => {
-    showHabitView('editor');
     const el = document.getElementById('pbcat-' + label);
     if (el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }, 170);
@@ -347,7 +338,6 @@ export function openHabitsAt(cat) {
 
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
-  window.showHabitView = showHabitView;
   window.openHabitsAt = openHabitsAt;
   window.renderMorningRun = renderMorningRun;
   window.renderRunThroughs = renderRunThroughs;
