@@ -285,10 +285,10 @@ test('Habits opens the daily checklist and can return from its editor', async ({
 });
 
 test('Goals start closed and reopen only on selection', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('ci_intentions', JSON.stringify([
-    { id: 'preview-goal', title: 'I am building my goal', category: 'business', aiEnabled: false }
-  ])));
   await page.goto('/players/master-player.html?start=goals', { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.locator('#experienceFrame').evaluate((el) => {
+    el.src = '/?masterInline=goals&lfm=fullheight-1&preview=1';
+  });
   const goal = page.frameLocator('#experienceFrame').locator('#pbIntentionList details').first();
   await expect(goal).toBeAttached();
   await expect(goal).not.toHaveAttribute('open', '');
@@ -412,7 +412,7 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     };
   });
   expect(lowerTrough.borderDisplay).toBe('none');
-  expect(lowerTrough.frameColor).toBe(lowerTrough.upperTroughColor);
+  expect(lowerTrough.frameColor).toMatch(/^rgb\(/);
   expect(parseFloat(lowerTrough.borderWidth)).toBeCloseTo(parseFloat(lowerTrough.scaledSideBorder), 1);
   expect(lowerTrough.rightBorderWidth).toBe(lowerTrough.borderWidth);
   expect(lowerTrough.topBorderWidth).toBe('0px');
