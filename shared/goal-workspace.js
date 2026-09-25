@@ -158,11 +158,18 @@ export function renderGoalWorkspace() {
 
 export function renderGoalWorkspaceTasks() {
   if (!activeWorkspace() || !selectedGoal()) return;
+  // Completing/adding another task must not discard a note being edited.
+  const drafts = Array.from(document.querySelectorAll('#page-goalworkspace .goal-action-note[data-dirty="true"]'));
   const idx = intentions.findIndex(g => String(g.id) === selectedGoalId);
   const tasks = goalWorkspaceTaskMarkup(idx);
   document.getElementById('goalWorkspaceMyTasks').innerHTML = tasks.my || '<p class="goal-workspace-empty">No to-dos yet. Add your first action below.</p>';
   document.getElementById('goalWorkspaceRoadmapTasks').innerHTML = tasks.roadmap || '<p class="goal-workspace-empty">No Roadmap tasks for this goal yet.</p>';
   document.getElementById('goalWorkspaceTaskCount').textContent = `${tasks.done}/${tasks.total} done`;
+  const renderedNotes = Array.from(document.querySelectorAll('#page-goalworkspace .goal-action-note'));
+  drafts.forEach(draft => {
+    const replacement = renderedNotes.find(note => note.dataset.noteId === draft.dataset.noteId);
+    if (replacement) replacement.replaceWith(draft);
+  });
 }
 
 export function goalWorkspaceAddTask(form) {

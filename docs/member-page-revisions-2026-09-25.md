@@ -5,6 +5,7 @@ Status: In review on `review/goal-workspace-note-save`, PR42. Production remains
 ## Scott's requested changes
 
 - Goal Workspace inline notes have an explicit Save note button and Saved / Unsaved changes status. Local storage success is confirmed; the existing asynchronous account sync remains unchanged.
+- Unsaved inline note drafts survive a task-list refresh when another action is completed or added.
 - Habits opens the existing daily checklist. Edit habits opens the existing editor; Back to daily checklist returns to checkmarks. Existing habit IDs, daily keys, and persistence adapters are reused. Old runthroughs navigation returns to this canonical destination.
 - Each goal card is a native collapsed disclosure on a fresh load. Cards opened during the session retain their state across renderer updates by stable goal ID. AI and removal remain separate controls.
 - Goal removal is a white × on a black circle. Habit move up, move down, and delete controls are black circles with white symbols, including their disabled boundary states.
@@ -27,5 +28,9 @@ The template integrity gate remains enabled. Its review baseline changes only fo
 - Browser: a temporary review goal loaded collapsed; opening and toggling AI retained its disclosure state. The goal × rendered white on black.
 - Browser: daily Habits and its editor are both reachable; checkmarks can be set and undone. Habit up/down/delete rendered black and white.
 - Reference mappings and source links checked for every configured page. JavaScript syntax and template integrity checks pass.
-- Remaining before final handoff: rendered teacher sections, Entrepreneur navigation, smaller countdown, populated Goal Workspace Save note, and owner-only admin appearance/placement.
+- Browser: the smaller countdown rendered at regular weight with white stacked minutes and seconds; play and pause worked. Meditation's Another perspective control switched the displayed teacher.
+- Browser after owner sign-in: Entrepreneur opens from the site menu, displays its information, and changing the selected skill updates resources and the roadmap. Its new heading needed an explicit dark text color on the white player surface.
+- Browser: both owner admin boxes rendered light purple with white text; the top and bottom stacks were the first and last children of the Entrepreneur page. The Goal Workspace also displayed both boxes and its reference section.
+- Browser limitation: the available signed-in Goal Workspace had no eligible saved notes or Journal entries, so its empty state was verified. Populated inline note saving is covered by the focused tests; an account-backed saved-note edit and cross-device synchronization remain unverified. No real member notes or goals were changed for verification.
+- The existing broad browser suite is not being claimed as passing; this revision used focused checks. Mobile redesign remains deferred at Scott's request.
 - No Supabase schema, Netlify settings, site privacy, or production changes.

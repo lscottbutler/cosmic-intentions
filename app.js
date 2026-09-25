@@ -472,8 +472,7 @@ export function showPage(id) {
 
   // Master link list at the top of every Column B (single source: window.colbLinksHTML).
   if (typeof window.injectColbLinks === 'function') window.injectColbLinks();
-  // Intro card at the top of Column A on selected pages, then the admin-editable
-  // text box directly under whatever intro card the page ended up with.
+  // Keep references within the page and the admin boxes at its content boundaries.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
   if (typeof window.wireInfoBoxAdmin === 'function') window.wireInfoBoxAdmin();
   mountPageReference(document.querySelector('.page.active'), id);
