@@ -3877,7 +3877,6 @@ html.master-inline-mode #tabBar,
 html.master-inline-mode .drawer,
 html.master-inline-mode .subnav,
 html.master-inline-mode #upgradeModal,
-html.master-inline-mode #authModal,
 html.master-inline-mode #blueprintModal,
 html.master-inline-mode #daylifeModal,
 html.master-inline-mode footer,
@@ -3897,6 +3896,20 @@ html.master-inline-mode .page.active {
   margin: 0 !important;
   padding: 0 !important;
   background: #fff !important;
+}
+/* The embedded tool still needs its sign-in dialog when a session expires.
+   Reserve enough frame height for the form instead of hiding it behind an
+   apparently empty destination. */
+html.master-inline-mode #authModal {
+  align-items: flex-start;
+  overflow-y: auto;
+}
+html.master-inline-mode #authModal .auth-sheet {
+  margin: 16px 10px;
+  border-radius: 16px;
+}
+html.master-inline-mode:has(#authModal.open) .page.active {
+  min-height: 580px !important;
 }
 html.master-inline-mode .page:not(.active),
 html.master-inline-mode #page-dashboard {

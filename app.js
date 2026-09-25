@@ -450,6 +450,7 @@ export function showPage(id) {
     if (typeof window.renderDailyGuru === 'function') window.renderDailyGuru();
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
+  if (id === 'myroadmap') renderWrapup();
   if (id === 'notes') {   // My Thoughts — its own page
     loadPegboard();             // personal foundation + legacy thought boxes now live here
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
@@ -5450,6 +5451,25 @@ function injectPlaceholderCards() {
   });
 }
 
+let _masterInlineWaitingForAuth = false;
+function _resumeMasterInlineDestination() {
+  const params = new URLSearchParams(location.search);
+  const action = params.get('masterInline');
+  if (!_masterInlineLabels[action]) return false;
+  document.documentElement.classList.add('master-inline-mode', 'master-inline-' + action);
+  for (const el of [document.querySelector('header.hdr'), document.getElementById('topNav'), document.getElementById('tabBar')]) {
+    if (el) el.style.setProperty('display', 'none', 'important');
+  }
+  _masterInlineWaitingForAuth = !currentUser;
+  if (currentUser) closeAuth();
+  openMasterDestination(action, params.get('goal'));
+  return true;
+}
+
+function _startupRender(label, render) {
+  try { render(); } catch (e) { console.error('[init] ' + label + ' failed:', e); }
+}
+
 export async function init() {
   // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
   // stop normal boot. No auth, no data stored server-side (the roadmap rides in the link).
@@ -5483,6 +5503,10 @@ export async function init() {
   try { selectPlan('annual'); } catch (e) { console.error('[init] selectPlan:', e); }
 
   const _preview = _previewActive();
+  // Public reference copy must not depend on restoring a member session.
+  if (new URLSearchParams(location.search).get('masterInline') === 'favorites') {
+    _startupRender('Favorites reference', () => window.renderDailyGuru?.());
+  }
   if (_preview) {
     const _previewParams = new URLSearchParams(location.search);
     const _qaWidth = Number.parseInt(_previewParams.get('qaWidth') || '', 10);
@@ -5511,15 +5535,29 @@ export async function init() {
   if (!_preview) sb.auth.onAuthStateChange((event, session) => {
     const user = session?.user || null;
     updateUI(user);
-    if (event === 'SIGNED_IN') {
-      localStorage.removeItem('ci_intentions');
-      syncFromSupabase(); // also pulls is_member
-      syncIntentionsFromSupabase().then(() => {
-        renderDashboard();
-        logDailyLogin();
-        injectPersonalContent();
-        renderTodayView();
-      });
+    if (user && (event === 'SIGNED_IN' || _masterInlineWaitingForAuth)) {
+      // Supabase holds its auth lock while notifying listeners. Start network
+      // work in a later task so it cannot deadlock session restoration.
+      setTimeout(async () => {
+        if (currentUser?.id !== user.id) return;
+        try {
+          if (_masterInlineWaitingForAuth) {
+            loadIntentionsFromLS();
+            _resumeMasterInlineDestination();
+          }
+          if (event === 'SIGNED_IN') localStorage.removeItem('ci_intentions');
+          await Promise.all([syncFromSupabase(), syncIntentionsFromSupabase()]);
+          if (currentUser?.id !== user.id) return;
+          _startupRender('dashboard', renderDashboard);
+          logDailyLogin();
+          injectPersonalContent();
+          renderTodayView();
+        } catch (e) {
+          console.error('[auth] account refresh failed:', e);
+        } finally {
+          if (currentUser?.id === user.id && _masterInlineWaitingForAuth) _resumeMasterInlineDestination();
+        }
+      }, 0);
     }
     if (event === 'SIGNED_OUT') {
       currentMember = false;
@@ -5541,10 +5579,13 @@ export async function init() {
     setTimeout(() => loader.remove(), 500);
   };
   const _loaderFailsafe = setTimeout(hideLoader, 8000);
-  const withTimeout = (p, ms, label) => Promise.race([
-    p,
-    new Promise((_, rej) => setTimeout(() => rej(new Error((label || 'op') + ' timed out after ' + ms + 'ms')), ms)),
-  ]);
+  const withTimeout = (p, ms, label) => {
+    let timer;
+    return Promise.race([
+      p,
+      new Promise((_, rej) => { timer = setTimeout(() => rej(new Error((label || 'op') + ' timed out after ' + ms + 'ms')), ms); }),
+    ]).finally(() => clearTimeout(timer));
+  };
 
   // Check existing session (skipped in localhost preview mode)
   try {
@@ -5552,8 +5593,16 @@ export async function init() {
       const { data: { session } } = await withTimeout(sb.auth.getSession(), 6000, 'getSession');
       if (session?.user) {
         updateUI(session.user);
-        await withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase');
-        await withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase');
+        loadIntentionsFromLS();
+        // Profile and goal loading are independent. A slow request must not
+        // discard the valid session or prevent the other request from running.
+        const syncResults = await Promise.allSettled([
+          withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase'),
+          withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase'),
+        ]);
+        syncResults.forEach(result => {
+          if (result.status === 'rejected') console.warn('[init] account data still loading:', result.reason);
+        });
         logDailyLogin();
         injectPersonalContent();
         renderTodayView();
@@ -5568,23 +5617,29 @@ export async function init() {
     // Network/auth failure — fall through and show the dashboard from local data
     // rather than hanging. The auth listener will re-sync if the session recovers.
     console.error('[init] session/sync failed — rendering from local data:', e);
-    updateUI(null);
+    // An auth listener may already have restored a valid session. A timeout or
+    // secondary renderer failure is not a sign-out event.
+    if (!currentUser) updateUI(null);
   }
 
-  renderDashboard();
+  _startupRender('dashboard', renderDashboard);
 
   // Backfill vision images for any goals that don't have one yet.
-  if (typeof backfillGoalImages === 'function') backfillGoalImages();
+  _startupRender('goal images', () => {
+    if (typeof backfillGoalImages === 'function') backfillGoalImages();
+  });
 
   // Hide loading (whatever happened above, clear the failsafe and drop the spinner)
   clearTimeout(_loaderFailsafe);
   hideLoader();
 
   // Populate Setup/BTS forms
-  loadPegboard();
+  _startupRender('setup forms', loadPegboard);
 
   // Load content blocks for all users (public read)
-  loadContentBlocks();
+  _startupRender('content blocks', () => {
+    Promise.resolve(loadContentBlocks()).catch(e => console.error('[init] content blocks failed:', e));
+  });
 
   // Keep Admin editor numbering available inside Admin, but never expose the
   // matching #N refinement badges in the member experience.
@@ -5595,19 +5650,7 @@ export async function init() {
 
   // Inline Master Player destinations run inside one reusable Column A frame.
   // They share the production origin/session, but hide duplicate app chrome.
-  const _masterInlineAction = new URLSearchParams(location.search).get('masterInline');
-  if (_masterInlineLabels[_masterInlineAction]) {
-    document.documentElement.classList.add('master-inline-mode');
-    document.documentElement.classList.add('master-inline-' + _masterInlineAction);
-    const _hdr = document.querySelector('header.hdr');
-    const _top = document.getElementById('topNav');
-    const _tabs = document.getElementById('tabBar');
-    if (_hdr) _hdr.style.setProperty('display', 'none', 'important');
-    if (_top) _top.style.setProperty('display', 'none', 'important');
-    if (_tabs) _tabs.style.setProperty('display', 'none', 'important');
-    const _inlineGoal = new URLSearchParams(location.search).get('goal');
-    openMasterDestination(_masterInlineAction, _inlineGoal);
-  } else {
+  if (!_resumeMasterInlineDestination()) {
     // The standalone Master Player may have handed us a destination. Wait until
     // session restoration above is complete before navigating, otherwise navTo()
     // mistakes a returning member for a logged-out visitor and opens sign-in.
