@@ -3,18 +3,18 @@ import { test, expect } from '@playwright/test';
 const PLAYER = '/players/master-player.html?start=goals&card=0';
 
 const CORE_DESTINATIONS = [
-  { action: 'goals', label: 'Goals', card: /STRATEGIC THINKER/i },
-  { action: 'favorites', label: 'Favorites', card: /MANAGING TIME WISELY/i },
-  { action: 'thoughts', label: 'Thoughts', card: /SKILLFUL COMMUNICATOR/i },
-  { action: 'journal', label: 'Journal', card: /GOOD LISTENER/i },
-  { action: 'action-plan', label: 'Action Plan', card: /METICULOUS PLANNER/i },
-  { action: 'visualization', label: 'Visualize', card: /OUTSIDE BOX/i },
-  { action: 'gratitude', label: 'Gratitude', card: /EMPATHETIC/i },
-  { action: 'wins', label: 'Wins', card: /SELF CONFIDENT/i },
-  { action: 'cosmic-library', label: 'Cosmic Library', card: /QUALITY PEOPLE/i },
+  { action: 'goals', label: 'Goals', card: /Goals word collage/i },
+  { action: 'favorites', label: 'Favorites', card: /Favorites word collage/i },
+  { action: 'thoughts', label: 'Thoughts', card: /Thoughts word collage/i },
+  { action: 'journal', label: 'Journal', card: /Journal word collage/i },
+  { action: 'action-plan', label: 'Action Plan', card: /Roadmap word collage/i },
+  { action: 'visualization', label: 'Visualize', card: /Visualize word collage/i },
+  { action: 'gratitude', label: 'Gratitude', card: /Gratitude word collage/i },
+  { action: 'wins', label: 'Wins', card: /Wins word collage/i },
+  { action: 'cosmic-library', label: 'Cosmic Library', card: /Cosmic Library word collage/i },
 ];
 
-async function waitForCard(page, expectedCard = /STRATEGIC THINKER/i) {
+async function waitForCard(page, expectedCard = /Goals word collage/i) {
   const card = page.locator('#toolInspirationCard');
   await expect(card).toHaveAttribute('alt', expectedCard, { timeout: 5000 });
   await expect.poll(async () => Number(await card.evaluate((el) => getComputedStyle(el).opacity)), {
@@ -61,6 +61,7 @@ test('Citadel 16:9 surfaces contain cards only', async ({ page }) => {
 
   const contents = await page.evaluate(() => ({
     homeChildren: [...document.querySelector('#dailyInspiration').children].map((node) => node.tagName),
+    homeImages: document.querySelectorAll('#dailyInspiration .inspiration-card img').length,
     toolChildren: [...document.querySelector('#toolDailyInspiration').children].map((node) => node.tagName),
     generatedText: document.querySelectorAll(
       '#dailyInspiration .inspiration-kind, #dailyInspiration .statement, #dailyInspiration .inspiration-author, ' +
@@ -69,8 +70,9 @@ test('Citadel 16:9 surfaces contain cards only', async ({ page }) => {
     upperTroughText: document.querySelector('#capTitle').textContent.trim(),
   }));
 
-  expect(contents.homeChildren).toEqual(['IMG']);
-  expect(contents.toolChildren).toEqual(['IMG']);
+  expect(contents.homeChildren).toEqual(['DIV']);
+  expect(contents.homeImages).toBe(2);
+  expect(contents.toolChildren).toEqual(['DIV']);
   expect(contents.generatedText).toBe(0);
   expect(contents.upperTroughText).toBe('');
 });
@@ -130,6 +132,7 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
     'visualization',
     'action-plan',
     'cosmic-library',
+    'task-notes',
     'menu',
   ]);
   expect(state.outerColor).toBe('rgb(30, 144, 255)');
@@ -205,15 +208,10 @@ for (const destination of CORE_DESTINATIONS) {
   });
 }
 
-test('upper-trough site menu button emits the global menu command', async ({ page }) => {
+test('upper-trough site menu opens the standalone menu', async ({ page }) => {
   await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
-  const messageType = await page.evaluate(() => new Promise((resolve) => {
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'ci-site-menu-toggle') resolve(event.data.type);
-    }, { once: true });
-    document.querySelector('#siteMenuButton').click();
-  }));
-  expect(messageType).toBe('ci-site-menu-toggle');
+  await page.locator('#siteMenuButton').click();
+  await expect(page.locator('#standaloneSiteMenu')).toBeVisible();
 });
 
 test('player change fades only the card for 3 seconds out and 3 seconds in', async ({ page }) => {
@@ -235,7 +233,7 @@ test('player change fades only the card for 3 seconds out and 3 seconds in', asy
     duration: getComputedStyle(el).transitionDuration,
     alt: el.alt,
   }));
-  expect(fadeOut.alt).toMatch(/STRATEGIC THINKER|DISCIPLINED/i);
+  expect(fadeOut.alt).toMatch(/Goals word collage|DISCIPLINED/i);
   expect(fadeOut.opacity).toBeGreaterThanOrEqual(0);
   expect(fadeOut.opacity).toBeLessThan(1);
   expect(fadeOut.duration).toBe('3s');
@@ -264,7 +262,7 @@ test('Cosmic Library frame height follows its visible workspace', async ({ page 
     waitUntil: 'domcontentloaded',
     timeout: 15000,
   });
-  await waitForCard(page, /QUALITY PEOPLE/i);
+  await waitForCard(page, /Cosmic Library word collage/i);
 
   const frame = page.locator('#experienceFrame');
   await expect.poll(async () => frame.evaluate((el) => {
@@ -287,7 +285,7 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
     waitUntil: 'domcontentloaded',
     timeout: 15000,
   });
-  await waitForCard(page, /METICULOUS PLANNER/i);
+  await waitForCard(page, /Roadmap word collage/i);
 
   const order = await page.evaluate(() => {
     const rotation = document.querySelector('#lfmToolRotation');
@@ -387,7 +385,7 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     const deckRect = document.querySelector('.deck')?.getBoundingClientRect();
     return stageRect && deckRect ? Math.round(deckRect.top - stageRect.bottom) : -1;
   });
-  expect(playerControlGap).toBeGreaterThanOrEqual(18);
+  expect(playerControlGap).toBe(0);
 
   const containment = await page.evaluate(() => {
     const deckRect = document.querySelector('.deck')?.getBoundingClientRect();
