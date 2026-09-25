@@ -219,7 +219,8 @@ test('switching players loads the next card in the shared 16:9 frame', async ({ 
   await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
   const card = await waitForCard(page);
   const frame = page.locator('#toolDailyInspiration');
-  await page.locator('[data-action="visualization"]').click();
+  await page.locator('#siteMenuButton').click();
+  await page.locator('#standaloneSiteMenu button', { hasText: 'Visualization Library' }).click();
   await waitForCard(page, /Visualize word collage/i);
   await expect(card.locator('..')).toHaveCSS('transition-duration', '3s');
   await expect(frame).toBeVisible();
@@ -262,13 +263,37 @@ test('long workspaces keep the navigation trough directly below the 16:9 card', 
     return {
       rotationBeforeDeck: Boolean(rotation && deck && rotation.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
       workspaceBeforeDeck: Boolean(deck && frame && frame.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING),
-      menuVisible: Boolean(document.querySelector('[data-lfm-mini-command="menu"]')?.getBoundingClientRect().height),
+      lowerTroughHidden: getComputedStyle(deck).display === 'none',
     };
   });
 
   expect(order.rotationBeforeDeck).toBe(true);
   expect(order.workspaceBeforeDeck).toBe(true);
-  expect(order.menuVisible).toBe(true);
+  expect(order.lowerTroughHidden).toBe(true);
+});
+
+
+test('Habits opens the daily checklist and can return from its editor', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=daily-habits', { waitUntil: 'domcontentloaded', timeout: 15000 });
+  const tool = page.frameLocator('#experienceFrame');
+  await expect(tool.locator('#habitsDailyView')).toBeVisible();
+  await expect(tool.locator('#habitsEditorView')).toBeHidden();
+  await tool.getByRole('button', { name: 'Edit habits' }).click();
+  await expect(tool.locator('#habitsEditorView')).toBeVisible();
+  await tool.getByRole('button', { name: 'Back to daily checklist' }).click();
+  await expect(tool.locator('#habitsDailyView')).toBeVisible();
+});
+
+test('Goals start closed and reopen only on selection', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('ci_intentions', JSON.stringify([
+    { id: 'preview-goal', title: 'I am building my goal', category: 'business', aiEnabled: false }
+  ])));
+  await page.goto('/players/master-player.html?start=goals', { waitUntil: 'domcontentloaded', timeout: 15000 });
+  const goal = page.frameLocator('#experienceFrame').locator('#pbIntentionList details').first();
+  await expect(goal).toBeAttached();
+  await expect(goal).not.toHaveAttribute('open', '');
+  await goal.locator('summary').click();
+  await expect(goal).toHaveAttribute('open', '');
 });
 
 test('Meditation choices use one full-width column and expose the relaxation toggle', async ({ page }) => {
@@ -375,6 +400,8 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     return {
       borderDisplay: getComputedStyle(deck, '::before').display,
       frameColor: getComputedStyle(deck).backgroundColor,
+      upperTroughColor: getComputedStyle(document.querySelector('#capTitle'), '::before').backgroundColor,
+      scaledSideBorder: (document.querySelector('#experienceFrame').clientWidth * 35 / 1920) + 'px',
       borderWidth: getComputedStyle(deck).borderLeftWidth,
       rightBorderWidth: getComputedStyle(deck).borderRightWidth,
       topBorderWidth: getComputedStyle(deck).borderTopWidth,
@@ -385,9 +412,9 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
     };
   });
   expect(lowerTrough.borderDisplay).toBe('none');
-  expect(lowerTrough.frameColor).toBe('rgb(89, 125, 160)');
-  expect(lowerTrough.borderWidth).toBe('35px');
-  expect(lowerTrough.rightBorderWidth).toBe('35px');
+  expect(lowerTrough.frameColor).toBe(lowerTrough.upperTroughColor);
+  expect(parseFloat(lowerTrough.borderWidth)).toBeCloseTo(parseFloat(lowerTrough.scaledSideBorder), 1);
+  expect(lowerTrough.rightBorderWidth).toBe(lowerTrough.borderWidth);
   expect(lowerTrough.topBorderWidth).toBe('0px');
   expect(lowerTrough.bottomBorderWidth).toBe('35px');
   expect(lowerTrough.leftMargin).toBe('0px');
