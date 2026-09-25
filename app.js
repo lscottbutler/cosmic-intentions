@@ -1,3 +1,4 @@
+import { mountPageReference } from './players/page-reference.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
@@ -390,6 +391,7 @@ export function showPage(id) {
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
       'quickie-move': 'entcard',
+      entrepreneur: 'entcard',
       admin: 'admin',
     };
     if (inlineAction && inlinePages[inlineAction]) id = inlinePages[inlineAction];
@@ -474,6 +476,7 @@ export function showPage(id) {
   // text box directly under whatever intro card the page ended up with.
   if (typeof window.injectPageIntro === 'function') window.injectPageIntro();
   if (typeof window.wireInfoBoxAdmin === 'function') window.wireInfoBoxAdmin();
+  mountPageReference(document.querySelector('.page.active'), id);
   if (typeof window.injectTitleInfo === 'function') window.injectTitleInfo();
   if (typeof window.sprinkleEncouragements === 'function') window.sprinkleEncouragements();
 
@@ -603,6 +606,7 @@ export function navTo(id) {
     gratitude: 'gratitude',
     wins: 'wins',
     cosmiclibrary: 'cosmic-library',
+    entcard: 'entrepreneur',
   };
   if (window.self === window.top && lfmRoutes[id]) {
     if (!currentUser) {
@@ -5974,6 +5978,7 @@ const _masterInlineLabels = {
   proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
   'quickie-move': 'Quickie Move',
+  entrepreneur: 'Entrepreneur',
   admin: 'Admin',
 };
 
@@ -6073,7 +6078,8 @@ export function openMasterDestination(action, goalIndex = null) {
       navTo('proof');
       break;
     case 'quickie-move':
-      navTo('myroadmap');
+    case 'entrepreneur':
+      navTo('entcard');
       break;
     case 'admin':
       navTo('admin');

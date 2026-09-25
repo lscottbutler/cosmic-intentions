@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-// Approved by Scott on 2026-09-24. Do not update these hashes without
-// his explicit instruction to change the locked template.
+// Frame approved by Scott on 2026-09-24. Review revision 2026-09-25 implements
+// his requested teacher references, Entrepreneur menu, and half-size regular timer.
+// Do not update these hashes for unrelated changes.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "643d2a83ad424af8f7e73a496a876578d980da77",
-  "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
+  "players/master-player.html": "f8b8f961aacfaea90dd9cb3e3c494c6558c04d00",
+  "players/meditation.html": "074cf51d930fbb1d34d11f485be277f39835523e"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
@@ -31,4 +32,3 @@ if (changed.length) {
 } else {
   console.log('Approved Master Player and meditation frame are unchanged.');
 }
-
