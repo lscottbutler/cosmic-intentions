@@ -107,6 +107,9 @@ export function goalWorkspaceSaveEntry(form) {
 }
 
 function savePendingEntries() {
+  for (const editor of document.querySelectorAll('#page-goalworkspace .goal-action-note[data-dirty="true"]')) {
+    if (!window.taskInlineNoteSave(editor)) return false;
+  }
   for (const form of document.querySelectorAll('#page-goalworkspace .goal-entry-form[data-dirty="true"]')) {
     if (!goalWorkspaceSaveEntry(form)) return false;
   }
@@ -171,7 +174,7 @@ export function goalWorkspaceAddTask(form) {
 
 export function renderGoalWorkspaceNotes(source) {
   if (!activeWorkspace()) return;
-  refreshGoalActionEntries();
+  refreshGoalActionEntries(source);
   const eligibleGoals = goalWorkspaceGoals();
   const select = document.getElementById('goalWorkspaceSelect');
   // Refresh membership after relinking/deleting a note, while retaining any
@@ -207,9 +210,10 @@ export function renderGoalWorkspaceNotes(source) {
   document.getElementById('goalWorkspaceJournalCount').textContent = String(records.journal.length);
 }
 
-function refreshGoalActionEntries() {
+function refreshGoalActionEntries(source) {
   const records = readNotes();
   document.querySelectorAll('#page-goalworkspace .goal-action-records').forEach(host => {
+    if ((source && host.contains(source)) || host.querySelector('[data-dirty="true"]')) return;
     host.innerHTML = taskLinkedEntriesHTML(JSON.parse(host.dataset.taskContext), records);
   });
 }

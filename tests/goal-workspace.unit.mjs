@@ -110,7 +110,8 @@ const linkedMarkup = wrap.goalWorkspaceTaskMarkup(0);
 assert.match(linkedMarkup.my, /class="goal-action-records"/);
 assert.match(linkedMarkup.my, /<h4>Journal entry<\/h4>\s*<p>Journal for My Actions A1<\/p>/);
 assert.doesNotMatch(linkedMarkup.roadmap, /Journal for My Actions A1/);
-assert.match(linkedMarkup.roadmap, /<h4>Note<\/h4>\s*<p>Note for Roadmap A1<\/p>/);
+assert.match(linkedMarkup.roadmap, /<textarea[^>]*>Note for Roadmap A1<\/textarea>/);
+assert.match(linkedMarkup.my, /onclick="taskInlineNoteSave\(this\)">Save note<\/button>/);
 assert.equal(taskNotes.taskLinkedRecords({ ...myAction, goalId: 'g2' }).length, 0);
 assert.ok(workspace.saveGoalWorkspaceRecord({ cat: 'note', goalId: 'g2', text: 'Wrong goal action', taskKey: myKey }).error);
 const countBeforeRelink = notes.readNotes().length;
@@ -124,6 +125,41 @@ notes.notesSaveGoal('journal1', 'g2');
 assert.equal(notes.readNotes().find(n => n.id === 'journal1').taskKey, undefined, 'moving to another goal clears the old action link');
 assert.ok(!taskNotes.taskLinkedRecords(roadmapAction).some(n => n.id === 'journal1'));
 assert.match(taskNotes.taskLinkedEntriesHTML(myAction, [{ ...fixtureTaskNote, text: '<script>private note</script>' }]), /&lt;script&gt;/);
+function inlineNote(taskContext, noteId, text) {
+  const textarea = { value: text }, status = { textContent: 'Saved' };
+  const host = { dataset: { taskContext: JSON.stringify(taskContext) } };
+  const editor = { dataset: { noteId },
+    closest: selector => selector === '.goal-action-note' ? editor : selector === '.goal-action-records' ? host : null,
+    querySelector: selector => selector === 'textarea' ? textarea : status };
+  textarea.closest = () => editor;
+  return { editor, textarea, status };
+}
+const inline = inlineNote(myAction, 'action-note', 'Edited directly under My Actions A1');
+taskNotes.taskInlineNoteChanged(inline.textarea);
+assert.equal(inline.status.textContent, 'Unsaved changes');
+const beforeInline = notes.readNotes().length;
+assert.equal(taskNotes.taskInlineNoteSave(inline.editor), true);
+assert.equal(inline.status.textContent, 'Saved');
+assert.equal(inline.editor.dataset.dirty, undefined);
+assert.equal(notes.readNotes().length, beforeInline, 'inline Save updates the existing record without duplication');
+assert.equal(notes.readNotes().find(n => n.id === 'action-note').text, inline.textarea.value);
+const inlineRoad = inlineNote(roadmapAction, added.record.id, 'Edited independent Roadmap note');
+assert.equal(taskNotes.taskInlineNoteSave(inlineRoad.editor), true);
+assert.equal(notes.readNotes().find(n => n.id === added.record.id).cat, 'goal-note');
+assert.equal(notes.readNotes().find(n => n.id === added.record.id).taskKey, roadmapKey);
+const savedInline = storage.get('ci_notes');
+inline.textarea.value = 'Keep this draft if storage fails';
+taskNotes.taskInlineNoteChanged(inline.textarea);
+failSave = true;
+assert.equal(taskNotes.taskInlineNoteSave(inline.editor), false);
+assert.match(inline.status.textContent, /Could not save/);
+assert.equal(inline.editor.dataset.dirty, 'true');
+assert.equal(inline.textarea.value, 'Keep this draft if storage fails');
+assert.equal(storage.get('ci_notes'), savedInline);
+failSave = false;
+assert.equal(taskNotes.taskInlineNoteSave(inlineNote(roadmapAction, 'action-note', 'Wrong action').editor), false);
+assert.equal(taskNotes.taskInlineNoteSave(inlineNote(myAction, 'action-note', '   ').editor), false);
+assert.equal(storage.get('ci_notes'), savedInline, 'wrong-action and blank saves preserve all saved records');
 workspace.saveGoalWorkspaceRecord({ id: added.record.id, cat: 'goal-note', goalId: 'g1', text: 'Whole-goal note', taskKey: '' });
 assert.equal(notes.readNotes().find(n => n.id === added.record.id).taskKey, undefined);
 
