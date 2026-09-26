@@ -205,7 +205,7 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.upperTrough.innerColor).toBe('rgb(116, 116, 116)');
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
     for (const gap of state.gaps) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
-    await expect(card.locator('..')).toHaveCSS('transition-duration', '3s');
+    await expect(card.locator('..')).toHaveCSS('transition-duration', '0s');
   });
 }
 
@@ -222,7 +222,7 @@ test('switching players loads the next card in the shared 16:9 frame', async ({ 
   await page.locator('#siteMenuButton').click();
   await page.locator('#standaloneSiteMenu button', { hasText: 'Visualization Library' }).click();
   await waitForCard(page, /Visualize word collage/i);
-  await expect(card.locator('..')).toHaveCSS('transition-duration', '3s');
+  await expect(card.locator('..')).toHaveCSS('transition-duration', '0s');
   await expect(frame).toBeVisible();
 });
 
