@@ -39,6 +39,8 @@ for (const viewport of [
       const card = document.querySelector('#toolInspirationCard').getBoundingClientRect();
       return {
         ratio: card.width / card.height,
+        frameWidth: frame.width,
+        centerOffset: Math.abs(frame.left - (innerWidth - frame.width) / 2),
         gaps: {
           left: card.left - frame.left,
           right: frame.right - card.right,
@@ -49,6 +51,8 @@ for (const viewport of [
     });
 
     expect(geometry.ratio).toBeCloseTo(16 / 9, 3);
+    expect(geometry.frameWidth).toBeLessThanOrEqual(900);
+    expect(geometry.centerOffset).toBeLessThanOrEqual(1);
     for (const gap of Object.values(geometry.gaps)) expect(Math.abs(gap)).toBeLessThanOrEqual(1);
   });
 }
