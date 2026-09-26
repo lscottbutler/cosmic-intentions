@@ -4488,9 +4488,11 @@ html.master-inline-goals #page-setup .page-intro-card {
   }
 }
 
-/* Goal rows open only when their chevron is selected. */
+/* Keep each written goal visible while its editing fields are closed. */
 .pb-goal-summary { cursor: pointer; list-style: none; }
 .pb-goal-summary::-webkit-details-marker { display: none; }
 .pb-goal-summary::marker { content: ''; }
-.pb-goal-chevron { display: inline-block; font-size: 28px; line-height: 1; transform: rotate(0deg); transition: transform .15s; }
-.pb-goal-details[open] .pb-goal-chevron { transform: rotate(90deg); }
+.pb-goal-heading { display: flex; align-items: flex-start; gap: 11px; min-width: 0; flex: 1; }
+.pb-goal-heading-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.pb-goal-label { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+.pb-goal-title { display: block; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; white-space: pre-wrap; }
