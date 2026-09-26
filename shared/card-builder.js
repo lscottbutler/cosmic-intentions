@@ -834,10 +834,12 @@ export function renderPBIntentionList(resetOpen = false) {
     return `
     <details id="pb-goal-${idx}" class="pb-goal-details" data-goal-id="${esc(goalId)}"${openGoals.has(goalId) ? ' open' : ''} style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
       <summary class="pb-goal-summary" style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div style="display:flex;align-items:center;gap:11px;min-width:0;">
+        <div class="pb-goal-heading">
           ${goalBadge(_letr, gc.bg, gc.text, 36)}
-          <span style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${_letr}</span>
-          <span class="pb-goal-chevron" aria-hidden="true" style="color:${shade.text};">›</span>
+          <div class="pb-goal-heading-text" style="color:${shade.text};">
+            <span class="pb-goal-label">Goal ${_letr}</span>
+            <span class="pb-goal-title">${esc(i.title || 'Add your goal')}</span>
+          </div>
         </div>
         <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
           <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
