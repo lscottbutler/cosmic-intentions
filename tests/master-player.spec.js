@@ -284,16 +284,26 @@ test('Habits opens the daily checklist and can return from its editor', async ({
   await expect(tool.locator('#habitsDailyView')).toBeVisible();
 });
 
-test('Goals start closed and reopen only on selection', async ({ page }) => {
+test('Every closed Goal row shows its written goal without a chevron', async ({ page }) => {
   await page.goto('/players/master-player.html?start=goals', { waitUntil: 'domcontentloaded', timeout: 15000 });
   await page.locator('#experienceFrame').evaluate((el) => {
     el.src = '/?masterInline=goals&lfm=fullheight-1&preview=1';
   });
-  const goal = page.frameLocator('#experienceFrame').locator('#pbIntentionList details').first();
-  await expect(goal).toBeAttached();
-  await expect(goal).not.toHaveAttribute('open', '');
-  await goal.locator('summary').click();
-  await expect(goal).toHaveAttribute('open', '');
+  const goals = page.frameLocator('#experienceFrame').locator('#pbIntentionList details');
+  await expect(goals.first()).toBeAttached();
+  const count = await goals.count();
+  expect(count).toBeGreaterThan(0);
+  for (let index = 0; index < count; index++) {
+    const goal = goals.nth(index);
+    await expect(goal).not.toHaveAttribute('open', '');
+    const writtenGoal = await goal.locator('textarea').inputValue();
+    await expect(goal.locator('summary .pb-goal-title')).toHaveText(writtenGoal);
+    await expect(goal.locator('summary .pb-goal-title')).toBeVisible();
+    await expect(goal.locator('.pb-goal-chevron')).toHaveCount(0);
+  }
+  await goals.first().locator('summary').click();
+  await expect(goals.first()).toHaveAttribute('open', '');
+  await expect(goals.first().locator('textarea')).toBeVisible();
 });
 
 test('Meditation choices use one full-width column and expose the relaxation toggle', async ({ page }) => {
