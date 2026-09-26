@@ -42,12 +42,12 @@
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
-    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity 3s ease}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:none}
     .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
     .player-word-card{pointer-events:none}
     /* The visible 16:9 frame sits above the image so the image cannot cover it. */
     .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #1e90ff;pointer-events:none}
-    .inspiration.has-card .inspiration-card{opacity:1;transition-duration:3s}
+    .inspiration.has-card .inspiration-card{opacity:1}
     .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
@@ -535,6 +535,9 @@
         if(!experience.hidden)return toolRotation.hidden?experienceFrame:toolRotation;
         return directoryView;
       }
+      function isStaticPlayerImage(surface){
+        return surface===home||surface===toolRotation||(surface===experienceFrame&&selected==='meditation');
+      }
       async function transitionStage(commit){
         const transitionId=++stageTransitionId;
         if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
@@ -551,21 +554,23 @@
           return transitionId===stageTransitionId;
         };
         try{
-          if(!reduced&&!await fade(currentVisualSurface(),1,0,250))return;
-          const outgoing=stageSurface;
+          const outgoingSurface=currentVisualSurface();
+          if(!reduced&&!isStaticPlayerImage(outgoingSurface)&&!await fade(outgoingSurface,1,0,250))return;
+          const outgoing=stageSurface||outgoingSurface;
           const ready=commit();
           const incoming=currentVisualSurface();
           if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
           if(outgoing&&outgoing!==incoming)outgoing.classList.remove('ci-visual-transition');
           stageSurface=incoming;
           incoming.classList.add('ci-visual-transition');
-          incoming.style.opacity=reduced?'1':'0';
+          const staticImage=isStaticPlayerImage(incoming);
+          incoming.style.opacity=reduced||staticImage?'1':'0';
           let readyTimeout;
           try{await Promise.race([Promise.resolve(ready),new Promise(resolve=>{readyTimeout=window.setTimeout(resolve,8000)})])}
           finally{window.clearTimeout(readyTimeout)}
           if(transitionId!==stageTransitionId)return;
           fitExperience();
-          if(!reduced)await fade(incoming,0,1,580);
+          if(!reduced&&!staticImage)await fade(incoming,0,1,580);
         }finally{
           if(transitionId===stageTransitionId){
             if(stageSurface){
