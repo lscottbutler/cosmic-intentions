@@ -837,7 +837,7 @@ export function renderPBIntentionList(resetOpen = false) {
         <div class="pb-goal-heading">
           ${goalBadge(_letr, gc.bg, gc.text, 36)}
           <div class="pb-goal-heading-text" style="color:${shade.text};">
-            <span class="pb-goal-label">Goal ${_letr}</span>
+            
             <span class="pb-goal-title">${esc(i.title || 'Add your goal')}</span>
           </div>
         </div>
