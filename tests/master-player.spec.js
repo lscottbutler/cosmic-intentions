@@ -40,7 +40,7 @@ for (const viewport of [
       return {
         ratio: card.width / card.height,
         frameWidth: frame.width,
-        centerOffset: Math.abs(frame.left - (innerWidth - frame.width) / 2),
+        centerOffset: Math.abs(frame.left - (document.documentElement.clientWidth - frame.width) / 2),
         gaps: {
           left: card.left - frame.left,
           right: frame.right - card.right,
