@@ -1890,7 +1890,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           #pbIntentionList{display:grid;grid-template-columns:1fr;gap:20px;margin-bottom:14px;align-items:start;}
         </style>
         <div id="pbIntentionList"></div>
-        <div id="pbAddIntentionRow" style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
+        <div id="pbAddIntentionRow" hidden style="background:#2E2E2E;padding:18px 20px;border-radius:14px;">
           <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:12px;">+ ADD A GOAL</div>
           <input type="text" id="pbNewIntentionInput" placeholder="I AM …" maxlength="150"
             style="width:100%;box-sizing:border-box;padding:12px 14px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;background:#fff;margin-bottom:14px;" />
@@ -1919,7 +1919,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <option value="growth">Growth</option>
           </select>
           <button onclick="pbConfirmAddIntention()"
-            style="width:100%;padding:14px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add Intention</button>
+            style="width:100%;padding:14px;background:#5E5E5E;border:none;border-radius:8px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;cursor:pointer;">+ Add Goal</button>
         </div>
       </div>
 
