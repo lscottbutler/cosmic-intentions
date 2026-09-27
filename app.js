@@ -4692,6 +4692,34 @@ function _pageBoxRoot(active) {
     active.firstElementChild || active;
 }
 
+
+function wireGoalsAddControl(active, topStack) {
+  if (active.id !== 'page-setup') return;
+  let row = active.querySelector('.ci-goals-top-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'ci-goals-top-row';
+    topStack.insertAdjacentElement('beforebegin', row);
+    row.appendChild(topStack);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ci-goals-add-toggle';
+    button.setAttribute('aria-controls', 'pbAddIntentionRow');
+    button.setAttribute('aria-expanded', 'false');
+    button.innerHTML = '<span class="ci-goals-add-plus" aria-hidden="true">+</span><span>ADD A GOAL</span>';
+    row.appendChild(button);
+    button.addEventListener('click', () => {
+      const form = active.querySelector('#pbAddIntentionRow');
+      if (!form) return;
+      form.hidden = !form.hidden;
+      button.setAttribute('aria-expanded', String(!form.hidden));
+      if (!form.hidden) form.querySelector('#pbNewIntentionInput')?.focus();
+    });
+  }
+  const form = active.querySelector('#pbAddIntentionRow');
+  if (form && form.previousElementSibling !== row) row.insertAdjacentElement('afterend', form);
+}
+
 function wireAdminPageBoxes() {
   const active = document.querySelector('.page.active');
   if (!active) return;
@@ -4719,6 +4747,8 @@ function wireAdminPageBoxes() {
       root.prepend(topStack);
     }
   }
+
+  wireGoalsAddControl(active, topStack);
 
   let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
   if (!bottomStack) {
@@ -4803,6 +4833,15 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
+    #page-setup .ci-goals-top-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-bottom:16px}
+    #page-setup .ci-goals-top-row .ci-admin-page-box-stack--top{min-width:0;margin:0}
+    #page-setup .ci-goals-top-row .ci-admin-page-box{height:100%}
+    #page-setup .ci-goals-add-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:114px;padding:12px;border:1px solid #d9dee5;border-radius:12px;background:#fff;color:#171717;font:800 14px/1.2 Inter,sans-serif;letter-spacing:.04em;cursor:pointer}
+    #page-setup .ci-goals-add-toggle:hover,#page-setup .ci-goals-add-toggle:focus-visible{background:#fff8de;outline:2px solid #111;outline-offset:2px}
+    #page-setup .ci-goals-add-plus{display:grid;place-items:center;width:56px;height:56px;border:5px solid #f1c40f;border-radius:50%;font-size:38px;font-weight:400;line-height:1}
+    #page-setup #pbAddIntentionRow[hidden]{display:none!important}
+    #page-setup #pbAddIntentionRow{margin-bottom:16px}
+    @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
     .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
