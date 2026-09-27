@@ -3732,6 +3732,15 @@ html.master-inline-daily-habits #page-habits {
 }
 
 
+/* Goal creation: keep the save action beside the text field at every width. */
+#page-setup .pb-goal-add-entry{display:flex;align-items:stretch;gap:10px;margin-bottom:14px}
+#page-setup .pb-goal-add-save{flex:0 0 auto;min-width:76px;padding:0 14px;border:0;border-radius:7px;background:#111;color:#fff;font:800 14px Inter,sans-serif;cursor:pointer}
+#page-setup .pb-goal-add-save:hover,#page-setup .pb-goal-add-save:focus-visible{background:#333;outline:2px solid #e7bf23;outline-offset:2px}
+html.master-inline-goals #page-setup .pb-goal-add-save{background:#111!important;color:#fff!important}
+html.master-inline-goals #page-setup .pb-goal-add-save:hover,html.master-inline-goals #page-setup .pb-goal-add-save:focus-visible{background:#333!important}
+@media(max-width:480px){#page-setup .pb-goal-add-entry{gap:7px}#page-setup .pb-goal-add-save{min-width:66px;padding:0 10px}}
+
+
 /* CI V2 — Goals inside the LFM is a clean white working surface.
    Remove the legacy dark setup panels without affecting standalone pages. */
 html.master-inline-goals,
