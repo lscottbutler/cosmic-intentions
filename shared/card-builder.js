@@ -844,11 +844,11 @@ export function renderPBIntentionList(resetOpen = false) {
         <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
           <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
           <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
-            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#111' : '#bbb'};transition:background .2s;">
+            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#2E9C45' : '#D53636'};transition:background .2s;">
             <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
           </button>
           <button type="button" onclick="event.stopPropagation();pbDeleteIntention(${idx})" title="Remove goal" aria-label="Remove Goal ${_letr}"
-            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;line-height:1;padding:0;">✕</button>
+            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 20 20" style="display:block;flex:none;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;"><path d="M4 4l12 12M16 4L4 16"/></svg></button>
         </div>
       </summary>
       <div style="background:#2E2E2E;padding:12px 14px;">
