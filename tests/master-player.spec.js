@@ -477,3 +477,30 @@ for (const choice of [
     );
   });
 }
+
+test('Goals mini card uses 75/25 columns and stacked Edit, AI, Delete controls', async ({ page }) => {
+  await page.goto('/players/master-player.html?start=goals', { waitUntil: 'domcontentloaded' });
+  await page.locator('#experienceFrame').evaluate(el => {
+    el.src = '/?masterInline=goals&lfm=fullheight-1&preview=1';
+  });
+  const goal = page.frameLocator('#experienceFrame').locator('#pbIntentionList details').first();
+  await expect(goal).toBeAttached();
+  const summary = goal.locator('summary');
+  await expect(summary.locator('.ci-mini-card-actions')).toBeVisible();
+  await expect(summary.getByRole('button', { name: /Edit Goal/ })).toBeVisible();
+  await expect(summary.getByRole('switch', { name: /AI for Goal/ })).toBeVisible();
+  await expect(summary.getByRole('button', { name: /Delete Goal/ })).toBeVisible();
+  const columns = await summary.evaluate(el => {
+    const main = el.querySelector('.ci-mini-card-main').getBoundingClientRect();
+    const controls = el.querySelector('.ci-mini-card-actions').getBoundingClientRect();
+    return main.width / controls.width;
+  });
+  expect(columns).toBeCloseTo(3, 0);
+  await summary.getByRole('button', { name: /Edit Goal/ }).click();
+  await expect(goal).toHaveAttribute('open', '');
+  await expect(goal.locator('.pb-goal-edit')).toBeVisible();
+  await goal.getByRole('button', { name: 'CANCEL' }).click();
+  await expect(goal.locator('.pb-goal-edit')).toBeHidden();
+  await expect(goal.getByRole('button', { name: 'VISUALIZATION' })).toBeVisible();
+  await expect(goal.getByRole('button', { name: 'ROADMAP' })).toBeVisible();
+});

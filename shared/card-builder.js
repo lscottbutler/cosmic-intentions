@@ -800,27 +800,31 @@ export function renderPBIntentionList(resetOpen = false) {
     const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };   // same colored letter badge as the Citadel cards
     return `
     <details id="pb-goal-${idx}" class="pb-goal-details" data-goal-id="${esc(goalId)}"${openGoals.has(goalId) ? ' open' : ''} style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <summary class="pb-goal-summary" style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div class="pb-goal-heading">
+      <summary class="pb-goal-summary ci-mini-card" style="background:${shade.bg};">
+        <div class="ci-mini-card-main pb-goal-heading">
           ${goalBadge(_letr, gc.bg, gc.text, 36)}
           <div class="pb-goal-heading-text" style="color:${shade.text};">
-            
             <span class="pb-goal-title">${esc(i.title || 'Add your goal')}</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
-          <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
-          <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
-            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#2E9C45' : '#D53636'};transition:background .2s;">
-            <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
-          </button>
-          <button type="button" onclick="event.stopPropagation();pbDeleteIntention(${idx})" title="Remove goal" aria-label="Remove Goal ${_letr}"
-            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 20 20" style="display:block;flex:none;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;"><path d="M4 4l12 12M16 4L4 16"/></svg></button>
+        <div class="ci-mini-card-actions" aria-label="Goal ${_letr} controls">
+          <button type="button" class="ci-mini-card-action" onclick="event.preventDefault();event.stopPropagation();pbEditGoal(${idx})" aria-label="Edit Goal ${_letr}">EDIT</button>
+          <div class="ci-mini-card-ai">
+            <span aria-hidden="true">AI</span>
+            <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.preventDefault();event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
+              style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#2E9C45' : '#D53636'};transition:background .2s;">
+              <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
+            </button>
+          </div>
+          <button type="button" class="ci-mini-card-action ci-mini-card-delete" onclick="event.preventDefault();event.stopPropagation();pbDeleteIntention(${idx})" aria-label="Delete Goal ${_letr}">DELETE</button>
         </div>
       </summary>
-      <div style="background:#2E2E2E;padding:12px 14px;">
-        <textarea maxlength="150" rows="2"
-          onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
+      <div id="pb-goal-edit-${idx}" class="pb-goal-edit" hidden>
+        <textarea maxlength="150" rows="2" aria-label="Edit goal text" style="${goalFld}">${esc(i.title)}</textarea>
+        <div class="pb-goal-edit-actions">
+          <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>
+          <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
+        </div>
       </div>
       <div class="pb-goal-fork" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#2E2E2E;padding:14px;border-top:1px solid #3a3a3a;">
         <button type="button" onclick="pbOpenGoalBranch(${idx},'visualization')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#7C5CC4;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">VISUALIZATION</button>
@@ -828,6 +832,36 @@ export function renderPBIntentionList(resetOpen = false) {
       </div>
     </details>`;
   }).join('');
+}
+
+export function pbEditGoal(idx) {
+  const details = document.getElementById('pb-goal-' + idx);
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  if (!details || !panel) return;
+  details.open = true;
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) panel.querySelector('textarea')?.focus();
+}
+
+export function pbCancelGoalEdit(idx) {
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  if (!panel) return;
+  const editor = panel.querySelector('textarea');
+  if (editor) editor.value = intentions[idx]?.title || '';
+  panel.hidden = true;
+}
+
+export async function pbSaveGoalEdit(idx) {
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  const editor = panel?.querySelector('textarea');
+  if (!editor || !editor.value.trim()) {
+    toast('Enter your goal.', 'error');
+    return;
+  }
+  await pbSaveIntentionTitle(idx, editor.value);
+  const title = document.querySelector('#pb-goal-' + idx + ' .pb-goal-title');
+  if (title) title.textContent = intentions[idx]?.title || '';
+  panel.hidden = true;
 }
 
 export function pbOpenGoalBranch(idx, action) {

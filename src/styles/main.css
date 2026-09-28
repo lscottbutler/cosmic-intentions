@@ -4505,3 +4505,17 @@ html.master-inline-goals #page-setup .page-intro-card {
 .pb-goal-heading-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .pb-goal-label { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
 .pb-goal-title { display: block; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; white-space: pre-wrap; }
+
+/* Reusable 75/25 mini card: content left, three compact controls right. */
+.ci-mini-card{display:grid!important;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:10px;align-items:stretch;padding:12px 14px;box-sizing:border-box}
+.ci-mini-card-main{min-width:0;align-self:center}
+.ci-mini-card-actions{min-width:0;display:grid;grid-template-rows:repeat(3,minmax(30px,auto));gap:4px;align-items:stretch}
+.ci-mini-card-action{width:100%;min-width:0;padding:4px 2px;border:1px solid #454545;border-radius:7px;background:#fff;color:#171717;font:800 11px/1.1 "Roboto Condensed",Arial,sans-serif;letter-spacing:.04em;cursor:pointer}
+.ci-mini-card-action:hover,.ci-mini-card-action:focus-visible{outline:2px solid #111;outline-offset:1px}
+.ci-mini-card-delete{background:#111;color:#fff}
+.ci-mini-card-ai{min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;font:800 15px/1 "Roboto Condensed",Arial,sans-serif;color:#111}
+.pb-goal-edit[hidden]{display:none!important}
+.pb-goal-edit{background:#2e2e2e;padding:12px 14px}
+.pb-goal-edit-actions{display:flex;gap:8px;margin-top:8px}
+.pb-goal-edit-actions button{padding:8px 14px;border:1px solid #fff;border-radius:7px;background:#111;color:#fff;font-weight:800;cursor:pointer}
+@media(max-width:480px){.ci-mini-card{gap:6px;padding:10px}.ci-mini-card-ai{font-size:12px;gap:2px}.ci-mini-card-action{font-size:10px}}
