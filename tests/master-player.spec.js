@@ -525,7 +525,7 @@ test('Entrepreneur skill card shows its authored page and returns to its library
     el.src = '/?masterInline=ent-card&ent=ORGANIZATIONAL%20SKILLS&lfm=fullheight-1&preview=1';
   });
   const card = page.frameLocator('#experienceFrame');
-  await expect(card.locator('#entLibHost img[alt="I AM ORGANIZATIONAL SKILLS"]')).toBeVisible();
+  await expect(card.locator('#entLibHost img[alt="I HAVE STRONG ORGANIZATIONAL SKILLS"]')).toBeVisible();
   await expect(card.locator('#entLibHost')).toContainText('31 / 31');
   await card.getByRole('button', { name: /ENTREPRENEUR LIBRARY/ }).click();
   await expect(page.locator('#experienceFrame')).toHaveAttribute(
