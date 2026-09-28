@@ -789,43 +789,10 @@ export function renderPBIntentionList(resetOpen = false) {
     el.innerHTML = '<div style="font-size:12px;color:#AAAAAA;padding:4px 0;">No intentions yet.</div>';
     return;
   }
-  const catOptions = [
-    { value: '', label: '— Category —' },
-    { value: 'wealth',          label: 'Wealth'               },
-    { value: 'makingmoney',     label: 'Making Money'         },
-    { value: 'moneymanagement', label: 'Money Management'     },
-    { value: 'career',          label: 'Career'               },
-    { value: 'business',        label: 'Business'             },
-    { value: 'health',          label: 'Health'               },
-    { value: 'fitness',         label: 'Fitness'              },
-    { value: 'vitality',        label: 'Energy & Vitality'    },
-    { value: 'mindset',         label: 'Mindset'              },
-    { value: 'confidence',      label: 'Confidence'           },
-    { value: 'peace',           label: 'Peace of Mind'        },
-    { value: 'responsibility',  label: 'Full Responsibility'  },
-    { value: 'discipline',      label: 'Discipline & Habits'  },
-    { value: 'focus',           label: 'Focus & Productivity' },
-    { value: 'growth',          label: 'Growth'               },
-    { value: 'purpose',         label: 'Purpose'              },
-    { value: 'spirituality',    label: 'Spirituality'         },
-    { value: 'learning',        label: 'Learning & Mastery'   },
-    { value: 'creative',        label: 'Create'               },
-    { value: 'relationship',    label: 'Relationship'         },
-    { value: 'family',          label: 'Family'               },
-    { value: 'community',       label: 'Friends & Community'  },
-    { value: 'leadership',      label: 'Leadership'           },
-    { value: 'adventure',       label: 'Adventure & Travel'   },
-    { value: 'legacy',          label: 'Contribution & Legacy'},
-  ];
-  const fld = 'width:100%;box-sizing:border-box;padding:8px 12px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
-  const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
   // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
   const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
   el.innerHTML = intentions.map((i, idx) => {
     const goalId = String(i.id ?? idx);
-    const optHtml = catOptions.map(o =>
-      `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
-    ).join('');
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     const _letr = goalLetter(i, idx);
@@ -855,24 +822,24 @@ export function renderPBIntentionList(resetOpen = false) {
         <textarea maxlength="150" rows="2"
           onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
       </div>
-      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">STARTED</div>
-            <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
-          </div>
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">COMPLETED</div>
-            <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
-          </div>
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">CATEGORY</div>
-            <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
-          </div>
-        </div>
+      <div class="pb-goal-fork" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#2E2E2E;padding:14px;border-top:1px solid #3a3a3a;">
+        <button type="button" onclick="pbOpenGoalBranch(${idx},'visualization')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#7C5CC4;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">VISUALIZATION</button>
+        <button type="button" onclick="pbOpenGoalBranch(${idx},'action-plan')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#D62828;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">ROADMAP</button>
       </div>
     </details>`;
   }).join('');
+}
+
+export function pbOpenGoalBranch(idx, action) {
+  if (!intentions[idx] || !['visualization', 'action-plan'].includes(action)) return;
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'ci-open-goal-branch', action, goalIndex: idx }, location.origin);
+    return;
+  }
+  const url = new URL('/players/master-player.html', location.origin);
+  url.searchParams.set('start', action);
+  url.searchParams.set('goal', String(idx));
+  location.assign(url.toString());
 }
 
 /* Per-goal AI on/off. Persisted to the dedicated `ai_enabled` Supabase column.

@@ -460,3 +460,20 @@ test('standalone Citadel shows saved opening box above its 16:9 stage', async ({
   expect(bounds.note).toBeLessThanOrEqual(bounds.stage);
   expect(bounds.ratio).toBeCloseTo(16 / 9, 2);
 });
+
+for (const choice of [
+  { label: 'VISUALIZATION', action: 'visualization' },
+  { label: 'ROADMAP', action: 'action-plan' },
+]) {
+  test(`Goals fork opens the selected goal in ${choice.label}`, async ({ page }) => {
+    await page.route('**/*masterInline=goals*', route => route.fulfill({
+      contentType: 'text/html',
+      body: `<button id="fork" onclick="parent.postMessage({type:'ci-open-goal-branch',action:'${choice.action}',goalIndex:2},location.origin)">${choice.label}</button>`,
+    }));
+    await page.goto('/players/master-player.html?start=goals', { waitUntil: 'domcontentloaded' });
+    await page.frameLocator('#experienceFrame').locator('#fork').click();
+    await expect(page.locator('#experienceFrame')).toHaveAttribute(
+      'src', new RegExp('masterInline=' + choice.action + '.*goal=2'), { timeout: 12000 }
+    );
+  });
+}

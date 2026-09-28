@@ -594,7 +594,13 @@ function _todayChecklist() {
   // Launch with the first goal's My Actions tab already expanded (default tab is
   // 'my'), so the user immediately sees something actionable — not a wall of
   // identical collapsed bars. Only forced once; user toggles are respected after.
-  if (!_didDefaultOpen && items[0]) { _openGoals.add(items[0].idx); _didDefaultOpen = true; }
+  if (!_didDefaultOpen && items[0]) {
+    const params = new URLSearchParams(location.search);
+    const selected = params.get('masterInline') === 'action-plan' && params.has('goal')
+      ? Number(params.get('goal')) : -1;
+    _openGoals.add(items.some(item => item.idx === selected) ? selected : items[0].idx);
+    _didDefaultOpen = true;
+  }
   let total = 0, done = 0, rows = '', fullRows = '';
   let allTaskCards = '';   // MY TASK LIST: every proven action across all goals, flattened into one list
   items.forEach(({ it, idx }) => {

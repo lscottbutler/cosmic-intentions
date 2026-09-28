@@ -831,6 +831,13 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
         const data=event.data||{};
+        if(data.type==='ci-open-goal-branch'&&
+           ['visualization','action-plan'].includes(data.action)&&
+           Number.isInteger(data.goalIndex)&&data.goalIndex>=0){
+          goalIndex=data.goalIndex;
+          select(data.action);
+          return;
+        }
         if(data.type==='ci-open-goal-workspace'){
           goalIndex=Number.isInteger(data.goalIndex)&&data.goalIndex>=0?data.goalIndex:null;
           select('goal-workspace');return;

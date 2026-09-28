@@ -453,7 +453,9 @@ export function showPage(id) {
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
-  if (id === 'setup') renderPBIntentionList(true);   // My Goals — each visit starts with closed goal rows
+  if (id === 'setup') renderPBIntentionList(true);
+  if (window.self !== window.top && id === 'vizlibrary') renderVizLibrary();
+  if (window.self !== window.top && id === 'myroadmap' && typeof window.renderWrapup === 'function') window.renderWrapup();   // My Goals — each visit starts with closed goal rows
   if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');   // Today's checklist first; editor remains one tap away.
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {
@@ -1647,6 +1649,9 @@ async function syncIntentionsFromSupabase() {
       // Roadmap. This matters when Supabase finishes after the inline Goals
       // destination first renders.
       renderPBIntentionList();
+      const inlineAction = new URLSearchParams(location.search).get('masterInline');
+      if (inlineAction === 'visualization') renderVizLibrary();
+      if (inlineAction === 'action-plan' && typeof window.renderWrapup === 'function') window.renderWrapup();
     }
   } catch(e) {
     console.warn('syncIntentionsFromSupabase failed:', e);
@@ -2588,6 +2593,7 @@ let _vizGoalIdx = 0;
 
 export function openVizLibrary() { renderVizLibrary(); navTo('vizlibrary'); }
 
+let _inlineVizGoalOpened = false;
 export function renderVizLibrary() {
   const sideEl = document.getElementById('vizSideStats');
   if (sideEl) { try { sideEl.innerHTML = vizSideStatsHTML(); } catch (e) { console.error('[vizSideStats]', e); } }
@@ -2620,6 +2626,15 @@ export function renderVizLibrary() {
     </div>
     <div id="vizLibPanel-${idx}" class="viz-lib-panel" style="display:none;"></div>`;
   }).join('');
+  // A choice from Goals opens this goal's visualization tools directly.
+  if (!_inlineVizGoalOpened && new URLSearchParams(location.search).get('masterInline') === 'visualization') {
+    const params = new URLSearchParams(location.search);
+    const selected = params.has('goal') ? Number(params.get('goal')) : -1;
+    if (Number.isInteger(selected) && selected >= 0 && intentions[selected]) {
+      _inlineVizGoalOpened = true;
+      vizLibToggle(selected);
+    }
+  }
 }
 
 /* The goal's visualization launchers, shown INLINE just below its card on the
