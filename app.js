@@ -4849,6 +4849,13 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
+    .ci-admin-page-box.is-editing .ci-admin-page-box-edit-slot{display:none}
+    .ci-admin-page-box-inline{padding:14px;border-top:1px solid #d9dee5;background:#fff}
+    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#fff;color:#171717;font-size:15px;line-height:1.6;outline:0;overflow-wrap:anywhere}
+    .ci-admin-page-box-inline-editor:focus{border-color:#111;box-shadow:0 0 0 2px #e7bf23}
+    .ci-admin-page-box-inline-actions{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13px;color:#b00020}
+    .ci-admin-page-box-inline-actions button{padding:8px 14px;border:1px solid #111;border-radius:7px;background:#111;color:#fff;font-weight:700;cursor:pointer}
+    .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff;color:#111}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
     .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
@@ -5051,6 +5058,64 @@ if (typeof window !== 'undefined') {
 // Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
 // adminGoToBlock). Scroll to it, flash it, focus the editor for a quick edit.
 function adminEditBlock(slug) {
+  // The Goals page runs inside the Master Player iframe. Its showPage guard
+  // deliberately keeps that frame on Goals, so navigating to Admin from here
+  // cannot reveal the editor. Edit the owner box where it is displayed.
+  const content = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
+    .find(el => el.getAttribute('data-block') === slug);
+  const box = content?.closest('.ci-admin-page-box');
+  if (box) {
+    if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
+    if (box.classList.contains('is-editing')) {
+      box.querySelector('.ci-admin-page-box-inline-editor')?.focus();
+      return;
+    }
+    const panel = document.createElement('div');
+    panel.className = 'ci-admin-page-box-inline';
+    panel.innerHTML =
+      '<div class="ci-admin-page-box-inline-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Edit administrator text"></div>' +
+      '<div class="ci-admin-page-box-inline-actions"><button type="button" class="ci-admin-page-box-inline-save">Save</button>' +
+      '<button type="button" class="ci-admin-page-box-inline-cancel">Cancel</button><span role="status"></span></div>';
+    const editor = panel.querySelector('.ci-admin-page-box-inline-editor');
+    const save = panel.querySelector('.ci-admin-page-box-inline-save');
+    const status = panel.querySelector('[role="status"]');
+    editor.innerHTML = _blockCache[slug] || '';
+    box.classList.add('is-editing');
+    box.appendChild(panel);
+    panel.querySelector('.ci-admin-page-box-inline-cancel').addEventListener('click', () => {
+      panel.remove();
+      box.classList.remove('is-editing');
+    });
+    save.addEventListener('click', async () => {
+      const body = editor.innerHTML.trim();
+      save.disabled = true;
+      save.textContent = 'Saving…';
+      status.textContent = '';
+      try {
+        const { error } = await sb.from('content_blocks')
+          .upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+        if (error) throw error;
+        _blockCache[slug] = body;
+        const adminEditor = document.getElementById('admin-editor-' + slug);
+        if (adminEditor) adminEditor.innerHTML = body;
+        document.querySelectorAll('[data-block]').forEach(el => {
+          if (el.getAttribute('data-block') === slug) _fillBlockEl(el, body);
+        });
+        panel.remove();
+        box.classList.remove('is-editing');
+        if (window.top !== window) {
+          window.top.postMessage({ type: 'ci-admin-block-saved', slug, body }, location.origin);
+        }
+        toast('Administrator text saved ✓', 'success');
+      } catch (error) {
+        status.textContent = 'Could not save. Try again.';
+        save.disabled = false;
+        save.textContent = 'Save';
+      }
+    });
+    editor.focus();
+    return;
+  }
   if (typeof window.navTo === 'function') window.navTo('admin');
   setTimeout(() => {
     const ab = document.getElementById('adminBlock-' + slug);
@@ -5064,6 +5129,19 @@ function adminEditBlock(slug) {
 }
 if (typeof window !== 'undefined') {
   window.adminEditBlock = adminEditBlock;
+  window.addEventListener('message', event => {
+    if (event.origin !== location.origin || !window.ciOwnerAccess ||
+        currentUser?.email !== 'lscottbutler@gmail.com') return;
+    const data = event.data || {};
+    if (data.type !== 'ci-admin-block-saved' || typeof data.slug !== 'string' ||
+        !/^intro-note-|^page-note-/.test(data.slug) || typeof data.body !== 'string') return;
+    _blockCache[data.slug] = data.body;
+    const editor = document.getElementById('admin-editor-' + data.slug);
+    if (editor && !editor.dataset.dirty) editor.innerHTML = data.body;
+    document.querySelectorAll('[data-block]').forEach(el => {
+      if (el.getAttribute('data-block') === data.slug) _fillBlockEl(el, data.body);
+    });
+  });
   // Refinement view only: clicking any numbered content box jumps to its Admin
   // editor. Delegated so it works for boxes injected/re-rendered at any time.
   document.addEventListener('click', (e) => {
