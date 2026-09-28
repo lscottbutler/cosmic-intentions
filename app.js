@@ -5570,7 +5570,42 @@ function injectPlaceholderCards() {
   });
 }
 
+// The standalone Master Player renders Citadel outside the main app's dashboard.
+async function initCitadelNoteFrame() {
+  document.body.replaceChildren();
+  document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
+  document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
+  const mount = document.createElement('div');
+  mount.style.cssText = 'padding:0;width:100%;box-sizing:border-box';
+  document.body.appendChild(mount);
+  const report = () => {
+    const height = Math.ceil(mount.getBoundingClientRect().height);
+    window.parent.postMessage({ type: 'ci-citadel-note-height', height }, location.origin);
+  };
+  try {
+    const [block, auth] = await Promise.all([
+      sb.from('content_blocks').select('slug, body').eq('slug', 'intro-note-dashboard').maybeSingle(),
+      sb.auth.getUser(),
+    ]);
+    if (block.error) throw block.error;
+    currentUser = auth.data?.user || null;
+    window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
+    _blockCache['intro-note-dashboard'] = block.data?.body || '';
+    const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', 1);
+    if (box.style.display !== 'none') mount.appendChild(box);
+    if ('ResizeObserver' in window) new ResizeObserver(report).observe(mount);
+    report();
+  } catch (error) {
+    console.error('[citadel-note] Could not load Box 1:', error);
+    report();
+  }
+}
+
 export async function init() {
+  if (new URLSearchParams(location.search).get('masterInline') === 'citadel-note') {
+    await initCitadelNoteFrame();
+    return;
+  }
   // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
   // stop normal boot. No auth, no data stored server-side (the roadmap rides in the link).
   const _shared = new URLSearchParams(location.search).get('r');

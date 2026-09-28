@@ -441,3 +441,22 @@ test('Meditate opens with its compact options menu visible', async ({ page }) =>
   await expect(menu).toBeVisible();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 });
+
+test('standalone Citadel shows saved opening box above its 16:9 stage', async ({ page }) => {
+  await page.route('**/*masterInline=citadel-note*', route => route.fulfill({
+    contentType: 'text/html',
+    body: '<div>Saved Citadel welcome</div><script>parent.postMessage({type:"ci-citadel-note-height",height:80},location.origin)</script>',
+  }));
+  await page.goto('/players/master-player.html?start=citadel', { waitUntil: 'domcontentloaded' });
+  const note = page.locator('#citadelNote');
+  await expect(note).toBeVisible();
+  await expect(note.locator('iframe')).toHaveAttribute('src', '/?masterInline=citadel-note');
+  const bounds = await page.evaluate(() => ({
+    note: document.querySelector('#citadelNote').getBoundingClientRect().bottom,
+    stage: document.querySelector('#stage').getBoundingClientRect().top,
+    ratio: document.querySelector('#homeView').getBoundingClientRect().width /
+      document.querySelector('#homeView').getBoundingClientRect().height,
+  }));
+  expect(bounds.note).toBeLessThanOrEqual(bounds.stage);
+  expect(bounds.ratio).toBeCloseTo(16 / 9, 2);
+});

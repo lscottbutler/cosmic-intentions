@@ -7,6 +7,9 @@
   <title>MASTER PLAYER TEMPLATE | Cosmic Intentions</title>
   <script>if(window.parent!==window)document.documentElement.classList.add('embedded-player')</script>
   <style>
+    .citadel-note[hidden]{display:none}
+    .citadel-note{padding:12px var(--frame-border);background:var(--header)}
+    .citadel-note iframe{display:block;width:100%;height:1px;border:0;overflow:hidden;background:transparent}
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
        Permanent shared shell for all member players.
        Outer shell: #1e90ff. Title/icon troughs: #747474.
@@ -192,6 +195,7 @@
 <body>
   <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
     <header class="cap" id="capTitle" aria-label="Player title"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
+    <div class="citadel-note" id="citadelNote" hidden><iframe id="citadelNoteFrame" title="Citadel opening message" scrolling="no"></iframe></div>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
@@ -468,6 +472,19 @@
           heightFrame=0;
           const height=Math.ceil(shell.getBoundingClientRect().height);
           parent.postMessage({type:'ci-lfm-height',height},location.origin);
+        });
+      }
+      const citadelNote=document.getElementById('citadelNote');
+      const citadelNoteFrame=document.getElementById('citadelNoteFrame');
+      if(window.parent===window){
+        citadelNoteFrame.src='/?masterInline=citadel-note';
+        addEventListener('message',event=>{
+          if(event.origin!==location.origin||event.source!==citadelNoteFrame.contentWindow||
+             event.data?.type!=='ci-citadel-note-height')return;
+          const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+          citadelNoteFrame.style.height=Math.max(1,height)+'px';
+          citadelNote.hidden=!height;
+          reportHeight();
         });
       }
       function show(view){

@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-// Scott requested static 16:9 images and the left-side hamburger position on the shared player.
-// The review hash also covers the restored Admin entry in the standalone site menu; meditation geometry remains locked.
+// Scott requested static 16:9 images, the left-side hamburger, and the saved Citadel
+// opening box above the standalone player. The stage and meditation geometry remain locked.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "4113e77d8e5f3284a3216c97fd1d10a06564d86d",
+  "players/master-player.html": "fd53e2cf5c47332b4cdaf1c6aa646b96fd119497",
   "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
 };
 const root = new URL('../', import.meta.url);
