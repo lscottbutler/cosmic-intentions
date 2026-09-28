@@ -219,6 +219,8 @@ test('upper-trough site menu opens the standalone menu', async ({ page }) => {
   await page.goto(PLAYER, { waitUntil: 'domcontentloaded', timeout: 15000 });
   await page.locator('#siteMenuButton').click();
   await expect(page.locator('#standaloneSiteMenu')).toBeVisible();
+  await page.locator('#standaloneSiteMenu').getByRole('button', { name: 'Admin', exact: true }).click();
+  await expect(page.locator('#experienceFrame')).toHaveAttribute('src', /masterInline=admin/);
 });
 
 test('switching players loads the next card in the shared 16:9 frame', async ({ page }) => {
