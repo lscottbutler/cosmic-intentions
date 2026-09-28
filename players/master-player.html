@@ -82,6 +82,8 @@
     .experience-copy,.launch{display:none}
     .deck{position:relative;isolation:isolate;margin:0;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:0;display:grid;transition:background-color .25s ease;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .deck::before{content:"";position:absolute;z-index:-1;inset:0 var(--frame-border) 35px;background:var(--trough-fill);border-radius:0 0 50% 50%/0 0 var(--trough-curve) var(--trough-curve);pointer-events:none;transition:background-color .25s ease}
+    /* Individual Entrepreneur skill cards use a white lower controls trough. */
+    .deck.ent-card-white-trough::before{background:#fff}
     .shell.home-mode .deck{min-height:329px;margin-bottom:0;padding:24px 22px 117px;column-gap:14px;row-gap:22px;align-content:start;border-radius:0}
     .shell.home-mode .deck::before{border-radius:0 0 50% 50%/0 0 var(--trough-curve) var(--trough-curve)}
     .nav{min-width:0;border:0;background:transparent;color:var(--trough-ink);padding:3px 2px;cursor:pointer;display:grid;grid-template-rows:58px auto;align-items:start;justify-items:center;gap:8px}
@@ -605,7 +607,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-white-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -687,11 +689,12 @@
           return;
         } // Safety: never embed Citadel inside its own LFM shell.
         notifyParentMode(action);
-        if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-white-trough');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
         const item=items.find(i=>i[0]===action); if(!item)return;
         selected=action;
         const usesLfmTemplate=lfmTemplateActions.has(action);
         deck.classList.toggle('workspace-trough-hidden',pagesWithoutLowerTrough.has(action));
+        deck.classList.toggle('ent-card-white-trough',action==='ent-card');
         dockDeck();
         shell.classList.toggle('daily-habits-mode',action==='daily-habits');
         shell.classList.toggle('goals-mode',action==='goals');

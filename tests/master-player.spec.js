@@ -530,6 +530,7 @@ test('Entrepreneur skill card shows its authored page and returns to its library
   });
   const card = page.frameLocator('#experienceFrame');
   await expect(card.locator('#entLibHost img[alt="I HAVE STRONG ORGANIZATIONAL SKILLS"]')).toBeVisible();
+  await expect.poll(() => page.locator('.deck').evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(255, 255, 255)');
   await expect(card.locator('#entLibHost')).toContainText('31 / 31');
   await card.locator('#entLibHost').evaluate(el => el.replaceChildren());
   await card.locator('#page-entcard').evaluate(() => window.openMasterDestination('ent-card'));
@@ -538,4 +539,5 @@ test('Entrepreneur skill card shows its authored page and returns to its library
   await expect(page.locator('#experienceFrame')).toHaveAttribute(
     'src', /masterInline=entrepreneur-library/, { timeout: 12000 }
   );
+  await expect.poll(() => page.locator('.deck').evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(116, 116, 116)');
 });
