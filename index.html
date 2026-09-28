@@ -43,6 +43,8 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       'wins':'page-wins',
       'proof':'page-proof',
       'cosmic-library':'page-cosmiclibrary',
+      'entrepreneur-library':'page-entrepreneurlibrary',
+      'ent-card':'page-entcard',
       'quickie-move':'page-entcard'
     };
     function forceInlineDestination(){
@@ -1049,6 +1051,19 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     @media(max-width:640px){.two-col{grid-template-columns:1fr;}}
   </style>
   <!-- ENTREPRENEUR LIBRARY — fixed identity cards (monitor design) -->
+  <div class="page" id="page-entrepreneurlibrary">
+    <div class="wins-frame">
+      <div class="wins-bezel">
+        <div class="wins-hdr ci-page-lettermark" data-ci-lettermark="ENTREPRENEUR LIBRARY" role="img" aria-label="ENTREPRENEUR LIBRARY"></div>
+        <div class="wins-screen">
+          <h1 style="margin:0 0 12px;font-size:25px;font-weight:900;color:#20241f;">Entrepreneur Library</h1>
+          <p class="wins-intro">The 31 entrepreneurial skills, grouped into four forces. Choose a skill to open its individual card.</p>
+          <div id="entrepreneurLibraryGrid" class="ent-force-groups"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="page" id="page-entcard">
     <div style="max-width:1280px;margin:0 auto;padding:16px 12px 80px;">
       <div id="entLibHost"></div>

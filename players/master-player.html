@@ -321,6 +321,7 @@
       const cardAlt=file=>file.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
       const goalRaw=params.get('goal')??params.get('idx');
       let goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
+      let entCardKey=params.get('ent')||null;
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
       const items=[
         ['goals','Goals','Review and work with your active intentions.'],
@@ -337,10 +338,12 @@
         ['wins','My Wins','Record and review progress worth celebrating.'],
         ['proof','Proof','Collect evidence that your intentions are becoming real.'],
         ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
+        ['entrepreneur-library','Entrepreneur Library','Explore the 31 entrepreneur skills.'],
+        ['ent-card','Entrepreneur Skill Cards','Study one entrepreneurial skill at a time.'],
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes','goal-workspace']);
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','entrepreneur-library','ent-card','task-notes','goal-workspace']);
       const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins','goal-workspace']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
@@ -672,6 +675,7 @@
         url.searchParams.set('masterInline',action);
         url.searchParams.set('lfm','fullheight-1');
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
+        if(action==='ent-card'&&entCardKey)url.searchParams.set('ent',entCardKey);
         return url.pathname+url.search;
       }
       function applySelection(action){
@@ -695,14 +699,14 @@
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
-        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace'].includes(action);
-        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace'].includes(action)?setToolCard(action):Promise.resolve();
+        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action);
+        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action)?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
         shell.style.setProperty('--frame','#1e90ff');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
-        cap.textContent=usesLfmTemplate?'':(action==='daily-habits'?'Habits':item[1]);
+        cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='daily-habits'?'Habits':item[1]);
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(stage.clientWidth*9/16)+'px':'600px';
         const nextUrl=destinationUrl(action);
@@ -755,7 +759,7 @@
           ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
           ['journal','My Journal'],['action-plan','Roadmap'],
           ['visualization','Visualization Library'],['meditation','Meditation'],
-          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace'],['admin','Admin']
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['entrepreneur-library','Entrepreneur Library'],['ent-card','Entrepreneur Skill Cards'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace'],['admin','Admin']
         ];
         siteChoices.forEach(([action,label])=>{
           const button=document.createElement('button');
@@ -818,7 +822,7 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
         const data=event.data||{};
-        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='home')homeMode();else select(data.action);return}
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='ent-card'&&typeof data.entKey==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.entKey))entCardKey=data.entKey;if(data.action==='home')homeMode();else select(data.action);return}
         if(data.type==='ci-lfm-guide-command'){
           if(data.command==='back'){homeMode();return}
           if(data.command==='menu'){select('everything');return}
@@ -836,6 +840,15 @@
            Number.isInteger(data.goalIndex)&&data.goalIndex>=0){
           goalIndex=data.goalIndex;
           select(data.action);
+          return;
+        }
+        if(data.type==='ci-open-ent-card'&&typeof data.key==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.key)){
+          entCardKey=data.key;
+          select('ent-card');
+          return;
+        }
+        if(data.type==='ci-open-entrepreneur-library'){
+          select('entrepreneur-library');
           return;
         }
         if(data.type==='ci-open-goal-workspace'){

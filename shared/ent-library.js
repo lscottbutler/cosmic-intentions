@@ -122,10 +122,32 @@ function _entOverview(c) {
 export function entGoToCard(key) {
   const idx = ENT_CARDS.findIndex(c => c.key === key);
   if (idx < 0) return;
+  // The card page can switch skills in place; a library tile must ask the
+  // Master Player to open the card destination with the selected skill key.
+  if (!document.getElementById('page-entcard')?.classList.contains('active')) {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'ci-open-ent-card', key }, location.origin);
+    } else if (typeof window.navTo === 'function') {
+      window.navTo('entcard');
+      window.setTimeout(() => {
+        document.getElementById('ciMasterPlayerFrame')?.contentWindow?.postMessage(
+          { type: 'ci-lfm-select', action: 'ent-card', entKey: key }, location.origin);
+      }, 250);
+    }
+    return;
+  }
   _entIdx = idx;
   _open.ab = false; _open.rm = false;
   renderEntLibrary();
   window.scrollTo(0, 0);
+}
+
+export function entBackToLibrary() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'ci-open-entrepreneur-library' }, location.origin);
+  } else if (typeof window.navTo === 'function') {
+    window.navTo('entrepreneurlibrary');
+  }
 }
 
 /* THE 50 THINGS PEOPLE WANT MOST — a synthesized list of the most universal human wants,
@@ -169,6 +191,38 @@ const FIFTY_GROUPS = [
    opens its corresponding card in the Entrepreneur Library. Built from ENT_CARDS so it
    stays in sync and reuses entCardImg() (which handles the file-naming quirks).
    Also renders the "50 Things People Want Most" grid (placeholder art reuses ENT images). */
+function renderEntrepreneurGrid(hostId) {
+  // Entrepreneur Library — the 31 cards grouped under their four forces, each
+  // card followed by a one-sentence "why this is crucial" (the card's directive).
+  const host = document.getElementById(hostId);
+  if (host) {
+    host.className = 'ent-force-groups';
+    const byKey = k => ENT_CARDS.find(c => c.key === k);
+    host.innerHTML = _ENT_FORCES.map(([name, desc, skills]) => {
+      const cards = skills.map(([label, key]) => {
+        const c = byKey(key);
+        if (!c) return '';
+        const why = c.directive ? _firstSentence(c.directive) : '';
+        return `<div class="ent-force-card">
+          <button class="cl-card" onclick="entGoToCard('${_esc(key)}')" title="${_esc(c.title || key)}" aria-label="${_esc(c.title || key)}">
+            <img src="${entCardImg(key)}" alt="${_esc(c.title || key)}" loading="lazy" onerror="this.closest('.ent-force-card').style.display='none'">
+          </button>
+          <div class="ent-force-why">${_esc(why)}</div>
+        </div>`;
+      }).join('');
+      return `<details class="ent-force-sec">
+        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
+        <p class="ent-force-sec__desc">${_esc(desc)}</p>
+        <div class="ent-force-sec__grid">${cards}</div>
+      </details>`;
+    }).join('');
+  }
+}
+
+export function renderEntrepreneurLibrary() {
+  renderEntrepreneurGrid('entrepreneurLibraryGrid');
+}
+
 export function renderCosmicLibrary() {
   // "The Successful Entrepreneur" overview (from the Entrepreneur Library card)
   // re-homed here as a collapsible dropdown, above the Entrepreneur grid.
@@ -188,31 +242,7 @@ export function renderCosmicLibrary() {
       </div>
     </details>`;
   }
-  // Entrepreneur Library — the 31 cards grouped under their four forces, each
-  // card followed by a one-sentence "why this is crucial" (the card's directive).
-  const host = document.getElementById('cosmicLibraryGrid');
-  if (host) {
-    host.className = 'ent-force-groups';
-    const byKey = k => ENT_CARDS.find(c => c.key === k);
-    host.innerHTML = _ENT_FORCES.map(([name, desc, skills]) => {
-      const cards = skills.map(([label, key]) => {
-        const c = byKey(key);
-        if (!c) return '';
-        const why = c.directive ? _firstSentence(c.directive) : '';
-        return `<div class="ent-force-card">
-          <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(key)}')" title="${_esc(c.title || key)}" aria-label="${_esc(c.title || key)}">
-            <img src="${entCardImg(key)}" alt="${_esc(c.title || key)}" loading="lazy" onerror="this.closest('.ent-force-card').style.display='none'">
-          </button>
-          <div class="ent-force-why">${_esc(why)}</div>
-        </div>`;
-      }).join('');
-      return `<details class="ent-force-sec">
-        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
-        <p class="ent-force-sec__desc">${_esc(desc)}</p>
-        <div class="ent-force-sec__grid">${cards}</div>
-      </details>`;
-    }).join('');
-  }
+  renderEntrepreneurGrid('cosmicLibraryGrid');
   const fifty = document.getElementById('fiftyThingsGrid');
   if (fifty) {
     fifty.className = 'ent-force-groups';   // stack the group dropdowns full-width (not the 3-col image grid)
@@ -236,13 +266,21 @@ export function renderCosmicLibrary() {
   }
 }
 
+let _initialEntCardApplied = false;
 export function renderEntLibrary() {
+  if (!_initialEntCardApplied) {
+    _initialEntCardApplied = true;
+    const key = new URLSearchParams(location.search).get('ent');
+    const idx = ENT_CARDS.findIndex(card => card.key === key);
+    if (idx >= 0) _entIdx = idx;
+  }
   const host = document.getElementById('entLibHost');
   if (!host) return;
   const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
   const has = entCardHasContent(c);
 
   const monitor = `
+    <button type="button" onclick="entBackToLibrary()" style="display:block;margin:0 0 12px;padding:9px 12px;border:1px solid #20241f;border-radius:7px;background:#fff;color:#20241f;font-weight:800;cursor:pointer;">‹ ENTREPRENEUR LIBRARY</button>
     <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
         <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">${_esc(ENT_CARD_TYPE)}</div>

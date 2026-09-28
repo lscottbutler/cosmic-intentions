@@ -389,6 +389,8 @@ export function showPage(id) {
       wins: 'wins',
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
+      'entrepreneur-library': 'entrepreneurlibrary',
+      'ent-card': 'entcard',
       'quickie-move': 'entcard',
       admin: 'admin',
     };
@@ -464,6 +466,7 @@ export function showPage(id) {
   }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
+  if (id === 'entrepreneurlibrary' && typeof window.renderEntrepreneurLibrary === 'function') window.renderEntrepreneurLibrary();
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
   if (id === 'meditation') renderMeditationStats();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
@@ -605,6 +608,8 @@ export function navTo(id) {
     gratitude: 'gratitude',
     wins: 'wins',
     cosmiclibrary: 'cosmic-library',
+    entrepreneurlibrary: 'entrepreneur-library',
+    entcard: 'ent-card',
   };
   if (window.self === window.top && lfmRoutes[id]) {
     if (!currentUser) {
