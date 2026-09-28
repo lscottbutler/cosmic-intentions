@@ -221,6 +221,7 @@ test('upper-trough site menu opens the standalone menu', async ({ page }) => {
   await expect(page.locator('#standaloneSiteMenu')).toBeVisible();
   await page.locator('#standaloneSiteMenu').getByRole('button', { name: 'Admin', exact: true }).click();
   await expect(page.locator('#experienceFrame')).toHaveAttribute('src', /masterInline=admin/);
+  await expect(page.frameLocator('#experienceFrame').locator('#page-admin')).not.toHaveClass(/active/);
 });
 
 test('switching players loads the next card in the shared 16:9 frame', async ({ page }) => {
