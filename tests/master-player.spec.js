@@ -512,6 +512,10 @@ test('Entrepreneur Library lists all 31 skills and opens the selected card', asy
   });
   const library = page.frameLocator('#experienceFrame');
   await expect(library.locator('#entrepreneurLibraryGrid .ent-force-card')).toHaveCount(31);
+  // Exercise the actual inline destination router after boot, not just preview's seeded render.
+  await library.locator('#entrepreneurLibraryGrid').evaluate(el => el.replaceChildren());
+  await library.locator('#page-entrepreneurlibrary').evaluate(() => window.openMasterDestination('entrepreneur-library'));
+  await expect(library.locator('#entrepreneurLibraryGrid .ent-force-card')).toHaveCount(31);
   await library.locator('#entrepreneurLibraryGrid .ent-force-sec').first().locator('summary').click();
   await library.locator('#entrepreneurLibraryGrid .ent-force-card .cl-card').first().click();
   await expect(page.locator('#experienceFrame')).toHaveAttribute(
@@ -527,6 +531,9 @@ test('Entrepreneur skill card shows its authored page and returns to its library
   const card = page.frameLocator('#experienceFrame');
   await expect(card.locator('#entLibHost img[alt="I HAVE STRONG ORGANIZATIONAL SKILLS"]')).toBeVisible();
   await expect(card.locator('#entLibHost')).toContainText('31 / 31');
+  await card.locator('#entLibHost').evaluate(el => el.replaceChildren());
+  await card.locator('#page-entcard').evaluate(() => window.openMasterDestination('ent-card'));
+  await expect(card.locator('#entLibHost img[alt="I HAVE STRONG ORGANIZATIONAL SKILLS"]')).toBeVisible();
   await card.getByRole('button', { name: /ENTREPRENEUR LIBRARY/ }).click();
   await expect(page.locator('#experienceFrame')).toHaveAttribute(
     'src', /masterInline=entrepreneur-library/, { timeout: 12000 }

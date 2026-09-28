@@ -6151,6 +6151,8 @@ const _masterInlineLabels = {
   wins: 'Wins',
   proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
+  'entrepreneur-library': 'Entrepreneur Library',
+  'ent-card': 'Entrepreneur Skill Card',
   'quickie-move': 'Quickie Move',
   admin: 'Admin',
 };
@@ -6274,6 +6276,12 @@ export function openMasterDestination(action, goalIndex = null) {
       break;
     case 'cosmic-library':
       navTo('cosmiclibrary');
+      break;
+    case 'entrepreneur-library':
+      navTo('entrepreneurlibrary');
+      break;
+    case 'ent-card':
+      navTo('entcard');
       break;
   }
 }
