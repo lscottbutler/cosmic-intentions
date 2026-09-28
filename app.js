@@ -4842,7 +4842,7 @@ function ensureAdminPageBoxStyles() {
     #page-setup #pbAddIntentionRow[hidden]{display:none!important}
     #page-setup #pbAddIntentionRow{margin-bottom:16px}
     @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
-    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #555;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
@@ -4851,7 +4851,7 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
     .ci-admin-page-box.is-editing .ci-admin-page-box-edit-slot{display:none}
     .ci-admin-page-box-inline{padding:14px;border-top:1px solid #d9dee5;background:#fff}
-    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#fff;color:#171717;font-size:15px;line-height:1.6;outline:0;overflow-wrap:anywhere}
+    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#f2f2f2;color:#171717;font-size:15px;line-height:1.6;outline:0;overflow-wrap:anywhere}
     .ci-admin-page-box-inline-editor:focus{border-color:#111;box-shadow:0 0 0 2px #e7bf23}
     .ci-admin-page-box-inline-actions{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13px;color:#b00020}
     .ci-admin-page-box-inline-actions button{padding:8px 14px;border:1px solid #111;border-radius:7px;background:#111;color:#fff;font-weight:700;cursor:pointer}
