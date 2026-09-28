@@ -4845,13 +4845,13 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #555;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
-    .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+    .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
     .ci-admin-page-box.is-editing .ci-admin-page-box-edit-slot{display:none}
     .ci-admin-page-box-inline{padding:14px;border-top:1px solid #d9dee5;background:#fff}
-    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#f2f2f2;color:#171717;font-size:15px;line-height:1.6;outline:0;overflow-wrap:anywhere}
+    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#f2f2f2;color:#171717;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;outline:0;overflow-wrap:anywhere}
     .ci-admin-page-box-inline-editor:focus{border-color:#111;box-shadow:0 0 0 2px #e7bf23}
     .ci-admin-page-box-inline-actions{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13px;color:#b00020}
     .ci-admin-page-box-inline-actions button{padding:8px 14px;border:1px solid #111;border-radius:7px;background:#111;color:#fff;font-weight:700;cursor:pointer}
@@ -4867,7 +4867,7 @@ function ensureAdminPageBoxStyles() {
     .ci-page-box-admin-grid .ib-preview-body *{color:#111!important}
     @media(max-width:700px){
       .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
-      .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14px}
+      .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14pt}
       .ci-admin-page-box-edit-slot{right:10px;bottom:10px}
       .ci-admin-page-box-edit{width:34px;height:34px}
       .ci-page-box-admin-section{padding:12px}
