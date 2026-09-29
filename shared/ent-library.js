@@ -199,7 +199,7 @@ function renderEntrepreneurGrid(hostId) {
   if (host) {
     host.className = 'ent-force-groups';
     const byKey = k => ENT_CARDS.find(c => c.key === k);
-    host.innerHTML = _ENT_FORCES.map(([name, desc, skills]) => {
+    host.innerHTML = _ENT_FORCES.map(([name, desc, skills], index) => {
       const cards = skills.map(([label, key]) => {
         const c = byKey(key);
         if (!c) return '';
@@ -211,7 +211,7 @@ function renderEntrepreneurGrid(hostId) {
           <div class="ent-force-why">${_esc(why)}</div>
         </div>`;
       }).join('');
-      return `<details class="ent-force-sec">
+      return `<details class="ent-force-sec"${hostId === 'entrepreneurLibraryGrid' && index === 0 ? ' open' : ''}>
         <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
         <p class="ent-force-sec__desc">${_esc(desc)}</p>
         <div class="ent-force-sec__grid">${cards}</div>

@@ -36,3 +36,11 @@ Review entry: `https://deploy-preview-43--gilded-profiterole-47a2eb.netlify.app/
 Focused Playwright coverage: chapter seek and playback highlight with a stubbed API; exact timestamp save/reload/replay/remove; next action capture; resource links; keyboard tabs; blocked video fallback; storage failure; desktop/mobile rendered screenshots using actual card art. Full existing test suite and template guard remain required. Mock API tests do not verify live third-party playback.
 
 Next creative review: approve the hierarchy/flow, then curate remaining cards and connect the working Roadmap AI result to the same learning component through an explicit adapter. This prototype does not replace the working Roadmap AI experience. No merge authorized.
+
+### Entrepreneur Library visibility correction — 2026-09-29
+
+Scott's screenshot showed an unpadded white catalog with faint category text and no visible cards. The shared catalog's CSS selectors only targeted `#page-cosmiclibrary`; the dedicated `#page-entrepreneurlibrary` therefore inherited light text and browser-default layout. All force groups also started collapsed.
+
+Share the existing card/force styles with the dedicated ENT Library, add content padding and keyboard focus indicators, and open its first category on entry. The four categories and all 31 original cards remain intact. The Master Player shell, individual lesson/resource content, account settings and production remain unchanged. Recovery before this focused correction: `574fbfd131cdd56eb89a774b7502e6ade5c79a43`.
+
+Verification now targets the delivered library URL on desktop/mobile, visible grid columns and text colors, all 31 loaded/usable artwork tiles, library-to-card-to-library navigation, and shell-menu entry. The two older library routing tests no longer rewrite the iframe URL. Screenshot evidence and CI/deployment results are recorded in the Bible after verification. Use the same private PR #43 preview with `start=entrepreneur-library&preview=1`; no production merge authorized.

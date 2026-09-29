@@ -506,17 +506,14 @@ test('Goals mini card uses 75/25 columns and stacked Edit, AI, Delete controls',
 });
 
 test('Entrepreneur Library lists all 31 skills and opens the selected card', async ({ page }) => {
-  await page.goto('/players/master-player.html?start=entrepreneur-library', { waitUntil: 'domcontentloaded' });
-  await page.locator('#experienceFrame').evaluate(el => {
-    el.src = '/?masterInline=entrepreneur-library&lfm=fullheight-1&preview=1';
-  });
+  await page.goto('/players/master-player.html?start=entrepreneur-library&preview=1', { waitUntil: 'domcontentloaded' });
   const library = page.frameLocator('#experienceFrame');
   await expect(library.locator('#entrepreneurLibraryGrid .ent-force-card')).toHaveCount(31);
   // Exercise the actual inline destination router after boot, not just preview's seeded render.
   await library.locator('#entrepreneurLibraryGrid').evaluate(el => el.replaceChildren());
   await library.locator('#page-entrepreneurlibrary').evaluate(() => window.openMasterDestination('entrepreneur-library'));
   await expect(library.locator('#entrepreneurLibraryGrid .ent-force-card')).toHaveCount(31);
-  await library.locator('#entrepreneurLibraryGrid .ent-force-sec').first().locator('summary').click();
+  await expect(library.locator('#entrepreneurLibraryGrid .ent-force-sec').first()).toHaveAttribute('open', '');
   await library.locator('#entrepreneurLibraryGrid .ent-force-card .cl-card').first().click();
   await expect(page.locator('#experienceFrame')).toHaveAttribute(
     'src', /masterInline=ent-card.*ent=DISCIPLINED/, { timeout: 12000 }
@@ -524,10 +521,7 @@ test('Entrepreneur Library lists all 31 skills and opens the selected card', asy
 });
 
 test('Entrepreneur skill card shows its authored page and returns to its library', async ({ page }) => {
-  await page.goto('/players/master-player.html?start=ent-card&ent=ORGANIZATIONAL%20SKILLS', { waitUntil: 'domcontentloaded' });
-  await page.locator('#experienceFrame').evaluate(el => {
-    el.src = '/?masterInline=ent-card&ent=ORGANIZATIONAL%20SKILLS&lfm=fullheight-1&preview=1';
-  });
+  await page.goto('/players/master-player.html?start=ent-card&ent=ORGANIZATIONAL%20SKILLS&preview=1', { waitUntil: 'domcontentloaded' });
   const card = page.frameLocator('#experienceFrame');
   await expect(card.locator('#entLibHost img[alt="I HAVE STRONG ORGANIZATIONAL SKILLS"]')).toBeVisible();
   await expect(card.locator('#entLibHost')).toContainText('31 / 31');

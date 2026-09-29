@@ -42,6 +42,64 @@ async function mockVideo(page) {
   });
 }
 
+for (const viewport of [
+  { name: 'desktop', width: 1440, height: 1000, columns: 3 },
+  { name: 'mobile', width: 390, height: 844, columns: 2 },
+]) {
+  test(`Entrepreneur Library is readable, shows cards and returns from the player — ${viewport.name}`, async ({ page }, testInfo) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize(viewport);
+    await page.goto('/players/master-player.html?start=entrepreneur-library&preview=1', { waitUntil: 'domcontentloaded' });
+    const frame = page.frameLocator('#experienceFrame');
+    const groups = frame.locator('#entrepreneurLibraryGrid .ent-force-sec');
+    await expect(groups).toHaveCount(4);
+    await expect(groups.first()).toHaveAttribute('open', '');
+    await expect(frame.locator('#entrepreneurLibraryGrid .cl-card')).toHaveCount(31);
+    await expect(groups.first().locator('.cl-card').first()).toBeVisible();
+    await expect(groups.first().locator('.ent-force-sec__bar')).toHaveCSS('color', 'rgb(77, 124, 58)');
+    await expect(groups.first().locator('.ent-force-why').first()).toHaveCSS('color', 'rgb(85, 85, 85)');
+    const columns = await groups.first().locator('.ent-force-sec__grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
+    expect(columns).toBe(viewport.columns);
+
+    // Check the actual expanded catalog: all artwork loads, fits its tile and
+    // has a usable hit target. A count of hidden DOM nodes missed this defect.
+    for (let i = 0; i < 4; i++) {
+      const group = groups.nth(i);
+      if (i) await group.locator('summary').click();
+      const cards = group.locator('.cl-card');
+      for (let j = 0; j < await cards.count(); j++) {
+        const card = cards.nth(j);
+        await card.scrollIntoViewIfNeeded();
+        await expect(card).toBeVisible();
+        await expect.poll(() => card.locator('img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+        const box = await card.boundingBox();
+        expect(box.width).toBeGreaterThan(100);
+        expect(box.height).toBeGreaterThan(44);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+      }
+      if (i) await group.locator('summary').click();
+    }
+    await groups.first().locator('summary').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`entrepreneur-library-${viewport.name}.png`), fullPage: true });
+
+    await groups.first().locator('.cl-card').first().click();
+    await expect(frame.locator('#entExperience h2')).toHaveText('DISCIPLINED');
+    await frame.getByRole('button', { name: /ENTREPRENEUR LIBRARY/ }).click();
+    await expect(groups.first().locator('.cl-card').first()).toBeVisible();
+    await groups.nth(2).locator('summary').click();
+    await frame.getByRole('button', { name: 'I AM SELF-CONFIDENT', exact: true }).click();
+    await expect(frame.locator('#entExperience h2')).toHaveText('SELF-CONFIDENT');
+
+    // The same library must render when reached through the shell's menu.
+    await page.getByRole('button', { name: 'Open site menu', exact: true }).click();
+    await page.getByRole('button', { name: 'Entrepreneur Library', exact: true }).click();
+    await expect(groups.first().locator('.cl-card').first()).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+}
+
 test('all 31 authored cards have complete resource sets with valid timing metadata', () => {
   expect(ENT_CARDS).toHaveLength(31);
   expect(Object.keys(RESOURCE_CATALOG).sort()).toEqual(ENT_CARDS.map(c => c.key).sort());
