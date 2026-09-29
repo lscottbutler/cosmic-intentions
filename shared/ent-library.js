@@ -5,6 +5,7 @@
 
 import { toast, intentions, currentUser } from '../app.js';
 import { mountEntrepreneurPlayer } from './entrepreneur-player.js';
+import { habitEntryContext, habitPlayerURL } from './habit-mindset.js';
 import { ENT_CARDS, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
 let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
@@ -281,8 +282,10 @@ export function renderEntLibrary() {
   _disposeEntExperience?.();
   const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
   const has = entCardHasContent(c);
+  const habitContext = habitEntryContext(currentUser?.id || '');
 
   const monitor = `
+    ${habitContext ? `<a class="habit-return-link" href="${habitPlayerURL()}" target="_parent">‹ Return to Habits</a>` : ''}
     <button type="button" onclick="entBackToLibrary()" style="display:block;margin:0 0 12px;padding:9px 12px;border:1px solid #20241f;border-radius:7px;background:#fff;color:#20241f;font-weight:800;cursor:pointer;">‹ ENTREPRENEUR LIBRARY</button>
     <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
@@ -312,6 +315,8 @@ export function renderEntLibrary() {
   host.innerHTML = monitor + '<div id="entExperience"></div><div id="entPlayer" style="display:none;"></div>';
   _disposeEntExperience = mountEntrepreneurPlayer(host.querySelector('#entExperience'), {
     card: c,
+    initialTab: habitContext ? 'mindset' : 'deeper',
+    habit: habitContext?.habit || null,
     goals: intentions || [],
     getAccount: () => currentUser?.id || '',
     notesHTML: _entNotesSection(c),

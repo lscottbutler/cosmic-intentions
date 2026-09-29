@@ -25,10 +25,10 @@ function loadYouTube() {
   return youtubeAPI;
 }
 
-export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, goals = [], getAccount = () => '' }) {
+export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, goals = [], getAccount = () => '', initialTab = 'deeper', habit = null }) {
   const account = String(getAccount() || 'local-preview');
   const storageKey = `ci_ent_player_v1:${account}:${card.key}`;
-  const view = views.get(storageKey) || { tab: 'deeper', note: '', action: '', goal: '', resourceTab: 'youtube' };
+  const view = views.get(storageKey) || { tab: initialTab, note: '', action: '', goal: '', resourceTab: 'youtube' };
   views.set(storageKey, view);
   const resource = resourceForCard(card.key);
   if (!resource && view.tab === 'deeper') view.tab = 'action';
@@ -52,6 +52,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   root.innerHTML = `
     <div class="ent-intro"><div class="ent-eyebrow">ENTREPRENEUR PLAYER <span class="ent-review-badge">REVIEW EDITION</span></div>
       <h2>${esc(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''))}</h2><p>${esc(card.directive)}</p>
+      ${habit ? `<div class="ent-habit-context"><div class="ent-eyebrow">FOR YOUR HABIT</div><strong>${esc(habit.name)}</strong><p>Choose a belief that helps you begin, then make your next repetition small and specific.</p><button type="button" class="ent-button ent-button-secondary" data-habit-step>Plan my next repetition →</button></div>` : ''}
       <div class="ent-pair"><div><strong>01 · DO THE WORK</strong><p>${esc(card.roadmap[0])}</p></div><div><strong>02 · BUILD THE MINDSET</strong><p>${esc(card.affirmations[0])}</p></div></div>
       <label class="ent-goal-select">Apply this to a goal<select data-goal><option value="">Personal practice · no goal selected</option>${goalItems.map(g => `<option value="${esc(g.id)}">${esc(g.title || g.text)}</option>`).join('')}</select></label>
       <p class="ent-muted" data-goal-context></p>
@@ -143,7 +144,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     catch (_) { status('Could not save on this device. Keep your text here and try again.', target); return false; }
   }
   function renderSaved() {
-    root.querySelector('.ent-saved-list').innerHTML = records.length ? records.map(r => `<li><div class="ent-saved-label">${r.kind === 'moment' ? 'VIDEO MOMENT' : 'NEXT STEP'}${r.goal ? ` · ${esc(r.goal)}` : ''}</div><div class="ent-saved-row">${r.kind === 'moment' && resource && r.videoId === resource.videoId ? `<button data-replay="${esc(r.id)}">▶ ${clock(r.seconds)} · ${esc(r.title)}</button>` : '<strong>My next action</strong>'}<button data-remove="${esc(r.id)}" aria-label="Remove saved ${r.kind}">Remove</button></div><p>${esc(r.text)}</p></li>`).join('') : '<li>No saved moments yet. Keep a useful idea from GO DEEPER or save your next action.</li>';
+    root.querySelector('.ent-saved-list').innerHTML = records.length ? records.map(r => `<li><div class="ent-saved-label">${r.kind === 'moment' ? 'VIDEO MOMENT' : 'NEXT STEP'}${r.goal ? ` · ${esc(r.goal)}` : ''}${r.habit ? ` · Habit: ${esc(r.habit)}` : ''}</div><div class="ent-saved-row">${r.kind === 'moment' && resource && r.videoId === resource.videoId ? `<button data-replay="${esc(r.id)}">▶ ${clock(r.seconds)} · ${esc(r.title)}</button>` : '<strong>My next action</strong>'}<button data-remove="${esc(r.id)}" aria-label="Remove saved ${r.kind}">Remove</button></div><p>${esc(r.text)}</p></li>`).join('') : '<li>No saved moments yet. Keep a useful idea from GO DEEPER or save your next action.</li>';
   }
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   root.addEventListener('input', e => {
@@ -164,6 +165,13 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   root.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.tab) setTab(b.dataset.tab);
+    if (b.hasAttribute('data-habit-step') && habit) {
+      setTab('action');
+      const field = root.querySelector('#ent-action-note');
+      field.placeholder = `For “${habit.name}”: After [my cue], I will [a small, repeatable action].`;
+      field.focus();
+      status('Choose a cue and a manageable first step. Your existing draft is preserved.', 'action');
+    }
     if (b.dataset.format) setFormat(b.dataset.format);
     if (b.hasAttribute('data-start')) play(resource.moments[selected].start);
     if (b.hasAttribute('data-moment')) { const i = Number(b.dataset.moment); paintMoment(i); play(resource.moments[i].start); }
@@ -179,13 +187,13 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     }
     if (b.hasAttribute('data-save-action')) {
       if (!view.action.trim()) { status('Write the step you want to take first.', 'action'); return; }
-      if (write([{ id: id(), kind: 'action', text: view.action.trim(), goal: goalLabel(), goalId: view.goal }, ...records], 'action')) { view.action = ''; root.querySelector('#ent-action-note').value = ''; status('Next step saved in MY NOTES.', 'action'); }
+      if (write([{ id: id(), kind: 'action', text: view.action.trim(), goal: goalLabel(), goalId: view.goal, ...(habit ? { habit: habit.name, habitId: habit.id } : {}) }, ...records], 'action')) { view.action = ''; root.querySelector('#ent-action-note').value = ''; status('Next step saved in MY NOTES.', 'action'); }
     }
     if (b.hasAttribute('data-save-moment')) {
       const raw = ready ? player.getCurrentTime() : pendingTime;
       const seconds = Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : resource.moments[selected].start;
       const at = resource.moments.find(m => containsTime(m, seconds));
-      const entry = { id: id(), kind: 'moment', videoId: resource.videoId, seconds, title: at?.title || resource.title, text: view.note.trim() || at?.takeaway || 'A moment to return to.', goal: goalLabel(), goalId: view.goal };
+      const entry = { id: id(), kind: 'moment', videoId: resource.videoId, seconds, title: at?.title || resource.title, text: view.note.trim() || at?.takeaway || 'A moment to return to.', goal: goalLabel(), goalId: view.goal, ...(habit ? { habit: habit.name, habitId: habit.id } : {}) };
       if (write([entry, ...records], 'moment')) { view.note = ''; root.querySelector('#ent-moment-note').value = ''; status(`Saved at ${clock(seconds)} in MY NOTES.`); }
     }
     if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => containsTime(m, r.seconds)); if (i >= 0) paintMoment(i); play(r.seconds); }

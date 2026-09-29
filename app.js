@@ -8,6 +8,7 @@ import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs, getHabitList } from './shared/habits.js';
+import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
@@ -5526,7 +5527,7 @@ function _previewActive() {
   // The approved Master Player keeps its own URL separate from the content
   // frame. Carry its explicit sample-review choice into Entrepreneur content
   // without changing that locked template or enabling previews on production.
-  if (window.self !== window.top && ['ent-card', 'entrepreneur-library'].includes(params.get('masterInline'))) {
+  if (window.self !== window.top && ['ent-card', 'entrepreneur-library', 'daily-habits'].includes(params.get('masterInline'))) {
     try {
       const parentUrl = new URL(window.parent.location.href);
       return parentUrl.origin === location.origin
@@ -5604,8 +5605,9 @@ function injectPlaceholderCards() {
     // not the outer frame — inject there so the cards sit in the content, not the frame edge.
     const wrap = page.querySelector('.viz-main, .pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
-    if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // the info box, under the title
-    else wrap.insertBefore(_makePhCard(), wrap.firstChild);
+    const card = id === 'habits' ? createHabitMindsetCard(() => currentUser?.id || '') : _makePhCard();
+    if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
+    else wrap.insertBefore(card, wrap.firstChild);
     // (bottom placeholder card removed — one admin-controlled info box per page)
   });
 }

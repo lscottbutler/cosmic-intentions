@@ -1,5 +1,6 @@
 import { RM_CIRCLE } from './card-builder.js';
-import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey } from '../app.js';
+import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey, currentUser } from '../app.js';
+import { habitSupportLink, wireHabitSupportLinks, restoreHabitSupport } from './habit-mindset.js';
 import { setTaskWin, getWins } from './wins.js';
 import { renderRings } from './rings.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
@@ -162,11 +163,11 @@ export function pbMoveHabit(id, dir) {
 }
 
 /* One tickable habit row. */
-function _habitRow(h, on) {
+function _habitRow(h, on, support = false) {
   const dom = _domain(h);
   return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
     <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
-    <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
+    <div style="flex:1;min-width:0;"><span style="font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>${support ? habitSupportLink(h) : ''}</div>
     ${dom ? `<span title="${esc(dom)}" style="flex-shrink:0;font-size:8px;font-weight:800;letter-spacing:.3px;color:var(--muted);border:1px solid var(--widget-border);border-radius:5px;padding:1px 4px;white-space:nowrap;">${esc(dom)}</span>` : ''}
   </div>`;
 }
@@ -243,6 +244,7 @@ export function showHabitView(view = 'daily') {
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
+  restoreHabitSupport(currentUser?.id || '', _closedCats);
 
   const d = _done();
   const groups = _grouped(getHabitList());
@@ -254,18 +256,19 @@ export function renderHabits() {
     if (!items.length) return;
     const doneN = items.filter(h => !!d[h.id]).length;
     const open = !_closedCats.has(cat);
-    html += `<details class="habit-drop" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
+    html += `<details class="habit-drop" data-habit-section="${cat}" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
       <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
         <span>${SECTION_LABEL[cat]}</span>
         <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">${items.map(h => _habitRow(h, !!d[h.id])).join('')}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">${items.map(h => _habitRow(h, !!d[h.id], true)).join('')}</div>
       </div>
     </details>`;
   });
   el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
     `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
+  wireHabitSupportLinks(el, currentUser?.id || '', getHabitList(), _closedCats);
 }
 
 /* ── Pegboard editor (banner-grouped, rename / recategorize / reorder / delete) ── */
