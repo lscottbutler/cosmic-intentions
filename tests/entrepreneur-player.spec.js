@@ -15,6 +15,12 @@ test('Entrepreneur link without sample preview shows sign-in instead of an empty
   await expect(frame.locator('#authModal.open')).toBeVisible();
   await expect(frame.locator('#si-email')).toBeVisible();
   await expect(frame.locator('#btn-signin')).toBeVisible();
+  await frame.locator('#btn-signin').click({ trial: true });
+  await expect.poll(async () => {
+    const outer = await page.locator('#experienceFrame').boundingBox();
+    const button = await frame.locator('#btn-signin').boundingBox();
+    return !!outer && !!button && button.y + button.height <= outer.y + outer.height;
+  }).toBe(true);
   await expect(frame.locator('#entExperience')).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath('entrepreneur-sign-in.png'), fullPage: true });
 });

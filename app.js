@@ -694,7 +694,14 @@ export function closeDrawer() {
 ───────────────────────────────────────────────────────── */
 export function openAuth(tab = 'signin') {
   switchTab(tab);
-  document.getElementById('authModal').classList.add('open');
+  const modal = document.getElementById('authModal');
+  // The Master Player measures its active page to size the content iframe.
+  // Keep this sign-in form inside that measured surface so it cannot be clipped.
+  if (document.documentElement.classList.contains('master-inline-ent-card')) {
+    const page = document.getElementById('page-entcard');
+    if (page && modal.parentElement !== page) page.appendChild(modal);
+  }
+  modal.classList.add('open');
   clearAuthError();
 }
 
