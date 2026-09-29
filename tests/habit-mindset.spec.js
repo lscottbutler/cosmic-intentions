@@ -89,7 +89,20 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await frame.getByRole('link', { name: 'Return to Habits' }).click();
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await expect(frame.locator('[data-habit-section="DAY"]')).not.toHaveAttribute('open');
-    await expect(frame.locator('[data-habit-support="qa-write"]')).toBeFocused({ timeout: 7000 });
+    try {
+      await expect(frame.locator('[data-habit-support="qa-write"]')).toBeFocused({ timeout: 7000 });
+    } catch (error) {
+      // Synthetic fixture state only; preserve a useful failure diagnosis.
+      console.log('Habits focus diagnosis', await frame.locator('[data-habit-support="qa-write"]').evaluate(el => ({
+        ready: document.readyState, focused: document.hasFocus(),
+        active: document.activeElement?.outerHTML.slice(0, 500),
+        pageClass: document.getElementById('page-habits')?.className,
+        frameRects: window.frameElement?.getClientRects().length,
+        targetRects: el.getClientRects().length,
+        contextPresent: !!sessionStorage.getItem('ci_habit_support_v1:preview'),
+      })));
+      throw error;
+    }
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await frame.getByRole('button', { name: 'Edit habits', exact: true }).click();

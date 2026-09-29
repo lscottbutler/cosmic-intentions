@@ -113,7 +113,17 @@ export function restoreHabitSupport(account, closedCats) {
   // The checklist is rendered once while hidden during app hydration. Wait for
   // both the active page and its parent frame to be displayed before focusing.
   const deadline = Date.now() + 15000;
+  let stopped = false;
+  let retry;
+  const cleanup = () => {
+    stopped = true;
+    window.clearTimeout(retry);
+    observer.disconnect();
+    document.removeEventListener('pointerdown', cleanup, true);
+    document.removeEventListener('keydown', cleanup, true);
+  };
   const focusSource = () => {
+    if (stopped) return;
     const selector = context.habit?.id
       ? `[data-habit-support="${CSS.escape(context.habit.id)}"]`
       : `[data-mindset-key="${CSS.escape(context.cardKey)}"]`;
@@ -131,7 +141,18 @@ export function restoreHabitSupport(account, closedCats) {
         return;
       }
     }
-    if (Date.now() < deadline) window.setTimeout(focusSource, 100);
+    if (Date.now() < deadline) retry = window.setTimeout(focusSource, 100);
   };
-  window.setTimeout(focusSource, 100);
+  // Account hydration can replace the checklist after its first visible paint.
+  // Restore focus on that replacement, but stop as soon as the member acts.
+  const observer = new MutationObserver(() => {
+    window.clearTimeout(retry);
+    retry = window.setTimeout(focusSource, 100);
+  });
+  const widget = document.getElementById('habitsWidget');
+  if (widget) observer.observe(widget, { childList: true, subtree: true });
+  document.addEventListener('pointerdown', cleanup, true);
+  document.addEventListener('keydown', cleanup, true);
+  window.setTimeout(cleanup, 15000);
+  retry = window.setTimeout(focusSource, 100);
 }
