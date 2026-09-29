@@ -122,8 +122,11 @@ export function restoreHabitSupport(account, closedCats) {
     const frameVisible = !window.frameElement || window.frameElement.getClientRects().length > 0;
     if (target && pageVisible && frameVisible && target.getClientRects().length) {
       target.closest('details')?.setAttribute('open', '');
+      // A link can be the active element in an inactive iframe. Activate this
+      // browsing context too, and only finish when keyboard focus is real.
+      window.focus();
       target.focus({ preventScroll: true });
-      if (document.activeElement === target) {
+      if (document.hasFocus() && document.activeElement === target) {
         target.scrollIntoView({ block: 'center', behavior: 'instant' });
         return;
       }
