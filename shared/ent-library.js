@@ -5,7 +5,7 @@
 
 import { toast, intentions, currentUser } from '../app.js';
 import { mountEntrepreneurPlayer } from './entrepreneur-player.js';
-import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
+import { ENT_CARDS, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
 let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
 if (_entIdx < 0) _entIdx = 0;
@@ -462,4 +462,3 @@ export function entTakeAction() {
   } catch (e) {}
   if (typeof toast === 'function') toast('✦ Win logged', 'success');
 }
-

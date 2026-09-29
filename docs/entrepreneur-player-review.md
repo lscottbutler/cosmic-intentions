@@ -4,6 +4,8 @@ Status: In Review. Scope authorized by Scott on 2026-09-29: integrate the brains
 
 Base/recovery: `bdfdbc07f86fc858e861bbdb65ed0a5053c70f90` on `review/goal-workspace-note-save`. Review branch: `review/entrepreneur-player-2026-09-29`.
 
+Draft PR #43 targets main only to activate the existing Netlify Deploy Preview integration (which requires an enabled deployment base). Its full PR diff includes the PR #42 dependency; compare feature changes against the recovery commit above. Retargeting the draft does not merge or publish production.
+
 The existing Entrepreneur card destination now mounts a shared learning component inside the canonical Master Player. No frame geometry, protected template, generated Roadmap output, AI model, Supabase data/schema, access control, or production setting changes.
 
 All 31 cards retain their authored practical steps, affirmations, beliefs, stoic principles and winning attitudes. Existing notes and favourites remain accessible. The Self-Confident card is the detailed GO DEEPER example: YouTube chapter navigation, associated takeaways/CI exercises, podcast and article links, local timestamped notes and replay. Other cards explicitly identify resource curation as outstanding. Watching does not complete a roadmap task or log a win.

@@ -92,9 +92,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     const frame = await openCard(page);
     await expect.poll(() => frame.locator('#entLibHost img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
     const root = frame.locator('#entExperience');
-    const fits = await root.evaluate(el => el.scrollWidth <= el.clientWidth + 1);
-    expect(fits).toBe(true);
     await root.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-deeper.png`) });
+    const overflow = await root.evaluate(el => [...el.querySelectorAll('*')].filter(n => n.getClientRects().length && n.getBoundingClientRect().right > el.getBoundingClientRect().right + 1).map(n => ({ tag: n.tagName, class: n.className, width: n.getBoundingClientRect().width })));
+    expect(overflow).toEqual([]);
     await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
     await root.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-action.png`) });
     await frame.getByRole('tab', { name: 'MINDSET', exact: true }).click();
