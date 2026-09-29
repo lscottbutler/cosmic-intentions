@@ -110,15 +110,25 @@ export function restoreHabitSupport(account, closedCats) {
     localStorage.setItem(key, JSON.stringify(current));
   } catch (_) { /* Keep the existing checklist if browser storage is blocked. */ }
   try { sessionStorage.removeItem(contextKey(account)); } catch (_) { /* Optional context. */ }
-  // Wait for the canonical frame to measure its new content before restoring focus.
-  window.setTimeout(() => {
+  // The checklist is rendered once while hidden during app hydration. Wait for
+  // both the active page and its parent frame to be displayed before focusing.
+  const deadline = Date.now() + 15000;
+  const focusSource = () => {
     const selector = context.habit?.id
       ? `[data-habit-support="${CSS.escape(context.habit.id)}"]`
       : `[data-mindset-key="${CSS.escape(context.cardKey)}"]`;
     const target = document.querySelector(selector);
-    if (!target) return;
-    target.closest('details')?.setAttribute('open', '');
-    target.focus({ preventScroll: true });
-    target.scrollIntoView({ block: 'center', behavior: 'instant' });
-  }, 750);
+    const pageVisible = document.getElementById('page-habits')?.classList.contains('active');
+    const frameVisible = !window.frameElement || window.frameElement.getClientRects().length > 0;
+    if (target && pageVisible && frameVisible && target.getClientRects().length) {
+      target.closest('details')?.setAttribute('open', '');
+      target.focus({ preventScroll: true });
+      if (document.activeElement === target) {
+        target.scrollIntoView({ block: 'center', behavior: 'instant' });
+        return;
+      }
+    }
+    if (Date.now() < deadline) window.setTimeout(focusSource, 100);
+  };
+  window.setTimeout(focusSource, 100);
 }
