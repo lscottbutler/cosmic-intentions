@@ -14,9 +14,12 @@
 .ent-pair>div{border-top:2px solid #8b9d7b;padding-top:10px}
 .ent-pair strong{font-size:12px;letter-spacing:.7px}
 .ent-pair p{margin:7px 0 0;font-size:13px}
-.ent-tabs{display:grid;grid-template-columns:repeat(4,1fr);background:#253023;padding:6px;gap:4px}
-.ent-tabs button{border:0;background:transparent;color:#e8ecdf;border-radius:5px;padding:12px 5px;font-size:11px;letter-spacing:.4px;font-weight:800;cursor:pointer}
+/* Match the CARD / TYPE / LIBRARY / DECK row above the learning workspace. */
+.ent-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#6f7570;padding:12px 14px 10px;gap:10px}
+.ent-tabs button{min-width:0;min-height:50px;border:0;background:#20241f;color:#e9ebe6;border-radius:12px 12px 0 0;box-shadow:inset 0 10px #7d827b;padding:18px 4px 8px;font-size:14px;line-height:1.4;letter-spacing:1px;font-weight:800;cursor:pointer}
 .ent-tabs button[aria-selected=true]{background:#c9d8b9;color:#192316}
+@media(hover:hover){.ent-tabs button[aria-selected=false]:hover{background:#353d32}}
+.ent-tabs button:focus-visible{outline-offset:2px}
 .ent-panel{padding:22px}
 .ent-section-top{display:flex;gap:12px;align-items:start;justify-content:space-between;margin-bottom:16px}
 .ent-section-top h3{margin:6px 0}.ent-muted{font-size:12px!important;color:#5b6555}.ent-section-top .ent-muted{max-width:300px;margin:0}
@@ -69,5 +72,5 @@
 .ent-steps{padding:0;margin:18px 0;list-style:none;counter-reset:ent-step;display:grid;gap:10px}.ent-steps li{counter-increment:ent-step;display:flex;align-items:start;gap:12px;border:1px solid #cbd4c2;background:#fff;padding:14px;border-radius:6px;font-size:14px;line-height:1.55}.ent-steps li:before{content:counter(ent-step,decimal-leading-zero);font-size:11px;font-weight:800;color:#617950;margin-top:3px}
 .ent-goal-select{display:grid;gap:8px;font-size:12px;font-weight:800;margin:16px 0}.ent-goal-select select{padding:10px;width:100%;border:1px solid #b5c0aa;border-radius:5px;background:#fff;color:#263421;font-weight:400}
 .ent-saved-list{padding:0;list-style:none;display:grid;gap:10px;margin:15px 0}.ent-saved-list li{border:1px solid #cbd2c3;background:#fff;padding:14px;border-radius:6px;overflow-wrap:anywhere}.ent-saved-list p{white-space:pre-wrap;margin:8px 0}.ent-saved-row{display:flex;justify-content:space-between;align-items:center;gap:10px}.ent-saved-row button{border:0;background:transparent;color:#355f2b;text-align:left;text-decoration:underline;font-size:12px;cursor:pointer;padding:5px}.ent-saved-row button[data-remove]{color:#695f56;font-size:11px}.ent-saved-label{font-size:10px;letter-spacing:.5px;color:#627257}
-@container (max-width:650px){.ent-video-grid{grid-template-columns:minmax(0,1fr)}.ent-moments{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ent-panel{padding:16px}.ent-intro{padding:18px}.ent-section-top{display:block}.ent-section-top .ent-muted{max-width:none}.ent-tabs button{font-size:10px;padding:12px 2px}}
-@container (max-width:380px){.ent-pair{grid-template-columns:1fr}.ent-moments{grid-template-columns:1fr}.ent-resource-card{padding:15px}.ent-resource-card dl{grid-template-columns:1fr;gap:5px}.ent-resource-card dd{margin-bottom:9px}.ent-tabs button{font-size:9px;letter-spacing:0}}
+@container (max-width:650px){.ent-video-grid{grid-template-columns:minmax(0,1fr)}.ent-moments{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ent-panel{padding:16px}.ent-intro{padding:18px}.ent-section-top{display:block}.ent-section-top .ent-muted{max-width:none}.ent-tabs{padding:10px;gap:8px}.ent-tabs button{font-size:12px;letter-spacing:.7px}}
+@container (max-width:380px){.ent-pair{grid-template-columns:1fr}.ent-moments{grid-template-columns:1fr}.ent-resource-card{padding:15px}.ent-resource-card dl{grid-template-columns:1fr;gap:5px}.ent-resource-card dd{margin-bottom:9px}.ent-tabs{padding:8px 6px;gap:6px}.ent-tabs button{font-size:10px;letter-spacing:.4px}}
