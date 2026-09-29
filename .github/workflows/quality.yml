@@ -29,7 +29,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Run Master Player and smoke tests
-        run: npm test -- --grep-invert "Habits mindset links and personal follow-through round trip|Habits links still navigate with session storage unavailable|Entrepreneur notes"
+        run: npm test -- --grep-invert "Habits mindset links and personal follow-through round trip|Habits links still navigate with session storage unavailable|Entrepreneur notes|Entrepreneur trough"
       - name: Preserve private review screenshots and test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,3 +63,28 @@ jobs:
           path: test-results/
           retention-days: 7
 
+
+  trough-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify Entrepreneur trough on desktop and mobile
+        run: npm test -- tests/entrepreneur-trough.spec.js --workers=2
+      - name: Preserve private trough review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trough-review-evidence
+          path: test-results/
+          retention-days: 7
