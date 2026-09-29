@@ -782,6 +782,9 @@ details.rm-drop[open]::details-content { height: auto; }
 :is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__chev { color:#4d7c3a; font-size:15px; transition:transform .2s; flex-shrink:0; }
 :is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec[open] .ent-force-sec__chev { transform:rotate(180deg); }
 :is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:12px 2px 14px; max-width:640px; }
+/* Also remove closed contents from layout: the frame measures descendants,
+   and browser-default details hiding can leave their old boxes measurable. */
+#page-entrepreneurlibrary .ent-force-sec:not([open]) > :not(summary) { display:none !important; }
 /* display:grid only when the section is open, otherwise this ID-specific rule
    would override the browser's UA "hide closed <details> children" rule. */
 :is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec[open] .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px 14px; }

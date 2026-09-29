@@ -47,6 +47,8 @@ for (const viewport of [
   { name: 'mobile', width: 390, height: 844, columns: 2 },
 ]) {
   test(`Entrepreneur Library is readable, shows cards and returns from the player — ${viewport.name}`, async ({ page }, testInfo) => {
+    // This checks 31 lazy images and five real iframe navigations.
+    test.setTimeout(90000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize(viewport);
@@ -82,6 +84,11 @@ for (const viewport of [
       if (i) await group.locator('summary').click();
     }
     await groups.first().locator('summary').scrollIntoViewIfNeeded();
+    await expect.poll(async () => {
+      const outer = await page.locator('#experienceFrame').boundingBox();
+      const content = await frame.locator('#page-entrepreneurlibrary').boundingBox();
+      return outer && content ? outer.height - content.height : 9999;
+    }).toBeLessThan(40);
     await page.screenshot({ path: testInfo.outputPath(`entrepreneur-library-${viewport.name}.png`), fullPage: true });
 
     await groups.first().locator('.cl-card').first().click();
@@ -131,7 +138,9 @@ for (const card of ENT_CARDS) {
     await page.goto(`/players/master-player.html?start=ent-card&ent=${encodeURIComponent(card.key)}&preview=1`, { waitUntil: 'domcontentloaded' });
     const frame = page.frameLocator('#experienceFrame');
     const root = frame.locator('#entExperience');
-    await expect(root).toBeVisible();
+    // CI traces show the lazy card module arriving just after the default 5s
+    // assertion budget on a busy runner. Wait for that entry before controls.
+    await expect(root).toBeVisible({ timeout: 15000 });
     await expect(root.locator('h2')).toHaveText(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''));
     await expect(frame.locator('.ent-video-cover')).toContainText(r.creator);
     await expect(frame.locator('[data-moment]')).toHaveCount(r.moments.length);
