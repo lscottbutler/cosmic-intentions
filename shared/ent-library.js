@@ -3,7 +3,8 @@
    design (see standalone/ent-monitor-proto.html). Content is frozen + identical
    for every member (see shared/ent-library-content.js). */
 
-import { toast } from '../app.js';
+import { toast, intentions, currentUser } from '../app.js';
+import { mountEntrepreneurPlayer } from './entrepreneur-player.js';
 import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
 let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
@@ -267,6 +268,7 @@ export function renderCosmicLibrary() {
 }
 
 let _initialEntCardApplied = false;
+let _disposeEntExperience;
 export function renderEntLibrary() {
   if (!_initialEntCardApplied) {
     _initialEntCardApplied = true;
@@ -276,6 +278,7 @@ export function renderEntLibrary() {
   }
   const host = document.getElementById('entLibHost');
   if (!host) return;
+  _disposeEntExperience?.();
   const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
   const has = entCardHasContent(c);
 
@@ -283,7 +286,7 @@ export function renderEntLibrary() {
     <button type="button" onclick="entBackToLibrary()" style="display:block;margin:0 0 12px;padding:9px 12px;border:1px solid #20241f;border-radius:7px;background:#fff;color:#20241f;font-weight:800;cursor:pointer;">‹ ENTREPRENEUR LIBRARY</button>
     <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
-        <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">${_esc(ENT_CARD_TYPE)}</div>
+        <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">ENTREPRENEUR PLAYER</div>
         <div style="background:#fff;position:relative;min-height:120px;display:flex;align-items:center;justify-content:center;line-height:0;">
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:26px 22px;font-weight:900;letter-spacing:1px;font-size:28px;line-height:1.15;color:#1c1c1c;text-align:center;text-transform:uppercase;">${_affLines(c.title)}</div>
           <img src="${entCardImg(c.key)}" alt="${_esc(c.title)}" style="position:relative;width:100%;display:block;" onerror="this.style.display='none'">
@@ -306,18 +309,18 @@ export function renderEntLibrary() {
     return;
   }
 
-  const btn = (t, s, on, extra = '') => `<button ${on ? `onclick="${on}"` : ''} style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;cursor:pointer;${extra}"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t}</span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
-  const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
-
-  host.innerHTML = monitor +
-    `<div style="background:#8FA977;padding:0 18px 4px;">${_entOverview(c)}</div>
-     ${_entNotesSection(c)}
-     ${_greenSection('ROADMAP', c.roadmap, 'num')}
-     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
-     ${_greenSection('BELIEFS', c.beliefs, 'belief', c.key)}
-     ${ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') : ''}
-     ${ENT_MINDSET[c.key] ? _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''}
-     <div id="entPlayer" style="display:none;"></div>`;
+  host.innerHTML = monitor + '<div id="entExperience"></div><div id="entPlayer" style="display:none;"></div>';
+  _disposeEntExperience = mountEntrepreneurPlayer(host.querySelector('#entExperience'), {
+    card: c,
+    goals: intentions || [],
+    getAccount: () => currentUser?.id || '',
+    notesHTML: _entNotesSection(c),
+    mindsetHTML:
+      _greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key) +
+      _greenSection('BELIEFS', c.beliefs, 'belief', c.key) +
+      (ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') +
+       _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''),
+  });
 }
 
 export function entNav(dir) {
@@ -459,3 +462,4 @@ export function entTakeAction() {
   } catch (e) {}
   if (typeof toast === 'function') toast('✦ Win logged', 'success');
 }
+
