@@ -11,9 +11,6 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     const frame = page.frameLocator('#experienceFrame');
     await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
     await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
-    // Visual preflight only: render Scott's requested variant before changing the locked baseline.
-    await page.addStyleTag({ content: '.deck.ent-card-trough::before{background:#fff}.deck.ent-card-trough #lfmToolControls{visibility:hidden}' });
-    await page.locator('.deck').evaluate(el => el.classList.add('ent-card-trough'));
     const deck = page.locator('.deck');
     await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(255, 255, 255)');
     await expect(page.locator('#lfmToolControls')).toBeHidden();
@@ -25,7 +22,22 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect.poll(() => page.locator('#capTitle').evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(116, 116, 116)');
     await deck.screenshot({ path: testInfo.outputPath(`ent-white-trough-${viewport.name}.png`) });
     await page.screenshot({ path: testInfo.outputPath(`ent-white-player-${viewport.name}.png`), fullPage: true });
-    // The live routing checks are added after this preflight is visually approved.
+    // The style must clear when leaving this card and reapply on return.
+    await page.getByRole('button', { name: 'Open site menu', exact: true }).click();
+    await page.getByRole('button', { name: 'Cosmic Library', exact: true }).click();
+    await expect(page.locator('#experienceFrame')).toHaveAttribute('src', /masterInline=cosmic-library/, { timeout: 15000 });
+    await expect(page.locator('#lfmToolControls')).toBeVisible();
+    await expect(deck.getByRole('button')).toHaveCount(3);
+    await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(116, 116, 116)');
+    await page.getByRole('button', { name: 'Open site menu', exact: true }).click();
+    await page.getByRole('button', { name: 'Entrepreneur Skill Cards', exact: true }).click();
+    await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#lfmToolControls')).toBeHidden();
+    await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(255, 255, 255)');
+    await page.getByRole('button', { name: 'Open site menu', exact: true }).click();
+    await page.getByRole('button', { name: 'Meditation', exact: true }).click();
+    await expect(deck).toHaveClass(/meditation-mode/, { timeout: 15000 });
+    await expect.poll(() => deck.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(116, 116, 116)');
     expect(errors).toEqual([]);
   });
 }

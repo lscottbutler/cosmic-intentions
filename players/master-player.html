@@ -100,6 +100,9 @@
     .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
     .deck.workspace-trough-hidden{display:none}
+    /* Scott, 2026-09-29: white Entrepreneur card trough without the three-button cluster. */
+    .deck.ent-card-trough::before{background:#fff}
+    .deck.ent-card-trough #lfmToolControls{visibility:hidden}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
     .deck.lfm-tool-mode{padding:18px 10px 90px;border-radius:0}
     .deck.lfm-tool-mode .normal-control{display:none}
@@ -605,7 +608,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -679,6 +682,7 @@
         return url.pathname+url.search;
       }
       function applySelection(action){
+        deck.classList.toggle('ent-card-trough',action==='ent-card');
         if(action==='citadel'){
           applyHomeMode();
           cap.textContent="";
