@@ -14,7 +14,7 @@
 .ent-pair>div{border-top:2px solid #8b9d7b;padding-top:10px}
 .ent-pair strong{font-size:12px;letter-spacing:.7px}
 .ent-pair p{margin:7px 0 0;font-size:13px}
-/* Match the CARD / TYPE / LIBRARY / DECK row above the learning workspace. */
+/* Keep the approved CARD / TYPE / LIBRARY / DECK styling on the learning tabs. */
 .ent-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#6f7570;padding:12px 14px 10px;gap:10px}
 .ent-tabs button{min-width:0;min-height:50px;border:0;background:#20241f;color:#e9ebe6;border-radius:12px 12px 0 0;box-shadow:inset 0 10px #7d827b;padding:18px 4px 8px;font-size:14px;line-height:1.4;letter-spacing:1px;font-weight:800;cursor:pointer}
 .ent-tabs button[aria-selected=true]{background:#c9d8b9;color:#192316}

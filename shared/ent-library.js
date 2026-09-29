@@ -13,7 +13,6 @@ if (_entIdx < 0) _entIdx = 0;
 const _open = { ab: false, rm: false };   // which content panels are expanded
 
 const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const _pad2 = n => String(n).padStart(2, '0');
 /* First sentence of a directive — the one-line "why this is crucial". Em dashes
    and semicolons don't end a sentence; only . ! ? followed by a space or the end. */
 function _firstSentence(s) {
@@ -293,10 +292,6 @@ export function renderEntLibrary() {
         <div style="background:#fff;position:relative;min-height:120px;display:flex;align-items:center;justify-content:center;line-height:0;">
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:26px 22px;font-weight:900;letter-spacing:1px;font-size:28px;line-height:1.15;color:#1c1c1c;text-align:center;text-transform:uppercase;">${_affLines(c.title)}</div>
           <img src="${entCardImg(c.key)}" alt="${_esc(c.title)}" style="position:relative;width:100%;display:block;" onerror="this.style.display='none'">
-        </div>
-        <div style="display:flex;gap:10px;margin-top:12px;">
-          ${[['CARD', _pad2(c.n)], ['TYPE', 'ATTITUDE'], ['LIBRARY', 'ENTREP'], ['DECK', c.n + ' · ' + ENT_CARDS.length]]
-            .map(([k, v]) => `<div style="flex:1;text-align:center;"><div style="background:#7d827b;border-radius:12px 12px 0 0;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:11px;padding:8px 4px;">${k}</div><div style="background:#20241f;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:14px;padding:8px 4px;">${_esc(v)}</div></div>`).join('')}
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:12px;">
