@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { ENT_CARDS } from '../shared/ent-library-content.js';
+import { RESOURCE_CATALOG, resourceForCard } from '../shared/entrepreneur-player-resources.js';
 
 async function openCard(page) {
   // Exercise the delivered URL and the Master Player's real frame navigation.
@@ -29,7 +31,7 @@ async function mockVideo(page) {
   await page.addInitScript(() => {
     window.__entVideo = { time: 0, seeks: [], playing: false, destroyed: false };
     window.YT = { Player: class {
-      constructor(el, options) { this.options = options; el.innerHTML = '<div style="color:white;padding:32px">Video API test fixture</div>'; setTimeout(() => options.events.onReady({ target: this }), 0); }
+      constructor(el, options) { this.options = options; window.__entVideo.videoId = options.videoId; el.innerHTML = '<div style="color:white;padding:32px">Video API test fixture</div>'; setTimeout(() => options.events.onReady({ target: this }), 0); }
       seekTo(time) { window.__entVideo.time = time; window.__entVideo.seeks.push(time); }
       playVideo() { window.__entVideo.playing = true; }
       pauseVideo() { window.__entVideo.playing = false; }
@@ -39,6 +41,99 @@ async function mockVideo(page) {
     } };
   });
 }
+
+test('all 31 authored cards have complete resource sets with valid timing metadata', () => {
+  expect(ENT_CARDS).toHaveLength(31);
+  expect(Object.keys(RESOURCE_CATALOG).sort()).toEqual(ENT_CARDS.map(c => c.key).sort());
+  expect(resourceForCard('toString')).toBeNull();
+  for (const card of ENT_CARDS) {
+    const r = resourceForCard(card.key);
+    expect(r.videoId).toMatch(/^[A-Za-z0-9_-]{11}$/);
+    expect(r.moments.length).toBeGreaterThan(0);
+    for (const field of ['title', 'creator', 'why', 'time', 'sourceLabel']) expect(r[field].trim().length).toBeGreaterThan(3);
+    for (const item of [r.podcast, r.article]) {
+      for (const field of ['title', 'creator', 'why', 'time', 'takeaway', 'action']) expect(item[field].trim().length).toBeGreaterThan(3);
+      expect(new URL(item.url).protocol).toBe('https:');
+    }
+    expect(new URL(r.source).protocol).toBe('https:');
+    r.moments.forEach((m, i) => {
+      expect(Number.isInteger(m.start) && m.start >= 0).toBe(true);
+      if (m.end === null) expect(r.chapterMode).toBe('full-lesson');
+      else expect(Number.isInteger(m.end) && m.end > m.start).toBe(true);
+      if (i) expect(m.start).toBeGreaterThanOrEqual(r.moments[i - 1].end);
+      for (const field of ['title', 'takeaway', 'practice']) expect(m[field].trim().length).toBeGreaterThan(3);
+    });
+  }
+});
+
+for (const card of ENT_CARDS) {
+  test(`ENT resource route, lesson and formats — ${card.key}`, async ({ page }, testInfo) => {
+    await mockVideo(page);
+    const r = resourceForCard(card.key);
+    await page.goto(`/players/master-player.html?start=ent-card&ent=${encodeURIComponent(card.key)}&preview=1`, { waitUntil: 'domcontentloaded' });
+    const frame = page.frameLocator('#experienceFrame');
+    const root = frame.locator('#entExperience');
+    await expect(root).toBeVisible();
+    await expect(root.locator('h2')).toHaveText(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''));
+    await expect(frame.locator('.ent-video-cover')).toContainText(r.creator);
+    await expect(frame.locator('[data-moment]')).toHaveCount(r.moments.length);
+    await expect.poll(() => frame.locator('#entLibHost img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+    if (['PROFITABLE', 'SKILLFUL COMMUNICATOR', 'BALANCE IN LIFE'].includes(card.key)) {
+      await root.screenshot({ path: testInfo.outputPath(`ent-${r.id}-deeper.png`) });
+    }
+    for (const [index, moment] of r.moments.entries()) {
+      await frame.locator(`[data-moment="${index}"]`).click();
+      await expect.poll(() => root.evaluate(() => window.__entVideo.seeks.at(-1))).toBe(moment.start);
+      await expect(frame.locator('[data-takeaway]')).toHaveText(moment.takeaway);
+      await expect(frame.locator('[data-practice]')).toHaveText(moment.practice);
+      await expect(frame.locator('[data-watch]')).toHaveAttribute('href', `https://www.youtube.com/watch?v=${r.videoId}&t=${moment.start}s`);
+    }
+    await expect.poll(() => root.evaluate(() => window.__entVideo.videoId)).toBe(r.videoId);
+    for (const format of ['podcast', 'article']) {
+      await frame.locator(`[data-format="${format}"]`).click();
+      const panel = frame.locator(`[data-resource="${format}"]`);
+      await expect(panel).toContainText(r[format].creator);
+      await expect(panel.locator('a')).toHaveAttribute('href', r[format].url);
+      await expect.poll(() => root.evaluate(() => window.__entVideo.playing)).toBe(false);
+    }
+  });
+}
+
+test('a learning practice becomes an editable, goal-linked next step without overwriting a draft', async ({ page }) => {
+  const frame = await openCard(page);
+  await frame.locator('[data-goal]').selectOption('pv1');
+  await expect(frame.locator('[data-goal-context]')).toContainText('For your goal: I AM LAUNCHING');
+  await frame.locator('[data-use-practice="moment"]').click();
+  await expect(frame.locator('#ent-action-note')).toHaveValue('Choose one small attempt you can make today.');
+  await frame.locator('#ent-action-note').fill('My existing launch draft.');
+  await frame.getByRole('tab', { name: 'GO DEEPER' }).click();
+  await frame.locator('[data-format="article"]').click();
+  await frame.locator('[data-use-practice="article"]').click();
+  await expect(frame.locator('#ent-action-note')).toHaveValue(/My existing launch draft\.\n\nWrite the first visible action/);
+  await frame.getByRole('button', { name: 'Save my next step' }).click();
+  await frame.getByRole('tab', { name: 'MY NOTES' }).click();
+  await expect(frame.locator('.ent-saved-list')).toContainText('I AM LAUNCHING COSMIC INTENTIONS');
+  await expect(frame.locator('.ent-saved-list')).toContainText('My existing launch draft.');
+  const records = await frame.locator('#entExperience').evaluate(() => JSON.parse(localStorage.getItem('ci_ent_player_v1:preview:SELF CONFIDENT')));
+  expect(records[0].goalId).toBe('pv1');
+  await frame.locator('button', { hasText: 'NEXT' }).first().click();
+  await frame.getByRole('tab', { name: 'MY NOTES' }).click();
+  await expect(frame.locator('.ent-saved-list')).not.toContainText('My existing launch draft.');
+});
+
+test('a full lesson saves and replays its exact time without fabricated chapter boundaries', async ({ page }) => {
+  await mockVideo(page);
+  await page.goto('/players/master-player.html?start=ent-card&ent=PROFITABLE&preview=1');
+  const frame = page.frameLocator('#experienceFrame');
+  await frame.locator('[data-moment="0"]').click();
+  await expect(frame.locator('.ent-moments')).toContainText('Full lesson');
+  await frame.locator('#entExperience').evaluate(() => { window.__entVideo.time = 245; });
+  await frame.locator('[data-save-moment]').click();
+  await frame.getByRole('tab', { name: 'MY NOTES' }).click();
+  await expect(frame.locator('.ent-saved-list')).toContainText('4:05');
+  await frame.locator('[data-replay]').click();
+  await expect.poll(() => frame.locator('#entExperience').evaluate(() => window.__entVideo.seeks.at(-1))).toBe(245);
+});
 
 test('Entrepreneur chapters seek, follow playback, save exact moments, persist and replay', async ({ page }) => {
   await mockVideo(page);

@@ -45,6 +45,8 @@
 .ent-resource-switch{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}
 .ent-resource-switch button{border:1px solid #a5b298;background:transparent;color:#46573b;padding:8px 15px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer}
 .ent-resource-switch button[aria-pressed=true]{background:#2c3927;color:#fff;border-color:#2c3927}
+.ent-resource-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ent-goal-select select{min-width:0;text-overflow:ellipsis}.ent-intro [data-goal-context]{overflow-wrap:anywhere;margin-bottom:0}
 .ent-resource-card{background:#fff;border:1px solid #cbd2c3;padding:22px;border-radius:8px}.ent-resource-card h3{font-size:24px;max-width:560px}.ent-resource-card dl{display:grid;grid-template-columns:105px 1fr;gap:12px;margin:22px 0;font-size:13px;line-height:1.6}.ent-resource-card dt{font-weight:800}.ent-resource-card dd{margin:0}
 .ent-steps{padding:0;margin:18px 0;list-style:none;counter-reset:ent-step;display:grid;gap:10px}.ent-steps li{counter-increment:ent-step;display:flex;align-items:start;gap:12px;border:1px solid #cbd4c2;background:#fff;padding:14px;border-radius:6px;font-size:14px;line-height:1.55}.ent-steps li:before{content:counter(ent-step,decimal-leading-zero);font-size:11px;font-weight:800;color:#617950;margin-top:3px}
 .ent-goal-select{display:grid;gap:8px;font-size:12px;font-weight:800;margin:16px 0}.ent-goal-select select{padding:10px;width:100%;border:1px solid #b5c0aa;border-radius:5px;background:#fff;color:#263421;font-weight:400}

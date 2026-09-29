@@ -3,6 +3,7 @@ import { resourceForCard } from './entrepreneur-player-resources.js';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clock = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+const containsTime = (moment, seconds) => seconds >= moment.start && (moment.end === null || seconds < moment.end);
 const views = new Map();
 let youtubeAPI;
 function loadYouTube() {
@@ -45,19 +46,20 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   const goalLabel = () => goalItems.find(g => String(g.id) === view.goal)?.title || goalItems.find(g => String(g.id) === view.goal)?.text || '';
   const status = (message, target = 'moment') => { root.querySelector(`[data-status="${target}"]`).textContent = message; };
   const urlAt = seconds => `https://www.youtube.com/watch?v=${resource.videoId}&t=${Math.floor(seconds)}s`;
-  const timeRange = m => `${clock(m.start)}–${clock(m.end)}`;
-  const editorial = r => `<article class="ent-resource-card"><div class="ent-eyebrow">${r === resource?.article ? 'ARTICLE · JAMES CLEAR' : 'PODCAST · MEL ROBBINS'}</div><h3>${esc(r.title)}</h3><p class="ent-muted">${esc(r.time)}</p><dl><dt>Why this helps</dt><dd>${esc(r.why)}</dd><dt>Takeaway</dt><dd>${esc(r.takeaway)}</dd><dt>Put it to work</dt><dd>${esc(r.action)}</dd></dl><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">Open this ${r === resource?.article ? 'article' : 'episode'} ↗</a></article>`;
+  const timeRange = m => m.end === null ? 'Full lesson · from the beginning' : `${clock(m.start)}–${clock(m.end)}`;
+  const editorial = r => `<article class="ent-resource-card"><div class="ent-eyebrow">${r === resource?.article ? 'ARTICLE' : 'PODCAST'} · ${esc(r.creator)}</div><h3>${esc(r.title)}</h3><p class="ent-muted">${esc(r.time)}</p><dl><dt>Why this helps</dt><dd>${esc(r.why)}</dd><dt>Takeaway</dt><dd>${esc(r.takeaway)}</dd><dt>Put it to work</dt><dd>${esc(r.action)}</dd></dl><div class="ent-resource-actions"><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">Open this ${r === resource?.article ? 'article' : 'episode'} ↗</a><button class="ent-button ent-button-secondary" data-use-practice="${r === resource?.article ? 'article' : 'podcast'}">Use this for my next step</button></div></article>`;
   root.className = 'ent-experience';
   root.innerHTML = `
     <div class="ent-intro"><div class="ent-eyebrow">ENTREPRENEUR PLAYER <span class="ent-review-badge">REVIEW EDITION</span></div>
       <h2>${esc(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''))}</h2><p>${esc(card.directive)}</p>
       <div class="ent-pair"><div><strong>01 · DO THE WORK</strong><p>${esc(card.roadmap[0])}</p></div><div><strong>02 · BUILD THE MINDSET</strong><p>${esc(card.affirmations[0])}</p></div></div>
+      <label class="ent-goal-select">Apply this to a goal<select data-goal><option value="">Personal practice · no goal selected</option>${goalItems.map(g => `<option value="${esc(g.id)}">${esc(g.title || g.text)}</option>`).join('')}</select></label>
+      <p class="ent-muted" data-goal-context></p>
     </div>
     <div class="ent-tabs" role="tablist" aria-label="Entrepreneur learning sections">${[['action','ACTION'],['mindset','MINDSET'],['deeper','GO DEEPER'],['notes','MY NOTES']].map(([key,label]) => `<button type="button" role="tab" id="ent-tab-${key}" aria-controls="ent-panel-${key}" data-tab="${key}">${label}</button>`).join('')}</div>
     <section class="ent-panel" id="ent-panel-action" role="tabpanel" aria-labelledby="ent-tab-action" data-panel="action">
       <div class="ent-eyebrow">MAKE IT REAL</div><h3>Your next useful step</h3><p>Use this card’s practical steps to move a goal forward. Choose one to start today.</p>
       <ol class="ent-steps">${card.roadmap.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
-      <label class="ent-goal-select">Apply this to a goal<select data-goal><option value="">Personal practice · no goal selected</option>${goalItems.map(g => `<option value="${esc(g.id)}">${esc(g.title || g.text)}</option>`).join('')}</select></label>
       <div class="ent-capture"><label for="ent-action-note">The action I will take</label><textarea id="ent-action-note" maxlength="2000" placeholder="What will you do, and when?">${esc(view.action)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Saved to this card on this device.</span><button class="ent-button" data-save-action>Save my next step</button></div><p class="ent-status" role="status" data-status="action"></p></div>
     </section>
     <section class="ent-panel" id="ent-panel-mindset" role="tabpanel" aria-labelledby="ent-tab-mindset" data-panel="mindset"><div class="ent-eyebrow">PREPARE THE PERSON DOING THE WORK</div><h3>Practise how you show up</h3><p>Choose a belief or affirmation to use alongside your next action. Your favourites stay connected to this card.</p>${mindsetHTML}</section>
@@ -65,10 +67,10 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     ${resource ? `<div class="ent-section-top"><div><div class="ent-eyebrow">GO DEEPER</div><h3>Find the moment you need.</h3></div><p class="ent-muted">Watch. Take something useful.<br>Put it into practice.</p></div>
       <div class="ent-resource-switch" role="group" aria-label="Resource format">${[['youtube','YouTube'],['podcast','Podcasts'],['article','Articles']].map(([key,label]) => `<button data-format="${key}" aria-pressed="${view.resourceTab === key}">${label}</button>`).join('')}</div>
       <div data-resource="youtube"><p>${esc(resource.why)}</p><div class="ent-video-grid"><div>
-        <div class="ent-video"><div class="ent-video-cover"><div class="ent-eyebrow" style="justify-content:center">MEL ROBBINS · EPISODE 46</div><button class="ent-play" data-start aria-label="Play selected video moment">▶</button><h3>${esc(resource.title)}</h3><p>Start with one useful moment.</p></div></div>
+        <div class="ent-video"><div class="ent-video-cover"><div class="ent-eyebrow" style="justify-content:center">${esc(resource.creator)}</div><button class="ent-play" data-start aria-label="Play selected video moment">▶</button><h3>${esc(resource.title)}</h3><p>${resource.chapterMode === 'full-lesson' ? 'Start the lesson, then make it useful.' : 'Start with one useful moment.'}</p></div></div>
         <div class="ent-video-meta"><span>${esc(resource.time)}</span><a data-watch href="${urlAt(pendingTime)}" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></div><p class="ent-muted">Playing connects to YouTube. Video controls remain available.</p>
-      </div><div><div class="ent-eyebrow">JUMP TO A MOMENT</div><ol class="ent-moments">${resource.moments.map((m,i) => `<li><button data-moment="${i}" aria-current="${i === 0}"><span class="ent-time">${clock(m.start)}</span><span><strong>${esc(m.title)}</strong><small>${timeRange(m)}</small></span></button></li>`).join('')}</ol><p class="ent-muted">Selected from <a href="${resource.source}" target="_blank" rel="noopener noreferrer">the publisher’s chapter list ↗</a></p></div></div>
-      <div class="ent-insight"><div class="ent-eyebrow">THE TAKEAWAY</div><p data-takeaway></p><div class="ent-eyebrow">TRY THIS · CI PRACTICE</div><p data-practice></p></div>
+      </div><div><div class="ent-eyebrow">${resource.chapterMode === 'full-lesson' ? 'START THE LESSON' : 'JUMP TO A MOMENT'}</div><ol class="ent-moments">${resource.moments.map((m,i) => `<li><button data-moment="${i}" aria-current="${i === 0}"><span class="ent-time">${clock(m.start)}</span><span><strong>${esc(m.title)}</strong><small>${timeRange(m)}</small></span></button></li>`).join('')}</ol><p class="ent-muted"><a href="${esc(resource.source)}" target="_blank" rel="noopener noreferrer">${esc(resource.sourceLabel)} ↗</a>${resource.chapterMode === 'full-lesson' ? '<br>Chapter timings are not yet verified for this video.' : ''}</p></div></div>
+      <div class="ent-insight"><div class="ent-eyebrow">THE TAKEAWAY</div><p data-takeaway></p><div class="ent-eyebrow">TRY THIS · CI PRACTICE</div><p data-practice></p><button class="ent-button ent-button-secondary" data-use-practice="moment">Use this for my next step</button></div>
       <div class="ent-capture"><label for="ent-moment-note">What will you use from this moment?</label><textarea id="ent-moment-note" maxlength="2000" placeholder="Capture the idea and how you’ll use it…">${esc(view.note)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Timestamp + your note, saved on this device.</span><button class="ent-button" data-save-moment>Save this moment</button></div><p class="ent-status" role="status" data-status="moment"></p></div>
       </div><div data-resource="podcast">${editorial(resource.podcast)}</div><div data-resource="article">${editorial(resource.article)}</div>` : `<div class="ent-eyebrow">GO DEEPER</div><h3>A resource should earn its place.</h3><p>The chapter experience is ready to explore on the Self-Confident card. Specific videos, episodes and articles for this card still need selection and review.</p><button class="ent-button" data-confidence>Explore the Self-Confident example →</button><p class="ent-status" role="status" data-status="moment"></p>`}
     </section>
@@ -124,7 +126,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
               if (!root.isConnected) { cleanup(); return; }
               if (event.target.getPlayerState?.() !== 1) return;
               const time = event.target.getCurrentTime();
-              const index = resource.moments.findIndex(m => time >= m.start && time < m.end);
+              const index = resource.moments.findIndex(m => containsTime(m, time));
               if (index >= 0 && index !== selected) paintMoment(index);
               root.querySelectorAll('[data-moment]').forEach(b => b.setAttribute('aria-current', String(Number(b.dataset.moment) === index)));
             }, 500);
@@ -149,7 +151,9 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     if (e.target.id === 'ent-action-note') view.action = e.target.value;
   });
   root.querySelector('[data-goal]').value = view.goal;
-  root.querySelector('[data-goal]').addEventListener('change', e => { view.goal = e.target.value; });
+  const paintGoal = () => { root.querySelector('[data-goal-context]').textContent = goalLabel() ? `For your goal: ${goalLabel()}. Saved moments and next steps will carry this goal.` : 'Choose a goal to connect your learning, or use this card for personal practice.'; };
+  root.querySelector('[data-goal]').addEventListener('change', e => { view.goal = e.target.value; paintGoal(); });
+  paintGoal();
   root.addEventListener('keydown', e => {
     if (!e.target.matches('[data-tab]') || !['ArrowRight','ArrowLeft','Home','End'].includes(e.key)) return;
     const tabs = [...root.querySelectorAll('[data-tab]')];
@@ -164,6 +168,15 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     if (b.hasAttribute('data-start')) play(resource.moments[selected].start);
     if (b.hasAttribute('data-moment')) { const i = Number(b.dataset.moment); paintMoment(i); play(resource.moments[i].start); }
     if (b.hasAttribute('data-confidence')) window.entGoToCard?.('SELF CONFIDENT');
+    if (b.dataset.usePractice && resource) {
+      const practice = b.dataset.usePractice === 'moment' ? resource.moments[selected].practice : resource[b.dataset.usePractice]?.action;
+      if (!practice) return;
+      if (!view.action.includes(practice)) view.action = [view.action.trim(), practice].filter(Boolean).join('\n\n').slice(0, 2000);
+      root.querySelector('#ent-action-note').value = view.action;
+      setTab('action');
+      root.querySelector('#ent-action-note').focus();
+      status('Practice added to your draft. Make it specific to your goal, then save your next step.', 'action');
+    }
     if (b.hasAttribute('data-save-action')) {
       if (!view.action.trim()) { status('Write the step you want to take first.', 'action'); return; }
       if (write([{ id: id(), kind: 'action', text: view.action.trim(), goal: goalLabel(), goalId: view.goal }, ...records], 'action')) { view.action = ''; root.querySelector('#ent-action-note').value = ''; status('Next step saved in MY NOTES.', 'action'); }
@@ -171,11 +184,11 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     if (b.hasAttribute('data-save-moment')) {
       const raw = ready ? player.getCurrentTime() : pendingTime;
       const seconds = Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : resource.moments[selected].start;
-      const at = resource.moments.find(m => seconds >= m.start && seconds < m.end);
+      const at = resource.moments.find(m => containsTime(m, seconds));
       const entry = { id: id(), kind: 'moment', videoId: resource.videoId, seconds, title: at?.title || resource.title, text: view.note.trim() || at?.takeaway || 'A moment to return to.', goal: goalLabel(), goalId: view.goal };
       if (write([entry, ...records], 'moment')) { view.note = ''; root.querySelector('#ent-moment-note').value = ''; status(`Saved at ${clock(seconds)} in MY NOTES.`); }
     }
-    if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => r.seconds >= m.start && r.seconds < m.end); if (i >= 0) paintMoment(i); play(r.seconds); }
+    if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => containsTime(m, r.seconds)); if (i >= 0) paintMoment(i); play(r.seconds); }
     if (b.dataset.remove) { if (write(records.filter(r => r.id !== b.dataset.remove), 'notes')) status('Saved item removed.', 'notes'); }
   });
   function cleanup() { disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
