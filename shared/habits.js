@@ -262,7 +262,7 @@ export function renderHabits() {
         <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">${items.map(h => _habitRow(h, !!d[h.id], true)).join('')}</div>
+        <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], true)).join('')}</div>
       </div>
     </details>`;
   });
