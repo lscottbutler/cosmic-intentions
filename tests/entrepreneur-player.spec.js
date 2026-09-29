@@ -1,12 +1,23 @@
 import { test, expect } from '@playwright/test';
 
 async function openCard(page) {
-  await page.goto('/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT', { waitUntil: 'domcontentloaded' });
-  await page.locator('#experienceFrame').evaluate(el => { el.src = '/?masterInline=ent-card&ent=SELF%20CONFIDENT&lfm=fullheight-1&preview=1'; });
+  // Exercise the delivered URL and the Master Player's real frame navigation.
+  // Do not replace the iframe URL: that previously hid the blank-frame bug.
+  await page.goto('/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT&preview=1', { waitUntil: 'domcontentloaded' });
   const frame = page.frameLocator('#experienceFrame');
   await expect(frame.locator('#entExperience')).toBeVisible();
   return frame;
 }
+
+test('Entrepreneur link without sample preview shows sign-in instead of an empty frame', async ({ page }, testInfo) => {
+  await page.goto('/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT');
+  const frame = page.frameLocator('#experienceFrame');
+  await expect(frame.locator('#authModal.open')).toBeVisible();
+  await expect(frame.locator('#si-email')).toBeVisible();
+  await expect(frame.locator('#btn-signin')).toBeVisible();
+  await expect(frame.locator('#entExperience')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('entrepreneur-sign-in.png'), fullPage: true });
+});
 
 async function mockVideo(page) {
   await page.addInitScript(() => {
@@ -91,7 +102,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await page.setViewportSize(viewport);
     const frame = await openCard(page);
     await expect.poll(() => frame.locator('#entLibHost img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+    await expect(frame.locator('#authModal')).not.toBeVisible();
+    await expect(page.locator('#experienceFrame')).toHaveAttribute('src', /masterInline=ent-card/);
+    await expect(page.locator('#experienceFrame')).not.toHaveAttribute('src', /preview=/);
     const root = frame.locator('#entExperience');
+    await page.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-full-player.png`), fullPage: true });
     await root.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-deeper.png`) });
     const overflow = await root.evaluate(el => [...el.querySelectorAll('*')].filter(n => n.getClientRects().length && n.getBoundingClientRect().right > el.getBoundingClientRect().right + 1).map(n => ({ tag: n.tagName, class: n.className, width: n.getBoundingClientRect().width })));
     expect(overflow).toEqual([]);

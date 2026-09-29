@@ -25,6 +25,14 @@ YouTube is loaded only after Play or a chapter click. It receives the standard e
 
 ## Verification and next decisions
 
+### Blank review frame correction — 2026-09-29
+
+Scott reported the Master Player frame appearing with empty content. The original handoff URL did not enable the existing sample preview; a fresh preview origin had no member session, and the embedded-tool CSS hid the sign-in form. Earlier tests replaced the iframe URL with `preview=1`, masking the actual entry path. Corrected tests now use the delivered Master Player URL without rewriting its iframe.
+
+The review URL now explicitly includes `preview=1`. Entrepreneur content inherits this only from the same-origin canonical Master Player on localhost or the existing allowlisted Netlify deploy-preview hostname. Production remains excluded before checking any flag. No authentication requirement, Netlify password protection or Supabase setting is removed. Without sample review, the existing Entrepreneur sign-in form is visible instead of hidden. No protected template file changes.
+
+Review entry: `https://deploy-preview-43--gilded-profiterole-47a2eb.netlify.app/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT&preview=1`. This displays sample goals; it is not an account-data or live Roadmap review. Verification results belong in the session checkpoint after CI and deployment checks. Live protected-preview inspection still requires browser access.
+
 Focused Playwright coverage: chapter seek and playback highlight with a stubbed API; exact timestamp save/reload/replay/remove; next action capture; resource links; keyboard tabs; blocked video fallback; storage failure; desktop/mobile rendered screenshots using actual card art. Full existing test suite and template guard remain required. Mock API tests do not verify live third-party playback.
 
 Next creative review: approve the hierarchy/flow, then curate remaining cards and connect the working Roadmap AI result to the same learning component through an explicit adapter. This prototype does not replace the working Roadmap AI experience. No merge authorized.

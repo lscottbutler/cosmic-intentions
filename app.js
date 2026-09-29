@@ -5513,8 +5513,21 @@ function _previewActive() {
   const host = location.hostname;
   const local = host === 'localhost' || host === '127.0.0.1';
   const netlifyReview = /^deploy-preview-\d+--gilded-profiterole-47a2eb\.netlify\.app$/.test(host);
-  const flag = new URLSearchParams(location.search).has('preview');
-  return (local || netlifyReview) && flag;
+  if (!local && !netlifyReview) return false;
+  const params = new URLSearchParams(location.search);
+  if (params.has('preview')) return true;
+  // The approved Master Player keeps its own URL separate from the content
+  // frame. Carry its explicit sample-review choice into Entrepreneur content
+  // without changing that locked template or enabling previews on production.
+  if (window.self !== window.top && ['ent-card', 'entrepreneur-library'].includes(params.get('masterInline'))) {
+    try {
+      const parentUrl = new URL(window.parent.location.href);
+      return parentUrl.origin === location.origin
+        && parentUrl.pathname === '/players/master-player.html'
+        && parentUrl.searchParams.get('preview') === '1';
+    } catch (_) { /* A cross-origin parent cannot activate sample review. */ }
+  }
+  return false;
 }
 
 function _seedPreviewDashboard() {

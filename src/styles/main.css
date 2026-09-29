@@ -3885,6 +3885,17 @@ html.master-inline-mode .colb-nav,
 html.master-inline-mode .colb-links {
   display: none !important;
 }
+/* An Entrepreneur deep link still needs a visible sign-in form when it is
+   opened without a session. Keep the existing account gate and form intact. */
+html.master-inline-ent-card #authModal.open {
+  display: flex !important;
+  position: relative;
+  inset: auto;
+  min-height: 520px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  align-items: center;
+}
 html.master-inline-mode .page-wrap,
 html.master-inline-mode .page.active {
   width: 100% !important;
