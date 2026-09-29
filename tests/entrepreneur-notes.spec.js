@@ -9,7 +9,7 @@ async function openCard(page) {
   await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
   return frame;
 }
-const saved = frame => frame.locator('#entExperience').evaluate(k => JSON.parse(localStorage.getItem(k)), key);
+const saved = frame => frame.locator('#entExperience').evaluate((_, k) => JSON.parse(localStorage.getItem(k)), key);
 async function noOverflow(root) {
   expect(await root.evaluate(el => [...el.querySelectorAll('*')].filter(n => n.getClientRects().length && n.getBoundingClientRect().right > el.getBoundingClientRect().right + 1).map(n => n.className))).toEqual([]);
 }
@@ -101,7 +101,7 @@ test('Entrepreneur notes preserve earlier notes and existing next steps', async 
   await frame.locator('[data-panel="action"] [data-complete-action="old-action"]').check();
   expect((await saved(frame)).find(r => r.id === 'old-action').done).toBe(true);
   expect(await frame.locator('#entExperience').evaluate(() => localStorage.getItem('ci_ent_notes'))).toBe(before);
-  expect(await frame.locator('#entExperience').evaluate(k => JSON.parse(localStorage.getItem(k.replace(':preview:', ':other-account:'))), key)).toEqual([{ id: 'private-fixture', kind: 'note', text: 'Other account fixture.' }]);
+  expect(await frame.locator('#entExperience').evaluate((_, k) => JSON.parse(localStorage.getItem(k.replace(':preview:', ':other-account:'))), key)).toEqual([{ id: 'private-fixture', kind: 'note', text: 'Other account fixture.' }]);
 });
 
 test('Entrepreneur notes keep drafts and saved items when storage fails', async ({ page }) => {
