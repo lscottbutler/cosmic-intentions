@@ -2,10 +2,10 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
 // Scott requested static 16:9 images, the left-side hamburger, and the saved Citadel
-// opening box, goal-specific fork, restored Entrepreneur routes, and a white lower trough on individual Entrepreneur skill cards. The stage and meditation geometry remain locked.
+// opening box, goal-specific fork, and restored Entrepreneur Library/card routes in the player. The stage and meditation geometry remain locked.
 // Earlier geometry checkpoint: 9b56b51fffbd208445be3eb8270be87a8a0e55ad.
 const lockedFiles = {
-  "players/master-player.html": "0eb0998db507abad5520c0f68af8626efcf6430e",
+  "players/master-player.html": "ac00ad0740e443b4d3713a2173bfbd54a492284c",
   "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
 };
 const root = new URL('../', import.meta.url);
