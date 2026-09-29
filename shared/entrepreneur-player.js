@@ -37,7 +37,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   try {
     const value = JSON.parse(localStorage.getItem(storageKey) || '[]');
     if (!Array.isArray(value)) throw new Error('Invalid notes');
-    records = value.filter(x => x && typeof x.id === 'string' && typeof x.text === 'string' && ['moment', 'action'].includes(x.kind));
+    records = value.filter(x => x && typeof x.id === 'string' && typeof x.text === 'string' && ['moment', 'action', 'note'].includes(x.kind));
   } catch (_) { readFailed = true; }
   let player, ready = false, loading = false, disposed = false, timer, readyTimeout;
   let selected = 0, pendingTime = resource?.moments[0].start || 0;
@@ -61,7 +61,9 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     <section class="ent-panel" id="ent-panel-action" role="tabpanel" aria-labelledby="ent-tab-action" data-panel="action">
       <div class="ent-eyebrow">MAKE IT REAL</div><h3>Your next useful step</h3><p>Use this card’s practical steps to move a goal forward. Choose one to start today.</p>
       <ol class="ent-steps">${card.roadmap.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
-      <div class="ent-capture"><label for="ent-action-note">The action I will take</label><textarea id="ent-action-note" maxlength="2000" placeholder="What will you do, and when?">${esc(view.action)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Saved to this card on this device.</span><button class="ent-button" data-save-action>Save my next step</button></div><p class="ent-status" role="status" data-status="action"></p></div>
+      <div data-capture-slot="action"><div class="ent-notes-capture"><h3>NOTES / TO-DO</h3><div class="ent-capture"><label for="ent-action-note">Add a note or to-do</label><textarea id="ent-action-note" maxlength="2000" placeholder="Capture an idea, or write what you’ll do next…">${esc(view.action)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Connected to this card and your selected goal. Saved on this device.</span><div class="ent-note-buttons"><button class="ent-button ent-button-secondary" data-save-note>Save note</button><button class="ent-button" data-save-action>Save my next step</button><button class="ent-button ent-button-secondary" data-cancel-edit hidden>Cancel edit</button></div></div><p class="ent-status" role="status" data-status="action"></p></div></div></div>
+      <h3 class="ent-list-title">MY ACTIONS</h3><p class="ent-muted">Your to-dos for this card. Check one off when it’s done.</p><ul class="ent-action-list ent-record-list"></ul>
+      <h3 class="ent-list-title">MY NOTES</h3><p class="ent-muted">Keep an idea here, then add it to your actions when you’re ready.</p><ul class="ent-action-notes ent-record-list"></ul>
     </section>
     <section class="ent-panel" id="ent-panel-mindset" role="tabpanel" aria-labelledby="ent-tab-mindset" data-panel="mindset"><div class="ent-eyebrow">PREPARE THE PERSON DOING THE WORK</div><h3>Practise how you show up</h3><p>Choose a belief or affirmation to use alongside your next action. Your favourites stay connected to this card.</p>${mindsetHTML}</section>
     <section class="ent-panel" id="ent-panel-deeper" role="tabpanel" aria-labelledby="ent-tab-deeper" data-panel="deeper">
@@ -75,10 +77,12 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
       <div class="ent-capture"><label for="ent-moment-note">What will you use from this moment?</label><textarea id="ent-moment-note" maxlength="2000" placeholder="Capture the idea and how you’ll use it…">${esc(view.note)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Timestamp + your note, saved on this device.</span><button class="ent-button" data-save-moment>Save this moment</button></div><p class="ent-status" role="status" data-status="moment"></p></div>
       </div><div data-resource="podcast">${editorial(resource.podcast)}</div><div data-resource="article">${editorial(resource.article)}</div>` : `<div class="ent-eyebrow">GO DEEPER</div><h3>A resource should earn its place.</h3><p>The chapter experience is ready to explore on the Self-Confident card. Specific videos, episodes and articles for this card still need selection and review.</p><button class="ent-button" data-confidence>Explore the Self-Confident example →</button><p class="ent-status" role="status" data-status="moment"></p>`}
     </section>
-    <section class="ent-panel" id="ent-panel-notes" role="tabpanel" aria-labelledby="ent-tab-notes" data-panel="notes"><div class="ent-eyebrow">KEEP WHAT MOVES YOU FORWARD</div><h3>Saved moments & next steps</h3><p class="ent-muted">Saved on this device${account === 'local-preview' ? ' for this preview' : ' for your account'}. Return to a moment, put it to work, or remove it.</p><ul class="ent-saved-list"></ul><p class="ent-status" role="status" data-status="notes"></p>${notesHTML}</section>`;
+    <section class="ent-panel" id="ent-panel-notes" role="tabpanel" aria-labelledby="ent-tab-notes" data-panel="notes"><div class="ent-eyebrow">KEEP WHAT MOVES YOU FORWARD</div><h3>Notes, moments & next steps</h3><p class="ent-muted">Saved on this device${account === 'local-preview' ? ' for this preview' : ' for your account'}. Return to a moment, put it to work, or remove it.</p><div data-capture-slot="notes"></div><ul class="ent-saved-list ent-record-list"></ul><p class="ent-status" role="status" data-status="notes"></p>${notesHTML}</section>`;
 
   function setTab(tab, focus = false) {
     view.tab = tab;
+    // One composer follows the active workspace; drafts and element IDs stay unique.
+    if (tab === 'action' || tab === 'notes') root.querySelector(`[data-capture-slot="${tab}"]`).append(root.querySelector('.ent-notes-capture'));
     if (tab !== 'deeper') player?.pauseVideo?.();
     root.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
     root.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== tab; });
@@ -144,9 +148,43 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     catch (_) { status('Could not save on this device. Keep your text here and try again.', target); return false; }
   }
   function renderSaved() {
-    root.querySelector('.ent-saved-list').innerHTML = records.length ? records.map(r => `<li><div class="ent-saved-label">${r.kind === 'moment' ? 'VIDEO MOMENT' : 'NEXT STEP'}${r.goal ? ` · ${esc(r.goal)}` : ''}${r.habit ? ` · Habit: ${esc(r.habit)}` : ''}</div><div class="ent-saved-row">${r.kind === 'moment' && resource && r.videoId === resource.videoId ? `<button data-replay="${esc(r.id)}">▶ ${clock(r.seconds)} · ${esc(r.title)}</button>` : '<strong>My next action</strong>'}<button data-remove="${esc(r.id)}" aria-label="Remove saved ${r.kind}">Remove</button></div><p>${esc(r.text)}</p></li>`).join('') : '<li>No saved moments yet. Keep a useful idea from GO DEEPER or save your next action.</li>';
+    const row = r => `<li data-record-id="${esc(r.id)}" class="${r.kind === 'action' && r.done ? 'ent-record-done' : ''}"><div class="ent-saved-label">${r.kind === 'moment' ? 'VIDEO MOMENT' : r.kind === 'note' ? 'NOTE' : 'TO-DO'}${r.goal ? ` · ${esc(r.goal)}` : ''}${r.habit ? ` · Habit: ${esc(r.habit)}` : ''}</div><div class="ent-saved-row">${r.kind === 'moment' && resource && r.videoId === resource.videoId ? `<button data-replay="${esc(r.id)}">▶ ${clock(r.seconds)} · ${esc(r.title)}</button>` : r.kind === 'action' ? `<label class="ent-task-check"><input type="checkbox" data-complete-action="${esc(r.id)}" ${r.done ? 'checked' : ''}><span>${r.done ? 'Completed — reopen' : 'Mark complete'}</span></label>` : '<strong>My note</strong>'}<div class="ent-record-controls">${r.kind === 'note' ? `<button data-note-to-action="${esc(r.id)}">Add to actions →</button>` : ''}${r.kind !== 'moment' ? `<button data-edit-record="${esc(r.id)}">Edit</button>` : ''}<button data-remove="${esc(r.id)}" aria-label="Remove saved ${r.kind}">Remove</button></div></div><p>${esc(r.text)}</p></li>`;
+    const actions = records.filter(r => r.kind === 'action');
+    const notes = records.filter(r => r.kind === 'note');
+    root.querySelector('.ent-saved-list').innerHTML = records.length ? records.map(row).join('') : '<li>No saved items yet. Add a note, save your next step, or keep a moment from GO DEEPER.</li>';
+    root.querySelector('.ent-action-list').innerHTML = actions.length ? actions.map(row).join('') : '<li>No to-dos yet. Save your next step above or turn a note into an action.</li>';
+    root.querySelector('.ent-action-notes').innerHTML = notes.length ? notes.map(row).join('') : '<li>No notes yet. Capture an idea in the box above.</li>';
   }
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  function paintEditor() {
+    const editing = records.find(r => r.id === view.editing);
+    if (!editing) view.editing = null;
+    root.querySelector('[data-save-note]').textContent = editing ? (editing.kind === 'note' ? 'Save note changes' : 'Save as note') : 'Save note';
+    root.querySelector('[data-save-action]').textContent = editing ? (editing.kind === 'action' ? 'Save action changes' : 'Save as action') : 'Save my next step';
+    root.querySelector('[data-cancel-edit]').hidden = !editing;
+  }
+  function saveDraft(kind) {
+    const text = view.action.trim();
+    if (!text) { status(kind === 'note' ? 'Write a note first.' : 'Write the step you want to take first.', 'action'); return; }
+    const existing = records.find(r => r.id === view.editing);
+    const entry = existing ? { ...existing, kind, text, done: kind === 'action' && existing.kind === 'action' ? !!existing.done : false } : { id: id(), kind, text, done: false, goal: goalLabel(), goalId: view.goal, ...(habit ? { habit: habit.name, habitId: habit.id } : {}) };
+    const next = existing ? records.map(r => r.id === existing.id ? entry : r) : [entry, ...records];
+    if (!write(next, 'action')) return;
+    view.action = ''; view.editing = null;
+    root.querySelector('#ent-action-note').value = '';
+    paintEditor();
+    status(kind === 'note' ? 'Note saved in ACTION and MY NOTES.' : 'Next step saved in ACTION and MY NOTES.', 'action');
+  }
+  root.addEventListener('change', e => {
+    if (!e.target.matches('[data-complete-action]')) return;
+    const record = records.find(r => r.id === e.target.dataset.completeAction && r.kind === 'action');
+    if (!record) return;
+    const panel = e.target.closest('[data-panel]').dataset.panel;
+    const done = e.target.checked;
+    if (!write(records.map(r => r.id === record.id ? { ...r, done } : r), panel)) { e.target.checked = !!record.done; return; }
+    root.querySelector(`[data-panel="${panel}"] [data-complete-action="${CSS.escape(record.id)}"]`)?.focus();
+    status(done ? 'Action completed.' : 'Action reopened.', panel);
+  });
   root.addEventListener('input', e => {
     if (e.target.id === 'ent-moment-note') view.note = e.target.value;
     if (e.target.id === 'ent-action-note') view.action = e.target.value;
@@ -186,8 +224,30 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
       status('Practice added to your draft. Make it specific to your goal, then save your next step.', 'action');
     }
     if (b.hasAttribute('data-save-action')) {
-      if (!view.action.trim()) { status('Write the step you want to take first.', 'action'); return; }
-      if (write([{ id: id(), kind: 'action', text: view.action.trim(), goal: goalLabel(), goalId: view.goal, ...(habit ? { habit: habit.name, habitId: habit.id } : {}) }, ...records], 'action')) { view.action = ''; root.querySelector('#ent-action-note').value = ''; status('Next step saved in MY NOTES.', 'action'); }
+      saveDraft('action');
+    }
+    if (b.hasAttribute('data-save-note')) saveDraft('note');
+    if (b.hasAttribute('data-cancel-edit')) { view.editing = null; view.action = ''; root.querySelector('#ent-action-note').value = ''; paintEditor(); status('Edit cancelled.', 'action'); }
+    if (b.dataset.editRecord) {
+      const record = records.find(r => r.id === b.dataset.editRecord && r.kind !== 'moment');
+      if (!record) return;
+      if (view.action.trim() && view.editing !== record.id) { status('Save or clear your current draft before editing another item.', 'action'); root.querySelector('#ent-action-note').focus(); return; }
+      view.editing = record.id; view.action = record.text;
+      root.querySelector('#ent-action-note').value = record.text;
+      paintEditor(); root.querySelector('#ent-action-note').focus();
+    }
+    if (b.dataset.noteToAction) {
+      const record = records.find(r => r.id === b.dataset.noteToAction && r.kind === 'note');
+      if (record && write(records.map(r => r.id === record.id ? { ...r, kind: 'action', done: false } : r), view.tab === 'notes' ? 'notes' : 'action')) {
+        setTab('action'); paintEditor(); status('Note added to your actions. Check it off when it’s done.', 'action');
+      }
+    }
+    if (b.dataset.legacyNote) {
+      const text = b.closest('[data-ent-note-card]')?.querySelector('.ent-note')?.innerText.trim().slice(0, 2000);
+      if (!text) { status('Write a note before adding it to your actions.', 'notes'); return; }
+      if (records.some(r => r.legacyNoteId === b.dataset.legacyNote)) { setTab('action'); status('This earlier note is already in your actions.', 'action'); return; }
+      const entry = { id: id(), kind: 'action', text, done: false, legacyNoteId: b.dataset.legacyNote, goal: goalLabel(), goalId: view.goal, ...(habit ? { habit: habit.name, habitId: habit.id } : {}) };
+      if (write([entry, ...records], 'notes')) { setTab('action'); status('Earlier note added to your actions. The original note is preserved.', 'action'); }
     }
     if (b.hasAttribute('data-save-moment')) {
       const raw = ready ? player.getCurrentTime() : pendingTime;
@@ -197,10 +257,10 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
       if (write([entry, ...records], 'moment')) { view.note = ''; root.querySelector('#ent-moment-note').value = ''; status(`Saved at ${clock(seconds)} in MY NOTES.`); }
     }
     if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => containsTime(m, r.seconds)); if (i >= 0) paintMoment(i); play(r.seconds); }
-    if (b.dataset.remove) { if (write(records.filter(r => r.id !== b.dataset.remove), 'notes')) status('Saved item removed.', 'notes'); }
+    if (b.dataset.remove) { const panel = b.closest('[data-panel]').dataset.panel; if (write(records.filter(r => r.id !== b.dataset.remove), panel)) { paintEditor(); status('Saved item removed.', panel); } }
   });
   function cleanup() { disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
-  setTab(view.tab); setFormat(view.resourceTab); renderSaved(); if (resource) paintMoment(0);
+  setTab(view.tab); setFormat(view.resourceTab); renderSaved(); paintEditor(); if (resource) paintMoment(0);
   if (readFailed) status('Existing saved items could not be read. They were left untouched.', 'notes');
   return cleanup;
 }

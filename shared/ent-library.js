@@ -355,19 +355,21 @@ function _noteId() { return 'n' + Date.now().toString(36) + Math.floor(Math.rand
 
 function _entNotesSection(c) {
   const notes = _cardNotes(c.key);
+  if (!notes.length) return '';
   const mBtn = 'display:block;width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;';
   const grow = "this.style.height='auto';this.style.height=this.scrollHeight+'px';";
   const cards = notes.map((n, i) => `
-    <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
+    <div data-ent-note-card draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
       <button onclick="entNoteDelete('${n.id}')" title="Delete note" aria-label="Delete note" style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#000;border:none;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;">&times;</button>
       <span aria-hidden="true" style="float:left;shape-outside:circle(52%);-webkit-shape-outside:circle(52%);width:34px;height:34px;border-radius:50%;background:#000;color:#fff;font-weight:800;font-size:15px;text-align:center;line-height:34px;margin:2px 12px 4px 0;">${i + 1}</span>
       <div class="ent-note" contenteditable="true" onblur="entNoteSave('${n.id}',this)" data-ph="Type a note…" style="font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;min-height:34px;outline:none;">${_esc(n.text || '')}</div>
+      <button type="button" class="ent-button ent-button-secondary" data-legacy-note="${encodeURIComponent(n.id)}">Add to actions →</button>
       <span title="Drag to reorder" style="position:absolute;bottom:7px;right:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
     </div>`).join('');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
-    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">MY NOTES</div>
-    ${notes.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:12px;align-items:start;">${cards}</div>` : ''}
-    <button onclick="entAddNote()" style="display:block;width:100%;text-align:center;background:transparent;border:2px dashed #5c6158;color:#3a3f34;font-weight:800;letter-spacing:1px;padding:13px;cursor:pointer;font-size:13px;">&#43; ADD A NOTE</button>
+    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:3px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">EARLIER CARD NOTES</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;margin-bottom:12px;align-items:start;">${cards}</div>
+    <p class="ent-muted">Your earlier notes are preserved here. Use NOTES / TO-DO above for new notes.</p>
   </div>`;
 }
 export function entAddNote() {
