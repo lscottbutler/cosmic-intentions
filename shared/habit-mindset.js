@@ -10,7 +10,10 @@ export const HABIT_MINDSET_LINKS = [
 ];
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const contextKey = account => `ci_habit_support_v1:${account || 'local-preview'}`;
-const today = () => new Date().toLocaleDateString('en-CA');
+const today = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
 
 function shellURL() {
   try {
@@ -48,8 +51,14 @@ export function habitEntryContext(account) {
 
 function rememberSupport(cardKey, account, habit, closedCats = []) {
   try {
+    const day = today();
+    const done = JSON.parse(localStorage.getItem(`ci_habits_${day}`) || '{}');
+    const list = JSON.parse(localStorage.getItem('ci_habit_list') || '[]');
+    // Snapshot both checked and unchecked rows. A fresh account read on return
+    // must not undo the last local click while its existing sync is in flight.
+    const checklist = Array.isArray(list) ? Object.fromEntries(list.filter(h => h?.id).map(h => [h.id, !!done[h.id]])) : {};
     sessionStorage.setItem(contextKey(account), JSON.stringify({
-      day: today(), cardKey, closedCats,
+      day, cardKey, closedCats, checklist,
       habit: habit ? { id: String(habit.id), name: String(habit.name).slice(0, 160) } : null,
     }));
   } catch (_) { /* The card and return link remain usable without personal context. */ }
@@ -73,7 +82,7 @@ export function createHabitMindsetCard(getAccount) {
 }
 
 export function habitSupportLink(habit) {
-  return `<a class="habit-follow-through" href="${esc(habitPlayerURL('DISCIPLINED'))}" target="_parent" data-habit-support="${esc(habit.id)}" aria-label="Help me follow through: ${esc(habit.name)}">Help me follow through <span aria-hidden="true">→</span></a>`;
+  return `<a class="habit-follow-through" href="${esc(habitPlayerURL('DISCIPLINED'))}" target="_parent" data-habit-support="${esc(habit.id)}">Help me follow through <span aria-hidden="true">→</span></a>`;
 }
 
 export function wireHabitSupportLinks(root, account, habits, closedCats) {
@@ -91,6 +100,15 @@ export function restoreHabitSupport(account, closedCats) {
   restored = true;
   closedCats.clear();
   if (Array.isArray(context.closedCats)) context.closedCats.forEach(cat => closedCats.add(cat));
+  try {
+    const key = `ci_habits_${today()}`;
+    const current = JSON.parse(localStorage.getItem(key) || '{}');
+    for (const [id, checked] of Object.entries(context.checklist || {})) {
+      if (checked === true) current[id] = true;
+      else if (checked === false) delete current[id];
+    }
+    localStorage.setItem(key, JSON.stringify(current));
+  } catch (_) { /* Keep the existing checklist if browser storage is blocked. */ }
   try { sessionStorage.removeItem(contextKey(account)); } catch (_) { /* Optional context. */ }
   // Wait for the canonical frame to measure its new content before restoring focus.
   window.setTimeout(() => {

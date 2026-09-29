@@ -17,6 +17,14 @@ async function seedHabits(page) {
       { id: 'qa-write', name: 'Write for 20 minutes', cat: 'MORNING', domain: 'Writing' },
       { id: 'qa-read', name: 'Read a chapter', cat: 'DAY', domain: 'Reading' },
     ]));
+    // Simulate a stale account response restoring an empty daily record during
+    // the return navigation. The same-day return snapshot must retain our tick.
+    if (new URL(location.href).searchParams.get('entry') === 'habits-return'
+      && sessionStorage.getItem('ci_habit_support_v1:preview')) {
+      const d = new Date();
+      const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      localStorage.setItem(`ci_habits_${day}`, '{}');
+    }
   });
 }
 
@@ -61,7 +69,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await frame.locator('[data-habit-section="DAY"] summary').click();
     await frame.locator('#habitsWidget button[title="Mark done"]').first().click();
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1);
-    await frame.getByRole('link', { name: 'Help me follow through: Write for 20 minutes', exact: true }).click();
+    await frame.locator('[data-habit-support="qa-write"]').click();
     await expect(frame.locator('[data-panel="mindset"]')).toBeVisible({ timeout: 15000 });
     await expect(frame.locator('.ent-habit-context strong')).toHaveText('Write for 20 minutes');
     expect(page.url()).not.toContain('qa-write');
@@ -79,7 +87,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await frame.getByRole('link', { name: 'Return to Habits' }).click();
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await expect(frame.locator('[data-habit-section="DAY"]')).not.toHaveAttribute('open');
-    await expect(frame.getByRole('link', { name: 'Help me follow through: Write for 20 minutes', exact: true })).toBeFocused({ timeout: 7000 });
+    await expect(frame.locator('[data-habit-support="qa-write"]')).toBeFocused({ timeout: 7000 });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await frame.getByRole('button', { name: 'Edit habits', exact: true }).click();
