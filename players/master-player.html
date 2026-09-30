@@ -8,6 +8,7 @@
   <script>if(window.parent!==window)document.documentElement.classList.add('embedded-player')</script>
   <style>
     .citadel-note[hidden]{display:none}
+    .citadel-note.is-loading{height:0;padding-block:0;overflow:hidden}
     .citadel-note{padding:12px var(--frame-border);background:var(--header)}
     .citadel-note iframe{display:block;width:100%;height:1px;border:0;overflow:hidden;background:transparent}
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
@@ -224,6 +225,7 @@
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
+    <div class="citadel-note" id="citadelBottomNote" hidden><iframe id="citadelBottomNoteFrame" title="Citadel closing message" scrolling="no"></iframe></div>
     <nav class="deck" data-template-region="lower-icon-trough" aria-label="MASTER PLAYER TEMPLATE controls">
       <button class="nav normal-control" data-action="meditation" aria-label="Meditate"><svg viewBox="0 0 28 28"><circle cx="12" cy="5" r="2"/><path d="M12 9v7l-6 7m6-6 7 2m-7-6 5-4M5 23h15"/></svg><span>Meditate</span></button>
       <button class="nav normal-control" data-action="daily-habits" aria-label="Daily Habits"><svg viewBox="0 0 28 28"><path d="M7 5h14v19H7zM11 2h6v6h-6zM11 12h6m-6 4h6m-6 4h5"/></svg><span>Habits</span></button>
@@ -480,20 +482,37 @@
           parent.postMessage({type:'ci-lfm-height',height},location.origin);
         });
       }
-      const citadelNote=document.getElementById('citadelNote');
-      const citadelNoteFrame=document.getElementById('citadelNoteFrame');
+      const citadelNotes=[
+        {box:document.getElementById('citadelNote'),frame:document.getElementById('citadelNoteFrame'),url:'/?masterInline=citadel-note',height:0},
+        {box:document.getElementById('citadelBottomNote'),frame:document.getElementById('citadelBottomNoteFrame'),url:'/?masterInline=citadel-note&box=2',height:0}
+      ];
+      let citadelHomeVisible=false;
       if(window.parent===window){
-        citadelNoteFrame.src='/?masterInline=citadel-note';
         addEventListener('message',event=>{
-          if(event.origin!==location.origin||event.source!==citadelNoteFrame.contentWindow||
-             event.data?.type!=='ci-citadel-note-height')return;
-          const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
-          citadelNoteFrame.style.height=Math.max(1,height)+'px';
-          citadelNote.hidden=!height;
+          if(event.origin!==location.origin||event.data?.type!=='ci-citadel-note-height')return;
+          const note=citadelNotes.find(item=>event.source===item.frame.contentWindow);
+          if(!note)return;
+          note.height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+          note.frame.style.height=Math.max(1,note.height)+'px';
+          note.box.classList.remove('is-loading');
+          note.box.hidden=!citadelHomeVisible||!note.height;
           reportHeight();
         });
       }
       function show(view){
+        const wasCitadel=citadelHomeVisible;
+        citadelHomeVisible=view===home&&window.parent===window;
+        citadelNotes.forEach(note=>{
+          note.box.hidden=!citadelHomeVisible||!note.height;
+          // Re-read saved text/session after returning from Admin or another tool.
+          if(citadelHomeVisible&&!wasCitadel){
+            // A display:none ancestor makes the iframe report zero height.
+            // Keep it laid out while loading, without reserving blank space.
+            note.box.hidden=false;
+            note.box.classList.add('is-loading');
+            note.frame.src=note.url;
+          }
+        });
         shell.classList.toggle('home-mode',view===home);
         shell.classList.toggle('experience-mode',view===experience);
         [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
@@ -901,6 +920,7 @@
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       const initialAction=params.get('start');
       if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);
+      else show(home);
       reportHeight();
       window.setTimeout(reportHeight,120);
       window.setTimeout(reportHeight,600);

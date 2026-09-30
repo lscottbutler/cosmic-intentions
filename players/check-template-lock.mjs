@@ -11,8 +11,13 @@ import { readFileSync } from 'node:fs';
 // Color-only desktop/mobile preflight: run 36663994741, artifact 11076115020;
 // screenshots visually inspected and before/after frame geometry is identical.
 // Pre-color recovery: dd9db0f3376b0849b68880cb7db488cf0b1b6395.
+// Scott requested restoring both Citadel administrator text boxes and Admin access.
+// Desktop/mobile owner editing, member blocking and sign-in preflight passed
+// in run 36681532333, artifact 11081619937; all four screenshots were inspected.
+// Only Citadel note mounting/loading changed in the shell; stage/trough geometry remains.
+// Recovery before this restoration: 9c4f773d610b0b296f4aa6c5532e118cd7270960.
 const lockedFiles = {
-  "players/master-player.html": "fe9b9e8478082c7325d5ce1f588188f6e4176e24",
+  "players/master-player.html": "110412b0854a5bb93a60a93e5e8ab8cfe49d4417",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
