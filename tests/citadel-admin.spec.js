@@ -110,6 +110,11 @@ for (const identity of ['anonymous','member']) {
     if (identity === 'anonymous') {
       await expect(admin.locator('#authModal.open')).toBeVisible({ timeout:15000 });
       await expect(admin.locator('#btn-signin')).toBeVisible();
+      await expect.poll(async () => {
+        const frame = await page.locator('#experienceFrame').boundingBox();
+        const button = await admin.locator('#btn-signin').boundingBox();
+        return !!frame && !!button && button.y + button.height <= frame.y + frame.height;
+      }).toBe(true);
     } else {
       await expect(admin.locator('#page-admin-access')).toContainText('does not have administrator access', { timeout:15000 });
     }

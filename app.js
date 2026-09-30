@@ -405,19 +405,20 @@ export function showPage(id) {
       frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'favorites' }, location.origin);
     }, 220);
   }
-  // The Admin workspace is owner-only. A direct or stale navigation attempt by
-  // any member returns to the Citadel without exposing editor controls.
+  // The Admin workspace is owner-only. Keep an explicit access message visible
+  // inside the player without exposing editor controls to other accounts.
   if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) {
     let notice = document.getElementById('page-admin-access');
     if (!notice) {
       notice = document.createElement('section');
       notice.id = 'page-admin-access';
       notice.className = 'page';
+      notice.innerHTML = '<div id="adminAccessMessage" style="padding:24px;color:#171717"></div>';
       document.getElementById('page-admin').parentElement.appendChild(notice);
     }
-    notice.innerHTML = '<div style="padding:24px;color:#171717"><h2>Admin</h2><p>' +
+    notice.querySelector('#adminAccessMessage').innerHTML = '<h2>Admin</h2><p>' +
       (currentUser ? 'This account does not have administrator access.' : 'Sign in with the owner account to edit the site text boxes.') +
-      '</p>' + (currentUser ? '' : '<button type="button" onclick="openAuth(\'signin\')">Sign in</button>') + '</div>';
+      '</p>' + (currentUser ? '' : '<button type="button" onclick="openAuth(\'signin\')">Sign in</button>');
     id = 'admin-access';
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -710,8 +711,9 @@ export function openAuth(tab = 'signin') {
   const modal = document.getElementById('authModal');
   // The Master Player measures its active page to size the content iframe.
   // Keep this sign-in form inside that measured surface so it cannot be clipped.
-  if (document.documentElement.classList.contains('master-inline-ent-card')) {
-    const page = document.getElementById('page-entcard');
+  const inlineAdmin = document.documentElement.classList.contains('master-inline-admin');
+  if (inlineAdmin || document.documentElement.classList.contains('master-inline-ent-card')) {
+    const page = document.getElementById(inlineAdmin ? 'page-admin-access' : 'page-entcard');
     if (page && modal.parentElement !== page) page.appendChild(modal);
   }
   modal.classList.add('open');
