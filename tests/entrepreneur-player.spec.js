@@ -267,6 +267,10 @@ test('Entrepreneur unavailable video has a timestamped escape route', async ({ p
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
   test(`Entrepreneur review renders inside the approved frame — ${viewport.name}`, async ({ page }, testInfo) => {
+    // Four screenshots, both wrap directions, and a real iframe return to the library.
+    test.setTimeout(60000);
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
     // Sample-card navigation needs no production data or remote service timing.
     await page.route('**/*.supabase.co/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await page.setViewportSize(viewport);
@@ -326,5 +330,6 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await navigation.getByRole('button', { name: 'ENTREPRENEUR LIBRARY', exact: true }).click();
     await expect(frame.locator('#entrepreneurLibraryGrid .cl-card')).toHaveCount(31);
     await expect(frame.locator('#entrepreneurLibraryGrid .cl-card').first()).toBeVisible();
+    expect(errors).toEqual([]);
   });
 }

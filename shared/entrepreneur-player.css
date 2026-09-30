@@ -21,9 +21,10 @@
 @media(hover:hover){.ent-tabs button[aria-selected=false]:hover{background:#353d32}}
 .ent-tabs button:focus-visible{outline-offset:2px}
 .ent-card-nav{align-items:stretch}
-.ent-card-nav button{white-space:normal;overflow-wrap:anywhere}
+.ent-card-nav button{white-space:normal}
 .ent-card-count{display:flex;align-items:center;justify-content:center;color:#e9ebe6;font-size:14px;font-weight:800;font-family:var(--vault-mono,monospace);white-space:nowrap;padding-top:10px}
 @media(hover:hover){.ent-card-nav button:hover{background:#353d32}}
+@container(max-width:650px){.ent-card-nav{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1fr)}}
 .ent-panel{padding:22px}
 .ent-section-top{display:flex;gap:12px;align-items:start;justify-content:space-between;margin-bottom:16px}
 .ent-section-top h3{margin:6px 0}.ent-muted{font-size:12px!important;color:#5b6555}.ent-section-top .ent-muted{max-width:300px;margin:0}
