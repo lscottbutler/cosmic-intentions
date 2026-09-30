@@ -407,7 +407,19 @@ export function showPage(id) {
   }
   // The Admin workspace is owner-only. A direct or stale navigation attempt by
   // any member returns to the Citadel without exposing editor controls.
-  if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) id = 'dashboard';
+  if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) {
+    let notice = document.getElementById('page-admin-access');
+    if (!notice) {
+      notice = document.createElement('section');
+      notice.id = 'page-admin-access';
+      notice.className = 'page';
+      document.getElementById('page-admin').parentElement.appendChild(notice);
+    }
+    notice.innerHTML = '<div style="padding:24px;color:#171717"><h2>Admin</h2><p>' +
+      (currentUser ? 'This account does not have administrator access.' : 'Sign in with the owner account to edit the site text boxes.') +
+      '</p>' + (currentUser ? '' : '<button type="button" onclick="openAuth(\'signin\')">Sign in</button>') + '</div>';
+    id = 'admin-access';
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
   const target = document.getElementById('page-' + id);
@@ -641,7 +653,7 @@ export function navTo(id) {
     return;
   }
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard'];
+  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard','admin'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -953,7 +965,7 @@ function updateUI(user) {
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   window.ciOwnerAccess = isOwner;
   document.querySelectorAll('[data-owner-only]').forEach(el => {
-    if (el.classList.contains('colb-links-hd')) el.style.display = isOwner ? '' : 'none';
+    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
   });
   const navAdmin = document.getElementById('nav-admin');
@@ -972,6 +984,9 @@ function updateUI(user) {
   const topNotes = document.getElementById('topnav-notes');
   if (topAdmin) topAdmin.style.display = isOwner ? 'inline-block' : 'none';
   if (topNotes) topNotes.style.display = isOwner ? 'inline-block' : 'none';
+  // Restore the requested Admin destination after sign-in and remove its
+  // editors immediately after sign-out. The owner guard stays in showPage.
+  if (new URLSearchParams(location.search).get('masterInline') === 'admin') showPage('admin');
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -5614,31 +5629,40 @@ function injectPlaceholderCards() {
 
 // The standalone Master Player renders Citadel outside the main app's dashboard.
 async function initCitadelNoteFrame() {
+  const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
+  const slug = _adminPageBoxSlug('dashboard', boxNumber);
   document.body.replaceChildren();
   document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
   document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
   const mount = document.createElement('div');
   mount.style.cssText = 'padding:0;width:100%;box-sizing:border-box';
   document.body.appendChild(mount);
+  // The inline Save handler uses the app's existing toast region.
+  const toastWrap = document.createElement('div');
+  toastWrap.id = 'toastWrap';
+  toastWrap.className = 'toast-wrap';
+  toastWrap.setAttribute('aria-live', 'polite');
+  document.body.appendChild(toastWrap);
   const report = () => {
     const height = Math.ceil(mount.getBoundingClientRect().height);
     window.parent.postMessage({ type: 'ci-citadel-note-height', height }, location.origin);
   };
   try {
     const [block, auth] = await Promise.all([
-      sb.from('content_blocks').select('slug, body').eq('slug', 'intro-note-dashboard').maybeSingle(),
+      sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
       sb.auth.getUser(),
     ]);
     if (block.error) throw block.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
-    _blockCache['intro-note-dashboard'] = block.data?.body || '';
-    const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', 1);
+    _blockCache[slug] = block.data?.body || '';
+    const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', boxNumber);
     if (box.style.display !== 'none') mount.appendChild(box);
     if ('ResizeObserver' in window) new ResizeObserver(report).observe(mount);
     report();
   } catch (error) {
-    console.error('[citadel-note] Could not load Box 1:', error);
+    console.error('[citadel-note] Could not load box:', boxNumber);
+    mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Citadel text could not load. Reload to try again.</p>';
     report();
   }
 }
