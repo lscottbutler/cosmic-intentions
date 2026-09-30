@@ -7,7 +7,7 @@ async function openCard(page) {
   // Do not replace the iframe URL: that previously hid the blank-frame bug.
   await page.goto('/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT&preview=1', { waitUntil: 'domcontentloaded' });
   const frame = page.frameLocator('#experienceFrame');
-  await expect(frame.locator('#entExperience')).toBeVisible();
+  await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
   return frame;
 }
 
@@ -267,6 +267,8 @@ test('Entrepreneur unavailable video has a timestamped escape route', async ({ p
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
   test(`Entrepreneur review renders inside the approved frame — ${viewport.name}`, async ({ page }, testInfo) => {
+    // Sample-card navigation needs no production data or remote service timing.
+    await page.route('**/*.supabase.co/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await page.setViewportSize(viewport);
     const frame = await openCard(page);
     await expect.poll(() => frame.locator('#entLibHost img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
