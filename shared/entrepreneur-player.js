@@ -25,7 +25,7 @@ function loadYouTube() {
   return youtubeAPI;
 }
 
-export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, goals = [], getAccount = () => '', initialTab = 'deeper', habit = null }) {
+export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, navigationHTML = '', goals = [], getAccount = () => '', initialTab = 'deeper', habit = null }) {
   const account = String(getAccount() || 'local-preview');
   const storageKey = `ci_ent_player_v1:${account}:${card.key}`;
   const view = views.get(storageKey) || { tab: initialTab, note: '', action: '', goal: '', resourceTab: 'youtube' };
@@ -51,7 +51,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   const tabBar = (prefix, label) => `<div class="ent-tabs" role="tablist" aria-label="${label}">${[['action','ACTION'],['mindset','MINDSET'],['deeper','GO DEEPER'],['notes','MY NOTES']].map(([key,name]) => `<button type="button" role="tab" id="${prefix}-${key}" aria-controls="ent-panel-${key}" data-tab="${key}">${name}</button>`).join('')}</div>`;
   root.className = 'ent-experience';
   root.innerHTML = `
-    ${tabBar('ent-top-tab', 'Entrepreneur learning shortcuts')}
+    ${navigationHTML}
     <div class="ent-intro"><div class="ent-eyebrow">ENTREPRENEUR PLAYER <span class="ent-review-badge">REVIEW EDITION</span></div>
       <h2>${esc(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''))}</h2><p>${esc(card.directive)}</p>
       ${habit ? `<div class="ent-habit-context"><div class="ent-eyebrow">FOR YOUR HABIT</div><strong>${esc(habit.name)}</strong><p>Choose a belief that helps you begin, then make your next repetition small and specific.</p><button type="button" class="ent-button ent-button-secondary" data-habit-step>Plan my next repetition →</button></div>` : ''}

@@ -296,7 +296,6 @@ export function renderEntLibrary() {
 
   const monitor = `
     ${habitContext ? `<a class="habit-return-link" href="${habitPlayerURL()}" target="_parent">‹ Return to Habits</a>` : ''}
-    <button type="button" onclick="entBackToLibrary()" style="display:block;margin:0 0 12px;padding:9px 12px;border:1px solid #20241f;border-radius:7px;background:#fff;color:#20241f;font-weight:800;cursor:pointer;">‹ ENTREPRENEUR LIBRARY</button>
     <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
         <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">ENTREPRENEUR PLAYER</div>
@@ -305,15 +304,16 @@ export function renderEntLibrary() {
           <img src="${entCardImg(c.key)}" alt="${_esc(c.title)}" style="position:relative;width:100%;display:block;" onerror="this.style.display='none'">
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-top:12px;">
-        <button onclick="entNav(-1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">‹ PREV</button>
-        <span style="align-self:center;color:#20241f;font-weight:800;font-size:12px;font-family:var(--vault-mono,monospace);">${c.n} / ${ENT_CARDS.length}</span>
-        <button onclick="entNav(1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">NEXT ›</button>
-      </div>
     </div>`;
+  const navigationHTML = `<nav class="ent-tabs ent-card-nav" aria-label="Entrepreneur card navigation">
+    <button type="button" onclick="entNav(-1)">‹ PREV</button>
+    <button type="button" onclick="entBackToLibrary()">ENTREPRENEUR LIBRARY</button>
+    <span class="ent-card-count" aria-label="Card ${c.n} of ${ENT_CARDS.length}">${c.n} / ${ENT_CARDS.length}</span>
+    <button type="button" onclick="entNav(1)">NEXT ›</button>
+  </nav>`;
 
   if (!has) {
-    host.innerHTML = monitor +
+    host.innerHTML = monitor + navigationHTML +
       `<div style="background:#1c1c1c;color:#fff;padding:20px 18px;text-align:center;font-size:15px;line-height:1.5;">This card's affirmations, beliefs and roadmap are coming soon.</div>`;
     return;
   }
@@ -321,6 +321,7 @@ export function renderEntLibrary() {
   host.innerHTML = monitor + '<div id="entExperience"></div><div id="entPlayer" style="display:none;"></div>';
   _disposeEntExperience = mountEntrepreneurPlayer(host.querySelector('#entExperience'), {
     card: c,
+    navigationHTML,
     initialTab: habitContext ? 'mindset' : 'deeper',
     habit: habitContext?.habit || null,
     goals: intentions || [],

@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { ENT_CARDS } from '../shared/ent-library-content.js';
 import { RESOURCE_CATALOG, resourceForCard } from '../shared/entrepreneur-player-resources.js';
 
-async function openCard(page) {
+async function openCard(page, key = 'SELF CONFIDENT') {
   // Exercise the delivered URL and the Master Player's real frame navigation.
   // Do not replace the iframe URL: that previously hid the blank-frame bug.
-  await page.goto('/players/master-player.html?start=ent-card&ent=SELF%20CONFIDENT&preview=1', { waitUntil: 'domcontentloaded' });
+  await page.goto(`/players/master-player.html?start=ent-card&ent=${encodeURIComponent(key)}&preview=1`, { waitUntil: 'domcontentloaded' });
   const frame = page.frameLocator('#experienceFrame');
   await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
   return frame;
@@ -270,25 +270,28 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     // Sample-card navigation needs no production data or remote service timing.
     await page.route('**/*.supabase.co/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await page.setViewportSize(viewport);
-    const frame = await openCard(page);
+    const frame = await openCard(page, 'ORGANIZATIONAL SKILLS');
     await expect.poll(() => frame.locator('#entLibHost img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
     await expect(frame.locator('#authModal')).not.toBeVisible();
     await expect(page.locator('#experienceFrame')).toHaveAttribute('src', /masterInline=ent-card/);
     await expect(page.locator('#experienceFrame')).not.toHaveAttribute('src', /preview=/);
     const root = frame.locator('#entExperience');
-    const shortcuts = frame.getByRole('tablist', { name: 'Entrepreneur learning shortcuts', exact: true });
+    const navigation = frame.getByRole('navigation', { name: 'Entrepreneur card navigation', exact: true });
     const sections = frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true });
-    await expect(shortcuts.getByRole('tab')).toHaveCount(4);
+    await expect(navigation.getByRole('button')).toHaveCount(3);
+    await expect(frame.locator('#entLibHost [role=tablist]')).toHaveCount(1);
+    await expect(frame.getByRole('button', { name: 'ENTREPRENEUR LIBRARY', exact: true })).toHaveCount(1);
+    await expect(navigation.locator('.ent-card-count')).toHaveText('31 / 31');
     await expect(sections.getByRole('tab')).toHaveCount(4);
     const placement = await root.evaluate(el => {
-      const upper = el.querySelector('[role="tablist"]').getBoundingClientRect();
-      const previous = document.querySelector('button[onclick="entNav(-1)"]').getBoundingClientRect();
+      const upper = el.querySelector('.ent-card-nav').getBoundingClientRect();
+      const artwork = document.querySelector('#entLibHost img').getBoundingClientRect();
       const intro = el.querySelector('.ent-intro').getBoundingClientRect();
       const ids = [...el.querySelectorAll('[id]')].map(node => node.id);
-      return { gap: upper.top - previous.bottom, beforeIntro: upper.bottom <= intro.top, uniqueIds: ids.length === new Set(ids).size };
+      return { gap: upper.top - artwork.bottom, beforeIntro: upper.bottom <= intro.top, uniqueIds: ids.length === new Set(ids).size };
     });
     expect(placement.gap).toBeGreaterThanOrEqual(0);
-    expect(placement.gap).toBeLessThan(20);
+    expect(placement.gap).toBeLessThan(30);
     expect(placement.beforeIntro).toBe(true);
     expect(placement.uniqueIds).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-full-player.png`), fullPage: true });
@@ -299,18 +302,29 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await root.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-action.png`) });
     await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MINDSET', exact: true }).click();
     await root.screenshot({ path: testInfo.outputPath(`entrepreneur-${viewport.name}-mindset.png`) });
-    await expect(shortcuts.getByRole('tab', { name: 'MINDSET', exact: true })).toHaveAttribute('aria-selected', 'true');
-    await shortcuts.getByRole('tab', { name: 'ACTION', exact: true }).click();
-    await expect(sections.getByRole('tab', { name: 'ACTION', exact: true })).toHaveAttribute('aria-selected', 'true');
-    await frame.locator('#ent-action-note').fill('Keep this draft while switching from either bar.');
-    await shortcuts.getByRole('tab', { name: 'ACTION', exact: true }).focus();
+    await sections.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.locator('#ent-action-note').fill('Keep this draft while navigating cards.');
+    await sections.getByRole('tab', { name: 'ACTION', exact: true }).focus();
     await page.keyboard.press('End');
-    await expect(shortcuts.getByRole('tab', { name: 'MY NOTES', exact: true })).toBeFocused();
-    await expect(sections.getByRole('tab', { name: 'MY NOTES', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(sections.getByRole('tab', { name: 'MY NOTES', exact: true })).toBeFocused();
     await expect(frame.locator('#ent-panel-notes')).toBeVisible();
-    await expect(frame.locator('#ent-action-note')).toHaveValue('Keep this draft while switching from either bar.');
+    await expect(frame.locator('#ent-action-note')).toHaveValue('Keep this draft while navigating cards.');
     await page.keyboard.press('Home');
-    await expect(shortcuts.getByRole('tab', { name: 'ACTION', exact: true })).toBeFocused();
+    await expect(sections.getByRole('tab', { name: 'ACTION', exact: true })).toBeFocused();
     await expect(frame.locator('#ent-panel-action')).toBeVisible();
+    await navigation.getByRole('button', { name: 'NEXT ›', exact: true }).click();
+    await expect(navigation.locator('.ent-card-count')).toHaveText('1 / 31');
+    await expect(root.locator('h2')).toHaveText('DISCIPLINED');
+    await navigation.getByRole('button', { name: '‹ PREV', exact: true }).click();
+    await expect(navigation.locator('.ent-card-count')).toHaveText('31 / 31');
+    await expect(root.locator('h2')).toHaveText('STRONG ORGANIZATIONAL SKILLS');
+    await expect(frame.locator('#ent-action-note')).toHaveValue('Keep this draft while navigating cards.');
+    await navigation.getByRole('button', { name: '‹ PREV', exact: true }).click();
+    await expect(navigation.locator('.ent-card-count')).toHaveText('30 / 31');
+    await navigation.getByRole('button', { name: 'NEXT ›', exact: true }).click();
+    await expect(navigation.locator('.ent-card-count')).toHaveText('31 / 31');
+    await navigation.getByRole('button', { name: 'ENTREPRENEUR LIBRARY', exact: true }).click();
+    await expect(frame.locator('#entrepreneurLibraryGrid .cl-card')).toHaveCount(31);
+    await expect(frame.locator('#entrepreneurLibraryGrid .cl-card').first()).toBeVisible();
   });
 }
