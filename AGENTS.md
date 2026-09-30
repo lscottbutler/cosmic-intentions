@@ -57,7 +57,9 @@ Canonical implementation: `players/master-player.html`. Approved recovery checkp
 
 Every page that displays a player must use this shared template. Do not introduce, restore, substitute, or show a different player template on another page. Keep page-specific content and behavior inside the canonical template instead of duplicating or redesigning its shell.
 
-Preserve the approved square outer blue top corners, square outer blue bottom, aligned blue side borders, curved grey inner troughs, matching grey meditation controls area, and working hamburger menu. A request to change page content does not authorize a template change. Scott must explicitly request the particular template feature to be changed; preserve the rest and retain the integrity guard.
+Preserve the approved square outer charcoal-grey top corners, square outer charcoal-grey bottom, aligned charcoal-grey side borders, curved grey inner troughs, matching grey meditation controls area, and working hamburger menu. A request to change page content does not authorize a template change. Scott must explicitly request the particular template feature to be changed; preserve the rest and retain the integrity guard.
+
+Color amendment — Scott explicitly requested on 2026-09-30: replace Dodger Blue with dark grey on all players. The shared outer frame and matching Meditation borders now use charcoal `#292929`, replacing `#1e90ff`. The grey `#747474` inner troughs, white Entrepreneur trough, geometry and controls remain protected. Earlier blue styling remains recoverable at `dd9db0f3376b0849b68880cb7db488cf0b1b6395`.
 
 Work one requested revision at a time. For a focused edit, inspect and verify the affected component and necessary dependencies; do not restart a whole-site audit or rework unrelated pages. This is Scott's later, specific scope direction for incremental revisions.
 

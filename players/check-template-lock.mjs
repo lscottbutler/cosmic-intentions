@@ -7,9 +7,13 @@ import { readFileSync } from 'node:fs';
 // Scott explicitly requested the Entrepreneur card lower trough white, without its three buttons.
 // Desktop/mobile visual preflight: run 36547855651, artifact 11023316652. Other player styling is unchanged.
 // Recovery before this scoped change: 264ef08d62525a3c96119b9f1a103e4376ae08a9.
+// Scott authorized Dodger Blue to charcoal #292929 across all players on 2026-09-30.
+// Color-only desktop/mobile preflight: run 36663994741, artifact 11076115020;
+// screenshots visually inspected and before/after frame geometry is identical.
+// Pre-color recovery: dd9db0f3376b0849b68880cb7db488cf0b1b6395.
 const lockedFiles = {
-  "players/master-player.html": "f15b6abb12426797c631bf01b7b0b7fd738e2f6c",
-  "players/meditation.html": "ee0950f90593f3b11bc194b588892539da9b68f6"
+  "players/master-player.html": "fe9b9e8478082c7325d5ce1f588188f6e4176e24",
+  "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

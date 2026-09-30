@@ -18,7 +18,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     const geometry = await deck.evaluate(el => ({ height: el.getBoundingClientRect().height, curve: getComputedStyle(el, '::before').borderBottomLeftRadius, frame: getComputedStyle(el).backgroundColor }));
     expect(geometry.height).toBeGreaterThan(200);
     expect(geometry.curve).not.toBe('0px');
-    expect(geometry.frame).toBe('rgb(30, 144, 255)');
+    expect(geometry.frame).toBe('rgb(41, 41, 41)');
     await expect.poll(() => page.locator('#capTitle').evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(116, 116, 116)');
     await deck.screenshot({ path: testInfo.outputPath(`ent-white-trough-${viewport.name}.png`) });
     await page.screenshot({ path: testInfo.outputPath(`ent-white-player-${viewport.name}.png`), fullPage: true });

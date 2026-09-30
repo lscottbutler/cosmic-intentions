@@ -1,3 +1,4 @@
+/* global document, getComputedStyle */
 import { chromium } from '@playwright/test';
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';

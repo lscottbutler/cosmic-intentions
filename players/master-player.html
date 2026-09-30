@@ -12,10 +12,10 @@
     .citadel-note iframe{display:block;width:100%;height:1px;border:0;overflow:hidden;background:transparent}
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
        Permanent shared shell for all member players.
-       Outer shell: #1e90ff. Title/icon troughs: #747474.
+       Outer shell: #292929. Title/icon troughs: #747474.
        Preserve the approved spacing, curves, typography and icon layout.
        Page-specific content may change; this shared chrome must remain consistent. */
-    :root{color-scheme:light;--frame:#1e90ff;--header:#1e90ff;--paper:#f2ede7;--deck:#1e90ff;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow-x:hidden;overflow-y:auto;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     html.embedded-player,html.embedded-player body{overflow:hidden}
@@ -25,7 +25,7 @@
     /* MASTER PLAYER TEMPLATE: only the upper and lower troughs curve; the 16:9 stage stays between them. */
     .shell.home-mode{background:var(--header);padding:0}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
-    .shell.daily-habits-mode .stage{background:#1e90ff!important}
+    .shell.daily-habits-mode .stage{background:#292929!important}
     /* LOCKED UPPER TROUGH GEOMETRY — title and site menu share one immutable centerline. */
     .cap{position:relative;isolation:isolate;width:100%;height:var(--cap-height);margin:0;padding:0;background:var(--header);color:var(--trough-ink);text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:0;transition:background-color .25s ease}
     .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border:0;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
@@ -49,7 +49,7 @@
     .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
     .player-word-card{pointer-events:none}
     /* The visible 16:9 frame sits above the image so the image cannot cover it. */
-    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #1e90ff;pointer-events:none}
+    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #292929;pointer-events:none}
     .inspiration.has-card .inspiration-card{opacity:1}
     .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
@@ -94,10 +94,10 @@
     /* Meditation sides match the upper player's 35-unit stroke on its 1920-unit canvas.
        The bottom border and its existing curve remain unchanged. */
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
-    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #1e90ff;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
+    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #292929;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
     .deck.meditation-mode::before{display:none}
     /* Fill only the outside lower corners; retain the curved white controls area. */
-    .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
+    .shell.meditation-player-mode{background:linear-gradient(#292929,#292929) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
     .deck.workspace-trough-hidden{display:none}
     /* Scott, 2026-09-29: white Entrepreneur card trough without the three-button cluster. */
@@ -384,8 +384,8 @@
         return '#'+channel(entry.r)+channel(entry.g)+channel(entry.b);
       }
       function applyTroughColors(){
-        shell.style.setProperty('--header','#1e90ff');
-        shell.style.setProperty('--deck','#1e90ff');
+        shell.style.setProperty('--header','#292929');
+        shell.style.setProperty('--deck','#292929');
         shell.style.setProperty('--trough-fill','#747474');
         shell.style.setProperty('--trough-ink','#fff');
       }
@@ -608,7 +608,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -707,7 +707,7 @@
         const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action)?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
-        shell.style.setProperty('--frame','#1e90ff');
+        shell.style.setProperty('--frame','#292929');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
         cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='daily-habits'?'Habits':item[1]);
