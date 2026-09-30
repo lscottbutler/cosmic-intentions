@@ -11,11 +11,6 @@ async function fixture(page, identity = 'owner') {
   };
   const blocks = new Map([['intro-note-dashboard', '<p>Citadel opening text — review fixture.</p>']]);
   const writes = [];
-  if (user) await page.addInitScript(user => {
-    const exp = Math.floor(Date.now() / 1000) + 3600;
-    const token = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })) + '.' + btoa(JSON.stringify({ sub: user.id, exp, aud: 'authenticated' })) + '.fixture';
-    localStorage.setItem('sb-wbqzwbubbeorcknevips-auth-token', JSON.stringify({ access_token: token, refresh_token: 'fixture', expires_at: exp, expires_in: 3600, token_type: 'bearer', user }));
-  }, user);
   // Every service request is intercepted; these tests cannot write live data.
   await page.route('**/*.supabase.co/**', async route => {
     const request = route.request(), url = new URL(request.url());
@@ -35,6 +30,28 @@ async function fixture(page, identity = 'owner') {
     }
     return json([]);
   });
+  if (user) {
+    // Match the app's existing IndexedDB auth adapter. Seed only the isolated
+    // browser context, before boot, rather than inventing an app preview owner.
+    await page.route('**/__ci_auth_fixture', route => route.fulfill({ contentType:'text/html', body:'<!doctype html><title>Isolated auth fixture</title>' }));
+    await page.goto('/__ci_auth_fixture');
+    await page.evaluate(async user => {
+      const exp = Math.floor(Date.now() / 1000) + 3600;
+      const token = btoa(JSON.stringify({ alg:'HS256', typ:'JWT' })) + '.' + btoa(JSON.stringify({ sub:user.id, exp, aud:'authenticated' })) + '.fixture';
+      const session = JSON.stringify({ access_token:token, refresh_token:'fixture', expires_at:exp, expires_in:3600, token_type:'bearer', user });
+      await new Promise((resolve, reject) => {
+        const request = indexedDB.open('ci-auth-db', 1);
+        request.onupgradeneeded = () => request.result.createObjectStore('kv');
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const db = request.result, transaction = db.transaction('kv','readwrite');
+          transaction.objectStore('kv').put(session,'ci-auth');
+          transaction.oncomplete = () => { db.close(); resolve(); };
+          transaction.onerror = () => reject(transaction.error);
+        };
+      });
+    }, user);
+  }
   if (process.env.CITADEL_TEMPLATE_PREFLIGHT === '1') {
     const html = restoreCitadelBoxes(readFileSync('dist/players/master-player.html','utf8'));
     await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
