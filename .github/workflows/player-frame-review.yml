@@ -1,0 +1,35 @@
+name: Player frame review
+
+on:
+  pull_request:
+    paths:
+      - 'players/**'
+      - 'scripts/review-player-frame.mjs'
+      - '.github/workflows/player-frame-review.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  frame-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Review authorized frame color before updating the protected baseline
+        run: node scripts/review-player-frame.mjs
+        env:
+          FRAME_COLOR_PREFLIGHT: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: player-frame-review
+          path: test-results/player-frame-review/
+          retention-days: 7
