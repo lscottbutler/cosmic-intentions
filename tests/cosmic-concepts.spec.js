@@ -37,14 +37,14 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await root.screenshot({ path: testInfo.outputPath(`concepts-${viewport.name}-themes.png`) });
 
     const first = root.locator('.cl-concept-theme').first();
-    await first.locator('summary').focus();
+    await first.locator(':scope > summary').focus();
     await page.keyboard.press('Enter');
     await expect(first).toHaveAttribute('open', '');
     await expect(root.locator('#cosmic-concept-1 h3')).toHaveText('Self-awareness');
     await expect(root.locator('#cosmic-concept-1 p')).toHaveText('Recognizing your thoughts, feelings, motives, and behavior.');
     const columns = await first.locator('.cl-concept-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
     expect(columns).toBe(viewport.name === 'desktop' ? 2 : 1);
-    await first.locator('summary').click();
+    await first.locator(':scope > summary').click();
 
     const search = root.getByLabel('Find a concept', { exact: true });
     const theme = root.getByLabel('Theme', { exact: true });
