@@ -5,6 +5,7 @@
 
 import { toast, intentions, currentUser } from '../app.js';
 import { mountEntrepreneurPlayer } from './entrepreneur-player.js';
+import { mountCosmicConceptLibrary } from './cosmic-concepts.js';
 import { habitEntryContext, habitPlayerURL } from './habit-mindset.js';
 import { ENT_CARDS, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
@@ -225,6 +226,16 @@ export function renderEntrepreneurLibrary() {
 }
 
 export function renderCosmicLibrary() {
+  const library = document.getElementById('cosmicLibraryBody');
+  if (library) {
+    let concepts = library.querySelector('#cosmicConceptLibrary');
+    if (!concepts) {
+      concepts = document.createElement('section');
+      concepts.id = 'cosmicConceptLibrary';
+      library.prepend(concepts);
+    }
+    mountCosmicConceptLibrary(concepts);
+  }
   // "The Successful Entrepreneur" overview (from the Entrepreneur Library card)
   // re-homed here as a collapsible dropdown, above the Entrepreneur grid.
   const dd = document.getElementById('entOverviewDropdown');
