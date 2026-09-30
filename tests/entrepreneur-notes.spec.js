@@ -23,10 +23,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await page.setViewportSize(viewport);
     const frame = await openCard(page);
     const root = frame.locator('#entExperience');
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     await frame.locator('[data-goal]').selectOption('pv1');
     await frame.locator('#ent-action-note').fill('Prepare tomorrow’s first focused work session.');
-    await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
     await expect(frame.locator('#ent-action-note')).toHaveCount(1);
     await expect(frame.locator('#ent-action-note')).toHaveValue('Prepare tomorrow’s first focused work session.');
     await frame.getByRole('button', { name: 'Save note', exact: true }).click();
@@ -34,7 +34,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     expect(original.kind).toBe('note');
     expect(original.goalId).toBe('pv1');
     await expect(frame.locator('.ent-saved-list [data-record-id]')).toHaveCount(1);
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     await frame.locator('.ent-action-notes [data-edit-record]').click();
     await frame.locator('#ent-action-note').fill('Before dinner, choose tomorrow’s first task.');
     // Editing/conversion must keep the original goal, even if the selector changes.
@@ -47,7 +47,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(frame.locator('.ent-action-list [data-complete-action]')).toBeFocused();
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(root).toBeVisible({ timeout: 15000 });
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     await expect(frame.locator('.ent-action-list [data-complete-action]')).toBeChecked();
     await frame.locator('#ent-action-note').fill('Protect the first 20 minutes on my calendar.');
     await frame.getByRole('button', { name: 'Save my next step', exact: true }).click();
@@ -57,7 +57,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await root.screenshot({ path: testInfo.outputPath(`notes-actions-${viewport.name}.png`) });
     await frame.locator('.ent-notes-capture').scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath(`notes-player-${viewport.name}.png`), fullPage: true });
-    await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
     await expect(frame.locator('.ent-saved-list [data-record-id]')).toHaveCount(3);
     await frame.locator(`.ent-saved-list [data-complete-action="${original.id}"]`).uncheck();
     await expect(frame.locator(`.ent-saved-list [data-complete-action="${original.id}"]`)).not.toBeChecked();
@@ -66,10 +66,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await root.screenshot({ path: testInfo.outputPath(`notes-library-${viewport.name}.png`) });
     await frame.locator('.ent-saved-list [data-remove]').first().click();
     expect(await saved(frame)).toHaveLength(2);
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     await expect(frame.locator('.ent-action-notes [data-record-id]')).toHaveCount(0);
     await frame.locator('button', { hasText: 'NEXT' }).first().click();
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     await expect(frame.locator('.ent-action-list [data-record-id]')).toHaveCount(0);
     expect(errors).toEqual([]);
     expect(videoRequests).toEqual([]);
@@ -87,7 +87,7 @@ test('Entrepreneur notes preserve earlier notes and existing next steps', async 
     localStorage.setItem(key.replace(':preview:', ':other-account:'), JSON.stringify([{ id: 'private-fixture', kind: 'note', text: 'Other account fixture.' }]));
   }, { key });
   const frame = await openCard(page);
-  await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+  await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
   const before = await frame.locator('#entExperience').evaluate(() => localStorage.getItem('ci_ent_notes'));
   await expect(frame.locator('[data-ent-note-card]')).toContainText('Set up my workspace');
   await expect(frame.locator('#entExperience')).not.toContainText('Other account fixture.');
@@ -95,7 +95,7 @@ test('Entrepreneur notes preserve earlier notes and existing next steps', async 
   await frame.locator('#entExperience').screenshot({ path: testInfo.outputPath('notes-earlier-mobile.png') });
   await frame.locator('[data-legacy-note]').click();
   await expect(frame.locator('.ent-action-list [data-record-id]')).toHaveCount(2);
-  await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+  await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
   await frame.locator('[data-legacy-note]').click();
   await expect(frame.locator('.ent-action-list [data-record-id]')).toHaveCount(2);
   await frame.locator('[data-panel="action"] [data-complete-action="old-action"]').check();
@@ -108,7 +108,7 @@ test('Entrepreneur notes keep drafts and saved items when storage fails', async 
   test.setTimeout(60000);
   const frame = await openCard(page);
   const root = frame.locator('#entExperience');
-  await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+  await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
   await frame.locator('#ent-action-note').fill('An idea to turn into action.');
   await frame.getByRole('button', { name: 'Save note', exact: true }).click();
   await frame.locator('#ent-action-note').fill('A step to complete.');
@@ -128,7 +128,7 @@ test('Entrepreneur notes keep drafts and saved items when storage fails', async 
   await frame.locator('.ent-action-list [data-complete-action]').click();
   await expect(frame.locator('.ent-action-list [data-complete-action]')).not.toBeChecked();
   expect(await saved(frame)).toEqual(before);
-  await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+  await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
   await expect(frame.locator('#ent-action-note')).toHaveValue('Keep this unsaved idea.');
   await frame.locator('.ent-saved-list [data-edit-record]').first().click();
   await expect(frame.locator('[data-status="action"]')).toContainText('Save or clear your current draft');

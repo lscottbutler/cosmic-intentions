@@ -10,7 +10,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await page.goto('/players/master-player.html?start=ent-card&ent=STRONG%20WORK%20ETHIC&preview=1', { waitUntil: 'domcontentloaded' });
     const frame = page.frameLocator('#experienceFrame');
     await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
-    await frame.getByRole('tab', { name: 'ACTION', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'ACTION', exact: true }).click();
     const deck = page.locator('.deck');
     await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(255, 255, 255)');
     await expect(page.locator('#lfmToolControls')).toBeHidden();

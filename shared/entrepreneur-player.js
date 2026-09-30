@@ -48,8 +48,10 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   const urlAt = seconds => `https://www.youtube.com/watch?v=${resource.videoId}&t=${Math.floor(seconds)}s`;
   const timeRange = m => m.end === null ? 'Full lesson · from the beginning' : `${clock(m.start)}–${clock(m.end)}`;
   const editorial = r => `<article class="ent-resource-card"><div class="ent-eyebrow">${r === resource?.article ? 'ARTICLE' : 'PODCAST'} · ${esc(r.creator)}</div><h3>${esc(r.title)}</h3><p class="ent-muted">${esc(r.time)}</p><dl><dt>Why this helps</dt><dd>${esc(r.why)}</dd><dt>Takeaway</dt><dd>${esc(r.takeaway)}</dd><dt>Put it to work</dt><dd>${esc(r.action)}</dd></dl><div class="ent-resource-actions"><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">Open this ${r === resource?.article ? 'article' : 'episode'} ↗</a><button class="ent-button ent-button-secondary" data-use-practice="${r === resource?.article ? 'article' : 'podcast'}">Use this for my next step</button></div></article>`;
+  const tabBar = (prefix, label) => `<div class="ent-tabs" role="tablist" aria-label="${label}">${[['action','ACTION'],['mindset','MINDSET'],['deeper','GO DEEPER'],['notes','MY NOTES']].map(([key,name]) => `<button type="button" role="tab" id="${prefix}-${key}" aria-controls="ent-panel-${key}" data-tab="${key}">${name}</button>`).join('')}</div>`;
   root.className = 'ent-experience';
   root.innerHTML = `
+    ${tabBar('ent-top-tab', 'Entrepreneur learning shortcuts')}
     <div class="ent-intro"><div class="ent-eyebrow">ENTREPRENEUR PLAYER <span class="ent-review-badge">REVIEW EDITION</span></div>
       <h2>${esc(card.title.replace(/^I AM /, '').replace(/^I HAVE /, ''))}</h2><p>${esc(card.directive)}</p>
       ${habit ? `<div class="ent-habit-context"><div class="ent-eyebrow">FOR YOUR HABIT</div><strong>${esc(habit.name)}</strong><p>Choose a belief that helps you begin, then make your next repetition small and specific.</p><button type="button" class="ent-button ent-button-secondary" data-habit-step>Plan my next repetition →</button></div>` : ''}
@@ -57,7 +59,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
       <label class="ent-goal-select">Apply this to a goal<select data-goal><option value="">Personal practice · no goal selected</option>${goalItems.map(g => `<option value="${esc(g.id)}">${esc(g.title || g.text)}</option>`).join('')}</select></label>
       <p class="ent-muted" data-goal-context></p>
     </div>
-    <div class="ent-tabs" role="tablist" aria-label="Entrepreneur learning sections">${[['action','ACTION'],['mindset','MINDSET'],['deeper','GO DEEPER'],['notes','MY NOTES']].map(([key,label]) => `<button type="button" role="tab" id="ent-tab-${key}" aria-controls="ent-panel-${key}" data-tab="${key}">${label}</button>`).join('')}</div>
+    ${tabBar('ent-tab', 'Entrepreneur learning sections')}
     <section class="ent-panel" id="ent-panel-action" role="tabpanel" aria-labelledby="ent-tab-action" data-panel="action">
       <div class="ent-eyebrow">MAKE IT REAL</div><h3>Your next useful step</h3><p>Use this card’s practical steps to move a goal forward. Choose one to start today.</p>
       <ol class="ent-steps">${card.roadmap.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
@@ -79,12 +81,12 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
     </section>
     <section class="ent-panel" id="ent-panel-notes" role="tabpanel" aria-labelledby="ent-tab-notes" data-panel="notes"><div class="ent-eyebrow">KEEP WHAT MOVES YOU FORWARD</div><h3>Notes, moments & next steps</h3><p class="ent-muted">Saved on this device${account === 'local-preview' ? ' for this preview' : ' for your account'}. Return to a moment, put it to work, or remove it.</p><div data-capture-slot="notes"></div><ul class="ent-saved-list ent-record-list"></ul><p class="ent-status" role="status" data-status="notes"></p>${notesHTML}</section>`;
 
-  function setTab(tab, focus = false) {
+  function setTab(tab, focusBar = null) {
     view.tab = tab;
     // One composer follows the active workspace; drafts and element IDs stay unique.
     if (tab === 'action' || tab === 'notes') root.querySelector(`[data-capture-slot="${tab}"]`).append(root.querySelector('.ent-notes-capture'));
     if (tab !== 'deeper') player?.pauseVideo?.();
-    root.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+    root.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on && b.closest('[role="tablist"]') === focusBar) b.focus(); });
     root.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== tab; });
   }
   function setFormat(format) {
@@ -195,10 +197,11 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, go
   paintGoal();
   root.addEventListener('keydown', e => {
     if (!e.target.matches('[data-tab]') || !['ArrowRight','ArrowLeft','Home','End'].includes(e.key)) return;
-    const tabs = [...root.querySelectorAll('[data-tab]')];
+    const bar = e.target.closest('[role="tablist"]');
+    const tabs = [...bar.querySelectorAll('[data-tab]')];
     const n = tabs.indexOf(e.target);
     const i = e.key === 'Home' ? 0 : e.key === 'End' ? 3 : (n + (e.key === 'ArrowRight' ? 1 : 3)) % 4;
-    e.preventDefault(); setTab(tabs[i].dataset.tab, true);
+    e.preventDefault(); setTab(tabs[i].dataset.tab, bar);
   });
   root.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;

@@ -59,7 +59,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
       expect(box.height).toBeGreaterThanOrEqual(44);
       await link.click();
       await expect(page).toHaveURL(new RegExp('start=ent-card'));
-      await expect(frame.locator('[data-tab="mindset"]')).toHaveAttribute('aria-selected', 'true', { timeout: 15000 });
+      await expect(frame.locator('#ent-tab-mindset')).toHaveAttribute('aria-selected', 'true', { timeout: 15000 });
       await expect(frame.locator('[data-panel="mindset"]')).toBeVisible();
       expect(new URL(page.url()).searchParams.get('ent')).toBe(key);
       await expect(frame.locator('.ent-habit-context')).toHaveCount(0);
@@ -81,10 +81,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(frame.locator('[data-panel="action"]')).toBeVisible();
     await frame.locator('#ent-action-note').fill('After breakfast, open my document and write for two minutes.');
     await frame.getByRole('button', { name: 'Save my next step', exact: true }).click();
-    await frame.getByRole('tab', { name: 'MY NOTES', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
     await expect(frame.locator('.ent-saved-list')).toContainText('Habit: Write for 20 minutes');
     await expect(frame.locator('.ent-saved-list')).toContainText('After breakfast');
-    await frame.getByRole('tab', { name: 'MINDSET', exact: true }).click();
+    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MINDSET', exact: true }).click();
     await frame.locator('.ent-habit-context').scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath(`habit-player-context-${viewport.name}.png`), fullPage: true });
     await frame.getByRole('link', { name: 'Return to Habits' }).click();
