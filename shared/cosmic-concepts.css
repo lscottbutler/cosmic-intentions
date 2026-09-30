@@ -38,3 +38,50 @@
 #cosmicConceptLibrary .cl-concepts-footnote{margin:0;padding:0 18px 18px;color:#586451;font-size:12px;line-height:1.5}
 @container(max-width:650px){#cosmicConceptLibrary .cl-concepts-controls{grid-template-columns:minmax(0,1fr) auto}#cosmicConceptLibrary .cl-concepts-search{grid-column:1/-1}#cosmicConceptLibrary .cl-concept-grid{grid-template-columns:minmax(0,1fr)}}
 @container(max-width:400px){#cosmicConceptLibrary .cl-concepts-header{padding:20px 14px}#cosmicConceptLibrary h2{font-size:23px}#cosmicConceptLibrary .cl-concepts-controls{padding:16px 10px 10px;gap:10px}#cosmicConceptLibrary .cl-concepts-themes{padding:0 10px 14px}#cosmicConceptLibrary .cl-concepts-count{padding-left:10px}#cosmicConceptLibrary summary{padding:12px 9px;gap:9px}#cosmicConceptLibrary .cl-concept-theme-number{width:30px;height:34px;font-size:14px}#cosmicConceptLibrary .cl-concept-theme-title{font-size:16px}#cosmicConceptLibrary .cl-concept-grid{padding:10px;gap:10px}#cosmicConceptLibrary .cl-concept-number{flex-basis:40px;font-size:14px}#cosmicConceptLibrary .cl-concept-item>div{padding:12px 10px}}
+
+#cosmicConceptLibrary .cl-research-guides{padding:18px 18px 0}
+#cosmicConceptLibrary .cl-research-intro{margin:0 0 8px;font-size:15px;line-height:1.55}
+#cosmicConceptLibrary .cl-research-caption{margin:8px 0 14px;font-size:12px;line-height:1.5;color:#586451}
+#cosmicConceptLibrary .cl-research-guide{margin-top:10px;border:1px solid #c7cec3;border-radius:6px;background:#fff;overflow:hidden}
+#cosmicConceptLibrary .cl-research-guide>summary{padding:13px 14px;min-height:64px;background:#edf0e9;color:#263421;font-size:16px;font-weight:800;justify-content:space-between}
+#cosmicConceptLibrary .cl-research-guide>summary small{display:block;margin-top:4px;font-size:12px;font-weight:400;line-height:1.4}
+#cosmicConceptLibrary .cl-research-guide>summary::after,#cosmicConceptLibrary .cl-lesson-research>summary::after{content:'+';font-size:20px;flex-shrink:0}
+#cosmicConceptLibrary .cl-research-guide[open]>summary::after,#cosmicConceptLibrary .cl-lesson-research[open]>summary::after{content:'−'}
+#cosmicConceptLibrary .cl-research-guide-body{padding:16px}
+#cosmicConceptLibrary :is(.cl-research-guide-body,.cl-lesson-research-body) p{font-size:14px;line-height:1.6;margin:0 0 12px;color:#475342}
+#cosmicConceptLibrary :is(.cl-research-guide-body,.cl-lesson-research-body) h3{font-size:18px;line-height:1.35;margin:20px 0 12px;color:#263421}
+#cosmicConceptLibrary :is(.cl-research-guide-body,.cl-lesson-research-body) h4{font-size:15px;line-height:1.4;margin:16px 0 8px;color:#263421}
+#cosmicConceptLibrary :is(.cl-research-guide-body,.cl-lesson-research-body) a{color:#215d84;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+#cosmicConceptLibrary :is(a,button):focus-visible{outline:3px solid #1e90ff;outline-offset:2px}
+#cosmicConceptLibrary .cl-research-start{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;list-style:none;margin:16px 0;padding:0}
+#cosmicConceptLibrary .cl-research-start button{width:100%;min-height:56px;padding:10px 12px;border:1px solid #c7cec3;border-radius:5px;background:#f7f8f4;text-align:left;line-height:1.4;font-size:15px;font-weight:700;color:#263421;cursor:pointer}
+#cosmicConceptLibrary .cl-research-start button:hover{background:#e5eadf}
+#cosmicConceptLibrary .cl-research-start small{display:block;margin-top:4px;font-size:12px;font-weight:400}
+#cosmicConceptLibrary .cl-research-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#cosmicConceptLibrary .cl-research-guide-card{min-width:0;border:1px solid #d3d9ce;border-radius:5px;padding:14px;background:#fff}
+#cosmicConceptLibrary .cl-research-guide-card>:first-child{margin-top:0}
+#cosmicConceptLibrary .cl-research-links{padding-left:18px;margin:12px 0 0;font-size:13px;line-height:1.5}
+#cosmicConceptLibrary .cl-research-links li+li{margin-top:8px}
+#cosmicConceptLibrary .cl-lesson-research{margin-top:14px;border-top:1px solid #d3d9ce}
+#cosmicConceptLibrary .cl-lesson-research>summary{min-height:44px;gap:8px;padding:10px 0;background:#fff;color:var(--concept-color);font-size:13px;line-height:1.4;font-weight:800;justify-content:space-between}
+#cosmicConceptLibrary .cl-concept-item:has(.cl-lesson-research[open]){grid-column:1/-1}
+#cosmicConceptLibrary .cl-concept-item>div{flex:1}
+#cosmicConceptLibrary .cl-lesson-research-body{padding-top:8px}
+#cosmicConceptLibrary .cl-research-action{padding:14px;border-radius:5px;border-left:4px solid var(--concept-color);background:var(--concept-tint);margin-bottom:16px}
+#cosmicConceptLibrary .cl-research-action h4{margin:0 0 6px}
+#cosmicConceptLibrary .cl-research-action p{margin:0}
+#cosmicConceptLibrary .cl-research-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+#cosmicConceptLibrary .cl-research-facts>div{min-width:0;background:#f7f8f4;padding:10px;border-radius:4px}
+#cosmicConceptLibrary .cl-research-facts dt{font-size:11px;font-weight:800;letter-spacing:.2px;margin-bottom:4px}
+#cosmicConceptLibrary .cl-research-facts dd{margin:0;font-size:13px;line-height:1.5}
+#cosmicConceptLibrary .cl-research-sources{list-style:none;padding:0;margin:12px 0 0}
+#cosmicConceptLibrary .cl-research-source{border:1px solid #d3d9ce;border-radius:5px;padding:14px;margin-top:12px}
+#cosmicConceptLibrary .cl-research-source>a{display:block;font-size:14px;line-height:1.5;font-weight:700;margin-bottom:12px}
+#cosmicConceptLibrary .cl-research-source p:last-child{margin-bottom:0}
+#cosmicConceptLibrary .cl-research-methods{margin:16px 0 0;font-size:14px;line-height:1.6}
+#cosmicConceptLibrary .cl-research-methods>div{padding:12px 0;border-top:1px solid #d3d9ce}
+#cosmicConceptLibrary .cl-research-methods dt{font-weight:800;margin-bottom:5px}
+#cosmicConceptLibrary .cl-research-methods dd{margin:0}
+#cosmicConceptLibrary :is(.cl-research-guide,.cl-lesson-research):not([open])>div{display:none!important}
+@container(max-width:650px){#cosmicConceptLibrary .cl-research-guide-grid,#cosmicConceptLibrary .cl-research-start{grid-template-columns:minmax(0,1fr)}}
+@container(max-width:400px){#cosmicConceptLibrary .cl-research-guides{padding:14px 10px 0}#cosmicConceptLibrary .cl-research-guide-body{padding:12px 10px}#cosmicConceptLibrary .cl-research-facts{grid-template-columns:minmax(0,1fr)}#cosmicConceptLibrary .cl-research-source{padding:10px}}

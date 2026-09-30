@@ -12,9 +12,10 @@ export function mountCosmicConceptLibrary(host) {
   host.innerHTML = `
     <header class="cl-concepts-header">
       <p class="cl-concepts-eyebrow">500 CONCEPTS · 20 THEMES</p>
-      <h2 id="cosmicConceptTitle">Personal Growth Library</h2>
+      <h2 id="cosmicConceptTitle">500 Lessons for Life</h2>
       <p>Ideas, frameworks and practices for everyday life. Open a theme to explore each concept and what it means.</p>
     </header>
+    <div class="cl-research-guides" aria-label="Research and learning guide"><p>Loading research notes…</p></div>
     <div class="cl-concepts-controls">
       <label class="cl-concepts-search" for="cosmicConceptSearch">Find a concept
         <input id="cosmicConceptSearch" type="search" maxlength="120" placeholder="Search title, explanation or number…" autocomplete="off">
@@ -94,5 +95,21 @@ export function mountCosmicConceptLibrary(host) {
     select.value = '';
     filterConcepts();
     search.focus();
+  });
+
+  // Keep the larger evidence map out of other player routes, and render its
+  // detailed source text only when a member opens a lesson or guide.
+  import('./cosmic-concepts-research.js').then(({ mountConceptResearch }) => {
+    mountConceptResearch(host, number => {
+      select.value = '';
+      search.value = `#${number}`;
+      filterConcepts();
+    });
+  }).catch(() => {
+    const guide = host.querySelector('.cl-research-guides');
+    guide.replaceChildren();
+    const message = document.createElement('p');
+    message.textContent = 'Research notes could not load. Reload this page to try again; the lesson titles and explanations remain available below.';
+    guide.append(message);
   });
 }
