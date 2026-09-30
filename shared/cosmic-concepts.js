@@ -19,9 +19,9 @@ export function mountCosmicConceptLibrary(host) {
       <label class="cl-concepts-search" for="cosmicConceptSearch">Find a concept
         <input id="cosmicConceptSearch" type="search" maxlength="120" placeholder="Search title, explanation or number…" autocomplete="off">
       </label>
-      <label for="cosmicConceptTheme">Theme
+      <div class="cl-concepts-theme-filter"><label for="cosmicConceptTheme">Theme</label>
         <select id="cosmicConceptTheme"><option value="">All 20 themes</option>${COSMIC_CONCEPT_THEMES.map(theme => `<option value="${theme.id}">${esc(theme.title)}</option>`).join('')}</select>
-      </label>
+      </div>
       <button type="button" class="cl-concepts-reset" aria-label="Clear search and filters" disabled>Reset</button>
     </div>
     <p class="cl-concepts-count" role="status" aria-live="polite" aria-atomic="true">500 concepts · 20 themes</p>

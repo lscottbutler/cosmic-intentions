@@ -6,7 +6,7 @@
 #cosmicConceptLibrary h2{font-family:inherit;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;margin:0 0 10px}
 #cosmicConceptLibrary .cl-concepts-header>p:last-child{font-size:15px;line-height:1.55;max-width:650px;margin:0;color:#f2f4ee}
 #cosmicConceptLibrary .cl-concepts-controls{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:end;gap:12px;padding:20px 18px 12px}
-#cosmicConceptLibrary label{display:grid;gap:7px;min-width:0;font-size:12px;line-height:1.4;font-weight:800;letter-spacing:.4px}
+#cosmicConceptLibrary label,#cosmicConceptLibrary .cl-concepts-theme-filter{display:grid;gap:7px;min-width:0;font-size:12px;line-height:1.4;font-weight:800;letter-spacing:.4px}
 #cosmicConceptLibrary input,#cosmicConceptLibrary select,#cosmicConceptLibrary button{font:inherit}
 #cosmicConceptLibrary input,#cosmicConceptLibrary select{width:100%;min-width:0;min-height:44px;border:1px solid #aebaa5;border-radius:5px;background:#fff;color:#20291f;font-size:14px;font-weight:400;letter-spacing:0;padding:10px}
 #cosmicConceptLibrary input::placeholder{color:#66715f;opacity:1}

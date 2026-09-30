@@ -44,8 +44,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(card.getByRole('link')).toHaveCount(6);
     await expect(frame.locator('#page-habits .ci-ph-card')).toHaveCount(0);
     await expect(frame.locator('#habitsDailyView')).toBeVisible();
-    const columns = await frame.locator('.habit-daily-grid').first().evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    expect(columns).toBe(viewport.name === 'mobile' ? 1 : 2);
+    // Wait for the embedded route's responsive layout to settle after it appears.
+    await expect.poll(() => frame.locator('.habit-daily-grid').first().evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length), { timeout: 10000 })
+      .toBe(viewport.name === 'mobile' ? 1 : 2);
     const overflow = await card.evaluate(el => el.scrollWidth - el.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     await card.scrollIntoViewIfNeeded();
