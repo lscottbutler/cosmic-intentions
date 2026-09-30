@@ -26,11 +26,13 @@ export function restoreCitadelBoxes(source) {
           if(!note)return;
           note.height=Math.max(0,Math.ceil(Number(event.data.height)||0));
           note.frame.style.height=Math.max(1,note.height)+'px';
+          note.box.classList.remove('is-loading');
           note.box.hidden=!citadelHomeVisible||!note.height;
           reportHeight();
         });
       }`;
   const replacements = [
+    ['    .citadel-note[hidden]{display:none}', '    .citadel-note[hidden]{display:none}\n    .citadel-note.is-loading{height:0;padding-block:0;overflow:hidden}'],
     ['      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);', '      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);\n      else show(home);'],
     [oldNotes,newNotes],
     ['      function show(view){',`      function show(view){
@@ -39,7 +41,13 @@ export function restoreCitadelBoxes(source) {
         citadelNotes.forEach(note=>{
           note.box.hidden=!citadelHomeVisible||!note.height;
           // Re-read saved text/session after returning from Admin or another tool.
-          if(citadelHomeVisible&&!wasCitadel)note.frame.src=note.url;
+          if(citadelHomeVisible&&!wasCitadel){
+            // A display:none ancestor makes the iframe report zero height.
+            // Keep it laid out while loading, without reserving blank space.
+            note.box.hidden=false;
+            note.box.classList.add('is-loading');
+            note.frame.src=note.url;
+          }
         });`],
     ['    <nav class="deck" data-template-region="lower-icon-trough"', '    <div class="citadel-note" id="citadelBottomNote" hidden><iframe id="citadelBottomNoteFrame" title="Citadel closing message" scrolling="no"></iframe></div>\n    <nav class="deck" data-template-region="lower-icon-trough"'],
   ];

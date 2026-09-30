@@ -103,7 +103,7 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await admin.locator('#admin-save-page-note-dashboard-2').click();
     await expect(admin.locator('#admin-status-page-note-dashboard-2')).toContainText('Saved');
     await admin.locator('#adminBlock-intro-note-dashboard').scrollIntoViewIfNeeded();
-    await page.screenshot({ path:testInfo.outputPath(`admin-${viewport.name}.png`), fullPage:true });
+    await page.screenshot({ path:testInfo.outputPath(`admin-${viewport.name}.png`), fullPage:false });
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Citadel', exact:true }).click();
     await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toHaveText('Updated from Admin', { timeout:15000 });
