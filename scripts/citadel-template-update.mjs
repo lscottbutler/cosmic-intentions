@@ -31,6 +31,7 @@ export function restoreCitadelBoxes(source) {
         });
       }`;
   const replacements = [
+    ['      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);', '      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);\n      else show(home);'],
     [oldNotes,newNotes],
     ['      function show(view){',`      function show(view){
         const wasCitadel=citadelHomeVisible;
