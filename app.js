@@ -4817,7 +4817,7 @@ function wireAdminPageBoxes() {
 function _adminEditorMarkup(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
-    '<div class="admin-block-hd">📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span></div>' +
+    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span></div>' +
     '<div class="admin-toolbar">' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
@@ -4843,12 +4843,17 @@ function ensureAdminPageBoxEditors() {
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
-      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label">ADMIN TEXT BOX</h3></div>' +
-      '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace: Box 1 at the top and Box 2 at the bottom. The pen opens its matching editor here. Blank boxes stay hidden from members.</p>' +
+      '<p class="ci-page-box-admin-help">Choose a page. Edit Box 1 at the top or Box 2 at the bottom, then Save. Matching colors keep each pair together.</p>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
+      '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
-    const firstBlock = adminPage.querySelector('.admin-block');
-    if (firstBlock) firstBlock.insertAdjacentElement('beforebegin', section);
-    else adminPage.appendChild(section);
+    adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
+    section.querySelector('#adminPageFinder').addEventListener('change', event => {
+      const group = document.getElementById('adminPageGroup-' + event.target.value);
+      if (!group) return;
+      group.scrollIntoView({ behavior: 'instant', block: 'start' });
+      group.querySelector('.ci-admin-page-heading').focus({ preventScroll: true });
+    });
   }
 
   const noteHost = section.querySelector('#adminSectionTextBox');
@@ -4864,7 +4869,22 @@ function ensureAdminPageBoxEditors() {
   }
 
   const grid = section.querySelector('.ci-page-box-admin-grid');
-  Object.entries(ADMIN_PAGE_BOXES).forEach(([pageId, label]) => {
+  Object.entries(ADMIN_PAGE_BOXES).forEach(([pageId, label], pageIndex) => {
+    const pageNumber = String(pageIndex + 1).padStart(2, '0');
+    let group = document.getElementById('adminPageGroup-' + pageId);
+    if (!group) {
+      group = document.createElement('section');
+      group.id = 'adminPageGroup-' + pageId;
+      group.className = 'ci-admin-page-group';
+      group.dataset.color = String(pageIndex % 6);
+      group.setAttribute('aria-labelledby', 'adminPageHeading-' + pageId);
+      group.innerHTML = '<h3 class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="-1"><span class="ci-admin-page-number">' + pageNumber + '</span>' + label + '</h3><div class="ci-admin-page-pair"></div>';
+      grid.appendChild(group);
+      const option = document.createElement('option');
+      option.value = pageId;
+      option.textContent = pageNumber + ' · ' + label;
+      section.querySelector('#adminPageFinder').appendChild(option);
+    }
     for (let boxNumber = 1; boxNumber <= 2; boxNumber += 1) {
       const slug = _adminPageBoxSlug(pageId, boxNumber);
       let entry = document.getElementById('adminBlock-' + slug);
@@ -4874,10 +4894,14 @@ function ensureAdminPageBoxEditors() {
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span>';
       }
-      grid.appendChild(entry);
+      entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
+      group.querySelector('.ci-admin-page-pair').appendChild(entry);
       const editor = document.getElementById('admin-editor-' + slug);
+      editor.setAttribute('role', 'textbox');
+      editor.setAttribute('aria-label', label + ' Box ' + boxNumber);
+      editor.setAttribute('aria-multiline', 'true');
       if (editor && !editor.dataset.dirty) editor.innerHTML = _blockCache[slug] || '';
     }
   });
@@ -4915,14 +4939,35 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box-inline-actions{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13px;color:#b00020}
     .ci-admin-page-box-inline-actions button{padding:8px 14px;border:1px solid #111;border-radius:7px;background:#111;color:#fff;font-weight:700;cursor:pointer}
     .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff;color:#111}
-    .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
-    .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
-    .ci-admin-section-note{margin:18px 0}
-    .ci-admin-section-note-label{margin:0 0 8px;color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em}
-    .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
-    .ci-page-box-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .ci-page-box-admin-section{margin:0 0 32px;padding:0;background:#fff;border:0}
+    .ci-page-box-admin-title{color:#253347;font-size:22px;font-weight:900;letter-spacing:.04em}
+    .ci-admin-section-note{margin:20px 0;padding:16px;background:#fff1f6;border:1px solid #ecc3d3;border-radius:12px}
+    .ci-admin-section-note-label{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#773954;font-size:14px;font-weight:800;letter-spacing:.04em}
+    #page-admin .ci-admin-section-note .ci-admin-page-box{background:#fff;border:1px solid #ecc3d3;box-shadow:none}
+    #page-admin .ci-admin-page-box-edit{border-color:#ecc3d3;color:#773954;background:#fff1f6}
+    #page-admin .ci-admin-page-box-inline-editor{background:#fff;border-color:#ecc3d3}
+    #page-admin .ci-admin-page-box-inline-actions button{background:#f9dce8;color:#773954;border-color:#ecc3d3}
+    #page-admin .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff}
+    .ci-page-box-admin-help{margin:6px 0 16px;color:#58677a;font-size:14px;line-height:1.55}
+    .ci-admin-page-finder{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;margin-bottom:24px;background:#f5f7fa;border:1px solid #dde4ed;border-radius:12px}
+    .ci-admin-page-finder label{font-size:14px;font-weight:800;color:#253347}
+    .ci-admin-page-finder select{flex:1;min-width:0;max-width:100%;min-height:44px;padding:10px;border:1px solid #bccbdc;border-radius:8px;background:#fff;color:#253347;font:600 14px/1.3 inherit}
+    .ci-page-box-admin-grid{display:grid;grid-template-columns:1fr;gap:24px}
+    .ci-admin-page-group{--box-tint:#edf5ff;--box-edge:#b6cfe9;--box-ink:#355b80;padding:16px;border:1px solid var(--box-edge);border-radius:14px;background:var(--box-tint);min-width:0;scroll-margin-top:18px}
+    .ci-admin-page-group[data-color="1"]{--box-tint:#edf8f0;--box-edge:#b6d9c2;--box-ink:#326447}
+    .ci-admin-page-group[data-color="2"]{--box-tint:#fff7e6;--box-edge:#ead39f;--box-ink:#795715}
+    .ci-admin-page-group[data-color="3"]{--box-tint:#f3effc;--box-edge:#cfc0e7;--box-ink:#65508a}
+    .ci-admin-page-group[data-color="4"]{--box-tint:#fff0eb;--box-edge:#ebc4b6;--box-ink:#8b503c}
+    .ci-admin-page-group[data-color="5"]{--box-tint:#eaf7f7;--box-edge:#b3d8d8;--box-ink:#346a6b}
+    .ci-admin-page-heading{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:16px;font-weight:800;line-height:1.4;color:var(--box-ink)}
+    .ci-admin-page-number{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-width:36px;height:32px;padding:0 6px;background:#fff;border:1px solid var(--box-edge,#ecc3d3);border-radius:8px;font-size:14px;font-weight:800}
+    .ci-admin-page-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
-    .ci-page-box-admin-grid .admin-editor{background:#242424!important;color:#fff!important;caret-color:#fff!important}
+    #page-admin .ci-page-box-admin-entry{border-color:var(--box-edge);background:#fff}
+    #page-admin .ci-page-box-admin-entry .admin-block-hd{background:var(--box-tint);color:var(--box-ink);border-color:var(--box-edge);justify-content:flex-start;gap:8px;letter-spacing:0;text-transform:none;flex-wrap:wrap}
+    #page-admin .ci-page-box-admin-entry .admin-block-num{margin:0;background:#fff;color:var(--box-ink)}
+    #page-admin .ci-page-box-admin-entry .admin-save-btn{background:var(--box-tint);color:var(--box-ink);border:1px solid var(--box-edge)}
+    .ci-page-box-admin-grid .admin-editor{min-height:132px;background:#fff!important;color:#253347!important;caret-color:#253347!important}
     .ci-page-box-admin-grid .admin-editor *{color:inherit!important}
     .ci-page-box-admin-grid .ib-preview-body{background:#fff!important;color:#111!important}
     .ci-page-box-admin-grid .ib-preview-body *{color:#111!important}
@@ -4931,8 +4976,9 @@ function ensureAdminPageBoxStyles() {
       .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14pt}
       .ci-admin-page-box-edit-slot{right:10px;bottom:10px}
       .ci-admin-page-box-edit{width:34px;height:34px}
-      .ci-page-box-admin-section{padding:12px}
-      .ci-page-box-admin-grid{grid-template-columns:1fr}
+      .ci-admin-page-group{padding:12px}
+      .ci-admin-page-pair{grid-template-columns:1fr}
+      .ci-admin-page-finder{align-items:stretch;flex-direction:column}
     }
   `;
   document.head.appendChild(style);
@@ -4946,11 +4992,11 @@ if (typeof window !== 'undefined') {
 }
 
 /* ── CONTENT-BLOCK NUMBERING (refinement aid) ─────────────────────────────────
-   Number every editor in the Admin "Content Blocks" section (1..N in page order)
+   Number page editors by page and position (01.1 / 01.2); other content has its
+   own Other 1..N sequence. Keep the same identifier on each live box.
    and stamp the SAME number onto each block's live box on the site (data-cbnum →
    a #N badge via CSS when body.cbnums is set). Lets Scott match a box on a page
-   to its Admin editor. Numbers auto-follow the Admin DOM order — add/remove a
-   block and everything renumbers on next load. */
+   to its Admin editor. Page pairs follow the registered page order. */
 // Which page each content block lives on (so the Admin header can jump to it).
 // intro-note-<page> maps to its page automatically; the rest are listed here.
 function _blockPage(slug) {
@@ -4994,8 +5040,9 @@ if (typeof window !== 'undefined') window.adminGoToBlock = adminGoToBlock;
 function numberContentBlocks() {
   const blocks = document.querySelectorAll('[id^="adminBlock-"]');
   const map = {};
-  blocks.forEach((el, i) => {
-    const n = i + 1;
+  let otherNumber = 0;
+  blocks.forEach(el => {
+    const n = el.dataset.adminNumber || 'Other ' + (++otherNumber);
     const slug = el.id.replace('adminBlock-', '');
     map[slug] = n;
     const hd = el.querySelector('.admin-block-hd');

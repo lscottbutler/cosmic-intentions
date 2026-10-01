@@ -2517,38 +2517,38 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div class="admin-page">
       <div class="ci-page-lettermark ci-admin-lettermark" data-ci-lettermark="ADMIN" role="img" aria-label="ADMIN"></div>
       <!-- ═══ AI CONTROL ROOM — live-editable AI prompts ═══ -->
-      <div style="background:#141414;border:1px solid #333;border-radius:12px;padding:18px 20px;margin:0 0 28px;">
-        <div style="font-weight:800;font-size:16px;color:#fff;letter-spacing:0.5px;margin-bottom:4px;">◈ AI CONTROL ROOM — ROADMAP</div>
-        <div style="color:#9a9a9a;font-size:12px;line-height:1.5;margin-bottom:12px;">Edit the prompts that generate every goal's AI roadmap. <b style="color:#8ba6a9;">Saved edits go live instantly</b> — no deploy. Keep the tokens where you want real data injected; blank = falls back to the built-in default.</div>
-        <div style="color:#8ba6a9;font-size:11px;font-family:var(--vault-mono);line-height:1.7;margin-bottom:16px;">TOKENS &nbsp;·&nbsp; <b>{{intention}}</b> the goal &nbsp;·&nbsp; <b>{{userActions}}</b> the user's My Actions &nbsp;·&nbsp; <b>{{dangerZone}}</b> the danger zone</div>
+      <div class="ci-admin-ai-controls" style="background:#f5f7fa;border:1px solid #d8dfe8;border-radius:12px;padding:18px 20px;margin:0 0 28px;">
+        <div style="font-weight:800;font-size:16px;color:#253347;letter-spacing:0.5px;margin-bottom:4px;">◈ AI CONTROL ROOM — ROADMAP</div>
+        <div style="color:#58677a;font-size:12px;line-height:1.5;margin-bottom:12px;">Edit the prompts that generate every goal's AI roadmap. <b style="color:#49697a;">Saved edits go live instantly</b> — no deploy. Keep the tokens where you want real data injected; blank = falls back to the built-in default.</div>
+        <div style="color:#49697a;font-size:11px;font-family:var(--vault-mono);line-height:1.7;margin-bottom:16px;">TOKENS &nbsp;·&nbsp; <b>{{intention}}</b> the goal &nbsp;·&nbsp; <b>{{userActions}}</b> the user's My Actions &nbsp;·&nbsp; <b>{{dangerZone}}</b> the danger zone</div>
 
-        <label style="display:block;color:#fff;font-weight:700;font-size:13px;margin-bottom:6px;">SYSTEM PROMPT — who the AI is</label>
-        <textarea id="prompt-editor-prompt_roadmap_system" spellcheck="false" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" style="width:100%;box-sizing:border-box;min-height:40px;overflow:hidden;background:#0e0e0e;color:#e8e8e8;border:1px solid #333;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:12px;line-height:1.5;resize:none;"></textarea>
+        <label style="display:block;color:#253347;font-weight:700;font-size:13px;margin-bottom:6px;">SYSTEM PROMPT — who the AI is</label>
+        <textarea id="prompt-editor-prompt_roadmap_system" spellcheck="false" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" style="width:100%;box-sizing:border-box;min-height:40px;overflow:hidden;background:#ffffff;color:#253347;border:1px solid #d8dfe8;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:12px;line-height:1.5;resize:none;"></textarea>
         <div style="display:flex;align-items:center;gap:10px;margin:8px 0 22px;">
-          <button id="prompt-save-prompt_roadmap_system" onclick="savePrompt('prompt_roadmap_system')" style="background:#8ba6a9;border:none;border-radius:6px;padding:8px 16px;color:#0a0a0a;font-weight:800;font-size:12px;cursor:pointer;">Save</button>
-          <button onclick="resetPrompt('prompt_roadmap_system')" style="background:none;border:1px solid #555;border-radius:6px;padding:8px 14px;color:#aaa;font-size:12px;cursor:pointer;">↺ Reset to default</button>
-          <span id="prompt-status-prompt_roadmap_system" style="color:#8ba6a9;font-size:12px;"></span>
+          <button id="prompt-save-prompt_roadmap_system" onclick="savePrompt('prompt_roadmap_system')" style="background:#dcebf2;border:none;border-radius:6px;padding:8px 16px;color:#253347;font-weight:800;font-size:12px;cursor:pointer;">Save</button>
+          <button onclick="resetPrompt('prompt_roadmap_system')" style="background:none;border:1px solid #bccbdc;border-radius:6px;padding:8px 14px;color:#58677a;font-size:12px;cursor:pointer;">↺ Reset to default</button>
+          <span id="prompt-status-prompt_roadmap_system" style="color:#49697a;font-size:12px;"></span>
         </div>
 
-        <label style="display:block;color:#fff;font-weight:700;font-size:13px;margin-bottom:6px;">USER PROMPT — the task + rules</label>
-        <textarea id="prompt-editor-prompt_roadmap_user" spellcheck="false" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" style="width:100%;box-sizing:border-box;min-height:40px;overflow:hidden;background:#0e0e0e;color:#e8e8e8;border:1px solid #333;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:12px;line-height:1.5;resize:none;"></textarea>
+        <label style="display:block;color:#253347;font-weight:700;font-size:13px;margin-bottom:6px;">USER PROMPT — the task + rules</label>
+        <textarea id="prompt-editor-prompt_roadmap_user" spellcheck="false" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" style="width:100%;box-sizing:border-box;min-height:40px;overflow:hidden;background:#ffffff;color:#253347;border:1px solid #d8dfe8;border-radius:8px;padding:12px;font-family:var(--vault-mono);font-size:12px;line-height:1.5;resize:none;"></textarea>
         <div style="display:flex;align-items:center;gap:10px;margin:8px 0 22px;">
-          <button id="prompt-save-prompt_roadmap_user" onclick="savePrompt('prompt_roadmap_user')" style="background:#8ba6a9;border:none;border-radius:6px;padding:8px 16px;color:#0a0a0a;font-weight:800;font-size:12px;cursor:pointer;">Save</button>
-          <button onclick="resetPrompt('prompt_roadmap_user')" style="background:none;border:1px solid #555;border-radius:6px;padding:8px 14px;color:#aaa;font-size:12px;cursor:pointer;">↺ Reset to default</button>
-          <span id="prompt-status-prompt_roadmap_user" style="color:#8ba6a9;font-size:12px;"></span>
+          <button id="prompt-save-prompt_roadmap_user" onclick="savePrompt('prompt_roadmap_user')" style="background:#dcebf2;border:none;border-radius:6px;padding:8px 16px;color:#253347;font-weight:800;font-size:12px;cursor:pointer;">Save</button>
+          <button onclick="resetPrompt('prompt_roadmap_user')" style="background:none;border:1px solid #bccbdc;border-radius:6px;padding:8px 14px;color:#58677a;font-size:12px;cursor:pointer;">↺ Reset to default</button>
+          <span id="prompt-status-prompt_roadmap_user" style="color:#49697a;font-size:12px;"></span>
         </div>
 
-        <div style="border-top:1px solid #333;margin-top:6px;padding-top:16px;">
-          <div style="font-weight:800;font-size:14px;color:#fff;margin-bottom:4px;">🧪 TEST BENCH</div>
-          <div style="color:#9a9a9a;font-size:12px;margin-bottom:10px;">Runs your <b>current (unsaved)</b> prompts above against gpt-4o — tweak → test → repeat.</div>
-          <input id="prompt-test-goal" type="text" placeholder="Sample goal, e.g. I AM PREMIERING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER" style="width:100%;box-sizing:border-box;background:#0e0e0e;color:#e8e8e8;border:1px solid #333;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;">
-          <textarea id="prompt-test-notes" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" placeholder="Sample My Actions — one per line (e.g. how do founder subs work)" style="width:100%;box-sizing:border-box;min-height:70px;overflow:hidden;background:#0e0e0e;color:#e8e8e8;border:1px solid #333;border-radius:8px;padding:10px 12px;font-size:13px;resize:none;margin-bottom:10px;"></textarea>
-          <button onclick="testRoadmapPrompt()" style="background:#e0102b;border:none;border-radius:6px;padding:10px 20px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;">✦ Run Test</button>
-          <div id="prompt-test-out" style="margin-top:14px;background:#0e0e0e;border:1px solid #333;border-radius:8px;padding:14px;min-height:40px;font-size:13px;color:#eee;"></div>
+        <div style="border-top:1px solid #d8dfe8;margin-top:6px;padding-top:16px;">
+          <div style="font-weight:800;font-size:14px;color:#253347;margin-bottom:4px;">🧪 TEST BENCH</div>
+          <div style="color:#58677a;font-size:12px;margin-bottom:10px;">Runs your <b>current (unsaved)</b> prompts above against gpt-4o — tweak → test → repeat.</div>
+          <input id="prompt-test-goal" type="text" placeholder="Sample goal, e.g. I AM PREMIERING COSMIC INTENTIONS GLOBALLY THIS SEPTEMBER" style="width:100%;box-sizing:border-box;background:#ffffff;color:#253347;border:1px solid #d8dfe8;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;">
+          <textarea id="prompt-test-notes" oninput="this.style.height='auto';this.style.height=(this.scrollHeight+2)+'px'" placeholder="Sample My Actions — one per line (e.g. how do founder subs work)" style="width:100%;box-sizing:border-box;min-height:70px;overflow:hidden;background:#ffffff;color:#253347;border:1px solid #d8dfe8;border-radius:8px;padding:10px 12px;font-size:13px;resize:none;margin-bottom:10px;"></textarea>
+          <button onclick="testRoadmapPrompt()" style="background:#f9dce8;border:none;border-radius:6px;padding:10px 20px;color:#253347;font-weight:800;font-size:13px;cursor:pointer;">✦ Run Test</button>
+          <div id="prompt-test-out" style="margin-top:14px;background:#ffffff;border:1px solid #d8dfe8;border-radius:8px;padding:14px;min-height:40px;font-size:13px;color:#253347;"></div>
         </div>
       </div>
 
-      <h2>⚙ Content Blocks</h2>
+      <h2>Other content boxes</h2>
       <p class="admin-page-sub">Write a paragraph for each block. Changes go live immediately on save. Leave empty to hide the block.</p>
 
       <!-- Block: home-welcome -->
@@ -3158,3 +3158,4 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 </body>
 </html>
+
