@@ -16,8 +16,13 @@ import { readFileSync } from 'node:fs';
 // in run 36681532333, artifact 11081619937; all four screenshots were inspected.
 // Only Citadel note mounting/loading changed in the shell; stage/trough geometry remains.
 // Recovery before this restoration: 9c4f773d610b0b296f4aa6c5532e118cd7270960.
+// Scott requested matching the two Citadel artwork joins to the standard side borders on 2026-10-01.
+// Remove only the 12px note padding facing the artwork; preserve outer spacing and frame geometry.
+// Desktop/mobile visual and admin preflight: run 36802313649, artifact 11136437507.
+// Both rendered joins match the side border; all four owner/member/anonymous checks passed.
+// Recovery before this scoped change: d4e221c1b6ed785dc6ed2d0b6d2306156793930f.
 const lockedFiles = {
-  "players/master-player.html": "110412b0854a5bb93a60a93e5e8ab8cfe49d4417",
+  "players/master-player.html": "9d3fa792af14607daf616d18244bef24c642d95c",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
