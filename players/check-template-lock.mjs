@@ -21,8 +21,13 @@ import { readFileSync } from 'node:fs';
 // Desktop/mobile visual and admin preflight: run 36802313649, artifact 11136437507.
 // Both rendered joins match the side border; all four owner/member/anonymous checks passed.
 // Recovery before this scoped change: d4e221c1b6ed785dc6ed2d0b6d2306156793930f.
+// Scott requested removing the Citadel Box 2-to-trough crossbar on 2026-10-01.
+// Only the closing note's bottom padding is removed; existing artwork borders remain.
+// Visual desktop/mobile preflight: run 36804135847, artifact 11136807436;
+// Box 2 matches trough grey and all four Citadel admin checks passed.
+// Recovery: 5a5568facfb7eacd84f3f0ce8bce77de80eb5d9d.
 const lockedFiles = {
-  "players/master-player.html": "9d3fa792af14607daf616d18244bef24c642d95c",
+  "players/master-player.html": "b4efae5a1ed26e6851da9dcd73b4285478879d66",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
