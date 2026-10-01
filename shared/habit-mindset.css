@@ -15,5 +15,15 @@
 .ent-habit-context strong{display:block;margin:5px 0;font-size:18px}
 .ent-habit-context p{margin:8px 0;font-size:14px}
 .ent-habit-context button{margin-top:4px}
+/* Match the supplied four-button player menu, including its pale-green selection. */
+.habit-period-menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 0;padding:12px 14px 10px;background:#6f7570;border-radius:6px;box-sizing:border-box}
+.habit-period-menu button{min-width:0;min-height:64px;border:0;border-radius:8px;background:#20241f;color:#e9ebe6;box-shadow:inset 0 12px #7d827b;padding:22px 5px 10px;font-family:inherit;font-size:14px;line-height:1.4;letter-spacing:1px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.habit-period-menu button[aria-current="location"]{background:#c9d8b9;color:#192316}
+.habit-period-menu button:focus-visible{outline:3px solid #186ac7;outline-offset:2px}
+.habit-period-menu + .ci-habit-mindset{margin-top:14px}
+.habit-period-empty{margin:4px 0;font-size:13px;line-height:1.5;color:#555}
+#habitsWidget .habit-drop{scroll-margin-top:12px}
+@media(hover:hover){.habit-period-menu button[aria-current="false"]:hover{background:#353d32}}
+@media(max-width:600px){.habit-period-menu{gap:6px;padding:8px 6px}.habit-period-menu button{font-size:11px;letter-spacing:.3px;padding:20px 3px 8px;min-height:62px}}
 @media(max-width:600px){.ci-habit-mindset{padding:18px 15px}.habit-mindset-links,.habit-daily-grid{grid-template-columns:1fr}.habit-mindset-links a{min-height:76px}.habit-follow-through{min-height:40px;display:flex;align-items:center}}
 @media(prefers-reduced-motion:reduce){.habit-mindset-links a{transition:none}}

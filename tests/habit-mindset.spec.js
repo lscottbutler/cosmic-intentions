@@ -49,6 +49,29 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
       .toBe(viewport.name === 'mobile' ? 1 : 2);
     const overflow = await card.evaluate(el => el.scrollWidth - el.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
+    const periodMenu = frame.getByRole('navigation', { name: 'Habit time of day' });
+    await expect(periodMenu.getByRole('button')).toHaveText(['MORNING', 'DAY', 'EVENING', 'BEFORE SLEEP']);
+    expect(await periodMenu.evaluate(el => ({
+      previous: el.previousElementSibling.classList.contains('setup-page-header'),
+      next: el.nextElementSibling.classList.contains('ci-habit-mindset'),
+      columns: getComputedStyle(el).gridTemplateColumns.split(' ').length,
+      overflow: el.scrollWidth - el.clientWidth,
+    }))).toEqual({ previous: true, next: true, columns: 4, overflow: 0 });
+    await expect(periodMenu.getByRole('button', { name: 'MORNING', exact: true })).toHaveCSS('background-color', 'rgb(201, 216, 185)');
+    for (const [label, cat] of [['DAY', 'DAY'], ['EVENING', 'EVENING'], ['BEFORE SLEEP', 'BEDTIME'], ['MORNING', 'MORNING']]) {
+      const section = frame.locator(`#habit-period-${cat}`);
+      await section.evaluate(el => { el.open = false; });
+      await periodMenu.getByRole('button', { name: label, exact: true }).click();
+      await expect(section).toHaveAttribute('open');
+      await expect(section.locator('summary')).toBeFocused();
+      await expect(periodMenu.locator('[aria-current="location"]')).toHaveText(label);
+    }
+    await expect(frame.locator('#habit-period-EVENING')).toContainText('No habits in this section yet');
+    await expect(frame.locator('#habit-period-BEDTIME')).toContainText('No habits in this section yet');
+    expect(await periodMenu.evaluate(() => JSON.parse(localStorage.getItem('ci_habit_list')).length)).toBe(2);
+    await periodMenu.scrollIntoViewIfNeeded();
+    await periodMenu.screenshot({ path: testInfo.outputPath(`habit-period-menu-${viewport.name}.png`) });
+    await page.screenshot({ path: testInfo.outputPath(`habit-period-placement-${viewport.name}.png`), fullPage: false });
     await card.scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath(`habits-mindset-${viewport.name}.png`), fullPage: true });
 
@@ -110,6 +133,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(frame.locator('#habitsEditorView')).toBeVisible();
     await frame.getByRole('button', { name: 'Back to daily checklist', exact: true }).click();
     await expect(frame.locator('#habitsDailyView')).toBeVisible();
+    await frame.getByRole('button', { name: 'Edit habits', exact: true }).click();
+    await periodMenu.getByRole('button', { name: 'BEFORE SLEEP', exact: true }).click();
+    await expect(frame.locator('#habitsEditorView')).toBeHidden();
+    await expect(frame.locator('#habit-period-BEDTIME')).toHaveAttribute('open');
+    await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1);
     expect(videoRequests).toEqual([]);
     expect(errors).toEqual([]);
   });

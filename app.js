@@ -7,7 +7,7 @@ import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
-import { renderHabits, renderRunThroughs, getHabitList } from './shared/habits.js';
+import { renderHabits, renderRunThroughs, getHabitList, createHabitPeriodMenu } from './shared/habits.js';
 import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
@@ -5689,6 +5689,7 @@ function injectPlaceholderCards() {
     const card = id === 'habits' ? createHabitMindsetCard(() => currentUser?.id || '') : _makePhCard();
     if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
+    if (id === 'habits') card.insertAdjacentElement('beforebegin', createHabitPeriodMenu());
     // (bottom placeholder card removed — one admin-controlled info box per page)
   });
 }
