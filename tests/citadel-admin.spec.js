@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { restoreCitadelBoxes } from '../scripts/citadel-template-update.mjs';
 import { removeCitadelJoinPadding } from '../scripts/citadel-note-spacing.mjs';
 import { removeCitadelClosingCrossbar } from '../scripts/citadel-closing-crossbar.mjs';
+import { outlineTopTrough } from '../scripts/top-trough-outline.mjs';
 
 async function fixture(page, identity = 'owner') {
   const user = identity === 'anonymous' ? null : {
@@ -66,6 +67,10 @@ async function fixture(page, identity = 'owner') {
     const html = removeCitadelClosingCrossbar(readFileSync('dist/players/master-player.html','utf8'));
     await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
   }
+  if (process.env.TOP_TROUGH_PREFLIGHT === '1') {
+    const html = outlineTopTrough(readFileSync('dist/players/master-player.html','utf8'));
+    await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
+  }
   return { blocks, writes };
 }
 
@@ -86,6 +91,7 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
       const b = id => document.getElementById(id).getBoundingClientRect();
       const shell = document.querySelector('.shell');
       const border = parseFloat(getComputedStyle(shell).getPropertyValue('--frame-border'));
+      const cap = getComputedStyle(document.querySelector('.cap'),'::before');
       return {
         top:b('citadelNote').bottom, stageTop:b('stage').top, stageBottom:b('stage').bottom,
         bottom:b('citadelBottomNote').top, ratio:b('homeView').width/b('homeView').height,
@@ -96,6 +102,9 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
         bottomOuterGap:b('citadelBottomNote').bottom - b('citadelBottomNoteFrame').bottom,
         troughJoin:document.querySelector('.deck').getBoundingClientRect().top - b('citadelBottomNoteFrame').bottom,
         troughFill:getComputedStyle(document.querySelector('.deck'),'::before').backgroundColor,
+        topTroughBorders:[cap.borderTopWidth,cap.borderRightWidth,cap.borderBottomWidth,cap.borderLeftWidth],
+        topTroughBorderColor:cap.borderTopColor,
+        topTroughFill:cap.backgroundColor,
       };
     });
     expect(layout.top).toBeLessThanOrEqual(layout.stageTop);
@@ -106,6 +115,9 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     expect(layout.topOuterGap).toBeCloseTo(12,1);
     expect(layout.bottomOuterGap).toBeCloseTo(0,1);
     expect(layout.troughJoin).toBeCloseTo(0,1);
+    expect(layout.topTroughBorders).toEqual(['3px','3px','3px','3px']);
+    expect(layout.topTroughBorderColor).toBe('rgb(237, 237, 237)');
+    expect(layout.topTroughFill).toBe('rgb(116, 116, 116)');
     await expect(bottom.locator('.ci-admin-page-box')).toHaveCSS('background-color',layout.troughFill);
     await expect(bottom.locator('.ci-admin-page-box-placeholder')).toHaveCSS('color','rgb(255, 255, 255)');
     await expect(top.locator('.ci-admin-page-box')).toHaveCSS('background-color','rgb(242, 242, 242)');
