@@ -4896,6 +4896,7 @@ function ensureAdminPageBoxEditors() {
         const header = entry.querySelector('.admin-block-hd');
         if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span>';
       }
+      entry.classList.add('ci-page-box-admin-entry');
       entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
       group.querySelector('.ci-admin-page-pair').appendChild(entry);
       const editor = document.getElementById('admin-editor-' + slug);
@@ -4951,7 +4952,7 @@ function ensureAdminPageBoxStyles() {
     .ci-page-box-admin-help{margin:6px 0 16px;color:#58677a;font-size:14px;line-height:1.55}
     .ci-admin-page-finder{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;margin-bottom:24px;background:#f5f7fa;border:1px solid #dde4ed;border-radius:12px}
     .ci-admin-page-finder label{font-size:14px;font-weight:800;color:#253347}
-    .ci-admin-page-finder select{flex:1;min-width:0;max-width:100%;min-height:44px;padding:10px;border:1px solid #bccbdc;border-radius:8px;background:#fff;color:#253347;font:600 14px/1.3 inherit}
+    .ci-admin-page-finder select{flex:1;min-width:0;max-width:100%;min-height:44px;padding:10px;border:1px solid #bccbdc;border-radius:8px;background:#fff;color:#253347;font-family:inherit;font-size:14px;font-weight:600;line-height:1.3}
     .ci-page-box-admin-grid{display:grid;grid-template-columns:1fr;gap:24px}
     .ci-admin-page-group{--box-tint:#edf5ff;--box-edge:#b6cfe9;--box-ink:#355b80;padding:16px;border:1px solid var(--box-edge);border-radius:14px;background:var(--box-tint);min-width:0;scroll-margin-top:18px}
     .ci-admin-page-group[data-color="1"]{--box-tint:#edf8f0;--box-edge:#b6d9c2;--box-ink:#326447}
