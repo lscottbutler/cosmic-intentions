@@ -59,7 +59,7 @@ for (const viewport of [
       await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
     }
     await page.goto('/players/master-player.html?start=entrepreneur-library&preview=1', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('#capTitleText')).toHaveText(process.env.LIBRARY_TITLE_PREFLIGHT === '1' ? 'Cosmic Library' : 'Entrepreneur Library');
+    await expect(page.locator('#capTitleText')).toHaveText('Cosmic Library');
     const frame = page.frameLocator('#experienceFrame');
     const groups = frame.locator('#entrepreneurLibraryGrid .ent-force-sec');
     await expect(groups).toHaveCount(4);

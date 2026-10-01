@@ -731,7 +731,7 @@
         shell.style.setProperty('--frame','#292929');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
-        cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='daily-habits'?'Habits':item[1]);
+        cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='entrepreneur-library'?'Cosmic Library':(action==='daily-habits'?'Habits':item[1]));
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(stage.clientWidth*9/16)+'px':'600px';
         const nextUrl=destinationUrl(action);

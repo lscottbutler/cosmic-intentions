@@ -30,8 +30,12 @@ import { readFileSync } from 'node:fs';
 // Desktop/mobile visual preflight: run 36804690887, artifact 11136842934;
 // curved top, straight lower edge, grey fill and existing controls verified.
 // Recovery before this outline: b5f8fc774f54800390a131148cba21d391f609c9.
+// Scott requested the circled Entrepreneur Library player heading read COSMIC LIBRARY.
+// Heading-only desktop/mobile visual preflight: run 36810697543, artifact 11139093196.
+// All 31 cards load; library/card/menu navigation passes. Geometry and controls unchanged.
+// Recovery before this title change: 06b98c2f4d599f253ab18fdc69713817f82cefc7.
 const lockedFiles = {
-  "players/master-player.html": "6810462aa35bf37f5410c5ff199709b10611a964",
+  "players/master-player.html": "5442b096f00e0b97ae7e35d4f613f5ef155e4c63",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
