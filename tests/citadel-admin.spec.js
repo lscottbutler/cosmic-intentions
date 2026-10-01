@@ -126,8 +126,10 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
         const content = box.querySelector('.ci-admin-page-box-content');
         const pen = box.querySelector('.ci-admin-page-box-edit-slot button');
         const shell = box.getBoundingClientRect(), copy = content.getBoundingClientRect(), edit = pen.getBoundingClientRect();
+        const mount = box.parentElement.getBoundingClientRect();
         const style = getComputedStyle(box), contentStyle = getComputedStyle(content);
         return {
+          outerInset: [shell.top - mount.top, mount.right - shell.right, mount.bottom - shell.bottom, shell.left - mount.left],
           padding: [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft],
           contentPadding: [contentStyle.paddingTop, contentStyle.paddingRight, contentStyle.paddingBottom, contentStyle.paddingLeft],
           copyLeft: copy.left - shell.left - parseFloat(style.borderLeftWidth),
@@ -137,6 +139,7 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
           penBottom: shell.bottom - parseFloat(style.borderBottomWidth) - edit.bottom,
         };
       });
+      expect(inset.outerInset).toEqual([20,20,20,20]);
       expect(inset.padding).toEqual(['20px','20px','20px','20px']);
       for (const side of ['top','right','bottom','left']) {
         await expect(frame.locator('.ci-admin-page-box')).toHaveCSS(`border-${side}-color`,'rgb(173, 20, 87)');

@@ -5659,7 +5659,11 @@ async function initCitadelNoteFrame() {
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     _blockCache[slug] = block.data?.body || '';
     const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', boxNumber);
-    if (box.style.display !== 'none') mount.appendChild(box);
+    if (box.style.display !== 'none') {
+      // Inset the entire pink-bordered box; empty member boxes stay collapsed.
+      mount.style.padding = '20px';
+      mount.appendChild(box);
+    }
     if ('ResizeObserver' in window) new ResizeObserver(report).observe(mount);
     report();
   } catch (error) {
