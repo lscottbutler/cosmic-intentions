@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { ENT_CARDS } from '../shared/ent-library-content.js';
 import { RESOURCE_CATALOG, resourceForCard } from '../shared/entrepreneur-player-resources.js';
+import { readFileSync } from 'node:fs';
+import { renameLibraryHeading } from '../scripts/library-heading-update.mjs';
 
 async function openCard(page, key = 'SELF CONFIDENT') {
   // Exercise the delivered URL and the Master Player's real frame navigation.
@@ -52,7 +54,12 @@ for (const viewport of [
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize(viewport);
+    if (process.env.LIBRARY_TITLE_PREFLIGHT === '1') {
+      const html = renameLibraryHeading(readFileSync('dist/players/master-player.html', 'utf8'));
+      await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
+    }
     await page.goto('/players/master-player.html?start=entrepreneur-library&preview=1', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#capTitleText')).toHaveText(process.env.LIBRARY_TITLE_PREFLIGHT === '1' ? 'Cosmic Library' : 'Entrepreneur Library');
     const frame = page.frameLocator('#experienceFrame');
     const groups = frame.locator('#entrepreneurLibraryGrid .ent-force-sec');
     await expect(groups).toHaveCount(4);
@@ -84,6 +91,8 @@ for (const viewport of [
       if (i) await group.locator('summary').click();
     }
     await groups.first().locator('summary').scrollIntoViewIfNeeded();
+    await page.locator('#capTitleText').scrollIntoViewIfNeeded();
+    await page.screenshot({ path:testInfo.outputPath(`library-heading-${viewport.name}.png`), fullPage:false });
     await expect.poll(async () => {
       const outer = await page.locator('#experienceFrame').boundingBox();
       const content = await frame.locator('#page-entrepreneurlibrary').boundingBox();
