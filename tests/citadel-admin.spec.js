@@ -138,6 +138,10 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
         };
       });
       expect(inset.padding).toEqual(['20px','20px','20px','20px']);
+      for (const side of ['top','right','bottom','left']) {
+        await expect(frame.locator('.ci-admin-page-box')).toHaveCSS(`border-${side}-color`,'rgb(173, 20, 87)');
+        await expect(frame.locator('.ci-admin-page-box')).toHaveCSS(`border-${side}-width`,'3px');
+      }
       expect(inset.contentPadding).toEqual(['0px','0px','0px','0px']);
       expect(inset.copyLeft).toBeCloseTo(20,1);
       expect(inset.copyTop).toBeCloseTo(20,1);
@@ -176,6 +180,17 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.getByRole('button', { name:'Citadel', exact:true }).click();
     await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toHaveText('Updated from Admin', { timeout:15000 });
     expect(writes).toHaveLength(2);
+    // The regular workspace boxes share the same border as Citadel's frames.
+    await page.getByRole('button', { name:'Open site menu', exact:true }).click();
+    await page.getByRole('button', { name:'Habits', exact:true }).click();
+    const habitBoxes = page.frameLocator('#experienceFrame').locator('#page-habits .ci-admin-page-box');
+    await expect(habitBoxes).toHaveCount(2);
+    for (const box of await habitBoxes.all()) {
+      await expect(box).toBeVisible();
+      await expect(box).toHaveCSS('border-color','rgb(173, 20, 87)');
+      await expect(box).toHaveCSS('border-width','3px');
+    }
+    await habitBoxes.first().screenshot({ path:testInfo.outputPath(`admin-box-habits-${viewport.name}.png`) });
     expect(errors).toEqual([]);
   });
 }
