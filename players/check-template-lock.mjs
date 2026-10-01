@@ -26,8 +26,12 @@ import { readFileSync } from 'node:fs';
 // Visual desktop/mobile preflight: run 36804135847, artifact 11136807436;
 // Box 2 matches trough grey and all four Citadel admin checks passed.
 // Recovery: 5a5568facfb7eacd84f3f0ce8bce77de80eb5d9d.
+// Scott's queued request adds a 3px pale grey-white (#ededed) outline to the top trough.
+// Desktop/mobile visual preflight: run 36804690887, artifact 11136842934;
+// curved top, straight lower edge, grey fill and existing controls verified.
+// Recovery before this outline: b5f8fc774f54800390a131148cba21d391f609c9.
 const lockedFiles = {
-  "players/master-player.html": "b4efae5a1ed26e6851da9dcd73b4285478879d66",
+  "players/master-player.html": "6810462aa35bf37f5410c5ff199709b10611a964",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);

@@ -137,8 +137,6 @@ jobs:
   citadel-admin-review:
     runs-on: ubuntu-latest
     timeout-minutes: 8
-    env:
-      TOP_TROUGH_PREFLIGHT: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
