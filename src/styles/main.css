@@ -4547,3 +4547,12 @@ html.master-inline-goals #page-setup .page-intro-card {
   outline: 3px solid #1e6eb9;
   outline-offset: 3px;
 }
+
+/* Citadel closing note joins the icon trough and shares its approved grey fill. */
+html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] {
+  background: #747474;
+  color: #fff;
+}
+html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] .ci-admin-page-box-placeholder {
+  color: inherit;
+}

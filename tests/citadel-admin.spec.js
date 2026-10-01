@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { restoreCitadelBoxes } from '../scripts/citadel-template-update.mjs';
 import { removeCitadelJoinPadding } from '../scripts/citadel-note-spacing.mjs';
+import { removeCitadelClosingCrossbar } from '../scripts/citadel-closing-crossbar.mjs';
 
 async function fixture(page, identity = 'owner') {
   const user = identity === 'anonymous' ? null : {
@@ -61,6 +62,10 @@ async function fixture(page, identity = 'owner') {
     const html = removeCitadelJoinPadding(readFileSync('dist/players/master-player.html','utf8'));
     await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
   }
+  if (process.env.CITADEL_CLOSING_PREFLIGHT === '1') {
+    const html = removeCitadelClosingCrossbar(readFileSync('dist/players/master-player.html','utf8'));
+    await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
+  }
   return { blocks, writes };
 }
 
@@ -89,6 +94,8 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
         bottomJoin:b('citadelBottomNoteFrame').top - (b('stage').bottom - border),
         topOuterGap:b('citadelNoteFrame').top - b('citadelNote').top,
         bottomOuterGap:b('citadelBottomNote').bottom - b('citadelBottomNoteFrame').bottom,
+        troughJoin:document.querySelector('.deck').getBoundingClientRect().top - b('citadelBottomNoteFrame').bottom,
+        troughFill:getComputedStyle(document.querySelector('.deck'),'::before').backgroundColor,
       };
     });
     expect(layout.top).toBeLessThanOrEqual(layout.stageTop);
@@ -97,7 +104,11 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     expect(layout.topJoin).toBeCloseTo(layout.side,1);
     expect(layout.bottomJoin).toBeCloseTo(layout.side,1);
     expect(layout.topOuterGap).toBeCloseTo(12,1);
-    expect(layout.bottomOuterGap).toBeCloseTo(12,1);
+    expect(layout.bottomOuterGap).toBeCloseTo(0,1);
+    expect(layout.troughJoin).toBeCloseTo(0,1);
+    await expect(bottom.locator('.ci-admin-page-box')).toHaveCSS('background-color',layout.troughFill);
+    await expect(bottom.locator('.ci-admin-page-box-placeholder')).toHaveCSS('color','rgb(255, 255, 255)');
+    await expect(top.locator('.ci-admin-page-box')).toHaveCSS('background-color','rgb(242, 242, 242)');
     await testInfo.attach('citadel-frame-measurements', { body:JSON.stringify(layout,null,2), contentType:'application/json' });
     await top.getByRole('button', { name:'Edit CITADEL Box 1' }).click();
     await top.getByRole('textbox', { name:'Edit administrator text' }).fill('Discard this draft');
