@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { restoreCitadelBoxes } from '../scripts/citadel-template-update.mjs';
+import { removeCitadelJoinPadding } from '../scripts/citadel-note-spacing.mjs';
 
 async function fixture(page, identity = 'owner') {
   const user = identity === 'anonymous' ? null : {
@@ -56,6 +57,10 @@ async function fixture(page, identity = 'owner') {
     const html = restoreCitadelBoxes(readFileSync('dist/players/master-player.html','utf8'));
     await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
   }
+  if (process.env.CITADEL_BORDER_PREFLIGHT === '1') {
+    const html = removeCitadelJoinPadding(readFileSync('dist/players/master-player.html','utf8'));
+    await page.route('**/players/master-player.html*', route => route.fulfill({ contentType:'text/html', body:html }));
+  }
   return { blocks, writes };
 }
 
@@ -74,11 +79,26 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.screenshot({ path:testInfo.outputPath(`citadel-${viewport.name}.png`), fullPage:true });
     const layout = await page.evaluate(() => {
       const b = id => document.getElementById(id).getBoundingClientRect();
-      return { top:b('citadelNote').bottom, stageTop:b('stage').top, stageBottom:b('stage').bottom, bottom:b('citadelBottomNote').top, ratio:b('homeView').width/b('homeView').height };
+      const shell = document.querySelector('.shell');
+      const border = parseFloat(getComputedStyle(shell).getPropertyValue('--frame-border'));
+      return {
+        top:b('citadelNote').bottom, stageTop:b('stage').top, stageBottom:b('stage').bottom,
+        bottom:b('citadelBottomNote').top, ratio:b('homeView').width/b('homeView').height,
+        side:b('citadelNoteFrame').left - shell.getBoundingClientRect().left,
+        topJoin:b('stage').top + border - b('citadelNoteFrame').bottom,
+        bottomJoin:b('citadelBottomNoteFrame').top - (b('stage').bottom - border),
+        topOuterGap:b('citadelNoteFrame').top - b('citadelNote').top,
+        bottomOuterGap:b('citadelBottomNote').bottom - b('citadelBottomNoteFrame').bottom,
+      };
     });
     expect(layout.top).toBeLessThanOrEqual(layout.stageTop);
     expect(layout.bottom).toBeGreaterThanOrEqual(layout.stageBottom);
     expect(layout.ratio).toBeCloseTo(16/9,2);
+    expect(layout.topJoin).toBeCloseTo(layout.side,1);
+    expect(layout.bottomJoin).toBeCloseTo(layout.side,1);
+    expect(layout.topOuterGap).toBeCloseTo(12,1);
+    expect(layout.bottomOuterGap).toBeCloseTo(12,1);
+    await testInfo.attach('citadel-frame-measurements', { body:JSON.stringify(layout,null,2), contentType:'application/json' });
     await top.getByRole('button', { name:'Edit CITADEL Box 1' }).click();
     await top.getByRole('textbox', { name:'Edit administrator text' }).fill('Discard this draft');
     await top.getByRole('button', { name:'Cancel', exact:true }).click();
