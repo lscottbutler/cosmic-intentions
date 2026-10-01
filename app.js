@@ -4833,6 +4833,7 @@ function _adminEditorMarkup(pageId, label, boxNumber) {
 }
 
 function ensureAdminPageBoxEditors() {
+  if (currentUser?.email !== 'lscottbutler@gmail.com') return;
   const adminPage = document.querySelector('#page-admin .admin-page');
   if (!adminPage) return;
   let section = document.getElementById('adminPageBoxEditors');
@@ -4841,12 +4842,25 @@ function ensureAdminPageBoxEditors() {
     section.id = 'adminPageBoxEditors';
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
-      '<div class="ci-page-box-admin-title">PAGE TEMPLATE BOXES</div>' +
+      '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label">ADMIN TEXT BOX</h3></div>' +
       '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace: Box 1 at the top and Box 2 at the bottom. The pen opens its matching editor here. Blank boxes stay hidden from members.</p>' +
       '<div class="ci-page-box-admin-grid"></div>';
     const firstBlock = adminPage.querySelector('.admin-block');
     if (firstBlock) firstBlock.insertAdjacentElement('beforebegin', section);
     else adminPage.appendChild(section);
+  }
+
+  const noteHost = section.querySelector('#adminSectionTextBox');
+  let noteBox = noteHost.querySelector('.ci-admin-page-box');
+  if (!noteBox) {
+    noteBox = _buildLiveAdminPageBox('admin-boxes', 'ADMIN TEXT', 1);
+    const pen = noteBox.querySelector('.ci-admin-page-box-edit');
+    pen.setAttribute('aria-label', 'Edit admin text box');
+    pen.title = 'Edit admin text box';
+    noteHost.appendChild(noteBox);
+  } else if (!noteBox.classList.contains('is-editing')) {
+    _fillBlockEl(noteBox.querySelector('[data-block]'), _blockCache['intro-note-admin-boxes'] || '');
   }
 
   const grid = section.querySelector('.ci-page-box-admin-grid');
@@ -4903,6 +4917,8 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff;color:#111}
     .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
     .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
+    .ci-admin-section-note{margin:18px 0}
+    .ci-admin-section-note-label{margin:0 0 8px;color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em}
     .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
     .ci-page-box-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}

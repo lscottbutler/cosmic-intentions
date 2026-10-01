@@ -170,6 +170,25 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.getByRole('button', { name:'Admin', exact:true }).click();
     const admin = page.frameLocator('#experienceFrame');
     await expect(admin.locator('#page-admin')).toBeVisible({ timeout:15000 });
+    await expect(admin.getByRole('heading', { name:'ADMIN BOXES', exact:true })).toBeVisible();
+    await expect(admin.getByText('PAGE TEMPLATE BOXES', { exact:true })).toHaveCount(0);
+    const adminNote = admin.getByRole('region', { name:'Admin text box', exact:true });
+    await expect(adminNote).toContainText('Empty');
+    await adminNote.getByRole('button', { name:'Edit admin text box' }).click();
+    await adminNote.getByRole('textbox').fill('Discard administrator draft');
+    await adminNote.getByRole('button', { name:'Cancel', exact:true }).click();
+    expect(writes).toHaveLength(1);
+    await adminNote.getByRole('button', { name:'Edit admin text box' }).click();
+    await adminNote.getByRole('textbox').fill('Administrator instructions — review fixture.');
+    await adminNote.getByRole('button', { name:'Save', exact:true }).click();
+    await expect(adminNote.locator('[data-block]')).toHaveText('Administrator instructions — review fixture.');
+    expect(writes).toHaveLength(2);
+    expect(writes[1].slug).toBe('intro-note-admin-boxes');
+    await page.goto('/players/master-player.html?start=admin', { waitUntil:'domcontentloaded' });
+    await expect(adminNote.locator('[data-block]')).toHaveText('Administrator instructions — review fixture.', { timeout:15000 });
+    await adminNote.screenshot({ path:testInfo.outputPath(`admin-text-box-${viewport.name}.png`) });
+    await adminNote.scrollIntoViewIfNeeded();
+    await page.screenshot({ path:testInfo.outputPath(`admin-boxes-section-${viewport.name}.png`), fullPage:false });
     await expect(page.locator('#citadelNote')).toBeHidden();
     await expect(page.locator('#citadelBottomNote')).toBeHidden();
     await expect(admin.locator('#admin-editor-intro-note-dashboard')).toContainText('review fixture');
@@ -182,7 +201,7 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Citadel', exact:true }).click();
     await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toHaveText('Updated from Admin', { timeout:15000 });
-    expect(writes).toHaveLength(2);
+    expect(writes).toHaveLength(3);
     // The regular workspace boxes share the same border as Citadel's frames.
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Habits', exact:true }).click();
@@ -210,6 +229,7 @@ for (const identity of ['anonymous','member']) {
     await page.getByRole('button', { name:'Admin', exact:true }).click();
     const admin = page.frameLocator('#experienceFrame');
     await expect(admin.locator('#page-admin')).not.toHaveClass(/active/);
+    await expect(admin.getByRole('region', { name:'Admin text box', exact:true })).toHaveCount(0);
     if (identity === 'anonymous') {
       await expect(admin.locator('#authModal.open')).toBeVisible({ timeout:15000 });
       await expect(admin.locator('#btn-signin')).toBeVisible();
