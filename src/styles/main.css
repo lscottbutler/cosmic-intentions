@@ -4556,3 +4556,16 @@ html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] {
 html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] .ci-admin-page-box-placeholder {
   color: inherit;
 }
+
+/* Give both Citadel notes an even inset, with the owner pen below the copy. */
+html.master-inline-citadel-note .ci-admin-page-box {
+  padding: 20px;
+}
+html.master-inline-citadel-note .ci-admin-page-box-content {
+  padding: 0;
+}
+html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
+  position: static;
+  margin-top: 12px;
+  text-align: right;
+}

@@ -121,8 +121,33 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await expect(bottom.locator('.ci-admin-page-box')).toHaveCSS('background-color',layout.troughFill);
     await expect(bottom.locator('.ci-admin-page-box-placeholder')).toHaveCSS('color','rgb(255, 255, 255)');
     await expect(top.locator('.ci-admin-page-box')).toHaveCSS('background-color','rgb(242, 242, 242)');
+    for (const frame of [top, bottom]) {
+      const inset = await frame.locator('.ci-admin-page-box').evaluate(box => {
+        const content = box.querySelector('.ci-admin-page-box-content');
+        const pen = box.querySelector('.ci-admin-page-box-edit-slot button');
+        const shell = box.getBoundingClientRect(), copy = content.getBoundingClientRect(), edit = pen.getBoundingClientRect();
+        const style = getComputedStyle(box), contentStyle = getComputedStyle(content);
+        return {
+          padding: [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft],
+          contentPadding: [contentStyle.paddingTop, contentStyle.paddingRight, contentStyle.paddingBottom, contentStyle.paddingLeft],
+          copyLeft: copy.left - shell.left - parseFloat(style.borderLeftWidth),
+          copyTop: copy.top - shell.top - parseFloat(style.borderTopWidth),
+          penGap: edit.top - copy.bottom,
+          penRight: shell.right - parseFloat(style.borderRightWidth) - edit.right,
+          penBottom: shell.bottom - parseFloat(style.borderBottomWidth) - edit.bottom,
+        };
+      });
+      expect(inset.padding).toEqual(['20px','20px','20px','20px']);
+      expect(inset.contentPadding).toEqual(['0px','0px','0px','0px']);
+      expect(inset.copyLeft).toBeCloseTo(20,1);
+      expect(inset.copyTop).toBeCloseTo(20,1);
+      expect(inset.penGap).toBeGreaterThanOrEqual(12);
+      expect(inset.penRight).toBeGreaterThanOrEqual(19.5);
+      expect(inset.penBottom).toBeGreaterThanOrEqual(19.5);
+    }
     await testInfo.attach('citadel-frame-measurements', { body:JSON.stringify(layout,null,2), contentType:'application/json' });
     await top.getByRole('button', { name:'Edit CITADEL Box 1' }).click();
+    await expect(top.getByRole('button', { name:'Edit CITADEL Box 1' })).toBeHidden();
     await top.getByRole('textbox', { name:'Edit administrator text' }).fill('Discard this draft');
     await top.getByRole('button', { name:'Cancel', exact:true }).click();
     expect(writes).toHaveLength(0);
