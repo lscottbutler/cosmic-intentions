@@ -96,6 +96,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(checklist).not.toContainText('Help me follow through');
     await expect(checklist).toContainText('Write for 20 minutes');
     await expect(checklist).toContainText('Read a chapter');
+    await expect(checklist.locator('span[title]')).toHaveCount(0);
+    expect(await checklist.evaluate(() => JSON.parse(localStorage.getItem('ci_habit_list')).map(h => h.domain))).toEqual(['Writing', 'Reading']);
     await checklist.scrollIntoViewIfNeeded();
     await checklist.screenshot({ path: testInfo.outputPath(`habits-clean-checklist-${viewport.name}.png`) });
     await page.screenshot({ path: testInfo.outputPath(`habits-clean-placement-${viewport.name}.png`), fullPage: false });

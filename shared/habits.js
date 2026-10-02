@@ -189,8 +189,8 @@ export function pbMoveHabit(id, dir) {
 }
 
 /* One tickable habit row. */
-function _habitRow(h, on) {
-  const dom = _domain(h);
+function _habitRow(h, on, showDomain = true) {
+  const dom = showDomain ? _domain(h) : '';
   return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
     <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
     <div style="flex:1;min-width:0;"><span style="font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span></div>
@@ -288,7 +288,7 @@ export function renderHabits() {
         <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
-        <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id])).join('')}</div>
+        <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], false)).join('')}</div>
         ${items.length ? '' : '<p class="habit-period-empty">No habits in this section yet. Use Edit habits to add one.</p>'}
       </div>
     </details>`;
