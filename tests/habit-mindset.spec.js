@@ -50,21 +50,21 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     const overflow = await card.evaluate(el => el.scrollWidth - el.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const periodMenu = frame.getByRole('navigation', { name: 'Habit time of day' });
-    await expect(periodMenu.getByRole('button')).toHaveText(['MORNING', 'DAY', 'EVENING', 'BEFORE SLEEP']);
+    await expect(periodMenu.locator('.habit-period-label')).toHaveText(['MORNING', 'DAY', 'EVENING', 'BEFORE SLEEP']);
     expect(await periodMenu.evaluate(el => ({
       previous: el.previousElementSibling.classList.contains('setup-page-header'),
       next: el.nextElementSibling.classList.contains('ci-habit-mindset'),
       columns: getComputedStyle(el).gridTemplateColumns.split(' ').length,
       overflow: el.scrollWidth - el.clientWidth,
     }))).toEqual({ previous: true, next: true, columns: 4, overflow: 0 });
-    await expect(periodMenu.getByRole('button', { name: 'MORNING', exact: true })).toHaveCSS('background-color', 'rgb(201, 216, 185)');
+    await expect(periodMenu.getByRole('button', { name: 'MORNING', exact: true }).locator('.habit-period-circle')).toHaveCSS('border-top-color', 'rgb(255, 255, 255)');
     for (const [label, cat] of [['DAY', 'DAY'], ['EVENING', 'EVENING'], ['BEFORE SLEEP', 'BEDTIME'], ['MORNING', 'MORNING']]) {
       const section = frame.locator(`#habit-period-${cat}`);
       await section.evaluate(el => { el.open = false; });
       await periodMenu.getByRole('button', { name: label, exact: true }).click();
       await expect(section).toHaveAttribute('open');
       await expect(section.locator('summary')).toBeFocused();
-      await expect(periodMenu.locator('[aria-current="location"]')).toHaveText(label);
+      await expect(periodMenu.locator('[aria-current="location"] .habit-period-label')).toHaveText(label);
     }
     await expect(frame.locator('#habit-period-EVENING')).toContainText('No habits in this section yet');
     await expect(frame.locator('#habit-period-BEDTIME')).toContainText('No habits in this section yet');

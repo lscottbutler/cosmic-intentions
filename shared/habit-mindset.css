@@ -1,28 +1,40 @@
-.ci-habit-mindset{margin:18px 0 22px;padding:24px;border:2px solid #20241f;border-radius:14px;background:#fff;color:#20241f;box-sizing:border-box}
-.ci-habit-mindset h2{margin:0 0 8px!important;font-size:clamp(19px,2vw,25px)!important;font-weight:800;letter-spacing:.6px;line-height:1.25;color:#20241f!important}
-.ci-habit-mindset>p{margin:0 0 20px!important;font-size:16px;line-height:1.5;color:#555!important}
-.habit-mindset-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.habit-mindset-links a{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 16px;min-height:84px;box-sizing:border-box;border:1px solid #b8c3b2;border-radius:9px;background:#f4f6f1;color:#20241f!important;text-decoration:none!important;transition:background .15s,border-color .15s}
-.habit-mindset-links strong{display:block;font-size:16px;line-height:1.35;font-weight:750;overflow-wrap:anywhere}
-.habit-mindset-links small{display:block;margin-top:6px;color:#4e6541;font-size:13px;line-height:1.3}
-.habit-mindset-links a>span:last-child{font-size:24px;color:#486637}
-.habit-mindset-links a:hover{background:#e6ecdf;border-color:#486637}
-.habit-mindset-links a:focus-visible,.habit-return-link:focus-visible{outline:3px solid #186ac7;outline-offset:3px}
+/* Habits borrows the Meditation menu's grey surface, pale circles and white ring.
+   Keep this inside Habits; the approved outer player and other tools stay separate. */
+html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master-inline-daily-habits #page-habits,#page-habits{background:#747474!important;color:#292929;--text:#292929;--widget-text:#292929;--muted:#292929;--widget-border:#c4c4c4}
+#page-habits .setup-page{font-family:Arial,Helvetica,sans-serif;color:#292929}
+#page-habits .setup-page-header p{color:#292929}
+.ci-habit-mindset{margin:24px 0 32px;padding:24px 0 28px;border:0;border-bottom:1px solid #c4c4c4;border-radius:0;background:transparent;color:#292929;box-sizing:border-box;text-align:center}
+.ci-habit-mindset h2{margin:0 0 8px!important;font-size:clamp(19px,2vw,25px)!important;font-weight:900;letter-spacing:1px;line-height:1.3;color:#292929!important}
+.ci-habit-mindset>p{margin:0 0 28px!important;font-size:16px;line-height:1.5;color:#292929!important}
+.habit-mindset-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 22px}
+.habit-mindset-links a{display:flex;flex-direction:column;align-items:center;gap:12px;padding:4px 6px;min-width:0;box-sizing:border-box;border:0;background:transparent;color:#292929!important;text-align:center;text-decoration:none!important}
+.habit-mindset-circle,.habit-period-circle{display:grid;place-items:center;flex-shrink:0;width:76px;height:76px;box-sizing:border-box;border:6px solid transparent;border-radius:50%;background:#e5e5e5;color:#292929;font-size:26px;font-weight:900;line-height:1;transition:background .15s,border-color .15s}
+.habit-mindset-links strong{display:block;font-size:16px;line-height:1.35;font-weight:900;text-transform:uppercase;letter-spacing:.45px;overflow-wrap:anywhere}
+.habit-mindset-links small{display:block;margin-top:6px;color:#292929;font-size:13px;line-height:1.4}
+.habit-mindset-links a:focus-visible,.habit-period-menu button:focus-visible{outline:2px solid #fff;outline-offset:5px;border-radius:4px}
+.habit-mindset-links a:focus-visible .habit-mindset-circle{background:#c4c4c4;border-color:#fff}
+.habit-return-link:focus-visible{outline:3px solid #186ac7;outline-offset:3px}
 .habit-daily-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
 .habit-return-link{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;margin:0 0 12px;padding:10px 15px;border:1px solid #20241f;border-radius:7px;background:#fff;color:#20241f!important;font-size:15px;font-weight:800;text-decoration:none}
 .ent-habit-context{margin:16px 0;padding:16px;border-left:4px solid #8fa977;background:#f4f6f1;color:#20241f;overflow-wrap:anywhere}
 .ent-habit-context strong{display:block;margin:5px 0;font-size:18px}
 .ent-habit-context p{margin:8px 0;font-size:14px}
 .ent-habit-context button{margin-top:4px}
-/* Match the supplied four-button player menu, including its pale-green selection. */
-.habit-period-menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 0;padding:12px 14px 10px;background:#6f7570;border-radius:6px;box-sizing:border-box}
-.habit-period-menu button{min-width:0;min-height:64px;border:0;border-radius:8px;background:#20241f;color:#e9ebe6;box-shadow:inset 0 12px #7d827b;padding:22px 5px 10px;font-family:inherit;font-size:14px;line-height:1.4;letter-spacing:1px;font-weight:800;cursor:pointer;touch-action:manipulation}
-.habit-period-menu button[aria-current="location"]{background:#c9d8b9;color:#192316}
-.habit-period-menu button:focus-visible{outline:3px solid #186ac7;outline-offset:2px}
+.habit-period-menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:14px 0 0;padding:12px 0 22px;border-bottom:1px solid #c4c4c4;background:transparent;box-sizing:border-box}
+.habit-period-menu button{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;border:0;border-radius:0;background:transparent;color:#292929;box-shadow:none;padding:4px 0;font-family:inherit;font-size:14px;line-height:1.3;letter-spacing:.8px;font-weight:900;cursor:pointer;touch-action:manipulation}
+.habit-period-menu button[aria-current="location"] .habit-period-circle{background:#c4c4c4;border-color:#fff}
 .habit-period-menu + .ci-habit-mindset{margin-top:14px}
-.habit-period-empty{margin:4px 0;font-size:13px;line-height:1.5;color:#555}
+.habit-period-empty{margin:4px 0;font-size:14px;line-height:1.5;color:#292929}
 #habitsWidget .habit-drop{scroll-margin-top:12px}
-@media(hover:hover){.habit-period-menu button[aria-current="false"]:hover{background:#353d32}}
-@media(max-width:600px){.habit-period-menu{gap:6px;padding:8px 6px}.habit-period-menu button{font-size:11px;letter-spacing:.3px;padding:20px 3px 8px;min-height:62px}}
-@media(max-width:600px){.ci-habit-mindset{padding:18px 15px}.habit-mindset-links,.habit-daily-grid{grid-template-columns:1fr}.habit-mindset-links a{min-height:76px}}
-@media(prefers-reduced-motion:reduce){.habit-mindset-links a{transition:none}}
+#page-habits .habits-view-button{min-height:44px;padding:12px 20px;border-radius:999px;background:#e5e5e5;color:#292929;font-size:14px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+#page-habits .habits-view-button:focus-visible,#habitsWidget :is(summary,.habit-check):focus-visible{outline:3px solid #fff;outline-offset:3px}
+#habitsWidget .habit-drop>summary{padding:16px 0!important;background:transparent!important;color:#292929!important;border-radius:0!important;border-bottom:1px solid #c4c4c4;font-family:Arial,Helvetica,sans-serif!important;font-size:18px!important;font-weight:900!important;letter-spacing:1px!important;text-transform:uppercase}
+#habitsWidget .habit-period-body{padding:12px 0 20px!important;background:transparent!important}
+#habitsWidget .habit-row{gap:12px!important;padding:6px 0!important}
+#habitsWidget .habit-check{width:44px!important;height:44px!important;min-width:44px;box-sizing:border-box;border:5px solid transparent!important;border-radius:50%!important;background:#e5e5e5!important;color:#292929!important;box-shadow:none!important;font-family:Arial,Helvetica,sans-serif!important;font-size:21px!important;font-weight:900}
+#habitsWidget .habit-check[aria-pressed="true"]{background:#c4c4c4!important;border-color:#fff!important}
+#habitsWidget .habit-row>div>span{color:#292929!important;font-size:16px!important;font-weight:700;line-height:1.45!important;overflow-wrap:anywhere}
+#habitsWidget .habit-health-note{color:#292929!important;font-size:12px!important}
+@media(hover:hover){.habit-mindset-links a:hover .habit-mindset-circle,.habit-period-menu button:hover .habit-period-circle{background:#c4c4c4;border-color:#fff}}
+@media(max-width:600px){.habit-period-menu{gap:6px;padding:8px 0 18px}.habit-period-menu button{font-size:10px;letter-spacing:.2px}.habit-period-circle{width:48px;height:48px;border-width:4px;font-size:20px}.ci-habit-mindset{padding:18px 0 24px}.habit-mindset-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}.habit-mindset-circle{width:64px;height:64px;font-size:23px}.habit-mindset-links a{padding:4px 0}.habit-mindset-links strong{font-size:13px;letter-spacing:.2px}.habit-mindset-links small{font-size:12px}.habit-daily-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.habit-mindset-circle,.habit-period-circle{transition:none}}

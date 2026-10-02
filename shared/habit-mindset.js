@@ -70,8 +70,8 @@ export function createHabitMindsetCard(getAccount) {
   card.setAttribute('aria-labelledby', 'habitMindsetTitle');
   card.innerHTML = `<h2 id="habitMindsetTitle">BUILD THE MINDSET BEHIND YOUR HABITS</h2>
     <p>Choose the support you need today.</p>
-    <div class="habit-mindset-links">${HABIT_MINDSET_LINKS.map(([key, label, title]) =>
-      `<a href="${esc(habitPlayerURL(key))}" target="_parent" data-mindset-key="${key}"><span><strong>${label}</strong><small>${title}</small></span><span aria-hidden="true">→</span></a>`).join('')}</div>`;
+    <div class="habit-mindset-links">${HABIT_MINDSET_LINKS.map(([key, label, title], index) =>
+      `<a href="${esc(habitPlayerURL(key))}" target="_parent" data-mindset-key="${key}"><span class="habit-mindset-circle" aria-hidden="true">${index + 1}</span><span><strong>${label}</strong><small>${title}</small></span></a>`).join('')}</div>`;
   card.addEventListener('click', event => {
     const link = event.target.closest('[data-mindset-key]');
     if (!link) return;

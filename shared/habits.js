@@ -56,14 +56,14 @@ let _selectedPeriod = 'MORNING';
 const _closedCats = new Set();
 export function habitsSectionToggle(cat, open) { if (open) _closedCats.delete(cat); else _closedCats.add(cat); }
 
-/* The same visual menu as the Entrepreneur Player, for the four daily periods.
+/* Meditation-style circle controls for the four daily periods.
    These are checklist shortcuts: existing habits and completion state stay put. */
 export function createHabitPeriodMenu() {
   const nav = document.createElement('nav');
   nav.className = 'habit-period-menu';
   nav.setAttribute('aria-label', 'Habit time of day');
-  nav.innerHTML = HABIT_PERIODS.map(([cat, label]) =>
-    `<button type="button" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}">${label}</button>`).join('');
+  nav.innerHTML = HABIT_PERIODS.map(([cat, label], index) =>
+    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle" aria-hidden="true">${index + 1}</span><span class="habit-period-label">${label}</span></button>`).join('');
   nav.addEventListener('click', event => {
     const button = event.target.closest('[data-habit-period]');
     if (!button) return;
@@ -191,8 +191,8 @@ export function pbMoveHabit(id, dir) {
 /* One tickable habit row. */
 function _habitRow(h, on, showDomain = true) {
   const dom = showDomain ? _domain(h) : '';
-  return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
-    <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
+  return `<div class="habit-row" style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+    <button class="habit-check" aria-pressed="${on}" onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
     <div style="flex:1;min-width:0;"><span style="font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span></div>
     ${dom ? `<span title="${esc(dom)}" style="flex-shrink:0;font-size:8px;font-weight:800;letter-spacing:.3px;color:var(--muted);border:1px solid var(--widget-border);border-radius:5px;padding:1px 4px;white-space:nowrap;">${esc(dom)}</span>` : ''}
   </div>`;
@@ -287,14 +287,14 @@ export function renderHabits() {
         <span>${SECTION_LABEL[cat]}</span>
         <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
-      <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
+      <div class="habit-period-body" style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
         <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], false)).join('')}</div>
         ${items.length ? '' : '<p class="habit-period-empty">No habits in this section yet. Use Edit habits to add one.</p>'}
       </div>
     </details>`;
   });
   el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
-    `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
+    `<div class="habit-health-note" style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
   document.querySelectorAll('.habit-period-menu [data-habit-period]').forEach(button => {
     button.setAttribute('aria-current', button.dataset.habitPeriod === _selectedPeriod ? 'location' : 'false');
   });
