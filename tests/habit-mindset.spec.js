@@ -90,43 +90,26 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
       await expect(card).toBeVisible({ timeout: 15000 });
     }
 
-    // Mark one habit complete, collapse another section, and enter support from
-    // the actual habit row. Returning must preserve completion and section state.
+    // Checklist rows stay compact; support is available through the mindset card.
+    const checklist = frame.locator('#habitsWidget');
+    await expect(checklist.getByRole('link')).toHaveCount(0);
+    await expect(checklist).not.toContainText('Help me follow through');
+    await expect(checklist).toContainText('Write for 20 minutes');
+    await expect(checklist).toContainText('Read a chapter');
+    await checklist.scrollIntoViewIfNeeded();
+    await checklist.screenshot({ path: testInfo.outputPath(`habits-clean-checklist-${viewport.name}.png`) });
+    await page.screenshot({ path: testInfo.outputPath(`habits-clean-placement-${viewport.name}.png`), fullPage: false });
+    // Returning from the retained mindset card still preserves ticks and sections.
     await frame.locator('[data-habit-section="DAY"] summary').click();
-    await frame.locator('#habitsWidget button[title="Mark done"]').first().click();
-    await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1);
-    await frame.locator('[data-habit-support="qa-write"]').click();
+    await checklist.getByRole('button', { name: 'Mark done', exact: true }).first().click();
+    await expect(checklist.getByRole('button', { name: 'Done — tap to undo', exact: true })).toHaveCount(1);
+    await card.getByRole('link', { name: /Build a habit that sticks/ }).click();
     await expect(frame.locator('[data-panel="mindset"]')).toBeVisible({ timeout: 15000 });
-    await expect(frame.locator('.ent-habit-context strong')).toHaveText('Write for 20 minutes');
-    expect(page.url()).not.toContain('qa-write');
-    expect(page.url()).not.toContain('Write');
-    await frame.getByRole('button', { name: 'Plan my next repetition' }).click();
-    await expect(frame.locator('[data-panel="action"]')).toBeVisible();
-    await frame.locator('#ent-action-note').fill('After breakfast, open my document and write for two minutes.');
-    await frame.getByRole('button', { name: 'Save my next step', exact: true }).click();
-    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MY NOTES', exact: true }).click();
-    await expect(frame.locator('.ent-saved-list')).toContainText('Habit: Write for 20 minutes');
-    await expect(frame.locator('.ent-saved-list')).toContainText('After breakfast');
-    await frame.getByRole('tablist', { name: 'Entrepreneur learning sections', exact: true }).getByRole('tab', { name: 'MINDSET', exact: true }).click();
-    await frame.locator('.ent-habit-context').scrollIntoViewIfNeeded();
-    await page.screenshot({ path: testInfo.outputPath(`habit-player-context-${viewport.name}.png`), fullPage: true });
     await frame.getByRole('link', { name: 'Return to Habits' }).click();
-    await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
+    await expect(checklist.getByRole('button', { name: 'Done — tap to undo', exact: true })).toHaveCount(1, { timeout: 15000 });
     await expect(frame.locator('[data-habit-section="DAY"]')).not.toHaveAttribute('open');
-    try {
-      await expect(frame.locator('[data-habit-support="qa-write"]')).toBeFocused({ timeout: 7000 });
-    } catch (error) {
-      // Synthetic fixture state only; preserve a useful failure diagnosis.
-      console.log('Habits focus diagnosis', await frame.locator('[data-habit-support="qa-write"]').evaluate(el => ({
-        ready: document.readyState, focused: document.hasFocus(),
-        active: document.activeElement?.outerHTML.slice(0, 500),
-        pageClass: document.getElementById('page-habits')?.className,
-        frameRects: window.frameElement?.getClientRects().length,
-        targetRects: el.getClientRects().length,
-        contextPresent: !!sessionStorage.getItem('ci_habit_support_v1:preview'),
-      })));
-      throw error;
-    }
+    await expect(card.getByRole('link', { name: /Build a habit that sticks/ })).toBeFocused({ timeout: 7000 });
+    await expect(checklist.getByRole('link')).toHaveCount(0);
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(frame.locator('#habitsWidget button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await frame.getByRole('button', { name: 'Edit habits', exact: true }).click();

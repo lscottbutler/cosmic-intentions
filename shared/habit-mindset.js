@@ -81,17 +81,6 @@ export function createHabitMindsetCard(getAccount) {
   return card;
 }
 
-export function habitSupportLink(habit) {
-  return `<a class="habit-follow-through" href="${esc(habitPlayerURL('DISCIPLINED'))}" target="_parent" data-habit-support="${esc(habit.id)}">Help me follow through <span aria-hidden="true">→</span></a>`;
-}
-
-export function wireHabitSupportLinks(root, account, habits, closedCats) {
-  root.querySelectorAll('[data-habit-support]').forEach(link => link.addEventListener('click', () => {
-    const habit = habits.find(h => String(h.id) === link.dataset.habitSupport);
-    rememberSupport('DISCIPLINED', account, habit, [...closedCats]);
-  }));
-}
-
 let restored = false;
 export function restoreHabitSupport(account, closedCats) {
   if (restored || shellURL().searchParams.get('entry') !== 'habits-return') return;
@@ -124,9 +113,8 @@ export function restoreHabitSupport(account, closedCats) {
   };
   const focusSource = () => {
     if (stopped) return;
-    const selector = context.habit?.id
-      ? `[data-habit-support="${CSS.escape(context.habit.id)}"]`
-      : `[data-mindset-key="${CSS.escape(context.cardKey)}"]`;
+    // Return to the mindset card, including sessions opened before row links were removed.
+    const selector = `[data-mindset-key="${CSS.escape(context.cardKey)}"]`;
     const target = document.querySelector(selector);
     const pageVisible = document.getElementById('page-habits')?.classList.contains('active');
     const frameVisible = !window.frameElement || window.frameElement.getClientRects().length > 0;
