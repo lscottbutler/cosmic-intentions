@@ -101,12 +101,12 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await page.screenshot({ path: testInfo.outputPath(`habits-clean-placement-${viewport.name}.png`), fullPage: false });
     // Returning from the retained mindset card still preserves ticks and sections.
     await frame.locator('[data-habit-section="DAY"] summary').click();
-    await checklist.getByRole('button', { name: 'Mark done', exact: true }).first().click();
-    await expect(checklist.getByRole('button', { name: 'Done — tap to undo', exact: true })).toHaveCount(1);
+    await checklist.locator('button[title="Mark done"]').first().click();
+    await expect(checklist.locator('button[title="Done — tap to undo"]')).toHaveCount(1);
     await card.getByRole('link', { name: /Build a habit that sticks/ }).click();
     await expect(frame.locator('[data-panel="mindset"]')).toBeVisible({ timeout: 15000 });
     await frame.getByRole('link', { name: 'Return to Habits' }).click();
-    await expect(checklist.getByRole('button', { name: 'Done — tap to undo', exact: true })).toHaveCount(1, { timeout: 15000 });
+    await expect(checklist.locator('button[title="Done — tap to undo"]')).toHaveCount(1, { timeout: 15000 });
     await expect(frame.locator('[data-habit-section="DAY"]')).not.toHaveAttribute('open');
     await expect(card.getByRole('link', { name: /Build a habit that sticks/ })).toBeFocused({ timeout: 7000 });
     await expect(checklist.getByRole('link')).toHaveCount(0);
