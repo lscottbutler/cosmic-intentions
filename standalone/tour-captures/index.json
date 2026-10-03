@@ -1,0 +1,996 @@
+[
+  {
+    "id": "citadel",
+    "label": "Citadel",
+    "description": "Find your way around your member home",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Citadel.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.146
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Citadel. Find your way around your member home.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Use the Goals icon in the lower trough to open your goals.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5799632352941176,
+          "y": 0.7021484375
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Citadel.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "goals",
+    "label": "Goals",
+    "description": "Set your direction",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Goals.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.184
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Goals. Set your direction.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Click ADD A GOAL to open the goal field.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7234375,
+          "y": 0.339046875
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Goals.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Write your goal in the field.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.46838235294117647,
+          "y": 0.496484375
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Click Save to add your goal.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7533088235294118,
+          "y": 0.496484375
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "Your new goal now appears in My Goals.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "action-plan",
+    "label": "Roadmap",
+    "description": "Turn your goal into next steps",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Roadmap.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.374
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Roadmap. Turn your goal into next steps.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Choose ROADMAP to see the steps for this goal.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7612132352941177,
+          "y": 0.49384375
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Roadmap.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Click the plus tab to see My Actions and Roadmap together.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7139705882352941,
+          "y": 0.49384375
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in Roadmap.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Click the pencil to open the note for that action.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7363970588235295,
+          "y": 0.690453125
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "See the result of that action in Roadmap.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "goal-workspace",
+    "label": "Goal Workspace",
+    "description": "Bring a goal\u2019s notes and journal together",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Goal Workspace.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.716
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Goal Workspace. Bring a goal\u2019s notes and journal together.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Choose your goal to view its linked entries.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.17928125
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Goal Workspace.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "daily-habits",
+    "label": "Habits",
+    "description": "Build your daily practice",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Habits.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.222
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Habits. Build your daily practice.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Choose DAY to move to that part of your routine.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.42472426470588237,
+          "y": 0.500140625
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Habits.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Return to MORNING.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.27417279411764706,
+          "y": 0.500140625
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in Habits.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Click the circle to mark the habit done.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.2349264705882353,
+          "y": 0.127859375
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "See the result of that action in Habits.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "meditation",
+    "label": "Meditation",
+    "description": "Choose a meditation session",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Meditation.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.45
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Meditation. Choose a meditation session.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Click Play in the center of the meditation screen.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.55703125
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Meditation.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Open Meditation Menu to see the session choices.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.75359375
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in Meditation.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Choose Guided.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5621323529411765,
+          "y": 0.833484375
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "See the result of that action in Meditation.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "9.jpg",
+        "caption": "Choose a three-minute session.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.6887235753676471,
+          "y": 0.907640625
+        }
+      },
+      {
+        "image": "10.jpg",
+        "caption": "See the result of that action in Meditation.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "visualization",
+    "label": "Visualization Library",
+    "description": "Rehearse what you intend to do",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Visualization Library.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.412
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Visualization Library. Rehearse what you intend to do.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Click a goal to open its visualization options.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.4215992647058823,
+          "y": 0.823328125
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Visualization Library.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "gratitude",
+    "label": "Gratitude",
+    "description": "Make space for gratitude",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Gratitude.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.488
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Gratitude. Make space for gratitude.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "favorites",
+    "label": "My Favorites Autoplay",
+    "description": "Keep your saved practice together",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose My Favorites Autoplay.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.26
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in My Favorites Autoplay. Keep your saved practice together.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Click Automatically Play My Daily Runthrough to start your saved sequence.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.49475
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in My Favorites Autoplay.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "thoughts",
+    "label": "My Thoughts",
+    "description": "Collect your words to live by",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose My Thoughts.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.298
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in My Thoughts. Collect your words to live by.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Click ADD A THOUGHT to open the categories.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7461397058823529,
+          "y": 0.327828125
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in My Thoughts.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Write a belief you want to keep.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.5220588235294118,
+          "y": 0.485328125
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Click Add to save the sample belief.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7768382352941177,
+          "y": 0.485328125
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "See the result of that action in My Thoughts.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "journal",
+    "label": "My Journal",
+    "description": "Reflect and connect an entry to a goal",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose My Journal.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.336
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in My Journal. Reflect and connect an entry to a goal.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Choose the goal this journal entry belongs to.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.8701875
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in My Journal.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "task-notes",
+    "label": "Notes",
+    "description": "Find your goal and action notes",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Notes.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.678
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Notes. Find your goal and action notes.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Open Goal Workspace to see notes, to-dos and journal entries together.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.2893382352941177,
+          "y": 0.271015625
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Notes.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "wins",
+    "label": "My Wins",
+    "description": "Record the progress you make",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose My Wins.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.64
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in My Wins. Record the progress you make.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Write the progress you want to record.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.3780618106617647,
+          "y": 0.781921875
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Click Add to log your win.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7735294117647059,
+          "y": 0.781921875
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in My Wins.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "cosmic-library",
+    "label": "Cosmic Library",
+    "description": "Explore the CI resource collection",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Cosmic Library.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.526
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Cosmic Library. Explore the CI resource collection.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Search the library for a topic.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.3556698069852941,
+          "y": 0.7143515625
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Reset the filters to see the full library.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7705824908088236,
+          "y": 0.714546875
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in Cosmic Library.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "entrepreneur-library",
+    "label": "Entrepreneur Library",
+    "description": "Browse the 31 entrepreneur skills",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Entrepreneur Library.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.564
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Entrepreneur Library. Browse the 31 entrepreneur skills.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Choose a skill card to open its individual experience.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.2933823529411765,
+          "y": 0.279140625
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Entrepreneur Library.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  },
+  {
+    "id": "ent-card",
+    "label": "Entrepreneur Skill Cards",
+    "description": "Explore an individual skill",
+    "width": 1360,
+    "height": 1000,
+    "source": "2bf60145ef6ef347c24887bb4a68412d94e23321",
+    "frames": [
+      {
+        "image": "0.jpg",
+        "caption": "Open the site menu in the upper-left corner.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.21433823529411763,
+          "y": 0.07175
+        }
+      },
+      {
+        "image": "1.jpg",
+        "caption": "Choose Entrepreneur Skill Cards.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.1829388786764706,
+          "y": 0.602
+        }
+      },
+      {
+        "image": "2.jpg",
+        "caption": "You\u2019re now in Entrepreneur Skill Cards. Explore an individual skill.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "3.jpg",
+        "caption": "Open Mindset to explore this skill\u2019s mindset content.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.4245404411764706,
+          "y": 0.49746875
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "See the result of that action in Entrepreneur Skill Cards.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
+        "caption": "Open Go Deeper to explore the supporting resources.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.5754595588235294,
+          "y": 0.49746875
+        }
+      },
+      {
+        "image": "6.jpg",
+        "caption": "See the result of that action in Entrepreneur Skill Cards.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "7.jpg",
+        "caption": "Open My Notes to record your own reflections.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.7263786764705882,
+          "y": 0.49746875
+        }
+      },
+      {
+        "image": "8.jpg",
+        "caption": "See the result of that action in Entrepreneur Skill Cards.",
+        "kind": "look",
+        "cursor": null
+      }
+    ]
+  }
+]
