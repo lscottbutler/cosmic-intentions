@@ -382,11 +382,19 @@ export function notesSaveField(el) {
     if (notes.filter(n => n && !['task', 'goal-note'].includes(n.cat)).length >= NOTES_CAP) { if (typeof toast === 'function') toast(`You've hit the ${NOTES_CAP}-note limit.`, 'info'); return; }
     notes.push({ id: _id(), cat: addCat, text: v, ts: Date.now() });
     _saveNotes(notes);
-    // Keep this section open across the re-render.
-    const body = document.getElementById(`notesec-${addCat}-body`);
+    // Preserve the visible editor's section and refresh that same page.
+    // Journal and Thoughts contain separate copies of these section IDs.
+    const root = el.closest('.page') || document;
+    const body = root.querySelector(`[id="notesec-${addCat}-body"]`);
     const wasOpen = body && body.style.display !== 'none';
-    renderNotesPage();
-    if (wasOpen) { const b = document.getElementById(`notesec-${addCat}-body`), a = document.getElementById(`notesec-${addCat}-arr`); if (b) { b.style.display = ''; b.querySelectorAll('textarea').forEach(notesAutoGrow); } if (a) a.style.transform = 'rotate(0deg)'; }
+    if (root.id === 'page-mynotes') renderMyNotesPage();
+    else renderNotesPage();
+    if (wasOpen) {
+      const b = root.querySelector(`[id="notesec-${addCat}-body"]`);
+      const a = root.querySelector(`[id="notesec-${addCat}-arr"]`);
+      if (b) { b.style.display = ''; b.querySelectorAll('textarea').forEach(notesAutoGrow); }
+      if (a) a.style.transform = 'rotate(0deg)';
+    }
   }
 }
 

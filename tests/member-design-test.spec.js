@@ -61,7 +61,7 @@ for(const width of [1440,390])test(`trough removal and note / to-do shortcuts ${
  await expect(app.locator('#page-mynotes')).toBeVisible({timeout:20000});
  await expect(app.locator('#page-mynotes #notesadd-note')).toBeVisible();await expect(app.locator('#page-mynotes #notesadd-note')).toBeFocused();
  await app.locator('#page-mynotes #notesadd-note').fill('A fictional note for the layout review.');await app.locator('#page-mynotes #notesadd-note').press('Tab');
- await expect(app.getByText('A fictional note for the layout review.',{exact:true}).first()).toBeVisible();
+ await expect(app.locator('#page-mynotes').getByText('A fictional note for the layout review.',{exact:true}).first()).toBeVisible();
  await page.getByRole('button',{name:'TO DO',exact:true}).click();
  await expect(app.locator('#page-myroadmap')).toBeVisible({timeout:20000});
  await page.screenshot({path:`test-results/no-upper-trough-${width}-todo.png`,fullPage:true});
