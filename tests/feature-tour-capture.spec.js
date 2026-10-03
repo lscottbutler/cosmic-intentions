@@ -30,7 +30,7 @@ for (const [id,label,ready,description] of tours) {
    const u=new URL(route.request().url());
    if (/supabase\.co$/.test(u.hostname) || route.request().method() !== 'GET' || /sentry\.io$/.test(u.hostname)) return route.fulfill({status:200,contentType:'application/json',body:'[]'});
    if (u.origin!=='http://localhost:8090') return route.continue();
-   if (u.pathname==='/' && u.searchParams.has('masterInline')) {u.searchParams.set('preview','1');return route.continue({url:u.href});}
+   if (u.pathname==='/' && u.searchParams.has('masterInline') && !u.searchParams.has('preview')) {u.searchParams.set('preview','1');return route.fulfill({status:302,headers:{location:u.href},body:''});}
    if (u.pathname.startsWith('/.netlify/'))return route.fulfill({status:200,contentType:'application/json',body:'{}'});
    // The preview seed is local-only. Replace its authored example values with
    // neutral fictional training content in the test response, not in app code.
