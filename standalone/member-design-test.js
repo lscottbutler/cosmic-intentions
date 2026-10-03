@@ -7,7 +7,8 @@
  const title=document.getElementById('feature-title');
  const purpose=document.getElementById('feature-purpose');
  const next=document.getElementById('feature-next');
- const resume=document.getElementById('resume');
+ const addNote=document.getElementById('add-note');
+ let pendingNote=false;
  const menu=document.getElementById('review-menu');
  const features={
   home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
@@ -39,8 +40,7 @@
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
   if(next.textContent!==copy[2])next.textContent=copy[2];
   if(action!=='home'&&action!=='admin'){last=action;try{sessionStorage.setItem('ci-review-last-feature',action);}catch(_){}}
-  resume.hidden=!last||current!=='home';
-  if(last)resume.textContent='Return to '+features[last][0];
+
  }
  function openFeature(action){frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);}
  const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
@@ -72,6 +72,7 @@
    const action=inlinePages[page.id.replace('page-','')];
    if(features[action]){
     renderFeature(action);
+    if(pendingNote&&action==='journal'&&typeof doc.defaultView.notesShowAdd==='function'&&page.querySelector('#notesadd-note')){pendingNote=false;doc.defaultView.notesShowAdd('note');}
     if(!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
     page.querySelectorAll('.ci-goals-add-toggle,.pb-goal-add-save,button[onclick="notesToggleQuickAdd()"],.goal-workspace-entry-save,[data-save-note]').forEach(button=>{if(!button.classList.contains('ci-review-key-action'))button.classList.add('ci-review-key-action');});
    }
@@ -89,15 +90,17 @@
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
    if(height>100&&frame.style.height!==height+'px')frame.style.height=height+'px';
-   const message=enabled?'Test improvements on · original frame, artwork and controls retained.':'Original appearance · improvements hidden.';
+   const message=enabled?'Test improvements on · upper trough removed · hamburger and existing controls retained.':'Original appearance · improvements hidden.';
    if(status.textContent!==message)status.textContent=message;
   }catch(_){status.textContent='The review frame could not be inspected. Reload this private preview.';}
  }
  frame.addEventListener('load',()=>{const doc=frame.contentDocument;const shell=doc?.querySelector('.shell');if(shell){new ResizeObserver(schedule).observe(shell);watchDocument(doc);inspect();}});
  document.querySelectorAll('[name=appearance]').forEach(input=>input.addEventListener('change',()=>{enabled=input.value==='test';document.body.classList.toggle('original',!enabled);inspect();}));
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
- resume.addEventListener('click',()=>{if(last)openFeature(last);});
+ addNote.addEventListener('click',()=>{pendingNote=true;openFeature('journal');schedule();});
+ document.getElementById('to-do').addEventListener('click',()=>openFeature('action-plan'));
  window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();}schedule();});
  window.addEventListener('resize',schedule);
  renderFeature('home');
 })();
+

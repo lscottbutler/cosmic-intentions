@@ -196,11 +196,18 @@
       .nav span:last-child{font-size:16px;letter-spacing:1px}
     }
     @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}.stage.ci-stage-fade-out{opacity:1}}
+    /* Scott's scoped revision, 2026-10-04: remove the upper trough globally.
+       Keep its menu at the upper-left without a replacement title band. */
+    .shell .cap{height:0;z-index:30;overflow:visible}
+    .shell .cap::before{content:none}
+    .shell #capTitleText{visibility:hidden;pointer-events:none}
+    .shell .site-menu-button{top:20px;transform:none;background:#292929}
+    #standaloneSiteMenu{inset:76px auto auto max(12px,8vw);max-height:calc(100dvh - 88px)}
   </style>
 </head>
 <body>
   <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
-    <header class="cap" id="capTitle" aria-label="Player title"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
+    <header class="cap" id="capTitle" aria-label="Site navigation"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
     <div class="citadel-note" id="citadelNote" hidden><iframe id="citadelNoteFrame" title="Citadel opening message" scrolling="no"></iframe></div>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
@@ -930,3 +937,4 @@
   </script>
 </body>
 </html>
+

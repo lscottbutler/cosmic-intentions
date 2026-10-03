@@ -31,11 +31,11 @@ for(const [name,width] of [['desktop',1440],['phone',390]]){
   expect(errors).toEqual([]);
  });
 }
-test('existing goal entry, local edits and return navigation remain usable',async({page})=>{
+test('existing goal entry and local edits remain usable',async({page})=>{
  test.setTimeout(90000);await fixture(page);const master=page.frameLocator('#ci-review-frame');await page.getByRole('button',{name:'Open Goals',exact:true}).click();const app=master.frameLocator('#experienceFrame');await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await app.locator('.ci-goals-add-toggle').click();await app.locator('#pbNewIntentionInput').fill('I AM WRITING MY NEXT CHAPTER');await app.locator('.pb-goal-add-save').click();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();
  await page.getByLabel('Original',{exact:true}).check();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();await page.getByLabel('Test improvements',{exact:true}).check();
- await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await expect(page.getByRole('button',{name:'Return to Goals',exact:true})).toBeVisible();await page.getByRole('button',{name:'Return to Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
+ await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await page.getByRole('button',{name:'Open Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await page.screenshot({path:'test-results/member-design-goal-saved.png',fullPage:true});
 });
 
@@ -46,4 +46,29 @@ test('existing hamburger opens the review menu and navigates',async({page})=>{
  await expect(master.frameLocator('#experienceFrame').locator('#page-habits')).toBeVisible({timeout:20000});
  await expect(page.locator('#feature-title')).toHaveText('Habits');
  await master.locator('#siteMenuButton').click();await page.getByRole('button',{name:'Close',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
+});
+
+
+for(const width of [1440,390])test(`trough removal and note / to-do shortcuts ${width}`,async({page})=>{
+ test.setTimeout(90000);await page.setViewportSize({width,height:1000});await fixture(page);
+ const master=page.frameLocator('#ci-review-frame');
+ expect(await master.locator('#capTitle').evaluate(e=>e.getBoundingClientRect().height)).toBe(0);
+ expect(await master.locator('#capTitle').evaluate(e=>getComputedStyle(e,'::before').content)).toBe('none');
+ await expect(master.locator('#siteMenuButton')).toBeVisible();
+ await page.screenshot({path:`test-results/no-upper-trough-${width}-citadel.png`,fullPage:true});
+ await page.getByRole('button',{name:'Add a note',exact:true}).click();
+ const app=master.frameLocator('#experienceFrame');
+ await expect(app.locator('#page-mynotes')).toBeVisible({timeout:20000});
+ await expect(app.locator('#notesadd-note')).toBeVisible();await expect(app.locator('#notesadd-note')).toBeFocused();
+ await app.locator('#notesadd-note').fill('A fictional note for the layout review.');await app.locator('#notesadd-note').press('Tab');
+ await expect(app.getByText('A fictional note for the layout review.',{exact:true}).first()).toBeVisible();
+ await page.getByRole('button',{name:'TO DO',exact:true}).click();
+ await expect(app.locator('#page-myroadmap')).toBeVisible({timeout:20000});
+ await page.screenshot({path:`test-results/no-upper-trough-${width}-todo.png`,fullPage:true});
+ await master.locator('#siteMenuButton').click();await expect(page.locator('#review-menu')).toBeVisible();
+ await page.locator('#review-menu').getByRole('button',{name:'Meditation',exact:true}).click();
+ await expect(master.frameLocator('#experienceFrame').locator('#timer')).toBeVisible({timeout:20000});
+ expect(await master.locator('#capTitle').evaluate(e=>e.getBoundingClientRect().height)).toBe(0);
+ await expect(master.locator('#siteMenuButton')).toBeVisible();
+ await page.screenshot({path:`test-results/no-upper-trough-${width}-meditation.png`,fullPage:true});
 });

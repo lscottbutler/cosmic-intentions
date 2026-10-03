@@ -125,11 +125,12 @@ test('MASTER PLAYER TEMPLATE structure is locked', async ({ page }) => {
   expect(state.name).toBe('MASTER PLAYER TEMPLATE');
   expect(state.status).toBe('locked');
   expect(state.upperTroughText).toBe('');
-  expect(state.upperTroughHeight).toBeCloseTo(108, 1);
+  expect(state.upperTroughHeight).toBeCloseTo(0, 1);
   expect(state.siteMenuVisible).toBe(true);
   expect(state.hamburgerLeftOffset).toBeGreaterThan(45);
   expect(state.hamburgerLeftOffset).toBeLessThan(65);
-  expect(state.menuClearsTitle).toBe(true);
+  await expect(page.locator('#capTitleText')).toBeHidden();
+  expect(await page.locator('#capTitle').evaluate(el=>getComputedStyle(el,'::before').content)).toBe('none');
   expect(state.cardRatio).toBeCloseTo(16 / 9, 3);
   expect(state.deckRegion).toBe('lower-icon-trough');
   expect(state.actions).toEqual([
@@ -204,9 +205,10 @@ for (const destination of CORE_DESTINATIONS) {
     expect(state.siteMenuVisible).toBe(true);
     // Locked master geometry: fixed mobile height, exact horizontal centering,
     // one shared vertical centerline, and the approved two-tone colors.
-    expect(state.upperTrough.height).toBeCloseTo(108, 1);
+    expect(state.upperTrough.height).toBeCloseTo(0, 1);
     expect(state.upperTrough.titleCenterX).toBeCloseTo(state.upperTrough.centerX, 1);
-    expect(state.upperTrough.titleCenterY).toBeCloseTo(state.upperTrough.menuCenterY, 1);
+    await expect(page.locator('#capTitleText')).toBeHidden();
+    expect(await page.locator('#capTitle').evaluate(el=>getComputedStyle(el,'::before').content)).toBe('none');
     expect(state.upperTrough.outerColor).toBe('rgb(41, 41, 41)');
     expect(state.upperTrough.innerColor).toBe('rgb(116, 116, 116)');
     expect(state.ratio).toBeCloseTo(16 / 9, 3);
@@ -533,3 +535,4 @@ test('Entrepreneur skill card shows its authored page and returns to its library
     'src', /masterInline=entrepreneur-library/, { timeout: 12000 }
   );
 });
+

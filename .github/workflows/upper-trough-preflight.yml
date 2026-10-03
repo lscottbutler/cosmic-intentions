@@ -1,0 +1,40 @@
+name: Scoped upper trough visual preflight
+on:
+  pull_request:
+    paths:
+      - 'players/master-player.html'
+      - 'standalone/member-design-test*'
+      - 'tests/member-design-test.spec.js'
+      - '.github/workflows/upper-trough-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  visual-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Isolated rendering of Scott's explicitly requested protected-template
+      # change, before visual acceptance can establish the new lock baseline.
+      # The normal build/quality integrity gate remains in force.
+      - name: Render scoped proposed change for visual acceptance
+        run: |
+          npx vite build
+          npm run preview > /tmp/ci-trough-preview.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:8090/players/master-player.html > /dev/null; then break; fi
+            sleep 1
+          done
+          npm test -- tests/member-design-test.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upper-trough-preflight-evidence
+          path: test-results/
+          retention-days: 7

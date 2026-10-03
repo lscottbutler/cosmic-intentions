@@ -91,7 +91,7 @@ for (const viewport of [
       if (i) await group.locator('summary').click();
     }
     await groups.first().locator('summary').scrollIntoViewIfNeeded();
-    await page.locator('#capTitleText').scrollIntoViewIfNeeded();
+    await page.locator('#siteMenuButton').scrollIntoViewIfNeeded();
     await page.screenshot({ path:testInfo.outputPath(`library-heading-${viewport.name}.png`), fullPage:false });
     await expect.poll(async () => {
       const outer = await page.locator('#experienceFrame').boundingBox();
@@ -342,3 +342,4 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     expect(errors).toEqual([]);
   });
 }
+
