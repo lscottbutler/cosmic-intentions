@@ -326,8 +326,10 @@ export function renderMyNotesPage() {
 
 /* "＋ Add …" in a section banner → open the section, reveal + focus its add box. */
 export function notesShowAdd(cat) {
-  const body = document.getElementById(`notesec-${cat}-body`);
-  const arr  = document.getElementById(`notesec-${cat}-arr`);
+  // Thoughts and Journal retain separate copies; target the visible page.
+  const root = document.querySelector('.page.active') || document;
+  const body = root.querySelector(`[id="notesec-${cat}-body"]`);
+  const arr  = root.querySelector(`[id="notesec-${cat}-arr"]`);
   if (body) {
     const visible = body.classList.contains('cc-open') ||
       (body.style.display !== 'none' && body.style.maxHeight !== '0px' && body.offsetHeight > 1);
@@ -335,7 +337,7 @@ export function notesShowAdd(cat) {
     if (arr) arr.style.transform = 'rotate(0deg)';
     body.querySelectorAll('textarea').forEach(el => { if (el.style.display !== 'none') notesAutoGrow(el); });
   }
-  const add = document.getElementById(`notesadd-${cat}`);
+  const add = root.querySelector(`[id="notesadd-${cat}"]`);
   if (add) { add.style.display = ''; notesAutoGrow(add); add.focus(); }
 }
 
@@ -464,3 +466,4 @@ export function notesToggleFav(id) {
   }
   if (typeof window !== 'undefined' && typeof window.renderFavorites === 'function') window.renderFavorites();
 }
+
