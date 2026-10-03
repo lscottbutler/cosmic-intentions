@@ -15,7 +15,7 @@ for(const [name,width] of [['desktop',1440],['phone',390]]){
   await page.getByLabel('Original',{exact:true}).check();await expect(page.locator('.orientation')).toBeHidden();await page.getByLabel('Test improvements',{exact:true}).check();await expect(page.locator('.orientation')).toBeVisible();
   expect(await master.locator('.cap').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,color:getComputedStyle(e).backgroundColor}))).toEqual(geometry);
   for(const [action,selector] of features){
-   await master.locator('body').evaluate((_,action)=>window.postMessage({type:'ci-lfm-select',action},location.origin),action);
+   await page.locator('#ci-review-frame').evaluate((el,action)=>el.contentWindow.postMessage({type:'ci-lfm-select',action},location.origin),action);
    const app=master.frameLocator('#experienceFrame');await expect(app.locator(selector)).toBeVisible({timeout:20000});
    await expect(app.locator(selector+' > .ci-review-guidance')).toBeVisible();
    const baseline=await app.locator(selector).evaluate(e=>Array.from(e.querySelectorAll('button')).map(b=>b.textContent));
@@ -26,7 +26,7 @@ for(const [name,width] of [['desktop',1440],['phone',390]]){
    if(['goals','daily-habits','goal-workspace'].includes(action))await page.screenshot({path:`test-results/member-design-${name}-${action}.png`,fullPage:true});
   }
   // Meditation is intentionally excluded from injected styling and guidance.
-  await master.locator('body').evaluate(()=>window.postMessage({type:'ci-lfm-select',action:'meditation'},location.origin));
+  await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'meditation'},location.origin));
   const meditation=master.frameLocator('#experienceFrame');await expect(meditation.locator('#timer')).toBeVisible({timeout:20000});expect(await meditation.locator('#ci-review-test-style').count()).toBe(0);
   expect(errors).toEqual([]);
  });
@@ -35,6 +35,6 @@ test('existing goal fork, local edits and return navigation remain usable',async
  test.setTimeout(90000);await fixture(page);const master=page.frameLocator('#ci-review-frame');await page.getByRole('button',{name:'Open Goals',exact:true}).click();const app=master.frameLocator('#experienceFrame');await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await app.locator('.ci-goals-add-toggle').click();await app.locator('#pbNewIntentionInput').fill('I AM WRITING MY NEXT CHAPTER');await app.locator('.pb-goal-add-save').click();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();
  await page.getByLabel('Original',{exact:true}).check();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();await page.getByLabel('Test improvements',{exact:true}).check();
- await master.locator('body').evaluate(()=>window.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await expect(page.getByRole('button',{name:'Return to Goals',exact:true})).toBeVisible();await page.getByRole('button',{name:'Return to Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
+ await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await expect(page.getByRole('button',{name:'Return to Goals',exact:true})).toBeVisible();await page.getByRole('button',{name:'Return to Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await page.screenshot({path:'test-results/member-design-goal-saved.png',fullPage:true});
 });

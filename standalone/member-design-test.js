@@ -8,6 +8,7 @@
  const purpose=document.getElementById('feature-purpose');
  const next=document.getElementById('feature-next');
  const resume=document.getElementById('resume');
+ const menu=document.getElementById('review-menu');
  const features={
   home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
   goals:['Goals','Keep your direction visible, in your own words.','Select a goal to choose Visualization or Roadmap. ADD A GOAL opens the entry field.'],
@@ -42,6 +43,10 @@
   if(last)resume.textContent='Return to '+features[last][0];
  }
  function openFeature(action){frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);}
+ const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
+ for(const [action,label] of Object.entries(menuLabels)){const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{menu.close();openFeature(action);});document.getElementById('review-menu-items').append(button);}
+ document.getElementById('close-menu').addEventListener('click',()=>menu.close());
+ menu.addEventListener('close',()=>{frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
  const overlayCss=`
  html.ci-review-test .page:not(#page-admin) .ci-review-guidance{font:13px/1.55 Arial,sans-serif;padding:12px 16px;margin:12px 0 18px;background:#f2ede7;color:#292929;border-left:3px solid #747474;text-transform:none;letter-spacing:0;overflow-wrap:anywhere}
  html:not(.ci-review-test) .ci-review-guidance{display:none!important}
@@ -92,7 +97,7 @@
  document.querySelectorAll('[name=appearance]').forEach(input=>input.addEventListener('change',()=>{enabled=input.value==='test';document.body.classList.toggle('original',!enabled);inspect();}));
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
  resume.addEventListener('click',()=>{if(last)openFeature(last);});
- window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;schedule();});
+ window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();}schedule();});
  window.addEventListener('resize',schedule);
  renderFeature('home');
 })();
