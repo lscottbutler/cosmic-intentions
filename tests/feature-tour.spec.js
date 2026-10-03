@@ -19,7 +19,7 @@ for(const viewport of [{name:'desktop',width:1440,height:1100},{name:'phone',wid
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   await page.locator('[data-tour="goals"]').click();await expect(page.locator('#tour-image')).toHaveAttribute('src',/goals\/0.jpg$/);
   await page.locator('#tour-player').scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath(`tour-hub-${viewport.name}.png`),fullPage:true});
-  await page.getByRole('button',{name:'Next step',exact:true}).click();await page.screenshot({path:info.outputPath(`tour-click-${viewport.name}.png`),fullPage:false});
+  await page.getByRole('button',{name:'Next step',exact:true}).click();await expect(page.locator('#tour-image')).toHaveAttribute('src',/goals\/1.jpg$/);await expect(page.locator('#tour-image')).toBeVisible();await expect.poll(()=>page.locator('#tour-image').evaluate(i=>i.complete&&i.naturalWidth>0)).toBe(true);await page.screenshot({path:info.outputPath(`tour-click-${viewport.name}.png`),fullPage:false});
  });
 }
 test('playback pause, advance, replay, switching and transcript',async({page})=>{
