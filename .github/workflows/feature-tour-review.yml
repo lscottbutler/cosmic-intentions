@@ -20,13 +20,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm test -- tests/feature-tour-capture.spec.js --workers=3
+      - run: |
+          if [ -f standalone/tour-captures/index.json ]; then
+            npm test -- tests/feature-tour.spec.js --workers=2
+          else
+            npm test -- tests/feature-tour-capture.spec.js --workers=2 --grep "capture (goals|action-plan)$"
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: feature-tour-captures
+          name: feature-tour-evidence
           path: |
             test-results/tour-captures
+            test-results/feature-tour-*/*.png
             test-results/**/error-context.md
             test-results/**/test-failed-*.png
           retention-days: 7

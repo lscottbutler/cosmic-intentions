@@ -69,7 +69,7 @@ for (const [id,label,ready,description] of tours) {
    if(target)await target.scrollIntoViewIfNeeded();
    // Frame auto-height settles separately from page load.
    await page.waitForTimeout(650);
-   let box=target?await target.boundingBox():null;
+   let box=target && kind!=='look'?await target.boundingBox():null;
    const image=`${frames.length}.jpg`;
    await page.screenshot({path:`${dir}/${image}`,type:'jpeg',quality:82,animations:'disabled'});
    frames.push({image,caption,kind,cursor:box?{x:(box.x+box.width/2)/vp.width,y:(box.y+box.height/2)/vp.height}:null});
@@ -99,7 +99,7 @@ for (const [id,label,ready,description] of tours) {
   if(id==='entrepreneur-library')actions=[['#entrepreneurLibraryGrid .cl-card','Choose a skill card to open its individual experience.']];
   if(id==='favorites')actions=[['#fav-play','Click Automatically Play My Daily Runthrough to start your saved sequence.']];
   if(id==='visualization')actions=[['button[onclick="vizLibToggle(0)"]','Click a goal to open its visualization options.']];
-  if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]','Click the pencil to open the note for that action.']];
+  if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]:visible','Click the pencil to open the note for that action.']];
   if(id==='cosmic-library')actions=[['#cosmicConceptSearch','Search the library for a topic.','fill','habit'],['button[aria-label="Clear search and filters"]','Reset the filters to see the full library.']];
   if(id==='ent-card')actions=[['#ent-tab-mindset','Open Mindset to explore this skill’s mindset content.'],['#ent-tab-deeper','Open Go Deeper to explore the supporting resources.'],['#ent-tab-notes','Open My Notes to record your own reflections.']];
   if(id==='citadel')actions=[['[data-action="goals"]','Use the Goals icon in the lower trough to open your goals.','outer']];
@@ -108,7 +108,7 @@ for (const [id,label,ready,description] of tours) {
    const target=(op==='outer'?page:frame).locator(sel).first();await expect(target).toBeVisible({timeout:10000});
    await shot(caption,target,op==='fill'?'type':'click');
    if(op==='fill')await target.fill(value);else if(op==='select')await target.selectOption(value);else await target.click({timeout:10000});
-   await shot(op==='fill'?'Your sample text is in place.':`See the result of that action in ${label}.`,null);
+   if(sel==='.pb-goal-add-save'){const saved=frame.getByText('I AM COMPLETING MY NEXT CHAPTER',{exact:true}).first();await expect(saved).toBeVisible();await shot('Your new goal now appears in My Goals.',saved);}else await shot(op==='fill'?'Your sample text is in place.':`See the result of that action in ${label}.`,null);
   }
   const controls=await (ready?frame.locator(ready):page.locator('#meditationControls')).locator('button,input,select,textarea,a').evaluateAll(es=>es.map(e=>({tag:e.tagName,text:e.textContent.trim().slice(0,90),id:e.id,aria:e.getAttribute('aria-label'),onclick:e.getAttribute('onclick')})));
   writeFileSync(`${dir}/tour.json`,JSON.stringify({id,label,description,width:vp.width,height:vp.height,source:'2bf60145ef6ef347c24887bb4a68412d94e23321',frames,controls},null,2));
