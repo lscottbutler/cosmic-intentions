@@ -65,14 +65,15 @@ for (const [id,label,ready,description] of tours) {
    if(!localStorage.getItem('ci_favorites'))localStorage.setItem('ci_favorites',JSON.stringify([{type:'note',id:'demo-thought'}]));
   });
   const dir=`${root}/${id}`;mkdirSync(dir,{recursive:true});let frames=[];
-  async function shot(caption,target=null,kind='look'){
+  async function shot(caption,target=null,kind='look',typingValue=null){
    if(target)await target.scrollIntoViewIfNeeded();
    // Frame auto-height settles separately from page load.
    await page.waitForTimeout(650);
    let box=target && kind!=='look'?await target.boundingBox():null;
    const image=`${frames.length}.jpg`;
    await page.screenshot({path:`${dir}/${image}`,type:'jpeg',quality:82,animations:'disabled'});
-   frames.push({image,caption,kind,cursor:box?{x:(box.x+box.width/2)/vp.width,y:(box.y+box.height/2)/vp.height}:null});
+   const typing=typingValue!==null?{text:typingValue,box:{x:box.x/vp.width,y:box.y/vp.height,width:box.width/vp.width,height:box.height/vp.height},style:await target.evaluate(e=>{const s=getComputedStyle(e);return Object.fromEntries(['backgroundColor','color','fontFamily','fontSize','fontWeight','fontStyle','lineHeight','letterSpacing','textTransform','textAlign','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderStyle','borderColor','borderRadius'].map(k=>[k,s[k]]));})}:undefined;
+   frames.push({image,caption,kind,cursor:box?{x:(box.x+box.width/2)/vp.width,y:(box.y+box.height/2)/vp.height}:null,...(typing?{typing}:{})});
   }
   await page.goto('/players/master-player.html?card=0&preview=1');
   await expect(page.locator('#dailyInspiration img').first()).toBeVisible();
@@ -99,14 +100,14 @@ for (const [id,label,ready,description] of tours) {
   if(id==='entrepreneur-library')actions=[['#entrepreneurLibraryGrid .cl-card','Choose a skill card to open its individual experience.']];
   if(id==='favorites')actions=[['#fav-play','Click Automatically Play My Daily Runthrough to start your saved sequence.']];
   if(id==='visualization')actions=[['button[onclick="vizLibToggle(0)"]','Click a goal to open its visualization options.']];
-  if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]:visible','Click the pencil to open the note for that action.']];
+  if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]:visible','Click the pencil to open the note for that action.'],['#page-myroadmap textarea:visible','Write a note for your next action.','fill','Focus on the opening scene first.']];
   if(id==='cosmic-library')actions=[['#cosmicConceptSearch','Search the library for a topic.','fill','habit'],['button[aria-label="Clear search and filters"]','Reset the filters to see the full library.']];
-  if(id==='ent-card')actions=[['#ent-tab-mindset','Open Mindset to explore this skill’s mindset content.'],['#ent-tab-deeper','Open Go Deeper to explore the supporting resources.'],['#ent-tab-notes','Open My Notes to record your own reflections.']];
+  if(id==='ent-card')actions=[['#ent-tab-mindset','Open Mindset to explore this skill’s mindset content.'],['#ent-tab-deeper','Open Go Deeper to explore the supporting resources.'],['#ent-tab-notes','Open My Notes to record your own reflections.'],['#ent-moment-note','Write your reflection in My Notes.','fill','I can prepare for a difficult conversation.'],['#ent-action-note','Write the next action you will take.','fill','Practice my opening sentence before the meeting.']];
   if(id==='citadel')actions=[['[data-action="goals"]','Use the Goals icon in the lower trough to open your goals.','outer']];
   if(id==='meditation')actions=[['#timer','Click Play in the center of the meditation screen.'],['[data-med-command="menu"]','Open Meditation Menu to see the session choices.','outer'],['[data-med-mode="guided"]','Choose Guided.','outer'],['[data-med-time="3"]','Choose a three-minute session.','outer']];
   for(const [sel,caption,op,value] of actions){
    const target=(op==='outer'?page:frame).locator(sel).first();await expect(target).toBeVisible({timeout:10000});
-   await shot(caption,target,op==='fill'?'type':'click');
+   await shot(caption,target,op==='fill'?'type':'click',op==='fill'?value:null);
    if(op==='fill')await target.fill(value);else if(op==='select')await target.selectOption(value);else await target.click({timeout:10000});
    if(sel==='.pb-goal-add-save'){const saved=frame.getByText('I AM COMPLETING MY NEXT CHAPTER',{exact:true}).first();await expect(saved).toBeVisible();await shot('Your new goal now appears in My Goals.',saved);}else await shot(op==='fill'?'Your sample text is in place.':`See the result of that action in ${label}.`,null);
   }
