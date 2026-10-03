@@ -1,4 +1,5 @@
-import './sentry.js';   // error monitoring — must init first
+import '../shared/member-design-review.js'; // explicit private test wrapper only
+import './sentry.js';   // error monitoring — must init before app boot
 import './styles/main.css';
 import * as _shared_api_js from '../shared/api.js';
 import * as _shared_content_bank_js from '../shared/content-bank.js';

@@ -1,0 +1,11 @@
+# Member design test — In Review
+
+Scott authorized a separate test incorporating the proposed usability ideas into the current CI design, preserving his design elements, text, concepts and canonical Master Player. Production release is not approved.
+
+The review entry is standalone/member-design-test.html. It embeds the existing Master Player without changing its source. Original / Test improvements switches the guidance and presentation layer in place without reloading the application. Existing art, lettermark titles, charcoal/grey troughs, circle controls, navigation and page behavior remain intact. The layer adds contextual purpose/next-step guidance, focus visibility, readable editable fields, selective emphasis for existing entry actions and a return-to-last-feature shortcut. Session storage records only a public feature identifier. No trackers, external assets, backend changes, fictitious progress or invented save states are added.
+
+The review uses the current application's existing preview mode, not a signed-in account. All member destinations are compared on desktop and phone; original button labels and shell geometry are checked, and existing goal entry is exercised. Meditation styling and Admin remain excluded. Gratitude's legacy deeper playback, hidden rings and unmounted Mind Loop remain existing limitations. No competitor copying, new player shell, scarcity or guarantees.
+
+Private baseline/recovery: f256dc01569424e37fa64682f1464e74e7b018a4. Branch review/member-usability-test-2026-10-03 retains PR42/43/44/45 dependencies; do not merge directly. Additive review files plus one main-module import. The imported helper carries existing sample mode into content frames only on localhost or this site's protected deploy-preview hostname, with the exact review wrapper as grandparent. Ordinary app visits and all production hostnames remain unaffected. Player sources, schemas, Netlify configuration and production untouched. Restore by opening the original build or branching from the baseline; never reset main or force-push.
+
+Verification is pending until the rendered desktop/phone evidence and private preview are inspected. Record final checks, review URL and Bible copy after verification.
