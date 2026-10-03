@@ -4,6 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 // Captures the delivered Master Player with fictional, local-only review data.
 // No app/template file changes. No production account, network writes or AI calls.
 const tours = [
+ ['citadel','Citadel',null,'Find your way around your member home'],
  ['goals','Goals','#page-setup','Set your direction'],
  ['daily-habits','Habits','#habitsDailyView','Build your daily practice'],
  ['action-plan','Roadmap','#page-myroadmap','Turn your goal into next steps'],
@@ -82,9 +83,10 @@ for (const [id,label,ready,description] of tours) {
   await expect(choice).toBeVisible();await shot(`Choose ${label}.`,choice,'click');await choice.click();
   const frame=page.frameLocator('#experienceFrame');
   if(ready) await expect(frame.locator(ready)).toBeVisible({timeout:20000});
-  else await expect(frame.locator('body')).toBeVisible({timeout:15000});
+  else if(id==='citadel')await expect(page.locator('#homeView')).toBeVisible();
+  else await expect(frame.locator('#timer')).toBeVisible({timeout:15000});
   // Center content viewport before recording its controls.
-  const content=ready?frame.locator(ready):page.locator('#experienceFrame');
+  const content=ready?frame.locator(ready):page.locator(id==='citadel'?'#homeView':'#experienceFrame');
   await shot(`You’re now in ${label}. ${description}.`,content);
   let actions=[];
   if(id==='goals')actions=[['.ci-goals-add-toggle','Click ADD A GOAL to open the goal field.'],['#pbNewIntentionInput','Write your goal in the field.','fill','I AM COMPLETING MY NEXT CHAPTER'],['.pb-goal-add-save','Click Save to add your goal.']];
@@ -95,8 +97,13 @@ for (const [id,label,ready,description] of tours) {
   if(id==='goal-workspace')actions=[['#goalWorkspaceSelect','Choose your goal to view its linked entries.','select','pv1']];
   if(id==='task-notes')actions=[['button.goal-workspace-link','Open Goal Workspace to see notes, to-dos and journal entries together.']];
   if(id==='entrepreneur-library')actions=[['#entrepreneurLibraryGrid .cl-card','Choose a skill card to open its individual experience.']];
-  if(id==='ent-card')actions=[['#ent-tab-mindset','Open Mindset to explore this skill’s mindset content.']];
-  if(id==='meditation')actions=[['[data-med-command="menu"]','Open Meditation Menu to see the session choices.','outer'],['[data-med-mode="guided"]','Choose Guided.','outer'],['[data-med-time="3"]','Choose a three-minute session.','outer']];
+  if(id==='favorites')actions=[['#fav-play','Click Automatically Play My Daily Runthrough to start your saved sequence.']];
+  if(id==='visualization')actions=[['button[onclick="vizLibToggle(0)"]','Click a goal to open its visualization options.']];
+  if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]','Click the pencil to open the note for that action.']];
+  if(id==='cosmic-library')actions=[['#cosmicConceptSearch','Search the library for a topic.','fill','habit'],['button[aria-label="Clear search and filters"]','Reset the filters to see the full library.']];
+  if(id==='ent-card')actions=[['#ent-tab-mindset','Open Mindset to explore this skill’s mindset content.'],['#ent-tab-deeper','Open Go Deeper to explore the supporting resources.'],['#ent-tab-notes','Open My Notes to record your own reflections.']];
+  if(id==='citadel')actions=[['[data-action="goals"]','Use the Goals icon in the lower trough to open your goals.','outer']];
+  if(id==='meditation')actions=[['#timer','Click Play in the center of the meditation screen.'],['[data-med-command="menu"]','Open Meditation Menu to see the session choices.','outer'],['[data-med-mode="guided"]','Choose Guided.','outer'],['[data-med-time="3"]','Choose a three-minute session.','outer']];
   for(const [sel,caption,op,value] of actions){
    const target=(op==='outer'?page:frame).locator(sel).first();await expect(target).toBeVisible({timeout:10000});
    await shot(caption,target,op==='fill'?'type':'click');
