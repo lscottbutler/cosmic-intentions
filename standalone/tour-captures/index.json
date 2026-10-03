@@ -102,6 +102,38 @@
         "cursor": {
           "x": 0.46838235294117647,
           "y": 0.496484375
+        },
+        "typing": {
+          "text": "I AM COMPLETING MY NEXT CHAPTER",
+          "box": {
+            "x": 0.21875,
+            "y": 0.472484375,
+            "width": 0.49926470588235294,
+            "height": 0.048
+          },
+          "style": {
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(0, 0, 0)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "21px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "12px",
+            "paddingRight": "14px",
+            "paddingBottom": "12px",
+            "paddingLeft": "14px",
+            "borderTopWidth": "0px",
+            "borderRightWidth": "0px",
+            "borderBottomWidth": "0px",
+            "borderLeftWidth": "0px",
+            "borderStyle": "none",
+            "borderColor": "rgb(0, 0, 0)",
+            "borderRadius": "7px"
+          }
         }
       },
       {
@@ -201,6 +233,53 @@
       {
         "image": "8.jpg",
         "caption": "See the result of that action in Roadmap.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "9.jpg",
+        "caption": "Write a note for your next action.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.5058823529411764,
+          "y": 0.807796875
+        },
+        "typing": {
+          "text": "Focus on the opening scene first.",
+          "box": {
+            "x": 0.22242647058823528,
+            "y": 0.759796875,
+            "width": 0.5669117647058823,
+            "height": 0.096
+          },
+          "style": {
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(21, 22, 26)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "10px",
+            "paddingRight": "12px",
+            "paddingBottom": "10px",
+            "paddingLeft": "12px",
+            "borderTopWidth": "1px",
+            "borderRightWidth": "1px",
+            "borderBottomWidth": "1px",
+            "borderLeftWidth": "1px",
+            "borderStyle": "solid",
+            "borderColor": "rgb(201, 204, 209)",
+            "borderRadius": "8px"
+          }
+        }
+      },
+      {
+        "image": "10.jpg",
+        "caption": "Your sample text is in place.",
         "kind": "look",
         "cursor": null
       }
@@ -614,6 +693,38 @@
         "cursor": {
           "x": 0.5220588235294118,
           "y": 0.485328125
+        },
+        "typing": {
+          "text": "I make time for the work that matters.",
+          "box": {
+            "x": 0.29448529411764707,
+            "y": 0.464328125,
+            "width": 0.4551470588235294,
+            "height": 0.042
+          },
+          "style": {
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(26, 26, 26)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "9px",
+            "paddingRight": "11px",
+            "paddingBottom": "9px",
+            "paddingLeft": "11px",
+            "borderTopWidth": "0px",
+            "borderRightWidth": "0px",
+            "borderBottomWidth": "0px",
+            "borderLeftWidth": "0px",
+            "borderStyle": "none",
+            "borderColor": "rgb(26, 26, 26)",
+            "borderRadius": "7px"
+          }
         }
       },
       {
@@ -673,6 +784,53 @@
       },
       {
         "image": "3.jpg",
+        "caption": "Write your reflection in the journal field.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.7921875
+        },
+        "typing": {
+          "text": "Today I completed the first scene of my short story.",
+          "box": {
+            "x": 0.2011029411764706,
+            "y": 0.7481875,
+            "width": 0.5977941176470588,
+            "height": 0.088
+          },
+          "style": {
+            "backgroundColor": "rgb(244, 246, 248)",
+            "color": "rgb(38, 54, 75)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "31px",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "13px",
+            "paddingRight": "48px",
+            "paddingBottom": "13px",
+            "paddingLeft": "15px",
+            "borderTopWidth": "1px",
+            "borderRightWidth": "1px",
+            "borderBottomWidth": "1px",
+            "borderLeftWidth": "1px",
+            "borderStyle": "solid",
+            "borderColor": "rgb(227, 231, 236)",
+            "borderRadius": "10px"
+          }
+        }
+      },
+      {
+        "image": "4.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "5.jpg",
         "caption": "Choose the goal this journal entry belongs to.",
         "kind": "click",
         "cursor": {
@@ -681,7 +839,7 @@
         }
       },
       {
-        "image": "4.jpg",
+        "image": "6.jpg",
         "caption": "See the result of that action in My Journal.",
         "kind": "look",
         "cursor": null
@@ -776,6 +934,38 @@
         "cursor": {
           "x": 0.3780618106617647,
           "y": 0.781921875
+        },
+        "typing": {
+          "text": "Completed the opening scene.",
+          "box": {
+            "x": 0.2011029411764706,
+            "y": 0.757921875,
+            "width": 0.35391773897058826,
+            "height": 0.048
+          },
+          "style": {
+            "backgroundColor": "rgb(26, 26, 26)",
+            "color": "rgb(255, 255, 255)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "11px",
+            "paddingRight": "13px",
+            "paddingBottom": "11px",
+            "paddingLeft": "13px",
+            "borderTopWidth": "1px",
+            "borderRightWidth": "1px",
+            "borderBottomWidth": "1px",
+            "borderLeftWidth": "1px",
+            "borderStyle": "solid",
+            "borderColor": "rgb(56, 56, 56)",
+            "borderRadius": "8px"
+          }
         }
       },
       {
@@ -840,6 +1030,38 @@
         "cursor": {
           "x": 0.3556698069852941,
           "y": 0.7143515625
+        },
+        "typing": {
+          "text": "habit",
+          "box": {
+            "x": 0.20772058823529413,
+            "y": 0.69215625,
+            "width": 0.2958984375,
+            "height": 0.044390625
+          },
+          "style": {
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(32, 41, 31)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "22.4px",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "10px",
+            "paddingRight": "10px",
+            "paddingBottom": "10px",
+            "paddingLeft": "10px",
+            "borderTopWidth": "1px",
+            "borderRightWidth": "1px",
+            "borderBottomWidth": "1px",
+            "borderLeftWidth": "1px",
+            "borderStyle": "solid",
+            "borderColor": "rgb(174, 186, 165)",
+            "borderRadius": "5px"
+          }
         }
       },
       {
@@ -987,6 +1209,68 @@
       },
       {
         "image": "8.jpg",
+        "caption": "See the result of that action in Entrepreneur Skill Cards.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "9.jpg",
+        "caption": "Write the next action you will take.",
+        "kind": "type",
+        "cursor": {
+          "x": 0.5,
+          "y": 0.807828125
+        },
+        "typing": {
+          "text": "Practice my opening sentence before the meeting.",
+          "box": {
+            "x": 0.23272058823529412,
+            "y": 0.765828125,
+            "width": 0.5345588235294118,
+            "height": 0.084
+          },
+          "style": {
+            "backgroundColor": "rgb(250, 251, 247)",
+            "color": "rgb(32, 41, 31)",
+            "fontFamily": "\"Roboto Condensed\", system-ui, -apple-system, sans-serif, system-ui, -apple-system, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "fontStyle": "normal",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none",
+            "textAlign": "start",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "12px",
+            "borderTopWidth": "1px",
+            "borderRightWidth": "1px",
+            "borderBottomWidth": "1px",
+            "borderLeftWidth": "1px",
+            "borderStyle": "solid",
+            "borderColor": "rgb(181, 192, 170)",
+            "borderRadius": "4px"
+          }
+        }
+      },
+      {
+        "image": "10.jpg",
+        "caption": "Your sample text is in place.",
+        "kind": "look",
+        "cursor": null
+      },
+      {
+        "image": "11.jpg",
+        "caption": "Click Save note to keep your words.",
+        "kind": "click",
+        "cursor": {
+          "x": 0.2613970588235294,
+          "y": 0.90921875
+        }
+      },
+      {
+        "image": "12.jpg",
         "caption": "See the result of that action in Entrepreneur Skill Cards.",
         "kind": "look",
         "cursor": null

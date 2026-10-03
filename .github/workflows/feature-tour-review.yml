@@ -24,7 +24,7 @@ jobs:
           if python3 -c "import json; ts=json.load(open('standalone/tour-captures/index.json')); assert all('typing' in f for t in ts for f in t['frames'] if f['kind']=='type')"; then
             npm test -- tests/feature-tour.spec.js --workers=2
           else
-            npm test -- tests/feature-tour-capture.spec.js --workers=3 --grep 'capture (ent-card|journal)$'
+            npm test -- tests/feature-tour-capture.spec.js --workers=3 --grep 'capture (goals|thoughts|wins|cosmic-library|action-plan|ent-card|journal)$'
           fi
       - uses: actions/upload-artifact@v4
         if: always()
