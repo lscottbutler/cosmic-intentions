@@ -1,0 +1,15 @@
+# Calm-inspired landing design review
+
+Status: In Review. Scott authorized the Original, Version 2 and Version 3 on October 3, 2026, preserving their exact wording and concepts.
+
+Source/recovery: e227b96ebf470431d3903f95d04fa3df6242a007, private lscottbutler/cosmic-intentions. Dedicated branch: review/calm-inspired-landings-2026-10-03, based on the existing PR43 work. Retain PR42/43 dependencies; no merge or production release authorization.
+
+Scope: standalone/landing-draft.html, landing-v2.html and landing-v3.html receive a shared CSS design layer and one decorative landscape. Existing body copy, headings, labels, emoji, sections, prices, trial wording and link targets remain intact. The dark variant and member application/player files are unchanged. Review selector: standalone/landing-design-review.html.
+
+Visual direction: Calm's current homepage was inspected directly. Borrow broad principles—panoramic nature, clear deep-blue headings, generous white surfaces, softly rounded controls and quiet cards. No Calm copy, artwork, logo, testimonials or product capabilities were copied. Preserve CI's different page structures. Original feature bold text previously white on a light background is made readable. Navigation wraps at smaller widths instead of being hidden.
+
+Asset record: standalone/landing-calm-landscape.jpg is an original AI-generated misty mountain-lake panorama, generated with the built-in image generation tool for this review. Source PNG retained in workspace; JPEG conversion to 1920x640 at quality 88, 184274 bytes. Prompt: original peaceful mountain lake at early morning, forested shoreline, soft distant peaks, muted blues and forest greens, still reflective water, wide 3:1 crop; no people, vehicles, buildings, camping equipment, text, logos or UI. No third-party source image supplied. Approval and commercial rights review remain pending; no exclusive ownership claim.
+
+Verification plan: compare every page's text and hrefs against source baselines; render at 1440, 390 and 320px; inspect hero/full page/features/pricing screenshots; verify local section links, panorama delivery, overflow, JavaScript errors and comparison selector. GitHub's private workflow provides rendered evidence because local Chromium download failed. Tests do not submit signup, payment or real-account actions. Existing Version 2 'Write your first intention' href remains '#' by instruction to preserve existing content/behavior; it is a pre-existing placeholder, not a functional signup flow.
+
+Privacy/recovery: production main remains 116525cae867405337935df1d39ca232e4e8a0a9; no Supabase writes or Netlify configuration/privacy changes. Review inherits existing all-context password gate. Start-of-day Bible copy 1E-b5tX4Eg6tHRvjGM-W0G6FCEYffvoDez1SXRxVDP5c in established private destination 0AKR8KHFk2nEEUk9PVA; shared=false and owner-only permissions verified. Native content equality must be verified before calling the copy proven. Bible copies exclude code archives, database exports and secrets. Restore through a new review branch at source checkpoint, never reset main or force-push.
