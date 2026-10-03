@@ -31,10 +31,19 @@ for(const [name,width] of [['desktop',1440],['phone',390]]){
   expect(errors).toEqual([]);
  });
 }
-test('existing goal fork, local edits and return navigation remain usable',async({page})=>{
+test('existing goal entry, local edits and return navigation remain usable',async({page})=>{
  test.setTimeout(90000);await fixture(page);const master=page.frameLocator('#ci-review-frame');await page.getByRole('button',{name:'Open Goals',exact:true}).click();const app=master.frameLocator('#experienceFrame');await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await app.locator('.ci-goals-add-toggle').click();await app.locator('#pbNewIntentionInput').fill('I AM WRITING MY NEXT CHAPTER');await app.locator('.pb-goal-add-save').click();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();
  await page.getByLabel('Original',{exact:true}).check();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();await page.getByLabel('Test improvements',{exact:true}).check();
  await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await expect(page.getByRole('button',{name:'Return to Goals',exact:true})).toBeVisible();await page.getByRole('button',{name:'Return to Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await page.screenshot({path:'test-results/member-design-goal-saved.png',fullPage:true});
+});
+
+test('existing hamburger opens the review menu and navigates',async({page})=>{
+ await fixture(page);const master=page.frameLocator('#ci-review-frame');
+ await master.locator('#siteMenuButton').click();await expect(page.locator('#review-menu')).toBeVisible();
+ await page.locator('#review-menu').getByRole('button',{name:'Habits',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
+ await expect(master.frameLocator('#experienceFrame').locator('#page-habits')).toBeVisible({timeout:20000});
+ await expect(page.locator('#feature-title')).toHaveText('Habits');
+ await master.locator('#siteMenuButton').click();await page.getByRole('button',{name:'Close',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
 });
