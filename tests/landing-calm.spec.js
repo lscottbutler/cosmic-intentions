@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
-const baseline=JSON.parse(fs.readFileSync(new URL('./fixtures/landing-original-content.json',import.meta.url),'utf8'));
+const baseline=JSON.parse(fs.readFileSync('tests/fixtures/landing-original-content.json','utf8'));
 for(const viewport of [{width:1440,height:1000},{width:390,height:844},{width:320,height:740}]){
  for(const file of ['landing-draft.html','landing-v2.html','landing-v3.html']){
   test(`Calm landing ${file} ${viewport.width}: exact content, links and responsive rendering`,async({page},info)=>{
-   await page.setViewportSize(viewport);
+   await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
    const errors=[];page.on('pageerror',error=>errors.push(error.message));
    await page.goto('/standalone/'+file);await page.evaluate(()=>document.fonts.ready);
    const actual=await page.evaluate(()=>{const body=document.body.cloneNode(true);body.querySelectorAll('script,style').forEach(n=>n.remove());return {text:body.textContent.replace(/\s+/g,' ').trim(),links:Array.from(document.querySelectorAll('a')).map(a=>({text:a.textContent.replace(/\s+/g,' ').trim(),href:a.getAttribute('href')})),overflow:document.documentElement.scrollWidth>innerWidth+1,landscape:getComputedStyle(document.querySelector('.landscape')).backgroundImage,heading:getComputedStyle(document.querySelector('h1')).color}});
