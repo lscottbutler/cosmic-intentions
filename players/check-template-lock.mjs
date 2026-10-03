@@ -34,8 +34,14 @@ import { readFileSync } from 'node:fs';
 // Heading-only desktop/mobile visual preflight: run 36810697543, artifact 11139093196.
 // All 31 cards load; library/card/menu navigation passes. Geometry and controls unchanged.
 // Recovery before this title change: 06b98c2f4d599f253ab18fdc69713817f82cefc7.
+// Scott explicitly requested upper-trough removal on all players.
+// Same master blob rendered on desktop/phone in preflight run 37162290987,
+// artifact 11287992723. Citadel and all 14 member destinations/menu checks passed;
+// the former title trough collapses and the upper-left hamburger remains.
+// Note-save checks are separate from this scoped template visual acceptance.
+// Recovery: 99acd1bbd0be57c4f0250f5d2c3004d6e51ca8d9.
 const lockedFiles = {
-  "players/master-player.html": "5442b096f00e0b97ae7e35d4f613f5ef155e4c63",
+  "players/master-player.html": "b1b1ddc93e2a06e8f0d43659de274aa45bb47921",
   "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
 };
 const root = new URL('../', import.meta.url);
@@ -61,4 +67,5 @@ if (changed.length) {
 } else {
   console.log('Approved Master Player and meditation frame are unchanged.');
 }
+
 
