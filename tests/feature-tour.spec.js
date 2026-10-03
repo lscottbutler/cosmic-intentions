@@ -35,5 +35,5 @@ test('playback pause, advance, replay, switching and transcript',async({page})=>
  await page.getByText('Read the steps',{exact:true}).click();await expect(page.locator('#transcript li')).toHaveCount(tours.find(t=>t.id==='meditation').frames.length);
 });
 test('missing image fails visibly and stops playback',async({page})=>{
- await page.route('**/tour-captures/goals/0.jpg',r=>r.fulfill({status:404,body:''}));await page.goto('/standalone/how-it-works.html');await expect(page.locator('#tour-status')).toContainText('could not load');await expect(page.locator('#play')).toHaveText('Play tour');
+ await page.route('**/tour-captures/goals/0.jpg',r=>r.fulfill({status:404,body:''}));await page.goto('/standalone/how-it-works.html#feature=goals');await expect(page.locator('#tour-status')).toContainText('could not load');await expect(page.locator('#play')).toHaveText('Play tour');
 });
