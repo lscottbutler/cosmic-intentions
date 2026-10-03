@@ -25,5 +25,8 @@ jobs:
         if: always()
         with:
           name: feature-tour-captures
-          path: test-results
+          path: |
+            test-results/tour-captures
+            test-results/**/error-context.md
+            test-results/**/test-failed-*.png
           retention-days: 7

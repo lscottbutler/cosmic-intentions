@@ -23,12 +23,13 @@ const tours = [
 const root = 'test-results/tour-captures';
 for (const [id,label,ready,description] of tours) {
  test(`capture ${id}`, async ({page}) => {
-  test.setTimeout(90000);
+  test.setTimeout(60000);
   const vp={width:1360,height:1000}; await page.setViewportSize(vp);
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.route('**/*', async route=> {
    const u=new URL(route.request().url());
-   if (u.origin!=='http://localhost:8090') return route.fulfill({status:200,contentType:'application/json',body:'[]'});
+   if (/supabase\.co$/.test(u.hostname) || route.request().method() !== 'GET' || /sentry\.io$/.test(u.hostname)) return route.fulfill({status:200,contentType:'application/json',body:'[]'});
+   if (u.origin!=='http://localhost:8090') return route.continue();
    if (u.pathname==='/' && u.searchParams.has('masterInline')) {u.searchParams.set('preview','1');return route.continue({url:u.href});}
    if (u.pathname.startsWith('/.netlify/'))return route.fulfill({status:200,contentType:'application/json',body:'{}'});
    // The preview seed is local-only. Replace its authored example values with
@@ -81,12 +82,12 @@ for (const [id,label,ready,description] of tours) {
   await expect(choice).toBeVisible();await shot(`Choose ${label}.`,choice,'click');await choice.click();
   const frame=page.frameLocator('#experienceFrame');
   if(ready) await expect(frame.locator(ready)).toBeVisible({timeout:20000});
-  else await expect(page.locator('#meditationControls')).toBeVisible({timeout:15000});
+  else await expect(frame.locator('body')).toBeVisible({timeout:15000});
   // Center content viewport before recording its controls.
-  const content=ready?frame.locator(ready):page.locator('#meditationControls');
+  const content=ready?frame.locator(ready):page.locator('#experienceFrame');
   await shot(`You’re now in ${label}. ${description}.`,content);
   let actions=[];
-  if(id==='goals')actions=[['.ci-goals-add-toggle','Click ADD A GOAL to open the goal field.'],['#pbNewIntentionInput','Write your goal in the field.','fill','I AM COMPLETING MY NEXT CHAPTER']];
+  if(id==='goals')actions=[['.ci-goals-add-toggle','Click ADD A GOAL to open the goal field.'],['#pbNewIntentionInput','Write your goal in the field.','fill','I AM COMPLETING MY NEXT CHAPTER'],['.pb-goal-add-save','Click Save to add your goal.']];
   if(id==='daily-habits')actions=[['[data-habit-period="DAY"]','Choose DAY to move to that part of your routine.'],['[data-habit-period="MORNING"]','Return to MORNING.'],['.habit-check','Click the circle to mark the habit done.']];
   if(id==='thoughts')actions=[['button[onclick="notesToggleQuickAdd()"]','Click ADD A THOUGHT to open the categories.'],['#notesQuickAdd input[data-add="belief"]','Write a belief you want to keep.','fill','I make time for the work that matters.'],['#notesQuickAdd input[data-add="belief"] + button','Click Add to save the sample belief.']];
   if(id==='journal')actions=[['select[title="Associate this note with a goal"]','Choose the goal this journal entry belongs to.','select','pv1']];
@@ -99,7 +100,7 @@ for (const [id,label,ready,description] of tours) {
   for(const [sel,caption,op,value] of actions){
    const target=(op==='outer'?page:frame).locator(sel).first();await expect(target).toBeVisible({timeout:10000});
    await shot(caption,target,op==='fill'?'type':'click');
-   if(op==='fill')await target.fill(value);else if(op==='select')await target.selectOption(value);else await target.click();
+   if(op==='fill')await target.fill(value);else if(op==='select')await target.selectOption(value);else await target.click({timeout:10000});
    await shot(op==='fill'?'Your sample text is in place.':`See the result of that action in ${label}.`,null);
   }
   const controls=await (ready?frame.locator(ready):page.locator('#meditationControls')).locator('button,input,select,textarea,a').evaluateAll(es=>es.map(e=>({tag:e.tagName,text:e.textContent.trim().slice(0,90),id:e.id,aria:e.getAttribute('aria-label'),onclick:e.getAttribute('onclick')})));
