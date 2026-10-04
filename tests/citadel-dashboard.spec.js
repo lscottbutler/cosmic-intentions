@@ -71,6 +71,21 @@ for (const width of [1440, 390]) {
   expect(saved.some(note=>note.cat==='goal-note'&&note.goal==='pv1'&&note.taskKey&&note.text==='Keep the opening scene simple.')).toBe(true);
   expect(saved.some(note=>note.cat==='note'&&note.goal==='pv1'&&note.taskKey)).toBe(true);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  // A blocked local write must keep the draft and must never say Saved.
+  await page.locator('#add-note').click();
+  await expect(page.locator('#dashboard-entry-text')).toBeVisible({timeout:20000});
+  await app.locator('body').evaluate(()=>{const original=Storage.prototype.setItem;window.restoreDashboardStorage=()=>{Storage.prototype.setItem=original;};Storage.prototype.setItem=function(key,value){if(key==='ci_notes')throw new Error('Review simulated local storage failure');return original.call(this,key,value);};});
+  await page.locator('#dashboard-entry-text').fill('Keep this draft when storage is unavailable.');
+  await page.getByRole('button',{name:'Save note',exact:true}).click();
+  await expect(page.locator('#dashboard-state')).toContainText('Could not save');
+  await expect(page.locator('#dashboard-entry-text')).toHaveValue('Keep this draft when storage is unavailable.');
+  await page.locator('[data-dashboard-view="journal"]').click();
+  await expect(page.locator('#dashboard-entry-text')).toHaveValue('');
+  await page.locator('[data-dashboard-view="notes"]').click();
+  await expect(page.locator('#dashboard-entry-text')).toHaveValue('Keep this draft when storage is unavailable.');
+  await app.locator('body').evaluate(()=>window.restoreDashboardStorage());
+  await page.getByRole('button',{name:'Save note',exact:true}).click();
+  await expect(page.locator('#dashboard-state')).toContainText('Entry saved on this device');
   expect(errors).toEqual([]);
  });
 }
