@@ -9,11 +9,23 @@
 <body>
 <header class="review-header"><fieldset class="comparison"><legend>Compare appearance</legend><label><input type="radio" name="appearance" value="original"> Original</label><label><input type="radio" name="appearance" value="test" checked> Test improvements</label></fieldset></header>
 <main>
-<section class="orientation" aria-labelledby="feature-title"><div><p class="eyebrow">YOUR INNER CITADEL</p><h1 id="feature-title">Citadel</h1><p id="feature-purpose">Start with a goal, or choose a practice from your existing menu.</p><p id="feature-next">Open a goal to choose Visualization or Roadmap.</p></div><div class="shortcuts"><button id="begin" type="button">Open Goals</button><button id="add-note" type="button">Add a note</button><button id="to-do" type="button">TO DO</button></div></section>
-<p class="review-note">Preview examples · not signed in. The comparison changes presentation only; existing controls keep their usual behavior.</p>
+<section class="orientation" aria-labelledby="feature-title"><div><p class="eyebrow">YOUR INNER CITADEL</p><h1 id="feature-title">Citadel</h1><p id="feature-purpose">Your next actions, notes and journal — connected to your goals.</p><p id="feature-next">Review your list in one click, or capture something while it is fresh.</p></div><div class="shortcuts"><button id="to-do" class="primary-shortcut" type="button" aria-haspopup="dialog">TO DO <span aria-hidden="true">↗</span></button><button id="add-note" type="button" aria-haspopup="dialog">Add a note</button><button id="write-journal" type="button" aria-haspopup="dialog">Write journal</button><button id="begin" type="button">Open Goals</button></div></section>
+<p class="review-note">Preview examples · not signed in. The dashboard uses the existing action and entry stores. Sample edits are for review.</p>
 <iframe id="ci-review-frame" src="/players/master-player.html?card=0&amp;preview=1" title="Current Cosmic Intentions member application" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
 <p id="review-status" role="status">Loading the current build…</p>
 </main>
+<dialog id="citadel-dashboard" aria-labelledby="dashboard-title">
+<header class="dashboard-heading"><div><p class="eyebrow">YOUR INNER CITADEL</p><h2 id="dashboard-title">Your to-do list</h2></div><button id="close-dashboard" type="button" aria-label="Close dashboard">Close</button></header>
+<p class="dashboard-intro">Take the next step. Keep the thoughts and reflections that belong with it.</p>
+<nav class="dashboard-tabs" aria-label="Dashboard views"><button type="button" data-dashboard-view="tasks" aria-pressed="true">TO DO</button><button type="button" data-dashboard-view="notes" aria-pressed="false">Notes</button><button type="button" data-dashboard-view="journal" aria-pressed="false">Journal</button></nav>
+<p id="dashboard-state" role="status">Loading your existing list…</p>
+<div id="dashboard-ready" hidden>
+<section id="dashboard-tasks"><div class="dashboard-list-heading"><h3>To do <span id="dashboard-task-count"></span></h3><label><input id="dashboard-completed" type="checkbox"> Show completed</label></div><div id="dashboard-task-list"></div>
+<form id="dashboard-add-task" class="dashboard-form"><h3>Add a to-do</h3><label>Your next action<input id="dashboard-task-text" maxlength="160" required placeholder="What will you do next?"></label><label>Linked goal<select id="dashboard-task-goal"></select></label><button type="submit">Add to-do</button></form></section>
+<section id="dashboard-entries" hidden><div id="dashboard-entry-list"></div></section>
+<form id="dashboard-add-entry" class="dashboard-form" hidden><h3 id="dashboard-entry-heading">Add a note</h3><label>Entry<textarea id="dashboard-entry-text" rows="4" maxlength="10000" required></textarea></label><div class="dashboard-link-fields"><label>Linked goal<select id="dashboard-entry-goal"></select></label><label>Related action<select id="dashboard-entry-task"></select></label></div><button id="dashboard-save-entry" type="submit">Save note</button></form>
+</div>
+</dialog>
 <dialog id="review-menu" aria-labelledby="review-menu-title"><header><h2 id="review-menu-title">Site menu</h2><button id="close-menu" type="button">Close</button></header><nav id="review-menu-items" aria-label="CI pages"></nav></dialog>
 </body>
 </html>

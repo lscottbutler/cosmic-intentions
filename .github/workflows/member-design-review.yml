@@ -4,6 +4,8 @@ on:
     paths:
       - 'standalone/member-design-test*'
       - 'tests/member-design-test.spec.js'
+      - 'tests/citadel-dashboard.spec.js'
+      - 'shared/citadel-dashboard-review.js'
       - '.github/workflows/member-design-review.yml'
 permissions:
   contents: read
@@ -20,10 +22,11 @@ jobs:
       - run: npm ci
       - run: npm run check:template
       - run: npx playwright install --with-deps chromium
-      - run: npm test -- tests/member-design-test.spec.js --workers=2
+      - run: npm test -- tests/member-design-test.spec.js tests/citadel-dashboard.spec.js --workers=2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: member-design-review-evidence
           path: test-results/
           retention-days: 7
+

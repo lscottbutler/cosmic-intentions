@@ -147,7 +147,7 @@ export function renderTaskNotesList() {
     .sort((a, b) => (b.updatedAt || b.ts || 0) - (a.updatedAt || a.ts || 0));
   host.innerHTML = notes.length ? notes.map(note => note.cat === 'goal-note' ? `<article class="master-task-note">
     <div class="master-task-note-source"><strong>Note</strong></div>
-    <p class="master-task-note-goal">${esc(intentions.find(g => String(g.id) === String(note.goal))?.title || note.goalTitle || 'Unavailable goal')}</p>
+    <p class="master-task-note-goal">${esc(intentions.find(g => String(g.id) === String(note.goal))?.title || note.goalTitle || (note.goal ? 'Unavailable goal' : 'General note'))}</p>
     <p class="goal-note-text">${esc(note.text)}</p>
     <button type="button" class="goal-workspace-link" data-goal-id="${esc(String(note.goal))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open goal workspace</button>
   </article>` : `<article class="master-task-note">

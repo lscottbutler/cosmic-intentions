@@ -1,4 +1,5 @@
 import '../shared/member-design-review.js'; // explicit private test wrapper only
+import '../shared/citadel-dashboard-review.js'; // private Citadel dashboard adapter
 import './sentry.js';   // error monitoring — must init before app boot
 import './styles/main.css';
 import * as _shared_api_js from '../shared/api.js';
