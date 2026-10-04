@@ -72,7 +72,10 @@ function addTask(text, goalId) {
     if ((intentions[idx].roadmapAI?.userTasks || []).length >= 25) return { error: 'This goal already has 25 personal actions.' };
     wrapGoalAddAction(idx, input);
   } else {
+    const before = snapshot().tasks.filter(task => task.kind === 'personal').length;
     wrapAddAction(input);
+    if (snapshot().tasks.filter(task => task.kind === 'personal').length === before)
+      return { error: 'Could not save this to-do. Keep your text and try again.' };
   }
   return snapshot();
 }
