@@ -64,13 +64,15 @@ function toggle(key) {
 function addTask(text, goalId) {
   text = String(text || '').trim().slice(0, 160);
   if (!text) return { error: 'Write a to-do before adding it.' };
+  const input = document.createElement('input');
+  input.value = text;
   if (goalId) {
     const idx = intentions.findIndex(goal => String(goal.id) === goalId);
     if (idx < 0) return { error: 'This goal is no longer available.' };
     if ((intentions[idx].roadmapAI?.userTasks || []).length >= 25) return { error: 'This goal already has 25 personal actions.' };
-    wrapGoalAddAction(idx, { value: text });
+    wrapGoalAddAction(idx, input);
   } else {
-    wrapAddAction({ value: text });
+    wrapAddAction(input);
   }
   return snapshot();
 }
