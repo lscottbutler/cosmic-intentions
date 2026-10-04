@@ -14,7 +14,7 @@ for (const width of [1440, 390]) {
     return route.fulfill({response,body});
    }return route.continue();
   });
-  await page.addInitScript(()=>{localStorage.setItem('ci_notes','[]');localStorage.setItem('ci_wrapup_actions',JSON.stringify([{id:77,text:'Organize the desk',done:false},{id:78,text:'Read yesterday’s draft',done:true}]));});
+  await page.addInitScript(()=>{if(localStorage.getItem('ci_dashboard_fixture_seeded'))return;localStorage.setItem('ci_dashboard_fixture_seeded','1');localStorage.setItem('ci_notes','[]');localStorage.setItem('ci_wrapup_actions',JSON.stringify([{id:77,text:'Organize the desk',done:false},{id:78,text:'Read yesterday’s draft',done:true}]));});
   await page.goto('/standalone/member-design-test.html');
   await expect(page.locator('#review-status')).toContainText('Test improvements on',{timeout:25000});
   await page.screenshot({path:`test-results/citadel-dashboard-${width}-home.png`,fullPage:true});
