@@ -70,9 +70,7 @@ function addTask(text, goalId) {
     if ((intentions[idx].roadmapAI?.userTasks || []).length >= 25) return { error: 'This goal already has 25 personal actions.' };
     wrapGoalAddAction(idx, { value: text });
   } else {
-    const input = document.getElementById('wrapActionInput');
-    if (!input) return { error: 'The action list is still loading. Try again.' };
-    input.value = text; wrapAddAction();
+    wrapAddAction({ value: text });
   }
   return snapshot();
 }

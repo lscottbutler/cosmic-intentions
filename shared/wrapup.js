@@ -374,8 +374,7 @@ export function wrapupStoryToggle() {
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
 function _saveWrapActs(a) { LS.set('ci_wrapup_actions', a); }
-export function wrapAddAction() {
-  const input = document.getElementById('wrapActionInput');
+export function wrapAddAction(input = document.getElementById('wrapActionInput')) {
   const text = (input?.value || '').trim(); if (!text) return;
   const a = _wrapActs(); a.unshift({ id: Date.now(), text: text.slice(0, 160), done: false });
   _saveWrapActs(a); if (input) input.value = ''; renderWrapup();
