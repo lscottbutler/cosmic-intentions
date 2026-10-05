@@ -1,0 +1,7 @@
+# NEW GRATITUDE — In Review
+
+Scott requested duplicating the current Meditation page and naming it NEW GRATITUDE. This separate review menu entry uses a fresh instance of the unchanged canonical Master Player and an exact copy of the current Meditation session engine, with its title/player/timer labels changed to gratitude. The existing Meditation and Gratitude pages remain available. The scene image, timing, scrubber, session menu, frame, modes and controls are copied without new content or audio. Guided retains the existing source behavior; no new guidance track is introduced.
+
+The private member comparison wrapper mounts the page and redirects its session frame to players/new-gratitude-session.html, preserving existing duration/mode/external parameters. It relabels only that instance's metadata/menu. Returning to Meditation creates a fresh Meditation instance, preventing shared timer/mode state. Canonical Master Player and Meditation source/integrity baseline remain unchanged. No backend, personal data or production configuration changes.
+
+Review: standalone/member-design-test.html?feature=new-gratitude on the existing protected PR48 preview, also available via hamburger NEW GRATITUDE. Recovery: 2a0769b4a4af54f0cdd4578c0af12cd6ad037fc2. Tests check desktop/phone naming, image loading, timer/menu behavior, time/mode changes, pause/resume/completion/replay, fresh-state navigation and original-page preservation. Final results and private Bible backup recorded in PR48/Bible.

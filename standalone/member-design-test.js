@@ -17,6 +17,7 @@
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Press Play to begin. Your existing Meditation Menu then offers session choices.'],
+  'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open New Gratitude Menu to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
   journal:['My Journal','Reflect in your own words.','Link an entry to a goal with the existing goal selector.'],
@@ -31,9 +32,11 @@
  };
  const inlinePages={setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',gratitude:'gratitude',wins:'wins',tasknotes:'task-notes',goalworkspace:'goal-workspace',cosmiclibrary:'cosmic-library',entrepreneurlibrary:'entrepreneur-library',entcard:'ent-card',admin:'admin'};
  let enabled=true,current='home',last=null,scheduled=false;
+ let newGratitude=false;
  const docs=new WeakSet(),frames=new WeakSet();
  try{const saved=sessionStorage.getItem('ci-review-last-feature');if(features[saved]&&saved!=='home'&&saved!=='admin')last=saved;}catch(_){/* Comparison remains usable without storage. */}
  function renderFeature(action){
+  if(newGratitude&&action==='meditation')action='new-gratitude';
   if(!features[action])return;
   if(dashboard.open)return;
   current=action;const copy=features[action];
@@ -43,8 +46,14 @@
   if(action!=='home'&&action!=='admin'){last=action;try{sessionStorage.setItem('ci-review-last-feature',action);}catch(_){}}
 
  }
- function openFeature(action){frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);}
- const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
+ function openFeature(action){
+  if(action==='new-gratitude'){
+   newGratitude=true;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
+  }
+  if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
+  frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
+ }
+ const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
  for(const [action,label] of Object.entries(menuLabels)){const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{menu.close();openFeature(action);});document.getElementById('review-menu-items').append(button);}
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
@@ -61,6 +70,22 @@
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;inspect();});}
  function watchDocument(doc){
   if(!doc?.documentElement)return;
+  if(newGratitude&&doc.getElementById('meditationControls')){
+   if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
+   if(doc.getElementById('capTitle').textContent!=='NEW GRATITUDE')doc.getElementById('capTitle').textContent='NEW GRATITUDE';
+   const controls=doc.getElementById('meditationControls');controls.setAttribute('aria-label','New Gratitude controls');
+   const button=controls.querySelector('[data-med-command="menu"]');
+   button.setAttribute('aria-label','New Gratitude Menu');if(button.querySelector('span:last-child').textContent!=='New Gratitude Menu')button.querySelector('span:last-child').textContent='New Gratitude Menu';
+   doc.getElementById('meditationMenu').setAttribute('aria-label','New Gratitude choices');
+   const session=doc.getElementById('experienceFrame');session.title='NEW GRATITUDE';
+   if(!frames.has(session))session.addEventListener('load',()=>{
+    if(!newGratitude)return;
+    const url=new URL(session.src,location.origin);
+    if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';session.src=url.href;}
+   });
+   const url=new URL(session.src,location.origin);
+   if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';session.src=url.href;}
+  }
   if(doc.documentElement.classList.contains('ci-review-test')!==enabled)doc.documentElement.classList.toggle('ci-review-test',enabled);
   if(!docs.has(doc)){
    docs.add(doc);
@@ -158,4 +183,5 @@
  window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();}schedule();});
  window.addEventListener('resize',schedule);
  renderFeature('home');
+ if(new URLSearchParams(location.search).get('feature')==='new-gratitude')openFeature('new-gratitude');
 })();
