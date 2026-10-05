@@ -31,7 +31,12 @@ body.external .timer{background:#747474;border-color:#292929}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide-caption{position:absolute;z-index:3;left:4%;right:4%;bottom:1.4%;height:4%;display:grid;place-items:center;color:#fff;text-align:center;font:800 clamp(8px,1.65vw,30px)/1.1 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+.timer{transition:opacity 1s ease}
+.player[data-phase="slides"]:not([data-state="ready"]) .timer{opacity:0;pointer-events:none}
+.slideshow-toggle{position:absolute;z-index:3;inset:0 0 16%;border:0;padding:0;background:transparent;cursor:pointer}
+.slideshow-toggle:focus-visible{outline:2px solid #fff;outline-offset:-8px}
 .timer:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.timer{transition:none}}
 </style>
 </head>
 <body>
@@ -42,7 +47,8 @@ body.external .timer{background:#747474;border-color:#292929}
     <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#292929" stroke="#747474" stroke-width="30"/>
     <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#292929" stroke-width="35"/>
   </svg>
-  <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true"></span>
+  <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true" hidden></span>
+  <button class="slideshow-toggle" id="slideshowToggle" type="button" aria-label="Pause gratitude slideshow" hidden></button>
   <button class="timer" id="timer" type="button" aria-label="Start gratitude">
     <span class="playicon" id="playIcon" aria-hidden="true"></span>
     <span class="value" id="value" hidden>15
@@ -64,6 +70,7 @@ body.external .timer{background:#747474;border-color:#292929}
   const playIcon=document.getElementById('playIcon');
   const curve=document.querySelector('.ccb-curve');
   const scrubber=document.getElementById('ccbScrubber');
+  const slideshowToggle=document.getElementById('slideshowToggle');
   const testModule=search.get('module')==='1';
   const slideFiles=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
   const slideOriginalNames=['A GREAT BURGER.jpg','A WALK IN NATURE.jpg','COMFORT FOOD.jpg','EXOTIC BEACH VACATION.jpg','FOR MY LIFE PARTNER.jpg'];
@@ -129,6 +136,13 @@ body.external .timer{background:#747474;border-color:#292929}
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,phase},location.origin)}
   function render(){
     const ready=state==='ready';
+    const hideCircle=phase==='slides'&&!ready;
+    scrubber.hidden=phase!=='meditation'||ready;
+    slideshowToggle.hidden=!hideCircle;
+    slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
+    slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
+    button.tabIndex=hideCircle?-1:0;
+    button.setAttribute('aria-hidden',String(hideCircle));
     playIcon.hidden=!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
     playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
@@ -182,6 +196,7 @@ body.external .timer{background:#747474;border-color:#292929}
     render();
   }
   button.addEventListener('click',toggle);
+  slideshowToggle.addEventListener('click',toggle);
   curve.addEventListener('click',event=>{
     const rect=curve.getBoundingClientRect();
     const x=(event.clientX-rect.left)/rect.width*1920;

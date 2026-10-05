@@ -28,6 +28,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  if(width===1440){expect(layout.ratio).toBeCloseTo(1/3,2);expect(layout.right).toBeCloseTo(9,0);}
  for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
+ await expect(session.locator('#ccbScrubber')).toBeHidden();
  await expect(session.locator('#slideCaption')).toHaveText('I AM GRATEFUL FOR A GREAT BURGER');
  await expect(session.locator('.ccb-curve')).toBeVisible();
  await expect(session.locator('#timer')).toHaveCSS('border-radius','50%');
@@ -63,9 +64,11 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(shell.locator('#meditationControls')).toBeVisible();
  await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
- await session.locator('#timer').click();
+ await expect(session.locator('#timer')).toHaveCSS('opacity','0');
+ await expect(session.locator('#ccbScrubber')).toBeHidden();
+ await session.locator('#slideshowToggle').click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
- await session.locator('#timer').click();
+ await session.locator('#slideshowToggle').click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-phase','meditation');
@@ -73,6 +76,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#slideCaption')).toBeHidden();
  await expect(session.locator('.ccb-curve')).toBeVisible();
  await expect(session.locator('#value')).toHaveText('1\n00');
+ await expect(session.locator('#timer')).toHaveCSS('opacity','1');
+ await expect(session.locator('#ccbScrubber')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
@@ -127,7 +132,7 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/module=1/);
  await expect(session.locator('#timer')).toBeEnabled();
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
- await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
+ await session.locator('#slideshowToggle').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  for(const [ratio,slide] of [[.25,2],[.45,3],[.65,4],[.85,5]]){
   await session.locator('body').evaluate((el,r)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
   await expect(session.locator('#player')).toHaveAttribute('data-slide',String(slide));
@@ -198,7 +203,7 @@ test('Gratitude reduced motion keeps images visible during transitions',async({p
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/players/new-gratitude-session.html?module=1&t=1&external=1');
  await expect(page.locator('#timer')).toBeEnabled();
- await page.locator('#timer').click();await page.locator('#timer').click();
+ await page.locator('#timer').click();await page.locator('#slideshowToggle').click();
  await page.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:.01},location.origin));
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','1');
 });
@@ -208,7 +213,7 @@ for(const width of [1440,390])test(`Filename captions follow every slide ${width
  await page.goto('/players/new-gratitude-session.html?module=1&t=1&external=1');
  await expect(page.locator('#timer')).toBeEnabled();
  const statements=['I AM GRATEFUL FOR A GREAT BURGER','I AM GRATEFUL FOR A WALK IN NATURE','I AM GRATEFUL FOR COMFORT FOOD','I AM GRATEFUL FOR EXOTIC BEACH VACATION','I AM GRATEFUL FOR MY LIFE PARTNER'];
- await page.locator('#timer').click();await page.locator('#timer').click();
+ await page.locator('#timer').click();await page.locator('#slideshowToggle').click();
  for(let index=0;index<5;index++){
   await page.evaluate(ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),(index*10+5)/50);
   await expect(page.locator('#slideCaption')).toHaveText(statements[index]);
