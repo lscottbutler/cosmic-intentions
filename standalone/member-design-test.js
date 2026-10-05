@@ -71,6 +71,10 @@
  function watchDocument(doc){
   if(!doc?.documentElement)return;
   if(newGratitude&&doc.getElementById('meditationControls')){
+   if(!doc.getElementById('new-gratitude-choices')){
+    const style=doc.createElement('style');style.id='new-gratitude-choices';
+    style.textContent='#meditationModes,.relaxation-toggle-row,#guidedNote{display:none!important}';doc.head.append(style);
+   }
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
    const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
    const controls=doc.getElementById('meditationControls');controls.setAttribute('aria-label','New Gratitude controls');

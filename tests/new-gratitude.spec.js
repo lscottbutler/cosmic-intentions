@@ -18,6 +18,10 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#player')).toHaveAttribute('aria-label','NEW GRATITUDE player');
  await expect(shell.locator('#meditationMenu')).toBeVisible();
  await expect(shell.locator('#meditationControls')).toBeHidden();
+ await expect(shell.getByRole('button',{name:'Unguided',exact:true})).toHaveCount(0);
+ await expect(shell.getByRole('button',{name:'Guided',exact:true})).toHaveCount(0);
+ await expect(shell.locator('.relaxation-toggle-row')).toBeHidden();
+ await expect(shell.locator('[data-med-time]')).toHaveCount(6);
  expect(await session.locator('.image').evaluate(el=>getComputedStyle(el).backgroundImage)).toContain('/images/meditation/meditation-1.jpg');
  await expect.poll(()=>session.locator('.image').evaluate(async el=>{const src=getComputedStyle(el).backgroundImage.match(/url\("?([^"\)]+)/)[1];const img=new Image();img.src=src;await img.decode();return img.naturalWidth;})).toBeGreaterThan(0);
  await page.screenshot({path:`test-results/new-gratitude-${width}-ready.png`,fullPage:true});
@@ -38,8 +42,10 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
  await expect(shell.locator('#meditationMenu')).toBeVisible();
- await shell.locator('[data-med-mode="guided"]').click();
- await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/new-gratitude-session\.html.*mode=guided/);
+ await expect(shell.locator('#meditationModes')).toBeHidden();
+ await expect(shell.locator('.relaxation-toggle-row')).toBeHidden();
+ await shell.locator('[data-med-time="3"]').click();
+ await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/new-gratitude-session\.html.*t=3(?:&|$)/);
  await expect(session.locator('#player')).toHaveAttribute('data-state','ready');
  await page.screenshot({path:`test-results/new-gratitude-${width}-menu.png`,fullPage:true});
  await shell.locator('#siteMenuButton').click();
@@ -48,6 +54,9 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/\/players\/meditation\.html/);
  await expect(session.getByRole('button',{name:'Start 15 minute meditation',exact:true})).toBeVisible();
  await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-label','Meditation Menu');
+ await expect(shell.getByRole('button',{name:'Unguided',exact:true})).toBeVisible();
+ await expect(shell.getByRole('button',{name:'Guided',exact:true})).toBeVisible();
+ await expect(shell.locator('.relaxation-toggle-row')).toBeVisible();
  await shell.locator('#siteMenuButton').click();
  await expect(page.locator('#review-menu-items').getByRole('button',{name:'Gratitude',exact:true})).toBeVisible();
  await page.locator('#review-menu-items').getByRole('button',{name:'NEW GRATITUDE',exact:true}).click();

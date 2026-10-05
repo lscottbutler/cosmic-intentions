@@ -1,5 +1,7 @@
 # NEW GRATITUDE — In Review
 
+Scott's next annotated revision removes Unguided, Guided and Relaxation Module from NEW GRATITUDE only. An instance-local style hides those two rows and the unused guided notice, removing their layout space and keyboard targets. Six duration choices and the existing playback/menu/hamburger remain. Original Meditation retains all three choices. Recovery: d479bea220977dec7b7b12c53908c2c1ddb2a077. Desktop/phone tests check absence before and after playback and the original Meditation controls on return.
+
 Scott requested duplicating the current Meditation page and naming it NEW GRATITUDE. This separate review menu entry uses a fresh instance of the unchanged canonical Master Player and an exact copy of the current Meditation session engine, with its title/player/timer labels changed to gratitude. The existing Meditation and Gratitude pages remain available. The scene image, timing, scrubber, session menu, frame, modes and controls are copied without new content or audio. Guided retains the existing source behavior; no new guidance track is introduced.
 
 The private member comparison wrapper mounts the page and redirects its session frame to players/new-gratitude-session.html, preserving existing duration/mode/external parameters. It relabels only that instance's metadata/menu. Returning to Meditation creates a fresh Meditation instance, preventing shared timer/mode state. Canonical Master Player and Meditation source/integrity baseline remain unchanged. No backend, personal data or production configuration changes.
