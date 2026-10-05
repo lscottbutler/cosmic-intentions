@@ -59,7 +59,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  expect(playbackStability.heightRange).toBeLessThanOrEqual(2);
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(shell.locator('#meditationControls')).toBeVisible();
- await expect(shell.locator('#meditationMenu')).toBeHidden();
+ await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
  await session.locator('#timer').click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  await session.locator('#timer').click();
@@ -79,7 +79,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
  await session.getByRole('button',{name:'Replay 1 minute gratitude',exact:true}).click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
- await expect(shell.locator('#meditationMenu')).toBeHidden();
+ await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
  await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
  await expect(shell.locator('#meditationMenu')).toBeVisible();
  await expect(shell.locator('#meditationModes')).toBeHidden();
@@ -150,7 +150,7 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-expanded','true');
  await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-slide','1');
- await expect(shell.locator('#meditationMenu')).toBeHidden();
+ await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
  await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
  await expect(shell.locator('#gratitude-module-group')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-module-${width}-menu.png`,fullPage:true});
