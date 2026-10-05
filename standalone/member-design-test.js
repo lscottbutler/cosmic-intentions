@@ -72,7 +72,7 @@
   if(!doc?.documentElement)return;
   if(newGratitude&&doc.getElementById('meditationControls')){
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
-   if(doc.getElementById('capTitle').textContent!=='NEW GRATITUDE')doc.getElementById('capTitle').textContent='NEW GRATITUDE';
+   const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
    const controls=doc.getElementById('meditationControls');controls.setAttribute('aria-label','New Gratitude controls');
    const button=controls.querySelector('[data-med-command="menu"]');
    button.setAttribute('aria-label','New Gratitude Menu');if(button.querySelector('span:last-child').textContent!=='New Gratitude Menu')button.querySelector('span:last-child').textContent='New Gratitude Menu';
