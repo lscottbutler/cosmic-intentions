@@ -11,3 +11,11 @@ Draft text stays in memory per Notes/Journal view during this visit. Blank/error
 Tests cover desktop/phone one-click list visibility, existing general and goal tasks, completed filtering, reversible completion, adding goal/personal actions, task-linked notes/journal entries, general notes, injection escaping, reopen retention and responsive screenshots. Existing member-flow tests follow the new direct entry interface. The broad Quality job's budget increases from 15 to 25 minutes because the previous run timed out after 103 passing checks; coverage is retained.
 
 This branch inherits earlier PR42–47 review dependencies and is not approved for direct merge or production publication. Final verification and checkpoint are recorded in the PR and Bible.
+
+## Goal-first Roadmap revision — In Review
+
+Scott's next revision: each goal is the top line, with its chevron revealing TO DO, then Notes, then Journal. The attached reference identifies the My Roadmap goal row. Existing My Actions / combined / Roadmap tabs move inside the TO DO section; the separate workspace shortcut is replaced here by inline goal-linked entry sections. Existing task check-offs, task pencils, action creation, task-linked entry options, other goals, artwork and player shell remain intact. Standalone Goal Workspace remains available.
+
+Entry sections reuse the existing `ci_notes` collection and goal/action save handler. They do not create a new data model or sync destination. Drafts remain separated by goal/type/entry in memory and survive task-list rerenders; failed saves retain the draft and error. Notes and Journal membership follows existing linked goal IDs, including relinked task notes. Recovery: PR48 checkpoint `342b616e2894a4b089cfc08f50dcab70e313b113`. Morning native Bible backup preserved before changes.
+
+Desktop/phone review tests cover header-first order, chevron collapse/expand, hidden controls while collapsed, action tab switching, task check-off with an unsaved entry, goal/action linkage, saved-entry reopening, isolation between goals, blocked-save recovery and horizontal fit. Source unit tests and canonical-template integrity passed locally; final rendered checks and screenshots are recorded in PR48/Bible after CI.

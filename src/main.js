@@ -30,7 +30,7 @@ import * as _app_js from '../app.js';
 for (const name of ['taskNoteToggle', 'taskNoteChanged', 'taskNoteSave', 'renderTaskNotesList']) {
   window[name] = _shared_task_notes_js[name];
 }
-for (const name of ['openGoalWorkspace', 'renderGoalWorkspace', 'renderGoalWorkspaceTasks', 'renderGoalWorkspaceNotes', 'goalWorkspaceSelect', 'goalWorkspaceEntryChanged', 'goalWorkspaceSaveEntry', 'goalWorkspaceAddTask']) {
+for (const name of ['openGoalWorkspace', 'renderGoalWorkspace', 'renderGoalWorkspaceTasks', 'renderGoalWorkspaceNotes', 'goalWorkspaceSelect', 'goalWorkspaceEntryChanged', 'goalWorkspaceSaveEntry', 'goalWorkspaceAddTask', 'roadmapGoalEntriesHTML', 'captureRoadmapGoalDrafts', 'refreshRoadmapGoalEntries']) {
   window[name] = _shared_goal_workspace_js[name];
 }
 const _mods = [_shared_api_js, _shared_content_bank_js, _shared_activity_js, _shared_card_builder_js, _shared_mission_control_js, _shared_weekly_focus_js, _shared_today_js, _shared_player_launcher_js, _shared_the_map_js, _shared_rings_js, _shared_wrapup_js, _shared_wins_js, _shared_winspage_js, _shared_habits_js, _shared_sleeploop_js, _shared_notes_js, _shared_quickwin_js, _shared_quote_frame_js, _shared_sleep_gurus_js, _shared_encourage_js, _app_js];
