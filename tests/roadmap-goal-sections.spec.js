@@ -32,6 +32,11 @@ for (const width of [1440, 390]) {
   await expect(goal.getByRole('heading',{name:'TO DO',exact:true})).toBeHidden();
   await expect(goal.getByRole('button',{name:'Save note',exact:true}).last()).toBeHidden();
   await expect(goal.locator('#wtab-my-0')).toBeHidden();
+  await expect.poll(async () => {
+    const contentHeight=await app.locator('#page-myroadmap').evaluate(el=>el.getBoundingClientRect().height);
+    const frameHeight=await page.frameLocator('#ci-review-frame').locator('#experienceFrame').evaluate(el=>el.getBoundingClientRect().height);
+    return frameHeight-contentHeight;
+  },{timeout:15000}).toBeLessThan(8);
   await page.screenshot({path:`test-results/roadmap-goal-${width}-collapsed.png`,fullPage:true});
   await summary.click();
   const notes=goal.locator('[data-goal-section="notes"]');
