@@ -29,7 +29,7 @@ body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
 body.external .ccb-scrubber{background:#f2f2f2}
 body.external .timer{background:#747474;border-color:#292929}
 /* Slide-only artwork layout from Scott's electricity reference. */
-.player[data-phase="slides"]{background:#08798b}
+body.external .player[data-phase="slides"],.player[data-phase="slides"]{background:#08798b}
 .player[data-phase="slides"] .image{inset:3.8% 2.05% 16%;background:#063b6e!important;overflow:hidden}
 .player[data-phase="slides"] .test-slide{object-fit:contain}
 .player[data-phase="slides"] .ccb-curve,.player[data-phase="slides"] .ccb-scrubber{visibility:hidden;pointer-events:none}
@@ -72,8 +72,9 @@ body.external .timer{background:#747474;border-color:#292929}
   const scrubber=document.getElementById('ccbScrubber');
   const testModule=search.get('module')==='1';
   const slideFiles=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
-  const slideNames=['A GREAT BURGER','A WALK IN NATURE','COMFORT FOOD','EXOTIC BEACH VACATION','FOR MY LIFE PARTNER'];
-  const slideStatements=slideNames.map(name=>'I AM GRATEFUL FOR '+name);
+  const slideOriginalNames=['A GREAT BURGER.jpg','A WALK IN NATURE.jpg','COMFORT FOOD.jpg','EXOTIC BEACH VACATION.jpg','FOR MY LIFE PARTNER.jpg'];
+  const slideNames=slideOriginalNames.map(name=>name.replace(/\.[^.]+$/,''));
+  const slideStatements=slideNames.map(name=>'I AM GRATEFUL FOR '+name.replace(/^FOR\s+/i,''));
   const caption=document.getElementById('slideCaption');
   const slideHoldMs=8000,fadeMs=1000,slideSlotMs=slideHoldMs+fadeMs*2;
   const introMs=slideFiles.length*slideSlotMs;

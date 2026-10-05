@@ -201,3 +201,21 @@ test('Gratitude reduced motion keeps images visible during transitions',async({p
  await page.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:.01},location.origin));
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','1');
 });
+
+for(const width of [1440,390])test(`Filename captions follow every slide ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ await page.goto('/players/new-gratitude-session.html?module=1&t=1&external=1');
+ await expect(page.locator('#timer')).toBeEnabled();
+ const statements=['I AM GRATEFUL FOR A GREAT BURGER','I AM GRATEFUL FOR A WALK IN NATURE','I AM GRATEFUL FOR COMFORT FOOD','I AM GRATEFUL FOR EXOTIC BEACH VACATION','I AM GRATEFUL FOR MY LIFE PARTNER'];
+ await page.locator('#timer').click();await page.locator('#timer').click();
+ for(let index=0;index<5;index++){
+  await page.evaluate(ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),(index*10+5)/50);
+  await expect(page.locator('#slideCaption')).toHaveText(statements[index]);
+  await expect(page.locator('.test-slide')).toHaveAttribute('alt',statements[index]);
+  await expect(page.locator('#player')).toHaveAttribute('data-voiceover',statements[index]);
+  const caption=await page.locator('#slideCaption').evaluate(el=>({fits:el.scrollWidth<=el.clientWidth,text:el.textContent,opacity:el.style.opacity}));expect(caption.fits).toBe(true);expect(caption.opacity).toBe('1');
+  await page.screenshot({path:`test-results/gratitude-caption-${width}-${index+1}.png`});
+ }
+ await page.evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
+ await expect(page.locator('#slideCaption')).toBeHidden();await expect(page.locator('.ccb-curve')).toBeVisible();
+});
