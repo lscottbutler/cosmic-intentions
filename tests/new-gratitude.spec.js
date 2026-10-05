@@ -29,6 +29,17 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  expect(await session.locator('.image').evaluate(el=>getComputedStyle(el).backgroundImage)).toContain('/images/meditation/meditation-1.jpg');
  await expect.poll(()=>session.locator('.image').evaluate(async el=>{const src=getComputedStyle(el).backgroundImage.match(/url\("?([^"\)]+)/)[1];const img=new Image();img.src=src;await img.decode();return img.naturalWidth;})).toBeGreaterThan(0);
+ const stability=await page.evaluate(async()=>{
+  const frame=document.getElementById('ci-review-frame');
+  frame.scrollIntoView({block:'end'});
+  const heights=[],positions=[];let resizeEvents=0;
+  frame.contentWindow.addEventListener('resize',()=>resizeEvents++);
+  for(let i=0;i<240;i++){await new Promise(requestAnimationFrame);if(i>=120){heights.push(frame.getBoundingClientRect().height);positions.push(scrollY);}}
+  return {heightRange:Math.max(...heights)-Math.min(...heights),scrollRange:Math.max(...positions)-Math.min(...positions),resizeEvents,heights:[...new Set(heights)]};
+ });
+ console.log('GRATITUDE STABILITY',width,JSON.stringify(stability));
+ expect(stability.heightRange).toBeLessThanOrEqual(1);
+ expect(stability.scrollRange).toBeLessThanOrEqual(1);
  await page.screenshot({path:`test-results/new-gratitude-${width}-ready.png`,fullPage:true});
  await shell.locator('[data-med-time="1"]').click();
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/new-gratitude-session\.html.*t=1(?:&|$)/);
