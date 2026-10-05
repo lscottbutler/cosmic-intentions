@@ -107,7 +107,8 @@
   if(!docs.has(doc)){
    docs.add(doc);
    if(doc.querySelector('.page')){const style=doc.createElement('style');style.id='ci-review-test-style';style.textContent=overlayCss;doc.head.append(style);}
-   const observer=new MutationObserver(schedule);observer.observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']});
+   // Loads, navigation and actual size changes drive inspection. Do not observe
+   // every timer/control mutation: that feeds continuous redraws back into sizing.
    doc.addEventListener('click',event=>{const control=event.target.closest('button[data-action],button[data-site-action]');const action=control?.dataset.action||control?.dataset.siteAction;if(features[action])renderFeature(action);schedule();});
   }
   const page=doc.querySelector('.page.active');
@@ -198,7 +199,13 @@
  addNote.addEventListener('click',()=>openDashboard('notes'));
  document.getElementById('write-journal').addEventListener('click',()=>openDashboard('journal'));
  document.getElementById('to-do').addEventListener('click',()=>openDashboard('tasks'));
- window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();}schedule();});
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
+  const type=event.data?.type;
+  if(type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();return;}
+  if(type==='ci-lfm-mode')schedule();
+  if(type==='ci-lfm-height'&&Math.abs(Number(event.data.height)+2-parseFloat(frame.style.height||'0'))>2)schedule();
+ });
  window.addEventListener('resize',schedule);
  renderFeature('home');
  if(new URLSearchParams(location.search).get('feature')==='new-gratitude')openFeature('new-gratitude');
