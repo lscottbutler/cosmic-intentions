@@ -28,6 +28,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  if(width===1440){expect(layout.ratio).toBeCloseTo(1/3,2);expect(layout.right).toBeCloseTo(9,0);}
  for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
+ await expect(session.locator('#slideCaption')).toHaveText('I AM GRATEFUL FOR A GREAT BURGER');
+ await expect(session.locator('.ccb-curve')).toBeHidden();
  await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.naturalWidth)).toBe(1280);
  const stability=await page.evaluate(async()=>{
   const frame=document.getElementById('ci-review-frame');
@@ -67,6 +69,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-phase','meditation');
  await expect(session.locator('.test-slide')).toBeHidden();
+ await expect(session.locator('#slideCaption')).toBeHidden();
+ await expect(session.locator('.ccb-curve')).toBeVisible();
  await expect(session.locator('#value')).toHaveText('1\n00');
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));

@@ -28,11 +28,22 @@ body.external .ccb-curve rect{display:block;fill:none;stroke:#292929}
 body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
 body.external .ccb-scrubber{background:#f2f2f2}
 body.external .timer{background:#747474;border-color:#292929}
+/* Slide-only artwork layout from Scott's electricity reference. */
+.player[data-phase="slides"]{background:#08798b}
+.player[data-phase="slides"] .image{inset:3.8% 2.05% 16%;background:#063b6e!important;overflow:hidden}
+.player[data-phase="slides"] .test-slide{object-fit:contain}
+.player[data-phase="slides"] .ccb-curve,.player[data-phase="slides"] .ccb-scrubber{visibility:hidden;pointer-events:none}
+.slide-caption{position:absolute;left:2.05%;right:2.05%;bottom:3.4%;height:13.7%;display:grid;place-items:center;padding:1% 8%;background:#82a777;color:white;text-align:center;font-family:Arial,Helvetica,sans-serif;font-stretch:condensed;font-weight:800;font-size:clamp(10px,2.9vw,52px);line-height:1.15;letter-spacing:.13em;text-transform:uppercase;clip-path:ellipse(85% 105% at 50% 100%)}
+.player[data-phase="slides"] .timer{left:auto;right:3%;top:auto;bottom:4.5%;transform:none;width:5%;min-width:24px;border:0;border-radius:4px;background:transparent;aspect-ratio:1}
+.player[data-phase="slides"] .timer .playicon{border-top-width:clamp(5px,.65vw,12px);border-bottom-width:clamp(5px,.65vw,12px);border-left-width:clamp(8px,1vw,18px)}
+.player[data-phase="slides"] .timer .pauseicon{border-top:0;border-bottom:0;border-left-width:clamp(3px,.3vw,6px);border-right-width:clamp(3px,.3vw,6px)}
+.timer:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
 <body>
 <main class="player" id="player" aria-label="NEW GRATITUDE player">
   <div class="image" aria-hidden="true"></div>
+  <div class="slide-caption" id="slideCaption" hidden></div>
   <svg class="ccb-curve" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#292929" stroke="#747474" stroke-width="30"/>
     <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="#292929" stroke-width="35"/>
@@ -61,7 +72,9 @@ body.external .timer{background:#747474;border-color:#292929}
   const scrubber=document.getElementById('ccbScrubber');
   const testModule=search.get('module')==='1';
   const slideFiles=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
-  const slideNames=['A great burger','A walk in nature','Comfort food','Exotic beach vacation','My life partner'];
+  const slideNames=['A GREAT BURGER','A WALK IN NATURE','COMFORT FOOD','EXOTIC BEACH VACATION','FOR MY LIFE PARTNER'];
+  const slideStatements=slideNames.map(name=>'I AM GRATEFUL FOR '+name);
+  const caption=document.getElementById('slideCaption');
   const slideHoldMs=8000,fadeMs=1000,slideSlotMs=slideHoldMs+fadeMs*2;
   const introMs=slideFiles.length*slideSlotMs;
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -80,14 +93,15 @@ body.external .timer{background:#747474;border-color:#292929}
     player.dataset.phase=phase;
     if(phase==='meditation'){
       surface.classList.remove('test-slides');surface.setAttribute('aria-hidden','true');
-      slideImage.hidden=true;delete player.dataset.slide;return;
+      slideImage.hidden=true;caption.hidden=true;delete player.dataset.slide;delete player.dataset.voiceover;return;
     }
-    surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');slideImage.hidden=false;
+    surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');slideImage.hidden=false;caption.hidden=false;
     const elapsed=Math.max(0,introMs-introRemaining);
     const next=Math.min(slideFiles.length-1,Math.floor(elapsed/slideSlotMs));
     const position=elapsed-next*slideSlotMs;
-    if(next!==slideIndex){slideIndex=next;slideImage.src='/images/gratitude/test-module-1/'+slideFiles[next];slideImage.alt=slideNames[next];}
+    if(next!==slideIndex){slideIndex=next;slideImage.src='/images/gratitude/test-module-1/'+slideFiles[next];slideImage.alt=slideStatements[next];caption.textContent=slideStatements[next];player.dataset.voiceover=slideStatements[next];}
     slideImage.style.opacity=state==='ready'||reducedMotion.matches?'1':String(position<fadeMs?position/fadeMs:position<fadeMs+slideHoldMs?1:Math.max(0,(slideSlotMs-position)/fadeMs));
+    caption.style.opacity=slideImage.style.opacity;
     player.dataset.slide=String(next+1);
   }
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
