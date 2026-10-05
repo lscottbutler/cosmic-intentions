@@ -47,7 +47,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(page.locator('#feature-title')).toHaveText('Meditation');
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/\/players\/meditation\.html/);
  await expect(session.getByRole('button',{name:'Start 15 minute meditation',exact:true})).toBeVisible();
- await expect(shell.getByRole('button',{name:'Meditation Menu',exact:true})).toHaveCount(1);
+ await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-label','Meditation Menu');
  await shell.locator('#siteMenuButton').click();
  await expect(page.locator('#review-menu-items').getByRole('button',{name:'Gratitude',exact:true})).toBeVisible();
  await page.locator('#review-menu-items').getByRole('button',{name:'NEW GRATITUDE',exact:true}).click();
