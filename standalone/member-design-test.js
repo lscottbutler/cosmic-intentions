@@ -132,7 +132,8 @@
    if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
-   if(height>100&&frame.style.height!==height+'px')frame.style.height=height+'px';
+   // Ignore subpixel/one-pixel resize noise from nested frame transitions.
+   if(height>100&&Math.abs(height-parseFloat(frame.style.height||'0'))>2)frame.style.height=height+'px';
    const message=enabled?'Test improvements on · upper trough removed · hamburger and existing controls retained.':'Original appearance · improvements hidden.';
    if(status.textContent!==message)status.textContent=message;
   }catch(_){status.textContent='The review frame could not be inspected. Reload this private preview.';}

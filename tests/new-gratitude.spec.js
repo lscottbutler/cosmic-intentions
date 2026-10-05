@@ -44,7 +44,19 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await shell.locator('[data-med-time="1"]').click();
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/new-gratitude-session\.html.*t=1(?:&|$)/);
  await expect(session.locator('#player')).toHaveAttribute('data-state','ready');
- await session.getByRole('button',{name:'Start 1 minute gratitude',exact:true}).click();
+ // Start without an automation-induced scroll, then measure the whole page.
+ const playbackStability=await page.evaluate(async()=>{
+  const frame=document.getElementById('ci-review-frame');
+  scrollTo(0,Math.min(150,document.documentElement.scrollHeight-innerHeight));
+  await new Promise(requestAnimationFrame);const startY=scrollY;
+  frame.contentDocument.getElementById('experienceFrame').contentDocument.getElementById('timer').click();
+  const positions=[],heights=[];
+  for(let i=0;i<240;i++){await new Promise(requestAnimationFrame);positions.push(scrollY);if(i>=120)heights.push(frame.getBoundingClientRect().height);}
+  return {startY,scrollRange:Math.max(...positions)-Math.min(...positions),heightRange:Math.max(...heights)-Math.min(...heights)};
+ });
+ console.log('GRATITUDE PLAYBACK STABILITY',width,JSON.stringify(playbackStability));
+ expect(playbackStability.scrollRange).toBeLessThanOrEqual(1);
+ expect(playbackStability.heightRange).toBeLessThanOrEqual(2);
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(shell.locator('#meditationControls')).toBeVisible();
  await expect(shell.locator('#meditationMenu')).toBeHidden();

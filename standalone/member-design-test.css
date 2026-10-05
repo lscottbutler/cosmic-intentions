@@ -21,3 +21,6 @@
 .dashboard-group-body{padding:0 12px 4px}
 .dashboard-task-group:not([open])>.dashboard-group-body{display:none}
 @media(prefers-reduced-motion:reduce){.dashboard-task-group>summary::before{transition:none}}
+
+/* Keep review resizing and dialogs from moving the page or changing its width. */
+html{scrollbar-gutter:stable;overflow-anchor:none}
