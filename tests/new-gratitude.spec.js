@@ -94,3 +94,36 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  expect(errors).toEqual([]);
 });
+
+for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,async({page})=>{
+ test.setTimeout(90000);await page.setViewportSize({width,height:1000});
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/standalone/member-design-test.html?feature=new-gratitude');
+ const shell=page.frameLocator('#ci-review-frame'),session=shell.frameLocator('#experienceFrame');
+ await shell.locator('[data-gratitude-module="1"]').click();
+ await expect(session.locator('#timer')).toBeEnabled();
+ await expect(session.locator('#player')).toHaveAttribute('data-slide','1');
+ await expect(shell.locator('[data-gratitude-module="1"]')).toHaveAttribute('aria-pressed','true');
+ await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.naturalWidth)).toBe(1280);
+ await page.screenshot({path:`test-results/gratitude-module-${width}-ready.png`,fullPage:true});
+ await shell.locator('[data-med-time="1"]').click();
+ await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/module=1/);
+ await expect(session.locator('#timer')).toBeEnabled();
+ await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
+ await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
+ for(const [ratio,slide] of [[.25,2],[.45,3],[.65,4],[.85,5]]){
+  await session.locator('body').evaluate(r=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
+  await expect(session.locator('#player')).toHaveAttribute('data-slide',String(slide));
+  await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+ }
+ await page.screenshot({path:`test-results/gratitude-module-${width}-last.png`,fullPage:true});
+ await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
+ await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
+ await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-slide','1');
+ await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
+ await expect(shell.locator('#gratitude-module-group')).toBeVisible();
+ await page.screenshot({path:`test-results/gratitude-module-${width}-menu.png`,fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ expect(errors).toEqual([]);
+});
+

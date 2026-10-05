@@ -32,7 +32,7 @@
  };
  const inlinePages={setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',gratitude:'gratitude',wins:'wins',tasknotes:'task-notes',goalworkspace:'goal-workspace',cosmiclibrary:'cosmic-library',entrepreneurlibrary:'entrepreneur-library',entcard:'ent-card',admin:'admin'};
  let enabled=true,current='home',last=null,scheduled=false;
- let newGratitude=false;
+ let newGratitude=false,gratitudeModule=0;
  const docs=new WeakSet(),frames=new WeakSet();
  try{const saved=sessionStorage.getItem('ci-review-last-feature');if(features[saved]&&saved!=='home'&&saved!=='admin')last=saved;}catch(_){/* Comparison remains usable without storage. */}
  function renderFeature(action){
@@ -48,7 +48,7 @@
  }
  function openFeature(action){
   if(action==='new-gratitude'){
-   newGratitude=true;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
+   newGratitude=true;gratitudeModule=0;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
   }
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
@@ -75,11 +75,20 @@
     const style=doc.createElement('style');style.id='new-gratitude-choices';
     style.textContent=`
      #meditationModes,.relaxation-toggle-row,#guidedNote{display:none!important}
-     #gratitude-time-group{box-sizing:border-box;width:33.333%;margin-left:auto}
+     #gratitude-choice-columns{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
+     #gratitude-module-group,#gratitude-time-group{box-sizing:border-box;width:33.333%;min-width:0}
+     #gratitude-module-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
+     #gratitude-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
+     .gratitude-module-choice{display:grid;justify-items:center;gap:7px;padding:0;border:0;background:transparent;color:#292929;cursor:pointer;font:inherit}
+     .gratitude-module-choice span{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#e5e5e5;color:#292929;font-size:18px;font-weight:900;border:1px solid #777}
+     .gratitude-module-choice[aria-pressed="true"] span{border:7px solid #fff}
+     .gratitude-module-choice:disabled{opacity:.45;cursor:default}
+     .gratitude-module-choice:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
+     #gratitude-module-status{margin:14px 0 0;text-align:center;font-size:12px;line-height:1.35;color:#292929}
      #gratitude-time-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
      #gratitude-time-group .med-time-stack{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
      #gratitude-time-group .med-time-option:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
-     @media(max-width:620px){#gratitude-time-group{width:100%;max-width:300px}#gratitude-time-group .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr))}}
+     @media(max-width:620px){#gratitude-choice-columns{gap:20px;flex-wrap:wrap}#gratitude-module-group,#gratitude-time-group{width:100%;max-width:300px;margin-inline:auto}#gratitude-time-group .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr))}}
     `;doc.head.append(style);
    }
    if(!doc.getElementById('gratitude-time-group')){
@@ -87,6 +96,26 @@
     const group=doc.createElement('div');group.id='gratitude-time-group';group.setAttribute('role','group');group.setAttribute('aria-labelledby','gratitude-time-heading');
     const heading=doc.createElement('h2');heading.id='gratitude-time-heading';heading.textContent='Expressing Gratitude Times';
     times.before(group);group.append(heading,times);
+   }
+   if(!doc.getElementById('gratitude-module-group')){
+    const timeGroup=doc.getElementById('gratitude-time-group');
+    const columns=doc.createElement('div');columns.id='gratitude-choice-columns';timeGroup.before(columns);
+    const group=doc.createElement('div');group.id='gratitude-module-group';group.setAttribute('role','group');group.setAttribute('aria-labelledby','gratitude-module-heading');
+    const heading=doc.createElement('h2');heading.id='gratitude-module-heading';heading.textContent='GRATITUDE MODULES';
+    const grid=doc.createElement('div');grid.id='gratitude-module-grid';
+    for(const number of [1,2,3,4,5]){
+     const choice=doc.createElement('button');choice.type='button';choice.className='gratitude-module-choice';choice.dataset.gratitudeModule=number;
+     const circle=doc.createElement('span');circle.textContent=number;choice.append(circle);
+     choice.disabled=number!==1;choice.setAttribute('aria-label',number===1?'Gratitude module 1 — test slides':`Gratitude module ${number} — not connected`);
+     if(number===1){choice.setAttribute('aria-pressed',String(gratitudeModule===1));choice.addEventListener('click',()=>{
+      gratitudeModule=1;choice.setAttribute('aria-pressed','true');
+      const session=doc.getElementById('experienceFrame');const url=new URL(session.src,location.origin);url.pathname='/players/new-gratitude-session.html';url.searchParams.set('module','1');session.src=url.href;
+      doc.getElementById('gratitude-module-status').textContent='Module 1 · five test slides';
+     });}
+     grid.append(choice);
+    }
+    const notice=doc.createElement('p');notice.id='gratitude-module-status';notice.setAttribute('role','status');notice.textContent='Select 1 for the test slides.';
+    group.append(heading,grid,notice);columns.append(group,timeGroup);
    }
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
    const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
@@ -98,10 +127,10 @@
    if(!frames.has(session))session.addEventListener('load',()=>{
     if(!newGratitude)return;
     const url=new URL(session.src,location.origin);
-    if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';session.src=url.href;}
+    if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');session.src=url.href;}
    });
    const url=new URL(session.src,location.origin);
-   if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';session.src=url.href;}
+   if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');session.src=url.href;}
   }
   if(doc.documentElement.classList.contains('ci-review-test')!==enabled)doc.documentElement.classList.toggle('ci-review-test',enabled);
   if(!docs.has(doc)){
@@ -210,3 +239,4 @@
  renderFeature('home');
  if(new URLSearchParams(location.search).get('feature')==='new-gratitude')openFeature('new-gratitude');
 })();
+

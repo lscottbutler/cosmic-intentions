@@ -11,6 +11,7 @@ html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
 body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:2px solid #000;overflow:hidden}
 .image{position:absolute;inset:3.45% 2.05% 3.35%;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
+.image.test-slides{background:#000!important;display:grid;place-items:center}.test-slide{display:block;width:100%;height:100%;object-fit:contain}.slide-error{position:absolute;z-index:6;inset:20% 10% auto;background:#292929;color:#fff;padding:20px;text-align:center;font:16px/1.5 Arial,sans-serif}
 .ccb-curve{position:absolute;z-index:2;inset:0;width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}
 .ccb-scrubber{position:absolute;z-index:5;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
 .timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #82ad77;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -57,6 +58,24 @@ body.external .timer{background:#747474;border-color:#292929}
   const playIcon=document.getElementById('playIcon');
   const curve=document.querySelector('.ccb-curve');
   const scrubber=document.getElementById('ccbScrubber');
+  const testModule=search.get('module')==='1';
+  const slideFiles=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
+  const slideNames=['A great burger','A walk in nature','Comfort food','Exotic beach vacation','My life partner'];
+  let slidesReady=!testModule,slideIndex=-1,slideImage=null;
+  if(testModule){
+    const surface=document.querySelector('.image');surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');
+    slideImage=document.createElement('img');slideImage.className='test-slide';surface.append(slideImage);button.disabled=true;
+    Promise.all(slideFiles.map(file=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src='/images/gratitude/test-module-1/'+file;}))).then(()=>{slidesReady=true;button.disabled=false;render();}).catch(()=>{
+      const error=document.createElement('p');error.className='slide-error';error.setAttribute('role','alert');error.textContent='The test slides could not load. Reload to try again.';player.append(error);
+    });
+  }
+  function renderSlide(){
+    if(!testModule)return;
+    const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
+    const next=Math.min(slideFiles.length-1,Math.floor(progress*slideFiles.length));
+    if(next===slideIndex)return;slideIndex=next;
+    slideImage.src='/images/gratitude/test-module-1/'+slideFiles[next];slideImage.alt=slideNames[next];player.dataset.slide=String(next+1);
+  }
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
@@ -87,13 +106,14 @@ body.external .timer{background:#747474;border-color:#292929}
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
   function render(){
     const ready=state==='ready';
-    playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
+    playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
     button.setAttribute('aria-label',`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
   function toggle(){
+    if(!slidesReady)return;
     clearTick();
     if(state==='ready'||state==='complete'){remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
     if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
@@ -124,3 +144,4 @@ body.external .timer{background:#747474;border-color:#292929}
 </script>
 </body>
 </html>
+
