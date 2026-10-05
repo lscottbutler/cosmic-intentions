@@ -98,6 +98,7 @@
  const dashboard=document.getElementById('citadel-dashboard');
  let dashboardApi=null,dashboardData=null,dashboardView='tasks',dashboardReturn='home',dashboardTrigger=null;
  const entryDrafts={notes:'',journal:''};
+ const taskGroupOpen=new Map();
  function rememberDraft(){if(dashboardView!=='tasks')entryDrafts[dashboardView]=byId('dashboard-entry-text').value;}
  const byId=id=>document.getElementById(id);
  function say(text){byId('dashboard-state').textContent=text;}
@@ -111,18 +112,30 @@
   byId('dashboard-entry-text').focus();
  }
  function taskRows(){
+  byId('dashboard-task-list').querySelectorAll('.dashboard-task-group').forEach(group=>taskGroupOpen.set(group.dataset.goalId,group.open));
   const host=byId('dashboard-task-list');host.replaceChildren();const open=dashboardData.tasks.filter(task=>!task.done);
   byId('dashboard-task-count').textContent=`${open.length} open`;
   const tasks=dashboardData.tasks.filter(task=>!task.done||byId('dashboard-completed').checked).sort((a,b)=>Number(a.done)-Number(b.done));
   if(!tasks.length)host.append(safeNode('p',dashboardData.tasks.length?'All caught up. Show completed to review earlier actions.':'No to-dos yet. Add your first action below.','dashboard-empty'));
+  const groups=new Map();
+  tasks.forEach(task=>{
+   if(groups.has(task.goalId))return;
+   const group=document.createElement('details');group.className='dashboard-task-group';group.dataset.goalId=task.goalId;
+   group.open=taskGroupOpen.get(task.goalId)!==false;
+   const summary=document.createElement('summary');
+   summary.append(safeNode('span',task.goalTitle||'Personal to-dos','dashboard-group-title'));
+   const body=document.createElement('div');body.className='dashboard-group-body';
+   group.append(summary,body);group.addEventListener('toggle',()=>{if(group.isConnected)taskGroupOpen.set(task.goalId,group.open);});
+   groups.set(task.goalId,body);host.append(group);
+  });
   tasks.forEach(task=>{
    const row=document.createElement('article');row.className='dashboard-task'+(task.done?' is-complete':'');row.dataset.taskKey=task.key;
    const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=task.done;check.setAttribute('aria-label',`Complete: ${task.text}`);
    check.addEventListener('change',()=>{try{const result=dashboardApi.toggle(task.key);if(result.error){check.checked=task.done;say(result.error);return;}dashboardData=result;taskRows();say('Task updated.');}catch(_){check.checked=task.done;say('Could not update this task. Reopen the list and try again.');}});
-   label.append(check,safeNode('span',task.text,'dashboard-task-text'));row.append(label,safeNode('p',task.goalTitle||'Personal to-do · no goal linked','dashboard-goal'));
+   label.append(check,safeNode('span',task.text,'dashboard-task-text'));row.append(label);
    if(task.goalId){const actions=document.createElement('div');actions.className='dashboard-row-actions';for(const [kind,text] of [['notes','Add note'],['journal','Journal']]){const button=safeNode('button',text);button.type='button';button.addEventListener('click',()=>showComposer(kind,task));actions.append(button);}row.append(actions);}
    const linked=dashboardData.entries.filter(entry=>entry.taskKey===task.key);linked.forEach(entry=>row.append(safeNode('p',`${entry.cat==='note'?'Journal':'Note'} · ${entry.text}`,'dashboard-linked-entry')));
-   host.append(row);
+   groups.get(task.goalId).append(row);
   });
  }
  function entryRows(){const host=byId('dashboard-entry-list');host.replaceChildren();const entries=dashboardData.entries.filter(entry=>dashboardView==='journal'?entry.cat==='note':entry.cat!=='note').sort((a,b)=>(b.updatedAt||b.ts||0)-(a.updatedAt||a.ts||0));if(!entries.length)host.append(safeNode('p',dashboardView==='journal'?'No journal entries yet. Write your first reflection below.':'No notes yet. Capture your first idea below.','dashboard-empty'));entries.forEach(entry=>{const row=document.createElement('article');row.className='dashboard-entry';row.append(safeNode('p',entry.text),safeNode('p',dashboardData.goals.find(goal=>goal.id===String(entry.goal))?.title||'No goal linked','dashboard-goal'));const task=dashboardData.tasks.find(task=>task.key===entry.taskKey);if(task)row.append(safeNode('p',`Related action · ${task.text}`,'dashboard-goal'));host.append(row);});}
@@ -146,4 +159,3 @@
  window.addEventListener('resize',schedule);
  renderFeature('home');
 })();
-
