@@ -29,7 +29,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
  await expect(session.locator('#slideCaption')).toHaveText('I AM GRATEFUL FOR A GREAT BURGER');
- await expect(session.locator('.ccb-curve')).toBeHidden();
+ await expect(session.locator('.ccb-curve')).toBeVisible();
+ await expect(session.locator('#timer')).toHaveCSS('border-radius','50%');
  await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.naturalWidth)).toBe(1280);
  const stability=await page.evaluate(async()=>{
   const frame=document.getElementById('ci-review-frame');
