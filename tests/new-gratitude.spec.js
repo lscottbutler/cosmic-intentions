@@ -29,6 +29,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
  await expect(session.locator('#ccbScrubber')).toBeHidden();
+ await expect(session.locator('.ccb-curve ellipse')).toHaveCSS('opacity','0');
+ await expect(session.locator('#timer')).toHaveCSS('opacity','1');
  await expect(session.locator('#player')).toHaveAttribute('data-stage','opening');
  await expect(session.locator('#slideCaption')).toBeHidden();
  await expect(session.locator('.ccb-curve')).toBeVisible();
