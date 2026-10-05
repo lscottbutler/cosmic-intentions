@@ -84,6 +84,7 @@
      .gratitude-module-choice[aria-pressed="true"] span{border:7px solid #fff}
      .gratitude-module-choice:disabled{opacity:.45;cursor:default}
      .gratitude-module-choice:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
+     #gratitude-back[hidden]{display:none!important}
      #gratitude-module-status{margin:14px 0 0;text-align:center;font-size:12px;line-height:1.35;color:#292929}
      #gratitude-time-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
      #gratitude-time-group .med-time-stack{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
@@ -124,6 +125,25 @@
    button.setAttribute('aria-label','New Gratitude Menu');if(button.querySelector('span:last-child').textContent!=='New Gratitude Menu')button.querySelector('span:last-child').textContent='New Gratitude Menu';
    doc.getElementById('meditationMenu').setAttribute('aria-label','New Gratitude choices');
    const session=doc.getElementById('experienceFrame');session.title='NEW GRATITUDE';
+   if(!doc.getElementById('gratitude-back')){
+    const panel=doc.getElementById('meditationMenu');
+    const back=doc.createElement('button');back.id='gratitude-back';back.type='button';back.className='med-control';back.hidden=true;
+    back.setAttribute('aria-label','Back to gratitude setup');
+    const arrow=doc.createElement('span');arrow.className='med-circle';arrow.textContent='◀';arrow.setAttribute('aria-hidden','true');
+    const label=doc.createElement('span');label.textContent='Back';back.append(arrow,label);panel.append(back);
+    back.style.cssText='display:grid;margin:24px auto 0;justify-items:center;width:72px';
+    back.addEventListener('click',()=>{back.hidden=true;session.src=session.src;});
+    let completed=false;
+    doc.defaultView.addEventListener('message',event=>{
+     if(!newGratitude||event.origin!==location.origin||event.source!==session.contentWindow||event.data?.type!=='ci-meditation-state')return;
+     const finished=event.data.state==='complete'&&event.data.phase==='meditation';
+     back.hidden=!finished;
+     if(finished&&button.getAttribute('aria-expanded')!=='true')button.click();
+     else if(completed&&!finished&&event.data.state==='running'&&button.getAttribute('aria-expanded')==='true')button.click();
+     completed=finished;
+    });
+   }
+
    if(!frames.has(session))session.addEventListener('load',()=>{
     if(!newGratitude)return;
     const url=new URL(session.src,location.origin);

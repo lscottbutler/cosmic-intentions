@@ -71,8 +71,15 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
+ await expect(shell.locator('#meditationMenu')).toBeVisible();
+ await expect(shell.locator('#gratitude-module-group')).toBeVisible();
+ await expect(shell.locator('#gratitude-time-group')).toBeVisible();
+ await expect(shell.locator('#gratitude-back')).toBeVisible();
+ await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-expanded','true');
+ await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
  await session.getByRole('button',{name:'Replay 1 minute gratitude',exact:true}).click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
+ await expect(shell.locator('#meditationMenu')).toBeHidden();
  await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
  await expect(shell.locator('#meditationMenu')).toBeVisible();
  await expect(shell.locator('#meditationModes')).toBeHidden();
@@ -136,7 +143,14 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
+ await expect(shell.locator('#meditationMenu')).toBeVisible();
+ await expect(shell.locator('#gratitude-module-group')).toBeVisible();
+ await expect(shell.locator('#gratitude-time-group')).toBeVisible();
+ await expect(shell.locator('#gratitude-back')).toBeVisible();
+ await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-expanded','true');
+ await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-slide','1');
+ await expect(shell.locator('#meditationMenu')).toBeHidden();
  await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
  await expect(shell.locator('#gratitude-module-group')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-module-${width}-menu.png`,fullPage:true});
@@ -161,6 +175,19 @@ test('Gratitude finishes all slides then automatically starts chosen meditation'
  const text=await session.locator('#value').textContent();expect(['2\n00','1\n59']).toContain(text);
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  await page.screenshot({path:'test-results/gratitude-natural-handoff.png',fullPage:true});
+ // Finish via the real timer tick, then return to setup without autoplay.
+ await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:.995},location.origin));
+ await session.locator('#timer').click();
+ await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
+ await expect(shell.locator('#meditationMenu')).toBeVisible();
+ await shell.getByRole('button',{name:'Back to gratitude setup',exact:true}).click();
+ await expect(session.locator('#player')).toHaveAttribute('data-state','ready');
+ await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
+ await expect(session.locator('#player')).toHaveAttribute('data-slide','1');
+ await expect(shell.locator('#gratitude-back')).toBeHidden();
+ await expect(shell.locator('#meditationMenu')).toBeVisible();
+ await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/t=2&.*module=1/);
+ await page.screenshot({path:'test-results/gratitude-back-to-setup.png',fullPage:true});
 });
 test('Gratitude reduced motion keeps images visible during transitions',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
