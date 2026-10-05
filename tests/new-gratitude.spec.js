@@ -214,6 +214,7 @@ for(const width of [1440,390])test(`Filename captions follow every slide ${width
   await expect(page.locator('.test-slide')).toHaveAttribute('alt',statements[index]);
   await expect(page.locator('#player')).toHaveAttribute('data-voiceover',statements[index]);
   const caption=await page.locator('#slideCaption').evaluate(el=>({fits:el.scrollWidth<=el.clientWidth,text:el.textContent,opacity:el.style.opacity}));expect(caption.fits).toBe(true);expect(caption.opacity).toBe('1');
+  const imageFits=await page.locator('.test-slide').evaluate(el=>{const image=el.getBoundingClientRect(),surface=el.parentElement.getBoundingClientRect();return image.width<=surface.width+1&&image.height<=surface.height+1;});expect(imageFits).toBe(true);
   await page.screenshot({path:`test-results/gratitude-caption-${width}-${index+1}.png`});
  }
  await page.evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
