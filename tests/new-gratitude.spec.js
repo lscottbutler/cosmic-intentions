@@ -21,7 +21,12 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(shell.getByRole('button',{name:'Unguided',exact:true})).toHaveCount(0);
  await expect(shell.getByRole('button',{name:'Guided',exact:true})).toHaveCount(0);
  await expect(shell.locator('.relaxation-toggle-row')).toBeHidden();
- await expect(shell.locator('[data-med-time]')).toHaveCount(6);
+ const times=shell.getByRole('group',{name:'Expressing Gratitude Times',exact:true});
+ await expect(times).toBeVisible();
+ await expect(times.locator('[data-med-time]')).toHaveCount(6);
+ const layout=await times.evaluate(el=>{const group=el.getBoundingClientRect(),menu=el.closest('#meditationMenu').getBoundingClientRect();return {ratio:group.width/(menu.width-18),right:menu.right-group.right};});
+ if(width===1440){expect(layout.ratio).toBeCloseTo(1/3,2);expect(layout.right).toBeCloseTo(9,0);}
+ for(const minutes of [1,2,3,5,10,15])await expect(times.locator(`[data-med-time="${minutes}"]`)).toBeVisible();
  expect(await session.locator('.image').evaluate(el=>getComputedStyle(el).backgroundImage)).toContain('/images/meditation/meditation-1.jpg');
  await expect.poll(()=>session.locator('.image').evaluate(async el=>{const src=getComputedStyle(el).backgroundImage.match(/url\("?([^"\)]+)/)[1];const img=new Image();img.src=src;await img.decode();return img.naturalWidth;})).toBeGreaterThan(0);
  await page.screenshot({path:`test-results/new-gratitude-${width}-ready.png`,fullPage:true});
@@ -54,6 +59,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/\/players\/meditation\.html/);
  await expect(session.getByRole('button',{name:'Start 15 minute meditation',exact:true})).toBeVisible();
  await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-label','Meditation Menu');
+ await expect(shell.locator('#gratitude-time-group')).toHaveCount(0);
  await expect(shell.getByRole('button',{name:'Unguided',exact:true})).toBeVisible();
  await expect(shell.getByRole('button',{name:'Guided',exact:true})).toBeVisible();
  await expect(shell.locator('.relaxation-toggle-row')).toBeVisible();

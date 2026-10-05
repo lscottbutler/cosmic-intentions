@@ -73,7 +73,20 @@
   if(newGratitude&&doc.getElementById('meditationControls')){
    if(!doc.getElementById('new-gratitude-choices')){
     const style=doc.createElement('style');style.id='new-gratitude-choices';
-    style.textContent='#meditationModes,.relaxation-toggle-row,#guidedNote{display:none!important}';doc.head.append(style);
+    style.textContent=`
+     #meditationModes,.relaxation-toggle-row,#guidedNote{display:none!important}
+     #gratitude-time-group{box-sizing:border-box;width:33.333%;margin-left:auto}
+     #gratitude-time-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
+     #gratitude-time-group .med-time-stack{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
+     #gratitude-time-group .med-time-option:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
+     @media(max-width:620px){#gratitude-time-group{width:100%;max-width:300px}#gratitude-time-group .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    `;doc.head.append(style);
+   }
+   if(!doc.getElementById('gratitude-time-group')){
+    const times=doc.getElementById('meditationTimes');
+    const group=doc.createElement('div');group.id='gratitude-time-group';group.setAttribute('role','group');group.setAttribute('aria-labelledby','gratitude-time-heading');
+    const heading=doc.createElement('h2');heading.id='gratitude-time-heading';heading.textContent='Expressing Gratitude Times';
+    times.before(group);group.append(heading,times);
    }
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
    const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
