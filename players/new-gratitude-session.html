@@ -20,6 +20,7 @@ body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
 .value,.playicon{position:relative;z-index:1;color:#fff}
 .value{font-size:clamp(22px,3.1vw,44px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:pre-line;text-align:center}
 .playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
+.playicon.pauseicon{width:30%;height:40%;border:0;border-left:clamp(5px,.6vw,10px) solid #fff;border-right:clamp(5px,.6vw,10px) solid #fff;margin:0}
 [hidden]{display:none!important}
 body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0;background:#292929}
 body.external .image{inset:0}
@@ -61,6 +62,11 @@ body.external .timer{background:#747474;border-color:#292929}
   const testModule=search.get('module')==='1';
   const slideFiles=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
   const slideNames=['A great burger','A walk in nature','Comfort food','Exotic beach vacation','My life partner'];
+  const slideHoldMs=8000,fadeMs=1000,slideSlotMs=slideHoldMs+fadeMs*2;
+  const introMs=slideFiles.length*slideSlotMs;
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const surface=document.querySelector('.image');
+  let phase=testModule?'slides':'meditation',introRemaining=introMs;
   let slidesReady=!testModule,slideIndex=-1,slideImage=null;
   if(testModule){
     const surface=document.querySelector('.image');surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');
@@ -71,10 +77,18 @@ body.external .timer{background:#747474;border-color:#292929}
   }
   function renderSlide(){
     if(!testModule)return;
-    const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
-    const next=Math.min(slideFiles.length-1,Math.floor(progress*slideFiles.length));
-    if(next===slideIndex)return;slideIndex=next;
-    slideImage.src='/images/gratitude/test-module-1/'+slideFiles[next];slideImage.alt=slideNames[next];player.dataset.slide=String(next+1);
+    player.dataset.phase=phase;
+    if(phase==='meditation'){
+      surface.classList.remove('test-slides');surface.setAttribute('aria-hidden','true');
+      slideImage.hidden=true;delete player.dataset.slide;return;
+    }
+    surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');slideImage.hidden=false;
+    const elapsed=Math.max(0,introMs-introRemaining);
+    const next=Math.min(slideFiles.length-1,Math.floor(elapsed/slideSlotMs));
+    const position=elapsed-next*slideSlotMs;
+    if(next!==slideIndex){slideIndex=next;slideImage.src='/images/gratitude/test-module-1/'+slideFiles[next];slideImage.alt=slideNames[next];}
+    slideImage.style.opacity=state==='ready'||reducedMotion.matches?'1':String(position<fadeMs?position/fadeMs:position<fadeMs+slideHoldMs?1:Math.max(0,(slideSlotMs-position)/fadeMs));
+    player.dataset.slide=String(next+1);
   }
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
   const shown=()=>{
@@ -82,7 +96,7 @@ body.external .timer{background:#747474;border-color:#292929}
     return `${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
   };
   function renderScrubber(){
-    const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
+    const progress=phase==='slides'?0:Math.max(0,Math.min(1,1-remaining/totalMs));
     const x=35+progress*1850;
     const dx=(x-960)/1379;
     let y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
@@ -103,28 +117,59 @@ body.external .timer{background:#747474;border-color:#292929}
     scrubber.style.left=(x/19.2)+'%';
     scrubber.style.top=(y/10.8)+'%';
   }
-  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
+  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,phase},location.origin)}
   function render(){
     const ready=state==='ready';
-    playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();renderSlide();
+    playIcon.hidden=!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
+    playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
+    button.setAttribute('aria-label',phase==='slides'?`${action} gratitude slideshow`:`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
-  function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
+  function beginMeditation(running=true){
+    phase='meditation';introRemaining=0;remaining=totalMs;deadline=performance.now()+remaining;
+    state=running?'running':'paused';render();
+  }
+  function tick(){
+    if(state!=='running')return;
+    const left=Math.max(0,deadline-performance.now());
+    if(phase==='slides'){
+      introRemaining=left;
+      if(left<=0)beginMeditation();
+    }else{
+      remaining=left;
+      if(left<=0){state='complete';clearTick();render();return;}
+    }
+    render();tickHandle=setTimeout(tick,phase==='slides'?40:250);
+  }
   function toggle(){
     if(!slidesReady)return;
     clearTick();
-    if(state==='ready'||state==='complete'){remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
-    if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
-    if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
+    if(state==='ready'||state==='complete'){
+      phase=testModule?'slides':'meditation';introRemaining=introMs;remaining=totalMs;
+      deadline=performance.now()+(phase==='slides'?introRemaining:remaining);state='running';render();tick();return;
+    }
+    if(state==='running'){
+      if(phase==='slides')introRemaining=Math.max(0,deadline-performance.now());
+      else remaining=Math.max(0,deadline-performance.now());
+      state='paused';render();return;
+    }
+    if(state==='paused'){deadline=performance.now()+(phase==='slides'?introRemaining:remaining);state='running';render();tick();}
   }
   function seek(ratio){
+    if(!slidesReady)return;
     const progress=Math.max(0,Math.min(1,Number(ratio)||0));
-    remaining=totalMs*(1-progress);
-    if(state==='running')deadline=performance.now()+remaining;
-    else if(remaining<=0)state='complete';
-    else if(state==='ready')state='paused';
+    if(phase==='slides'){
+      introRemaining=introMs*(1-progress);
+      if(progress===1){beginMeditation(state==='running');return;}
+      if(state==='running')deadline=performance.now()+introRemaining;
+      else if(state==='ready')state='paused';
+    }else{
+      remaining=totalMs*(1-progress);
+      if(state==='running')deadline=performance.now()+remaining;
+      if(remaining<=0){state='complete';clearTick();}
+      else if(state==='ready')state='paused';
+    }
     render();
   }
   button.addEventListener('click',toggle);

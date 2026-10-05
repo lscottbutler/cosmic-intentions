@@ -48,7 +48,7 @@
  }
  function openFeature(action){
   if(action==='new-gratitude'){
-   newGratitude=true;gratitudeModule=0;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
+   newGratitude=true;gratitudeModule=1;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
   }
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
@@ -114,7 +114,7 @@
      });}
      grid.append(choice);
     }
-    const notice=doc.createElement('p');notice.id='gratitude-module-status';notice.setAttribute('role','status');notice.textContent='Select 1 for the test slides.';
+    const notice=doc.createElement('p');notice.id='gratitude-module-status';notice.setAttribute('role','status');notice.textContent=gratitudeModule===1?'Module 1 · five test slides':'Select 1 for the test slides.';
     group.append(heading,grid,notice);columns.append(group,timeGroup);
    }
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
