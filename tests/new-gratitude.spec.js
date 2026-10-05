@@ -112,7 +112,7 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  for(const [ratio,slide] of [[.25,2],[.45,3],[.65,4],[.85,5]]){
-  await session.locator('body').evaluate(r=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
+  await session.locator('body').evaluate((el,r)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
   await expect(session.locator('#player')).toHaveAttribute('data-slide',String(slide));
   await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
  }
