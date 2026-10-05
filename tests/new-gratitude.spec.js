@@ -66,6 +66,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(shell.locator('#meditationControls')).toBeVisible();
  await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
  await expect(session.locator('#timer')).toHaveCSS('opacity','0');
+ await expect(session.locator('.ccb-curve ellipse')).toHaveCSS('opacity','0');
  await expect(session.locator('#ccbScrubber')).toBeHidden();
  await session.locator('#slideshowToggle').click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
@@ -78,6 +79,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('.ccb-curve')).toBeVisible();
  await expect(session.locator('#value')).toHaveText('1\n00');
  await expect(session.locator('#timer')).toHaveCSS('opacity','1');
+ await expect(session.locator('.ccb-curve ellipse')).toHaveCSS('opacity','1');
  await expect(session.locator('#ccbScrubber')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));

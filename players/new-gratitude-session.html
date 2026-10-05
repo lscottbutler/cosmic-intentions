@@ -31,12 +31,13 @@ body.external .timer{background:#747474;border-color:#292929}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide-caption{position:absolute;z-index:3;left:4%;right:4%;bottom:1.4%;height:4%;display:grid;place-items:center;color:#fff;text-align:center;font:800 clamp(8px,1.65vw,30px)/1.1 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
-.timer{transition:opacity 1s ease}
-.player[data-phase="slides"]:not([data-state="ready"]) .timer{opacity:0;pointer-events:none}
+.timer,.ccb-curve ellipse{transition:opacity 1s ease}
+.player[data-phase="slides"]:not([data-state="ready"]):not([data-reveal="true"]) .timer,.player[data-phase="slides"]:not([data-state="ready"]):not([data-reveal="true"]) .ccb-curve ellipse{opacity:0}
+.player[data-phase="slides"]:not([data-state="ready"]) .timer{pointer-events:none}
 .slideshow-toggle{position:absolute;z-index:3;inset:0 0 16%;border:0;padding:0;background:transparent;cursor:pointer}
 .slideshow-toggle:focus-visible{outline:2px solid #fff;outline-offset:-8px}
 .timer:focus-visible{outline:2px solid #fff;outline-offset:2px}
-@media(prefers-reduced-motion:reduce){.timer{transition:none}}
+@media(prefers-reduced-motion:reduce){.timer,.ccb-curve ellipse{transition:none}}
 </style>
 </head>
 <body>
@@ -158,13 +159,15 @@ body.external .timer{background:#747474;border-color:#292929}
   function render(){
     const ready=state==='ready';
     const hideCircle=phase==='slides'&&!ready;
+    const reveal=hideCircle&&introRemaining<=fadeMs;
+    player.dataset.reveal=String(reveal);
     scrubber.hidden=phase!=='meditation'||ready;
     slideshowToggle.hidden=!hideCircle;
     slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
     slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
     button.tabIndex=hideCircle?-1:0;
     button.setAttribute('aria-hidden',String(hideCircle));
-    playIcon.hidden=!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
+    playIcon.hidden=reveal||!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
     playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
     button.setAttribute('aria-label',phase==='slides'?`${action} gratitude slideshow`:`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
