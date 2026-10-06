@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+async function toggleGratitude(shell){
+ const counter=shell.locator('#gratitude-slide-counter');
+ if(await counter.isVisible())await counter.click();else await shell.locator('#gratitude-start').click();
+}
 
 for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separately ${width}`,async({page})=>{
  test.setTimeout(90000);
@@ -81,7 +85,7 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#slideCaption')).toBeHidden();
  await expect(session.locator('.ccb-curve')).toBeVisible();
  await expect(session.locator('#value')).toHaveText('1\n00');
- await expect(session.locator('#timer')).toHaveCSS('opacity','1');
+ await expect(session.locator('#timer')).toHaveCSS('opacity','0');
  await expect(session.locator('.ccb-curve ellipse')).toHaveCSS('opacity','1');
  await expect(session.locator('#ccbScrubber')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-meditation-${width}.png`,fullPage:true});
@@ -93,10 +97,10 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(shell.locator('#gratitude-back')).toBeVisible();
  await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-expanded','true');
  await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
- await session.getByRole('button',{name:'Replay 1 minute gratitude',exact:true}).click();
+ await shell.getByRole('button',{name:'Replay gratitude',exact:true}).click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
- await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
+ await shell.getByRole('button',{name:'GRATITUDE MENU',exact:true}).click();
  await expect(shell.locator('#meditationMenu')).toBeVisible();
  await expect(shell.locator('#meditationModes')).toBeHidden();
  await expect(shell.locator('.relaxation-toggle-row')).toBeHidden();
@@ -165,9 +169,9 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await expect(shell.locator('#gratitude-back')).toBeVisible();
  await expect(shell.locator('[data-med-command="menu"]')).toHaveAttribute('aria-expanded','true');
  await page.screenshot({path:`test-results/gratitude-complete-${width}.png`,fullPage:true});
- await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-stage','opening');
+ await toggleGratitude(shell);await expect(session.locator('#player')).toHaveAttribute('data-stage','opening');
  await expect(shell.locator('#meditationMenu')).toBeHidden({timeout:8000});
- await shell.getByRole('button',{name:'New Gratitude Menu',exact:true}).click();
+ await shell.getByRole('button',{name:'GRATITUDE MENU',exact:true}).click();
  await expect(shell.locator('#gratitude-module-group')).toBeVisible();
  await page.screenshot({path:`test-results/gratitude-module-${width}-menu.png`,fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -193,11 +197,11 @@ test('Gratitude finishes all slides then automatically starts chosen meditation'
  await expect(session.locator('.test-slide')).toBeHidden();
  await expect(session.locator('#timer')).toHaveAttribute('aria-label','Pause 2 minute gratitude');
  const text=await session.locator('#value').textContent();expect(['2\n00','1\n59']).toContain(text);
- await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
+ await toggleGratitude(shell);await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  await page.screenshot({path:'test-results/gratitude-natural-handoff.png',fullPage:true});
  // Finish via the real timer tick, then return to setup without autoplay.
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:.995},location.origin));
- await session.locator('#timer').click();
+ await toggleGratitude(shell);
  await expect(session.locator('#player')).toHaveAttribute('data-state','complete');
  await expect(shell.locator('#meditationMenu')).toBeVisible();
  await shell.getByRole('button',{name:'Back to gratitude setup',exact:true}).click();
@@ -300,6 +304,9 @@ for(const width of [1440,390])test(`Gratitude counter between arrows and doubled
  await shell.locator('#gratitude-slide-counter').click();
  await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
- await expect(shell.locator('#gratitude-slide-counter')).toBeHidden();
+ await expect(shell.locator('#gratitude-slide-counter')).toBeVisible();
+ await expect(shell.locator('#gratitude-slide-counter')).toHaveText('2\n00');
+ await expect(shell.locator('[data-med-command="menu"]>span:last-child')).toHaveText('GRATITUDE MENU');
+ await expect(shell.locator('[data-med-command="menu"]>span:last-child')).toBeVisible();
  await expect(session.locator('#timer')).toHaveCSS('opacity','1');
 });
