@@ -174,7 +174,7 @@ body.counter-docked .player[data-phase="slides"] .timer{opacity:0!important;poin
     curve.querySelector('ellipse').style.opacity=String(visibleOpacity);
     button.style.opacity=String(ready?(panelPlay?0:1):visibleOpacity);
     scrubber.style.opacity=String(visibleOpacity);
-    scrubber.hidden=ready||!controlsVisible;
+    scrubber.hidden=phase!=='meditation'||ready;
     slideshowToggle.hidden=phase!=='slides'||ready;
     slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
     slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
