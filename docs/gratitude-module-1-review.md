@@ -60,3 +60,10 @@ Source checkpoint: 961f35e4f607e5a4e6732f27c6e7c948e30e3b9a. Reference card 4 in
 Scott clarified: only change the text inside the text box, never swap the entire 16:9 frame. Supersedes the previous whole-reference-frame implementation. All four instruction messages now use the existing opening-card.webp as a fixed background; only the body text inside the white panel changes and fades. Background, GRATITUDE heading, title ornament and teal curved outline remain static during instruction cards. SVG overlay matches the artwork's 1669x939 coordinate system and contains the text within the existing white body area. Original subsequent opening/photos/reflection/countdown sequence retained.
 
 Checkpoint 384a370fcb3b4a9c95910d4a3aa4c4f9ab0a0478. Syntax and controlled-clock playback checks passed. Actual browser visual verification remains blocked; text fit and panel coverage require rendered confirmation, not claimed verified. Production, Supabase and Netlify settings unchanged. GitHub checkpoint saved; Bible and Drive snapshot remain pending.
+
+
+## 2026-10-06 — first ElevenLabs instruction narration (In Review)
+
+Scott uploaded output.bin from the successful ElevenLabs request shown in his screenshot. File inspection confirms MP3, 44.1kHz mono, 128kbps, duration 7.88898 seconds. Screenshot request text corresponds to the first instruction card; voice selection Rowan – Gentle, Soft-Spoken. Audio is embedded as audio/mpeg and only plays during first instruction card (0–8 seconds); pauses/resumes with player, follows seeks and resets on replay/exit. Remaining instruction/opening/reflection/photo narration not supplied and not connected.
+
+Syntax and controlled-clock engine sequence checks passed with a mocked Audio interface. Real browser audio playback/autoplay and listening verification remain pending due to browser access blocker. No claim of listening verification. Existing artwork/timings preserved. Production, Supabase and Netlify settings unchanged. Review GitHub checkpoint saved; Bible/Drive backup pending.
