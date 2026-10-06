@@ -29,7 +29,7 @@ body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
 body.external .ccb-scrubber{background:#f2f2f2}
 body.panel-play .player[data-state="ready"] .timer{opacity:0;pointer-events:none}
 body.external .timer{background:#747474;border-color:#292929}
-body.counter-docked .player[data-phase="slides"] .timer{opacity:0!important;pointer-events:none}
+body.counter-docked .timer{opacity:0!important;pointer-events:none}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide-caption{position:absolute;z-index:3;left:4%;right:4%;bottom:1.4%;min-height:8%;display:grid;place-items:center;color:#fff;text-align:center;font:800 clamp(16px,3.3vw,60px)/1.1 Arial,Helvetica,sans-serif;letter-spacing:.06em;text-transform:uppercase;white-space:normal;pointer-events:none}
@@ -148,7 +148,7 @@ body.counter-docked .player[data-phase="slides"] .timer{opacity:0!important;poin
     // Follow the center of the timer rim where it rises above the lower curve.
     const curveBox=curve.getBoundingClientRect();
     const timerBox=button.getBoundingClientRect();
-    if(curveBox.width&&curveBox.height){
+    if(curveBox.width&&curveBox.height&&!dockCounter){
       const scaleX=1920/curveBox.width,scaleY=1080/curveBox.height;
       const radius=timerBox.width/2-parseFloat(getComputedStyle(button).borderTopWidth)/2;
       const centerX=(timerBox.left+timerBox.width/2-curveBox.left)*scaleX;
@@ -178,7 +178,7 @@ body.counter-docked .player[data-phase="slides"] .timer{opacity:0!important;poin
     slideshowToggle.hidden=phase!=='slides'||ready;
     slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
     slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
-    button.tabIndex=hideCircle||(dockCounter&&phase==='slides')||(panelPlay&&ready)?-1:0;
+    button.tabIndex=hideCircle||dockCounter||(panelPlay&&ready)?-1:0;
     button.setAttribute('aria-hidden',String(hideCircle||(dockCounter&&phase==='slides')||(panelPlay&&ready)));
     playIcon.hidden=!ready; value.hidden=ready||hideCircle;
     playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); renderScrubber();renderSlide();
