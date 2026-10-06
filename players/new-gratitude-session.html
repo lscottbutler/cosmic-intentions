@@ -32,10 +32,7 @@ body.external .timer{background:#747474;border-color:#292929}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide-caption{position:absolute;z-index:3;left:4%;right:4%;bottom:1.4%;height:4%;display:grid;place-items:center;color:#fff;text-align:center;font:800 clamp(8px,1.65vw,30px)/1.1 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
-.timer,.ccb-curve ellipse{transition:opacity 1s ease}
-.player[data-phase="slides"] .ccb-curve ellipse{opacity:0}
-.player[data-phase="slides"]:not([data-state="ready"]) .timer{opacity:0}
-.player[data-phase="slides"]:not([data-state="ready"]) .timer{pointer-events:none}
+.player[data-phase="slides"][data-controls-visible="false"] .timer{pointer-events:none}
 .slideshow-toggle{position:absolute;z-index:3;inset:0 0 16%;border:0;padding:0;background:transparent;cursor:pointer}
 .slideshow-toggle:focus-visible{outline:2px solid #fff;outline-offset:-8px}
 .timer:focus-visible{outline:2px solid #fff;outline-offset:2px}
@@ -84,7 +81,8 @@ body.external .timer{background:#747474;border-color:#292929}
   const caption=document.getElementById('slideCaption');
   const slideHoldMs=8000,fadeMs=1000,slideSlotMs=slideHoldMs+fadeMs*2;
   const cardHoldMs=6000,openingMs=cardHoldMs+fadeMs,photoMs=slideFiles.length*slideSlotMs,closingMs=cardHoldMs+fadeMs*2;
-  const introMs=openingMs+photoMs+closingMs;
+  const controlsFadeMs=fadeMs,photosStartMs=openingMs+controlsFadeMs;
+  const introMs=photosStartMs+photoMs+closingMs;
   const openingFile='opening-card.webp',closingFile='reflection-card.webp';
   const openingText='GRATITUDE. Here are a few things that some in the Cosmic Community are grateful for.';
   const closingText='GRATITUDE. Now take a minute and reflect on some of the things in your life that your grateful for. As always, when you hear the Bell open your eyes and proceed.';
@@ -112,14 +110,16 @@ body.external .timer{background:#747474;border-color:#292929}
     if(elapsed<openingMs){
       next=-2;file=openingFile;text=openingText;stage='opening';
       opacity=elapsed<cardHoldMs?1:Math.max(0,(openingMs-elapsed)/fadeMs);
-    }else if(elapsed<openingMs+photoMs){
-      const photoElapsed=elapsed-openingMs;
+    }else if(elapsed<photosStartMs){
+      next=-2;file=openingFile;text=openingText;stage='controls';opacity=0;
+    }else if(elapsed<photosStartMs+photoMs){
+      const photoElapsed=elapsed-photosStartMs;
       next=Math.min(slideFiles.length-1,Math.floor(photoElapsed/slideSlotMs));
       const position=photoElapsed-next*slideSlotMs;
       file=slideFiles[next];text=slideStatements[next];stage='photos';
       opacity=position<fadeMs?position/fadeMs:position<fadeMs+slideHoldMs?1:Math.max(0,(slideSlotMs-position)/fadeMs);
     }else{
-      const position=elapsed-openingMs-photoMs;
+      const position=elapsed-photosStartMs-photoMs;
       next=slideFiles.length;file=closingFile;text=closingText;stage='closing';
       opacity=position<fadeMs?position/fadeMs:position<fadeMs+cardHoldMs?1:Math.max(0,(closingMs-position)/fadeMs);
     }
@@ -162,14 +162,22 @@ body.external .timer{background:#747474;border-color:#292929}
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,phase},location.origin)}
   function render(){
     const ready=state==='ready';
-    const hideCircle=phase==='slides'&&!ready;
-    scrubber.hidden=phase!=='meditation'||ready;
-    slideshowToggle.hidden=!hideCircle;
+    const elapsed=Math.max(0,introMs-introRemaining);
+    const controlsOpacity=phase==='slides'?(ready?0:Math.max(0,Math.min(1,(elapsed-openingMs)/controlsFadeMs))):1;
+    const controlsVisible=phase!=='slides'||controlsOpacity>0;
+    const hideCircle=phase==='slides'&&!ready&&!controlsVisible;
+    player.dataset.controlsVisible=String(controlsVisible);
+    const visibleOpacity=reducedMotion.matches?(controlsOpacity>0?1:0):controlsOpacity;
+    curve.querySelector('ellipse').style.opacity=String(visibleOpacity);
+    button.style.opacity=String(ready?(panelPlay?0:1):visibleOpacity);
+    scrubber.style.opacity=String(visibleOpacity);
+    scrubber.hidden=ready||!controlsVisible;
+    slideshowToggle.hidden=phase!=='slides'||ready;
     slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
     slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
     button.tabIndex=hideCircle||(panelPlay&&ready)?-1:0;
     button.setAttribute('aria-hidden',String(hideCircle||(panelPlay&&ready)));
-    playIcon.hidden=!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
+    playIcon.hidden=!ready; value.hidden=ready||hideCircle;
     playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
     button.setAttribute('aria-label',phase==='slides'?`${action} gratitude slideshow`:`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
