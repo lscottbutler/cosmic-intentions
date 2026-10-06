@@ -178,7 +178,8 @@ body.external .timer{background:#747474;border-color:#292929}
     button.tabIndex=hideCircle||(panelPlay&&ready)?-1:0;
     button.setAttribute('aria-hidden',String(hideCircle||(panelPlay&&ready)));
     playIcon.hidden=!ready; value.hidden=ready||hideCircle;
-    playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
+    playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); renderScrubber();renderSlide();
+    value.textContent=phase==='slides'?`${Math.max(1,Math.min(slideFiles.length,slideIndex+1))}/${slideFiles.length}`:shown();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
     button.setAttribute('aria-label',phase==='slides'?`${action} gratitude slideshow`:`${action} ${minutes} minute gratitude`); player.dataset.state=state;notify();
   }
