@@ -139,18 +139,18 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await expect(shell.locator('#gratitude-start')).toBeEnabled();
  await shell.locator('#gratitude-start').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await session.locator('#slideshowToggle').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
- for(const [ratio,slide] of [[22/65,2],[32/65,3],[42/65,4],[52/65,5]]){
+ for(const [ratio,slide] of [[22/66,2],[32/66,3],[42/66,4],[52/66,5]]){
   await session.locator('body').evaluate((el,r)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
   await expect(session.locator('#player')).toHaveAttribute('data-slide',String(slide));
   await expect.poll(()=>session.locator('.test-slide').evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
  }
  // Fades use the slideshow clock and freeze while paused.
- for(const [ratio,slide] of [[7.5/65,1],[16.5/65,1],[17.5/65,2]]){
+ for(const [ratio,slide] of [[8.5/66,1],[17.5/66,1],[18.5/66,2]]){
   await session.locator('body').evaluate((el,r)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
   await expect(session.locator('#player')).toHaveAttribute('data-slide',String(slide));
   expect(await session.locator('.test-slide').evaluate(el=>Number(el.style.opacity))).toBeCloseTo(.5,1);
  }
- await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:52/65},location.origin));
+ await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:52/66},location.origin));
  await page.screenshot({path:`test-results/gratitude-module-${width}-last.png`,fullPage:true});
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(session.locator('#player')).toHaveAttribute('data-phase','meditation');
@@ -187,7 +187,7 @@ test('Gratitude finishes all slides then automatically starts chosen meditation'
  await expect(session.locator('#player')).toHaveAttribute('data-stage','photos',{timeout:10000});
  await expect(session.locator('#player')).toHaveAttribute('data-stage','closing',{timeout:55000});
  await expect(session.locator('.test-slide')).toHaveAttribute('src',/reflection-card\.webp/);
- await expect(session.locator('#ccbScrubber')).toBeHidden();
+ await expect(session.locator('#ccbScrubber')).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','meditation',{timeout:12000});
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(session.locator('.test-slide')).toBeHidden();
@@ -225,7 +225,7 @@ for(const width of [1440,390])test(`Filename captions follow every slide ${width
  const statements=['I AM GRATEFUL FOR A GREAT BURGER','I AM GRATEFUL FOR A WALK IN NATURE','I AM GRATEFUL FOR COMFORT FOOD','I AM GRATEFUL FOR EXOTIC BEACH VACATION','I AM GRATEFUL FOR MY LIFE PARTNER'];
  await page.locator('#timer').click();await page.locator('#slideshowToggle').click();
  for(let index=0;index<5;index++){
-  await page.evaluate(ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),(7+index*10+5)/65);
+  await page.evaluate(ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),(8+index*10+5)/66);
   await expect(page.locator('#slideCaption')).toHaveText(statements[index]);
   await expect(page.locator('.test-slide')).toHaveAttribute('alt',statements[index]);
   await expect(page.locator('#player')).toHaveAttribute('data-voiceover',statements[index]);
@@ -235,4 +235,35 @@ for(const width of [1440,390])test(`Filename captions follow every slide ${width
  }
  await page.evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
  await expect(page.locator('#slideCaption')).toBeHidden();await expect(page.locator('.ccb-curve')).toBeVisible();
+});
+
+for(const width of [1440,390])test(`Gratitude controls fade in before photos ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ await page.goto('/players/new-gratitude-session.html?module=1&t=2&external=1');
+ await expect(page.locator('#timer')).toBeEnabled();
+ await page.locator('#timer').click();
+ await page.locator('#slideshowToggle').click();
+ const seek=seconds=>page.evaluate(ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),seconds/66);
+ await seek(7.5);
+ await expect(page.locator('#player')).toHaveAttribute('data-stage','controls');
+ await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
+ for(const selector of ['#timer','#ccbScrubber','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','0.5');
+ await expect(page.locator('#value')).toHaveText('2\n00');
+ await page.screenshot({path:`test-results/gratitude-controls-${width}-fade.png`,fullPage:true});
+ await seek(8);
+ await expect(page.locator('#player')).toHaveAttribute('data-stage','photos');
+ for(const selector of ['#timer','#ccbScrubber','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','1');
+ await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
+ await seek(12);
+ await expect(page.locator('#player')).toHaveAttribute('data-slide','1');
+ await expect(page.locator('#value')).toHaveText('2\n00');
+ await page.screenshot({path:`test-results/gratitude-controls-${width}-photos.png`,fullPage:true});
+ await page.locator('#timer').click();
+ await expect(page.locator('#player')).toHaveAttribute('data-state','running');
+ await page.locator('#timer').click();
+ await expect(page.locator('#player')).toHaveAttribute('data-state','paused');
+ await expect(page.locator('#value')).toHaveText('2\n00');
+ await seek(66);
+ await expect(page.locator('#player')).toHaveAttribute('data-phase','meditation');
+ await expect(page.locator('#value')).toHaveText('2\n00');
 });
