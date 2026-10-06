@@ -10,6 +10,15 @@
  const addNote=document.getElementById('add-note');
  let pendingDashboard=false;
  const menu=document.getElementById('review-menu');
+ const menuTrigger=document.createElement('button');menuTrigger.id='review-menu-trigger';menuTrigger.type='button';menuTrigger.setAttribute('aria-label','Open site menu');menuTrigger.setAttribute('aria-haspopup','dialog');menuTrigger.setAttribute('aria-controls','review-menu');
+ const menuIcon=document.createElement('span');menuIcon.setAttribute('aria-hidden','true');menuIcon.textContent='☰';menuTrigger.append(menuIcon);
+ document.querySelector('.orientation > div').append(menuTrigger);
+ const menuPositionStyle=document.createElement('style');menuPositionStyle.textContent=`
+ .orientation > div:first-child{position:relative;flex:1;min-width:0;padding-bottom:48px}
+ #review-menu-trigger{position:absolute;right:0;bottom:0;width:44px;height:44px;border:2px solid #747474;border-radius:50%;background:#292929;color:#fff;display:grid;place-items:center;padding:0;font-size:28px;line-height:1}
+ body.original #review-menu-trigger{display:none}
+ `;document.head.append(menuPositionStyle);
+ menuTrigger.addEventListener('click',()=>menu.showModal());
  const features={
   home:['Citadel','Your next actions, notes and journal — connected to your goals.','Review your list in one click, or capture something while it is fresh.'],
   goals:['Goals','Keep your direction visible, in your own words.','Select a goal to choose Visualization or Roadmap. ADD A GOAL opens the entry field.'],
@@ -56,7 +65,7 @@
  const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{menu.close();openFeature(action);});document.getElementById('review-menu-items').append(button);}
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
- menu.addEventListener('close',()=>{frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
+ menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
  const overlayCss=`
  html.ci-review-test .page:not(#page-admin) .ci-review-guidance{font:13px/1.55 Arial,sans-serif;padding:12px 16px;margin:12px 0 18px;background:#f2ede7;color:#292929;border-left:3px solid #747474;text-transform:none;letter-spacing:0;overflow-wrap:anywhere}
  html:not(.ci-review-test) .ci-review-guidance{display:none!important}
@@ -70,6 +79,9 @@
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;inspect();});}
  function watchDocument(doc){
   if(!doc?.documentElement)return;
+  if(doc.getElementById('siteMenuButton')&&!doc.getElementById('review-menu-relocation')){
+   const style=doc.createElement('style');style.id='review-menu-relocation';style.textContent='html.ci-review-test #siteMenuButton{display:none!important}';doc.head.append(style);
+  }
   if(newGratitude&&doc.getElementById('meditationControls')){
    if(!doc.getElementById('new-gratitude-choices')){
     const style=doc.createElement('style');style.id='new-gratitude-choices';
