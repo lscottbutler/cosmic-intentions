@@ -27,6 +27,7 @@ body.external .image{inset:0}
 body.external .ccb-curve rect{display:block;fill:none;stroke:#292929}
 body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
 body.external .ccb-scrubber{background:#f2f2f2}
+body.panel-play .player[data-state="ready"] .timer{opacity:0;pointer-events:none}
 body.external .timer{background:#747474;border-color:#292929}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
@@ -64,6 +65,8 @@ body.external .timer{background:#747474;border-color:#292929}
   const requested=Number(search.get('t'));
   const external=search.get('external')==='1';
   if(external)document.body.classList.add('external');
+  const panelPlay=search.get('panelplay')==='1';
+  if(panelPlay)document.body.classList.add('panel-play');
   const minutes=allowed.includes(requested)?requested:15;
   const totalMs=minutes*60000;
   const player=document.getElementById('player');
@@ -164,8 +167,8 @@ body.external .timer{background:#747474;border-color:#292929}
     slideshowToggle.hidden=!hideCircle;
     slideshowToggle.setAttribute('aria-label',state==='paused'?'Resume gratitude slideshow':'Pause gratitude slideshow');
     slideshowToggle.title=state==='paused'?'Resume slideshow':'Pause slideshow';
-    button.tabIndex=hideCircle?-1:0;
-    button.setAttribute('aria-hidden',String(hideCircle));
+    button.tabIndex=hideCircle||(panelPlay&&ready)?-1:0;
+    button.setAttribute('aria-hidden',String(hideCircle||(panelPlay&&ready)));
     playIcon.hidden=!(ready||phase==='slides'); value.hidden=ready||phase==='slides';
     playIcon.classList.toggle('pauseicon',phase==='slides'&&state==='running'); value.textContent=shown(); renderScrubber();renderSlide();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';

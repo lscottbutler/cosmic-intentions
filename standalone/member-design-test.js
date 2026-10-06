@@ -75,7 +75,12 @@
     const style=doc.createElement('style');style.id='new-gratitude-choices';
     style.textContent=`
      #meditationModes,.relaxation-toggle-row,#guidedNote{display:none!important}
-     #gratitude-choice-columns{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
+     #gratitude-choice-columns{position:relative;display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
+     #gratitude-start{position:absolute;top:0;left:50%;transform:translateX(-50%);width:10.4167%;min-width:56px;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #292929;border-radius:50%;background:#747474;display:grid;place-items:center;padding:0;cursor:pointer;transition:opacity 1s ease}
+     #gratitude-start span{width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:16px solid white;margin-left:7%}
+     #gratitude-start[data-started="true"]{opacity:0;pointer-events:none}
+     #gratitude-start:focus-visible{outline:2px solid white;outline-offset:3px}
+     @media(prefers-reduced-motion:reduce){#gratitude-start{transition:none}}
      #gratitude-module-group,#gratitude-time-group{box-sizing:border-box;width:33.333%;min-width:0}
      #gratitude-module-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
      #gratitude-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
@@ -89,7 +94,7 @@
      #gratitude-time-heading{margin:0 0 14px;text-align:center;font-size:16px;line-height:1.35;font-weight:800;color:#292929}
      #gratitude-time-group .med-time-stack{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
      #gratitude-time-group .med-time-option:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
-     @media(max-width:620px){#gratitude-choice-columns{gap:20px;flex-wrap:wrap}#gratitude-module-group,#gratitude-time-group{width:100%;max-width:300px;margin-inline:auto}#gratitude-time-group .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr))}}
+     @media(max-width:620px){#gratitude-start{position:relative;left:auto;transform:none;width:56px;margin:0 auto;order:1}#gratitude-module-group{order:0}#gratitude-time-group{order:2}#gratitude-choice-columns{gap:20px;flex-wrap:wrap}#gratitude-module-group,#gratitude-time-group{width:100%;max-width:300px;margin-inline:auto}#gratitude-time-group .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr))}}
     `;doc.head.append(style);
    }
    if(!doc.getElementById('gratitude-time-group')){
@@ -110,13 +115,23 @@
      choice.disabled=number!==1;choice.setAttribute('aria-label',number===1?'Gratitude module 1 — test slides':`Gratitude module ${number} — not connected`);
      if(number===1){choice.setAttribute('aria-pressed',String(gratitudeModule===1));choice.addEventListener('click',()=>{
       gratitudeModule=1;choice.setAttribute('aria-pressed','true');
-      const session=doc.getElementById('experienceFrame');const url=new URL(session.src,location.origin);url.pathname='/players/new-gratitude-session.html';url.searchParams.set('module','1');session.src=url.href;
+      const session=doc.getElementById('experienceFrame');const url=new URL(session.src,location.origin);url.pathname='/players/new-gratitude-session.html';url.searchParams.set('module','1');url.searchParams.set('panelplay','1');session.src=url.href;
       doc.getElementById('gratitude-module-status').textContent='Module 1 · five test slides';
      });}
      grid.append(choice);
     }
     const notice=doc.createElement('p');notice.id='gratitude-module-status';notice.setAttribute('role','status');notice.textContent=gratitudeModule===1?'Module 1 · five test slides':'Select 1 for the test slides.';
     group.append(heading,grid,notice);columns.append(group,timeGroup);
+   }
+   if(!doc.getElementById('gratitude-start')){
+    const start=doc.createElement('button');start.id='gratitude-start';start.type='button';start.disabled=true;start.setAttribute('aria-label','Start gratitude slideshow');
+    const icon=doc.createElement('span');icon.setAttribute('aria-hidden','true');start.append(icon);
+    doc.getElementById('gratitude-choice-columns').append(start);
+    start.addEventListener('click',()=>doc.getElementById('experienceFrame').contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin));
+    doc.defaultView.addEventListener('message',event=>{
+     if(event.origin!==location.origin||event.source!==doc.getElementById('experienceFrame').contentWindow||event.data?.type!=='ci-meditation-state')return;
+     const ready=event.data.state==='ready';start.disabled=false;start.dataset.started=String(!ready);start.tabIndex=ready?0:-1;start.setAttribute('aria-hidden',String(!ready));
+    });
    }
    if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
    const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
@@ -147,10 +162,10 @@
    if(!frames.has(session))session.addEventListener('load',()=>{
     if(!newGratitude)return;
     const url=new URL(session.src,location.origin);
-    if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');session.src=url.href;}
+    if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');url.searchParams.set('panelplay','1');session.src=url.href;}
    });
    const url=new URL(session.src,location.origin);
-   if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');session.src=url.href;}
+   if(url.pathname==='/players/meditation.html'){url.pathname='/players/new-gratitude-session.html';if(gratitudeModule===1)url.searchParams.set('module','1');url.searchParams.set('panelplay','1');session.src=url.href;}
   }
   if(doc.documentElement.classList.contains('ci-review-test')!==enabled)doc.documentElement.classList.toggle('ci-review-test',enabled);
   if(!docs.has(doc)){

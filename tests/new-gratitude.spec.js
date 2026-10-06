@@ -30,7 +30,8 @@ for(const width of [1440,390])test(`NEW GRATITUDE duplicates Meditation separate
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
  await expect(session.locator('#ccbScrubber')).toBeHidden();
  await expect(session.locator('.ccb-curve ellipse')).toHaveCSS('opacity','0');
- await expect(session.locator('#timer')).toHaveCSS('opacity','1');
+ await expect(session.locator('#timer')).toHaveCSS('opacity','0');
+ await expect(shell.locator('#gratitude-start')).toBeVisible();
  await expect(session.locator('#player')).toHaveAttribute('data-stage','opening');
  await expect(session.locator('#slideCaption')).toBeHidden();
  await expect(session.locator('.ccb-curve')).toBeVisible();
@@ -135,8 +136,8 @@ for(const width of [1440,390])test(`Gratitude module 1 test slides ${width}`,asy
  await page.screenshot({path:`test-results/gratitude-module-${width}-ready.png`,fullPage:true});
  await shell.locator('[data-med-time="1"]').click();
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/module=1/);
- await expect(session.locator('#timer')).toBeEnabled();
- await session.locator('#timer').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
+ await expect(shell.locator('#gratitude-start')).toBeEnabled();
+ await shell.locator('#gratitude-start').click();await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await session.locator('#slideshowToggle').click();await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
  for(const [ratio,slide] of [[22/65,2],[32/65,3],[42/65,4],[52/65,5]]){
   await session.locator('body').evaluate((el,r)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:r},location.origin),ratio);
@@ -179,8 +180,8 @@ test('Gratitude finishes all slides then automatically starts chosen meditation'
  await page.goto('/standalone/member-design-test.html?feature=new-gratitude');
  const shell=page.frameLocator('#ci-review-frame'),session=shell.frameLocator('#experienceFrame');
  await shell.locator('[data-med-time="2"]').click();
- await expect(session.locator('#timer')).toBeEnabled();
- await session.locator('#timer').click();
+ await expect(shell.locator('#gratitude-start')).toBeEnabled();
+ await shell.locator('#gratitude-start').click();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','slides');
  await expect(session.locator('#value')).toBeHidden();
  await expect(session.locator('#player')).toHaveAttribute('data-stage','photos',{timeout:10000});
