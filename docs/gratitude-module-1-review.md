@@ -46,3 +46,10 @@ Verification: JavaScript syntax passed. Controlled-clock engine checks passed: f
 Claims status: source text mentions emotional health, depression, blood pressure and manifestation; reproduced for private review only, not scientifically verified or cleared for production. Qualified claims/legal review remains pending before launch.
 
 Production, protected master/meditation template, Supabase, access controls and Netlify settings unchanged. GitHub checkpoint saved; daily Bible and independent Drive snapshot remain pending and are not represented as completed backups.
+
+
+## 2026-10-06 — restore original instruction artwork (In Review)
+
+Scott rejected the plain grey text-card redesign. Restored the original video artwork for all four new instruction cards: colorful square background, teal curved border, white text panel, original GRATITUDE typography and original body text. Captured complete reference frames at clip seconds 2, 8, 16 and 24; optimized WebP totals 206,302 bytes, embedded in the player to preserve exact artwork without new image-route dependencies. No AI reconstruction or substitute background.
+
+Source checkpoint: 961f35e4f607e5a4e6732f27c6e7c948e30e3b9a. Reference card 4 inspected visually; all four images decode correctly. JavaScript syntax and existing controlled-clock playback checks pass after change. Actual private-preview desktop/mobile rendering remains unverified due to the existing authentication blocker. Timings and subsequent photographs/countdown preserved. Production, Supabase and Netlify settings unchanged. GitHub checkpoint saved; Bible/Drive backup pending.
