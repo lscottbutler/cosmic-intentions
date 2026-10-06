@@ -53,3 +53,10 @@ Production, protected master/meditation template, Supabase, access controls and 
 Scott rejected the plain grey text-card redesign. Restored the original video artwork for all four new instruction cards: colorful square background, teal curved border, white text panel, original GRATITUDE typography and original body text. Captured complete reference frames at clip seconds 2, 8, 16 and 24; optimized WebP totals 206,302 bytes, embedded in the player to preserve exact artwork without new image-route dependencies. No AI reconstruction or substitute background.
 
 Source checkpoint: 961f35e4f607e5a4e6732f27c6e7c948e30e3b9a. Reference card 4 inspected visually; all four images decode correctly. JavaScript syntax and existing controlled-clock playback checks pass after change. Actual private-preview desktop/mobile rendering remains unverified due to the existing authentication blocker. Timings and subsequent photographs/countdown preserved. Production, Supabase and Netlify settings unchanged. GitHub checkpoint saved; Bible/Drive backup pending.
+
+
+## 2026-10-06 — text-only transitions inside approved artwork (In Review)
+
+Scott clarified: only change the text inside the text box, never swap the entire 16:9 frame. Supersedes the previous whole-reference-frame implementation. All four instruction messages now use the existing opening-card.webp as a fixed background; only the body text inside the white panel changes and fades. Background, GRATITUDE heading, title ornament and teal curved outline remain static during instruction cards. SVG overlay matches the artwork's 1669x939 coordinate system and contains the text within the existing white body area. Original subsequent opening/photos/reflection/countdown sequence retained.
+
+Checkpoint 384a370fcb3b4a9c95910d4a3aa4c4f9ab0a0478. Syntax and controlled-clock playback checks passed. Actual browser visual verification remains blocked; text fit and panel coverage require rendered confirmation, not claimed verified. Production, Supabase and Netlify settings unchanged. GitHub checkpoint saved; Bible and Drive snapshot remain pending.
