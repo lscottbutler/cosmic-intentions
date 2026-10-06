@@ -187,7 +187,7 @@ test('Gratitude finishes all slides then automatically starts chosen meditation'
  await expect(session.locator('#player')).toHaveAttribute('data-stage','photos',{timeout:10000});
  await expect(session.locator('#player')).toHaveAttribute('data-stage','closing',{timeout:55000});
  await expect(session.locator('.test-slide')).toHaveAttribute('src',/reflection-card\.webp/);
- await expect(session.locator('#ccbScrubber')).toBeVisible();
+ await expect(session.locator('#ccbScrubber')).toBeHidden();
  await expect(session.locator('#player')).toHaveAttribute('data-phase','meditation',{timeout:12000});
  await expect(session.locator('#player')).toHaveAttribute('data-state','running');
  await expect(session.locator('.test-slide')).toBeHidden();
@@ -248,12 +248,13 @@ for(const width of [1440,390])test(`Gratitude controls fade in before photos ${w
  await seek(7.5);
  await expect(page.locator('#player')).toHaveAttribute('data-stage','controls');
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
- for(const selector of ['#timer','#ccbScrubber','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','0.5');
+ for(const selector of ['#timer','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','0.5');
  await expect(page.locator('#value')).toHaveText('1/5');
  await page.screenshot({path:`test-results/gratitude-controls-${width}-fade.png`,fullPage:true});
  await seek(8);
  await expect(page.locator('#player')).toHaveAttribute('data-stage','photos');
- for(const selector of ['#timer','#ccbScrubber','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','1');
+ await expect(page.locator('#ccbScrubber')).toBeHidden();
+ for(const selector of ['#timer','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','1');
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
  await seek(12);
  await expect(page.locator('#player')).toHaveAttribute('data-slide','1');
@@ -278,6 +279,7 @@ for(const width of [1440,390])test(`Gratitude counter between arrows and doubled
  await session.locator('#slideshowToggle').click();
  await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:12/66},location.origin));
  await expect(shell.locator('#gratitude-slide-counter')).toHaveText('1/5');
+ await expect(session.locator('#ccbScrubber')).toBeHidden();
  await expect(session.locator('#timer')).toHaveCSS('opacity','0');
  const positions=await shell.locator('#meditationControls').evaluate(el=>{
   const a=el.querySelector('[data-med-command="back"]').getBoundingClientRect();
