@@ -33,6 +33,7 @@ body.counter-docked .timer{opacity:0!important;pointer-events:none}
 /* Original grey player, with the current slide statement below its circle. */
 .test-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide-caption{position:absolute;z-index:3;left:4%;right:4%;bottom:1.4%;min-height:8%;display:grid;place-items:center;color:#fff;text-align:center;font:800 clamp(16px,3.3vw,60px)/1.1 Arial,Helvetica,sans-serif;letter-spacing:.06em;text-transform:uppercase;white-space:normal;pointer-events:none}
+.instruction-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5%;padding:7% 10%;background:#747474;color:#fff;text-align:center}.instruction-card h2{margin:0;font:800 clamp(20px,4vw,64px)/1.1 Arial,sans-serif;letter-spacing:.12em}.instruction-card p{margin:0;max-width:32em;font:700 clamp(14px,2.3vw,40px)/1.5 Arial,sans-serif;letter-spacing:.06em}
 .player[data-phase="slides"][data-controls-visible="false"] .timer{pointer-events:none}
 .slideshow-toggle{position:absolute;z-index:3;inset:0 0 16%;border:0;padding:0;background:transparent;cursor:pointer}
 .slideshow-toggle:focus-visible{outline:2px solid #fff;outline-offset:-8px}
@@ -83,7 +84,13 @@ body.counter-docked .timer{opacity:0!important;pointer-events:none}
   const slideStatements=slideNames.map(name=>'I AM GRATEFUL FOR '+name.replace(/^FOR\s+/i,''));
   const caption=document.getElementById('slideCaption');
   const slideHoldMs=8000,fadeMs=1000,slideSlotMs=slideHoldMs+fadeMs*2;
-  const cardHoldMs=6000,openingMs=cardHoldMs+fadeMs,photoMs=slideFiles.length*slideSlotMs,closingMs=cardHoldMs+fadeMs*2;
+  const instructionTexts=[
+    'Spending as little as five minutes per day expressing our gratitude has shown to have a positive impact on our emotional health.',
+    'It turns out that noticing the things we already have in our lives makes us feel more positive and optimistic about the future. Being grateful',
+    'not only increases our psychological well being, it improves our self-esteem, reduces depression and may even lower our blood pressure.',
+    'Being grateful lays the foundation for a POSITIVE MENTAL ATTITUDE which is a key ingredient when it comes to manifesting your dreams.'
+  ];
+  const cardHoldMs=6000,instructionSlotMs=cardHoldMs+fadeMs*2,instructionsMs=instructionTexts.length*instructionSlotMs,openingMs=instructionsMs+cardHoldMs+fadeMs,photoMs=slideFiles.length*slideSlotMs,closingMs=cardHoldMs+fadeMs*2;
   const controlsFadeMs=fadeMs,photosStartMs=openingMs+controlsFadeMs;
   const introMs=photosStartMs+photoMs+closingMs;
   const openingFile='opening-card.webp',closingFile='reflection-card.webp';
@@ -92,10 +99,13 @@ body.counter-docked .timer{opacity:0!important;pointer-events:none}
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const surface=document.querySelector('.image');
   let phase=testModule?'slides':'meditation',introRemaining=introMs;
-  let slidesReady=!testModule,slideIndex=-1,slideImage=null;
+  let slidesReady=!testModule,slideIndex=-1,slideImage=null,instructionCard=null,instructionCopy=null;
   if(testModule){
     const surface=document.querySelector('.image');surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');
-    slideImage=document.createElement('img');slideImage.className='test-slide';surface.append(slideImage);button.disabled=true;
+    slideImage=document.createElement('img');slideImage.className='test-slide';surface.append(slideImage);
+    instructionCard=document.createElement('section');instructionCard.className='instruction-card';instructionCard.hidden=true;
+    const heading=document.createElement('h2');heading.textContent='GRATITUDE';instructionCard.append(heading);
+    instructionCopy=document.createElement('p');instructionCard.append(instructionCopy);surface.append(instructionCard);button.disabled=true;
     Promise.all([openingFile,...slideFiles,closingFile].map(file=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src='/images/gratitude/test-module-1/'+file;}))).then(()=>{slidesReady=true;button.disabled=false;render();}).catch(()=>{
       const error=document.createElement('p');error.className='slide-error';error.setAttribute('role','alert');error.textContent='The test slides could not load. Reload to try again.';player.append(error);
     });
@@ -105,14 +115,19 @@ body.counter-docked .timer{opacity:0!important;pointer-events:none}
     player.dataset.phase=phase;
     if(phase==='meditation'){
       surface.classList.remove('test-slides');surface.setAttribute('aria-hidden','true');
-      slideImage.hidden=true;caption.hidden=true;delete player.dataset.slide;delete player.dataset.voiceover;player.dataset.stage='meditation';return;
+      slideImage.hidden=true;instructionCard.hidden=true;caption.hidden=true;delete player.dataset.slide;delete player.dataset.voiceover;player.dataset.stage='meditation';return;
     }
     surface.classList.add('test-slides');surface.removeAttribute('aria-hidden');slideImage.hidden=false;caption.hidden=false;
     const elapsed=Math.max(0,introMs-introRemaining);
     let next,file,text,opacity,stage;
-    if(elapsed<openingMs){
+    if(elapsed<instructionsMs){
+      const index=Math.min(instructionTexts.length-1,Math.floor(elapsed/instructionSlotMs));
+      const position=elapsed-index*instructionSlotMs;
+      next=-10-index;file=null;text=instructionTexts[index];stage='instruction';
+      opacity=position<fadeMs?position/fadeMs:position<fadeMs+cardHoldMs?1:Math.max(0,(instructionSlotMs-position)/fadeMs);
+    }else if(elapsed<openingMs){
       next=-2;file=openingFile;text=openingText;stage='opening';
-      opacity=elapsed<cardHoldMs?1:Math.max(0,(openingMs-elapsed)/fadeMs);
+      opacity=elapsed-instructionsMs<cardHoldMs?1:Math.max(0,(openingMs-elapsed)/fadeMs);
     }else if(elapsed<photosStartMs){
       next=-2;file=openingFile;text=openingText;stage='controls';opacity=0;
     }else if(elapsed<photosStartMs+photoMs){
@@ -126,7 +141,9 @@ body.counter-docked .timer{opacity:0!important;pointer-events:none}
       next=slideFiles.length;file=closingFile;text=closingText;stage='closing';
       opacity=position<fadeMs?position/fadeMs:position<fadeMs+cardHoldMs?1:Math.max(0,(closingMs-position)/fadeMs);
     }
-    if(next!==slideIndex){slideIndex=next;slideImage.src='/images/gratitude/test-module-1/'+file;slideImage.alt=text;caption.textContent=stage==='photos'?text:'';}
+    if(next!==slideIndex){slideIndex=next;if(file)slideImage.src='/images/gratitude/test-module-1/'+file;slideImage.alt=text;instructionCopy.textContent=stage==='instruction'?text:'';caption.textContent=stage==='photos'?text:'';}
+    instructionCard.hidden=stage!=='instruction';slideImage.hidden=stage==='instruction';
+    instructionCard.style.opacity=state==='ready'||reducedMotion.matches?'1':String(opacity);
     caption.hidden=stage!=='photos';
     slideImage.style.opacity=state==='ready'||reducedMotion.matches?'1':String(opacity);
     caption.style.opacity=slideImage.style.opacity;
