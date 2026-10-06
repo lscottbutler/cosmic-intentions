@@ -229,6 +229,7 @@ for(const width of [1440,390])test(`Filename captions follow every slide ${width
   await expect(page.locator('#slideCaption')).toHaveText(statements[index]);
   await expect(page.locator('.test-slide')).toHaveAttribute('alt',statements[index]);
   await expect(page.locator('#player')).toHaveAttribute('data-voiceover',statements[index]);
+  await expect(page.locator('#value')).toHaveText(`${index+1}/5`);
   const caption=await page.locator('#slideCaption').evaluate(el=>({fits:el.scrollWidth<=el.clientWidth,text:el.textContent,opacity:el.style.opacity}));expect(caption.fits).toBe(true);expect(caption.opacity).toBe('1');
   const imageFits=await page.locator('.test-slide').evaluate(el=>{const image=el.getBoundingClientRect(),surface=el.parentElement.getBoundingClientRect();return image.width<=surface.width+1&&image.height<=surface.height+1;});expect(imageFits).toBe(true);
   await page.screenshot({path:`test-results/gratitude-caption-${width}-${index+1}.png`});
@@ -248,7 +249,7 @@ for(const width of [1440,390])test(`Gratitude controls fade in before photos ${w
  await expect(page.locator('#player')).toHaveAttribute('data-stage','controls');
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
  for(const selector of ['#timer','#ccbScrubber','.ccb-curve ellipse'])await expect(page.locator(selector)).toHaveCSS('opacity','0.5');
- await expect(page.locator('#value')).toHaveText('2\n00');
+ await expect(page.locator('#value')).toHaveText('1/5');
  await page.screenshot({path:`test-results/gratitude-controls-${width}-fade.png`,fullPage:true});
  await seek(8);
  await expect(page.locator('#player')).toHaveAttribute('data-stage','photos');
@@ -256,13 +257,13 @@ for(const width of [1440,390])test(`Gratitude controls fade in before photos ${w
  await expect(page.locator('.test-slide')).toHaveCSS('opacity','0');
  await seek(12);
  await expect(page.locator('#player')).toHaveAttribute('data-slide','1');
- await expect(page.locator('#value')).toHaveText('2\n00');
+ await expect(page.locator('#value')).toHaveText('1/5');
  await page.screenshot({path:`test-results/gratitude-controls-${width}-photos.png`,fullPage:true});
  await page.locator('#timer').click();
  await expect(page.locator('#player')).toHaveAttribute('data-state','running');
  await page.locator('#timer').click();
  await expect(page.locator('#player')).toHaveAttribute('data-state','paused');
- await expect(page.locator('#value')).toHaveText('2\n00');
+ await expect(page.locator('#value')).toHaveText('1/5');
  await seek(66);
  await expect(page.locator('#player')).toHaveAttribute('data-phase','meditation');
  await expect(page.locator('#value')).toHaveText('2\n00');
