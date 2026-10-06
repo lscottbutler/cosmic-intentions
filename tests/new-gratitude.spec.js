@@ -268,3 +268,36 @@ for(const width of [1440,390])test(`Gratitude controls fade in before photos ${w
  await expect(page.locator('#player')).toHaveAttribute('data-phase','meditation');
  await expect(page.locator('#value')).toHaveText('2\n00');
 });
+
+for(const width of [1440,390])test(`Gratitude counter between arrows and doubled caption ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ await page.goto('/standalone/member-design-test.html?feature=new-gratitude');
+ const shell=page.frameLocator('#ci-review-frame'),session=shell.frameLocator('#experienceFrame');
+ await expect(shell.locator('#gratitude-start')).toBeEnabled();
+ await shell.locator('#gratitude-start').click();
+ await session.locator('#slideshowToggle').click();
+ await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:12/66},location.origin));
+ await expect(shell.locator('#gratitude-slide-counter')).toHaveText('1/5');
+ await expect(session.locator('#timer')).toHaveCSS('opacity','0');
+ const positions=await shell.locator('#meditationControls').evaluate(el=>{
+  const a=el.querySelector('[data-med-command="back"]').getBoundingClientRect();
+  const b=el.querySelector('#gratitude-slide-counter').getBoundingClientRect();
+  const c=el.querySelector('[data-lfm-mini-command="forward"]').getBoundingClientRect();
+  return {backRight:a.right,counterLeft:b.left,counterRight:b.right,nextLeft:c.left,backY:a.top+a.height/2,counterY:b.top+b.height/2,nextY:c.top+c.height/2};
+ });
+ expect(positions.backRight).toBeLessThan(positions.counterLeft);
+ expect(positions.counterRight).toBeLessThan(positions.nextLeft);
+ expect(Math.abs(positions.backY-positions.counterY)).toBeLessThanOrEqual(1);
+ expect(Math.abs(positions.nextY-positions.counterY)).toBeLessThanOrEqual(1);
+ const caption=await session.locator('#slideCaption').evaluate(el=>({size:parseFloat(getComputedStyle(el).fontSize),viewport:el.ownerDocument.defaultView.innerWidth,spacing:getComputedStyle(el).letterSpacing}));
+ expect(caption.size).toBeCloseTo(2*Math.max(8,Math.min(30,caption.viewport*.0165)),1);
+ expect(parseFloat(caption.spacing)).toBeCloseTo(caption.size*.06,1);
+ await page.screenshot({path:`test-results/gratitude-counter-docked-${width}.png`,fullPage:true});
+ await shell.locator('#gratitude-slide-counter').click();
+ await expect(session.locator('#player')).toHaveAttribute('data-state','running');
+ await shell.locator('#gratitude-slide-counter').click();
+ await expect(session.locator('#player')).toHaveAttribute('data-state','paused');
+ await session.locator('body').evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:1},location.origin));
+ await expect(shell.locator('#gratitude-slide-counter')).toBeHidden();
+ await expect(session.locator('#timer')).toHaveCSS('opacity','1');
+});
