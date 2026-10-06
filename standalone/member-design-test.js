@@ -26,7 +26,7 @@
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Press Play to begin. Your existing Meditation Menu then offers session choices.'],
-  'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open New Gratitude Menu to choose your session.'],
+  'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
   journal:['My Journal','Reflect in your own words.','Link an entry to a goal with the existing goal selector.'],
@@ -155,23 +155,26 @@
     const counterStyle=doc.createElement('style');counterStyle.textContent=`
      #meditationControls.gratitude-photo-controls{grid-template-columns:65.25px 65.25px 65.25px;column-gap:18px;row-gap:12px}
      #meditationControls.gratitude-photo-controls [data-lfm-mini-command="forward"]{grid-column:3}
-     #gratitude-slide-counter{grid-column:2;grid-row:1;align-self:center;justify-self:center;width:65.25px;aspect-ratio:1;border:7.875px solid #292929;border-radius:50%;padding:0;background:#747474;color:#fff;display:grid;place-items:center;font:800 22px/1.05 Arial,Helvetica,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.2px;cursor:pointer}
+     #gratitude-slide-counter{grid-column:2;grid-row:1;align-self:center;justify-self:center;width:65.25px;aspect-ratio:1;border:7.875px solid #292929;border-radius:50%;padding:0;background:#747474;color:#fff;display:grid;place-items:center;font:800 22px/1.05 Arial,Helvetica,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:pre-line;cursor:pointer}
+     #meditationControls [data-med-command="menu"]>span:last-child{display:block!important;font:800 12px/1.2 Arial,Helvetica,sans-serif;letter-spacing:.08em;white-space:nowrap;text-align:center;margin-top:6px;color:#fff}
      #gratitude-slide-counter[hidden]{display:none!important}
      #gratitude-slide-counter:focus-visible{outline:2px solid #fff;outline-offset:3px}
     `;doc.head.append(counterStyle);
     counter.addEventListener('click',()=>doc.getElementById('experienceFrame').contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin));
     doc.defaultView.addEventListener('message',event=>{
      if(event.origin!==location.origin||event.source!==doc.getElementById('experienceFrame').contentWindow||event.data?.type!=='ci-meditation-state')return;
-     const data=event.data,slides=data.phase==='slides'&&data.state!=='ready';
-     controls.classList.toggle('gratitude-photo-controls',slides);
-     counter.hidden=!slides;counter.textContent=/^[1-5]\/5$/.test(data.slideCounter)?data.slideCounter:'1/5';
-     const opacity=Math.max(0,Math.min(1,Number(data.counterOpacity)||0));counter.style.opacity=String(opacity);counter.style.pointerEvents=opacity>0?'auto':'none';counter.tabIndex=slides&&opacity>0?0:-1;
-     counter.setAttribute('aria-hidden',String(!slides||opacity===0));counter.setAttribute('aria-label',(data.state==='paused'?'Resume':'Pause')+' gratitude slideshow');
+     const data=event.data,active=data.state!=='ready',slides=data.phase==='slides';
+     controls.classList.toggle('gratitude-photo-controls',active);
+     counter.hidden=!active;
+     const seconds=Math.max(0,Math.ceil((Number(data.remaining)||0)/1000));
+     counter.textContent=slides?(/^[1-5]\/5$/.test(data.slideCounter)?data.slideCounter:'1/5'):`${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
+     const opacity=Math.max(0,Math.min(1,(slides?Number(data.counterOpacity):1)||0));counter.style.opacity=String(opacity);counter.style.pointerEvents=opacity>0?'auto':'none';counter.tabIndex=active&&opacity>0?0:-1;
+     counter.setAttribute('aria-hidden',String(!active||opacity===0));counter.setAttribute('aria-label',data.state==='complete'?'Replay gratitude':(data.state==='paused'?'Resume':'Pause')+(slides?' gratitude slideshow':' gratitude countdown'));
     });
    }
 
    const button=controls.querySelector('[data-med-command="menu"]');
-   button.setAttribute('aria-label','New Gratitude Menu');if(button.querySelector('span:last-child').textContent!=='New Gratitude Menu')button.querySelector('span:last-child').textContent='New Gratitude Menu';
+   button.setAttribute('aria-label','GRATITUDE MENU');if(button.querySelector('span:last-child').textContent!=='GRATITUDE MENU')button.querySelector('span:last-child').textContent='GRATITUDE MENU';
    doc.getElementById('meditationMenu').setAttribute('aria-label','New Gratitude choices');
    const session=doc.getElementById('experienceFrame');session.title='NEW GRATITUDE';
    if(!doc.getElementById('gratitude-back')){
