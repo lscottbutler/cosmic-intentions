@@ -31,3 +31,18 @@ Scott's latest screenshot and instruction supersede the earlier pre-photo dot re
 ## 2026-10-06 ICT — persistent lower circle and menu label (In Review)
 
 Scott's annotated countdown screenshot requests keeping the circle between Back and Next after the slideshow, and displaying GRATITUDE MENU below the hamburger. The existing docked circle now changes from the image count to minutes/seconds at countdown entry, remains in that lower row, and supports countdown pause/resume/replay. Its former in-image position stays hidden for this docked instance. The countdown scrubber follows the uninterrupted crossbar instead of an invisible timer rim. The hamburger's caption is visible and reads GRATITUDE MENU. Original Meditation and canonical source unchanged. Wrapper syntax passed; focused checks updated; rendered verification remains blocked by preview authentication. Production, Supabase and privacy unchanged. Current Bible/Drive snapshot pending. Source/wrapper recovery: 4a5baa503da231dd4a8ca69c3fd810451d836305.
+
+
+## 2026-10-06 — reference-video instruction text (In Review)
+
+Source: Scott's uploaded Recording 2026-10-06 095118.zip, containing the 178.2-second screen recording. Frames inspected directly; the first four GRATITUDE instruction cards transcribed verbatim. Later goal/visualization material in the recording is outside this change.
+
+Added four text cards before the existing opening card, using the current grey-and-white player theme. Each holds six seconds with one-second fades. Existing opening/reflection assets, five optimized photos, captions, docked circle, GRATITUDE MENU, and selected-duration countdown remain in their current sequence. Total introduction now 98 seconds. Scrubber dot remains hidden until the meditation countdown.
+
+Content checkpoint: 1124a48343da39972f9f8d08499bf245b9248db6. Previous recovery point: 730161f35ed9c2b3bb51a723610157571611b042.
+
+Verification: JavaScript syntax passed. Controlled-clock engine checks passed: four instruction cards, opening, controls reveal, 1/5 through 5/5 photos, reflection, 2-minute selected countdown, scrubber visibility, pause/resume, completion and replay. These checks use a simulated DOM and do not establish visual rendering. Desktop/mobile browser and actual private preview verification remain Blocked by unavailable local browser binaries and preview authentication. No claim of completed rendered verification.
+
+Claims status: source text mentions emotional health, depression, blood pressure and manifestation; reproduced for private review only, not scientifically verified or cleared for production. Qualified claims/legal review remains pending before launch.
+
+Production, protected master/meditation template, Supabase, access controls and Netlify settings unchanged. GitHub checkpoint saved; daily Bible and independent Drive snapshot remain pending and are not represented as completed backups.
