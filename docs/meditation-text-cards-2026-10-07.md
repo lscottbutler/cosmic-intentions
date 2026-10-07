@@ -11,3 +11,7 @@ Recovery: main fd8307cf4ce53b2759d0ffb72bba7d3bddff0ae5. Review branch: review/m
 Verification blockers: local Playwright has no installed browser; downloads returned an invalid archive. GitHub visual workflow run 37611982422 failed with no executed steps or artifacts; logs unavailable. This does not establish a verified rendered result. The protected template baseline was intentionally not updated. Production, Netlify settings and Supabase were not changed during this correction.
 
 Current Bible/Drive synchronization remains pending; this record is an additional dated decision checkpoint, not a replacement for the current Bible. Next: render desktop/mobile, inspect all ten cards and controls, correct defects, update the scoped baseline only after visual acceptance, verify the private review deployment, then publish under Scott's existing instruction and verify the live member route.
+
+## Later explicit publication instruction — 2026-10-07 18:09 ICT
+
+After being told the correction was prepared but browser verification was blocked, Scott explicitly requested making it live now. Proceed with this scoped release; disclose pending visual verification. The lock baseline records the requested text-card feature, without claiming browser checks passed. Password protection must remain enabled. Rollback remains main fd8307cf4ce53b2759d0ffb72bba7d3bddff0ae5.
