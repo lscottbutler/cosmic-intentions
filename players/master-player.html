@@ -7,32 +7,38 @@
   <title>MASTER PLAYER TEMPLATE | Cosmic Intentions</title>
   <script>if(window.parent!==window)document.documentElement.classList.add('embedded-player')</script>
   <style>
+    .citadel-note[hidden]{display:none}
+    .citadel-note.is-loading{height:0;padding-block:0;overflow:hidden}
+    .citadel-note{padding:12px var(--frame-border);background:var(--header)}
+    #citadelNote{padding-bottom:0}
+    #citadelBottomNote{padding-block:0}
+    .citadel-note iframe{display:block;width:100%;height:1px;border:0;overflow:hidden;background:transparent}
     /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
        Permanent shared shell for all member players.
-       Outer shell: #1e90ff. Title/icon troughs: #747474.
+       Outer shell: #292929. Title/icon troughs: #747474.
        Preserve the approved spacing, curves, typography and icon layout.
        Page-specific content may change; this shared chrome must remain consistent. */
-    :root{color-scheme:light;--frame:#1e90ff;--header:#1e90ff;--paper:#f2ede7;--deck:#1e90ff;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
+    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
     *{box-sizing:border-box}
     html,body{width:100%;margin:0;overflow-x:hidden;overflow-y:auto;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
     html.embedded-player,html.embedded-player body{overflow:hidden}
     body{padding:0}
     button{font:inherit}
-    .shell{width:100%;border:0;background:var(--header);overflow:hidden;transition:min-height .35s ease}
+    .shell{width:100%;max-width:900px;margin:0 auto;border:0;background:var(--header);overflow:hidden;transition:min-height .35s ease}
     /* MASTER PLAYER TEMPLATE: only the upper and lower troughs curve; the 16:9 stage stays between them. */
     .shell.home-mode{background:var(--header);padding:0}
     .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
-    .shell.daily-habits-mode .stage{background:#1e90ff!important}
+    .shell.daily-habits-mode .stage{background:#292929!important}
     /* LOCKED UPPER TROUGH GEOMETRY — title and site menu share one immutable centerline. */
     .cap{position:relative;isolation:isolate;width:100%;height:var(--cap-height);margin:0;padding:0;background:var(--header);color:var(--trough-ink);text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:0;transition:background-color .25s ease}
-    .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);border:0;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
+    .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);box-sizing:border-box;border:3px solid #ededed;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
     #capTitleText{position:absolute;z-index:1;left:calc(var(--frame-border) + 72px);right:calc(var(--frame-border) + 72px);top:var(--cap-center-y);transform:translateY(-50%);display:block;line-height:1.05;text-align:center;white-space:nowrap}
-    .site-menu-button{position:absolute;z-index:2;right:calc(12.5% - 13px);top:var(--cap-center-y);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    .site-menu-button{position:absolute;z-index:2;left:calc(var(--frame-border) + 20px);top:var(--cap-center-y);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
     .site-menu-button span{display:block;width:100%;height:4px;border-radius:3px;background:currentColor}
     .site-menu-button:hover,.site-menu-button:focus-visible{background:rgba(255,255,255,.26);outline:2px solid rgba(255,255,255,.72);outline-offset:2px}
 
     /* Standalone player navigation uses the top layer, preserving the frame geometry. */
-    #standaloneSiteMenu{position:fixed;inset:calc(var(--cap-height) - 8px) max(12px,8vw) auto auto;width:min(280px,calc(100vw - 24px));max-height:calc(100dvh - var(--cap-height) - 12px);margin:0;padding:8px;overflow-y:auto;border:1px solid #747474;border-radius:8px;background:#292929;color:#fff;box-shadow:0 8px 24px #0006}
+    #standaloneSiteMenu{position:fixed;inset:calc(var(--cap-height) - 8px) auto auto max(12px,8vw);width:min(280px,calc(100vw - 24px));max-height:calc(100dvh - var(--cap-height) - 12px);margin:0;padding:8px;overflow-y:auto;border:1px solid #747474;border-radius:8px;background:#292929;color:#fff;box-shadow:0 8px 24px #0006}
     #standaloneSiteMenu button,#standaloneSiteMenu a{display:block;width:100%;padding:10px 14px;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}
     #standaloneSiteMenu button:hover,#standaloneSiteMenu a:hover,#standaloneSiteMenu button:focus-visible,#standaloneSiteMenu a:focus-visible{background:#747474;outline:2px solid #fff;outline-offset:-2px}
     .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
@@ -42,12 +48,12 @@
     .view[hidden]{display:none}
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
-    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:opacity 3s ease}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:none}
     .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
     .player-word-card{pointer-events:none}
     /* The visible 16:9 frame sits above the image so the image cannot cover it. */
-    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #1e90ff;pointer-events:none}
-    .inspiration.has-card .inspiration-card{opacity:1;transition-duration:3s}
+    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #292929;pointer-events:none}
+    .inspiration.has-card .inspiration-card{opacity:1}
     .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
     .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
     .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
@@ -91,12 +97,15 @@
     /* Meditation sides match the upper player's 35-unit stroke on its 1920-unit canvas.
        The bottom border and its existing curve remain unchanged. */
     .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
-    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #1e90ff;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
+    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #292929;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
     .deck.meditation-mode::before{display:none}
     /* Fill only the outside lower corners; retain the curved white controls area. */
-    .shell.meditation-player-mode{background:linear-gradient(#1e90ff,#1e90ff) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
+    .shell.meditation-player-mode{background:linear-gradient(#292929,#292929) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
     .deck.compact-trough-mode{padding-bottom:20px}
     .deck.workspace-trough-hidden{display:none}
+    /* Scott, 2026-09-29: white Entrepreneur card trough without the three-button cluster. */
+    .deck.ent-card-trough::before{background:#fff}
+    .deck.ent-card-trough #lfmToolControls{visibility:hidden}
     .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
     .deck.lfm-tool-mode{padding:18px 10px 90px;border-radius:0}
     .deck.lfm-tool-mode .normal-control{display:none}
@@ -178,7 +187,7 @@
     @media(max-width:620px){
       .cap{font-size:22px;letter-spacing:2px}
       #capTitleText{left:calc(var(--frame-border) + 62px);right:calc(var(--frame-border) + 62px)}
-      .site-menu-button{right:calc(12.5% - 21px);width:42px;height:42px;padding:9px;gap:4px}
+      .site-menu-button{left:calc(var(--frame-border) + 16px);width:42px;height:42px;padding:9px;gap:4px}
       .stage{margin:0;padding:22px 14px}
       .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:0}
       .directory{grid-template-columns:1fr}
@@ -187,11 +196,19 @@
       .nav span:last-child{font-size:16px;letter-spacing:1px}
     }
     @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}.stage.ci-stage-fade-out{opacity:1}}
+    /* Scott's scoped revision, 2026-10-04: remove the upper trough globally.
+       Keep its menu at the upper-left without a replacement title band. */
+    .shell .cap{height:0;z-index:30;overflow:visible}
+    .shell .cap::before{content:none}
+    .shell #capTitleText{visibility:hidden;pointer-events:none}
+    .shell .site-menu-button{top:20px;transform:none;background:#292929}
+    #standaloneSiteMenu{inset:76px auto auto max(12px,8vw);max-height:calc(100dvh - 88px)}
   </style>
 </head>
 <body>
   <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
-    <header class="cap" id="capTitle" aria-label="Player title"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
+    <header class="cap" id="capTitle" aria-label="Site navigation"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
+    <div class="citadel-note" id="citadelNote" hidden><iframe id="citadelNoteFrame" title="Citadel opening message" scrolling="no"></iframe></div>
     <section class="stage" id="stage">
       <div class="view" id="homeView">
         <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
@@ -217,6 +234,7 @@
         <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
       </div>
     </section>
+    <div class="citadel-note" id="citadelBottomNote" hidden><iframe id="citadelBottomNoteFrame" title="Citadel closing message" scrolling="no"></iframe></div>
     <nav class="deck" data-template-region="lower-icon-trough" aria-label="MASTER PLAYER TEMPLATE controls">
       <button class="nav normal-control" data-action="meditation" aria-label="Meditate"><svg viewBox="0 0 28 28"><circle cx="12" cy="5" r="2"/><path d="M12 9v7l-6 7m6-6 7 2m-7-6 5-4M5 23h15"/></svg><span>Meditate</span></button>
       <button class="nav normal-control" data-action="daily-habits" aria-label="Daily Habits"><svg viewBox="0 0 28 28"><path d="M7 5h14v19H7zM11 2h6v6h-6zM11 12h6m-6 4h6m-6 4h5"/></svg><span>Habits</span></button>
@@ -317,6 +335,7 @@
       const cardAlt=file=>file.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
       const goalRaw=params.get('goal')??params.get('idx');
       let goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
+      let entCardKey=params.get('ent')||null;
       const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
       const items=[
         ['goals','Goals','Review and work with your active intentions.'],
@@ -333,10 +352,12 @@
         ['wins','My Wins','Record and review progress worth celebrating.'],
         ['proof','Proof','Collect evidence that your intentions are becoming real.'],
         ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
+        ['entrepreneur-library','Entrepreneur Library','Explore the 31 entrepreneur skills.'],
+        ['ent-card','Entrepreneur Skill Cards','Study one entrepreneurial skill at a time.'],
         ['quickie-move','Quickie Move','Take one fast action right now.'],
         ['admin','Admin','Manage content and site controls.']
       ];
-      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','task-notes','goal-workspace']);
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','entrepreneur-library','ent-card','task-notes','goal-workspace']);
       const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins','goal-workspace']);
       const shell=document.querySelector('.shell');
       const stage=document.getElementById('stage');
@@ -374,8 +395,8 @@
         return '#'+channel(entry.r)+channel(entry.g)+channel(entry.b);
       }
       function applyTroughColors(){
-        shell.style.setProperty('--header','#1e90ff');
-        shell.style.setProperty('--deck','#1e90ff');
+        shell.style.setProperty('--header','#292929');
+        shell.style.setProperty('--deck','#292929');
         shell.style.setProperty('--trough-fill','#747474');
         shell.style.setProperty('--trough-ink','#fff');
       }
@@ -470,7 +491,37 @@
           parent.postMessage({type:'ci-lfm-height',height},location.origin);
         });
       }
+      const citadelNotes=[
+        {box:document.getElementById('citadelNote'),frame:document.getElementById('citadelNoteFrame'),url:'/?masterInline=citadel-note',height:0},
+        {box:document.getElementById('citadelBottomNote'),frame:document.getElementById('citadelBottomNoteFrame'),url:'/?masterInline=citadel-note&box=2',height:0}
+      ];
+      let citadelHomeVisible=false;
+      if(window.parent===window){
+        addEventListener('message',event=>{
+          if(event.origin!==location.origin||event.data?.type!=='ci-citadel-note-height')return;
+          const note=citadelNotes.find(item=>event.source===item.frame.contentWindow);
+          if(!note)return;
+          note.height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+          note.frame.style.height=Math.max(1,note.height)+'px';
+          note.box.classList.remove('is-loading');
+          note.box.hidden=!citadelHomeVisible||!note.height;
+          reportHeight();
+        });
+      }
       function show(view){
+        const wasCitadel=citadelHomeVisible;
+        citadelHomeVisible=view===home&&window.parent===window;
+        citadelNotes.forEach(note=>{
+          note.box.hidden=!citadelHomeVisible||!note.height;
+          // Re-read saved text/session after returning from Admin or another tool.
+          if(citadelHomeVisible&&!wasCitadel){
+            // A display:none ancestor makes the iframe report zero height.
+            // Keep it laid out while loading, without reserving blank space.
+            note.box.hidden=false;
+            note.box.classList.add('is-loading');
+            note.frame.src=note.url;
+          }
+        });
         shell.classList.toggle('home-mode',view===home);
         shell.classList.toggle('experience-mode',view===experience);
         [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
@@ -535,6 +586,9 @@
         if(!experience.hidden)return toolRotation.hidden?experienceFrame:toolRotation;
         return directoryView;
       }
+      function isStaticPlayerImage(surface){
+        return surface===home||surface===toolRotation||(surface===experienceFrame&&selected==='meditation');
+      }
       async function transitionStage(commit){
         const transitionId=++stageTransitionId;
         if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
@@ -551,21 +605,23 @@
           return transitionId===stageTransitionId;
         };
         try{
-          if(!reduced&&!await fade(currentVisualSurface(),1,0,250))return;
-          const outgoing=stageSurface;
+          const outgoingSurface=currentVisualSurface();
+          if(!reduced&&!isStaticPlayerImage(outgoingSurface)&&!await fade(outgoingSurface,1,0,250))return;
+          const outgoing=stageSurface||outgoingSurface;
           const ready=commit();
           const incoming=currentVisualSurface();
           if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
           if(outgoing&&outgoing!==incoming)outgoing.classList.remove('ci-visual-transition');
           stageSurface=incoming;
           incoming.classList.add('ci-visual-transition');
-          incoming.style.opacity=reduced?'1':'0';
+          const staticImage=isStaticPlayerImage(incoming);
+          incoming.style.opacity=reduced||staticImage?'1':'0';
           let readyTimeout;
           try{await Promise.race([Promise.resolve(ready),new Promise(resolve=>{readyTimeout=window.setTimeout(resolve,8000)})])}
           finally{window.clearTimeout(readyTimeout)}
           if(transitionId!==stageTransitionId)return;
           fitExperience();
-          if(!reduced)await fade(incoming,0,1,580);
+          if(!reduced&&!staticImage)await fade(incoming,0,1,580);
         }finally{
           if(transitionId===stageTransitionId){
             if(stageSurface){
@@ -580,7 +636,7 @@
       }
       function applyHomeMode(){
         notifyParentMode('home');
-        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#1e90ff');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
       }
       function homeMode(){transitionStage(applyHomeMode)}
       function visibleContentHeight(root){
@@ -650,9 +706,11 @@
         url.searchParams.set('masterInline',action);
         url.searchParams.set('lfm','fullheight-1');
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
+        if(action==='ent-card'&&entCardKey)url.searchParams.set('ent',entCardKey);
         return url.pathname+url.search;
       }
       function applySelection(action){
+        deck.classList.toggle('ent-card-trough',action==='ent-card');
         if(action==='citadel'){
           applyHomeMode();
           cap.textContent="";
@@ -673,14 +731,14 @@
         shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
         deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
         deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
-        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace'].includes(action);
-        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace'].includes(action)?setToolCard(action):Promise.resolve();
+        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action);
+        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action)?setToolCard(action):Promise.resolve();
         setMeditationMode(action==='meditation');
         const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
-        shell.style.setProperty('--frame','#1e90ff');
+        shell.style.setProperty('--frame','#292929');
         shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
         clearExperienceObservers();
-        cap.textContent=usesLfmTemplate?'':(action==='daily-habits'?'Habits':item[1]);
+        cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='entrepreneur-library'?'Cosmic Library':(action==='daily-habits'?'Habits':item[1]));
         experienceFrame.title=item[1];
         experienceFrame.style.height=action==='meditation'?(stage.clientWidth*9/16)+'px':'600px';
         const nextUrl=destinationUrl(action);
@@ -733,7 +791,7 @@
           ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
           ['journal','My Journal'],['action-plan','Roadmap'],
           ['visualization','Visualization Library'],['meditation','Meditation'],
-          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace']
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['entrepreneur-library','Entrepreneur Library'],['ent-card','Entrepreneur Skill Cards'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace'],['admin','Admin']
         ];
         siteChoices.forEach(([action,label])=>{
           const button=document.createElement('button');
@@ -796,7 +854,7 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==parent)return;
         const data=event.data||{};
-        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='home')homeMode();else select(data.action);return}
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='ent-card'&&typeof data.entKey==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.entKey))entCardKey=data.entKey;if(data.action==='home')homeMode();else select(data.action);return}
         if(data.type==='ci-lfm-guide-command'){
           if(data.command==='back'){homeMode();return}
           if(data.command==='menu'){select('everything');return}
@@ -809,6 +867,22 @@
       addEventListener('message',event=>{
         if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
         const data=event.data||{};
+        if(data.type==='ci-open-goal-branch'&&
+           ['visualization','action-plan'].includes(data.action)&&
+           Number.isInteger(data.goalIndex)&&data.goalIndex>=0){
+          goalIndex=data.goalIndex;
+          select(data.action);
+          return;
+        }
+        if(data.type==='ci-open-ent-card'&&typeof data.key==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.key)){
+          entCardKey=data.key;
+          select('ent-card');
+          return;
+        }
+        if(data.type==='ci-open-entrepreneur-library'){
+          select('entrepreneur-library');
+          return;
+        }
         if(data.type==='ci-open-goal-workspace'){
           goalIndex=Number.isInteger(data.goalIndex)&&data.goalIndex>=0?data.goalIndex:null;
           select('goal-workspace');return;
@@ -855,6 +929,7 @@
       if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
       const initialAction=params.get('start');
       if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);
+      else show(home);
       reportHeight();
       window.setTimeout(reportHeight,120);
       window.setTimeout(reportHeight,600);
@@ -862,3 +937,4 @@
   </script>
 </body>
 </html>
+
