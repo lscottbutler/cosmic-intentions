@@ -350,6 +350,7 @@
  let dashboardApi=null,dashboardData=null,dashboardView='tasks',dashboardReturn='home',dashboardTrigger=null;
  const entryDrafts={notes:'',journal:''};
  const taskGroupOpen=new Map();
+ const groupTodoDrafts=new Map();
  function rememberDraft(){if(dashboardView!=='tasks')entryDrafts[dashboardView]=byId('dashboard-entry-text').value;}
  const byId=id=>document.getElementById(id);
  function say(text){byId('dashboard-state').textContent=text;}
@@ -376,6 +377,20 @@
    const summary=document.createElement('summary');
    summary.append(safeNode('span',task.goalTitle||'Personal to-dos','dashboard-group-title'));
    const body=document.createElement('div');body.className='dashboard-group-body';
+   const plus=safeNode('button','+','dashboard-goal-add');plus.type='button';
+   plus.setAttribute('aria-label','Add a to-do to '+(task.goalTitle||'Personal to-dos'));
+   plus.setAttribute('aria-expanded','false');summary.append(plus);
+   const form=document.createElement('form');form.className='dashboard-inline-todo';form.hidden=true;
+   const label=safeNode('label','Your next action'),input=document.createElement('input');
+   input.type='text';input.maxLength=160;input.required=true;input.placeholder='What will you do next?';
+   input.value=groupTodoDrafts.get(task.goalId)||'';
+   input.addEventListener('input',()=>groupTodoDrafts.set(task.goalId,input.value));
+   label.append(input);
+   const controls=document.createElement('div'),save=safeNode('button','Add to-do'),cancel=safeNode('button','Cancel');
+   controls.className='dashboard-inline-actions';save.type='submit';cancel.type='button';controls.append(save,cancel);form.append(label,controls);body.append(form);
+   plus.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();group.open=true;taskGroupOpen.set(task.goalId,true);form.hidden=!form.hidden;plus.setAttribute('aria-expanded',String(!form.hidden));if(!form.hidden)input.focus();});
+   cancel.addEventListener('click',()=>{form.hidden=true;plus.setAttribute('aria-expanded','false');plus.focus();});
+   form.addEventListener('submit',event=>{event.preventDefault();try{const result=dashboardApi.addTask(input.value,task.goalId);if(result.error){say(result.error);return;}groupTodoDrafts.delete(task.goalId);dashboardData=result;taskGroupOpen.set(task.goalId,true);taskRows();say('To-do added to '+(task.goalTitle||'your personal list')+'.');}catch(_){say('Could not add this to-do. Your text is still here.');}});
    group.append(summary,body);group.addEventListener('toggle',()=>{if(group.isConnected)taskGroupOpen.set(task.goalId,group.open);});
    groups.set(task.goalId,body);host.append(group);
   });
