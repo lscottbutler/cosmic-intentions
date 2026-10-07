@@ -44,9 +44,13 @@ import { readFileSync } from 'node:fs';
 // Meditation player, 2026-10-07. Only audio synchronization was added; HTML/CSS
 // frame, controls and geometry are unchanged. State/seek/replay checks passed.
 // Recovery: 4c0d2fed5f5b2b2cf414970d98f036f321e10c30.
+// 2026-10-07: Scott explicitly instructed immediate live publication after the
+// missing Meditation text cards were reported and the visual-check blocker disclosed.
+// Baseline records only that scoped text-card change; visual verification is pending.
+// Recovery: fd8307cf4ce53b2759d0ffb72bba7d3bddff0ae5.
 const lockedFiles = {
   "players/master-player.html": "b1b1ddc93e2a06e8f0d43659de274aa45bb47921",
-  "players/meditation.html": "a4c7d0e91d1be00632b6c40c909e90dc98e309cf"
+  "players/meditation.html": "6ee316b13f663bc246e1a8129bf0127c100ae694"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
