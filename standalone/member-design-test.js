@@ -229,7 +229,7 @@
  }
 
  // Review-only audio attachment: preserve the locked Master Player and timer engine.
- const meditationAudio=new Audio('/audio/meditation/coming-back-to-yourself-10m.ogg');
+ const meditationAudio=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');
  meditationAudio.preload='none';
  let audioSession=null,audioDoc=null,audioGeneration=0;
  function stopMeditationAudio(){audioGeneration++;meditationAudio.pause();meditationAudio.currentTime=0;}
@@ -241,12 +241,36 @@
    doc.querySelector('[data-med-time="10"]')?.click();
    doc.querySelector('[data-med-mode="guided"]')?.click();
   }
-  const clear=()=>stopMeditationAudio();
+
+  let playbackState='ready';
+  const audioButton=doc.createElement('button');audioButton.id='meditation-audio-play';audioButton.type='button';audioButton.textContent='▶ PLAY';audioButton.setAttribute('aria-label','Play guided meditation');
+  audioButton.style.cssText='display:block;margin:18px auto;padding:14px 26px;border:3px solid #fff;border-radius:32px;background:#292929;color:#fff;font:800 18px/1.2 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;min-height:52px';
+  doc.getElementById('meditationControls').before(audioButton);
+  const connectedSession=()=>{const u=new URL(session.src,location.origin);return !newGratitude&&u.pathname==='/players/meditation.html'&&u.searchParams.get('mode')==='guided'&&Number(u.searchParams.get('t'))===10;};
+  const buttonState=()=>{
+   audioButton.hidden=!connectedSession();audioButton.style.display=audioButton.hidden?'none':'block';
+   const label=playbackState==='running'?'Pause':playbackState==='paused'?'Resume':playbackState==='complete'?'Replay':'Play';
+   audioButton.textContent=(playbackState==='running'?'Ⅱ ':'▶ ')+label.toUpperCase();audioButton.setAttribute('aria-label',label+' guided meditation');
+  };
+  audioButton.addEventListener('click',()=>{
+   if(playbackState==='running'){session.contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);return;}
+   if(playbackState==='ready'||playbackState==='complete')meditationAudio.currentTime=0;
+   audioButton.disabled=true;
+   meditationAudio.play().then(()=>{
+    audioButton.disabled=false;
+    if(!connectedSession()){stopMeditationAudio();return;}
+    status.textContent='Guided meditation playing.';
+    session.contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
+   }).catch(()=>{audioButton.disabled=false;status.textContent='Audio could not start. Use the PLAY button below the image to retry.';});
+  });
+  const clear=()=>{stopMeditationAudio();playbackState='ready';buttonState();};
+  buttonState();
   session.addEventListener('load',clear);
   doc.defaultView.addEventListener('pagehide',clear);
   doc.defaultView.addEventListener('message',event=>{
    if(event.origin!==location.origin||event.source!==session.contentWindow||event.data?.type!=='ci-meditation-state')return;
    const url=new URL(session.src,location.origin),data=event.data;
+   playbackState=data.state;buttonState();
    const connected=!newGratitude&&url.pathname==='/players/meditation.html'&&url.searchParams.get('mode')==='guided'&&Number(data.minutes)===10;
    if(!connected||data.state==='ready'||data.state==='complete'){stopMeditationAudio();return;}
    const position=Math.max(0,Math.min(600,600-(Number(data.remaining)||0)/1000));

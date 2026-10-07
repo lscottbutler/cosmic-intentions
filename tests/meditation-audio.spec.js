@@ -7,7 +7,7 @@ for(const width of [1440,390])test('guided meditation audio '+width,async({page}
  await page.goto('/standalone/member-design-test.html?feature=meditation');
  const shell=page.frameLocator('#ci-review-frame'),session=shell.frameLocator('#experienceFrame');
  await expect(shell.locator('#experienceFrame')).toHaveAttribute('src',/t=10&mode=guided/);
- await session.getByRole('button',{name:'Start 10 minute meditation',exact:true}).click();
+ await shell.getByRole('button',{name:'Play guided meditation',exact:true}).click();
  const audio=()=>page.evaluate(()=>{const a=window.reviewAudios.find(a=>a.src.includes('coming-back'));return {paused:a.paused,time:a.currentTime,duration:a.duration,error:a.error?.code};});
  await expect.poll(async()=>(await audio()).paused).toBe(false);
  await expect.poll(async()=>(await audio()).time).toBeGreaterThan(.5);
