@@ -40,9 +40,13 @@ import { readFileSync } from 'node:fs';
 // the former title trough collapses and the upper-left hamburger remains.
 // Note-save checks are separate from this scoped template visual acceptance.
 // Recovery: 99acd1bbd0be57c4f0250f5d2c3004d6e51ca8d9.
+// Scott explicitly requested publishing the ten-minute narration in the actual
+// Meditation player, 2026-10-07. Only audio synchronization was added; HTML/CSS
+// frame, controls and geometry are unchanged. State/seek/replay checks passed.
+// Recovery: 4c0d2fed5f5b2b2cf414970d98f036f321e10c30.
 const lockedFiles = {
   "players/master-player.html": "b1b1ddc93e2a06e8f0d43659de274aa45bb47921",
-  "players/meditation.html": "1479db4d49123a83dc1aa5605762f80fe54e766a"
+  "players/meditation.html": "a4c7d0e91d1be00632b6c40c909e90dc98e309cf"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

@@ -58,6 +58,36 @@ body.external .timer{background:#747474;border-color:#292929}
   const curve=document.querySelector('.ccb-curve');
   const scrubber=document.getElementById('ccbScrubber');
   let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
+  // Narration belongs to the real Meditation engine, not its review wrapper.
+  const narration=minutes===10&&search.get('mode')==='guided'
+    ? new Audio('/players/audio/coming-back-to-yourself-10m.ogg') : null;
+  let voicePending=false,voiceGeneration=0;
+  if(narration)narration.preload='metadata';
+  function syncNarration(){
+    if(!narration)return;
+    const elapsed=(totalMs-remaining)/1000;
+    if(state!=='running'||(elapsed>=540&&elapsed<565)){
+      voiceGeneration++;narration.pause();return;
+    }
+    // Final passage 9:25–9:55, closing bell 9:55–10:00.
+    const position=elapsed>=595?elapsed:elapsed>=565?540+elapsed-565:elapsed;
+    if(Math.abs(narration.currentTime-position)>.35)narration.currentTime=position;
+    if(narration.paused&&!voicePending){
+      voicePending=true;const generation=voiceGeneration;
+      narration.play().then(()=>{
+        voicePending=false;
+        if(generation!==voiceGeneration||state!=='running')narration.pause();
+      }).catch(()=>{
+        voicePending=false;
+        if(generation!==voiceGeneration||state!=='running')return;
+        clearTick();remaining=Math.max(0,deadline-performance.now());state='paused';
+        render();
+        button.setAttribute('aria-label','Resume meditation and retry narration');
+      });
+    }
+  }
+  addEventListener('pagehide',()=>{voiceGeneration++;if(narration)narration.pause()});
+
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
     return `${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
@@ -89,7 +119,7 @@ body.external .timer{background:#747474;border-color:#292929}
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
@@ -124,3 +154,4 @@ body.external .timer{background:#747474;border-color:#292929}
 </script>
 </body>
 </html>
+

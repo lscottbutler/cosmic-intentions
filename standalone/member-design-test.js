@@ -336,7 +336,7 @@
   try{
    const doc=frame.contentDocument;if(!doc?.querySelector('.shell'))return;
    watchDocument(doc);
-   attachMeditationAudio(doc);
+   // The Meditation engine now owns narration on both live and review routes.
    if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
