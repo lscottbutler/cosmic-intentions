@@ -5,11 +5,12 @@ import { saveGoalWorkspaceRecord } from './goal-workspace.js';
 import { wrapSubToggle, wrapToggleAction, wrapGoalAddAction, wrapAddAction } from './wrapup.js';
 import { toggleRoadmapTaskDone, toggleRoadmapUserTaskDone } from './card-builder.js';
 
-// An adapter for Scott's private comparison wrapper, never a production UI.
+// Adapter restricted to Scott's same-origin member wrapper on approved CI hosts.
 function allowed() {
   try {
     const wrapper = new URL(window.parent.parent.location.href);
-    return (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    return (location.hostname === 'cosmicintentions.com' || location.hostname === 'www.cosmicintentions.com'
+      || location.hostname === 'localhost' || location.hostname === '127.0.0.1'
       || /^deploy-preview-\d+--gilded-profiterole-47a2eb\.netlify\.app$/.test(location.hostname))
       && wrapper.origin === location.origin && wrapper.pathname === '/standalone/member-design-test.html';
   } catch (_) { return false; }
