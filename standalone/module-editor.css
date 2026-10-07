@@ -16,3 +16,6 @@ header{padding:8px 24px}header h1{font-size:24px}header p{margin:2px 0}main{padd
 
 /* Short grey gaps are markers; readable timing lives below the timeline. */
 .voice-track .quiet{background:repeating-linear-gradient(135deg,#d7dce1 0,#d7dce1 4px,#eef1f4 4px,#eef1f4 8px)}#silence-list{overflow-x:auto;margin:8px 0 16px}#silence-list table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}#silence-list caption{text-align:left;font-weight:bold;padding:6px 0}#silence-list th,#silence-list td{text-align:left;padding:7px 10px;border-bottom:1px solid #cbd1d6;white-space:nowrap}#silence-list th{background:#edf0f3}#silence-list button{padding:3px 7px;font-size:14px}
+
+/* Scott: enlarge preview by 2.5x, fitting smaller screens proportionally. */
+.preview-viewport{width:800px;height:700px;max-width:100%}.preview-viewport iframe{transform:scale(.8333333333)}@media(max-width:879px){.preview-viewport{width:calc(100vw - 80px);height:calc((100vw - 80px)*.875)}.preview-viewport iframe{transform:scale(calc((100vw - 80px)/960px))}}@media(max-width:850px){.preview-viewport{width:calc(100vw - 32px);height:calc((100vw - 32px)*.875)}.preview-viewport iframe{transform:scale(calc((100vw - 32px)/960px))}}
