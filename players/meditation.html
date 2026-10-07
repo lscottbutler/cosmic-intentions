@@ -26,6 +26,14 @@ body.external .ccb-curve rect{display:block;fill:none;stroke:#292929}
 body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
 body.external .ccb-scrubber{background:#f2f2f2}
 body.external .timer{background:#747474;border-color:#292929}
+
+body.text-card-session .ccb-curve{pointer-events:none}
+body.text-card-session .image,body.text-card-session .ccb-curve ellipse{display:none}
+.session-card{position:absolute;inset:0;z-index:1;background:#fff}
+.session-card>img,.session-card>svg{position:absolute;width:100%;height:100%;object-fit:contain}
+.session-card p{height:100%;margin:0;display:flex;align-items:center;justify-content:center;padding:6px 12px;color:#000;text-align:center;font:700 36px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.04em}
+body.text-card-session .timer{left:50%;top:90%;width:7%;border-width:5px;background:#747474}
+body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
 </style>
 </head>
 <body>
@@ -61,6 +69,28 @@ body.external .timer{background:#747474;border-color:#292929}
   // Narration belongs to the real Meditation engine, not its review wrapper.
   const narration=minutes===10&&search.get('mode')==='guided'
     ? new Audio('/players/audio/coming-back-to-yourself-10m.ogg') : null;
+
+  const textCards=["Welcome.\n\nFor the next ten minutes, give yourself permission to be here.\nFind a position that feels comfortable and supported. You can sit, or lie down.\nLet your eyes close if that feels comfortable. Or keep them open, resting your gaze softly on something nearby.\nThere is no particular feeling you need to create.\nYou can arrive exactly as you are.","Notice where your body meets the chair, the floor, or the surface beneath you.\nFeel those points of contact.\nNotice the sounds around you.\nYou don’t need to make them disappear. They can be part of this moment.\nIf it feels comfortable, let your shoulders settle a little.\nAllow your hands to rest.\nFor now, there is nothing you need to figure out.","Bring your attention gently to your breathing.\nLet it move at its own pace.\nNotice where you feel it most clearly. Perhaps at your nose, in your chest, or in the movement of your belly.\nIf focusing on your breath feels uncomfortable, you can stay with the feeling of your feet or hands instead.\nChoose a place where your attention can rest.","Notice your face.\nYour forehead.\nYour jaw.\nIf you find tension, see whether there is room to soften a little. There is no need to force it.\nLet your attention move to your shoulders, your arms, and your hands.\nThen your chest and belly.\nSimply notice what is here.\nWhatever you find, you can meet it gently.","At some point, your attention may wander.\nYou might find yourself planning, remembering, or following a thought.\nThat is part of the practice.\nThe moment you notice, you have an opportunity to return.\nYou don’t need to criticize yourself.\nCome back to the next breath, or to the feeling of your body being supported.\nBegin again, gently.","If you notice frustration or self-judgment, take a moment.\nYou might quietly say to yourself:\n“It’s okay to begin again.”\nYou don’t have to earn a moment of kindness.\nPerhaps today has been difficult. Perhaps you’re tired. Perhaps your mind is busy.\nYou can acknowledge that without needing to change it immediately.\nFor this moment, see whether you can offer yourself a little patience.","Return to the place you chose for your attention.\nThe breath.\nYour hands.\nYour feet.\nLet this be simple.\nNotice a sensation.\nWhen your attention moves away, gently bring it back.\nThere is no score to keep.\nWe’ll leave a little space now for you to practice in your own way.","Notice what this moment feels like.\nThere may be ease. There may be restlessness. There may be very little to notice.\nYou don’t need to decide whether this is going well.\nFeel the support beneath you again.\nLet your attention rest there, or return to your breathing.\nOne moment at a time.","Now allow your awareness to widen.\nNotice your whole body resting here.\nNotice the sounds around you.\nThe air against your skin.\nThe space you are in.\nConsider what would support you as you return to your day.\nPerhaps a little patience.\nA moment to pause.\nOr one small, manageable next step.\nYou don’t need to make a plan. Simply notice what comes to mind.","Begin to notice the room more fully.\nFeel your hands and feet.\nWhen you’re ready, gently move your fingers or toes.\nTake your time.\nIf your eyes are closed, let them open whenever you feel ready.\nNotice something in front of you.\nFeel the surface beneath you.\nThank you for taking this time.\nAs you continue your day, remember: when your attention wanders, you can return.\nAnd you can meet yourself with kindness when you do."];
+  let textStage=null,textIndex=-1;
+  if(narration){
+    document.body.classList.add('text-card-session');
+    textStage=document.createElement('div');textStage.className='session-card';
+    textStage.innerHTML='<img src="/images/gratitude/test-module-1/opening-card.webp" alt=""><svg viewBox="0 0 1669 939" preserveAspectRatio="xMidYMid meet"><rect x="290" y="215" width="1090" height="465" fill="#fff"/><foreignObject x="300" y="215" width="1070" height="465"><p xmlns="http://www.w3.org/1999/xhtml"></p></foreignObject><path d="M243 734 Q840.5 817 1438 734" fill="none" stroke="transparent" stroke-width="28" style="pointer-events:stroke;cursor:pointer"/><circle cx="243" cy="734" r="14" fill="#fff" stroke="#292929" stroke-width="4"/></svg>';
+    player.prepend(textStage);scrubber.hidden=true;
+    textStage.querySelector('path').addEventListener('click',event=>{const rect=textStage.getBoundingClientRect(),scale=Math.min(rect.width/1669,rect.height/939),left=rect.left+(rect.width-1669*scale)/2;seek(((event.clientX-left)/scale-243)/1195)});
+  }
+  function renderTextCard(){
+    if(!textStage)return;
+    const elapsed=(totalMs-remaining)/1000;
+    const starts=[0,60,120,180,240,300,360,420,480,565];
+    let i=starts.findLastIndex(t=>elapsed>=t);i=Math.max(0,i);
+    const p=textStage.querySelector('p');
+    if(i!==textIndex||state==='complete'){p.textContent=state==='complete'?'Session complete':textCards[i].replace(/\\s+/g,' ').trim();textIndex=i}
+    const end=i===9?600:starts[i+1],local=elapsed-starts[i];
+    p.style.opacity=state!=='running'||matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.max(0,Math.min(1,local,end-elapsed));
+    const progress=elapsed/600,dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
+  }
+
   let voicePending=false,voiceGeneration=0;
   if(narration)narration.preload='metadata';
   function syncNarration(){
@@ -119,7 +149,7 @@ body.external .timer{background:#747474;border-color:#292929}
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;syncNarration();notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
