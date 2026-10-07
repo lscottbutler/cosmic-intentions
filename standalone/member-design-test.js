@@ -263,6 +263,49 @@
     session.contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
    }).catch(()=>{audioButton.disabled=false;status.textContent='Audio could not start. Use the PLAY button below the image to retry.';});
   });
+
+  const durations=[23.36,23.44,22.32,23.28,23.20,26.32,19.52,20.48,26.56,30.00];
+  const timelineLegend=doc.createElement('p');timelineLegend.id='meditation-audio-legend';
+  timelineLegend.style.cssText='margin:0 auto 16px;text-align:center;font:700 13px/1.5 Arial,sans-serif;letter-spacing:.03em;color:#fff';
+  const narrationKey=doc.createElement('span');narrationKey.textContent='━ Narration';narrationKey.style.color='#f6d27a';
+  const silenceKey=doc.createElement('span');silenceKey.textContent='━ Silence';silenceKey.style.color='#b8bec5';
+  timelineLegend.append(narrationKey,doc.createTextNode('   ·   '),silenceKey);
+  audioButton.after(timelineLegend);
+  function paintNarrationRail(){
+   timelineLegend.hidden=!connectedSession();timelineLegend.style.display=timelineLegend.hidden?'none':'block';
+   if(!connectedSession())return;
+   const child=session.contentDocument,svg=child?.querySelector('.ccb-curve'),timer=child?.getElementById('timer');
+   if(!svg||!timer)return;
+   let group=child.getElementById('narration-rail');
+   if(!group){group=child.createElementNS('http://www.w3.org/2000/svg','g');group.id='narration-rail';group.setAttribute('pointer-events','none');svg.append(group);}
+   const box=svg.getBoundingClientRect(),circle=timer.getBoundingClientRect();
+   if(!box.width||!box.height)return;
+   const sx=1920/box.width,sy=1080/box.height;
+   const radius=circle.width/2-parseFloat(child.defaultView.getComputedStyle(timer).borderTopWidth)/2;
+   const cx=(circle.left+circle.width/2-box.left)*sx,cy=(circle.top+circle.height/2-box.top)*sy;
+   const point=seconds=>{
+    const x=35+seconds/600*1850,dx=(x-960)/1379;
+    let y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
+    const circleX=(x-cx)/(radius*sx);
+    if(Math.abs(circleX)<=1)y=Math.min(y,cy-radius*sy*Math.sqrt(Math.max(0,1-circleX*circleX)));
+    return [x,y];
+   };
+   const entries=[];
+   for(let i=0;i<10;i++){entries.push([i*60,i*60+durations[i],'narration']);entries.push([i*60+durations[i],(i+1)*60,'silence']);}
+   group.replaceChildren();
+   for(const [from,to,kind] of entries){
+    const path=child.createElementNS('http://www.w3.org/2000/svg','path');
+    const points=[];const steps=Math.max(2,Math.ceil((to-from)*2));
+    for(let i=0;i<=steps;i++){const [x,y]=point(from+(to-from)*i/steps);points.push((i?'L':'M')+x.toFixed(2)+' '+y.toFixed(2));}
+    path.setAttribute('d',points.join(' '));path.setAttribute('fill','none');path.setAttribute('stroke',kind==='narration'?'#f6d27a':'#b8bec5');path.setAttribute('stroke-width','9');
+    path.dataset.kind=kind;path.dataset.start=String(from);path.dataset.end=String(to);
+    const title=child.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=kind+' '+Math.floor(from/60)+':'+String(Math.floor(from%60)).padStart(2,'0')+'–'+Math.floor(to/60)+':'+String(Math.floor(to%60)).padStart(2,'0');path.append(title);group.append(path);
+   }
+  }
+  session.addEventListener('load',paintNarrationRail);
+  doc.defaultView.addEventListener('resize',paintNarrationRail);
+  paintNarrationRail();
+
   const clear=()=>{stopMeditationAudio();playbackState='ready';buttonState();};
   buttonState();
   session.addEventListener('load',clear);
