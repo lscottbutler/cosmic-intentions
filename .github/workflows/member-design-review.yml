@@ -29,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run check:template
       - run: npx playwright install --with-deps chromium
-      - run: npm test -- tests/member-design-test.spec.js tests/citadel-dashboard.spec.js tests/roadmap-goal-sections.spec.js --workers=2
+      - run: npm test -- tests/member-design-test.spec.js tests/citadel-dashboard.spec.js tests/roadmap-goal-sections.spec.js tests/meditation-audio.spec.js --workers=2
       - uses: actions/upload-artifact@v4
         if: always()
         with:

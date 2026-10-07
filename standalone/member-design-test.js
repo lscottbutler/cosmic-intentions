@@ -25,7 +25,7 @@
   'daily-habits':['Habits','Work through your existing daily routine.','Choose MORNING, DAY, EVENING or BEFORE SLEEP. Select a habit circle to check it off.'],
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
-  meditation:['Meditation','Make space for your chosen meditation practice.','Press Play to begin. Your existing Meditation Menu then offers session choices.'],
+  meditation:['Meditation','Make space for your chosen meditation practice.','Press Play to begin. Choose 10 minutes and Guided in Meditation Menu to hear Coming Back to Yourself.'],
   'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
@@ -227,10 +227,49 @@
    try{if(child.contentDocument?.readyState!=='loading')watchDocument(child.contentDocument);}catch(_){/* A third-party media frame is never inspected. */}
   });
  }
+
+ // Review-only audio attachment: preserve the locked Master Player and timer engine.
+ const meditationAudio=new Audio('/audio/meditation/coming-back-to-yourself-10m.ogg');
+ meditationAudio.preload='none';
+ let audioSession=null,audioDoc=null,audioGeneration=0;
+ function stopMeditationAudio(){audioGeneration++;meditationAudio.pause();meditationAudio.currentTime=0;}
+ function attachMeditationAudio(doc){
+  const session=doc.getElementById('experienceFrame');
+  if(!session||audioDoc===doc)return;
+  audioDoc=doc;audioSession=session;
+  if(new URLSearchParams(location.search).get('feature')==='meditation'&&!newGratitude){
+   doc.querySelector('[data-med-time="10"]')?.click();
+   doc.querySelector('[data-med-mode="guided"]')?.click();
+  }
+  const clear=()=>stopMeditationAudio();
+  session.addEventListener('load',clear);
+  doc.defaultView.addEventListener('pagehide',clear);
+  doc.defaultView.addEventListener('message',event=>{
+   if(event.origin!==location.origin||event.source!==session.contentWindow||event.data?.type!=='ci-meditation-state')return;
+   const url=new URL(session.src,location.origin),data=event.data;
+   const connected=!newGratitude&&url.pathname==='/players/meditation.html'&&url.searchParams.get('mode')==='guided'&&Number(data.minutes)===10;
+   if(!connected||data.state==='ready'||data.state==='complete'){stopMeditationAudio();return;}
+   const position=Math.max(0,Math.min(600,600-(Number(data.remaining)||0)/1000));
+   if(Math.abs(meditationAudio.currentTime-position)>.8)meditationAudio.currentTime=position;
+   if(data.state==='paused'){audioGeneration++;meditationAudio.pause();return;}
+   if(data.state==='running'&&meditationAudio.paused){
+    const generation=++audioGeneration;
+    meditationAudio.play().catch(()=>{
+     if(generation!==audioGeneration)return;
+     session.contentWindow.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
+     status.textContent='Audio could not start. Press Play to try again.';
+    });
+   }
+  });
+ }
+ frame.addEventListener('load',stopMeditationAudio);
+ window.addEventListener('pagehide',stopMeditationAudio);
+
  function inspect(){
   try{
    const doc=frame.contentDocument;if(!doc?.querySelector('.shell'))return;
    watchDocument(doc);
+   attachMeditationAudio(doc);
    if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
@@ -309,6 +348,7 @@
  });
  window.addEventListener('resize',schedule);
  renderFeature('home');
- if(new URLSearchParams(location.search).get('feature')==='new-gratitude')openFeature('new-gratitude');
+ const initialFeature=new URLSearchParams(location.search).get('feature');
+ if(initialFeature&&features[initialFeature])openFeature(initialFeature);
 })();
 
