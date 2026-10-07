@@ -13,3 +13,6 @@ header{padding:8px 24px}header h1{font-size:24px}header p{margin:2px 0}main{padd
 
 /* Narration is half the slide-row height; pauses stay clearly visible. */
 .voice-track{height:50px}.voice-track button:not(.cut-handle){height:50px;font-size:12px;line-height:1.2;padding:3px 2px}.voice-track .narration-handle,.voice-track .narration-handle.dragging{height:50px}.voice-track .quiet{background:#e8edf1;color:#292929;border-top:2px solid #89949e;border-bottom:2px solid #89949e}.voice-track .voice{background:#f6d27a;color:#292929}
+
+/* Short grey gaps are markers; readable timing lives below the timeline. */
+.voice-track .quiet{background:repeating-linear-gradient(135deg,#d7dce1 0,#d7dce1 4px,#eef1f4 4px,#eef1f4 8px)}#silence-list{overflow-x:auto;margin:8px 0 16px}#silence-list table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}#silence-list caption{text-align:left;font-weight:bold;padding:6px 0}#silence-list th,#silence-list td{text-align:left;padding:7px 10px;border-bottom:1px solid #cbd1d6;white-space:nowrap}#silence-list th{background:#edf0f3}#silence-list button{padding:3px 7px;font-size:14px}
