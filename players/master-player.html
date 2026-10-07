@@ -156,7 +156,7 @@
     .deck:not(.meditation-mode) .med-menu{display:none}
     .med-menu[hidden]{display:none}
     .med-menu-row{display:grid;gap:5px;margin-top:5px}
-    .med-menu-row.mode{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:320px;margin:0 auto 4px}
+    .med-menu-row.mode{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:420px;margin:0 auto 4px}
     .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:5px 4px;font-size:13px;font-weight:800;cursor:pointer}
     .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
     .med-mode-option{min-width:0;border:0;border-radius:0;background:transparent;padding:0;display:grid;justify-items:center;gap:7px;color:#fff}
@@ -258,7 +258,8 @@
       </div>
         <section class="med-menu" id="meditationMenu" aria-label="Meditation choices" hidden>
           <div class="med-menu-row mode" id="meditationModes">
-            <button class="med-option med-mode-option active" type="button" data-med-mode="unguided" aria-label="Unguided"><span class="med-mode-circle" aria-hidden="true">U</span><span class="med-mode-label">Unguided</span></button>
+            <button class="med-option med-mode-option active" type="button" data-med-mode="unguided" aria-label="Unguided"><span class="med-mode-circle" aria-hidden="true">U</span><span class="med-mode-label">Unguided<br>Bells only</span></button>
+            <button class="med-option med-mode-option" type="button" data-med-mode="lightly-guided" aria-label="Lightly Guided"><span class="med-mode-circle" aria-hidden="true">L</span><span class="med-mode-label">Lightly Guided</span></button>
             <button class="med-option med-mode-option" type="button" data-med-mode="guided" aria-label="Guided"><span class="med-mode-circle" aria-hidden="true">G</span><span class="med-mode-label">Guided</span></button>
           </div>
           <div class="relaxation-toggle-row">
@@ -370,7 +371,7 @@
         // The shared lower trough always closes the full page, after its content.
         if(deck.parentElement!==shell||shell.lastElementChild!==deck)shell.appendChild(deck);
       }
-      const meditationTimes=[1,2,3,5,10,15];let meditationMinutes=15,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      const meditationTimes=[1,2,3,5,10,15];let meditationMinutes=10,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       let relaxationModuleEnabled=sessionStorage.getItem('ci-relaxation-module')==='on',relaxationThenVisualization=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
@@ -770,9 +771,11 @@
         document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
         const modeIcon=document.getElementById('medModeIcon');
         const modeLabel=document.getElementById('medModeLabel');
-        if(modeIcon)modeIcon.textContent=meditationMode==='guided'?'G':'U';
-        if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':'Unguided';
-        document.getElementById('guidedNote').hidden=meditationMode!=='guided';
+        if(modeIcon)modeIcon.textContent=meditationMode==='guided'?'G':meditationMode==='lightly-guided'?'L':'U';
+        if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':meditationMode==='lightly-guided'?'Lightly Guided':'Unguided';
+        const guidanceNote=document.getElementById('guidedNote');
+        guidanceNote.hidden=false;
+        guidanceNote.textContent=meditationMode==='lightly-guided'?'10-minute rough draft: readable breath reminders at 3:00 and 7:00. Short reminder voice-over is pending.':meditationMode==='unguided'?'10-minute rough draft: opening and closing bells only. No halfway gong.':meditationMinutes===10?'Guided: ten narration passages with practice pauses.':'Guided narration is available for 10 minutes.';
         const relaxationToggle=document.querySelector('[data-relaxation-toggle]');
         if(relaxationToggle){
           relaxationToggle.setAttribute('aria-pressed',String(relaxationModuleEnabled));
@@ -838,7 +841,7 @@
         if(command==='back'){homeMode();return}
         if(command==='menu'){setMeditationMenuOpen(!meditationMenuOpen,true);return}
         if(command==='toggle'){sendMeditation('toggle');return}
-        if(command==='mode'){meditationMode=meditationMode==='guided'?'unguided':'guided';reloadMeditation();return}
+        if(command==='mode'){meditationMode=['unguided','lightly-guided','guided'][(['unguided','lightly-guided','guided'].indexOf(meditationMode)+1)%3];meditationMinutes=10;reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);
         if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
         if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}

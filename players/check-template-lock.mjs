@@ -48,9 +48,13 @@ import { readFileSync } from 'node:fs';
 // missing Meditation text cards were reported and the visual-check blocker disclosed.
 // Baseline records only that scoped text-card change; visual verification is pending.
 // Recovery: fd8307cf4ce53b2759d0ffb72bba7d3bddff0ae5.
+// Scott requested rough Unguided and Lightly Guided builds on 2026-10-07.
+// Review baseline only: three mode choices, ten-minute bells and readable reminders.
+// Mock state/cue checks passed; rendered/browser verification and short VO remain pending.
+// This baseline is not production approval. Existing Guided passages are preserved.
 const lockedFiles = {
-  "players/master-player.html": "b1b1ddc93e2a06e8f0d43659de274aa45bb47921",
-  "players/meditation.html": "6ee316b13f663bc246e1a8129bf0127c100ae694"
+  "players/master-player.html": "11b73b9c8f94821a3aa3298d2e48a3fa01ec4c3a",
+  "players/meditation.html": "205369e508c3fd80cc4e1b8dab0129c307cecea9"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
