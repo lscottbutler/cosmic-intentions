@@ -11,3 +11,7 @@ Lightly Guided: same opening and closing bells; core natural-breath instruction 
 Validation: syntax checks passed for both changed scripts. Isolated mock DOM/audio checks confirmed all three modes' cue sequences, completion at 600 seconds, opening bell source at 595 seconds, pause and replay. These are behavior checks, not rendered or audible browser verification. Local shell transport disconnected in this turn; earlier browser downloads and GitHub browser execution were blocked. No claim of completed visual verification.
 
 Review branch: review/meditation-guidance-levels. Recovery production: a1a35f59d32ae79e08eeea491b49a3112e6c2c36. Checkpoints: a142334d4ddcdfa5de34af13e38ee89394c48eeb and cc73b7ff52d4c78737e76142398e7396c18acf85. Supabase and production unchanged. Password protection remains untouched. Current Bible and Drive synchronization pending; this dated record supplements the Bible.
+
+## Deployment authorization — 2026-10-07 20:06 ICT
+
+Scott explicitly instructed: “PUSH ALL DRAFTS LIVE THAT ARE RELEVANTT”. PR52 is the current applicable draft. PR5 is superseded by the canonical Master Player and PR7 is an older manual countdown reference rather than a complete current player. Publish PR52 only; preserve existing live Notes/To-do/Journal and goal-plus fixes. Recovery before deployment: 461ed8d1113c81ba98ef5e8bf4a59d087414ce6f. Existing behavior checks passed; rendered and audible verification remains blocked. Lightly Guided reminder VO remains pending. Password protection and Supabase unchanged. Current Bible/Drive sync remains pending.
