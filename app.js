@@ -7,7 +7,8 @@ import { logActivity, logDailyLogin } from './shared/activity.js';
 import { renderRings, _wireRingsSync, vizSideStatsHTML } from './shared/rings.js';
 import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
-import { renderHabits, renderRunThroughs, getHabitList } from './shared/habits.js';
+import { renderHabits, renderRunThroughs, getHabitList, createHabitPeriodMenu } from './shared/habits.js';
+import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins } from './shared/wins.js';
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
@@ -389,6 +390,8 @@ export function showPage(id) {
       wins: 'wins',
       proof: 'proof',
       'cosmic-library': 'cosmiclibrary',
+      'entrepreneur-library': 'entrepreneurlibrary',
+      'ent-card': 'entcard',
       'quickie-move': 'entcard',
       admin: 'admin',
     };
@@ -402,9 +405,22 @@ export function showPage(id) {
       frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'favorites' }, location.origin);
     }, 220);
   }
-  // The Admin workspace is owner-only. A direct or stale navigation attempt by
-  // any member returns to the Citadel without exposing editor controls.
-  if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) id = 'dashboard';
+  // The Admin workspace is owner-only. Keep an explicit access message visible
+  // inside the player without exposing editor controls to other accounts.
+  if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) {
+    let notice = document.getElementById('page-admin-access');
+    if (!notice) {
+      notice = document.createElement('section');
+      notice.id = 'page-admin-access';
+      notice.className = 'page';
+      notice.innerHTML = '<div id="adminAccessMessage" style="padding:24px;color:#171717"></div>';
+      document.getElementById('page-admin').parentElement.appendChild(notice);
+    }
+    notice.querySelector('#adminAccessMessage').innerHTML = '<h2>Admin</h2><p>' +
+      (currentUser ? 'This account does not have administrator access.' : 'Sign in with the owner account to edit the site text boxes.') +
+      '</p>' + (currentUser ? '' : '<button type="button" onclick="openAuth(\'signin\')">Sign in</button>');
+    id = 'admin-access';
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // My Thoughts / My Goals / My Habits are now individual pages (no longer merged).
   const target = document.getElementById('page-' + id);
@@ -453,8 +469,10 @@ export function showPage(id) {
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
   }
-  if (id === 'setup') renderPBIntentionList();   // My Goals — its own page
-  if (id === 'habits' && typeof window.renderPBHabitList === 'function') window.renderPBHabitList();   // My Habits — its own page
+  if (id === 'setup') renderPBIntentionList(true);
+  if (window.self !== window.top && id === 'vizlibrary') renderVizLibrary();
+  if (window.self !== window.top && id === 'myroadmap' && typeof window.renderWrapup === 'function') window.renderWrapup();   // My Goals — each visit starts with closed goal rows
+  if (id === 'habits' && typeof window.showHabitView === 'function') window.showHabitView('daily');   // Today's checklist first; editor remains one tap away.
   if (typeof window.sprinkleNotes === 'function') window.sprinkleNotes();   // rotate surfaced notes on every page
   if (id === 'admin') {
     ensureAdminPageBoxEditors();
@@ -462,6 +480,7 @@ export function showPage(id) {
   }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
+  if (id === 'entrepreneurlibrary' && typeof window.renderEntrepreneurLibrary === 'function') window.renderEntrepreneurLibrary();
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
   if (id === 'meditation') renderMeditationStats();
   if (id === 'mynotes' && typeof window.renderMyNotesPage === 'function') window.renderMyNotesPage();
@@ -585,9 +604,8 @@ export function navTo(id) {
     openFavoritesInLfm();
     return;
   }
-  // The old standalone Daily Habits/run-through page is retired. Habits now
-  // live inside the LFM; stale links return safely to the Citadel dashboard.
-  if (id === 'runthroughs') id = 'dashboard';
+  // Old routine links open the daily checklist inside the canonical Habits player.
+  if (id === 'runthroughs') id = 'habits';
   // CI V2: all core member tools live inside the persistent LFM. Legacy links,
   // top tabs, and stale page URLs now reopen the Citadel and select the matching
   // LFM destination instead of exposing a standalone page or Column B.
@@ -604,6 +622,8 @@ export function navTo(id) {
     gratitude: 'gratitude',
     wins: 'wins',
     cosmiclibrary: 'cosmic-library',
+    entrepreneurlibrary: 'entrepreneur-library',
+    entcard: 'ent-card',
   };
   if (window.self === window.top && lfmRoutes[id]) {
     if (!currentUser) {
@@ -634,7 +654,7 @@ export function navTo(id) {
     return;
   }
   // Must be logged in for any non-home page
-  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard'];
+  const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard','admin'];
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -688,7 +708,15 @@ export function closeDrawer() {
 ───────────────────────────────────────────────────────── */
 export function openAuth(tab = 'signin') {
   switchTab(tab);
-  document.getElementById('authModal').classList.add('open');
+  const modal = document.getElementById('authModal');
+  // The Master Player measures its active page to size the content iframe.
+  // Keep this sign-in form inside that measured surface so it cannot be clipped.
+  const inlineAdmin = document.documentElement.classList.contains('master-inline-admin');
+  if (inlineAdmin || document.documentElement.classList.contains('master-inline-ent-card')) {
+    const page = document.getElementById(inlineAdmin ? 'page-admin-access' : 'page-entcard');
+    if (page && modal.parentElement !== page) page.appendChild(modal);
+  }
+  modal.classList.add('open');
   clearAuthError();
 }
 
@@ -939,7 +967,7 @@ function updateUI(user) {
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   window.ciOwnerAccess = isOwner;
   document.querySelectorAll('[data-owner-only]').forEach(el => {
-    if (el.classList.contains('colb-links-hd')) el.style.display = isOwner ? '' : 'none';
+    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
   });
   const navAdmin = document.getElementById('nav-admin');
@@ -958,6 +986,9 @@ function updateUI(user) {
   const topNotes = document.getElementById('topnav-notes');
   if (topAdmin) topAdmin.style.display = isOwner ? 'inline-block' : 'none';
   if (topNotes) topNotes.style.display = isOwner ? 'inline-block' : 'none';
+  // Restore the requested Admin destination after sign-in and remove its
+  // editors immediately after sign-out. The owner guard stays in showPage.
+  if (new URLSearchParams(location.search).get('masterInline') === 'admin') showPage('admin');
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1648,6 +1679,9 @@ async function syncIntentionsFromSupabase() {
       // Roadmap. This matters when Supabase finishes after the inline Goals
       // destination first renders.
       renderPBIntentionList();
+      const inlineAction = new URLSearchParams(location.search).get('masterInline');
+      if (inlineAction === 'visualization') renderVizLibrary();
+      if (inlineAction === 'action-plan' && typeof window.renderWrapup === 'function') window.renderWrapup();
     }
   } catch(e) {
     console.warn('syncIntentionsFromSupabase failed:', e);
@@ -2589,6 +2623,7 @@ let _vizGoalIdx = 0;
 
 export function openVizLibrary() { renderVizLibrary(); navTo('vizlibrary'); }
 
+let _inlineVizGoalOpened = false;
 export function renderVizLibrary() {
   const sideEl = document.getElementById('vizSideStats');
   if (sideEl) { try { sideEl.innerHTML = vizSideStatsHTML(); } catch (e) { console.error('[vizSideStats]', e); } }
@@ -2621,6 +2656,15 @@ export function renderVizLibrary() {
     </div>
     <div id="vizLibPanel-${idx}" class="viz-lib-panel" style="display:none;"></div>`;
   }).join('');
+  // A choice from Goals opens this goal's visualization tools directly.
+  if (!_inlineVizGoalOpened && new URLSearchParams(location.search).get('masterInline') === 'visualization') {
+    const params = new URLSearchParams(location.search);
+    const selected = params.has('goal') ? Number(params.get('goal')) : -1;
+    if (Number.isInteger(selected) && selected >= 0 && intentions[selected]) {
+      _inlineVizGoalOpened = true;
+      vizLibToggle(selected);
+    }
+  }
 }
 
 /* The goal's visualization launchers, shown INLINE just below its card on the
@@ -4693,6 +4737,34 @@ function _pageBoxRoot(active) {
     active.firstElementChild || active;
 }
 
+
+function wireGoalsAddControl(active, topStack) {
+  if (active.id !== 'page-setup') return;
+  let row = active.querySelector('.ci-goals-top-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'ci-goals-top-row';
+    topStack.insertAdjacentElement('beforebegin', row);
+    row.appendChild(topStack);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ci-goals-add-toggle';
+    button.setAttribute('aria-controls', 'pbAddIntentionRow');
+    button.setAttribute('aria-expanded', 'false');
+    button.innerHTML = '<span class="ci-goals-add-plus" aria-hidden="true">+</span><span>ADD A GOAL</span>';
+    row.appendChild(button);
+    button.addEventListener('click', () => {
+      const form = active.querySelector('#pbAddIntentionRow');
+      if (!form) return;
+      form.hidden = !form.hidden;
+      button.setAttribute('aria-expanded', String(!form.hidden));
+      if (!form.hidden) form.querySelector('#pbNewIntentionInput')?.focus();
+    });
+  }
+  const form = active.querySelector('#pbAddIntentionRow');
+  if (form && form.previousElementSibling !== row) row.insertAdjacentElement('afterend', form);
+}
+
 function wireAdminPageBoxes() {
   const active = document.querySelector('.page.active');
   if (!active) return;
@@ -4721,6 +4793,8 @@ function wireAdminPageBoxes() {
     }
   }
 
+  wireGoalsAddControl(active, topStack);
+
   let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
   if (!bottomStack) {
     // Box 2 is the closing message at the bottom of the workspace.
@@ -4743,7 +4817,7 @@ function wireAdminPageBoxes() {
 function _adminEditorMarkup(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
-    '<div class="admin-block-hd">📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span></div>' +
+    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span></div>' +
     '<div class="admin-toolbar">' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
@@ -4759,6 +4833,7 @@ function _adminEditorMarkup(pageId, label, boxNumber) {
 }
 
 function ensureAdminPageBoxEditors() {
+  if (currentUser?.email !== 'lscottbutler@gmail.com') return;
   const adminPage = document.querySelector('#page-admin .admin-page');
   if (!adminPage) return;
   let section = document.getElementById('adminPageBoxEditors');
@@ -4767,16 +4842,49 @@ function ensureAdminPageBoxEditors() {
     section.id = 'adminPageBoxEditors';
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
-      '<div class="ci-page-box-admin-title">PAGE TEMPLATE BOXES</div>' +
-      '<p class="ci-page-box-admin-help">Two editable text boxes for every member workspace: Box 1 at the top and Box 2 at the bottom. The pen opens its matching editor here. Blank boxes stay hidden from members.</p>' +
+      '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
+      '<p class="ci-page-box-admin-help">Choose a page. Edit Box 1 at the top or Box 2 at the bottom, then Save. Matching colors keep each pair together.</p>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
+      '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
-    const firstBlock = adminPage.querySelector('.admin-block');
-    if (firstBlock) firstBlock.insertAdjacentElement('beforebegin', section);
-    else adminPage.appendChild(section);
+    adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
+    section.querySelector('#adminPageFinder').addEventListener('change', event => {
+      const group = document.getElementById('adminPageGroup-' + event.target.value);
+      if (!group) return;
+      group.scrollIntoView({ behavior: 'instant', block: 'start' });
+      group.querySelector('.ci-admin-page-heading').focus({ preventScroll: true });
+    });
+  }
+
+  const noteHost = section.querySelector('#adminSectionTextBox');
+  let noteBox = noteHost.querySelector('.ci-admin-page-box');
+  if (!noteBox) {
+    noteBox = _buildLiveAdminPageBox('admin-boxes', 'ADMIN TEXT', 1);
+    const pen = noteBox.querySelector('.ci-admin-page-box-edit');
+    pen.setAttribute('aria-label', 'Edit admin text box');
+    pen.title = 'Edit admin text box';
+    noteHost.appendChild(noteBox);
+  } else if (!noteBox.classList.contains('is-editing')) {
+    _fillBlockEl(noteBox.querySelector('[data-block]'), _blockCache['intro-note-admin-boxes'] || '');
   }
 
   const grid = section.querySelector('.ci-page-box-admin-grid');
-  Object.entries(ADMIN_PAGE_BOXES).forEach(([pageId, label]) => {
+  Object.entries(ADMIN_PAGE_BOXES).forEach(([pageId, label], pageIndex) => {
+    const pageNumber = String(pageIndex + 1).padStart(2, '0');
+    let group = document.getElementById('adminPageGroup-' + pageId);
+    if (!group) {
+      group = document.createElement('section');
+      group.id = 'adminPageGroup-' + pageId;
+      group.className = 'ci-admin-page-group';
+      group.dataset.color = String(pageIndex % 6);
+      group.setAttribute('aria-labelledby', 'adminPageHeading-' + pageId);
+      group.innerHTML = '<h3 class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="-1"><span class="ci-admin-page-number">' + pageNumber + '</span>' + label + '</h3><div class="ci-admin-page-pair"></div>';
+      grid.appendChild(group);
+      const option = document.createElement('option');
+      option.value = pageId;
+      option.textContent = pageNumber + ' · ' + label;
+      section.querySelector('#adminPageFinder').appendChild(option);
+    }
     for (let boxNumber = 1; boxNumber <= 2; boxNumber += 1) {
       const slug = _adminPageBoxSlug(pageId, boxNumber);
       let entry = document.getElementById('adminBlock-' + slug);
@@ -4786,10 +4894,15 @@ function ensureAdminPageBoxEditors() {
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '📝 ' + label + ' BOX ' + boxNumber + ' <span class="admin-block-slug">' + slug + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span>';
       }
-      grid.appendChild(entry);
+      entry.classList.add('ci-page-box-admin-entry');
+      entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
+      group.querySelector('.ci-admin-page-pair').appendChild(entry);
       const editor = document.getElementById('admin-editor-' + slug);
+      editor.setAttribute('role', 'textbox');
+      editor.setAttribute('aria-label', label + ' Box ' + boxNumber);
+      editor.setAttribute('aria-multiline', 'true');
       if (editor && !editor.dataset.dirty) editor.innerHTML = _blockCache[slug] || '';
     }
   });
@@ -4804,29 +4917,69 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
-    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#fff;border:1px solid #d9dee5;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    #page-setup .ci-goals-top-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-bottom:16px}
+    #page-setup .ci-goals-top-row .ci-admin-page-box-stack--top{min-width:0;margin:0}
+    #page-setup .ci-goals-top-row .ci-admin-page-box{height:100%}
+    #page-setup .ci-goals-add-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:114px;padding:12px;border:1px solid #d9dee5;border-radius:12px;background:#fff;color:#171717;font:800 14px/1.2 Inter,sans-serif;letter-spacing:.04em;cursor:pointer}
+    #page-setup .ci-goals-add-toggle:hover,#page-setup .ci-goals-add-toggle:focus-visible{background:#fff8de;outline:2px solid #111;outline-offset:2px}
+    #page-setup .ci-goals-add-plus{display:grid;place-items:center;width:56px;height:56px;border:5px solid #f1c40f;border-radius:50%;font-size:38px;font-weight:400;line-height:1}
+    #page-setup #pbAddIntentionRow[hidden]{display:none!important}
+    #page-setup #pbAddIntentionRow{margin-bottom:16px}
+    @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #ad1457;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
-    .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+    .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
-    .ci-page-box-admin-section{margin:0 0 28px;padding:18px;background:#0f0f0f;border:1px solid #343434;border-radius:14px}
-    .ci-page-box-admin-title{color:#fff;font-size:18px;font-weight:900;letter-spacing:.08em}
-    .ci-page-box-admin-help{margin:6px 0 16px;color:#a8a8a8;font-size:13px;line-height:1.55}
-    .ci-page-box-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .ci-admin-page-box.is-editing .ci-admin-page-box-edit-slot{display:none}
+    .ci-admin-page-box-inline{padding:14px;border-top:1px solid #d9dee5;background:#fff}
+    .ci-admin-page-box-inline-editor{min-height:84px;padding:10px;border:1px solid #888;border-radius:7px;background:#f2f2f2;color:#171717;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;outline:0;overflow-wrap:anywhere}
+    .ci-admin-page-box-inline-editor:focus{border-color:#111;box-shadow:0 0 0 2px #e7bf23}
+    .ci-admin-page-box-inline-actions{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13px;color:#b00020}
+    .ci-admin-page-box-inline-actions button{padding:8px 14px;border:1px solid #111;border-radius:7px;background:#111;color:#fff;font-weight:700;cursor:pointer}
+    .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff;color:#111}
+    .ci-page-box-admin-section{margin:0 0 32px;padding:0;background:#fff;border:0}
+    .ci-page-box-admin-title{color:#253347;font-size:22px;font-weight:900;letter-spacing:.04em}
+    .ci-admin-section-note{margin:20px 0;padding:16px;background:#fff1f6;border:1px solid #ecc3d3;border-radius:12px}
+    .ci-admin-section-note-label{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#773954;font-size:14px;font-weight:800;letter-spacing:.04em}
+    #page-admin .ci-admin-section-note .ci-admin-page-box{background:#fff;border:1px solid #ecc3d3;box-shadow:none}
+    #page-admin .ci-admin-page-box-edit{border-color:#ecc3d3;color:#773954;background:#fff1f6}
+    #page-admin .ci-admin-page-box-inline-editor{background:#fff;border-color:#ecc3d3}
+    #page-admin .ci-admin-page-box-inline-actions button{background:#f9dce8;color:#773954;border-color:#ecc3d3}
+    #page-admin .ci-admin-page-box-inline-actions .ci-admin-page-box-inline-cancel{background:#fff}
+    .ci-page-box-admin-help{margin:6px 0 16px;color:#58677a;font-size:14px;line-height:1.55}
+    .ci-admin-page-finder{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;margin-bottom:24px;background:#f5f7fa;border:1px solid #dde4ed;border-radius:12px}
+    .ci-admin-page-finder label{font-size:14px;font-weight:800;color:#253347}
+    .ci-admin-page-finder select{flex:1;min-width:0;max-width:100%;min-height:44px;padding:10px;border:1px solid #bccbdc;border-radius:8px;background:#fff;color:#253347;font-family:inherit;font-size:14px;font-weight:600;line-height:1.3}
+    .ci-page-box-admin-grid{display:grid;grid-template-columns:1fr;gap:24px}
+    .ci-admin-page-group{--box-tint:#edf5ff;--box-edge:#b6cfe9;--box-ink:#355b80;padding:16px;border:1px solid var(--box-edge);border-radius:14px;background:var(--box-tint);min-width:0;scroll-margin-top:18px}
+    .ci-admin-page-group[data-color="1"]{--box-tint:#edf8f0;--box-edge:#b6d9c2;--box-ink:#326447}
+    .ci-admin-page-group[data-color="2"]{--box-tint:#fff7e6;--box-edge:#ead39f;--box-ink:#795715}
+    .ci-admin-page-group[data-color="3"]{--box-tint:#f3effc;--box-edge:#cfc0e7;--box-ink:#65508a}
+    .ci-admin-page-group[data-color="4"]{--box-tint:#fff0eb;--box-edge:#ebc4b6;--box-ink:#8b503c}
+    .ci-admin-page-group[data-color="5"]{--box-tint:#eaf7f7;--box-edge:#b3d8d8;--box-ink:#346a6b}
+    .ci-admin-page-heading{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:16px;font-weight:800;line-height:1.4;color:var(--box-ink)}
+    .ci-admin-page-number{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-width:36px;height:32px;padding:0 6px;background:#fff;border:1px solid var(--box-edge,#ecc3d3);border-radius:8px;font-size:14px;font-weight:800}
+    .ci-admin-page-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
-    .ci-page-box-admin-grid .admin-editor{background:#242424!important;color:#fff!important;caret-color:#fff!important}
+    #page-admin .ci-page-box-admin-entry{border-color:var(--box-edge);background:#fff}
+    #page-admin .ci-page-box-admin-entry .admin-block-hd{background:var(--box-tint);color:var(--box-ink);border-color:var(--box-edge);justify-content:flex-start;gap:8px;letter-spacing:0;text-transform:none;flex-wrap:wrap}
+    #page-admin .ci-page-box-admin-entry .admin-block-num{margin:0;background:#fff;color:var(--box-ink)}
+    #page-admin .ci-page-box-admin-entry .admin-save-btn{background:var(--box-tint);color:var(--box-ink);border:1px solid var(--box-edge)}
+    .ci-page-box-admin-grid .admin-editor{min-height:132px;background:#fff!important;color:#253347!important;caret-color:#253347!important}
     .ci-page-box-admin-grid .admin-editor *{color:inherit!important}
     .ci-page-box-admin-grid .ib-preview-body{background:#fff!important;color:#111!important}
     .ci-page-box-admin-grid .ib-preview-body *{color:#111!important}
     @media(max-width:700px){
       .ci-admin-page-box-stack{gap:8px;margin-bottom:12px}
-      .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14px}
+      .ci-admin-page-box-content{min-height:44px;padding:13px 54px 56px 14px;font-size:14pt}
       .ci-admin-page-box-edit-slot{right:10px;bottom:10px}
       .ci-admin-page-box-edit{width:34px;height:34px}
-      .ci-page-box-admin-section{padding:12px}
-      .ci-page-box-admin-grid{grid-template-columns:1fr}
+      .ci-admin-page-group{padding:12px}
+      .ci-admin-page-pair{grid-template-columns:1fr}
+      .ci-admin-page-finder{align-items:stretch;flex-direction:column}
     }
   `;
   document.head.appendChild(style);
@@ -4840,11 +4993,11 @@ if (typeof window !== 'undefined') {
 }
 
 /* ── CONTENT-BLOCK NUMBERING (refinement aid) ─────────────────────────────────
-   Number every editor in the Admin "Content Blocks" section (1..N in page order)
+   Number page editors by page and position (01.1 / 01.2); other content has its
+   own Other 1..N sequence. Keep the same identifier on each live box.
    and stamp the SAME number onto each block's live box on the site (data-cbnum →
    a #N badge via CSS when body.cbnums is set). Lets Scott match a box on a page
-   to its Admin editor. Numbers auto-follow the Admin DOM order — add/remove a
-   block and everything renumbers on next load. */
+   to its Admin editor. Page pairs follow the registered page order. */
 // Which page each content block lives on (so the Admin header can jump to it).
 // intro-note-<page> maps to its page automatically; the rest are listed here.
 function _blockPage(slug) {
@@ -4888,8 +5041,9 @@ if (typeof window !== 'undefined') window.adminGoToBlock = adminGoToBlock;
 function numberContentBlocks() {
   const blocks = document.querySelectorAll('[id^="adminBlock-"]');
   const map = {};
-  blocks.forEach((el, i) => {
-    const n = i + 1;
+  let otherNumber = 0;
+  blocks.forEach(el => {
+    const n = el.dataset.adminNumber || 'Other ' + (++otherNumber);
     const slug = el.id.replace('adminBlock-', '');
     map[slug] = n;
     const hd = el.querySelector('.admin-block-hd');
@@ -5013,6 +5167,64 @@ if (typeof window !== 'undefined') {
 // Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
 // adminGoToBlock). Scroll to it, flash it, focus the editor for a quick edit.
 function adminEditBlock(slug) {
+  // The Goals page runs inside the Master Player iframe. Its showPage guard
+  // deliberately keeps that frame on Goals, so navigating to Admin from here
+  // cannot reveal the editor. Edit the owner box where it is displayed.
+  const content = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
+    .find(el => el.getAttribute('data-block') === slug);
+  const box = content?.closest('.ci-admin-page-box');
+  if (box) {
+    if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
+    if (box.classList.contains('is-editing')) {
+      box.querySelector('.ci-admin-page-box-inline-editor')?.focus();
+      return;
+    }
+    const panel = document.createElement('div');
+    panel.className = 'ci-admin-page-box-inline';
+    panel.innerHTML =
+      '<div class="ci-admin-page-box-inline-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Edit administrator text"></div>' +
+      '<div class="ci-admin-page-box-inline-actions"><button type="button" class="ci-admin-page-box-inline-save">Save</button>' +
+      '<button type="button" class="ci-admin-page-box-inline-cancel">Cancel</button><span role="status"></span></div>';
+    const editor = panel.querySelector('.ci-admin-page-box-inline-editor');
+    const save = panel.querySelector('.ci-admin-page-box-inline-save');
+    const status = panel.querySelector('[role="status"]');
+    editor.innerHTML = _blockCache[slug] || '';
+    box.classList.add('is-editing');
+    box.appendChild(panel);
+    panel.querySelector('.ci-admin-page-box-inline-cancel').addEventListener('click', () => {
+      panel.remove();
+      box.classList.remove('is-editing');
+    });
+    save.addEventListener('click', async () => {
+      const body = editor.innerHTML.trim();
+      save.disabled = true;
+      save.textContent = 'Saving…';
+      status.textContent = '';
+      try {
+        const { error } = await sb.from('content_blocks')
+          .upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+        if (error) throw error;
+        _blockCache[slug] = body;
+        const adminEditor = document.getElementById('admin-editor-' + slug);
+        if (adminEditor) adminEditor.innerHTML = body;
+        document.querySelectorAll('[data-block]').forEach(el => {
+          if (el.getAttribute('data-block') === slug) _fillBlockEl(el, body);
+        });
+        panel.remove();
+        box.classList.remove('is-editing');
+        if (window.top !== window) {
+          window.top.postMessage({ type: 'ci-admin-block-saved', slug, body }, location.origin);
+        }
+        toast('Administrator text saved ✓', 'success');
+      } catch (error) {
+        status.textContent = 'Could not save. Try again.';
+        save.disabled = false;
+        save.textContent = 'Save';
+      }
+    });
+    editor.focus();
+    return;
+  }
   if (typeof window.navTo === 'function') window.navTo('admin');
   setTimeout(() => {
     const ab = document.getElementById('adminBlock-' + slug);
@@ -5026,6 +5238,19 @@ function adminEditBlock(slug) {
 }
 if (typeof window !== 'undefined') {
   window.adminEditBlock = adminEditBlock;
+  window.addEventListener('message', event => {
+    if (event.origin !== location.origin || !window.ciOwnerAccess ||
+        currentUser?.email !== 'lscottbutler@gmail.com') return;
+    const data = event.data || {};
+    if (data.type !== 'ci-admin-block-saved' || typeof data.slug !== 'string' ||
+        !/^intro-note-|^page-note-/.test(data.slug) || typeof data.body !== 'string') return;
+    _blockCache[data.slug] = data.body;
+    const editor = document.getElementById('admin-editor-' + data.slug);
+    if (editor && !editor.dataset.dirty) editor.innerHTML = data.body;
+    document.querySelectorAll('[data-block]').forEach(el => {
+      if (el.getAttribute('data-block') === data.slug) _fillBlockEl(el, data.body);
+    });
+  });
   // Refinement view only: clicking any numbered content box jumps to its Admin
   // editor. Delegated so it works for boxes injected/re-rendered at any time.
   document.addEventListener('click', (e) => {
@@ -5377,8 +5602,21 @@ function _previewActive() {
   const host = location.hostname;
   const local = host === 'localhost' || host === '127.0.0.1';
   const netlifyReview = /^deploy-preview-\d+--gilded-profiterole-47a2eb\.netlify\.app$/.test(host);
-  const flag = new URLSearchParams(location.search).has('preview');
-  return (local || netlifyReview) && flag;
+  if (!local && !netlifyReview) return false;
+  const params = new URLSearchParams(location.search);
+  if (params.has('preview')) return true;
+  // The approved Master Player keeps its own URL separate from the content
+  // frame. Carry its explicit sample-review choice into Entrepreneur content
+  // without changing that locked template or enabling previews on production.
+  if (window.self !== window.top && ['ent-card', 'entrepreneur-library', 'daily-habits'].includes(params.get('masterInline'))) {
+    try {
+      const parentUrl = new URL(window.parent.location.href);
+      return parentUrl.origin === location.origin
+        && parentUrl.pathname === '/players/master-player.html'
+        && parentUrl.searchParams.get('preview') === '1';
+    } catch (_) { /* A cross-origin parent cannot activate sample review. */ }
+  }
+  return false;
 }
 
 function _seedPreviewDashboard() {
@@ -5448,13 +5686,63 @@ function injectPlaceholderCards() {
     // not the outer frame — inject there so the cards sit in the content, not the frame edge.
     const wrap = page.querySelector('.viz-main, .pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
-    if (anchor) anchor.insertAdjacentElement('afterend', _makePhCard());   // the info box, under the title
-    else wrap.insertBefore(_makePhCard(), wrap.firstChild);
+    const card = id === 'habits' ? createHabitMindsetCard(() => currentUser?.id || '') : _makePhCard();
+    if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
+    else wrap.insertBefore(card, wrap.firstChild);
+    if (id === 'habits') card.insertAdjacentElement('beforebegin', createHabitPeriodMenu());
     // (bottom placeholder card removed — one admin-controlled info box per page)
   });
 }
 
+// The standalone Master Player renders Citadel outside the main app's dashboard.
+async function initCitadelNoteFrame() {
+  const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
+  const slug = _adminPageBoxSlug('dashboard', boxNumber);
+  document.body.replaceChildren();
+  document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
+  document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
+  const mount = document.createElement('div');
+  mount.style.cssText = 'padding:0;width:100%;box-sizing:border-box';
+  document.body.appendChild(mount);
+  // The inline Save handler uses the app's existing toast region.
+  const toastWrap = document.createElement('div');
+  toastWrap.id = 'toastWrap';
+  toastWrap.className = 'toast-wrap';
+  toastWrap.setAttribute('aria-live', 'polite');
+  document.body.appendChild(toastWrap);
+  const report = () => {
+    const height = Math.ceil(mount.getBoundingClientRect().height);
+    window.parent.postMessage({ type: 'ci-citadel-note-height', height }, location.origin);
+  };
+  try {
+    const [block, auth] = await Promise.all([
+      sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
+      sb.auth.getUser(),
+    ]);
+    if (block.error) throw block.error;
+    currentUser = auth.data?.user || null;
+    window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
+    _blockCache[slug] = block.data?.body || '';
+    const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', boxNumber);
+    if (box.style.display !== 'none') {
+      // Inset the entire pink-bordered box; empty member boxes stay collapsed.
+      mount.style.padding = '20px';
+      mount.appendChild(box);
+    }
+    if ('ResizeObserver' in window) new ResizeObserver(report).observe(mount);
+    report();
+  } catch (error) {
+    console.error('[citadel-note] Could not load box:', boxNumber);
+    mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Citadel text could not load. Reload to try again.</p>';
+    report();
+  }
+}
+
 export async function init() {
+  if (new URLSearchParams(location.search).get('masterInline') === 'citadel-note') {
+    await initCitadelNoteFrame();
+    return;
+  }
   // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
   // stop normal boot. No auth, no data stored server-side (the roadmap rides in the link).
   const _shared = new URLSearchParams(location.search).get('r');
@@ -5980,6 +6268,8 @@ const _masterInlineLabels = {
   wins: 'Wins',
   proof: 'Proof',
   'cosmic-library': 'Cosmic Library',
+  'entrepreneur-library': 'Entrepreneur Library',
+  'ent-card': 'Entrepreneur Skill Card',
   'quickie-move': 'Quickie Move',
   admin: 'Admin',
 };
@@ -6103,6 +6393,12 @@ export function openMasterDestination(action, goalIndex = null) {
       break;
     case 'cosmic-library':
       navTo('cosmiclibrary');
+      break;
+    case 'entrepreneur-library':
+      navTo('entrepreneurlibrary');
+      break;
+    case 'ent-card':
+      navTo('entcard');
       break;
   }
 }

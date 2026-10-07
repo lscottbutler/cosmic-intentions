@@ -3,15 +3,17 @@
    design (see standalone/ent-monitor-proto.html). Content is frozen + identical
    for every member (see shared/ent-library-content.js). */
 
-import { toast } from '../app.js';
-import { ENT_CARDS, ENT_CARD_TYPE, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
+import { toast, intentions, currentUser } from '../app.js';
+import { mountEntrepreneurPlayer } from './entrepreneur-player.js';
+import { mountCosmicConceptLibrary } from './cosmic-concepts.js';
+import { habitEntryContext, habitPlayerURL } from './habit-mindset.js';
+import { ENT_CARDS, entCardHasContent, entCardImg, ENT_MINDSET } from './ent-library-content.js';
 
 let _entIdx = ENT_CARDS.findIndex(c => c.key === 'SELF CONFIDENT');   // start on the authored card
 if (_entIdx < 0) _entIdx = 0;
 const _open = { ab: false, rm: false };   // which content panels are expanded
 
 const _esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const _pad2 = n => String(n).padStart(2, '0');
 /* First sentence of a directive — the one-line "why this is crucial". Em dashes
    and semicolons don't end a sentence; only . ! ? followed by a space or the end. */
 function _firstSentence(s) {
@@ -122,10 +124,32 @@ function _entOverview(c) {
 export function entGoToCard(key) {
   const idx = ENT_CARDS.findIndex(c => c.key === key);
   if (idx < 0) return;
+  // The card page can switch skills in place; a library tile must ask the
+  // Master Player to open the card destination with the selected skill key.
+  if (!document.getElementById('page-entcard')?.classList.contains('active')) {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'ci-open-ent-card', key }, location.origin);
+    } else if (typeof window.navTo === 'function') {
+      window.navTo('entcard');
+      window.setTimeout(() => {
+        document.getElementById('ciMasterPlayerFrame')?.contentWindow?.postMessage(
+          { type: 'ci-lfm-select', action: 'ent-card', entKey: key }, location.origin);
+      }, 250);
+    }
+    return;
+  }
   _entIdx = idx;
   _open.ab = false; _open.rm = false;
   renderEntLibrary();
   window.scrollTo(0, 0);
+}
+
+export function entBackToLibrary() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'ci-open-entrepreneur-library' }, location.origin);
+  } else if (typeof window.navTo === 'function') {
+    window.navTo('entrepreneurlibrary');
+  }
 }
 
 /* THE 50 THINGS PEOPLE WANT MOST — a synthesized list of the most universal human wants,
@@ -169,7 +193,49 @@ const FIFTY_GROUPS = [
    opens its corresponding card in the Entrepreneur Library. Built from ENT_CARDS so it
    stays in sync and reuses entCardImg() (which handles the file-naming quirks).
    Also renders the "50 Things People Want Most" grid (placeholder art reuses ENT images). */
+function renderEntrepreneurGrid(hostId) {
+  // Entrepreneur Library — the 31 cards grouped under their four forces, each
+  // card followed by a one-sentence "why this is crucial" (the card's directive).
+  const host = document.getElementById(hostId);
+  if (host) {
+    host.className = 'ent-force-groups';
+    const byKey = k => ENT_CARDS.find(c => c.key === k);
+    host.innerHTML = _ENT_FORCES.map(([name, desc, skills], index) => {
+      const cards = skills.map(([label, key]) => {
+        const c = byKey(key);
+        if (!c) return '';
+        const why = c.directive ? _firstSentence(c.directive) : '';
+        return `<div class="ent-force-card">
+          <button class="cl-card" onclick="entGoToCard('${_esc(key)}')" title="${_esc(c.title || key)}" aria-label="${_esc(c.title || key)}">
+            <img src="${entCardImg(key)}" alt="${_esc(c.title || key)}" loading="lazy" onerror="this.closest('.ent-force-card').style.display='none'">
+          </button>
+          <div class="ent-force-why">${_esc(why)}</div>
+        </div>`;
+      }).join('');
+      return `<details class="ent-force-sec"${hostId === 'entrepreneurLibraryGrid' && index === 0 ? ' open' : ''}>
+        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
+        <p class="ent-force-sec__desc">${_esc(desc)}</p>
+        <div class="ent-force-sec__grid">${cards}</div>
+      </details>`;
+    }).join('');
+  }
+}
+
+export function renderEntrepreneurLibrary() {
+  renderEntrepreneurGrid('entrepreneurLibraryGrid');
+}
+
 export function renderCosmicLibrary() {
+  const library = document.getElementById('cosmicLibraryBody');
+  if (library) {
+    let concepts = library.querySelector('#cosmicConceptLibrary');
+    if (!concepts) {
+      concepts = document.createElement('section');
+      concepts.id = 'cosmicConceptLibrary';
+      library.prepend(concepts);
+    }
+    mountCosmicConceptLibrary(concepts);
+  }
   // "The Successful Entrepreneur" overview (from the Entrepreneur Library card)
   // re-homed here as a collapsible dropdown, above the Entrepreneur grid.
   const dd = document.getElementById('entOverviewDropdown');
@@ -188,31 +254,7 @@ export function renderCosmicLibrary() {
       </div>
     </details>`;
   }
-  // Entrepreneur Library — the 31 cards grouped under their four forces, each
-  // card followed by a one-sentence "why this is crucial" (the card's directive).
-  const host = document.getElementById('cosmicLibraryGrid');
-  if (host) {
-    host.className = 'ent-force-groups';
-    const byKey = k => ENT_CARDS.find(c => c.key === k);
-    host.innerHTML = _ENT_FORCES.map(([name, desc, skills]) => {
-      const cards = skills.map(([label, key]) => {
-        const c = byKey(key);
-        if (!c) return '';
-        const why = c.directive ? _firstSentence(c.directive) : '';
-        return `<div class="ent-force-card">
-          <button class="cl-card" onclick="navTo('entcard');entGoToCard('${_esc(key)}')" title="${_esc(c.title || key)}" aria-label="${_esc(c.title || key)}">
-            <img src="${entCardImg(key)}" alt="${_esc(c.title || key)}" loading="lazy" onerror="this.closest('.ent-force-card').style.display='none'">
-          </button>
-          <div class="ent-force-why">${_esc(why)}</div>
-        </div>`;
-      }).join('');
-      return `<details class="ent-force-sec">
-        <summary class="ent-force-sec__head"><span class="ent-force-sec__bar">${_esc(name)}<span class="ent-force-sec__chev">&#9662;</span></span></summary>
-        <p class="ent-force-sec__desc">${_esc(desc)}</p>
-        <div class="ent-force-sec__grid">${cards}</div>
-      </details>`;
-    }).join('');
-  }
+  renderEntrepreneurGrid('cosmicLibraryGrid');
   const fifty = document.getElementById('fiftyThingsGrid');
   if (fifty) {
     fifty.className = 'ent-force-groups';   // stack the group dropdowns full-width (not the 3-col image grid)
@@ -236,50 +278,61 @@ export function renderCosmicLibrary() {
   }
 }
 
+let _initialEntCardApplied = false;
+let _disposeEntExperience;
 export function renderEntLibrary() {
+  if (!_initialEntCardApplied) {
+    _initialEntCardApplied = true;
+    const key = new URLSearchParams(location.search).get('ent');
+    const idx = ENT_CARDS.findIndex(card => card.key === key);
+    if (idx >= 0) _entIdx = idx;
+  }
   const host = document.getElementById('entLibHost');
   if (!host) return;
+  _disposeEntExperience?.();
   const c = ENT_CARDS[_entIdx] || ENT_CARDS[0];
   const has = entCardHasContent(c);
+  const habitContext = habitEntryContext(currentUser?.id || '');
 
   const monitor = `
+    ${habitContext ? `<a class="habit-return-link" href="${habitPlayerURL()}" target="_parent">‹ Return to Habits</a>` : ''}
     <div style="padding:0 0 14px;">
       <div style="background:#6f7570;border-radius:10px 10px 4px 4px;padding:0 14px 10px;">
-        <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">${_esc(ENT_CARD_TYPE)}</div>
+        <div style="background:#5c6158;border-radius:14px 14px 0 0;margin:0 -14px 12px;padding:14px 0;text-align:center;color:#e9ebe6;font-weight:800;letter-spacing:4px;font-size:15px;white-space:nowrap;">ENTREPRENEUR PLAYER</div>
         <div style="background:#fff;position:relative;min-height:120px;display:flex;align-items:center;justify-content:center;line-height:0;">
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:26px 22px;font-weight:900;letter-spacing:1px;font-size:28px;line-height:1.15;color:#1c1c1c;text-align:center;text-transform:uppercase;">${_affLines(c.title)}</div>
           <img src="${entCardImg(c.key)}" alt="${_esc(c.title)}" style="position:relative;width:100%;display:block;" onerror="this.style.display='none'">
         </div>
-        <div style="display:flex;gap:10px;margin-top:12px;">
-          ${[['CARD', _pad2(c.n)], ['TYPE', 'ATTITUDE'], ['LIBRARY', 'ENTREP'], ['DECK', c.n + ' · ' + ENT_CARDS.length]]
-            .map(([k, v]) => `<div style="flex:1;text-align:center;"><div style="background:#7d827b;border-radius:12px 12px 0 0;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:11px;padding:8px 4px;">${k}</div><div style="background:#20241f;color:#e9ebe6;font-weight:800;letter-spacing:1px;font-size:14px;padding:8px 4px;">${_esc(v)}</div></div>`).join('')}
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-top:12px;">
-        <button onclick="entNav(-1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">‹ PREV</button>
-        <span style="align-self:center;color:#20241f;font-weight:800;font-size:12px;font-family:var(--vault-mono,monospace);">${c.n} / ${ENT_CARDS.length}</span>
-        <button onclick="entNav(1)" style="background:#20241f;border:none;color:#fff;font-weight:800;letter-spacing:1px;font-size:12px;padding:10px 16px;cursor:pointer;">NEXT ›</button>
       </div>
     </div>`;
+  const navigationHTML = `<nav class="ent-tabs ent-card-nav" aria-label="Entrepreneur card navigation">
+    <button type="button" onclick="entNav(-1)">‹ PREV</button>
+    <button type="button" onclick="entBackToLibrary()">ENTREPRENEUR LIBRARY</button>
+    <span class="ent-card-count" aria-label="Card ${c.n} of ${ENT_CARDS.length}">${c.n} / ${ENT_CARDS.length}</span>
+    <button type="button" onclick="entNav(1)">NEXT ›</button>
+  </nav>`;
 
   if (!has) {
-    host.innerHTML = monitor +
+    host.innerHTML = monitor + navigationHTML +
       `<div style="background:#1c1c1c;color:#fff;padding:20px 18px;text-align:center;font-size:15px;line-height:1.5;">This card's affirmations, beliefs and roadmap are coming soon.</div>`;
     return;
   }
 
-  const btn = (t, s, on, extra = '') => `<button ${on ? `onclick="${on}"` : ''} style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;cursor:pointer;${extra}"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t}</span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
-  const soon = (t, s) => `<button disabled style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid #cfcfcf;padding:15px 18px;margin-bottom:10px;opacity:.5;"><span style="font-weight:800;font-size:17px;color:#2b2f45;">${t} <span style="font-family:var(--vault-mono,monospace);font-size:9px;font-weight:800;color:#b23;border:1px solid #b23;padding:2px 5px;margin-left:6px;">SOON</span></span><span style="font-family:var(--vault-mono,monospace);font-size:12px;color:#8a8a8a;">${s}</span></button>`;
-
-  host.innerHTML = monitor +
-    `<div style="background:#8FA977;padding:0 18px 4px;">${_entOverview(c)}</div>
-     ${_entNotesSection(c)}
-     ${_greenSection('ROADMAP', c.roadmap, 'num')}
-     ${_greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key)}
-     ${_greenSection('BELIEFS', c.beliefs, 'belief', c.key)}
-     ${ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') : ''}
-     ${ENT_MINDSET[c.key] ? _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''}
-     <div id="entPlayer" style="display:none;"></div>`;
+  host.innerHTML = monitor + '<div id="entExperience"></div><div id="entPlayer" style="display:none;"></div>';
+  _disposeEntExperience = mountEntrepreneurPlayer(host.querySelector('#entExperience'), {
+    card: c,
+    navigationHTML,
+    initialTab: habitContext ? 'mindset' : 'deeper',
+    habit: habitContext?.habit || null,
+    goals: intentions || [],
+    getAccount: () => currentUser?.id || '',
+    notesHTML: _entNotesSection(c),
+    mindsetHTML:
+      _greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key) +
+      _greenSection('BELIEFS', c.beliefs, 'belief', c.key) +
+      (ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') +
+       _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''),
+  });
 }
 
 export function entNav(dir) {
@@ -309,19 +362,21 @@ function _noteId() { return 'n' + Date.now().toString(36) + Math.floor(Math.rand
 
 function _entNotesSection(c) {
   const notes = _cardNotes(c.key);
+  if (!notes.length) return '';
   const mBtn = 'display:block;width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;';
   const grow = "this.style.height='auto';this.style.height=this.scrollHeight+'px';";
   const cards = notes.map((n, i) => `
-    <div draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
+    <div data-ent-note-card draggable="true" ondragstart="entNoteDragStart('${n.id}',event)" ondragover="entNoteDragOver(event)" ondrop="entNoteDrop('${n.id}',event)" ondragend="entNoteDragEnd(this)" style="position:relative;background:#fff;padding:14px 40px 30px 15px;">
       <button onclick="entNoteDelete('${n.id}')" title="Delete note" aria-label="Delete note" style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#000;border:none;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;">&times;</button>
       <span aria-hidden="true" style="float:left;shape-outside:circle(52%);-webkit-shape-outside:circle(52%);width:34px;height:34px;border-radius:50%;background:#000;color:#fff;font-weight:800;font-size:15px;text-align:center;line-height:34px;margin:2px 12px 4px 0;">${i + 1}</span>
       <div class="ent-note" contenteditable="true" onblur="entNoteSave('${n.id}',this)" data-ph="Type a note…" style="font-family:inherit;font-size:14px;line-height:1.6;color:#1c1c1c;min-height:34px;outline:none;">${_esc(n.text || '')}</div>
+      <button type="button" class="ent-button ent-button-secondary" data-legacy-note="${encodeURIComponent(n.id)}">Add to actions →</button>
       <span title="Drag to reorder" style="position:absolute;bottom:7px;right:9px;cursor:grab;color:#c2c2c2;font-size:15px;line-height:1;user-select:none;">&#9776;</span>
     </div>`).join('');
   return `<div style="background:#8FA977;padding:16px 18px 20px;">
-    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:6px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">MY NOTES</div>
-    ${notes.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:12px;align-items:start;">${cards}</div>` : ''}
-    <button onclick="entAddNote()" style="display:block;width:100%;text-align:center;background:transparent;border:2px dashed #5c6158;color:#3a3f34;font-weight:800;letter-spacing:1px;padding:13px;cursor:pointer;font-size:13px;">&#43; ADD A NOTE</button>
+    <div style="background:#5c6158;color:#e9ebe6;font-weight:800;letter-spacing:3px;font-size:14px;text-align:center;padding:12px;margin-bottom:14px;">EARLIER CARD NOTES</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;margin-bottom:12px;align-items:start;">${cards}</div>
+    <p class="ent-muted">Your earlier notes are preserved here. Use NOTES / TO-DO above for new notes.</p>
   </div>`;
 }
 export function entAddNote() {

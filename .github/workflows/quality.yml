@@ -11,7 +11,7 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,4 +29,128 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Run Master Player and smoke tests
-        run: npm test
+        run: npm test -- --grep-invert "Habits mindset links and personal follow-through round trip|Habits links still navigate with session storage unavailable|Entrepreneur notes|Entrepreneur trough|Cosmic concept|Entrepreneur review renders|Citadel admin"
+      - name: Preserve private review screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: player-review-evidence
+          path: test-results/
+          retention-days: 7
+
+  focused-player-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify Habits round trips and Entrepreneur notes
+        run: npm test -- tests/habit-mindset.spec.js tests/entrepreneur-notes.spec.js --workers=2
+      - name: Preserve focused player review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focused-player-evidence
+          path: test-results/
+          retention-days: 7
+
+
+  trough-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify Entrepreneur trough on desktop and mobile
+        run: npm test -- tests/entrepreneur-trough.spec.js --workers=2
+      - name: Preserve private trough review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trough-review-evidence
+          path: test-results/
+          retention-days: 7
+
+  cosmic-concepts-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify Cosmic Library catalog on desktop and mobile
+        run: npm test -- tests/cosmic-concepts.spec.js --workers=2
+      - name: Preserve private catalog review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmic-concepts-evidence
+          path: test-results/
+          retention-days: 7
+
+  entrepreneur-navigation-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify both Entrepreneur navigation bars on desktop and mobile
+        run: npm test -- tests/entrepreneur-player.spec.js --grep "Entrepreneur review renders|Entrepreneur Library is readable" --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: entrepreneur-navigation-evidence
+          path: test-results/
+          retention-days: 7
+
+  citadel-admin-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Review Citadel boxes and owner-only Admin on desktop and mobile
+        run: npm test -- tests/citadel-admin.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: citadel-admin-evidence
+          path: test-results/
+          retention-days: 7
+

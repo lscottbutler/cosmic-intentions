@@ -1,0 +1,5 @@
+# Restore ten-minute practice pauses
+
+Scott requested the linked module editor retain longer practice silences, run exactly ten minutes, and remove the long dead-air ending. Timing revision3 restores narration1–9 at their original minute starts; final narration moves to565–595 seconds and closing bell plays595–600 immediately afterward. The former25-second ending silence is moved into practice after narration9. Slide durations are60 seconds for1–8,85 seconds for9,35 seconds for10, total600. Opening delay resets to0. Text/images/voice source and preview styling retained. Previous browser saved draft remains untouched until Save draft. Restore10-minute pauses is provided explicitly; older timing revisions migrate once, subsequent edits remain saved.
+
+Syntax and DOM behavioral checks passed: total600, passage positions, final source mapping to540–570, immediate source bell595–600, completion at600, save and restart. Actual browser audio playback and visual verification remain pending behind private preview authentication. Production, Supabase and Netlify settings unchanged. Bible update pending.

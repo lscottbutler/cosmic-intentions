@@ -1,0 +1,3 @@
+# Meditation draft using approved Gratitude presentation
+
+Scott selected NEW GRATITUDE as visual reference, superseding full white backgrounds. Reuse exact opening-card.webp artwork and native instruction box SVG geometry (1669×939 canvas; white box x290 y394 w1090 h286; copy container x300 y397 w1070 h275). Only the instruction text fades; background stays static. Existing ten narration passages and one-minute slots are retained, with existing full audio. Text normalized to continuous paragraphs to fit the reference box; font 24px with .04em spacing for longer passages. Shared template sources and Gratitude behavior unchanged. DOM checks passed; rendered fit and audio listening remain pending due preview authentication. Bible update pending.

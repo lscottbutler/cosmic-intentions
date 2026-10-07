@@ -1,0 +1,38 @@
+name: Feature tour review
+on:
+  pull_request:
+    paths:
+      - 'standalone/how-it-works*'
+      - 'standalone/tour-*'
+      - 'tests/feature-tour*'
+      - '.github/workflows/feature-tour-review.yml'
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          if python3 -c "import json; ts=json.load(open('standalone/tour-captures/index.json')); assert all('typing' in f for t in ts for f in t['frames'] if f['kind']=='type')"; then
+            npm test -- tests/feature-tour.spec.js --workers=2
+          else
+            npm test -- tests/feature-tour-capture.spec.js --workers=3 --grep 'capture (goals|thoughts|wins|cosmic-library|action-plan|ent-card|journal)$'
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: feature-tour-evidence
+          path: |
+            test-results/tour-captures
+            test-results/feature-tour-*/*.png
+            test-results/**/error-context.md
+            test-results/**/test-failed-*.png
+          retention-days: 7

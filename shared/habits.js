@@ -1,5 +1,6 @@
 import { RM_CIRCLE } from './card-builder.js';
-import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey } from '../app.js';
+import { LS, esc, syncHabitsToSupabase, syncHabitDoneToSupabase, dayKey, currentUser } from '../app.js';
+import { restoreHabitSupport } from './habit-mindset.js';
 import { setTaskWin, getWins } from './wins.js';
 import { renderRings } from './rings.js';
 /* ── DAILY TRACKER ───────────────────────────────────────
@@ -49,9 +50,35 @@ export function habitsToggleSection(open) { _open = !!open; }
 // Time-of-day sections shown as their own collapsible dropdowns (display label + order).
 const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH', ''];
 const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+const HABIT_PERIODS = [['MORNING', 'MORNING'], ['DAY', 'DAY'], ['EVENING', 'EVENING'], ['BEDTIME', 'BEFORE SLEEP']];
+let _selectedPeriod = 'MORNING';
 // Sections open FULLY EXPANDED by default; we only remember which ones the user collapses.
 const _closedCats = new Set();
 export function habitsSectionToggle(cat, open) { if (open) _closedCats.delete(cat); else _closedCats.add(cat); }
+
+/* Meditation-style circle controls for the four daily periods.
+   These are checklist shortcuts: existing habits and completion state stay put. */
+export function createHabitPeriodMenu() {
+  const nav = document.createElement('nav');
+  nav.className = 'habit-period-menu';
+  nav.setAttribute('aria-label', 'Habit time of day');
+  nav.innerHTML = HABIT_PERIODS.map(([cat, label], index) =>
+    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle" aria-hidden="true">${index + 1}</span><span class="habit-period-label">${label}</span></button>`).join('');
+  nav.addEventListener('click', event => {
+    const button = event.target.closest('[data-habit-period]');
+    if (!button) return;
+    const cat = button.dataset.habitPeriod;
+    _selectedPeriod = cat;
+    _closedCats.delete(cat);
+    showHabitView('daily');
+    const section = document.getElementById('habit-period-' + cat);
+    if (!section) return;
+    section.open = true;
+    section.querySelector('summary').focus({ preventScroll: true });
+    section.scrollIntoView({ behavior: 'instant', block: 'start' });
+  });
+  return nav;
+}
 
 function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }
@@ -162,11 +189,11 @@ export function pbMoveHabit(id, dir) {
 }
 
 /* One tickable habit row. */
-function _habitRow(h, on) {
-  const dom = _domain(h);
-  return `<div style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
-    <button onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
-    <span style="flex:1;min-width:0;font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span>
+function _habitRow(h, on, showDomain = true) {
+  const dom = showDomain ? _domain(h) : '';
+  return `<div class="habit-row" style="display:flex;gap:8px;align-items:center;padding:4px 2px;">
+    <button class="habit-check" aria-pressed="${on}" onclick="habitToggle('${h.id}')" title="${on ? 'Done — tap to undo' : 'Mark done'}" style="${RM_CIRCLE}font-size:14px;">${on ? '✓' : '○'}</button>
+    <div style="flex:1;min-width:0;"><span style="font-size:12px;line-height:1.45;color:${on ? '#8a8a8a' : 'var(--widget-text)'};${on ? 'text-decoration:line-through;' : ''}">${esc(h.name)}</span></div>
     ${dom ? `<span title="${esc(dom)}" style="flex-shrink:0;font-size:8px;font-weight:800;letter-spacing:.3px;color:var(--muted);border:1px solid var(--widget-border);border-radius:5px;padding:1px 4px;white-space:nowrap;">${esc(dom)}</span>` : ''}
   </div>`;
 }
@@ -230,9 +257,20 @@ export function renderRunThroughs() { renderMorningRun(); renderDayRun(); render
 /* ── Daily Tracker widget — a master list of EVERY habit, grouped by category
    (Morning/Day/Evening/Bedtime/Health/Unsorted). Ticks share the same per-day
    done state as the run-through cards, so checking here or there stays in sync. ── */
+export function showHabitView(view = 'daily') {
+  const editing = view === 'editor';
+  const daily = document.getElementById('habitsDailyView');
+  const editor = document.getElementById('habitsEditorView');
+  if (daily) daily.hidden = editing;
+  if (editor) editor.hidden = !editing;
+  if (editing) renderPBHabitList();
+  else renderHabits();
+}
+
 export function renderHabits() {
   const el = document.getElementById('habitsWidget');
   if (!el) return;
+  restoreHabitSupport(currentUser?.id || '', _closedCats);
 
   const d = _done();
   const groups = _grouped(getHabitList());
@@ -241,21 +279,25 @@ export function renderHabits() {
   let html = '';
   SECTION_ORDER.forEach(cat => {
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-    if (!items.length) return;
+    if (!items.length && !HABIT_PERIODS.some(([period]) => period === cat)) return;
     const doneN = items.filter(h => !!d[h.id]).length;
     const open = !_closedCats.has(cat);
-    html += `<details class="habit-drop" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
+    html += `<details class="habit-drop" id="habit-period-${cat}" data-habit-section="${cat}" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
       <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
         <span>${SECTION_LABEL[cat]}</span>
         <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
-      <div style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">${items.map(h => _habitRow(h, !!d[h.id])).join('')}</div>
+      <div class="habit-period-body" style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
+        <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], false)).join('')}</div>
+        ${items.length ? '' : '<p class="habit-period-empty">No habits in this section yet. Use Edit habits to add one.</p>'}
       </div>
     </details>`;
   });
-  el.innerHTML = html +
-    `<div style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
+  el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
+    `<div class="habit-health-note" style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
+  document.querySelectorAll('.habit-period-menu [data-habit-period]').forEach(button => {
+    button.setAttribute('aria-current', button.dataset.habitPeriod === _selectedPeriod ? 'location' : 'false');
+  });
 }
 
 /* ── Pegboard editor (banner-grouped, rename / recategorize / reorder / delete) ── */
@@ -338,6 +380,7 @@ export function openHabitsAt(cat) {
 
 if (typeof window !== 'undefined') {
   window.renderHabits = renderHabits;
+  window.showHabitView = showHabitView;
   window.openHabitsAt = openHabitsAt;
   window.renderMorningRun = renderMorningRun;
   window.renderRunThroughs = renderRunThroughs;

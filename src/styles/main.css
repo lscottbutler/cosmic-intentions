@@ -436,6 +436,17 @@ details.rm-drop[open]::details-content { height: auto; }
 .goal-workspace-page [hidden] { display:none!important; }
 .goal-workspace-page button:focus-visible, .goal-workspace-link:focus-visible { outline:3px solid #1e90ff; outline-offset:3px; }
 
+/* A goal stays above its three connected sections in My Roadmap. */
+.wgoal > details:not([open]) > .roadmap-goal-body { display:none; }
+.roadmap-goal-section { margin:0 0 24px; min-width:0; color:#15161a; }
+.roadmap-goal-section > h3 { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 14px; padding:12px 14px; border:1px solid #d8dce2; border-radius:8px; background:#f2f3f5; color:#15161a; font-size:20px; font-weight:700; }
+.roadmap-goal-section > h3 .roadmap-entry-count { font-size:13px; font-weight:400; }
+.roadmap-goal-todo > .wtabs { display:flex; flex-wrap:wrap; margin:0 0 12px; padding:0; }
+.roadmap-goal-entries .goal-entry-form { background:#fff; }
+.roadmap-goal-entries .goal-entry-form button { min-height:44px; }
+.roadmap-goal-entries .goal-entry-form button:focus-visible { outline:3px solid #1e90ff; outline-offset:3px; }
+.roadmap-goal-records h3 { overflow-wrap:anywhere; }
+
 .wcard-menu { height: 0; overflow: hidden; transition: height .92s ease, content-visibility .92s allow-discrete; content-visibility: hidden; }
 .wcard-menu.open { height: auto; content-visibility: visible; }
 
@@ -746,9 +757,9 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-section-title { font-size:15px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#26364b; margin:8px 0 12px; text-align:left; }
 #page-cosmiclibrary .cl-section-title--soon { color:#9aa7b6; margin-top:26px; }
 #page-cosmiclibrary .cl-imggrid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:6px 0 4px; }
-#page-cosmiclibrary .cl-card { border:none; background:none; padding:0; cursor:pointer; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.18); transition:transform .12s, box-shadow .12s; line-height:0; }
-#page-cosmiclibrary .cl-card:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.26); }
-#page-cosmiclibrary .cl-card img { width:100%; height:auto; display:block; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .cl-card { border:none; background:none; padding:0; cursor:pointer; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.18); transition:transform .12s, box-shadow .12s; line-height:0; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .cl-card:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.26); }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .cl-card img { width:100%; height:auto; display:block; }
 #page-cosmiclibrary .cl-card--cap { display:flex; flex-direction:column; background:#fff; }
 #page-cosmiclibrary .cl-card-cap { line-height:1.25; font-size:12px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; color:#26364b; padding:9px 8px 11px; text-align:center; }
 @media (max-width:560px){ #page-cosmiclibrary .cl-imggrid { grid-template-columns:repeat(2,1fr); } }
@@ -773,21 +784,24 @@ details.rm-drop[open]::details-content { height: auto; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(1) { background:#1c1c1c; }
 #page-cosmiclibrary .cl-lib-btn:nth-child(2) { background:#566270; }
 #page-cosmiclibrary .cl-lib-btn:hover { filter:brightness(1.12); }
-#page-cosmiclibrary .ent-force-groups { display:block; box-sizing:border-box; }   /* indent now comes from .pg-2col-main */
-#page-cosmiclibrary .ent-force-sec { margin:0 0 12px; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-groups { display:block; box-sizing:border-box; }   /* indent now comes from .pg-2col-main */
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec { margin:0 0 12px; }
 /* Each force is now a collapsible dropdown — the header toggles its cards. */
-#page-cosmiclibrary .ent-force-sec__head { list-style:none; cursor:pointer; display:block; }
-#page-cosmiclibrary .ent-force-sec__head::-webkit-details-marker { display:none; }
-#page-cosmiclibrary .ent-force-sec__bar { display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; padding:11px 16px; background:#eef2ea; border:1px solid #dbe4d4; border-radius:10px; }
-#page-cosmiclibrary .ent-force-sec__chev { color:#4d7c3a; font-size:15px; transition:transform .2s; flex-shrink:0; }
-#page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__chev { transform:rotate(180deg); }
-#page-cosmiclibrary .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:12px 2px 14px; max-width:640px; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__head { list-style:none; cursor:pointer; display:block; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__head::-webkit-details-marker { display:none; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__bar { display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Roboto Condensed',system-ui,sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; color:#4d7c3a; padding:11px 16px; background:#eef2ea; border:1px solid #dbe4d4; border-radius:10px; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__chev { color:#4d7c3a; font-size:15px; transition:transform .2s; flex-shrink:0; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec[open] .ent-force-sec__chev { transform:rotate(180deg); }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec__desc { font-size:14px; line-height:1.5; color:#667; margin:12px 2px 14px; max-width:640px; }
+/* Also remove closed contents from layout: the frame measures descendants,
+   and browser-default details hiding can leave their old boxes measurable. */
+#page-entrepreneurlibrary .ent-force-sec:not([open]) > :not(summary) { display:none !important; }
 /* display:grid only when the section is open, otherwise this ID-specific rule
    would override the browser's UA "hide closed <details> children" rule. */
-#page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px 14px; }
-#page-cosmiclibrary .ent-force-card { display:flex; flex-direction:column; }
-#page-cosmiclibrary .ent-force-why { font-size:12.5px; line-height:1.45; color:#555; margin-top:8px; }
-@media (max-width:560px){ #page-cosmiclibrary .ent-force-sec[open] .ent-force-sec__grid { grid-template-columns:repeat(2,1fr); } }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec[open] .ent-force-sec__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px 14px; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-card { display:flex; flex-direction:column; }
+:is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-why { font-size:12.5px; line-height:1.45; color:#555; margin-top:8px; }
+@media (max-width:560px){ :is(#page-cosmiclibrary, #page-entrepreneurlibrary) .ent-force-sec[open] .ent-force-sec__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 
 /* ── Reusable FULL-BLEED PAGE FRAME (from the Wins design) ──
    Colors come from CSS vars so each page sets its own palette. Fills top→bottom
@@ -2309,6 +2323,31 @@ input, textarea, select {
 .admin-save-btn:hover { opacity: 0.85; }
 .admin-save-status { font-size: 11px; color: var(--mid); }
 
+/* Light admin workspace. Page-box colors are scoped to these editors only. */
+#page-admin {
+  --off:#fff; --card:#fff; --border:#dde4ed; --border-2:#c9d7e5;
+  --black:#253347; --text:#253347; --mid:#58677a; --muted:#64748b; --accent:#e2edf7;
+  background:#fff; color:#253347;
+}
+#page-admin .admin-page { max-width:1100px; }
+#page-admin .admin-page h2 { color:#253347; }
+#page-admin .admin-block { background:#fff; border-color:#c9d7e5; }
+#page-admin .admin-block-hd { background:#f0f5fb; color:#355b80; flex-wrap:wrap; gap:6px; }
+#page-admin .admin-block-slug { display:none; }
+#page-admin .admin-block-num { background:#e2edf7; color:#355b80; }
+#page-admin .admin-toolbar::before { content:none; }
+#page-admin .admin-tb-btn { min-height:32px; background:#f0f5fb; color:#355b80; border:1px solid #d8e3ee; }
+#page-admin .admin-tb-btn:hover { background:#dce9f5; }
+#page-admin .admin-tb-inserts { margin:0; padding:0; border:0; }
+#page-admin .admin-editor { background:#fff!important; color:#253347!important; }
+#page-admin .admin-save-btn { min-height:38px; background:#e2edf7; color:#355b80; border:1px solid #c9d7e5; }
+#page-admin .admin-block-foot { flex-wrap:wrap; }
+#page-admin .ib-preview { margin:0; padding:12px; border-top:1px solid #dde4ed; background:#f9fbfd; }
+#page-admin .ib-preview-label { color:#58677a; letter-spacing:.04em; }
+#page-admin .ib-preview-body { border-color:#d8e3ee; background:#fff!important; color:#253347!important; box-shadow:none; }
+#page-admin :is(button,select,[contenteditable],.ci-admin-page-heading):focus-visible { outline:2px solid #6a87a6; outline-offset:3px; }
+@media(max-width:700px) { #page-admin .admin-page { padding:20px 14px; } }
+
 /* Home page video layout */
 .home-vid-block { border-radius: 10px; overflow: hidden; }
 .home-vid-block iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
@@ -3408,6 +3447,16 @@ input, textarea, select {
    (Players are separate files and are unaffected by this.)
 ─────────────────────────────────────────────────────────────────────────── */
 
+.habits-view-button {display:block;margin:0 0 18px;padding:10px 16px;border:0;border-radius:8px;background:#000;color:#fff;cursor:pointer;font:inherit;font-weight:700;}
+.habits-view-button:focus-visible {outline:2px solid #000;outline-offset:3px;}
+#habitsDailyView[hidden],#habitsEditorView[hidden] {display:none!important;}
+html.master-inline-daily-habits #page-habits {
+  color:#111;
+  --text:#111;
+  --widget-text:#111;
+  --muted:#666;
+  --widget-border:#ccc;
+}
 .dashboard-note-container{width:100%;margin-top:30px;margin-bottom:1rem;display:flex;justify-content:center;}
 .dashboard-note-box{width:100%;background:var(--card);border-left:4px solid var(--brand);border-top:1px solid var(--border-2);border-right:1px solid var(--border-2);border-bottom:1px solid var(--border-2);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;border-radius:0 4px 4px 0;}
 .note-pin-icon{font-size:1.1rem;line-height:1.4;}
@@ -3722,6 +3771,15 @@ input, textarea, select {
 }
 
 
+/* Goal creation: keep the save action beside the text field at every width. */
+#page-setup .pb-goal-add-entry{display:flex;align-items:stretch;gap:10px;margin-bottom:14px}
+#page-setup .pb-goal-add-save{flex:0 0 auto;min-width:76px;padding:0 14px;border:0;border-radius:7px;background:#111;color:#fff;font:800 14px Inter,sans-serif;cursor:pointer}
+#page-setup .pb-goal-add-save:hover,#page-setup .pb-goal-add-save:focus-visible{background:#333;outline:2px solid #e7bf23;outline-offset:2px}
+html.master-inline-goals #page-setup .pb-goal-add-save{background:#111!important;color:#fff!important}
+html.master-inline-goals #page-setup .pb-goal-add-save:hover,html.master-inline-goals #page-setup .pb-goal-add-save:focus-visible{background:#333!important}
+@media(max-width:480px){#page-setup .pb-goal-add-entry{gap:7px}#page-setup .pb-goal-add-save{min-width:66px;padding:0 10px}}
+
+
 /* CI V2 — Goals inside the LFM is a clean white working surface.
    Remove the legacy dark setup panels without affecting standalone pages. */
 html.master-inline-goals,
@@ -3865,6 +3923,18 @@ html.master-inline-mode .viz-side,
 html.master-inline-mode .colb-nav,
 html.master-inline-mode .colb-links {
   display: none !important;
+}
+/* An Entrepreneur deep link still needs a visible sign-in form when it is
+   opened without a session. Keep the existing account gate and form intact. */
+html.master-inline-ent-card #authModal.open,
+html.master-inline-admin #authModal.open {
+  display: flex !important;
+  position: relative;
+  inset: auto;
+  min-height: 520px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  align-items: center;
 }
 html.master-inline-mode .page-wrap,
 html.master-inline-mode .page.active {
@@ -4476,4 +4546,62 @@ html.master-inline-goals #page-setup .page-intro-card {
   .lfm-guide-panel p {
     font-size: 14px;
   }
+}
+
+/* Keep each written goal visible while its editing fields are closed. */
+.pb-goal-summary { cursor: pointer; list-style: none; }
+.pb-goal-summary::-webkit-details-marker { display: none; }
+.pb-goal-summary::marker { content: ''; }
+.pb-goal-heading { display: flex; align-items: flex-start; gap: 11px; min-width: 0; flex: 1; }
+.pb-goal-heading-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.pb-goal-label { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+.pb-goal-title { display: block; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; white-space: pre-wrap; }
+
+/* Reusable 75/25 mini card: content left, three compact controls right. */
+.ci-mini-card{display:grid!important;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:10px;align-items:stretch;padding:12px 14px;box-sizing:border-box}
+.ci-mini-card-main{min-width:0;align-self:center}
+.ci-mini-card-actions{min-width:0;display:grid;grid-template-rows:repeat(3,minmax(30px,auto));gap:4px;align-items:stretch}
+.ci-mini-card-action{width:100%;min-width:0;padding:4px 2px;border:1px solid #454545;border-radius:7px;background:#fff;color:#171717;font:800 11px/1.1 "Roboto Condensed",Arial,sans-serif;letter-spacing:.04em;cursor:pointer}
+.ci-mini-card-action:hover,.ci-mini-card-action:focus-visible{outline:2px solid #111;outline-offset:1px}
+.ci-mini-card-delete{background:#111;color:#fff}
+.ci-mini-card-ai{min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;font:800 15px/1 "Roboto Condensed",Arial,sans-serif;color:#111}
+.pb-goal-edit[hidden]{display:none!important}
+.pb-goal-edit{background:#2e2e2e;padding:12px 14px}
+.pb-goal-edit-actions{display:flex;gap:8px;margin-top:8px}
+.pb-goal-edit-actions button{padding:8px 14px;border:1px solid #fff;border-radius:7px;background:#111;color:#fff;font-weight:800;cursor:pointer}
+@media(max-width:480px){.ci-mini-card{gap:6px;padding:10px}.ci-mini-card-ai{font-size:12px;gap:2px}.ci-mini-card-action{font-size:10px}}
+
+/* The dedicated Entrepreneur Library shares the catalog styling above. Keep
+   its content padded and readable inside the unchanged Master Player shell. */
+#page-entrepreneurlibrary .wins-screen {
+  box-sizing: border-box;
+  padding: 20px 18px 34px !important;
+  color: #20241f;
+}
+#page-entrepreneurlibrary .cl-card:focus-visible,
+#page-entrepreneurlibrary .ent-force-sec__head:focus-visible {
+  outline: 3px solid #1e6eb9;
+  outline-offset: 3px;
+}
+
+/* Citadel closing note joins the icon trough and shares its approved grey fill. */
+html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] {
+  background: #747474;
+  color: #fff;
+}
+html.master-inline-citadel-note .ci-admin-page-box[data-page-box="2"] .ci-admin-page-box-placeholder {
+  color: inherit;
+}
+
+/* Give both Citadel notes an even inset, with the owner pen below the copy. */
+html.master-inline-citadel-note .ci-admin-page-box {
+  padding: 20px;
+}
+html.master-inline-citadel-note .ci-admin-page-box-content {
+  padding: 0;
+}
+html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
+  position: static;
+  margin-top: 12px;
+  text-align: right;
 }

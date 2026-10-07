@@ -779,93 +779,101 @@ async function regenerateGoalImage(idx, ev) {
   await fetchGoalImage(idx, intn.title);
 }
 
-export function renderPBIntentionList() {
+export function renderPBIntentionList(resetOpen = false) {
   const el = document.getElementById('pbIntentionList');
   if (!el) return;
+  const openGoals = resetOpen ? new Set() : new Set(
+    Array.from(el.querySelectorAll('details[data-goal-id][open]'), card => card.dataset.goalId)
+  );
   if (intentions.length === 0) {
     el.innerHTML = '<div style="font-size:12px;color:#AAAAAA;padding:4px 0;">No intentions yet.</div>';
     return;
   }
-  const catOptions = [
-    { value: '', label: '— Category —' },
-    { value: 'wealth',          label: 'Wealth'               },
-    { value: 'makingmoney',     label: 'Making Money'         },
-    { value: 'moneymanagement', label: 'Money Management'     },
-    { value: 'career',          label: 'Career'               },
-    { value: 'business',        label: 'Business'             },
-    { value: 'health',          label: 'Health'               },
-    { value: 'fitness',         label: 'Fitness'              },
-    { value: 'vitality',        label: 'Energy & Vitality'    },
-    { value: 'mindset',         label: 'Mindset'              },
-    { value: 'confidence',      label: 'Confidence'           },
-    { value: 'peace',           label: 'Peace of Mind'        },
-    { value: 'responsibility',  label: 'Full Responsibility'  },
-    { value: 'discipline',      label: 'Discipline & Habits'  },
-    { value: 'focus',           label: 'Focus & Productivity' },
-    { value: 'growth',          label: 'Growth'               },
-    { value: 'purpose',         label: 'Purpose'              },
-    { value: 'spirituality',    label: 'Spirituality'         },
-    { value: 'learning',        label: 'Learning & Mastery'   },
-    { value: 'creative',        label: 'Create'               },
-    { value: 'relationship',    label: 'Relationship'         },
-    { value: 'family',          label: 'Family'               },
-    { value: 'community',       label: 'Friends & Community'  },
-    { value: 'leadership',      label: 'Leadership'           },
-    { value: 'adventure',       label: 'Adventure & Travel'   },
-    { value: 'legacy',          label: 'Contribution & Legacy'},
-  ];
-  const fld = 'width:100%;box-sizing:border-box;padding:8px 12px;border:none;border-radius:7px;font-size:15px;color:#1a1a1a;';
-  const lbl = 'color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:10px;';
   // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
   const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
   el.innerHTML = intentions.map((i, idx) => {
-    const optHtml = catOptions.map(o =>
-      `<option value="${o.value}"${i.category === o.value ? ' selected' : ''}>${o.label}</option>`
-    ).join('');
+    const goalId = String(i.id ?? idx);
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     const _letr = goalLetter(i, idx);
     const _lci  = (typeof _letr === 'string' && /^[A-Z]$/.test(_letr)) ? _letr.charCodeAt(0) - 65 : idx;
     const gc    = GOAL_COLORS[((_lci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };   // same colored letter badge as the Citadel cards
     return `
-    <div id="pb-goal-${idx}" style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
-      <div style="padding:12px 14px;background:${shade.bg};display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div style="display:flex;align-items:center;gap:11px;min-width:0;">
+    <details id="pb-goal-${idx}" class="pb-goal-details" data-goal-id="${esc(goalId)}"${openGoals.has(goalId) ? ' open' : ''} style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);">
+      <summary class="pb-goal-summary ci-mini-card" style="background:${shade.bg};">
+        <div class="ci-mini-card-main pb-goal-heading">
           ${goalBadge(_letr, gc.bg, gc.text, 36)}
-          <span style="font-size:20px;font-weight:800;color:${shade.text};text-transform:uppercase;letter-spacing:.5px;">Goal ${_letr}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">
-          <span title="Auto-generate affirmations, beliefs, roadmap & more" style="font-size:20px;font-weight:800;letter-spacing:.5px;color:${shade.text};text-transform:uppercase;">AI</span>
-          <button role="switch" aria-checked="${aiOn}" onclick="pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
-            style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#111' : '#bbb'};transition:background .2s;">
-            <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
-          </button>
-          <button onclick="pbDeleteIntention(${idx})" title="Remove goal"
-            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;line-height:1;padding:0;">✕</button>
-        </div>
-      </div>
-      <div style="background:#2E2E2E;padding:12px 14px;">
-        <textarea maxlength="150" rows="2"
-          onchange="pbSaveIntentionTitle(${idx}, this.value)" style="${goalFld}">${esc(i.title)}</textarea>
-      </div>
-      <div style="background:#2E2E2E;padding:12px 14px;border-top:1px solid #3a3a3a;">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">STARTED</div>
-            <input type="date" value="${esc(i.startDate || '')}" onchange="saveCardDate(${idx},'startDate',this.value)" style="${fld}" />
-          </div>
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">COMPLETED</div>
-            <input type="date" value="${esc(i.targetDate || '')}" onchange="saveCardDate(${idx},'targetDate',this.value)" style="${fld}" />
-          </div>
-          <div style="flex:1;min-width:130px;">
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">CATEGORY</div>
-            <select onchange="pbSaveCategory(${idx}, this.value)" style="${fld}">${optHtml}</select>
+          <div class="pb-goal-heading-text" style="color:${shade.text};">
+            <span class="pb-goal-title">${esc(i.title || 'Add your goal')}</span>
           </div>
         </div>
+        <div class="ci-mini-card-actions" aria-label="Goal ${_letr} controls">
+          <button type="button" class="ci-mini-card-action" onclick="event.preventDefault();event.stopPropagation();pbEditGoal(${idx})" aria-label="Edit Goal ${_letr}">EDIT</button>
+          <div class="ci-mini-card-ai">
+            <span aria-hidden="true">AI</span>
+            <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.preventDefault();event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
+              style="flex:0 0 auto;width:46px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:${aiOn ? '#2E9C45' : '#D53636'};transition:background .2s;">
+              <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
+            </button>
+          </div>
+          <button type="button" class="ci-mini-card-action ci-mini-card-delete" onclick="event.preventDefault();event.stopPropagation();pbDeleteIntention(${idx})" aria-label="Delete Goal ${_letr}">DELETE</button>
+        </div>
+      </summary>
+      <div id="pb-goal-edit-${idx}" class="pb-goal-edit" hidden>
+        <textarea maxlength="150" rows="2" aria-label="Edit goal text" style="${goalFld}">${esc(i.title)}</textarea>
+        <div class="pb-goal-edit-actions">
+          <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>
+          <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
+        </div>
       </div>
-    </div>`;
+      <div class="pb-goal-fork" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#2E2E2E;padding:14px;border-top:1px solid #3a3a3a;">
+        <button type="button" onclick="pbOpenGoalBranch(${idx},'visualization')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#7C5CC4;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">VISUALIZATION</button>
+        <button type="button" onclick="pbOpenGoalBranch(${idx},'action-plan')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#D62828;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">ROADMAP</button>
+      </div>
+    </details>`;
   }).join('');
+}
+
+export function pbEditGoal(idx) {
+  const details = document.getElementById('pb-goal-' + idx);
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  if (!details || !panel) return;
+  details.open = true;
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) panel.querySelector('textarea')?.focus();
+}
+
+export function pbCancelGoalEdit(idx) {
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  if (!panel) return;
+  const editor = panel.querySelector('textarea');
+  if (editor) editor.value = intentions[idx]?.title || '';
+  panel.hidden = true;
+}
+
+export async function pbSaveGoalEdit(idx) {
+  const panel = document.getElementById('pb-goal-edit-' + idx);
+  const editor = panel?.querySelector('textarea');
+  if (!editor || !editor.value.trim()) {
+    toast('Enter your goal.', 'error');
+    return;
+  }
+  await pbSaveIntentionTitle(idx, editor.value);
+  const title = document.querySelector('#pb-goal-' + idx + ' .pb-goal-title');
+  if (title) title.textContent = intentions[idx]?.title || '';
+  panel.hidden = true;
+}
+
+export function pbOpenGoalBranch(idx, action) {
+  if (!intentions[idx] || !['visualization', 'action-plan'].includes(action)) return;
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'ci-open-goal-branch', action, goalIndex: idx }, location.origin);
+    return;
+  }
+  const url = new URL('/players/master-player.html', location.origin);
+  url.searchParams.set('start', action);
+  url.searchParams.set('goal', String(idx));
+  location.assign(url.toString());
 }
 
 /* Per-goal AI on/off. Persisted to the dedicated `ai_enabled` Supabase column.

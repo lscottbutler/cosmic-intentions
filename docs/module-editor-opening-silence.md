@@ -1,0 +1,5 @@
+# Opening silence before narration
+
+Adds Silence before narration (seconds), 0–120, saved in draft and exported JSON. Existing drafts default to zero. Opening image/text is visible while audio remains paused; after the delay the unchanged full recording starts. All narration/silence timestamps, later slide boundaries, playhead and seek range shift by the delay. Base card durations remain 600 seconds; added opening silence extends first card and total session (5 seconds => 10:05). No spoken audio is cut. Sound-off applies to delayed audio. Seeking before the offset pauses/rewinds audio, seeking after maps session position to recording position. Pause/resume respects the opening interval. Canonical player source and Gratitude behavior unchanged.
+
+Syntax and DOM-level tests passed: zero-delay regression, five-second opening, delayed start, shifted markers, seek through opening silence, pause/resume and 10:05 completion. Browser audio/render verification pending behind password wall. Production/Supabase/privacy unchanged. Bible update pending.

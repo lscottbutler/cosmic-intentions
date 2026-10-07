@@ -9,15 +9,19 @@ Follow the repository root AGENTS.md. These instructions record Scott's directio
 - Verify the requested visible result. Code values alone do not prove visual agreement.
 - Preserve unrelated user work. Never restore an entire older master-player.html to fix one component.
 
+## Authorized frame color amendment — 2026-09-30
+
+Scott requested replacing Dodger Blue with dark grey on all players. Use charcoal `#292929` for the shared outer frame and Meditation frame. The earlier blue baseline remains recoverable at `dd9db0f3376b0849b68880cb7db488cf0b1b6395`. Desktop/mobile before-and-after review confirmed unchanged geometry in run `36663994741`, artifact `11076115020`. This color direction does not authorize changing trough fills, artwork, layout, controls or behavior.
+
 ## Protected meditation frame
 
 Reference checkpoint: `9b56b51fffbd208445be3eb8270be87a8a0e55ad` in `players/master-player.html` and `players/meditation.html`.
 
 Preserve all of the following unless Scott explicitly requests changing that feature:
 
-1. The lower left and right blue borders visually align with the upper meditation player. The upper SVG uses a 35-unit stroke on a 1920-unit canvas; the lower sides follow `experienceFrame.clientWidth * 35 / 1920` through `--meditation-side-border`. Do not replace this with a fixed 35 CSS pixels.
+1. The lower left and right charcoal-grey borders visually align with the upper meditation player. The upper SVG uses a 35-unit stroke on a 1920-unit canvas; the lower sides follow `experienceFrame.clientWidth * 35 / 1920` through `--meditation-side-border`. Do not replace this with a fixed 35 CSS pixels.
 2. The controls area matches the upper trough grey (`var(--trough-fill)`, `#747474`) with its curved inner bottom edge, as explicitly requested by Scott on 2026-09-24.
-3. The outer bottom edge is straight and the outer bottom corners are square, filled in Dodger Blue `#1e90ff`. The bottom-only background fill on `.shell.meditation-player-mode` preserves the controls curve and does not square off the upper title.
+3. The outer bottom edge is straight and the outer bottom corners are square, filled in charcoal grey `#292929`. The bottom-only background fill on `.shell.meditation-player-mode` preserves the controls curve and does not square off the upper title.
 4. Preserve the existing bottom-border thickness, controls and spacing during tasks targeting something else.
 
 For unrelated edits, leave these geometry rules and the side-width calculation untouched. If an authorized change to shared styling could affect this frame, compare just this affected border region with the reference before handoff. Do not claim that this instruction file is an automated regression test or a technical write lock.

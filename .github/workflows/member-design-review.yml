@@ -1,0 +1,58 @@
+name: Member design comparison review
+on:
+  pull_request:
+    paths:
+      - 'standalone/member-design-test*'
+      - 'tests/member-design-test.spec.js'
+      - 'tests/citadel-dashboard.spec.js'
+      - 'shared/citadel-dashboard-review.js'
+      - 'shared/goal-workspace.js'
+      - 'shared/wrapup.js'
+      - 'src/main.js'
+      - 'src/styles/main.css'
+      - 'tests/roadmap-goal-sections.spec.js'
+      - 'tests/new-gratitude.spec.js'
+      - 'players/new-gratitude-session.html'
+      - '.github/workflows/member-design-review.yml'
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:template
+      - run: npx playwright install --with-deps chromium
+      - run: npm test -- tests/member-design-test.spec.js tests/citadel-dashboard.spec.js tests/roadmap-goal-sections.spec.js tests/meditation-audio.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: member-design-review-evidence
+          path: test-results/
+          retention-days: 7
+
+  new-gratitude-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:template
+      - run: npx playwright install --with-deps chromium
+      - run: npm test -- tests/new-gratitude.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: new-gratitude-review-evidence
+          path: test-results/
+          retention-days: 7

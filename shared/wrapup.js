@@ -374,8 +374,7 @@ export function wrapupStoryToggle() {
 // (not tied to any goal). Stored in ci_wrapup_actions as [{id,text,done}].
 function _wrapActs()      { return LS.get('ci_wrapup_actions') || []; }
 function _saveWrapActs(a) { LS.set('ci_wrapup_actions', a); }
-export function wrapAddAction() {
-  const input = document.getElementById('wrapActionInput');
+export function wrapAddAction(input = document.getElementById('wrapActionInput')) {
   const text = (input?.value || '').trim(); if (!text) return;
   const a = _wrapActs(); a.unshift({ id: Date.now(), text: text.slice(0, 160), done: false });
   _saveWrapActs(a); if (input) input.value = ''; renderWrapup();
@@ -594,7 +593,13 @@ function _todayChecklist() {
   // Launch with the first goal's My Actions tab already expanded (default tab is
   // 'my'), so the user immediately sees something actionable — not a wall of
   // identical collapsed bars. Only forced once; user toggles are respected after.
-  if (!_didDefaultOpen && items[0]) { _openGoals.add(items[0].idx); _didDefaultOpen = true; }
+  if (!_didDefaultOpen && items[0]) {
+    const params = new URLSearchParams(location.search);
+    const selected = params.get('masterInline') === 'action-plan' && params.has('goal')
+      ? Number(params.get('goal')) : -1;
+    _openGoals.add(items.some(item => item.idx === selected) ? selected : items[0].idx);
+    _didDefaultOpen = true;
+  }
   let total = 0, done = 0, rows = '', fullRows = '';
   let allTaskCards = '';   // MY TASK LIST: every proven action across all goals, flattened into one list
   items.forEach(({ it, idx }) => {
@@ -670,6 +675,14 @@ function _todayChecklist() {
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<div class="wgoal">
+
+      <details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
+      <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
+        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(goalCase(it.title))}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
+      </summary>
+      <div class="roadmap-goal-body" style="padding:10px 2px 4px;">
+        <section class="roadmap-goal-section roadmap-goal-todo" data-goal-section="todo">
+          <h3>TO DO</h3>
       <div class="wtabs">
         <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
         <button id="wtab-both-${idx}" class="wtab-combine${activeTab === 'both' ? ' wtab-active' : ''}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" aria-label="Show My Actions and Roadmap together" aria-pressed="${activeTab === 'both'}">
@@ -677,12 +690,6 @@ function _todayChecklist() {
         </button>
         <button id="wtab-roadmap-${idx}" class="wtab${activeTab === 'roadmap' ? ' wtab-active' : ''}" style="background:${ROADMAP_COLOR};color:#fff;" aria-pressed="${activeTab === 'roadmap'}" onclick="wrapTab(${idx},'roadmap')">ROADMAP${hasAi ? ` ${_aiRowArr.length}` : ''}</button>
       </div>
-      <details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
-      <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
-        <span style="display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;">${goalBadge(letter, gc.bg, gc.text, 24)}<span style="min-width:0;">${esc(goalCase(it.title))}</span></span><span class="rm-caret2" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:10px;line-height:1;">▶</span>
-      </summary>
-      <div style="padding:10px 2px 4px;">
-        <button type="button" class="goal-workspace-link" data-goal-id="${esc(String(it.id))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open goal workspace · Notes / To-do / Journal</button>
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
           <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:#000;border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
@@ -691,6 +698,8 @@ function _todayChecklist() {
           ${roadmapBox}
         </div>
         <div id="wtab-panel-roadmap-${idx}" style="display:${activeTab === 'roadmap' ? 'block' : 'none'};">${roadmapBox}${resourcesBlock}</div>
+        </section>
+        ${typeof window.roadmapGoalEntriesHTML === 'function' ? window.roadmapGoalEntriesHTML(it.id) : ''}
       </div>
       </details>
     </div>`;
@@ -879,6 +888,7 @@ export async function wrapupRegenerate(btn) {
 }
 
 export function renderWrapup() {
+  window.captureRoadmapGoalDrafts?.();
   if (typeof window.renderGoalWorkspaceTasks === "function") window.renderGoalWorkspaceTasks();
   const el = document.getElementById('wrapupWidget');
   if (!el) return;

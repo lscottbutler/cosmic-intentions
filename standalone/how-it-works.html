@@ -1,62 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How Cosmic Intentions works</title>
-<style>
-  :root{
-    --mono:'Courier New','IBM Plex Mono',monospace;
-    --ink:#1C2230; --paper:#F4F5F7; --muted:#8A8F98; --brand:#F5A623; --blue:#577590;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    padding:40px 20px}
-  .wrap{max-width:1180px;margin:0 auto}
-  .lede{text-align:center;margin-bottom:40px}
-  .lede h1{font-size:34px;font-weight:800;letter-spacing:.3px;margin-bottom:10px}
-  .lede p{color:var(--muted);font-size:16px}
-  .lede .kicker{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--brand);
-    font-weight:800;margin-bottom:14px}
-  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
-  @media(max-width:900px){.row{grid-template-columns:1fr}}
-  .panel{display:flex;flex-direction:column}
-  .panel .cap{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:1px;
-    color:var(--blue);margin:0 0 10px;text-align:center}
-  .panel .cap b{color:var(--ink)}
-  .frame{background:#fff;border:1px solid #E4E6EB;border-radius:16px;overflow:hidden;
-    box-shadow:0 8px 30px rgba(28,34,48,.06);height:760px}
-  .frame iframe{width:100%;height:100%;border:0;display:block}
-  .foot{text-align:center;margin-top:40px;font-family:var(--mono);font-size:11px;
-    letter-spacing:2px;color:var(--muted)}
-  .foot b{color:var(--brand)}
-</style>
-</head>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How it works · Cosmic Intentions</title><link rel="stylesheet" href="how-it-works.css"><script src="how-it-works.js" defer></script></head>
 <body>
-  <div class="wrap">
-    <div class="lede">
-      <div class="kicker">HOW IT WORKS</div>
-      <h1>Every goal gets a concrete plan.</h1>
-      <p>Type your goal. Get an expert roadmap. Break any step down as far as you need — and learn from people who did it.</p>
-    </div>
-
-    <div class="row">
-      <div class="panel">
-        <div class="cap">① <b>Your AI Roadmap</b></div>
-        <div class="frame"><iframe src="demo-roadmap.html?embed=1" loading="lazy" title="AI Roadmap"></iframe></div>
-      </div>
-      <div class="panel">
-        <div class="cap">② <b>Break It Down</b></div>
-        <div class="frame"><iframe src="demo-breakdown.html?embed=1" loading="lazy" title="Break It Down"></iframe></div>
-      </div>
-      <div class="panel">
-        <div class="cap">③ <b>Learn From the Greats</b></div>
-        <div class="frame"><iframe src="demo-greats.html?embed=1" loading="lazy" title="Learn From the Greats"></iframe></div>
-      </div>
-    </div>
-
-    <div class="foot">POWERED BY <b>COSMIC INTENTIONS</b></div>
-  </div>
-</body>
-</html>
+<header class="site-header"><a href="landing-design-review.html" class="wordmark">COSMIC INTENTIONS</a><a href="landing-design-review.html" class="back-link">Explore CI <span aria-hidden="true">↗</span></a></header>
+<main>
+<section class="intro"><p class="eyebrow">HOW IT WORKS</p><h1>See your next step.<br><span>Then make it yours.</span></h1><p class="lede">Watch the clicks. Follow the steps. Get to know the tools that bring your goals into your everyday life.</p><a class="primary" id="watch-all" href="#tour-player">Watch the full walkthrough <span aria-hidden="true">↓</span></a></section>
+<section class="workspace" id="tour-player" aria-label="Guided feature tours">
+ <aside class="feature-sidebar"><div class="sidebar-heading"><h2>Choose a feature</h2><span id="feature-count"></span></div><label class="search"><span class="sr-only">Find a feature</span><input id="feature-search" type="search" placeholder="Find a feature…"></label><nav id="feature-list" aria-label="Feature tours"></nav><p id="search-empty" hidden>No matching features. Try another name.</p><div class="pending-tours"><p class="feature-group">More tours to follow</p><p>Mind Loop</p><p>Daily rings</p></div></aside>
+ <div class="player-column">
+  <div class="tour-heading"><div><p class="eyebrow" id="tour-group">YOUR DIRECTION</p><h2 id="tour-title">Loading your tours…</h2><p id="tour-description"></p></div><span class="sample-tag">Sample walkthrough</span></div>
+  <div class="screen-viewport" id="screen-viewport"><div class="screen" id="screen"><img id="tour-image" alt="" draggable="false"><div id="typing-field" aria-hidden="true" hidden><span id="typed-text"></span><span class="typing-caret"></span></div><div id="spotlight" aria-hidden="true"></div><div id="cursor" aria-hidden="true"><svg viewBox="0 0 24 30"><path d="M2 1v24l6-6 5 10 4-2-5-9h9Z"/></svg><i></i></div><button id="hotspot" class="hotspot" aria-label="Show the result of this step" hidden></button><div class="screen-label" aria-hidden="true">COSMIC INTENTIONS · GUIDED TOUR</div></div></div>
+  <div class="caption"><span id="step-number" class="step-number">01</span><div><p class="caption-kicker" id="action-label">LOOK</p><p id="step-caption" aria-live="polite">Your feature tours are loading.</p></div></div>
+  <div class="playback" aria-label="Tour playback controls"><div class="transport"><button id="previous" aria-label="Previous step">←</button><button id="play" class="primary" disabled>Play tour</button><button id="next" aria-label="Next step">→</button><button id="replay" aria-label="Replay tour">↺</button></div><div class="view-controls"><label>Speed <select id="speed"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label><button id="zoom" aria-pressed="false">Enlarge screen</button></div></div>
+  <div id="step-progress" class="step-progress" aria-label="Tour steps"></div>
+  <p class="tour-note">Recorded with fictional sample content. These clicks demonstrate CI; they don’t change your account.</p>
+  <details class="step-transcript"><summary>Read the steps</summary><ol id="transcript"></ol></details>
+  <p class="status" id="tour-status" role="status"></p>
+ </div>
+</section>
+<section class="more"><p class="eyebrow">GO DEEPER</p><h2>A closer look at your roadmap.</h2><p>Follow the existing examples of planning, breaking down a task and learning from experienced people.</p><div class="demo-links"><a href="demo-roadmap.html">Your AI Roadmap <span>↗</span></a><a href="demo-breakdown.html">Break It Down <span>↗</span></a><a href="demo-greats.html">Learn From the Greats <span>↗</span></a></div></section>
+</main><footer>COSMIC INTENTIONS <span>Build a practice around your direction.</span></footer>
+</body></html>

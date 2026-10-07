@@ -1,0 +1,3 @@
+# Ten-slide instruction rough draft
+
+Ten existing Coming Back to Yourself passages, one minute each (600 seconds). Black text on white backgrounds in existing Master Player frame. Uses existing complete 10-minute audio recording, including its closing bell; no halfway gong. Sound off displays full spoken passage. Separate local draft key preserves previous relaxation edits. Text/timing edits do not regenerate or retime the full audio; warning states this limitation. Draft remains proposed. Syntax verified; visual desktop/mobile and real audio verification remain blocked by private preview authentication. Production, template sources, Supabase and privacy unchanged. Bible update pending.

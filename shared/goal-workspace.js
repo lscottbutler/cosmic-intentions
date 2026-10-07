@@ -5,6 +5,9 @@ import { goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction }
 
 let selectedGoalId = null;
 let initialSelectionRead = false;
+// Visit-only drafts survive task check-offs and action-list rerenders. They
+// remain separate for each goal, entry type and saved entry.
+const roadmapDrafts = new Map();
 
 export function goalWorkspaceRecords(goalId, records = readNotes()) {
   const matches = n => String(n.cat === 'task' ? linkedGoalId(n.task || {}, n) : n.goal || '') === String(goalId);
@@ -62,8 +65,8 @@ export function openGoalWorkspace(goalId) {
 function selectedGoal() { return intentions.find(g => String(g.id) === selectedGoalId); }
 function activeWorkspace() { return document.getElementById('page-goalworkspace')?.classList.contains('active'); }
 
-function actionOptions(note) {
-  const actions = goalWorkspaceTaskContexts(intentions.findIndex(g => String(g.id) === selectedGoalId));
+function actionOptions(note, goalId = selectedGoalId) {
+  const actions = goalWorkspaceTaskContexts(intentions.findIndex(g => String(g.id) === String(goalId)));
   const key = note?.taskKey || '';
   const missing = key && !actions.some(task => taskNoteKey(task) === key);
   return `<option value=""${!key ? ' selected' : ''}>Whole goal — no specific action</option>` +
@@ -71,16 +74,63 @@ function actionOptions(note) {
     actions.map(task => `<option value="${esc(taskNoteKey(task))}"${taskNoteKey(task) === key ? ' selected' : ''}>${esc((task.kind === 'my' ? 'My Actions' : 'Roadmap') + ' · ' + task.code + ' · ' + task.taskText)}</option>`).join('');
 }
 
-function entryForm(cat, note) {
+function entryForm(cat, note, goalId = selectedGoalId, roadmap = false) {
   const journal = cat === 'note';
   const title = journal ? 'Journal entry' : 'Note';
+  const draft = roadmap ? roadmapDrafts.get(JSON.stringify([String(goalId), cat, note?.id || ''])) : null;
   const stamp = note?.ts ? new Date(note.ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-  return `<form class="goal-entry-form" data-cat="${cat}" data-entry-id="${esc(note?.id || '')}" data-goal-id="${esc(selectedGoalId)}" onsubmit="event.preventDefault();goalWorkspaceSaveEntry(this)">
+  return `<form class="goal-entry-form" data-cat="${cat}" data-entry-id="${esc(note?.id || '')}" data-goal-id="${esc(String(goalId))}"${draft ? ' data-dirty="true"' : ''} onsubmit="event.preventDefault();goalWorkspaceSaveEntry(this)">
     ${stamp ? `<p class="goal-entry-date">${esc(stamp)}</p>` : ''}
-    <label>${note ? title : journal ? 'Add a journal entry' : 'Add a note'}<textarea rows="3" maxlength="10000" placeholder="${journal ? 'Reflect on this goal…' : 'Capture a note for this goal…'}" oninput="goalWorkspaceEntryChanged(this)" ${note ? 'onchange="goalWorkspaceSaveEntry(this.form)"' : ''}>${esc(note?.text || '')}</textarea></label>
-    <label class="goal-entry-action-label">Related action<select class="goal-entry-action" onchange="goalWorkspaceEntryChanged(this);${note ? 'goalWorkspaceSaveEntry(this.form)' : ''}">${actionOptions(note)}</select></label>
-    <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="submit">${note ? 'Save changes' : journal ? 'Save journal entry' : 'Save note'}</button></div>
+    <label>${note ? title : journal ? 'Add a journal entry' : 'Add a note'}<textarea rows="3" maxlength="10000" placeholder="${journal ? 'Reflect on this goal…' : 'Capture a note for this goal…'}" oninput="goalWorkspaceEntryChanged(this)" ${note ? 'onchange="goalWorkspaceSaveEntry(this.form)"' : ''}>${esc(draft?.text ?? note?.text ?? '')}</textarea></label>
+    <label class="goal-entry-action-label">Related action<select class="goal-entry-action" onchange="goalWorkspaceEntryChanged(this);${note ? 'goalWorkspaceSaveEntry(this.form)' : ''}">${actionOptions(draft ? { ...note, taskKey: draft.taskKey } : note, goalId)}</select></label>
+    <div class="task-note-footer"><span class="task-note-status" role="status">${esc(draft?.status || (note ? 'Saved' : ''))}</span><button type="submit">${note ? 'Save changes' : journal ? 'Save journal entry' : 'Save note'}</button></div>
   </form>`;
+}
+
+export function captureRoadmapGoalDrafts() {
+  document.querySelectorAll('#page-myroadmap .roadmap-goal-entries .goal-entry-form').forEach(form => {
+    const key = JSON.stringify([form.dataset.goalId, form.dataset.cat, form.dataset.entryId || '']);
+    if (form.dataset.dirty !== 'true') { roadmapDrafts.delete(key); return; }
+    roadmapDrafts.set(key, { text: form.querySelector('textarea').value,
+      taskKey: form.querySelector('.goal-entry-action').value,
+      status: form.querySelector('.task-note-status').textContent });
+  });
+}
+
+function roadmapRecordMarkup(record, goalId) {
+  return record.cat === 'task' ? `<article class="master-task-note">
+    <div class="master-task-note-source"><strong>${esc(record.task.code)}</strong><span>${record.task.kind === 'roadmap' ? 'Roadmap' : 'My Actions'}</span></div>
+    <h3>${esc(record.task.taskText)}</h3>${editorHTML(record.task, record)}</article>` : entryForm(record.cat, record, goalId, true);
+}
+
+export function roadmapGoalEntriesHTML(goalId) {
+  const records = goalWorkspaceRecords(goalId);
+  return `<div class="roadmap-goal-entries" data-goal-id="${esc(String(goalId))}">
+    <section class="roadmap-goal-section" data-goal-section="notes">
+      <h3>Notes <span class="roadmap-entry-count">${records.notes.length}</span></h3>
+      <div class="roadmap-goal-records" data-entry-type="notes">${records.notes.map(n => roadmapRecordMarkup(n, goalId)).join('') || '<p class="goal-workspace-empty">No notes for this goal yet.</p>'}</div>
+      ${entryForm('goal-note', null, goalId, true)}
+    </section>
+    <section class="roadmap-goal-section" data-goal-section="journal">
+      <h3>Journal <span class="roadmap-entry-count">${records.journal.length}</span></h3>
+      <div class="roadmap-goal-records" data-entry-type="journal">${records.journal.map(n => roadmapRecordMarkup(n, goalId)).join('') || '<p class="goal-workspace-empty">No journal entries for this goal yet.</p>'}</div>
+      ${entryForm('note', null, goalId, true)}
+    </section>
+  </div>`;
+}
+
+export function refreshRoadmapGoalEntries(source) {
+  document.querySelectorAll('#page-myroadmap .roadmap-goal-entries').forEach(goal => {
+    const records = goalWorkspaceRecords(goal.dataset.goalId);
+    for (const type of ['notes', 'journal']) {
+      const section = goal.querySelector(`[data-goal-section="${type}"]`);
+      section.querySelector('.roadmap-entry-count').textContent = String(records[type].length);
+      const host = section.querySelector('.roadmap-goal-records');
+      if (host.contains(source) || host.querySelector('[data-dirty="true"]')) continue;
+      host.innerHTML = records[type].map(n => roadmapRecordMarkup(n, goal.dataset.goalId)).join('') ||
+        `<p class="goal-workspace-empty">No ${type === 'notes' ? 'notes' : 'journal entries'} for this goal yet.</p>`;
+    }
+  });
 }
 
 export function goalWorkspaceEntryChanged(input) {
@@ -95,6 +145,7 @@ export function goalWorkspaceSaveEntry(form) {
   const status = form.querySelector('.task-note-status');
   if (error) { status.textContent = error; return false; }
   delete form.dataset.dirty;
+  roadmapDrafts.delete(JSON.stringify([form.dataset.goalId, form.dataset.cat, form.dataset.entryId || '']));
   status.textContent = 'Saved';
   if (!form.dataset.entryId) {
     form.querySelector('textarea').value = '';
@@ -102,15 +153,16 @@ export function goalWorkspaceSaveEntry(form) {
     renderGoalWorkspaceNotes();
   }
   refreshGoalActionEntries();
+  refreshRoadmapGoalEntries();
   window.renderTaskNotesList?.();
   return !!record;
 }
 
-function savePendingEntries() {
-  for (const form of document.querySelectorAll('#page-goalworkspace .goal-entry-form[data-dirty="true"]')) {
+function savePendingEntries(root = '#page-goalworkspace') {
+  for (const form of document.querySelectorAll(`${root} .goal-entry-form[data-dirty="true"]`)) {
     if (!goalWorkspaceSaveEntry(form)) return false;
   }
-  for (const editor of document.querySelectorAll('#page-goalworkspace .task-note-editor[data-dirty="true"]')) {
+  for (const editor of document.querySelectorAll(`${root} .task-note-editor[data-dirty="true"]`)) {
     if (!window.taskNoteSave(editor)) return false;
   }
   return true;
@@ -170,6 +222,7 @@ export function goalWorkspaceAddTask(form) {
 }
 
 export function renderGoalWorkspaceNotes(source) {
+  refreshRoadmapGoalEntries(source);
   if (!activeWorkspace()) return;
   refreshGoalActionEntries();
   const eligibleGoals = goalWorkspaceGoals();
@@ -215,7 +268,10 @@ function refreshGoalActionEntries() {
 }
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('pagehide', () => { if (activeWorkspace()) savePendingEntries(); });
+  window.addEventListener('pagehide', () => {
+    if (activeWorkspace()) savePendingEntries();
+    else if (document.getElementById('page-myroadmap')?.classList.contains('active')) savePendingEntries('#page-myroadmap');
+  });
   window.addEventListener('storage', event => {
     if (event.key === 'ci_notes') renderGoalWorkspaceNotes();
   });
