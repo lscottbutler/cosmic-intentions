@@ -10,6 +10,8 @@
  const addNote=document.getElementById('add-note');
  let pendingDashboard=false,dashboardLoadTimer=0;
  const menu=document.getElementById('review-menu');
+ const menuTrigger=document.getElementById('review-menu-trigger');
+ menuTrigger.addEventListener('click',()=>menu.showModal());
  const features={
   home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
   goals:['Goals','Keep your direction visible, in your own words.','Select a goal to choose Visualization or Roadmap. ADD A GOAL opens the entry field.'],
