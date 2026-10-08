@@ -1,7 +1,7 @@
 #cosmicConceptLibrary{container-type:inline-size;color:#20291f;background:#f7f8f4;border:1px solid #c7cec3;border-radius:10px;margin:0 0 28px;overflow:hidden}
 #cosmicConceptLibrary *{box-sizing:border-box}
 #cosmicConceptLibrary [hidden]{display:none!important}
-#cosmicConceptLibrary .cl-concepts-header{background:#5c6158;color:#fff;padding:24px 22px}
+#cosmicConceptLibrary .cl-concepts-header{position:relative;background:#5c6158;color:#fff;padding:24px 66px 24px 22px}
 #cosmicConceptLibrary .cl-concepts-eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;margin:0 0 8px;color:#e4e9df}
 #cosmicConceptLibrary h2{font-family:inherit;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;margin:0 0 10px}
 #cosmicConceptLibrary .cl-concepts-header>p:last-child{font-size:15px;line-height:1.55;max-width:650px;margin:0;color:#f2f4ee}
@@ -85,3 +85,9 @@
 #cosmicConceptLibrary :is(.cl-research-guide,.cl-lesson-research):not([open])>div{display:none!important}
 @container(max-width:650px){#cosmicConceptLibrary .cl-research-guide-grid,#cosmicConceptLibrary .cl-research-start{grid-template-columns:minmax(0,1fr)}}
 @container(max-width:400px){#cosmicConceptLibrary .cl-research-guides{padding:14px 10px 0}#cosmicConceptLibrary .cl-research-guide-body{padding:12px 10px}#cosmicConceptLibrary .cl-research-facts{grid-template-columns:minmax(0,1fr)}#cosmicConceptLibrary .cl-research-source{padding:10px}}
+
+#cosmicConceptLibrary .cl-concepts-toggle{position:absolute;top:12px;right:12px;display:grid;place-items:center;width:44px;height:44px;padding:10px;border:0;border-radius:5px;background:transparent;color:#fff;cursor:pointer}
+#cosmicConceptLibrary .cl-concepts-toggle:hover{background:#ffffff1a}
+#cosmicConceptLibrary .cl-concepts-toggle svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+#cosmicConceptLibrary .cl-concepts-toggle[aria-expanded="true"] svg{transform:rotate(90deg)}
+#cosmicConceptLibrary .cl-concepts-header{padding-right:66px}

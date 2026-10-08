@@ -11,10 +11,12 @@ export function mountCosmicConceptLibrary(host) {
   host.setAttribute('aria-labelledby', 'cosmicConceptTitle');
   host.innerHTML = `
     <header class="cl-concepts-header">
+      <button type="button" class="cl-concepts-toggle" aria-expanded="true" aria-controls="cosmicConceptBody" aria-label="Collapse 500 Lessons for Life"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 8 8-8 8"/></svg></button>
       <p class="cl-concepts-eyebrow">500 CONCEPTS · 20 THEMES</p>
       <h2 id="cosmicConceptTitle">500 Lessons for Life</h2>
       <p>Ideas, frameworks and practices for everyday life. Open a theme to explore each concept and what it means.</p>
     </header>
+    <div id="cosmicConceptBody">
     <div class="cl-research-guides" aria-label="Research and learning guide"><p>Loading research notes…</p></div>
     <div class="cl-concepts-controls">
       <label class="cl-concepts-search" for="cosmicConceptSearch">Find a concept
@@ -42,7 +44,15 @@ export function mountCosmicConceptLibrary(host) {
         </ol>
       </details>`).join('')}</div>
     <p class="cl-concepts-empty" hidden>No concepts found. Try another word, a concept number, or a different theme.</p>
-    <p class="cl-concepts-footnote">Numbers are for reference, not a ranking. These concepts have different levels of research support.</p>`;
+    <p class="cl-concepts-footnote">Numbers are for reference, not a ranking. These concepts have different levels of research support.</p></div>`;
+
+  const toggle = host.querySelector('.cl-concepts-toggle');
+  const body = host.querySelector('#cosmicConceptBody');
+  toggle.addEventListener('click', () => {
+    body.hidden = !body.hidden;
+    toggle.setAttribute('aria-expanded', String(!body.hidden));
+    toggle.setAttribute('aria-label', (body.hidden ? 'Expand' : 'Collapse') + ' 500 Lessons for Life');
+  });
 
   const search = host.querySelector('#cosmicConceptSearch');
   const select = host.querySelector('#cosmicConceptTheme');
