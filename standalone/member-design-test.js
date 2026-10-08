@@ -424,6 +424,9 @@
  window.addEventListener('resize',schedule);
  renderFeature('home');
  const initialFeature=new URLSearchParams(location.search).get('feature');
- if(initialFeature&&features[initialFeature])openFeature(initialFeature);
+ if(initialFeature&&features[initialFeature]){
+  if(frame.contentDocument?.querySelector('.shell'))openFeature(initialFeature);
+  else frame.addEventListener('load',()=>openFeature(initialFeature),{once:true});
+ }
 })();
 

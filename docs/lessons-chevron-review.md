@@ -4,3 +4,5 @@ Added a top-right collapse/expand chevron to the 500 Lessons for Life header. In
 
 Review: http://127.0.0.1:8084/standalone/member-design-test.html ? menu, Cosmic Library.
 Recovery: c98e864. Only shared/cosmic-concepts.js and .css changed in the app. Root work preserved. Production, Netlify and Supabase unchanged. This record supplements the Bible; Drive Bible sync pending.
+
+Follow-up: Scott reported a missing chevron with meditation choices over the Library. Fresh Chrome checks did not reproduce that combination. Fixed the review direct-link startup race: requested destination now waits for the player frame to load. Direct Library link verified at 1040 and 390 pixels: chevron visible, collapse/reopen passes, meditation menu hidden. Production unchanged.
