@@ -52,9 +52,13 @@ import { readFileSync } from 'node:fs';
 // Review baseline only: three mode choices, ten-minute bells and readable reminders.
 // Mock state/cue checks passed; rendered/browser verification and short VO remain pending.
 // This baseline is not production approval. Existing Guided passages are preserved.
+// Scott requested all three modes at 1/2/3/5/10/15/30/45/60 minutes.
+// Scoped scripts and controls verified in Chrome at 1040/390px; 27 lifecycle checks pass.
+// Frame CSS is byte-equivalent after newline normalization. Recovery: 75e883f.
+// New narration uses labelled browser-voice drafts; recorded Guided 10m retained.
 const lockedFiles = {
-  "players/master-player.html": "11b73b9c8f94821a3aa3298d2e48a3fa01ec4c3a",
-  "players/meditation.html": "205369e508c3fd80cc4e1b8dab0129c307cecea9"
+  "players/master-player.html": "cf093d952cb5f69629b0774efe5841a0640e1773",
+  "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

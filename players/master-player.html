@@ -275,6 +275,9 @@
             <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5" aria-label="5 Minutes"><span class="med-time-circle" aria-hidden="true">5</span><span class="med-time-label">Minutes</span></button></div>
             <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10" aria-label="10 Minutes"><span class="med-time-circle" aria-hidden="true">10</span><span class="med-time-label">Minutes</span></button></div>
             <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15" aria-label="15 Minutes"><span class="med-time-circle" aria-hidden="true">15</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="30" aria-label="30 Minutes"><span class="med-time-circle" aria-hidden="true">30</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="45" aria-label="45 Minutes"><span class="med-time-circle" aria-hidden="true">45</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="60" aria-label="60 Minutes"><span class="med-time-circle" aria-hidden="true">60</span><span class="med-time-label">Minutes</span></button></div>
           </div>
           <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
         </section>
@@ -371,7 +374,7 @@
         // The shared lower trough always closes the full page, after its content.
         if(deck.parentElement!==shell||shell.lastElementChild!==deck)shell.appendChild(deck);
       }
-      const meditationTimes=[1,2,3,5,10,15];let meditationMinutes=10,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      const meditationTimes=[1,2,3,5,10,15,30,45,60];let meditationMinutes=10,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
       let relaxationModuleEnabled=sessionStorage.getItem('ci-relaxation-module')==='on',relaxationThenVisualization=false;
       const requestedCard=Number.parseInt(params.get('card'),10);
       let cardIndex;
@@ -775,7 +778,7 @@
         if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':meditationMode==='lightly-guided'?'Lightly Guided':'Unguided';
         const guidanceNote=document.getElementById('guidedNote');
         guidanceNote.hidden=false;
-        guidanceNote.textContent=meditationMode==='lightly-guided'?'10-minute rough draft: readable breath reminders at 3:00 and 7:00. Short reminder voice-over is pending.':meditationMode==='unguided'?'10-minute rough draft: opening and closing bells only. No halfway gong.':meditationMinutes===10?'Guided: ten narration passages with practice pauses.':'Guided narration is available for 10 minutes.';
+        guidanceNote.textContent=meditationMode==='unguided'?meditationMinutes+' minutes: opening and closing bells, with silence between.':meditationMode==='guided'&&meditationMinutes===10?'10 minutes: recorded Guided narration with practice pauses.':meditationMinutes+' minutes: '+(meditationMode==='lightly-guided'?'brief reminders and longer quiet spaces.':'fuller guidance and practice pauses.')+' Draft script spoken with your browser voice; on-screen text is included.';
         const relaxationToggle=document.querySelector('[data-relaxation-toggle]');
         if(relaxationToggle){
           relaxationToggle.setAttribute('aria-pressed',String(relaxationModuleEnabled));
@@ -841,7 +844,7 @@
         if(command==='back'){homeMode();return}
         if(command==='menu'){setMeditationMenuOpen(!meditationMenuOpen,true);return}
         if(command==='toggle'){sendMeditation('toggle');return}
-        if(command==='mode'){meditationMode=['unguided','lightly-guided','guided'][(['unguided','lightly-guided','guided'].indexOf(meditationMode)+1)%3];meditationMinutes=10;reloadMeditation();return}
+        if(command==='mode'){meditationMode=['unguided','lightly-guided','guided'][(['unguided','lightly-guided','guided'].indexOf(meditationMode)+1)%3];reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);
         if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
         if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}

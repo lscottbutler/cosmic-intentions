@@ -50,17 +50,19 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
 00</span>
   </button>
 </main>
+<script src="/players/meditation-sessions.js"></script>
 <script>
 (()=>{
-  const allowed=[15,10,5,3,2,1,0.5,0.25];
+  const allowed=CIMeditationSessions.durations;
   const search=new URLSearchParams(location.search);
   const requested=Number(search.get('t'));
   const external=search.get('external')==='1';
   if(external)document.body.classList.add('external');
   const minutes=allowed.includes(requested)?requested:15;
   const totalMs=minutes*60000;
-  const mode=search.get('mode')||'unguided';
-  const draftSession=minutes===10&&['unguided','lightly-guided'].includes(mode);
+  const mode=['unguided','lightly-guided','guided'].includes(search.get('mode'))?search.get('mode'):'unguided';
+  const draftSession=!(minutes===10&&mode==='guided');
+  const cues=CIMeditationSessions.session(minutes,mode);
   const player=document.getElementById('player');
   const button=document.getElementById('timer');
   const value=document.getElementById('value');
@@ -85,15 +87,12 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(!textStage)return;
     const elapsed=(totalMs-remaining)/1000;
     if(draftSession){
-      const cues=mode==='lightly-guided'
-        ?[{start:0,end:15,text:'Let breathing happen naturally, notice its sensations, and gently return when you realize your attention has wandered.'},{start:180,end:190,text:'If your attention has wandered, gently return to your breath.'},{start:420,end:430,text:'Begin again with the feeling of breathing.'}]
-        :[{start:0,end:5,text:'Begin'}];
-      const cue=cues.find(c=>elapsed>=c.start&&elapsed<c.end);
+      const cue=state==='ready'?cues[0]:cues.find(c=>elapsed>=c.start&&elapsed<c.end);
       const p=textStage.querySelector('p');
       p.textContent=state==='complete'?'Session complete':cue?.text||'';
       const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
       p.style.opacity=!cue||state!=='running'||reduced?1:Math.max(0,Math.min(1,elapsed-cue.start,cue.end-elapsed));
-      const progress=elapsed/600,dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
+      const progress=elapsed/(totalMs/1000),dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
       return;
     }
     const starts=[0,60,120,180,240,300,360,420,480,565];
@@ -102,7 +101,26 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(i!==textIndex||state==='complete'){p.textContent=state==='complete'?'Session complete':textCards[i].replace(/\\s+/g,' ').trim();textIndex=i}
     const end=i===9?600:starts[i+1],local=elapsed-starts[i];
     p.style.opacity=state!=='running'||matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.max(0,Math.min(1,local,end-elapsed));
-    const progress=elapsed/600,dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
+    const progress=elapsed/(totalMs/1000),dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
+  }
+
+  let spokenCue=null;
+  const voiceStatus=document.createElement('div');
+  voiceStatus.setAttribute('role','status');voiceStatus.style.cssText='position:absolute;top:8px;left:8px;right:8px;z-index:5;text-align:center;background:white;color:#292929;font:14px Arial';voiceStatus.hidden=true;player.append(voiceStatus);
+  function stopSpeech(){if('speechSynthesis' in window)speechSynthesis.cancel();spokenCue=null;}
+  function syncSpeech(elapsed){
+    if(mode==='unguided')return;
+    if(!('speechSynthesis' in window)){voiceStatus.textContent='Voice unavailable on this browser. Read the guidance on screen.';voiceStatus.hidden=false;return;}
+    if(state==='paused'){speechSynthesis.pause();return;}
+    if(state!=='running'){stopSpeech();return;}
+    const cue=cues.find(c=>elapsed>=c.start&&elapsed<c.end);
+    if(!cue){if(spokenCue!==null)stopSpeech();return;}
+    if(spokenCue===cue.start){if(speechSynthesis.paused)speechSynthesis.resume();return;}
+    stopSpeech();spokenCue=cue.start;
+    const utterance=new SpeechSynthesisUtterance(cue.text);utterance.lang='en-US';utterance.rate=0.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Voice could not play. Guidance remains available on screen.';voiceStatus.hidden=false;}};
+    voiceStatus.hidden=true;speechSynthesis.resume();speechSynthesis.speak(utterance);
   }
 
   let voicePending=false,voiceGeneration=0;
@@ -112,9 +130,11 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   function syncNarration(){
     if(bellAudio){
       const elapsed=(totalMs-remaining)/1000;
-      const ringing=elapsed<5||elapsed>=595&&elapsed<600;
+      const end=totalMs/1000;
+      syncSpeech(elapsed);
+      const ringing=elapsed<5||elapsed>=end-5&&elapsed<end;
       if(state!=='running'||!ringing){voiceGeneration++;bellAudio.pause();return}
-      const position=595+(elapsed<5?elapsed:elapsed-595);
+      const position=595+(elapsed<5?elapsed:elapsed-(end-5));
       if(Math.abs(bellAudio.currentTime-position)>.35)bellAudio.currentTime=position;
       if(bellAudio.paused&&!voicePending){voicePending=true;const generation=voiceGeneration;bellAudio.play().then(()=>{voicePending=false;if(generation!==voiceGeneration||state!=='running')bellAudio.pause()}).catch(()=>{voicePending=false;if(generation!==voiceGeneration||state!=='running')return;clearTick();remaining=Math.max(0,deadline-performance.now());state='paused';render();button.setAttribute('aria-label','Resume meditation and retry bell')})}
       return;
@@ -141,7 +161,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
       });
     }
   }
-  addEventListener('pagehide',()=>{voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause()});
+  addEventListener('pagehide',()=>{stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause()});
 
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
@@ -185,10 +205,11 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
   }
   function seek(ratio){
+    stopSpeech();
     const progress=Math.max(0,Math.min(1,Number(ratio)||0));
     remaining=totalMs*(1-progress);
-    if(state==='running')deadline=performance.now()+remaining;
-    else if(remaining<=0)state='complete';
+    if(remaining<=0){state='complete';clearTick();}
+    else if(state==='running')deadline=performance.now()+remaining;
     else if(state==='ready')state='paused';
     render();
   }
