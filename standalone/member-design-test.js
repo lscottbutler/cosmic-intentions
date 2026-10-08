@@ -10,17 +10,8 @@
  const addNote=document.getElementById('add-note');
  let pendingDashboard=false,dashboardLoadTimer=0;
  const menu=document.getElementById('review-menu');
- const menuTrigger=document.createElement('button');menuTrigger.id='review-menu-trigger';menuTrigger.type='button';menuTrigger.setAttribute('aria-label','Open site menu');menuTrigger.setAttribute('aria-haspopup','dialog');menuTrigger.setAttribute('aria-controls','review-menu');
- const menuIcon=document.createElement('span');menuIcon.setAttribute('aria-hidden','true');menuIcon.textContent='☰';menuTrigger.append(menuIcon);
- document.querySelector('.orientation > div').append(menuTrigger);
- const menuPositionStyle=document.createElement('style');menuPositionStyle.textContent=`
- .orientation > div:first-child{position:relative;flex:1;min-width:0;padding-bottom:48px}
- #review-menu-trigger{position:absolute;right:0;bottom:0;width:44px;height:44px;border:2px solid #747474;border-radius:50%;background:#292929;color:#fff;display:grid;place-items:center;padding:0;font-size:28px;line-height:1}
- body.original #review-menu-trigger{display:none}
- `;document.head.append(menuPositionStyle);
- menuTrigger.addEventListener('click',()=>menu.showModal());
  const features={
-  home:['Citadel','Your next actions, notes and journal — connected to your goals.','Review your list in one click, or capture something while it is fresh.'],
+  home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
   goals:['Goals','Keep your direction visible, in your own words.','Select a goal to choose Visualization or Roadmap. ADD A GOAL opens the entry field.'],
   'daily-habits':['Habits','Work through your existing daily routine.','Choose MORNING, DAY, EVENING or BEFORE SLEEP. Select a habit circle to check it off.'],
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
@@ -419,7 +410,7 @@
  document.querySelectorAll('[name=appearance]').forEach(input=>input.addEventListener('change',()=>{enabled=input.value==='test';document.body.classList.toggle('original',!enabled);inspect();}));
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
  addNote.addEventListener('click',()=>openDashboard('notes'));
- document.getElementById('write-journal').addEventListener('click',()=>openDashboard('journal'));
+
  document.getElementById('to-do').addEventListener('click',()=>openDashboard('tasks'));
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
