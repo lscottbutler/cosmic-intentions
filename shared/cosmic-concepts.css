@@ -1,10 +1,10 @@
 #cosmicConceptLibrary{container-type:inline-size;color:#20291f;background:#f7f8f4;border:1px solid #c7cec3;border-radius:10px;margin:0 0 28px;overflow:hidden}
 #cosmicConceptLibrary *{box-sizing:border-box}
 #cosmicConceptLibrary [hidden]{display:none!important}
-#cosmicConceptLibrary .cl-concepts-header{position:relative;background:#5c6158;color:#fff;padding:24px 66px 24px 22px}
-#cosmicConceptLibrary .cl-concepts-eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;margin:0 0 8px;color:#e4e9df}
-#cosmicConceptLibrary h2{font-family:inherit;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;margin:0 0 10px}
-#cosmicConceptLibrary .cl-concepts-header>p:last-child{font-size:15px;line-height:1.55;max-width:650px;margin:0;color:#f2f4ee}
+#cosmicConceptLibrary .cl-concepts-header,#page-cosmiclibrary .cl-library-header{position:relative;background:#5c6158;color:#fff;padding:24px 66px 24px 22px}
+#cosmicConceptLibrary .cl-concepts-eyebrow,#page-cosmiclibrary .cl-library-eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;margin:0 0 8px;color:#e4e9df}
+#cosmicConceptLibrary h2,#page-cosmiclibrary .cl-library-header h2{font-family:inherit;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;margin:0 0 10px}
+#cosmicConceptLibrary .cl-concepts-header>p:last-child,#page-cosmiclibrary .cl-library-description{font-size:15px;line-height:1.55;max-width:650px;margin:0;color:#f2f4ee}
 #cosmicConceptLibrary .cl-concepts-controls{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:end;gap:12px;padding:20px 18px 12px}
 #cosmicConceptLibrary label,#cosmicConceptLibrary .cl-concepts-theme-filter{display:grid;gap:7px;min-width:0;font-size:12px;line-height:1.4;font-weight:800;letter-spacing:.4px}
 #cosmicConceptLibrary input,#cosmicConceptLibrary select,#cosmicConceptLibrary button{font:inherit}
@@ -37,7 +37,7 @@
 #cosmicConceptLibrary .cl-concepts-empty{margin:0 18px 18px;padding:20px;background:#fff;border:1px solid #c7cec3;border-radius:6px;color:#475342;font-size:15px;line-height:1.6}
 #cosmicConceptLibrary .cl-concepts-footnote{margin:0;padding:0 18px 18px;color:#586451;font-size:12px;line-height:1.5}
 @container(max-width:650px){#cosmicConceptLibrary .cl-concepts-controls{grid-template-columns:minmax(0,1fr) auto}#cosmicConceptLibrary .cl-concepts-search{grid-column:1/-1}#cosmicConceptLibrary .cl-concept-grid{grid-template-columns:minmax(0,1fr)}}
-@container(max-width:400px){#cosmicConceptLibrary .cl-concepts-header{padding:20px 14px}#cosmicConceptLibrary h2{font-size:23px}#cosmicConceptLibrary .cl-concepts-controls{padding:16px 10px 10px;gap:10px}#cosmicConceptLibrary .cl-concepts-themes{padding:0 10px 14px}#cosmicConceptLibrary .cl-concepts-count{padding-left:10px}#cosmicConceptLibrary summary{padding:12px 9px;gap:9px}#cosmicConceptLibrary .cl-concept-theme-number{width:30px;height:34px;font-size:14px}#cosmicConceptLibrary .cl-concept-theme-title{font-size:16px}#cosmicConceptLibrary .cl-concept-grid{padding:10px;gap:10px}#cosmicConceptLibrary .cl-concept-number{flex-basis:40px;font-size:14px}#cosmicConceptLibrary .cl-concept-item>div{padding:12px 10px}}
+@container(max-width:400px){#cosmicConceptLibrary .cl-concepts-header,#page-cosmiclibrary .cl-library-header{padding:20px 14px}#cosmicConceptLibrary h2,#page-cosmiclibrary .cl-library-header h2{font-size:23px}#cosmicConceptLibrary .cl-concepts-controls{padding:16px 10px 10px;gap:10px}#cosmicConceptLibrary .cl-concepts-themes{padding:0 10px 14px}#cosmicConceptLibrary .cl-concepts-count{padding-left:10px}#cosmicConceptLibrary summary{padding:12px 9px;gap:9px}#cosmicConceptLibrary .cl-concept-theme-number{width:30px;height:34px;font-size:14px}#cosmicConceptLibrary .cl-concept-theme-title{font-size:16px}#cosmicConceptLibrary .cl-concept-grid{padding:10px;gap:10px}#cosmicConceptLibrary .cl-concept-number{flex-basis:40px;font-size:14px}#cosmicConceptLibrary .cl-concept-item>div{padding:12px 10px}}
 
 #cosmicConceptLibrary .cl-research-guides{padding:18px 18px 0}
 #cosmicConceptLibrary .cl-research-intro{margin:0 0 8px;font-size:15px;line-height:1.55}
@@ -90,4 +90,12 @@
 #cosmicConceptLibrary .cl-concepts-toggle:hover{background:#ffffff1a}
 #cosmicConceptLibrary .cl-concepts-toggle svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 #cosmicConceptLibrary .cl-concepts-toggle[aria-expanded="true"] svg{transform:rotate(90deg)}
-#cosmicConceptLibrary .cl-concepts-header{padding-right:66px}
+#cosmicConceptLibrary .cl-concepts-header,#page-cosmiclibrary .cl-library-header{padding-right:66px}
+
+#page-cosmiclibrary .cl-section-drop{container-type:inline-size}
+#page-cosmiclibrary .cl-library-header{border:1px solid #c7cec3;border-radius:10px;box-sizing:border-box}
+#page-cosmiclibrary .cl-library-eyebrow,#page-cosmiclibrary .cl-library-description{display:block}
+#page-cosmiclibrary .cl-library-chevron{position:absolute;top:22px;right:22px;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+#page-cosmiclibrary .cl-section-drop[open]>.cl-library-header .cl-library-chevron{transform:rotate(90deg)}
+#page-cosmiclibrary .cl-library-header:focus-visible{outline:3px solid #1e90ff;outline-offset:2px}
+#page-cosmiclibrary .cl-library-eyebrow{font-size:16px;line-height:1.55}
