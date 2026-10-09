@@ -32,6 +32,67 @@
   'ent-card':['Entrepreneur Skill Cards','Work with the selected skill.','Use the existing tabs for Mindset, Go Deeper and My Notes.'],
   admin:['Admin','Your existing administrator workspace.','Owner access is required. Member presentation changes do not apply here.']
  };
+
+ const searchForm=document.getElementById('player-search');
+ const searchInput=document.getElementById('player-search-input');
+ const searchDialog=document.getElementById('player-search-results');
+ const searchStatus=document.getElementById('player-search-status');
+ const searchList=document.getElementById('player-search-list');
+ let catalogPromise,searchVersion=0;
+ const normalizeSearch=value=>String(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ document.getElementById('player-search-close').addEventListener('click',()=>searchDialog.close());
+ searchDialog.addEventListener('close',()=>{searchVersion++;searchInput.focus();});
+ function searchDocuments(doc=frame.contentDocument){
+  if(!doc)return [];
+  const result=[doc];
+  for(const child of doc.querySelectorAll('iframe')){try{result.push(...searchDocuments(child.contentDocument));}catch(_){/* Only same-origin content can be searched. */}}
+  return result;
+ }
+ async function openSearchResult(item){
+  searchStatus.textContent='Opening '+item.title+'...';
+  if(item.key){
+   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start=ent-card&ent='+encodeURIComponent(item.key);}
+   else frame.contentWindow.postMessage({type:'ci-lfm-select',action:'ent-card',entKey:item.key},location.origin);
+   renderFeature('ent-card');searchDialog.close();return;
+  }
+  const previousDocs=searchDocuments();
+  const changingPage=current!==item.action;
+  if(changingPage)openFeature(item.action);
+  if(!item.target&&!item.want){searchDialog.close();return;}
+  const version=searchVersion;
+  for(let attempt=0;attempt<60;attempt++){
+   if(version!==searchVersion)return;
+   const docs=searchDocuments();
+   const target=docs.map(doc=>item.target?doc.getElementById(item.target):[...doc.querySelectorAll('.cl-card--cap')].find(el=>el.getAttribute('title')===item.want)).find(Boolean);
+   if(target&&(!changingPage||!previousDocs.includes(target.ownerDocument))){
+    const doc=target.ownerDocument;
+    const filter=doc.getElementById('cosmicConceptSearch'),theme=doc.getElementById('cosmicConceptTheme');
+    if(filter&&item.target){filter.value='';if(theme)theme.value='';filter.dispatchEvent(new doc.defaultView.Event('input',{bubbles:true}));}
+    for(let parent=target.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS')parent.open=true;}
+    const body=doc.getElementById('cosmicConceptBody');
+    if(item.target&&body?.hidden)doc.querySelector('.cl-concepts-toggle')?.click();
+    searchDialog.close();
+    // Let the existing iframe height observer catch up before revealing the result.
+    setTimeout(()=>{target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'center'});},350);
+    return;
+   }
+   await new Promise(resolve=>setTimeout(resolve,150));
+  }
+  searchStatus.textContent='The page is open, but the item could not be located. Try searching again after it finishes loading.';
+ }
+ searchForm.addEventListener('submit',async event=>{
+  event.preventDefault();const query=searchInput.value.trim();if(!query){searchInput.focus();return;}
+  const version=++searchVersion;searchList.replaceChildren();searchStatus.textContent='Searching pages and library...';searchDialog.showModal();
+  try{
+   if(!catalogPromise)catalogPromise=fetch('/player-search-index.json').then(response=>{if(!response.ok)throw Error('Search unavailable');return response.json();}).catch(error=>{catalogPromise=null;throw error;});
+   const catalog=await catalogPromise;if(version!==searchVersion)return;
+   const pages=Object.entries(features).filter(([action])=>action!=='admin').map(([action,[title,text]])=>({action,title,text,group:'CI page'}));
+   const terms=normalizeSearch(query).split(/\s+/);
+   const matches=[...pages,...catalog].filter(item=>terms.every(term=>normalizeSearch(item.title+' '+item.text+' '+item.group).includes(term)));
+   searchStatus.textContent=matches.length?matches.length+' result'+(matches.length===1?'':'s')+' for "'+query+'"':'No results. Try another word or a page name.';
+   for(const item of matches){const button=document.createElement('button');button.type='button';const title=document.createElement('strong'),detail=document.createElement('span');title.textContent=item.title;detail.textContent=item.group+' - '+item.text;button.append(title,detail);button.addEventListener('click',()=>openSearchResult(item));searchList.append(button);}
+  }catch(_){if(version===searchVersion)searchStatus.textContent='Search could not load. Check your connection and try again.';}
+ });
  const inlinePages={setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',gratitude:'gratitude',wins:'wins',tasknotes:'task-notes',goalworkspace:'goal-workspace',cosmiclibrary:'cosmic-library',entrepreneurlibrary:'entrepreneur-library',entcard:'ent-card',admin:'admin'};
  let enabled=true,current='home',last=null,scheduled=false;
  let newGratitude=false,gratitudeModule=0;
@@ -425,8 +486,8 @@
  renderFeature('home');
  const initialFeature=new URLSearchParams(location.search).get('feature');
  if(initialFeature&&features[initialFeature]){
-  if(frame.contentDocument?.querySelector('.shell'))openFeature(initialFeature);
-  else frame.addEventListener('load',()=>openFeature(initialFeature),{once:true});
+  if(initialFeature==='new-gratitude')openFeature(initialFeature);
+  else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();
 

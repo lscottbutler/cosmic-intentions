@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
 <title>CI member design test</title>
-<link rel="stylesheet" href="member-design-test.css?v=header-menu-20261008">
-<script src="member-design-test.js?v=header-menu-20261008" defer></script>
+<link rel="stylesheet" href="member-design-test.css?v=player-search-20261009">
+<script src="member-design-test.js?v=player-search-20261009" defer></script>
 </head>
 <body>
 <header class="review-header"><fieldset class="comparison"><legend>Compare appearance</legend><label><input type="radio" name="appearance" value="original"> Original</label><label><input type="radio" name="appearance" value="test" checked> Test improvements</label></fieldset></header>
 <main>
-<section class="orientation" aria-labelledby="feature-title"><div><p class="eyebrow">YOUR INNER CITADEL</p><h1 id="feature-title">Citadel</h1><p id="feature-purpose">Start with a goal, or choose a practice from your existing menu.</p><p id="feature-next">Open a goal to choose Visualization or Roadmap.</p></div><div class="shortcuts"><button id="begin" type="button">Open Goals</button><button id="add-note" type="button" aria-haspopup="dialog">Add a note</button><button id="to-do" type="button" aria-haspopup="dialog">TO DO</button></div><button id="review-menu-trigger" type="button" aria-label="Open site menu" aria-haspopup="dialog" aria-controls="review-menu"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button></section>
+<section class="orientation" aria-labelledby="feature-title"><div><p class="eyebrow">YOUR INNER CITADEL</p><h1 id="feature-title">Citadel</h1><p id="feature-purpose">Start with a goal, or choose a practice from your existing menu.</p><p id="feature-next">Open a goal to choose Visualization or Roadmap.</p></div><div class="shortcuts"><button id="begin" type="button">Open Goals</button><button id="add-note" type="button" aria-haspopup="dialog">Add a note</button><button id="to-do" type="button" aria-haspopup="dialog">TO DO</button></div><button id="review-menu-trigger" type="button" aria-label="Open site menu" aria-haspopup="dialog" aria-controls="review-menu"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button><form id="player-search" role="search"><input id="player-search-input" type="search" aria-label="Search CI" placeholder="Search" maxlength="120" autocomplete="off"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2"/></svg></button></form></section>
 <p class="review-note">Preview examples · not signed in. The dashboard uses the existing action and entry stores. Sample edits are for review.</p>
 <iframe id="ci-review-frame" src="/players/master-player.html?card=0&amp;preview=1" title="Current Cosmic Intentions member application" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
 <p id="review-status" role="status">Loading the current build…</p>
@@ -27,6 +27,7 @@
 </div>
 </dialog>
 <dialog id="review-menu" aria-labelledby="review-menu-title"><header><h2 id="review-menu-title">Site menu</h2><button id="close-menu" type="button">Close</button></header><nav id="review-menu-items" aria-label="CI pages"></nav></dialog>
+<dialog id="player-search-results" aria-labelledby="player-search-title"><header><h2 id="player-search-title">Search CI</h2><button id="player-search-close" type="button">Close</button></header><p id="player-search-status" role="status"></p><div id="player-search-list"></div></dialog>
 </body>
 </html>
 
