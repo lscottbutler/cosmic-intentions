@@ -48,3 +48,19 @@ html{scrollbar-gutter:stable;overflow-anchor:none}
 @media(max-width:650px){#player-search{left:calc(54% + 30px);right:12px}#player-search input{padding:8px}#player-search button{flex-basis:36px}}
 
 #player-search-results{width:min(640px,calc(100vw - 24px));max-height:80dvh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:20px;background:var(--surface);color:var(--ink);font-family:Arial,sans-serif}#player-search-results::backdrop{background:#0006}#player-search-results header{display:flex;align-items:center;justify-content:space-between;gap:16px}#player-search-results h2{font-size:22px;margin:0}#player-search-results button{min-height:44px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);padding:10px}#player-search-status{font-size:14px;line-height:1.5}#player-search-list{display:grid;gap:8px}#player-search-list button{text-align:left;display:grid;gap:5px;width:100%;overflow-wrap:anywhere}#player-search-list span{font-size:13px;line-height:1.5;color:var(--muted)}
+
+/* Opening administrator text belongs inside the shared upper header. */
+main{padding-top:24px}
+.orientation{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:18px 24px;padding:26px;align-items:start}
+.orientation>div:first-child{grid-column:1;grid-row:1}
+.orientation .shortcuts{grid-column:2;grid-row:1}
+#header-admin-note{grid-column:1;grid-row:2 / span 2;min-width:0}
+#header-admin-note-frame{display:block;width:100%;height:1px;border:0}
+#review-menu-trigger{position:static;transform:none;grid-column:2;grid-row:2;justify-self:center;align-self:center}
+#player-search{position:static;grid-column:2;grid-row:3;width:100%;height:44px;min-width:0;align-self:end}
+@media(max-width:650px){
+ .orientation{grid-template-columns:minmax(0,1fr) 100px;padding:20px;gap:16px 14px}
+ #header-admin-note{grid-column:1 / -1;grid-row:3}
+ #review-menu-trigger{grid-column:1;grid-row:2}
+ #player-search{grid-column:2;grid-row:2}
+}

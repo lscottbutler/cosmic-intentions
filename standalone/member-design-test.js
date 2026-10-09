@@ -131,8 +131,27 @@
  @media(prefers-reduced-motion:reduce){html.ci-review-test .page:not(#page-admin) .ci-review-guidance{animation:none}}
  `;
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;inspect();});}
+ const headerNote=document.getElementById('header-admin-note');
+ const headerNoteFrame=document.getElementById('header-admin-note-frame');
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow||event.data?.type!=='ci-citadel-note-height')return;
+  const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+  headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
+ });
  function watchDocument(doc){
   if(!doc?.documentElement)return;
+  const opening=doc===frame.contentDocument?doc.getElementById('citadelNoteFrame'):null;
+  if(opening){
+   if(!doc.getElementById('header-note-relocation')){
+    const style=doc.createElement('style');style.id='header-note-relocation';
+    style.textContent='#citadelNote{display:none!important}';doc.head.append(style);
+   }
+   const src=opening.getAttribute('src');
+   if(src&&headerNoteFrame.getAttribute('src')!==src){headerNote.hidden=false;headerNoteFrame.src=src;}
+   if(current==='admin')headerNote.hidden=true;
+   else if(src===headerNoteFrame.getAttribute('src')&&parseFloat(headerNoteFrame.style.height)>0)headerNote.hidden=false;
+  }
+
   if(doc.getElementById('siteMenuButton')&&!doc.getElementById('review-menu-relocation')){
    const style=doc.createElement('style');style.id='review-menu-relocation';style.textContent='html.ci-review-test #siteMenuButton{display:none!important}';doc.head.append(style);
   }
@@ -493,7 +512,6 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
  byId('dashboard-add-task').addEventListener('submit',event=>{event.preventDefault();try{const result=dashboardApi.addTask(byId('dashboard-task-text').value,byId('dashboard-task-goal').value);if(result.error){say(result.error);return;}dashboardData=result;byId('dashboard-task-text').value='';taskRows();say('To-do added to your existing list.');}catch(_){say('Could not add this to-do. Your text is still here.');}});
  byId('dashboard-add-entry').addEventListener('submit',event=>{event.preventDefault();try{const result=dashboardApi.addEntry({text:byId('dashboard-entry-text').value,kind:dashboardView,goalId:byId('dashboard-entry-goal').value,taskKey:byId('dashboard-entry-task').value});if(result.error){say(result.error);return;}dashboardData=result;entryDrafts[dashboardView]='';byId('dashboard-entry-text').value='';taskRows();entryRows();say('Entry saved on this device using your existing notes store.');}catch(_){say('Could not save this entry. Your text is still here.');}});
  frame.addEventListener('load',()=>{const doc=frame.contentDocument;const shell=doc?.querySelector('.shell');if(shell){new ResizeObserver(schedule).observe(shell);watchDocument(doc);inspect();}});
- document.querySelectorAll('[name=appearance]').forEach(input=>input.addEventListener('change',()=>{enabled=input.value==='test';document.body.classList.toggle('original',!enabled);inspect();}));
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
  addNote.addEventListener('click',()=>openDashboard('notes'));
 

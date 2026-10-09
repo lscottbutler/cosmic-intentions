@@ -329,3 +329,26 @@ for (const width of [1440,390]) {
     await expect(admin.locator('#authModal')).not.toHaveClass(/open/);
   });
 }
+
+for (const width of [1040,390]) test(`Opening admin box is editable inside header ${width}`, async ({page},testInfo)=>{
+ const {writes}=await fixture(page,'owner');
+ await page.setViewportSize({width,height:1000});
+ await page.goto('/standalone/member-design-test.html?feature=thoughts');
+ await expect(page.getByText('Test improvements',{exact:true})).toHaveCount(0);
+ await expect(page.locator('#header-admin-note')).toBeVisible();
+ const note=page.frameLocator('#header-admin-note-frame');
+ await note.getByRole('button',{name:/Edit .* Box 1/}).click();
+ await note.getByRole('textbox',{name:'Edit administrator text'}).fill('Header note fixture');
+ await note.getByRole('button',{name:'Save',exact:true}).click();
+ await expect(note.locator('[data-block="intro-note-notes"]')).toHaveText('Header note fixture');
+ expect(writes.at(-1).slug).toBe('intro-note-notes');
+ const bounds=await page.locator('.orientation').boundingBox();
+ const box=await page.locator('#header-admin-note').boundingBox();
+ expect(box.y).toBeGreaterThanOrEqual(bounds.y);
+ expect(box.y+box.height).toBeLessThanOrEqual(bounds.y+bounds.height+1);
+ await expect(page.frameLocator('#ci-review-frame').locator('#citadelNote')).toBeHidden();
+ await page.locator('.orientation').screenshot({path:testInfo.outputPath('header-note.png')});
+ await page.locator('#review-menu-trigger').click();
+ await page.locator('#review-menu').getByRole('button',{name:'Goals',exact:true}).click();
+ await expect(page.locator('#header-admin-note-frame')).toHaveAttribute('src',/notePage=setup/);
+});
