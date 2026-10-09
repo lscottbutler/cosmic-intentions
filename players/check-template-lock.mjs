@@ -60,7 +60,7 @@ import { readFileSync } from 'node:fs';
 // Chrome owner save/readback tests and 16-route placement checks pass at 1040/390px.
 // Existing saved slugs and owner editing retained; recovery 4ce3b48.
 const lockedFiles = {
-  "players/master-player.html": "c6a160d1f5e039a20f7c230f4fea501bcb0bc65d",
+  "players/master-player.html": "1ac39de188ab096874e1e2e87c55fdd03ed078a3",
   "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
 };
 const root = new URL('../', import.meta.url);
