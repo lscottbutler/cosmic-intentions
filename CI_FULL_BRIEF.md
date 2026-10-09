@@ -1,3 +1,5 @@
+> Current assistant: ChatGPT / Codex. Use AGENTS.md and the current working standard in docs/CI_MASTER_BUILD_LIBRARY.md. Architecture and dated history below require checking against current code; they are not evidence of today's live version. Claude-specific tooling is not active merely because an older note mentions it.
+
 # Cosmic Intentions — Full Project Brief
 
 > Paste this whole file into ChatGPT / Grok when you want a second opinion. It is
@@ -83,7 +85,7 @@ netlify/functions/*.js  Serverless (OpenAI-backed): roadmap-ai, roadmap-drilldow
                       wrapup-ai, bbfw, claude.js (uses OpenAI despite the name),
                       viz-config, waitlist-signup, _guard.js (shared guard).
 
-CLAUDE.md             The dev's operating rules (definition of done, deploy
+AGENTS.md             The dev's operating rules (definition of done, deploy
                       reality, output format). Read this to understand the
                       working style constraints.
 docs/CI_MASTER_BUILD_LIBRARY.md   Running build log / bible.
@@ -213,15 +215,14 @@ to the `HANDLERS` array in `src/main.js`, or it silently doesn't exist in prod. 
 
 ---
 
-## 9. Constraints / how the developer must work (from CLAUDE.md)
+## 9. Constraints / how the developer must work (from AGENTS.md)
 
 - **Simplicity first, surgical changes.** Minimum code to solve the task; don't
   refactor or "improve" adjacent code; don't rename/reformat bystanders.
 - **Don't mass-convert colors to tokens** — colors are intentional. No big-bang
   refactors (the app is auth-gated and hard to screenshot wholesale).
 - **Security/privacy is #1**, non-negotiable. Repo stays private. Minimize PII.
-- **No PRs / no feature branches** — commits go straight to `main` (vibe-coder
-  workflow). Push only when explicitly told to deploy.
+- **Use an appropriate review branch**, preserve user work, and consolidate verified changes into the primary working folder. Publish only with authorization covering the release; verify the actual production deployment.
 - **Spell out acronyms** on first use (Scott is learning the business/tech terms).
 - **Dead-simple external steps:** when a step is in Supabase/Netlify/GitHub, give
   ONE path with a direct deep link and exact clicks — no "menu-hunting" options.
