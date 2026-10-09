@@ -56,8 +56,11 @@ import { readFileSync } from 'node:fs';
 // Scoped scripts and controls verified in Chrome at 1040/390px; 27 lifecycle checks pass.
 // Frame CSS is byte-equivalent after newline normalization. Recovery: 75e883f.
 // New narration uses labelled browser-voice drafts; recorded Guided 10m retained.
+// Scott requested restoration of both admin boxes across player pages.
+// Chrome owner save/readback tests and 16-route placement checks pass at 1040/390px.
+// Existing saved slugs and owner editing retained; recovery 4ce3b48.
 const lockedFiles = {
-  "players/master-player.html": "cf093d952cb5f69629b0774efe5841a0640e1773",
+  "players/master-player.html": "c6a160d1f5e039a20f7c230f4fea501bcb0bc65d",
   "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
 };
 const root = new URL('../', import.meta.url);

@@ -499,12 +499,13 @@
         {box:document.getElementById('citadelNote'),frame:document.getElementById('citadelNoteFrame'),url:'/?masterInline=citadel-note',height:0},
         {box:document.getElementById('citadelBottomNote'),frame:document.getElementById('citadelBottomNoteFrame'),url:'/?masterInline=citadel-note&box=2',height:0}
       ];
-      let citadelHomeVisible=false;
-      if(window.parent===window){
+      const notePages={home:'dashboard',citadel:'dashboard',goals:'setup','daily-habits':'habits','action-plan':'myroadmap',visualization:'vizlibrary',meditation:'meditation',favorites:'dailyfocus',gratitude:'gratitude',journal:'mynotes',thoughts:'notes',wins:'wins',proof:'proof','cosmic-library':'cosmiclibrary','entrepreneur-library':'entcard','ent-card':'entcard','task-notes':'tasknotes','goal-workspace':'goalworkspace'};
+      let citadelHomeVisible=false,notePage=null;
+      {
         addEventListener('message',event=>{
           if(event.origin!==location.origin||event.data?.type!=='ci-citadel-note-height')return;
           const note=citadelNotes.find(item=>event.source===item.frame.contentWindow);
-          if(!note)return;
+          if(!note||event.data.pageId&&event.data.pageId!==notePage)return;
           note.height=Math.max(0,Math.ceil(Number(event.data.height)||0));
           note.frame.style.height=Math.max(1,note.height)+'px';
           note.box.classList.remove('is-loading');
@@ -513,17 +514,17 @@
         });
       }
       function show(view){
-        const wasCitadel=citadelHomeVisible;
-        citadelHomeVisible=view===home&&window.parent===window;
-        citadelNotes.forEach(note=>{
+        const nextPage=view===home?'dashboard':selected==='meditation'&&params.get('reviewPage')==='new-gratitude'?'gratitude':notePages[selected]||null;
+        const changedPage=nextPage!==notePage;
+        notePage=nextPage;citadelHomeVisible=!!notePage;
+        citadelNotes.forEach((note,index)=>{
           note.box.hidden=!citadelHomeVisible||!note.height;
-          // Re-read saved text/session after returning from Admin or another tool.
-          if(citadelHomeVisible&&!wasCitadel){
-            // A display:none ancestor makes the iframe report zero height.
-            // Keep it laid out while loading, without reserving blank space.
-            note.box.hidden=false;
-            note.box.classList.add('is-loading');
-            note.frame.src=note.url;
+          if(citadelHomeVisible&&(changedPage||!note.frame.getAttribute('src'))){
+            note.height=0;note.box.hidden=false;note.box.classList.add('is-loading');
+            const url=new URL(note.url,location.origin);url.searchParams.set('notePage',notePage);
+            if(params.has('preview'))url.searchParams.set('preview','1');
+            note.frame.title=notePage+' '+(index===0?'opening':'closing')+' administrator text';
+            note.frame.src=url.pathname+url.search;
           }
         });
         shell.classList.toggle('home-mode',view===home);
@@ -709,6 +710,7 @@
         const url=new URL('/',location.origin);
         url.searchParams.set('masterInline',action);
         url.searchParams.set('lfm','fullheight-1');
+        url.searchParams.set('playerNotes','1');
         if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
         if(action==='ent-card'&&entCardKey)url.searchParams.set('ent',entCardKey);
         return url.pathname+url.search;

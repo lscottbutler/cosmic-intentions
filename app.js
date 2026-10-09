@@ -4766,6 +4766,12 @@ function wireGoalsAddControl(active, topStack) {
 }
 
 function wireAdminPageBoxes() {
+  if (window.self !== window.top && new URLSearchParams(location.search).get('playerNotes') === '1') {
+    if (!document.getElementById('shared-player-note-placement')) {
+      const style = document.createElement('style'); style.id = 'shared-player-note-placement';
+      style.textContent = '.ci-admin-page-box-stack{display:none!important}'; document.head.appendChild(style);
+    }
+  }
   const active = document.querySelector('.page.active');
   if (!active) return;
   const pageId = active.id.replace('page-', '');
@@ -5697,7 +5703,10 @@ function injectPlaceholderCards() {
 // The standalone Master Player renders Citadel outside the main app's dashboard.
 async function initCitadelNoteFrame() {
   const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
-  const slug = _adminPageBoxSlug('dashboard', boxNumber);
+  const requestedPage = new URLSearchParams(location.search).get('notePage') || 'dashboard';
+  const pageId = Object.hasOwn(ADMIN_PAGE_BOXES, requestedPage) ? requestedPage : 'dashboard';
+  const slug = _adminPageBoxSlug(pageId, boxNumber);
+  ensureAdminPageBoxStyles();
   document.body.replaceChildren();
   document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
   document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
@@ -5712,7 +5721,7 @@ async function initCitadelNoteFrame() {
   document.body.appendChild(toastWrap);
   const report = () => {
     const height = Math.ceil(mount.getBoundingClientRect().height);
-    window.parent.postMessage({ type: 'ci-citadel-note-height', height }, location.origin);
+    window.parent.postMessage({ type: 'ci-citadel-note-height', height, pageId }, location.origin);
   };
   try {
     const [block, auth] = await Promise.all([
@@ -5723,7 +5732,12 @@ async function initCitadelNoteFrame() {
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     _blockCache[slug] = block.data?.body || '';
-    const box = _buildLiveAdminPageBox('dashboard', 'CITADEL', boxNumber);
+    const box = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
+    if (_previewActive() && box.style.display === 'none') {
+      box.style.display = '';
+      box.querySelector('.ci-admin-page-box-content').textContent = (boxNumber === 1 ? 'Opening' : 'Closing') + ' administrator text box. Sign in as the administrator to add text.';
+      box.querySelector('.ci-admin-page-box-content').style.display = '';
+    }
     if (box.style.display !== 'none') {
       // Inset the entire pink-bordered box; empty member boxes stay collapsed.
       mount.style.padding = '20px';
@@ -5733,7 +5747,7 @@ async function initCitadelNoteFrame() {
     report();
   } catch (error) {
     console.error('[citadel-note] Could not load box:', boxNumber);
-    mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Citadel text could not load. Reload to try again.</p>';
+    mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Administrator text could not load. Reload to try again.</p>';
     report();
   }
 }
