@@ -139,6 +139,28 @@
   if(doc.getElementById('siteMenuButton')&&!doc.getElementById('review-menu-relocation')){
    const style=doc.createElement('style');style.id='review-menu-relocation';style.textContent='html.ci-review-test #siteMenuButton{display:none!important}';doc.head.append(style);
   }
+  if(doc.querySelector('.shell')&&!doc.getElementById('citadel-border-test')){
+   const style=doc.createElement('style');style.id='citadel-border-test';
+   style.textContent=`html.ci-review-test .shell.home-mode{--frame-border:0px;--header:transparent;--deck:transparent;background:transparent}
+    html.ci-review-test .shell.home-mode #citadelNote{padding-top:0}
+    html.ci-review-test .shell.home-mode .stage{padding:40px;background:#fff}
+    html.ci-review-test .shell.home-mode .deck{background:transparent}
+    html.ci-review-test .shell.home-mode .deck::before{bottom:0;background:#fff}
+    html.ci-review-test .shell.home-mode .nav{color:#171717}
+    html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){color:#fff}
+    html.ci-review-test .shell.home-mode .nav:focus-visible{outline-color:#171717}
+html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#080808}
+html.ci-review-test .shell.home-mode [data-action="daily-habits"]{--citadel-button:#121212}
+html.ci-review-test .shell.home-mode [data-action="goals"]{--citadel-button:#1c1c1c}
+html.ci-review-test .shell.home-mode [data-action="visualization"]{--citadel-button:#262626}
+html.ci-review-test .shell.home-mode [data-action="action-plan"]{--citadel-button:#303030}
+html.ci-review-test .shell.home-mode [data-action="cosmic-library"]{--citadel-button:#3a3a3a}
+html.ci-review-test .shell.home-mode [data-action="task-notes"]{--citadel-button:#444444}
+html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
+html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818)}
+html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}`;
+   doc.head.append(style);
+  }
   if(newGratitude&&doc.getElementById('meditationControls')){
    if(!doc.getElementById('new-gratitude-choices')){
     const style=doc.createElement('style');style.id='new-gratitude-choices';
