@@ -64,3 +64,5 @@ main{padding-top:24px}
  #review-menu-trigger{grid-column:1;grid-row:2}
  #player-search{grid-column:2;grid-row:2}
 }
+
+.dashboard-item-number{font-size:12px;font-weight:700;letter-spacing:.06em;color:#555;margin-bottom:10px}
