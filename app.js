@@ -1,4 +1,4 @@
-import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
+import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
@@ -480,6 +480,7 @@ export function showPage(id) {
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
   if (id === 'notes') {   // My Thoughts — its own page
+    renderThoughtGoalEditors();
     loadPegboard();             // personal foundation + legacy thought boxes now live here
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();

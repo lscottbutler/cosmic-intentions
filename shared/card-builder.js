@@ -785,6 +785,20 @@ function hiddenGoalIds() {
   catch (_) { return new Set(); }
 }
 
+export function renderThoughtGoalEditors() {
+  const el = document.getElementById('thoughtGoalEditors');
+  if (!el) return;
+  el.innerHTML = intentions.map((goal, idx) => `
+    <div id="pb-goal-edit-${idx}" data-goal-id="${esc(String(goal.id ?? idx))}">
+      <label for="thought-goal-${idx}" style="display:block;color:#fff;font-weight:800;margin-bottom:8px;">GOAL ${esc(goalLetter(goal, idx))}</label>
+      <textarea id="thought-goal-${idx}" maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:0;border-radius:7px;font-family:inherit;font-size:15px;line-height:1.5;background:#fff;color:#171717;resize:vertical;">${esc(goal.title || '')}</textarea>
+      <div class="pb-goal-edit-actions">
+        <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>
+        <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
+      </div>
+    </div>`).join('') || '<p style="color:#fff;">No goals yet. Add a goal in My Goals to get started.</p>';
+}
+
 export function renderPBIntentionList(resetOpen = false) {
   const el = document.getElementById('pbIntentionList');
   if (!el) return;
@@ -796,7 +810,6 @@ export function renderPBIntentionList(resetOpen = false) {
     return;
   }
   // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
-  const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
   const hidden = hiddenGoalIds();
   el.innerHTML = intentions.map((i, idx) => {
     const goalId = String(i.id ?? idx);
@@ -816,7 +829,6 @@ export function renderPBIntentionList(resetOpen = false) {
           </div>
         </div>
         <div class="ci-mini-card-actions" aria-label="Goal ${_letr} controls">
-          <button type="button" class="ci-mini-card-action" onclick="event.preventDefault();event.stopPropagation();pbEditGoal(${idx})" aria-label="Edit Goal ${_letr}">EDIT</button>
           <div class="ci-mini-card-ai">
             <span aria-hidden="true">AI</span>
             <button type="button" role="switch" aria-label="AI for Goal ${_letr}" aria-checked="${aiOn}" onclick="event.preventDefault();event.stopPropagation();pbToggleAI(${idx})" title="${aiOn ? 'AI on — tap to turn off' : 'AI off — tap to turn on'}"
@@ -827,13 +839,6 @@ export function renderPBIntentionList(resetOpen = false) {
           <button type="button" class="ci-mini-card-action ci-mini-card-delete" onclick="event.preventDefault();event.stopPropagation();pbDeleteIntention(${idx})" aria-label="Hide Goal ${_letr}">HIDE</button>
         </div>
       </summary>
-      <div id="pb-goal-edit-${idx}" class="pb-goal-edit" hidden>
-        <textarea maxlength="150" rows="2" aria-label="Edit goal text" style="${goalFld}">${esc(i.title)}</textarea>
-        <div class="pb-goal-edit-actions">
-          <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>
-          <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
-        </div>
-      </div>
       <div class="pb-goal-fork" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#2E2E2E;padding:14px;border-top:1px solid #3a3a3a;">
         <button type="button" onclick="pbOpenGoalBranch(${idx},'visualization')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#7C5CC4;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">VISUALIZATION</button>
         <button type="button" onclick="pbOpenGoalBranch(${idx},'action-plan')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#D62828;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">ROADMAP</button>
@@ -868,7 +873,7 @@ export function pbCancelGoalEdit(idx) {
   if (!panel) return;
   const editor = panel.querySelector('textarea');
   if (editor) editor.value = intentions[idx]?.title || '';
-  panel.hidden = true;
+  if (!panel.closest('#thoughtGoalEditors')) panel.hidden = true;
 }
 
 export async function pbSaveGoalEdit(idx) {
@@ -881,7 +886,8 @@ export async function pbSaveGoalEdit(idx) {
   await pbSaveIntentionTitle(idx, editor.value);
   const title = document.querySelector('#pb-goal-' + idx + ' .pb-goal-title');
   if (title) title.textContent = intentions[idx]?.title || '';
-  panel.hidden = true;
+  if (!panel.closest('#thoughtGoalEditors')) panel.hidden = true;
+  toast('Goal saved.', 'success');
 }
 
 export function pbOpenGoalBranch(idx, action) {
