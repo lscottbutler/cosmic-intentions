@@ -263,3 +263,69 @@ for (const identity of ['anonymous','member']) {
     expect(writes).toEqual([]);
   });
 }
+
+for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mobile', width:390, height:844 }]) {
+  for (const identity of ['anonymous', 'owner', 'member']) {
+    test(`Admin review restores real ${identity} access - ${viewport.name}`, async ({ page }, testInfo) => {
+      const { writes } = await fixture(page, identity);
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      await page.setViewportSize(viewport);
+      await page.goto('/standalone/member-design-test.html');
+      await page.locator('#review-menu-trigger').click();
+      await page.locator('#review-menu').getByRole('button', { name:'Admin', exact:true }).click();
+      const admin = page.frameLocator('#ci-review-frame').frameLocator('#experienceFrame');
+      if (identity === 'owner') {
+        await expect(admin.getByRole('heading', { name:'ADMIN BOXES', exact:true })).toBeVisible({ timeout:15000 });
+      } else if (identity === 'anonymous') {
+        await expect(admin.locator('#authModal.open')).toBeVisible({ timeout:15000 });
+        await expect(admin.locator('#btn-signin')).toBeVisible();
+        await expect.poll(async () => {
+          const frame = await page.frameLocator('#ci-review-frame').locator('#experienceFrame').boundingBox();
+          const button = await admin.locator('#btn-signin').boundingBox();
+          return !!frame && !!button && button.y + button.height <= frame.y + frame.height;
+        }).toBe(true);
+      } else {
+        await expect(admin.locator('#page-admin-access')).toContainText('does not have administrator access', { timeout:15000 });
+        await expect(admin.locator('#page-admin')).not.toHaveClass(/active/);
+      }
+      await expect(page.locator('#feature-title')).toHaveText('Admin');
+      await expect(page.locator('.review-note')).toContainText('real sign-in');
+      if (identity === 'member') {
+        await admin.getByRole('button', {name:'Sign in with the owner account',exact:true}).click();
+        await expect(admin.locator('#authModal.open')).toBeVisible();
+        await expect(admin.locator('#btn-signin')).toBeVisible();
+      }
+      if (identity !== 'owner') {
+        await expect.poll(async () => {
+          const frame=await page.frameLocator('#ci-review-frame').locator('#experienceFrame').boundingBox();
+          const button=await admin.locator('#btn-signin').boundingBox();
+          return !!frame && !!button && button.y+button.height<=frame.y+frame.height;
+        }).toBe(true);
+      }
+      await page.screenshot({ path:testInfo.outputPath(`admin-${identity}-${viewport.name}.png`), fullPage:true });
+      expect(errors).toEqual([]);
+      expect(writes).toEqual([]);
+    });
+  }
+}
+
+for (const width of [1440,390]) {
+  test(`Admin denied account can sign in as owner ${width}`, async ({ page }) => {
+    await fixture(page, 'member');
+    await page.setViewportSize({width,height:900});
+    await page.goto('/standalone/member-design-test.html?feature=admin');
+    const admin=page.frameLocator('#ci-review-frame').frameLocator('#experienceFrame');
+    await admin.getByRole('button',{name:'Sign in with the owner account',exact:true}).click();
+    const user={id:'00000000-0000-4000-8000-000000000456',email:'lscottbutler@gmail.com',aud:'authenticated',app_metadata:{role:'admin'},user_metadata:{}};
+    const exp=Math.floor(Date.now()/1000)+3600;
+    const token=Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url')+'.'+Buffer.from(JSON.stringify({sub:user.id,exp,aud:'authenticated'})).toString('base64url')+'.fixture';
+    await page.route('**/auth/v1/token*', route=>route.fulfill({contentType:'application/json',body:JSON.stringify({access_token:token,refresh_token:'fixture',expires_in:3600,expires_at:exp,token_type:'bearer',user})}));
+    await page.route('**/auth/v1/user', route=>route.fulfill({contentType:'application/json',body:JSON.stringify(user)}));
+    await admin.locator('#si-email').fill(user.email);
+    await admin.locator('#si-pass').fill('synthetic-test-password');
+    await admin.locator('#btn-signin').click();
+    await expect(admin.getByRole('heading',{name:'ADMIN BOXES',exact:true})).toBeVisible();
+    await expect(admin.locator('#authModal')).not.toHaveClass(/open/);
+  });
+}

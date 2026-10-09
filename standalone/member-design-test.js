@@ -103,6 +103,9 @@
   if(!features[action])return;
   if(dashboard.open)return;
   current=action;const copy=features[action];
+  document.querySelector('.review-note').textContent=action==='admin'
+   ? 'Admin uses your real sign-in. Sign in with the owner account to edit site content.'
+   : 'Preview examples \u00b7 not signed in. The dashboard uses the existing action and entry stores. Sample edits are for review.';
   if(title.textContent!==copy[0])title.textContent=copy[0];
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
   if(next.textContent!==copy[2])next.textContent=copy[2];
@@ -267,6 +270,7 @@
    doc.addEventListener('click',event=>{const control=event.target.closest('button[data-action],button[data-site-action]');const action=control?.dataset.action||control?.dataset.siteAction;if(features[action])renderFeature(action);schedule();});
   }
   const page=doc.querySelector('.page.active');
+  if(page?.id==='page-admin'||page?.id==='page-admin-access')renderFeature('admin');
   if(page&&page.id!=='page-admin'&&page.id!=='page-admin-access'){
    const action=inlinePages[page.id.replace('page-','')];
    if(features[action]){
