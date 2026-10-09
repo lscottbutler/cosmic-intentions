@@ -290,7 +290,7 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
         await expect(admin.locator('#page-admin')).not.toHaveClass(/active/);
       }
       await expect(page.locator('#feature-title')).toHaveText('Admin');
-      await expect(page.locator('.review-note')).toContainText('real sign-in');
+      await expect(page.locator('.review-note')).toHaveCount(0);
       if (identity === 'member') {
         await admin.getByRole('button', {name:'Sign in with the owner account',exact:true}).click();
         await expect(admin.locator('#authModal.open')).toBeVisible();
