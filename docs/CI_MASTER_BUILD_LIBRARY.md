@@ -6,6 +6,26 @@
 
 ---
 
+
+## Current working standard - ChatGPT / Codex (reviewed 2026-10-09)
+
+Scott uses ChatGPT for planning, writing and research, and Codex in the connected local project for implementation. The [current Google Bible](https://docs.google.com/document/d/1JiDXWfSGVXqM0ZdmHXpBK6CVUBFYRsbRYRMAuIk0BLE/edit) records product decisions. [AGENTS.md](../AGENTS.md) and applicable nested instructions govern repository work. This section supersedes assistant-specific operating advice in the dated log below; the original log remains historical evidence.
+
+- Claude-authored product plans remain usable when their requirements and assumptions hold. Keep the Foundation and approved design decisions; recheck old dates, budgets, forecasts, provider details and completion claims. Switching assistants does not prove a plan or migrate the website's AI service.
+- Use ChatGPT project instructions and uploaded/connected sources for document work. Use the actual local project and AGENTS.md for coding. A chat or project name does not itself grant filesystem, Drive, GitHub, Netlify or database access. Verify each required tool in the session.
+- Claude Projects, CLAUDE.md, .claude permission hooks, slash commands and memory references are historical and do not automatically configure ChatGPT. Do not rely on an old ALLOW_PUSH marker or reload command. Use the current session's permissions and approval controls.
+- Preserve real compatibility names such as claude.js and callClaude where the code still uses them. Do not turn a documentation update into an API migration or claim production environment values were inspected.
+- Keep one identified review branch per active outcome; preserve local edits and source assets. Bring verified changes back into C:\WORK\ROOT. At handoff record the saved commit, published commit, link, checks and outstanding work. Never call a local preview live.
+- Carry out authorized work without repeated questions. Publishing requires authorization covering the release; if automatic approval blocks it, report the exact blocker. Confirm Netlify's actual published deployment and route after release.
+- Use relevant Council perspectives as analytical roles, not claims that named experts participated or that 21 independent agents approved the work. Professional sign-off and actual tests require evidence.
+- Preserve durable decisions in the Bible and project files. Do not assume memory transfers from Claude or that background schedules exist without a verified job.
+
+**Plan acceptance:** define the intended outcome, current inputs/dependencies, authorized implementation scope, a concrete test and a delivery status. For mobile-facing work, inspect the phone layout. Treat commercial forecasts as assumptions, and proposed features as proposals until implemented and checked. No assistant or prompt makes a plan perfect.
+
+**Delivery checkpoint:** production/main is dfb8cd1 (Netlify 6ac83fb1b80ef2000853d7e5). Search is saved locally at 8a0c7cd and not published; publication approval is pending. These are recorded checkpoints, not substitutes for a fresh deployment check.
+
+Official references: [AGENTS.md guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [projects and source context](https://learn.chatgpt.com/docs/projects).
+
 # PART 1 — THE BUILD BIBLE
 
 ## 1. Overview & Stack
@@ -125,7 +145,9 @@ Called via `ciApi(name, body)` / `ciApiJson` (`shared/api.js`), which attach the
 
 ---
 
-# PART 2 — SESSION LOG
+# PART 2 - HISTORICAL SESSION LOG
+
+Entries below describe their recorded date. Older Claude tooling, branch/deploy rules and completion claims are historical; use the current working standard above.
 _(Newest first. On "SESSION DONE FOR THE DAY," append a dated, plain-English bullet summary of the day's work + where each key area stands.)_
 
 ## 2026-09-05
