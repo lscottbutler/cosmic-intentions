@@ -779,6 +779,12 @@ async function regenerateGoalImage(idx, ev) {
   await fetchGoalImage(idx, intn.title);
 }
 
+function hiddenGoalKey() { return 'ci-hidden-goals:' + (currentUser?.id || 'anonymous'); }
+function hiddenGoalIds() {
+  try { const ids = JSON.parse(localStorage.getItem(hiddenGoalKey()) || '[]'); return new Set(Array.isArray(ids) ? ids : []); }
+  catch (_) { return new Set(); }
+}
+
 export function renderPBIntentionList(resetOpen = false) {
   const el = document.getElementById('pbIntentionList');
   if (!el) return;
@@ -791,8 +797,10 @@ export function renderPBIntentionList(resetOpen = false) {
   }
   // Goal box starts at 2 lines, drag-to-expand for longer "I AM…" goals.
   const goalFld = 'width:100%;box-sizing:border-box;padding:10px 14px;border:none;border-radius:7px;font-size:10pt;line-height:1.5;color:#1a1a1a;font-family:inherit;resize:vertical;min-height:48px;';
+  const hidden = hiddenGoalIds();
   el.innerHTML = intentions.map((i, idx) => {
     const goalId = String(i.id ?? idx);
+    if (hidden.has(goalId)) return '';
     const aiOn = i.aiEnabled !== false;   // ON unless explicitly turned off
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same per-goal color as the Citadel goal cards
     const _letr = goalLetter(i, idx);
@@ -816,7 +824,7 @@ export function renderPBIntentionList(resetOpen = false) {
               <span style="position:absolute;top:3px;left:${aiOn ? '23px' : '3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span>
             </button>
           </div>
-          <button type="button" class="ci-mini-card-action ci-mini-card-delete" onclick="event.preventDefault();event.stopPropagation();pbDeleteIntention(${idx})" aria-label="Delete Goal ${_letr}">DELETE</button>
+          <button type="button" class="ci-mini-card-action ci-mini-card-delete" onclick="event.preventDefault();event.stopPropagation();pbDeleteIntention(${idx})" aria-label="Hide Goal ${_letr}">HIDE</button>
         </div>
       </summary>
       <div id="pb-goal-edit-${idx}" class="pb-goal-edit" hidden>
@@ -832,6 +840,18 @@ export function renderPBIntentionList(resetOpen = false) {
       </div>
     </details>`;
   }).join('');
+  const hiddenCount = intentions.filter((i, idx) => hidden.has(String(i.id ?? idx))).length;
+  if (hiddenCount) {
+    const restore = document.createElement('button');
+    restore.type = 'button';
+    restore.textContent = 'Show hidden goals (' + hiddenCount + ')';
+    restore.addEventListener('click', () => {
+      try { localStorage.removeItem(hiddenGoalKey()); }
+      catch (_) { toast('Could not show hidden goals. Please try again.', ''); return; }
+      renderPBIntentionList();
+    });
+    el.append(restore);
+  }
 }
 
 export function pbEditGoal(idx) {
@@ -927,17 +947,16 @@ export async function pbSaveIntentionTitle(idx, newTitle) {
   renderVaultSidebar();
 }
 
+// Retain the existing public handler name for older rendered controls.
 export async function pbDeleteIntention(idx) {
-  if (!confirm(`Remove "${intentions[idx]?.title}"?`)) { renderPBIntentionList(); return; }
-  const deletedId = intentions[idx]?.id;
-  intentions.splice(idx, 1);
-  await saveIntentions();
-  if (currentUser && deletedId) {
-    await sb.from('intentions').delete().eq('id', deletedId).eq('user_id', currentUser.id);
-  }
+  const goal = intentions[idx];
+  if (!goal) return;
+  const hidden = hiddenGoalIds();
+  hidden.add(String(goal.id ?? idx));
+  try { localStorage.setItem(hiddenGoalKey(), JSON.stringify([...hidden])); }
+  catch (_) { toast('Could not hide this goal. Nothing was deleted.', ''); return; }
   renderPBIntentionList();
-  renderVaultSidebar();
-  toast('Intention removed.', '');
+  toast('Goal hidden from this list on this browser. Use Show hidden goals to restore it.', '');
 }
 
 export async function deleteIntention(idx) {
