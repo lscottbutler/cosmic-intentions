@@ -788,15 +788,19 @@ function hiddenGoalIds() {
 export function renderThoughtGoalEditors() {
   const el = document.getElementById('thoughtGoalEditors');
   if (!el) return;
-  el.innerHTML = intentions.map((goal, idx) => `
+  el.innerHTML = intentions.map((goal, idx) => {
+    const letter = goalLetter(goal, idx);
+    const colorIndex = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : idx;
+    const color = GOAL_COLORS[((colorIndex % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+    return `
     <div id="pb-goal-edit-${idx}" data-goal-id="${esc(String(goal.id ?? idx))}">
-      <label for="thought-goal-${idx}" style="display:block;color:#fff;font-weight:800;margin-bottom:8px;">GOAL ${esc(goalLetter(goal, idx))}</label>
+      <label for="thought-goal-${idx}" style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;margin-bottom:8px;">${goalBadge(letter, color.bg, color.text, 36)}<span>GOAL ${esc(letter)}</span></label>
       <textarea id="thought-goal-${idx}" maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:0;border-radius:7px;font-family:inherit;font-size:15px;line-height:1.5;background:#fff;color:#171717;resize:vertical;">${esc(goal.title || '')}</textarea>
       <div class="pb-goal-edit-actions">
         <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>
         <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
       </div>
-    </div>`).join('') || '<p style="color:#fff;">No goals yet. Add a goal in My Goals to get started.</p>';
+    </div>`; }).join('') || '<p style="color:#fff;">No goals yet. Add a goal in My Goals to get started.</p>';
 }
 
 export function renderPBIntentionList(resetOpen = false) {
