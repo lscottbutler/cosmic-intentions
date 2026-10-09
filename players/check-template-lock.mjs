@@ -63,7 +63,7 @@ import { readFileSync } from 'node:fs';
 // and 40px artwork padding. Desktop/mobile rendered checks passed; Meditation unchanged.
 // Recovery: 2480dc5.
 const lockedFiles = {
-  "players/master-player.html": "5530464e672591ec1a3e8e27cf8f4d0df8a610ee",
+  "players/master-player.html": "416d33163dd788e2a5de74bf6f6b1b9269cf39fe",
   "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
 };
 const root = new URL('../', import.meta.url);
