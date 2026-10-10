@@ -4817,17 +4817,11 @@ function wireAdminPageBoxes() {
 
   wireGoalsAddControl(active, topStack);
 
-  let bottomStack = active.querySelector(':scope .ci-admin-page-box-stack--bottom');
-  if (!bottomStack) {
-    // Box 2 is the closing message at the bottom of the workspace.
-    bottomStack = document.createElement('div');
-    bottomStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--bottom';
-    bottomStack.setAttribute('aria-label', label + ' administrator text box 2');
-    bottomStack.appendChild(_buildLiveAdminPageBox(pageId, label, 2));
-    _pageBoxRoot(active).appendChild(bottomStack);
-  }
+  // Scott removed Box 2 from every player page on 2026-10-10.
+  // Preserve saved closing text in the admin content library.
+  active.querySelectorAll('.ci-admin-page-box-stack--bottom').forEach(group => group.remove());
 
-  [topStack, bottomStack].forEach(group => {
+  [topStack].forEach(group => {
     group.querySelectorAll('[data-block]').forEach(el => {
       const slug = el.getAttribute('data-block');
       _fillBlockEl(el, _blockCache[slug] || '');
@@ -5723,6 +5717,15 @@ async function initCitadelNoteFrame() {
   const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
   const requestedPage = new URLSearchParams(location.search).get('notePage') || 'dashboard';
   const pageId = Object.hasOwn(ADMIN_PAGE_BOXES, requestedPage) ? requestedPage : 'dashboard';
+  // Closing frames still exist in the locked shared shell, but must render
+  // no box, reserve no space, and perform no content/auth request.
+  if (boxNumber === 2) {
+    document.body.replaceChildren();
+    document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
+    document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
+    window.parent.postMessage({ type: 'ci-citadel-note-height', height: 0, pageId }, location.origin);
+    return;
+  }
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   ensureAdminPageBoxStyles();
   document.body.replaceChildren();
