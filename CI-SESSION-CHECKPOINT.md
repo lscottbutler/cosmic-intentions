@@ -1,6 +1,6 @@
 # CI session checkpoint
 
-Updated: 2026-10-10, Asia/Bangkok. Owner: Scott.
+Updated: 2026-10-10 13:23 ICT (Asia/Bangkok). Owner: Scott.
 Purpose: short durable handoff, not a replacement for the current Bible.
 
 ## Standing preferences
@@ -26,11 +26,15 @@ Local main was at September 7 commit 2ad4cfc481d91eab5e73a88c5133968e79c544ac, w
 A request to preserve local work, update safely, and start preview was supplied. Its execution is NOT verified here.
 This browser workspace cannot write to the Windows folder. Do not claim local memory installed, local work backed up, hourly automation enabled, or local preview running without evidence.
 
-## Active objective / next action
-Enable session continuity in the actual local project. Preserve existing local work first. Incorporate these repository instructions and checkpoint into the local working branch without overwriting local edits.
-Inspect current state and update this checkpoint from verified evidence. Confirm which saved chat is active.
-Start or reuse one local preview and provide the clickable URL. Do not publish.
-Hourly recoverable backups are requested; setup and successful execution remain unverified.
+## Current session and next action
+Scott stopped the VS Code setup and returned to this browser chat on Oct 10. Do not require a return to VS Code as the default next step.
+Persistent memory and startup/update instructions are saved on review/persistent-project-memory-20261010 (PR 55). Existing operating instructions are preserved. This is an unmerged documentation checkpoint, not proof every new default-branch session will load it.
+Current request: lasting concise memory; plain-language results and clickable previews; never code; do not publish anything.
+Before the next site edit, verify current repository/deployment state and relevant files; changes from the separate VS Code session remain unknown. Work from available connections, preserve unrelated changes, and update this checkpoint after each completed task.
+Next product priorities previously unfinished: Lightly Guided narration and newer Citadel integration with the main homepage. They are recorded priorities, not authorization to implement both now.
+Existing newer Citadel URL: https://www.cosmicintentions.com/standalone/member-design-test.html (not newly verified or published during this task).
+Hourly recoverable backups remain requested but automation setup/success is unverified.
+This task changes documentation only. No application code, Supabase data/settings, Netlify settings, merge, or publication.
 
 ## Update format after every completed material task
 Record: requested change; verified result; current working branch and checkpoint; preview URL and whether tested; preserved local changes; open defects/unknowns; next exact action; backup status; production changes (if any).
