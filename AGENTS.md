@@ -195,3 +195,11 @@ Cosmic Intentions includes visualization, gratitude, affirmation, meditation, mi
 ## Final rule
 
 Accuracy, privacy, completion, and recoverability take priority over speed. No guessing. No half-finished handoffs. No unnecessary burden on Scott. No unverified production changes. No undocumented product, data, privacy, legal, or infrastructure changes.
+
+## Persistent session continuity — Scott's direction, 2026-10-10
+
+At the start of every session, read CI-SESSION-CHECKPOINT.md before implementation. Treat it as a concise handoff; verify current local state and distinguish historical evidence from current facts. Read relevant Bible sections only when needed, not the entire archive for each small edit.
+
+After every completed material task and before stopping, update CI-SESSION-CHECKPOINT.md with the verified outcome, current branch/checkpoint, local preview URL, open requests, blockers, next action, backup status, and whether production changed. On interruption, save an honest partial checkpoint when possible. Do not rely solely on chat history or imply that another chat's context is automatically present.
+
+Scott is a vibe coder. Keep code, commands, diffs, and routine engineering details out of user-facing responses unless requested. Give plain-language results and clickable previews. Prefer one local preview refreshed after each tweak; do not publish to obtain routine previews. Preserve all existing local work before synchronization. Never claim local setup, backup automation, or a preview is running unless verified in that environment.
