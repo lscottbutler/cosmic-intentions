@@ -48,3 +48,5 @@ Next action: visually verify this change in the actual application on desktop/mo
 
 ## Script comparison task — 2026-10-11
 Completed document-only: 10 original Guided versions (G01–G10, ten timed cues each) and 10 Lightly Guided versions (LG01–LG10, three cues each) added beneath their respective original sections in https://docs.google.com/document/d/13OwayiVoCv7jEokcb9F_UTunwdJeasCjUP1M98p1tf0/edit . Ten matching colors; original paragraphs preserved; native heading/color readback verified. Private pre-edit script backup preserved and Bible checkpoint updated. Timings remain proposed until recorded/measured. No site/audio/production changes. Next: Scott selects favorite versions or lines. General writing references informed original wording; no third-party generator output used.
+
+2026-10-11 script formatting: preserved all wording and 20 version colors; split sentences into native bullet paragraphs; set 150% line spacing plus 6pt paragraph separation. Headings and links preserved. Private native backup before edits. Document-only; no publication. Next remains Scott's version selection.
