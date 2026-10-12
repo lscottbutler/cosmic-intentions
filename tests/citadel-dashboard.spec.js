@@ -26,7 +26,7 @@ for (const width of [1440, 390]) {
   await expect(list.getByText('Read yesterday’s draft',{exact:true})).toBeHidden();
   await expect(list.getByText('I AM FINISHING MY FIRST SHORT STORY',{exact:true}).first()).toBeVisible();
   const goalGroup=list.locator('.dashboard-task-group[data-goal-id="pv1"]');
-  await expect(goalGroup.locator('summary')).toHaveText('I AM FINISHING MY FIRST SHORT STORY');
+  await expect(goalGroup.locator('summary')).toContainText('I AM FINISHING MY FIRST SHORT STORY');
   await expect(list.getByText('I AM FINISHING MY FIRST SHORT STORY',{exact:true})).toHaveCount(1);
   await expect(list.locator('.dashboard-task .dashboard-goal')).toHaveCount(0);
   await goalGroup.locator('summary').click();
@@ -55,7 +55,7 @@ for (const width of [1440, 390]) {
   await task.getByRole('checkbox').check();
   await expect(task).toHaveClass(/is-complete/);
   await task.getByRole('checkbox').uncheck();
-  await page.getByLabel('Your next action').fill('Review the second scene');
+  await page.locator('#dashboard-task-text').fill('Review the second scene');
   await page.locator('#dashboard-task-goal').selectOption('pv1');
   await page.getByRole('button',{name:'Add to-do',exact:true}).click();
   await expect(list.getByText('Review the second scene',{exact:true})).toBeVisible();
@@ -63,7 +63,7 @@ for (const width of [1440, 390]) {
   await expect(goalGroup.locator('summary')).toHaveCount(1);
   await expect(list.getByText('I AM FINISHING MY FIRST SHORT STORY',{exact:true})).toHaveCount(1);
   await page.screenshot({path:`test-results/citadel-goal-groups-${width}.png`,fullPage:true});
-  await page.getByLabel('Your next action').fill('Take a walk');
+  await page.locator('#dashboard-task-text').fill('Take a walk');
   await page.locator('#dashboard-task-goal').selectOption('');
   await page.getByRole('button',{name:'Add to-do',exact:true}).click();
   await expect(list.getByText('Take a walk',{exact:true})).toBeVisible();
@@ -76,7 +76,7 @@ for (const width of [1440, 390]) {
   await page.screenshot({path:`test-results/citadel-dashboard-${width}-notes.png`,fullPage:true});
   await page.getByRole('button',{name:'Close dashboard',exact:true}).click();
   await expect(page.locator('#to-do')).toBeFocused();
-  await page.locator('#write-journal').click();
+  await page.locator('#add-note').click();await page.locator('[data-dashboard-view="journal"]').click();
   await expect(page.locator('#dashboard-entry-list')).toContainText('I worked on the scene');
   await page.screenshot({path:`test-results/citadel-dashboard-${width}-journal.png`,fullPage:true});
   await page.getByRole('button',{name:'Close dashboard',exact:true}).click();

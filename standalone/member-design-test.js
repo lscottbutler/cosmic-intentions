@@ -94,7 +94,7 @@
   }catch(_){if(version===searchVersion)searchStatus.textContent='Search could not load. Check your connection and try again.';}
  });
  const inlinePages={setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',gratitude:'gratitude',wins:'wins',tasknotes:'task-notes',goalworkspace:'goal-workspace',cosmiclibrary:'cosmic-library',entrepreneurlibrary:'entrepreneur-library',entcard:'ent-card',admin:'admin'};
- let enabled=true,current='home',last=null,scheduled=false;
+ let enabled=true,current='home',last=null,scheduled=false,playerAction='home';
  let newGratitude=false,gratitudeModule=0;
  const docs=new WeakSet(),frames=new WeakSet();
  try{const saved=sessionStorage.getItem('ci-review-last-feature');if(features[saved]&&saved!=='home'&&saved!=='admin')last=saved;}catch(_){/* Comparison remains usable without storage. */}
@@ -110,6 +110,7 @@
 
  }
  function openFeature(action){
+  playerAction=action;
   if(action==='new-gratitude'){
    newGratitude=true;gratitudeModule=1;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
   }
@@ -433,7 +434,7 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
    const doc=frame.contentDocument;if(!doc?.querySelector('.shell'))return;
    watchDocument(doc);
    // The Meditation engine now owns narration on both live and review routes.
-   if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');
+   if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');else if(features[playerAction])renderFeature(playerAction);
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
    // Ignore subpixel/one-pixel resize noise from nested frame transitions.
@@ -521,15 +522,15 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
   if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
   const type=event.data?.type;
   if(type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();return;}
-  if(type==='ci-lfm-mode')schedule();
+  if(type==='ci-lfm-mode'){if(features[event.data.action])playerAction=event.data.action;else if(event.data.action==='citadel')playerAction='home';renderFeature(playerAction);schedule();}
   if(type==='ci-lfm-height'&&Math.abs(Number(event.data.height)+2-parseFloat(frame.style.height||'0'))>2)schedule();
  });
  window.addEventListener('resize',schedule);
  renderFeature('home');
  const initialFeature=new URLSearchParams(location.search).get('feature');
  if(initialFeature&&features[initialFeature]){
+  playerAction=initialFeature;
   if(initialFeature==='new-gratitude')openFeature(initialFeature);
   else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();
-

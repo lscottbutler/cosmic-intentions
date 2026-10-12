@@ -60,9 +60,9 @@ main{padding-top:24px}
 #player-search{position:static;grid-column:2;grid-row:3;width:100%;height:44px;min-width:0;align-self:end}
 @media(max-width:650px){
  .orientation{grid-template-columns:minmax(0,1fr) 100px;padding:20px;gap:16px 14px}
- #header-admin-note{grid-column:1 / -1;grid-row:3}
+ #header-admin-note{grid-column:1 / -1;grid-row:4}
  #review-menu-trigger{grid-column:1;grid-row:2}
- #player-search{grid-column:2;grid-row:2}
+ #player-search{grid-column:1 / -1;grid-row:3}
 }
 
 .dashboard-item-number{font-size:12px;font-weight:700;letter-spacing:.06em;color:#555;margin-bottom:10px}
