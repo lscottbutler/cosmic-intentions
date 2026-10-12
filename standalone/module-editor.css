@@ -19,3 +19,6 @@ header{padding:8px 24px}header h1{font-size:24px}header p{margin:2px 0}main{padd
 
 /* Scott: enlarge preview by 2.5x, fitting smaller screens proportionally. */
 .preview-viewport{width:800px;height:700px;max-width:100%}.preview-viewport iframe{transform:scale(.8333333333)}@media(max-width:879px){.preview-viewport{width:calc(100vw - 80px);height:calc((100vw - 80px)*.875)}.preview-viewport iframe{transform:scale(calc((100vw - 80px)/960px))}}@media(max-width:850px){.preview-viewport{width:calc(100vw - 32px);height:calc((100vw - 32px)*.875)}.preview-viewport iframe{transform:scale(calc((100vw - 32px)/960px))}}
+
+/* Editor preview shows only artwork and slide content. */
+.preview-viewport{width:min(800px,100%);height:auto;aspect-ratio:1669/939}.preview-viewport iframe{position:absolute;inset:0;width:100%;height:100%;transform:none;background:transparent}
