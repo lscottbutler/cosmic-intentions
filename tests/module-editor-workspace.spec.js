@@ -7,6 +7,7 @@ function recording() {
 for(const width of [1440,390])test(`all slides stay visible and new text synchronizes at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/standalone/module-editor.html');
  await expect(page.locator('#slide-list .slide-list-item')).toHaveCount(10);
+ await page.locator('#slide-list .slide-list-item').nth(2).click();
  await page.locator('#cards .card').nth(2).getByRole('button',{name:'Insert title card after'}).click();
  await page.getByLabel('Title card text',{exact:true}).fill('New slide appears everywhere');
  await expect(page.locator('#slide-list .slide-list-item')).toHaveCount(11);
@@ -19,6 +20,7 @@ for(const width of [1440,390])test(`all slides stay visible and new text synchro
  await expect.poll(()=>page.evaluate(()=>surface.querySelector('p').textContent)).toBe('New slide appears everywhere');
  await expect(page.locator('.narration-slot').nth(3)).toContainText('No recording');
  await expect(page.locator('#status')).toContainText('Draft saved');await page.reload();
+ await page.locator('#slide-list .slide-list-item').nth(3).click();
  await expect(page.getByLabel('Title card text',{exact:true})).toHaveValue('New slide appears everywhere');
  await expect(page.locator('#preview-duration')).toHaveText('10:00.0');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -37,6 +39,7 @@ test('new slide accepts actual narration, plays it and keeps it after reload',as
  await page.locator('#stop').click();await page.reload();
  await expect(page.locator('.narration-slot').nth(1)).toContainText('Uploaded narration');
  await expect(page.locator('#cards .card').nth(1).locator('audio')).toHaveAttribute('src',/^data:audio/);
+ await page.locator('#slide-list .slide-list-item').nth(1).click();
  await page.locator('#cards .card').nth(1).getByRole('button',{name:'Delete',exact:true}).click();
  await expect(page.locator('.slide-region')).toHaveCount(10);await expect(page.locator('.narration-slot')).toHaveCount(10);
  await expect(page.locator('#preview-duration')).toHaveText('10:00.0');
@@ -70,4 +73,19 @@ test('changed uploaded narration text cannot be played through seeking',async({p
  await page.evaluate(()=>seekPreview(boundaries()[1].start));await page.locator('#play').click();
  await expect(page.locator('#status')).toContainText('replace its uploaded narration');
  expect(await page.evaluate(()=>paused)).toBe(true);
+});
+
+test('typed uploaded narration duration trims playback and survives reload',async({page})=>{
+ await page.goto('/standalone/module-editor.html');await page.locator('#add').click();let card=page.locator('#cards .card:visible');
+ await card.getByLabel('On-screen instruction',{exact:true}).fill('Trimmed recording');
+ await card.getByLabel('Upload narration',{exact:true}).setInputFiles({name:'synthetic.wav',mimeType:'audio/wav',buffer:recording()});
+ await expect(page.locator('.narration-slot').nth(1)).toContainText('Uploaded narration');
+ await page.getByLabel('Narration duration (seconds)',{exact:true}).fill('0.4');await page.getByLabel('Narration duration (seconds)',{exact:true}).press('Tab');
+ await expect(page.getByLabel('Slide 2 narration duration',{exact:true})).toHaveValue('0.4');
+ await expect(page.locator('#status')).toContainText('Draft saved');await page.reload();
+ await expect(page.getByLabel('Slide 2 narration duration',{exact:true})).toHaveValue('0.4');
+ await page.evaluate(()=>seekPreview(boundaries()[1].start));await page.locator('#play').click();
+ await expect.poll(()=>page.evaluate(()=>cardAudio&&!cardAudio.paused)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>elapsed>boundaries()[1].start+.4&&cardAudio===null)).toBe(true);
+ await expect(page.locator('#preview-duration')).toHaveText('10:00.0');
 });

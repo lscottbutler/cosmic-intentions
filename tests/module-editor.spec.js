@@ -7,6 +7,7 @@ for(const width of [1440,390]) test(`module editor preserves title cards and ten
  await page.locator('#add').click();
  await expect(page.locator('#cards .card')).toHaveCount(11);
  await page.locator('#cards .card').nth(1).getByRole('button',{name:'Delete',exact:true}).click();
+ await page.locator('#slide-list .slide-list-item').nth(3).click();
  await page.locator('#cards .card').nth(3).getByRole('button',{name:'Insert title card after'}).click();
  await page.getByLabel('Title card text',{exact:true}).fill('Return gently');
  await expect(page.locator('#status')).toContainText('Draft saved');
@@ -30,6 +31,7 @@ for(const width of [1440,390]) test(`module editor preserves title cards and ten
 
 test('storage failure keeps editor text and reports unsaved status',async({page})=>{
  await page.goto('/standalone/module-editor.html');
+ await page.locator('#slide-list .slide-list-item').first().click();
  await page.evaluate(()=>{Storage.prototype.setItem=()=>{throw new DOMException('Storage full','QuotaExceededError')};});
  await page.locator('#cards .card').first().getByRole('button',{name:'Insert title card after'}).click();
  await page.getByLabel('Title card text',{exact:true}).fill('Keep this unsaved title');

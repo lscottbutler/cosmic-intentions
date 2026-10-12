@@ -1,2 +1,45 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>CI Module Editor</title><link rel="stylesheet" href="module-editor.css"><script src="module-editor.js" defer></script></head><body><header><p>COSMIC INTENTIONS · PRIVATE REVIEW</p><h1>Module editor</h1><p>Select a slide, edit its text and narration, then preview the complete ten-minute module.</p></header><main><section class="toolbar"><label>Module title<input id="title" maxlength="120"></label><button id="save">Save draft</button><button id="restore">Restore previous</button><button id="export">Download backup</button><label class="filebutton">Open backup<input id="import" type="file" accept="application/json"></label></section><p id="status" role="status">10-minute instruction rough draft. Edits save automatically on this device at this site address. Download a backup before switching addresses.</p><div class="editor-workspace"><section class="preview"><h2>Preview · <span id="preview-duration">10:00.0</span></h2><div class="preview-viewport"><iframe id="player" srcdoc="<!doctype html><html><head><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}#player{position:relative;width:100%;height:100%}</style></head><body><div id=player></div></body></html>" title="Module preview" allow="autoplay"></iframe></div><label>Playback position <output id="playhead-time">00:00.0</output><input id="seek" type="range" min="0" max="600" step="0.1" value="0"></label><div class="row"><button id="play">Play preview</button><button id="restart" title="Start the preview again from the beginning">Restart</button><button id="stop">Stop</button><label><input id="sound" type="checkbox" checked> Sound</label></div><p id="progress" role="status">Ready</p></section><aside class="slide-library"><div class="library-heading"><h2>All slides</h2><span id="slide-count"></span></div><p>Every slide stays listed here. Select one to preview and edit it.</p><nav id="slide-list" aria-label="All module slides"></nav></aside></div><section class="timeline-panel" aria-labelledby="timeline-heading"><h2 id="timeline-heading">Narration &amp; slide timing</h2><p>Top row: original recording. Middle row: narration for every slide. Bottom row: all slides. Select a slide to edit; drag a cut to change timing.</p><details><summary>Timing notes</summary><p>Clip timestamps are approximate. Brief pauses remain gold. Closing bell plays in the final five seconds. Slide edits do not move narration.</p></details><label>First recorded narration starts at (seconds)<input id="narration-delay" type="number" min="0" max="120" step="0.1" value="0"></label><p class="note">MEDITATIONS appears for four seconds, then fades and expands into the first instruction. The first recording starts no earlier than six seconds. Total duration stays ten minutes.</p><div class="row timeline-navigation"><button id="timeline-prev">Previous slide</button><strong id="timeline-focus"></strong><button id="timeline-next">Next slide</button><button id="restore-ten">Restore 10-minute pauses</button><button id="close-gaps">Remove long gaps</button></div><div class="timeline-scroll"><div id="timeline"></div></div><div id="silence-list" aria-live="polite"></div><p id="cut-status" role="status">All slides remain on the timeline. New slides appear immediately with a narration slot. Upload a recording to give a new slide its own narration.</p></section><div class="layout"><section aria-label="Edit cards"><div class="row"><h2>Slide editor</h2><button id="add">Add slide after selected</button></div><div id="cards"></div></section></div></main></body></html>
-
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow"><title>CI Module Editor</title>
+ <link rel="stylesheet" href="module-editor.css?v=20261012-studio"><script src="module-editor.js?v=20261012-studio" defer></script>
+</head>
+<body>
+ <header><div><p>COSMIC INTENTIONS · MODULE STUDIO</p><h1>Module editor</h1></div><span class="workspace-description">Slides · Narration · Sequence</span></header>
+ <main>
+  <section class="toolbar" aria-label="Project controls">
+   <label>Module title<input id="title" maxlength="120"></label>
+   <button id="save">Save draft</button><button id="restore">Restore previous</button><button id="export">Download backup</button>
+   <label class="filebutton">Open backup<input id="import" type="file" accept="application/json"></label>
+  </section>
+  <p id="status" role="status">Edits save automatically on this device at this address.</p>
+  <div class="editor-workspace">
+   <aside class="slide-library panel">
+    <div class="panel-heading"><h2>Project slides</h2><span id="slide-count"></span></div>
+    <nav id="slide-list" aria-label="All module slides"></nav>
+    <button id="add">Add slide after selected</button>
+   </aside>
+   <section class="preview panel" aria-label="Program preview">
+    <div class="panel-heading"><h2>Program preview</h2><span id="preview-duration">10:00.0</span></div>
+    <div class="preview-viewport"><iframe id="player" srcdoc="<!doctype html><html><head><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}#player{position:relative;width:100%;height:100%}</style></head><body><div id=player></div></body></html>" title="Module preview" allow="autoplay"></iframe></div>
+    <label class="playback-label">Playback position <output id="playhead-time">00:00.0</output><input id="seek" type="range" min="0" max="600" step="0.1" value="0"></label>
+    <div class="row transport"><button id="play">Play preview</button><button id="restart">Restart</button><button id="stop">Stop</button><label><input id="sound" type="checkbox" checked> Sound</label></div>
+    <p id="progress" role="status">Ready</p>
+   </section>
+   <section class="inspector panel" aria-label="Selected slide controls">
+    <div class="panel-heading"><h2>Edit selected slide</h2></div>
+    <div id="opening-editor"></div><div id="cards"></div>
+   </section>
+  </div>
+  <section class="timeline-panel panel" aria-labelledby="timeline-heading">
+   <div class="panel-heading"><h2 id="timeline-heading">Sequence · narration &amp; slides</h2><strong id="timeline-focus"></strong></div>
+   <div class="row timeline-navigation"><button id="timeline-prev">Previous slide</button><button id="timeline-next">Next slide</button><button id="restore-ten">Restore 10-minute pauses</button><button id="close-gaps" hidden>Remove long gaps</button><label>First recorded narration starts at (seconds)<input id="narration-delay" type="number" min="0" max="120" step="0.1" value="6"></label></div>
+   <p class="timeline-help">Gold: original audio. Cream: each slide’s narration. Blue: slides. Type seconds directly into a clip or the selected-slide controls. Scroll horizontally to navigate the complete sequence.</p>
+   <div class="timeline-scroll"><div id="timeline"></div></div>
+   <p id="cut-status" role="status">Select the opening title or a slide to edit its text and duration.</p>
+   <details class="timing-notes"><summary>Recording and timing notes</summary><div id="silence-list"></div></details>
+  </section>
+ </main>
+</body>
+</html>
