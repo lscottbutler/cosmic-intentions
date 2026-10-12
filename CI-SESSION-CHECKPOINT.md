@@ -1,58 +1,48 @@
 # CI session checkpoint
 
-Updated: 2026-10-10 13:23 ICT (Asia/Bangkok). Owner: Scott.
-Purpose: short durable handoff, not a replacement for the current Bible.
+Updated: 2026-10-12, UTC / Asia-Bangkok (UTC+7). Owner: Scott.
+Read this first. It replaces stale current-state entries; prior records remain in Git history and the Bible.
 
-## Standing preferences
-Scott is a professional product designer and vibe coder. Give plain-language results, exact clicks when needed, and clickable playable previews. Do not show code, terminal commands, diffs, or routine engineering details unless requested.
-Work one requested revision at a time. Preserve the canonical Master Player and unrelated work. Preview locally after each tweak. Publish only when explicitly authorized. Keep the site private.
-Use focused reads and concise checkpoints to reduce token use. Do not reread the entire project for small edits.
+## Standing delivery rule
 
-## Last verified history (not current deployment verification)
-On Oct 7, PRs 51–54 were released: guided meditation text cards, Guided/Lightly Guided/Unguided choices, Notes/To-Do/Journal hostname access fix, and inline goal To-Do plus entry.
-Last production checkpoint verified in the prior browser session: a90498585d0625f10c21b38ae0df21d2590ad449. Recheck before relying on it.
-Lightly Guided voice narration remained pending. Visual/audio verification had been blocked and must not be represented as completed.
-New member wrapper: /standalone/member-design-test.html. Older root Citadel integration remained unfinished.
-Older draft PRs 5 and 7 were superseded; do not blindly merge old drafts.
+Scott explicitly authorized publishing all current branch work on October 11 and making future requested revisions permanent on October 12. Finish requested changes by verifying, merging and deploying to the existing private production site. Do not leave the result only on a branch or ask him to repeat routine release approval. A later explicit preview-only instruction takes precedence. Keep password protection. Preserve the locked Master Player and meditation template.
 
-## Backup reference
+Use one current integration branch until release, not a growing list of competing revisions. Explain results in plain language and supply the current playable link. Scott should not have to coordinate terminals, GitHub or multiple preview links.
+
+## Current audited release
+
+- Detailed request-to-result mapping, evidence, infrastructure findings and remaining work: `docs/AUDIT-2026-10-12.md`.
+- Existing PR58 / `review/consolidated-ci-20261011` consolidates PR55 persistent instructions, PR56 second admin box removal, PR57 card insertion, plus the October 12 audit fixes. Use this release, not older prototypes.
+- Fixed: title/ordinary card insertion and deletion; editor autosave with recoverable failure; title visibility when muted; timeline card tracking; fixed ten-minute insertion workflow; signed-in root entry into current member UI; stale navigation heading; readable phone search.
+- Canonical files `players/master-player.html` and `players/meditation.html` remain unchanged and pass the integrity guard.
+- Build, lint (zero errors), three unit suites, desktop/phone card and member tests, owner/member/guest fixtures and 27 mocked meditation lifecycle combinations passed. See audit for limits. Remote page remains behind the password gate in this browser; do not claim live signed-in/audio verification.
+- Production at audit start: `651208fc2080161bb55cf78f2fee7b6fb403b68b`, deploy `6ac8bc08cc18f20007a6fe22`. This is a historical recovery point, not a claim it remains latest after release.
+- Recovery branch: `backup/pre-publication-20261011-2010-ict` at that SHA.
+- For live status, compare current `main`, PR58 merge result and Netlify's published deploy commit. The current Bible records the final release result. Do not infer deployment from this file or a ready preview.
+
+Stable member address: https://cosmicintentions.com/standalone/member-design-test.html
+Stable editor address: https://cosmicintentions.com/standalone/module-editor.html
+Site id: `bf7cacf8-3b22-42be-b187-baf4ab0ebe9c`.
+
+## Save and content limitations
+
+Editor drafts autosave on the same browser, device and site address. They do not automatically transfer from an old numbered preview to production or publish content to all members. Download/Open backup transfers drafts. Never overwrite an unreadable draft automatically or claim unsaved browser data was recovered.
+
+Script variants: https://docs.google.com/document/d/13OwayiVoCv7jEokcb9F_UTunwdJeasCjUP1M98p1tf0/edit . Ten Guided and ten Lightly Guided versions, original text preserved, colors and sentence formatting applied. Scott's selection and new production recordings remain pending. Preserve the existing ten-minute recording and identify browser-speech versions as drafts.
+
+## Preservation and open blockers
+
 Current Bible: https://docs.google.com/document/d/1JiDXWfSGVXqM0ZdmHXpBK6CVUBFYRsbRYRMAuIk0BLE/edit
-Last verified morning snapshot, Oct 8 0600 ICT: https://docs.google.com/document/d/1bQzlnOqQTJtx7sKVCAETsPd8227V1eTWwtHaC-q-6KI/edit
-This checkpoint is not a full repository, asset, or database backup.
+Native pre-audit backup: https://docs.google.com/document/d/1l8zz6fMjONJCd73hnpKYRRoXld1ED-c_O0lWzZGnOI4/edit
 
-## Local setup evidence and unknowns
-Oct 8 screenshot showed Codex working locally in Windows VS Code, folder C:\WORK\ROOT, matching repository remote.
-Local main was at September 7 commit 2ad4cfc481d91eab5e73a88c5133968e79c544ac, with 38 unstaged deletions and 23 untracked files. No fetch had been performed.
-A request to preserve local work, update safely, and start preview was supplied. Its execution is NOT verified here.
-This browser workspace cannot write to the Windows folder. Do not claim local memory installed, local work backed up, hourly automation enabled, or local preview running without evidence.
+Recent GitHub quality, hourly offsite, Supabase backup and Bible jobs fail before steps run. Root cause unknown; no logs available. Do not call these successful backups. Verified Bible copy and Git recovery point do not constitute full database backup or restore testing.
 
-## Current session and next action
-Scott stopped the VS Code setup and returned to this browser chat on Oct 10. Do not require a return to VS Code as the default next step.
-Persistent memory and startup/update instructions are saved on review/persistent-project-memory-20261010 (PR 55). Existing operating instructions are preserved. This is an unmerged documentation checkpoint, not proof every new default-branch session will load it.
-Current request: lasting concise memory; plain-language results and clickable previews; never code; do not publish anything.
-Before the next site edit, verify current repository/deployment state and relevant files; changes from the separate VS Code session remain unknown. Work from available connections, preserve unrelated changes, and update this checkpoint after each completed task.
-Next product priorities previously unfinished: Lightly Guided narration and newer Citadel integration with the main homepage. They are recorded priorities, not authorization to implement both now.
-Existing newer Citadel URL: https://www.cosmicintentions.com/standalone/member-design-test.html (not newly verified or published during this task).
-Hourly recoverable backups remain requested but automation setup/success is unverified.
-This task changes documentation only. No application code, Supabase data/settings, Netlify settings, merge, or publication.
+Supabase `wbqzwbubbeorcknevips`: read-only audit, active/healthy, 12 public tables with RLS enabled. No schema/data/settings changes. Remaining advisor findings are documented; do not loosen policies blindly.
 
-## Update format after every completed material task
-Record: requested change; verified result; current working branch and checkpoint; preview URL and whether tested; preserved local changes; open defects/unknowns; next exact action; backup status; production changes (if any).
-Replace stale current-state entries while retaining decisions and recovery references. Never mark untested behavior verified.
+No public launch, real-account cloud-sync, payment, AI-service or full audio certification was completed in this audit. Remote browser access remains password-gated; keep it private.
 
-## Latest task — 2026-10-10 13:25 ICT
-Scott requested removal of the second admin box from every player page. Implemented in app.js on review/remove-second-admin-box-20261010, application checkpoint 66a0e3728314cac858646df085fa095e21d7cd8d.
-The shared workspace mounting keeps Box 1, removes stale Box 2 mounts, and does not create new ones. Closing note iframes return empty content and zero height before content/auth requests. Existing saved Box 2 text and admin-library editors are preserved for recovery. Locked Master Player and meditation files/guard are untouched.
-Verification: JavaScript syntax passed; isolated 18-route mounting/repeated-call checks and closing-iframe zero-height/no-content-request check passed. Full rendered visual checks are pending: Playwright browser executable unavailable in this workspace. No playable preview was published under Scott's no-publication direction.
-Next action: visually verify this change in the actual application on desktop/mobile before calling it complete or releasing it. No production, Netlify settings, or Supabase changes. Repository checkpoint only; Bible update/full backup not performed in this task.
+Older PR2/5/7/11/34 are prototypes or superseded work; do not merge wholesale. Close redundant PR55/56/57 only after verified consolidation. Preserve unmerged branches and history. The separate Windows checkout and its old uncommitted work remain unverified and must not be claimed backed up or updated.
 
-## Script comparison task — 2026-10-11
-Completed document-only: 10 original Guided versions (G01–G10, ten timed cues each) and 10 Lightly Guided versions (LG01–LG10, three cues each) added beneath their respective original sections in https://docs.google.com/document/d/13OwayiVoCv7jEokcb9F_UTunwdJeasCjUP1M98p1tf0/edit . Ten matching colors; original paragraphs preserved; native heading/color readback verified. Private pre-edit script backup preserved and Bible checkpoint updated. Timings remain proposed until recorded/measured. No site/audio/production changes. Next: Scott selects favorite versions or lines. General writing references informed original wording; no third-party generator output used.
+## Next-session rule
 
-2026-10-11 script formatting: preserved all wording and 20 version colors; split sentences into native bullet paragraphs; set 150% line spacing plus 6pt paragraph separation. Headings and links preserved. Private native backup before edits. Document-only; no publication. Next remains Scott's version selection.
-
-## Consolidated publication — 2026-10-11 20:10 ICT
-
-Scott explicitly authorized publishing all current branch work. PR55 memory instructions are already included in PR56's files. Consolidated branch review/consolidated-ci-20261011 includes the latest PR56 full-site code plus PR57 meditation editor/title-card code. Older prototype PRs remain excluded as superseded or unrelated. Recovery branch backup/pre-publication-20261011-2010-ict preserves production 651208fc2080161bb55cf78f2fee7b6fb403b68b. Application consolidation checkpoint f57257d67d88c77563689e30cd09bcfdd1355c74.
-
-Editor checks passed for add/save/reload, title insertion and deletion, unchanged original text/audio/duration. Admin Box2 source diff reviewed. Rendered checks blocked by password and remain required before release. Publication pending; no production change yet. Site stays password protected; no Supabase changes. Latest member route is /standalone/member-design-test.html; root remains older homepage. Current external Bible update and Drive snapshot pending.
+Start from the actual current `main` and published commit, read this checkpoint and the latest Bible checkpoint, then address Scott's next requested revision. Update this file and the Bible with the real result, evidence, recovery point and open issues. Never restart from an old preview or claim unfinished voice-over/backups are complete.

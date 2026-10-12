@@ -1,3 +1,4 @@
+import { memberEntryUrl } from './shared/member-entry.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
@@ -934,6 +935,8 @@ export async function signOut() {
 ───────────────────────────────────────────────────────── */
 function updateUI(user) {
   currentUser = user;
+  const memberEntry = memberEntryUrl({pathname:location.pathname, search:location.search, hash:location.hash, topLevel:window.self===window.top, user});
+  if (memberEntry) { location.replace(memberEntry); return; }
   const loggedIn = !!user;
 
   const hdrUser = document.getElementById('hdrUser');
@@ -4833,7 +4836,7 @@ function wireAdminPageBoxes() {
 function _adminEditorMarkup(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
-    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span></div>' +
+    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Archived — hidden on player pages') + '</span></div>' +
     '<div class="admin-toolbar">' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
@@ -4859,7 +4862,7 @@ function ensureAdminPageBoxEditors() {
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
-      '<p class="ci-page-box-admin-help">Choose a page. Edit Box 1 at the top or Box 2 at the bottom, then Save. Matching colors keep each pair together.</p>' +
+      '<p class="ci-page-box-admin-help">Choose a page and edit its opening Box 1, then Save. Box 2 is archived here for recovery and is hidden on player pages.</p>' +
       '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
@@ -4910,7 +4913,7 @@ function ensureAdminPageBoxEditors() {
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Bottom') + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Archived — hidden on player pages') + '</span>';
       }
       entry.classList.add('ci-page-box-admin-entry');
       entry.dataset.adminNumber = pageNumber + '.' + boxNumber;

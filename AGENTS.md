@@ -8,6 +8,14 @@ This file is mandatory operating policy for every agent working in this reposito
 
 ## Non-negotiable principles
 
+### Delivery amendment — Scott, 2026-10-11 and 2026-10-12
+
+Scott explicitly requested publication of all current work and then instructed: when he makes a revision, make it permanent rather than leaving it on disconnected branches. For requested site revisions, his standing authorization covers implementation, verification, recovery checkpoints, merging the reviewed change to `main`, and deploying to the existing password-protected production site. Do not ask him to repeat that authorization for each routine revision. A later explicit preview-only or do-not-publish instruction overrides this default for that task.
+
+Use one active integration branch while doing the work, then finish the authorized release. `main` and its verified production deploy are the durable delivery; a preview branch alone is unfinished work. Prefer the stable member URL https://cosmicintentions.com/standalone/member-design-test.html and editor URL https://cosmicintentions.com/standalone/module-editor.html after verifying the deployed commit. Do not substitute old numbered preview URLs. Preserve history and recovery points; never merge obsolete competing prototypes just because they are open.
+
+This later instruction supersedes the earlier per-revision approval and review-only defaults below. It does not authorize weakening privacy, changing the locked player design, destructive operations, or claiming untested behavior works. Read `CI-SESSION-CHECKPOINT.md` at session start and update it after material work. The comprehensive audit on October 12 was explicitly requested; subsequent focused revisions should remain focused.
+
 1. Never guess. Treat approved screens, uploaded references, specifications, assets, videos, and recorded decisions as authoritative.
 2. If an asset, filename, route, database field, connection, timing, interaction, or design decision cannot be verified, state the exact unknown and stop before inventing a substitute.
 3. Reproduce visual references faithfully unless Scott explicitly requests redesign.

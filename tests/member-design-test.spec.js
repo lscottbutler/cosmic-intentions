@@ -8,20 +8,18 @@ async function fixture(page){
  await expect(page.locator('#review-status')).toContainText('Test improvements on',{timeout:25000});
 }
 for(const [name,width] of [['desktop',1440],['phone',390]]){
- test(`member design comparison and every member destination ${name}`,async({page})=>{
+ test(`current member interface and every member destination ${name}`,async({page})=>{
   test.setTimeout(180000);await page.setViewportSize({width,height:1100});const errors=[];page.on('pageerror',e=>errors.push(e.message));await fixture(page);
   const master=page.frameLocator('#ci-review-frame');
   const geometry=await master.locator('.cap').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,color:getComputedStyle(e).backgroundColor}));
-  await page.getByLabel('Original',{exact:true}).check();await expect(page.locator('.orientation')).toBeHidden();await page.getByLabel('Test improvements',{exact:true}).check();await expect(page.locator('.orientation')).toBeVisible();
+  await expect(page.locator('.comparison')).toHaveCount(0);await expect(page.locator('.orientation')).toBeVisible();
   expect(await master.locator('.cap').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,color:getComputedStyle(e).backgroundColor}))).toEqual(geometry);
   for(const [action,selector] of features){
    await page.locator('#ci-review-frame').evaluate((el,action)=>el.contentWindow.postMessage({type:'ci-lfm-select',action},location.origin),action);
    const app=master.frameLocator('#experienceFrame');await expect(app.locator(selector)).toBeVisible({timeout:20000});
    await expect(app.locator(selector+' > .ci-review-guidance')).toBeVisible();
    const baseline=await app.locator(selector).evaluate(e=>Array.from(e.querySelectorAll('button')).map(b=>b.textContent));
-   await page.getByLabel('Original',{exact:true}).check();await expect(app.locator(selector+' > .ci-review-guidance')).toBeHidden();
    expect(await app.locator(selector).evaluate(e=>Array.from(e.querySelectorAll('button')).map(b=>b.textContent))).toEqual(baseline);
-   await page.getByLabel('Test improvements',{exact:true}).check();await expect(app.locator(selector+' > .ci-review-guidance')).toBeVisible();
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    if(['goals','daily-habits','goal-workspace'].includes(action))await page.screenshot({path:`test-results/member-design-${name}-${action}.png`,fullPage:true});
   }
@@ -34,18 +32,18 @@ for(const [name,width] of [['desktop',1440],['phone',390]]){
 test('existing goal entry and local edits remain usable',async({page})=>{
  test.setTimeout(90000);await fixture(page);const master=page.frameLocator('#ci-review-frame');await page.getByRole('button',{name:'Open Goals',exact:true}).click();const app=master.frameLocator('#experienceFrame');await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await app.locator('.ci-goals-add-toggle').click();await app.locator('#pbNewIntentionInput').fill('I AM WRITING MY NEXT CHAPTER');await app.locator('.pb-goal-add-save').click();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();
- await page.getByLabel('Original',{exact:true}).check();await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();await page.getByLabel('Test improvements',{exact:true}).check();
+ await expect(app.getByText('I AM WRITING MY NEXT CHAPTER',{exact:true}).first()).toBeVisible();
  await page.locator('#ci-review-frame').evaluate(el=>el.contentWindow.postMessage({type:'ci-lfm-select',action:'home'},location.origin));await page.getByRole('button',{name:'Open Goals',exact:true}).click();await expect(app.locator('#page-setup')).toBeVisible({timeout:20000});
  await page.screenshot({path:'test-results/member-design-goal-saved.png',fullPage:true});
 });
 
 test('existing hamburger opens the review menu and navigates',async({page})=>{
  await fixture(page);const master=page.frameLocator('#ci-review-frame');
- await master.locator('#siteMenuButton').click();await expect(page.locator('#review-menu')).toBeVisible();
+ await page.locator('#review-menu-trigger').click();await expect(page.locator('#review-menu')).toBeVisible();
  await page.locator('#review-menu').getByRole('button',{name:'Habits',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
  await expect(master.frameLocator('#experienceFrame').locator('#page-habits')).toBeVisible({timeout:20000});
  await expect(page.locator('#feature-title')).toHaveText('Habits');
- await master.locator('#siteMenuButton').click();await page.getByRole('button',{name:'Close',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
+ await page.locator('#review-menu-trigger').click();await page.getByRole('button',{name:'Close',exact:true}).click();await expect(page.locator('#review-menu')).toBeHidden();
 });
 
 
@@ -54,9 +52,9 @@ for(const width of [1440,390])test(`trough removal and note / to-do shortcuts ${
  const master=page.frameLocator('#ci-review-frame');
  expect(await master.locator('#capTitle').evaluate(e=>e.getBoundingClientRect().height)).toBe(0);
  expect(await master.locator('#capTitle').evaluate(e=>getComputedStyle(e,'::before').content)).toBe('none');
- await expect(master.locator('#siteMenuButton')).toBeVisible();
+ await expect(page.locator('#review-menu-trigger')).toBeVisible();
  await page.screenshot({path:`test-results/no-upper-trough-${width}-citadel.png`,fullPage:true});
- await page.getByRole('button',{name:'Write journal',exact:true}).click();
+ await page.locator('#add-note').click();await page.locator('[data-dashboard-view="journal"]').click();
  await expect(page.locator('#citadel-dashboard')).toBeVisible();
  await expect(page.locator('#dashboard-entry-text')).toBeVisible({timeout:20000});
  await page.locator('#dashboard-entry-text').fill('A fictional journal entry for the layout review.');
@@ -67,10 +65,10 @@ for(const width of [1440,390])test(`trough removal and note / to-do shortcuts ${
  await expect(page.locator('#dashboard-task-list .dashboard-task').first()).toBeVisible({timeout:20000});
  await page.screenshot({path:`test-results/no-upper-trough-${width}-todo.png`,fullPage:true});
  await page.getByRole('button',{name:'Close dashboard',exact:true}).click();
- await master.locator('#siteMenuButton').click();await expect(page.locator('#review-menu')).toBeVisible();
+ await page.locator('#review-menu-trigger').click();await expect(page.locator('#review-menu')).toBeVisible();
  await page.locator('#review-menu').getByRole('button',{name:'Meditation',exact:true}).click();
  await expect(master.frameLocator('#experienceFrame').locator('#timer')).toBeVisible({timeout:20000});
  expect(await master.locator('#capTitle').evaluate(e=>e.getBoundingClientRect().height)).toBe(0);
- await expect(master.locator('#siteMenuButton')).toBeVisible();
+ await expect(page.locator('#review-menu-trigger')).toBeVisible();
  await page.screenshot({path:`test-results/no-upper-trough-${width}-meditation.png`,fullPage:true});
 });

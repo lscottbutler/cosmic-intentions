@@ -5,6 +5,20 @@ import { removeCitadelJoinPadding } from '../scripts/citadel-note-spacing.mjs';
 import { removeCitadelClosingCrossbar } from '../scripts/citadel-closing-crossbar.mjs';
 import { outlineTopTrough } from '../scripts/top-trough-outline.mjs';
 
+for (const identity of ['owner','member','anonymous']) test(`root entry preserves ${identity} routing`, async ({page}) => {
+  await fixture(page, identity);
+  await page.goto('/');
+  if (identity === 'anonymous') {
+    await expect(page).toHaveURL('http://localhost:8090/');
+    return;
+  }
+  await expect(page).toHaveURL(/\/standalone\/member-design-test.html$/);
+  const note = page.frameLocator('#header-admin-note-frame');
+  await expect(note.locator('[data-block="intro-note-dashboard"]')).toContainText('review fixture');
+  if (identity === 'owner') await expect(note.locator('.ci-admin-page-box-edit')).toBeVisible();
+  else await expect(note.locator('.ci-admin-page-box-edit')).toBeHidden();
+});
+
 async function fixture(page, identity = 'owner') {
   const user = identity === 'anonymous' ? null : {
     id: '00000000-0000-4000-8000-000000000123',
@@ -84,8 +98,8 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.goto('/players/master-player.html?start=citadel', { waitUntil:'domcontentloaded' });
     const top = page.frameLocator('#citadelNoteFrame'), bottom = page.frameLocator('#citadelBottomNoteFrame');
     await expect(top.locator('[data-block="intro-note-dashboard"]')).toContainText('review fixture', { timeout:15000 });
-    await expect(bottom.getByRole('button', { name:'Edit CITADEL Box 2' })).toBeVisible();
-    await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toContainText('Empty');
+    await expect(bottom.locator('.ci-admin-page-box')).toHaveCount(0);
+    await expect(page.locator('#citadelBottomNote')).toBeHidden();
     await page.screenshot({ path:testInfo.outputPath(`citadel-${viewport.name}.png`), fullPage:true });
     const layout = await page.evaluate(() => {
       const b = id => document.getElementById(id).getBoundingClientRect();
@@ -108,20 +122,14 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
       };
     });
     expect(layout.top).toBeLessThanOrEqual(layout.stageTop);
-    expect(layout.bottom).toBeGreaterThanOrEqual(layout.stageBottom);
     expect(layout.ratio).toBeCloseTo(16/9,2);
     expect(layout.topJoin).toBeCloseTo(layout.side,1);
-    expect(layout.bottomJoin).toBeCloseTo(layout.side,1);
-    expect(layout.topOuterGap).toBeCloseTo(12,1);
-    expect(layout.bottomOuterGap).toBeCloseTo(0,1);
-    expect(layout.troughJoin).toBeCloseTo(0,1);
+    expect(layout.topOuterGap).toBeCloseTo(0,1);
     expect(layout.topTroughBorders).toEqual(['3px','3px','3px','3px']);
     expect(layout.topTroughBorderColor).toBe('rgb(237, 237, 237)');
     expect(layout.topTroughFill).toBe('rgb(116, 116, 116)');
-    await expect(bottom.locator('.ci-admin-page-box')).toHaveCSS('background-color',layout.troughFill);
-    await expect(bottom.locator('.ci-admin-page-box-placeholder')).toHaveCSS('color','rgb(255, 255, 255)');
     await expect(top.locator('.ci-admin-page-box')).toHaveCSS('background-color','rgb(242, 242, 242)');
-    for (const frame of [top, bottom]) {
+    for (const frame of [top]) {
       const inset = await frame.locator('.ci-admin-page-box').evaluate(box => {
         const content = box.querySelector('.ci-admin-page-box-content');
         const pen = box.querySelector('.ci-admin-page-box-edit-slot button');
@@ -159,13 +167,12 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await top.getByRole('button', { name:'Cancel', exact:true }).click();
     expect(writes).toHaveLength(0);
     await expect(top.locator('[data-block="intro-note-dashboard"]')).toContainText('review fixture');
-    await bottom.getByRole('button', { name:'Edit CITADEL Box 2' }).click();
-    await bottom.getByRole('textbox', { name:'Edit administrator text' }).fill('Saved closing text');
-    await bottom.getByRole('button', { name:'Save', exact:true }).click();
-    await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toHaveText('Saved closing text');
-    await expect(bottom.getByRole('textbox')).toHaveCount(0);
+    await top.getByRole('button', { name:'Edit CITADEL Box 1' }).click();
+    await top.getByRole('textbox', { name:'Edit administrator text' }).fill('Saved opening text');
+    await top.getByRole('button', { name:'Save', exact:true }).click();
+    await expect(top.locator('[data-block="intro-note-dashboard"]')).toHaveText('Saved opening text');
     expect(writes).toHaveLength(1);
-    expect(writes[0].slug).toBe('page-note-dashboard-2');
+    expect(writes[0].slug).toBe('intro-note-dashboard');
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Admin', exact:true }).click();
     const admin = page.frameLocator('#experienceFrame');
@@ -210,8 +217,8 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.screenshot({ path:testInfo.outputPath(`admin-boxes-section-${viewport.name}.png`), fullPage:false });
     await expect(page.locator('#citadelNote')).toBeHidden();
     await expect(page.locator('#citadelBottomNote')).toBeHidden();
-    await expect(admin.locator('#admin-editor-intro-note-dashboard')).toContainText('review fixture');
-    await expect(admin.locator('#admin-editor-page-note-dashboard-2')).toHaveText('Saved closing text');
+    await expect(admin.locator('#admin-editor-intro-note-dashboard')).toHaveText('Saved opening text');
+    await expect(admin.locator('#adminBlock-page-note-dashboard-2')).toContainText('Archived — hidden on player pages');
     await admin.locator('#admin-editor-page-note-dashboard-2').fill('Updated from Admin');
     await admin.locator('#admin-save-page-note-dashboard-2').click();
     await expect(admin.locator('#admin-status-page-note-dashboard-2')).toContainText('Saved');
@@ -219,19 +226,17 @@ for (const viewport of [{ name:'desktop', width:1440, height:1000 }, { name:'mob
     await page.screenshot({ path:testInfo.outputPath(`admin-${viewport.name}.png`), fullPage:false });
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Citadel', exact:true }).click();
-    await expect(bottom.locator('[data-block="page-note-dashboard-2"]')).toHaveText('Updated from Admin', { timeout:15000 });
+    await expect(bottom.locator('.ci-admin-page-box')).toHaveCount(0);
+    await expect(page.locator('#citadelBottomNote')).toBeHidden();
     expect(writes).toHaveLength(3);
-    // The regular workspace boxes share the same border as Citadel's frames.
+    // Inline workspaces hide their duplicate opening mount; the shared
+    // player header carries the one visible opening note for the selected page.
     await page.getByRole('button', { name:'Open site menu', exact:true }).click();
     await page.getByRole('button', { name:'Habits', exact:true }).click();
-    const habitBoxes = page.frameLocator('#experienceFrame').locator('#page-habits .ci-admin-page-box');
-    await expect(habitBoxes).toHaveCount(2);
-    for (const box of await habitBoxes.all()) {
-      await expect(box).toBeVisible();
-      await expect(box).toHaveCSS('border-color','rgb(173, 20, 87)');
-      await expect(box).toHaveCSS('border-width','3px');
-    }
-    await habitBoxes.first().screenshot({ path:testInfo.outputPath(`admin-box-habits-${viewport.name}.png`) });
+    await expect(top.locator('[data-block="intro-note-habits"]')).toBeVisible();
+    await expect(top.getByRole('button', { name:'Edit HABITS Box 1' })).toBeVisible();
+    await expect(page.frameLocator('#experienceFrame').locator('#page-habits .ci-admin-page-box-stack--bottom')).toHaveCount(0);
+    await top.locator('.ci-admin-page-box').screenshot({ path:testInfo.outputPath(`admin-box-habits-${viewport.name}.png`) });
     expect(errors).toEqual([]);
   });
 }
