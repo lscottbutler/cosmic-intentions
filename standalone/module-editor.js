@@ -51,11 +51,12 @@ function renderOpening(t) {
 }
 
 const $ = id => document.getElementById(id);
-const lightlyGuided=new URLSearchParams(location.search).get('module')==='lightly-guided';
+const gratitude=new URLSearchParams(location.search).get('module')==='gratitude';
+const lightlyGuided=gratitude||new URLSearchParams(location.search).get('module')==='lightly-guided';
 const earlierTen=lightlyGuided&&new URLSearchParams(location.search).get('session')==='10m';
-const key=lightlyGuided?(earlierTen?'ci-module-editor-lightly-10m-v1':'ci-module-editor-lightly-mini-v2'):'ci-module-editor-10m-v1';
+const key=gratitude?'ci-module-editor-gratitude-v1':lightlyGuided?(earlierTen?'ci-module-editor-lightly-10m-v1':'ci-module-editor-lightly-mini-v2'):'ci-module-editor-10m-v1';
 const voiceLengths = [23.36,23.44,22.32,23.28,23.20,26.32,19.52,20.48,26.56,30];
-let model = lightlyGuided?(earlierTen?window.CIModulePresets.lightlyGuided():window.CIModulePresets.gratitudeStyle()):sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
+let model = gratitude?window.CIModulePresets.gratitudeStyle():lightlyGuided?(earlierTen?window.CIModulePresets.lightlyGuided():window.CIModulePresets.slightlyGuidedImages()):sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
 let index = -1, openingView = true;
 let audio = null, cardAudio = null, cardAudioIndex = -1, surface = null, raf = 0, last = 0;
 let dirty = false, unreadableDraft = false, autosaveTimer = 0;
@@ -66,7 +67,7 @@ const lead = () => Number(model.narrationDelay)||0;
 const stamp = seconds => { const t=Math.round(seconds*10); return `${String(Math.floor(t/600)).padStart(2,'0')}:${((t%600)/10).toFixed(1).padStart(4,'0')}`; };
 const tell = text => { $('status').textContent=text; };
 function validate(m) {
- if(lightlyGuided!==(m?.moduleType==='lightly-guided'))throw Error('Open this backup in its matching session version.');
+ if((gratitude?'gratitude':lightlyGuided?'lightly-guided':undefined)!==m?.moduleType)throw Error('Open this backup in its matching session version.');
  if(m?.bellAudio&&m.bellAudio!=='/players/audio/coming-back-to-yourself-10m.ogg')throw Error('Unrecognized bell recording');
  if(lightlyGuided&&m.sessionAudio)throw Error('The guided training recording does not belong in this version.');
  if(m?.version!==1 || typeof m.title!=='string' || !Array.isArray(m.cards) || !m.cards.length || m.cards.length>50) throw Error('Invalid module backup');
@@ -81,13 +82,13 @@ function validate(m) {
   for(const k of ['duration','silence','fadeIn','fadeOut']) if(!Number.isFinite(c[k])||c[k]<0||c[k]>3600) throw Error('Invalid slide timing');
   if(c.audioOffset!==undefined&&(!Number.isFinite(c.audioOffset)||c.audioOffset<0||c.audioOffset>=c.duration))throw Error('Invalid narration start offset');
   if(c.duration<1||c.fadeIn+c.fadeOut>c.duration) throw Error('Slide fades exceed its duration');
-  for(const k of ['image','audio']) if(typeof c[k]!=='string'||(c[k]&&!c[k].startsWith(k==='image'?'data:image/':'data:audio/')&&!(k==='image'&&/^\/images\/gratitude\/test-module-1\/(a-great-burger|a-walk-in-nature|comfort-food|exotic-beach-vacation|for-my-life-partner)\.avif$/.test(c[k])))) throw Error('Invalid media');
+  for(const k of ['image','audio']) if(typeof c[k]!=='string'||(c[k]&&!c[k].startsWith(k==='image'?'data:image/':'data:audio/')&&!(k==='image'&&(/^\/images\/gratitude\/video-reference\/(chair|electricity|travel|book|friends)\.jpg$/.test(c[k])||/^\/images\/gratitude\/test-module-1\/(a-great-burger|a-walk-in-nature|comfort-food|exotic-beach-vacation|for-my-life-partner)\.avif$/.test(c[k]))))) throw Error('Invalid media');
  }
  if(m.voiceStarts!==undefined && (!Array.isArray(m.voiceStarts)||m.voiceStarts.length!==10||m.voiceStarts.some((v,i)=>!Number.isFinite(v)||v<0||v+(m.voiceDurations?.[i]??voiceLengths[i])>(i===9?m.cards.reduce((s,c)=>s+c.duration,0)-5:m.voiceStarts[i+1])))) throw Error('Recorded narration overlaps');
  return m;
 }
 try { const saved=localStorage.getItem(key); if(saved) model=validate(JSON.parse(saved)); } catch { unreadableDraft=true; tell('Saved draft could not be read. It remains untouched. Open a backup or download the current module before saving.'); }
-if(mini()&&!unreadableDraft&&model.instructionLayout!==2){const fresh=window.CIModulePresets.gratitudeStyle();const first=model.cards[0];if(first.duration===13&&!first.audio)first.duration=8;if(!first.audio)first.audioOffset=0;model.cards.unshift(...fresh.cards.slice(0,3));model.opening={...model.opening,hold:2,fade:1,expand:1};model.instructionLayout=2;dirty=true;}
+if(mini()&&!gratitude&&!unreadableDraft&&model.instructionLayout!==2){const fresh=window.CIModulePresets.slightlyGuidedImages();const first=model.cards[0];if(first.duration===13&&!first.audio)first.duration=8;if(!first.audio)first.audioOffset=0;model.cards.unshift(...fresh.cards.slice(0,3));model.opening={...model.opening,hold:2,fade:1,expand:1};model.instructionLayout=2;dirty=true;}
 function saveDraft(manual=false) {
  clearTimeout(autosaveTimer);
  if(unreadableDraft&&!manual) { tell('Automatic saving paused: the existing draft is unreadable. Download a backup before replacing it.'); return false; }
@@ -226,7 +227,7 @@ function restoreTenMinutes(initial=false) {
 }
 $('title').onchange=()=>{model.title=$('title').value;mark();};$('add').onclick=()=>insertCard(focusedSlide);$('save').onclick=()=>saveDraft(true);
 $('restore').onclick=()=>{try{const old=localStorage.getItem(key+'-previous');if(!old){tell('No previous saved draft.');return;}const next=validate(JSON.parse(old));stop();model=next;focusedSlide=0;dirty=true;render();tell('Previous draft loaded. Save draft to keep it.');}catch(e){tell('Previous draft could not be read: '+e.message);}};
-$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=lightlyGuided?'CI-slightly-guided-backup.json':'CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=gratitude?'CI-gratitude-backup.json':lightlyGuided?'CI-slightly-guided-backup.json':'CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('import').onchange=async()=>{try{const file=$('import').files[0];if(!file)return;if(file.size>30*1024*1024)throw Error('Backup exceeds 30 MB');const next=validate(JSON.parse(await file.text()));stop();model=next;focusedSlide=0;dirty=true;render();tell('Backup opened. Save draft to keep it.');}catch(e){tell('Backup could not be opened: '+e.message);}};
 $('play').onclick=play;$('restart').onclick=async()=>{stop();await play();};$('stop').onclick=()=>stop();$('seek').oninput=()=>seekPreview(Number($('seek').value));$('sound').onchange=()=>{if(audio)audio.muted=!$('sound').checked;if(cardAudio)cardAudio.muted=!$('sound').checked;renderPlayback();};
 $('narration-delay').onchange=()=>moveVoice(0,Number($('narration-delay').value));$('timeline-prev').onclick=()=>selectSlide(focusedSlide-1);$('timeline-next').onclick=()=>selectSlide(focusedSlide+1);$('restore-ten').onclick=()=>restoreTenMinutes();
@@ -236,9 +237,9 @@ $('player').addEventListener('load',initPreview);
 if(model.sessionAudio&&model.timingVersion!==3&&model.cards.length===10)restoreTenMinutes(true);else render();initPreview();
 
 
-$('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';
-$('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';return;}const url=new URL(location.href);if($('module-version').value.startsWith('lightly-guided'))url.searchParams.set('module','lightly-guided');else url.searchParams.delete('module');if($('module-version').value==='lightly-guided-10m')url.searchParams.set('session','10m');else url.searchParams.delete('session');location.href=url.href;};
-if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent=earlierTen?'Earlier ten-minute slightly guided draft · three reminder slots · new VO pending.':'Slightly guided · expanding title → instruction cards from 0:04 → five editable reference images → black quiet countdown (1–5 minutes) → closing bell. Matching reminder recordings are not attached yet. Your guided training and earlier ten-minute drafts are preserved separately.';}
+$('module-version').value=gratitude?'gratitude':lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';
+$('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=gratitude?'gratitude':lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';return;}const url=new URL(location.href);if($('module-version').value.startsWith('lightly-guided'))url.searchParams.set('module','lightly-guided');else if($('module-version').value==='gratitude')url.searchParams.set('module','gratitude');else url.searchParams.delete('module');if($('module-version').value==='lightly-guided-10m')url.searchParams.set('session','10m');else url.searchParams.delete('session');location.href=url.href;};
+if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent=gratitude?'Gratitude · original uploaded-video text → five matching images and captions → reflection instruction → black countdown (1–5 minutes) → closing bell. Original video wording is transcribed as supplied. Matching card VO is not attached yet. Meditation drafts are saved separately.':earlierTen?'Earlier ten-minute slightly guided draft · three reminder slots · new VO pending.':'Slightly guided · expanding title → instruction cards from 0:04 → five editable reference images → black quiet countdown (1–5 minutes) → closing bell. Matching reminder recordings are not attached yet. Your guided training and earlier ten-minute drafts are preserved separately.';}
 
 function renderMini(time,finished=false){
  if(!surface||!mini())return;
@@ -249,7 +250,7 @@ function renderMini(time,finished=false){
  plate.style.display=quiet?'none':'';if(box)box.style.display=quiet?'none':'';dot.style.visibility='hidden';group.style.display=quiet?'':'none';
  p.closest('foreignObject').setAttribute('y',215);p.closest('foreignObject').setAttribute('height',465);p.style.visibility=quiet?'hidden':'visible';
  p.style.color='#000';p.style.background='transparent';p.style.fontSize=opening?'72px':'36px';surface.style.background='#000';surface.style.border='12px solid #08788b';surface.style.boxSizing='border-box';img.style.display='none';
- if(!opening&&!quiet){const c=model.cards[slideAt(time)];if(c.image){if(img.getAttribute('src')!==c.image)img.src=c.image;img.alt=c.label||'Session image';img.style.display='block';plate.style.display='none';if(box)box.style.display='none';p.closest('foreignObject').setAttribute('y',760);p.closest('foreignObject').setAttribute('height',150);p.style.fontSize='27px';p.style.color='#fff';p.style.background='rgba(0,0,0,.8)';}}
+ if(!opening&&!quiet){const c=model.cards[slideAt(time)];if(c.image){if(img.getAttribute('src')!==c.image)img.src=c.image;img.alt=c.label||'Session image';img.style.display='block';plate.style.display='none';if(box)box.style.display='none';p.closest('foreignObject').setAttribute('y',760);p.closest('foreignObject').setAttribute('height',150);p.style.fontSize='27px';p.style.color='#fff';p.style.background='#83ab76';}}
  else {p.style.color='#000';p.style.background='transparent';}
  group.querySelector('text').textContent=ending?'':(()=>{const sec=Math.max(0,Math.ceil(total()-5-time));return sec>=60?Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'):String(sec);})();group.querySelector('#ci-mini-bell').style.display=ending?'':'none';
 }
