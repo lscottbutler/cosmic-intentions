@@ -87,6 +87,7 @@ function validate(m) {
  return m;
 }
 try { const saved=localStorage.getItem(key); if(saved) model=validate(JSON.parse(saved)); } catch { unreadableDraft=true; tell('Saved draft could not be read. It remains untouched. Open a backup or download the current module before saving.'); }
+if(mini()&&!unreadableDraft&&model.instructionLayout!==2){const fresh=window.CIModulePresets.gratitudeStyle();const first=model.cards[0];if(first.duration===13&&!first.audio)first.duration=8;if(!first.audio)first.audioOffset=0;model.cards.unshift(...fresh.cards.slice(0,3));model.opening={...model.opening,hold:2,fade:1,expand:1};model.instructionLayout=2;dirty=true;}
 function saveDraft(manual=false) {
  clearTimeout(autosaveTimer);
  if(unreadableDraft&&!manual) { tell('Automatic saving paused: the existing draft is unreadable. Download a backup before replacing it.'); return false; }
@@ -237,7 +238,7 @@ if(model.sessionAudio&&model.timingVersion!==3&&model.cards.length===10)restoreT
 
 $('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';
 $('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';return;}const url=new URL(location.href);if($('module-version').value.startsWith('lightly-guided'))url.searchParams.set('module','lightly-guided');else url.searchParams.delete('module');if($('module-version').value==='lightly-guided-10m')url.searchParams.set('session','10m');else url.searchParams.delete('session');location.href=url.href;};
-if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent=earlierTen?'Earlier ten-minute slightly guided draft · three reminder slots · new VO pending.':'Slightly guided · expanding title → five editable reference images → black quiet countdown (1–5 minutes) → closing bell. Matching reminder recordings are not attached yet. Your guided training and earlier ten-minute drafts are preserved separately.';}
+if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent=earlierTen?'Earlier ten-minute slightly guided draft · three reminder slots · new VO pending.':'Slightly guided · expanding title → instruction cards from 0:04 → five editable reference images → black quiet countdown (1–5 minutes) → closing bell. Matching reminder recordings are not attached yet. Your guided training and earlier ten-minute drafts are preserved separately.';}
 
 function renderMini(time,finished=false){
  if(!surface||!mini())return;
@@ -247,7 +248,7 @@ function renderMini(time,finished=false){
  const opening=time<openingTiming().duration,quiet=time>=quietStart(),ending=finished||time>=total()-5;
  plate.style.display=quiet?'none':'';if(box)box.style.display=quiet?'none':'';dot.style.visibility='hidden';group.style.display=quiet?'':'none';
  p.closest('foreignObject').setAttribute('y',215);p.closest('foreignObject').setAttribute('height',465);p.style.visibility=quiet?'hidden':'visible';
- surface.style.background='#000';surface.style.border='12px solid #08788b';surface.style.boxSizing='border-box';img.style.display='none';
+ p.style.color='#000';p.style.background='transparent';p.style.fontSize=opening?'72px':'36px';surface.style.background='#000';surface.style.border='12px solid #08788b';surface.style.boxSizing='border-box';img.style.display='none';
  if(!opening&&!quiet){const c=model.cards[slideAt(time)];if(c.image){if(img.getAttribute('src')!==c.image)img.src=c.image;img.alt=c.label||'Session image';img.style.display='block';plate.style.display='none';if(box)box.style.display='none';p.closest('foreignObject').setAttribute('y',760);p.closest('foreignObject').setAttribute('height',150);p.style.fontSize='27px';p.style.color='#fff';p.style.background='rgba(0,0,0,.8)';}}
  else {p.style.color='#000';p.style.background='transparent';}
  group.querySelector('text').textContent=ending?'':(()=>{const sec=Math.max(0,Math.ceil(total()-5-time));return sec>=60?Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'):String(sec);})();group.querySelector('#ci-mini-bell').style.display=ending?'':'none';
