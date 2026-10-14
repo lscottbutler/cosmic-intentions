@@ -16,7 +16,7 @@ function setSlideDuration(i,value) {
  const b=boundaries();return i===model.cards.length-1?setBoundary(i-1,b[i].end-value):setBoundary(i,b[i].start+(i===0?lead():0)+value);
 }
 function setUploadedDuration(i,value) {
- const c=model.cards[i],max=Math.min(c.duration,c.audioDuration??c.duration);
+ const c=model.cards[i],max=Math.min(c.duration,c.audioDuration??c.duration-(c.audioOffset||0));
  if(!Number.isFinite(value)||value<.1||value>max){tell('Uploaded narration duration must be between 0.1 and '+max.toFixed(1)+' seconds.');return false;}
  c.audioPlayDuration=value;stop(false);mark();render();showSlide(i);return true;
 }
@@ -30,9 +30,9 @@ function renderOpeningEditor() {
  const heading=document.createElement('h3');heading.textContent='Opening title';box.append(heading);
  field(box,'Title text','textarea',openingTiming().text,value=>{model.opening??={text:'MEDITATIONS',hold:4,fade:1,expand:1};model.opening.text=value;stop(false);openingView=true;mark();renderOpening(0);renderSlideList();});
  for(const [key,label]of [['hold','Title duration (seconds)'],['fade','Title fade out (seconds)'],['expand','Box expansion (seconds)']]) {
-  const o=openingTiming();durationInput(box,label,o[key],Math.min(model.cards[0].duration,voiceStart(1)),value=>{
+  const o=openingTiming();durationInput(box,label,o[key],lightlyGuided?(model.cards[0].audioOffset||5):Math.min(model.cards[0].duration,voiceStart(1)),value=>{
    const current=openingTiming();const next={text:current.text,hold:current.hold,fade:current.fade,expand:current.expand,[key]:value};const duration=next.hold+next.fade+next.expand;
-   if(!Number.isFinite(value)||value<0||duration<.1||duration>Math.min(model.cards[0].duration,voiceStart(1)-voiceDuration(0))){tell('The opening must fit before the first recorded passage and within slide 1.');return;}
+   if(!Number.isFinite(value)||value<0||duration<.1||duration>(lightlyGuided?(model.cards[0].audioOffset||5):Math.min(model.cards[0].duration,voiceStart(1)-voiceDuration(0)))){tell('The opening must fit before the first recorded passage and within slide 1.');return;}
    model.opening=next;stop(false);openingView=true;mark();render();renderOpening(0);
   });
  }
@@ -50,9 +50,10 @@ function renderOpening(t) {
 }
 
 const $ = id => document.getElementById(id);
-const key = 'ci-module-editor-10m-v1';
+const lightlyGuided=new URLSearchParams(location.search).get('module')==='lightly-guided';
+const key=lightlyGuided?'ci-module-editor-lightly-10m-v1':'ci-module-editor-10m-v1';
 const voiceLengths = [23.36,23.44,22.32,23.28,23.20,26.32,19.52,20.48,26.56,30];
-let model = sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
+let model = lightlyGuided?window.CIModulePresets.lightlyGuided():sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
 let index = -1, openingView = true;
 let audio = null, cardAudio = null, cardAudioIndex = -1, surface = null, raf = 0, last = 0;
 let dirty = false, unreadableDraft = false, autosaveTimer = 0;
@@ -61,6 +62,9 @@ const lead = () => Number(model.narrationDelay)||0;
 const stamp = seconds => { const t=Math.round(seconds*10); return `${String(Math.floor(t/600)).padStart(2,'0')}:${((t%600)/10).toFixed(1).padStart(4,'0')}`; };
 const tell = text => { $('status').textContent=text; };
 function validate(m) {
+ if(lightlyGuided!==(m?.moduleType==='lightly-guided'))throw Error('Open this backup in its matching session version.');
+ if(m?.bellAudio&&m.bellAudio!=='/players/audio/coming-back-to-yourself-10m.ogg')throw Error('Unrecognized bell recording');
+ if(lightlyGuided&&m.sessionAudio)throw Error('The guided training recording does not belong in this version.');
  if(m?.version!==1 || typeof m.title!=='string' || !Array.isArray(m.cards) || !m.cards.length || m.cards.length>50) throw Error('Invalid module backup');
  if(m.opening&&(typeof m.opening.text!=='string'||['hold','fade','expand'].some(k=>!Number.isFinite(m.opening[k])||m.opening[k]<0)||m.opening.hold+m.opening.fade+m.opening.expand<.1))throw Error('Invalid opening title');
  if(m.voiceDurations&&(!Array.isArray(m.voiceDurations)||m.voiceDurations.length!==10||m.voiceDurations.some((v,i)=>!Number.isFinite(v)||v<.1||v>(i===9?55:60))))throw Error('Invalid narration durations');
@@ -69,6 +73,7 @@ function validate(m) {
  for(const c of m.cards) {
   if(typeof c.text!=='string'||typeof c.spoken!=='string') throw Error('Invalid slide text');
   for(const k of ['duration','silence','fadeIn','fadeOut']) if(!Number.isFinite(c[k])||c[k]<0||c[k]>3600) throw Error('Invalid slide timing');
+  if(c.audioOffset!==undefined&&(!Number.isFinite(c.audioOffset)||c.audioOffset<0||c.audioOffset>=c.duration))throw Error('Invalid narration start offset');
   if(c.duration<1||c.fadeIn+c.fadeOut>c.duration) throw Error('Slide fades exceed its duration');
   for(const k of ['image','audio']) if(typeof c[k]!=='string'||(c[k]&&!c[k].startsWith(k==='image'?'data:image/':'data:audio/'))) throw Error('Invalid media');
  }
@@ -87,11 +92,12 @@ function boundaries() { let time=0;return model.cards.map((c,i)=>{const start=ti
 function voiceStart(i) { const start=lead()+(model.voiceStarts?.[i]??(i===9?565:i*60));return i===0?Math.max(openingTiming().duration,start):start; }
 function voiceLimits(i) {return {min:i?voiceStart(i-1)+voiceDuration(i-1):Math.max(openingTiming().duration,lead()),max:(i===9?total()-5:voiceStart(i+1))-voiceDuration(i)};}
 function parseStamp(value) { if(!/^\d{1,2}:[0-5]\d(?:\.\d)?$/.test(value.trim()))throw Error('Use minutes:seconds, for example 01:30.0');const [m,s]=value.split(':').map(Number);return m*60+s; }
-function overlaps(i) {const b=boundaries()[i];return voiceLengths.flatMap((d,j)=>voiceStart(j)<b.end&&voiceStart(j)+voiceDuration(j)>b.start?[j]:[]);}
-function slideName(i) {return (model.cards[i].kind==='title'?'Title card ':'Slide ')+(i+1);}
+function overlaps(i) {if(!model.sessionAudio)return [];const b=boundaries()[i];return voiceLengths.flatMap((d,j)=>voiceStart(j)<b.end&&voiceStart(j)+voiceDuration(j)>b.start?[j]:[]);}
+function slideName(i) {if(lightlyGuided&&model.cards[i].label)return model.cards[i].label;return (model.cards[i].kind==='title'?'Title card ':'Slide ')+(i+1);}
 function labelText(i) {return model.cards[i].text.replace(/\s+/g,' ').trim()||'Empty — enter text';}
 function narrationStatus(i) {
  const c=model.cards[i];if(c.audio)return c.audioText===c.spoken?'Uploaded narration':'Text changed — replace narration';
+ if(c.kind==='silence')return c.text?'On-screen only — no narration':'Silence — no narration';
  if(c.kind)return 'No recording — upload narration';
  const clips=overlaps(i);return clips.length?'Original recording '+clips.map(j=>j+1).join(', '):'Silence — no recorded passage';
 }
@@ -128,15 +134,15 @@ async function measure(c) {
 function media(box,i) {
  const c=model.cards[i],label=document.createElement('label');label.textContent='Upload narration';const input=document.createElement('input');input.type='file';input.accept='audio/*';
  input.onchange=async()=>{const file=input.files[0];if(!file)return;if(file.size>8*1024*1024){tell('Choose a recording smaller than 8 MB.');return;}
-  try { const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});const duration=await measure({audio:data});if(duration>c.duration)throw Error('Recording is longer than this slide. Adjust slide timing first.');c.audio=data;c.audioDuration=duration;c.audioText=c.spoken;mark();render();selectSlide(i); }
+  try { const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});const duration=await measure({audio:data});if(duration>c.duration-(c.audioOffset||0))throw Error('Recording is longer than this slide. Adjust slide timing first.');c.audio=data;c.audioDuration=duration;c.audioText=c.spoken;mark();render();selectSlide(i); }
   catch(e){tell('Recording not added: '+e.message);}
  };label.append(input);box.append(label);const status=document.createElement('p');status.className='narration-status';status.textContent=narrationStatus(i);box.append(status);
  if(c.audio){const player=document.createElement('audio');player.controls=true;player.src=c.audio;box.append(player);const remove=document.createElement('button');remove.textContent='Remove uploaded narration';remove.onclick=()=>{c.audio='';c.audioText='';delete c.audioDuration;mark();render();selectSlide(i);};box.append(remove);}
 }
-function limits(i){const b=boundaries();return {min:b[i].start+(i===0?lead():0)+Math.max(1,model.cards[i].fadeIn+model.cards[i].fadeOut,i===0?openingTiming().duration:0),max:b[i+1].end-Math.max(1,model.cards[i+1].fadeIn+model.cards[i+1].fadeOut)};}
+function limits(i){const b=boundaries();return {min:b[i].start+(i===0?lead():0)+Math.max(1,model.cards[i].fadeIn+model.cards[i].fadeOut,i===0?openingTiming().duration:0),max:b[i+1].end-Math.max(1,model.cards[i+1].fadeIn+model.cards[i+1].fadeOut,(model.cards[i+1].audioOffset||0)+.1)};}
 function setBoundary(i,time) {
  if(i<0||i>=model.cards.length-1)return false;const {min,max}=limits(i);if(!Number.isFinite(time)||time<min||time>max){tell('Choose a cut between '+stamp(min)+' and '+stamp(max)+'.');return false;}
- const b=boundaries();const left=+(time-b[i].start-(i===0?lead():0)).toFixed(2),right=+(b[i+1].end-time).toFixed(2);if((model.cards[i].audioPlayDuration??model.cards[i].audioDuration??0)>left||(model.cards[i+1].audioPlayDuration??model.cards[i+1].audioDuration??0)>right){tell('The cut would shorten a slide below its uploaded recording. Trim narration first.');return false;}model.cards[i].duration=left;model.cards[i+1].duration=right;stop(false);mark();render();showSlide(focusedSlide);return true;
+ const b=boundaries();const left=+(time-b[i].start-(i===0?lead():0)).toFixed(2),right=+(b[i+1].end-time).toFixed(2);if((model.cards[i].audioPlayDuration??model.cards[i].audioDuration??0)+(model.cards[i].audioOffset||0)>left||(model.cards[i+1].audioPlayDuration??model.cards[i+1].audioDuration??0)+(model.cards[i+1].audioOffset||0)>right){tell('The cut would shorten a slide below its uploaded recording. Trim narration first.');return false;}model.cards[i].duration=left;model.cards[i+1].duration=right;stop(false);mark();render();showSlide(focusedSlide);return true;
 }
 function timingFields(box,i) {
  const b=boundaries(),wrap=document.createElement('div');wrap.className='timing';durationInput(box,'Duration (seconds)',model.cards[i].duration,total(),v=>setSlideDuration(i,v));if(model.cards[i].audio)durationInput(box,'Narration duration (seconds)',model.cards[i].audioPlayDuration??model.cards[i].audioDuration??model.cards[i].duration,model.cards[i].audioDuration??model.cards[i].duration,v=>setUploadedDuration(i,v));else for(const j of overlaps(i))durationInput(box,'Original narration '+(j+1)+' duration (seconds)',voiceDuration(j),j===9?55:60,v=>setVoiceDuration(j,v));
@@ -149,16 +155,16 @@ function render() {
   const row=document.createElement('div');row.className='row';const h=document.createElement('h3');h.textContent=slideName(i);row.append(h);
   const preview=document.createElement('button');preview.textContent='Preview this slide';preview.onclick=()=>selectSlide(i);row.append(preview);
   const insert=document.createElement('button');insert.textContent='Insert title card after';insert.onclick=()=>insertCard(i,'title');insert.disabled=model.cards.length>=50;row.append(insert);
-  const del=document.createElement('button');del.textContent='Delete';del.disabled=model.cards.length===1||(!c.kind&&!c.audio);del.onclick=()=>{if(i>0)model.cards[i-1].duration+=c.duration;else model.cards[1].duration+=c.duration;model.cards.splice(i,1);focusedSlide=Math.max(0,i-1);stop(false);mark();render();showSlide(focusedSlide);};row.append(del);box.append(row);
+  const del=document.createElement('button');del.textContent='Delete';del.disabled=model.cards.length===1||(!c.kind&&!c.audio);del.onclick=()=>{if(lightlyGuided&&i===0&&model.cards[1].duration<openingTiming().duration){tell('Keep room for the opening title.');return;}if(i>0)model.cards[i-1].duration+=c.duration;else model.cards[1].duration+=c.duration;model.cards.splice(i,1);focusedSlide=Math.max(0,i-1);stop(false);mark();render();showSlide(focusedSlide);};row.append(del);box.append(row);
   field(box,c.kind==='title'?'Title card text':'On-screen instruction','textarea',c.text,value=>{c.text=value;if(c.same)c.spoken=value;refreshText(i);});
   const same=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=c.same;check.onchange=()=>{c.same=check.checked;if(c.same)c.spoken=c.text;mark();render();showSlide(i);};same.append(check,' Use the same text for narration');box.append(same);
   if(!c.same)field(box,'Spoken text','textarea',c.spoken,value=>{c.spoken=value;refreshText(i);});
   media(box,i);timingFields(box,i);$('cards').append(box);
- });$('add').disabled=model.cards.length>=50;$('restore-ten').disabled=model.cards.length!==10;$('close-gaps').hidden=true;renderOpeningEditor();renderSlideList();renderTimeline();
+ });$('add').disabled=model.cards.length>=50;$('restore-ten').disabled=lightlyGuided||model.cards.length!==10;$('restore-ten').hidden=lightlyGuided;$('narration-delay').closest('label').hidden=lightlyGuided;$('close-gaps').hidden=true;renderOpeningEditor();renderSlideList();renderTimeline();
 }
 function insertCard(after,kind='content') {
- if(model.cards.length>=50){tell('Maximum 50 slides.');return;}const i=Math.max(0,Math.min(model.cards.length-1,after)),c=model.cards[i];const minimum=Math.max(1,c.fadeIn+c.fadeOut);if(c.duration<minimum*2){tell('Select a longer slide to split.');return;}
- const duration=c.duration/2;if(i===0&&duration<openingTiming().duration){tell('Slide 1 needs room for the opening title. Shorten the opening or split another slide.');return;}c.duration=duration;model.cards.splice(i+1,0,{...c,text:'',spoken:'',same:true,kind,audio:'',audioText:'',audioDuration:undefined,audioPlayDuration:undefined,duration});focusedSlide=i+1;openingView=false;stop(false);mark();render();showSlide(focusedSlide);const box=$('slide-card-'+focusedSlide);box.scrollIntoView({block:'nearest'});box.querySelector('textarea').focus();
+ if(model.cards.length>=50){tell('Maximum 50 slides.');return;}const i=Math.max(0,Math.min(model.cards.length-1,after)),c=model.cards[i];const minimum=Math.max(1,c.fadeIn+c.fadeOut,(c.audioOffset||0)+.1);if(c.duration<minimum*2){tell('Select a longer slide to split.');return;}
+ const duration=c.duration/2;if(c.audio&&(c.audioPlayDuration??c.audioDuration??c.duration)+(c.audioOffset||0)>duration){tell('Trim the uploaded narration before splitting this slide.');return;}if(i===0&&duration<openingTiming().duration){tell('Slide 1 needs room for the opening title. Shorten the opening or split another slide.');return;}c.duration=duration;model.cards.splice(i+1,0,{...c,text:'',spoken:'',same:true,kind,label:undefined,audioOffset:0,audio:'',audioText:'',audioDuration:undefined,audioPlayDuration:undefined,duration});focusedSlide=i+1;openingView=false;stop(false);mark();render();showSlide(focusedSlide);const box=$('slide-card-'+focusedSlide);box.scrollIntoView({block:'nearest'});box.querySelector('textarea').focus();
 }
 function segment(track,start,end,text,className,click) {const el=document.createElement('div');el.className=className;el.style.left=start/total()*100+'%';el.style.width=(end-start)/total()*100+'%';const select=document.createElement('button');select.type='button';select.className='clip-select';select.textContent=text;select.title=text;select.onclick=click;el.append(select);track.append(el);return el;}
 function dragHandle(track,time,label,onChange,min,max) {
@@ -169,25 +175,28 @@ function renderTimeline() {
  const root=$('timeline');root.replaceChildren();root.style.minWidth=Math.max(2200,model.cards.length*160)+'px';$('timeline-focus').textContent=(openingView?'Opening title':'Current slide '+(focusedSlide+1)+' of '+model.cards.length)+' · all slides shown';$('timeline-prev').disabled=focusedSlide===0;$('timeline-next').disabled=focusedSlide===model.cards.length-1;
  const ruler=document.createElement('div');ruler.className='ruler';for(let t=0;t<=total();t+=60){const mark=document.createElement('span');mark.style.left=t/total()*100+'%';mark.textContent=stamp(t);ruler.append(mark);}root.append(ruler);
  const original=document.createElement('div');original.className='voice-track';segment(original,0,voiceStart(0),'Opening title','quiet',()=>seekPreview(0));
- for(let j=0;j<10;j++){const start=voiceStart(j),end=start+voiceDuration(j);const recorded=segment(original,start,end,'Recorded '+(j+1)+'\n'+stamp(start)+'–'+stamp(end),'voice',()=>seekPreview(start));durationInput(recorded,'Recorded narration '+(j+1)+' duration',voiceDuration(j),j===9?55:60,v=>setVoiceDuration(j,v));const silenceEnd=j===9?total()-5:voiceStart(j+1);if(silenceEnd>end)segment(original,end,silenceEnd,'','quiet',()=>seekPreview(end));const lim=voiceLimits(j);dragHandle(original,start,'Move narration '+(j+1)+' start',v=>moveVoice(j,v),lim.min,lim.max);}
- root.append(original);
+ for(let j=0;j<(model.sessionAudio?10:0);j++){const start=voiceStart(j),end=start+voiceDuration(j);const recorded=segment(original,start,end,'Recorded '+(j+1)+'\n'+stamp(start)+'–'+stamp(end),'voice',()=>seekPreview(start));durationInput(recorded,'Recorded narration '+(j+1)+' duration',voiceDuration(j),j===9?55:60,v=>setVoiceDuration(j,v));const silenceEnd=j===9?total()-5:voiceStart(j+1);if(silenceEnd>end)segment(original,end,silenceEnd,'','quiet',()=>seekPreview(end));const lim=voiceLimits(j);dragHandle(original,start,'Move narration '+(j+1)+' start',v=>moveVoice(j,v),lim.min,lim.max);}
+ if(lightlyGuided){original.replaceChildren();segment(original,0,5,'Opening bell','voice',()=>seekPreview(0));segment(original,5,total()-5,'Quiet practice · 3 reminder slots','quiet',()=>seekPreview(30));segment(original,total()-5,total(),'Closing bell','voice',()=>seekPreview(total()-5));}root.append(original);
  const clips=document.createElement('div');clips.className='slide-voice-track';const slides=document.createElement('div');slides.className='slide-track';const b=boundaries();
  b.forEach((v,i)=>{const c=model.cards[i];const clip=segment(clips,v.start,v.end,'Slide '+(i+1)+'\n'+narrationStatus(i),c.audio?'narration-slot uploaded-narration':'narration-slot',()=>{selectSlide(i);$('slide-card-'+i).scrollIntoView({block:'nearest'});});clip.dataset.slide=String(i);if(c.audio)durationInput(clip,'Slide '+(i+1)+' narration duration',c.audioPlayDuration??c.audioDuration??c.duration,c.audioDuration??c.duration,v=>setUploadedDuration(i,v));
   const slide=segment(slides,v.start,v.end,slideName(i)+'\n'+labelText(i)+'\n'+stamp(v.start)+'–'+stamp(v.end),'slide-region',()=>{selectSlide(i);$('slide-card-'+i).scrollIntoView({block:'nearest'});});slide.classList.toggle('current-slide',i===focusedSlide);slide.dataset.slide=String(i);durationInput(slide,'Slide '+(i+1)+' duration',c.duration,total(),value=>setSlideDuration(i,value));
   if(i<b.length-1){const lim=limits(i);dragHandle(slides,v.end,'Slide '+(i+1)+' ends at',v=>setBoundary(i,v),lim.min,lim.max);}
  });root.append(clips,slides);const line=document.createElement('div');line.id='timeline-playhead';line.className='playhead';root.append(line);updatePlayhead();
- const summary=$('silence-list');summary.replaceChildren();const note=document.createElement('p');note.textContent='Original recording: ten recorded passages. Every slide has a separate narration slot. Upload narration to a new slide to add actual audio; original passages stay at their recorded times. Closing bell: '+stamp(total()-5)+'–'+stamp(total())+'.';summary.append(note);
+ const summary=$('silence-list');summary.replaceChildren();const note=document.createElement('p');note.textContent=lightlyGuided?'Opening and closing bells only. Reminder wording is loaded; new reminder recordings must be uploaded. No halfway gong.': 'Original recording: ten recorded passages. Every slide has a separate narration slot. Upload narration to a new slide to add actual audio; original passages stay at their recorded times. Closing bell: '+stamp(total()-5)+'–'+stamp(total())+'.';summary.append(note);
 }
 function moveVoice(i,time) {const lim=voiceLimits(i);if(!Number.isFinite(time)||time<lim.min||time>lim.max){tell('Recorded passage must stay between '+stamp(lim.min)+' and '+stamp(lim.max)+'.');return;}model.voiceStarts??=Array.from({length:10},(_,j)=>j===9?565:j*60);model.voiceStarts[i]=+(time-lead()).toFixed(2);stop(false);mark();render();}
 function updatePlayhead() {if(!$('seek'))return;$('seek').value=Math.min(total(),elapsed);$('playhead-time').textContent=stamp(elapsed);const line=$('timeline-playhead');if(line)line.style.left=elapsed/total()*100+'%';const dot=surface?.querySelector('#ci-editor-scrub-dot');if(dot){const t=elapsed/total();dot.setAttribute('cx',243+1195*t);dot.setAttribute('cy',734+166*t*(1-t));}}
 function updateCardScrubber(){updatePlayhead();}
 function slideAt(time){const b=boundaries();return Math.max(0,b.findIndex((v,i)=>time<v.end||i===b.length-1));}
 function syncVoice() {
- if(!running)return;const i=slideAt(elapsed),c=model.cards[i],start=boundaries()[i].start;
+ if(!running)return;const i=slideAt(elapsed),c=model.cards[i],start=boundaries()[i].start+(c.audioOffset||0);
  if(c.audio&&elapsed>=start&&elapsed<start+(c.audioPlayDuration??c.audioDuration??c.duration)){
   audio?.pause();if(cardAudioIndex!==i){releaseCustom();cardAudio=new Audio(c.audio);cardAudioIndex=i;}cardAudio.muted=!$('sound').checked;if(Math.abs(cardAudio.currentTime-(elapsed-start))>.3)cardAudio.currentTime=elapsed-start;if(paused)cardAudio.pause();else if(cardAudio.paused)cardAudio.play().catch(()=>{paused=true;tell('Recording could not play. Press Resume to retry.');});return;
  }
- releaseCustom();if(!model.sessionAudio)return;if(!audio)audio=new Audio(model.sessionAudio);audio.muted=!$('sound').checked;
+ releaseCustom();if(lightlyGuided){
+  const bell=elapsed<5||elapsed>=total()-5;if(!model.bellAudio||!bell||paused){audio?.pause();return;}
+  if(!audio)audio=new Audio(model.bellAudio);audio.muted=!$('sound').checked;const position=595+(elapsed<5?elapsed:elapsed-(total()-5));if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;if(audio.paused)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start the bell.');});return;
+ }if(!model.sessionAudio)return;if(!audio)audio=new Audio(model.sessionAudio);audio.muted=!$('sound').checked;
  const j=voiceLengths.findIndex((duration,i)=>elapsed>=voiceStart(i)&&elapsed<voiceStart(i)+voiceDuration(i)),bell=elapsed>=total()-5;
  if(paused||(!bell&&j<0)){audio.pause();return;}const position=bell?595+elapsed-(total()-5):j*60+elapsed-voiceStart(j);if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;if(audio.paused)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start narration.');});
 }
@@ -201,16 +210,16 @@ function tick(now) {if(!running)return;if(!paused)elapsed+=(now-last)/1000;last=
 async function seekPreview(time) {if(!mount())return;elapsed=Math.max(0,Math.min(total()-.1,time));if(!running){running=true;paused=true;last=performance.now();raf=requestAnimationFrame(tick);}renderPlayback();syncVoice();$('play').textContent=paused?'Resume':'Pause';}
 async function play() {
  if(model.cards.some(c=>c.audio&&c.audioText!==c.spoken)){tell('Slide text changed: replace its uploaded narration before playback.');return;}
- if(model.cards.some(c=>c.audio&&(c.audioPlayDuration??c.audioDuration)>c.duration)){tell('An uploaded recording exceeds its slide duration. Adjust its timing before playback.');return;}
+ if(model.cards.some(c=>c.audio&&(c.audioPlayDuration??c.audioDuration)>c.duration-(c.audioOffset||0))){tell('An uploaded recording exceeds its slide duration. Adjust its timing before playback.');return;}
  if(running){paused=!paused;last=performance.now();if(paused){audio?.pause();cardAudio?.pause();}$('play').textContent=paused?'Resume':'Pause';syncVoice();return;}
- try{validate(model);const durations=await Promise.all(model.cards.map(measure));durations.forEach((d,i)=>{if(d&&Math.min(d,model.cards[i].audioPlayDuration??d)>model.cards[i].duration)throw Error('Slide '+(i+1)+' recording exceeds its duration');if(d&&model.cards[i].audioText!==model.cards[i].spoken)throw Error('Slide '+(i+1)+' text changed: replace its narration');if(d)model.cards[i].audioDuration=d;});if(!mount())throw Error('Preview is loading');elapsed=0;focusedSlide=0;running=true;paused=false;last=performance.now();renderPlayback();syncVoice();$('play').textContent='Pause';raf=requestAnimationFrame(tick);}catch(e){tell(e.message);}
+ try{validate(model);const durations=await Promise.all(model.cards.map(measure));durations.forEach((d,i)=>{if(d&&Math.min(d,model.cards[i].audioPlayDuration??d)>model.cards[i].duration-(model.cards[i].audioOffset||0))throw Error('Slide '+(i+1)+' recording exceeds its duration');if(d&&model.cards[i].audioText!==model.cards[i].spoken)throw Error('Slide '+(i+1)+' text changed: replace its narration');if(d)model.cards[i].audioDuration=d;});if(!mount())throw Error('Preview is loading');elapsed=0;focusedSlide=0;running=true;paused=false;last=performance.now();renderPlayback();syncVoice();$('play').textContent='Pause';raf=requestAnimationFrame(tick);}catch(e){tell(e.message);}
 }
 function restoreTenMinutes(initial=false) {
  if(model.cards.length!==10){tell('Added slides are preserved. Adjust their cuts on the timeline.');return;}model.narrationDelay=0;model.voiceStarts=Array.from({length:10},(_,i)=>i===9?565:i*60);model.cards.forEach((c,i)=>{c.duration=i===8?85:i===9?35:60;c.fadeIn=1;c.fadeOut=1;c.mode='fixed';});model.timingVersion=3;if(!initial)mark();render();
 }
 $('title').onchange=()=>{model.title=$('title').value;mark();};$('add').onclick=()=>insertCard(focusedSlide);$('save').onclick=()=>saveDraft(true);
 $('restore').onclick=()=>{try{const old=localStorage.getItem(key+'-previous');if(!old){tell('No previous saved draft.');return;}const next=validate(JSON.parse(old));stop();model=next;focusedSlide=0;dirty=true;render();tell('Previous draft loaded. Save draft to keep it.');}catch(e){tell('Previous draft could not be read: '+e.message);}};
-$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=lightlyGuided?'CI-slightly-guided-10m-backup.json':'CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('import').onchange=async()=>{try{const file=$('import').files[0];if(!file)return;if(file.size>30*1024*1024)throw Error('Backup exceeds 30 MB');const next=validate(JSON.parse(await file.text()));stop();model=next;focusedSlide=0;dirty=true;render();tell('Backup opened. Save draft to keep it.');}catch(e){tell('Backup could not be opened: '+e.message);}};
 $('play').onclick=play;$('restart').onclick=async()=>{stop();await play();};$('stop').onclick=()=>stop();$('seek').oninput=()=>seekPreview(Number($('seek').value));$('sound').onchange=()=>{if(audio)audio.muted=!$('sound').checked;if(cardAudio)cardAudio.muted=!$('sound').checked;renderPlayback();};
 $('narration-delay').onchange=()=>moveVoice(0,Number($('narration-delay').value));$('timeline-prev').onclick=()=>selectSlide(focusedSlide-1);$('timeline-next').onclick=()=>selectSlide(focusedSlide+1);$('restore-ten').onclick=()=>restoreTenMinutes();
@@ -218,3 +227,8 @@ window.addEventListener('beforeunload',e=>{if(dirty)saveDraft();if(dirty){e.prev
 function initPreview(){if(mount())renderOpening(0);}
 $('player').addEventListener('load',initPreview);
 if(model.sessionAudio&&model.timingVersion!==3&&model.cards.length===10)restoreTenMinutes(true);else render();initPreview();
+
+
+$('module-version').value=lightlyGuided?'lightly-guided':'guided';
+$('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=lightlyGuided?'lightly-guided':'guided';return;}const url=new URL(location.href);if($('module-version').value==='lightly-guided')url.searchParams.set('module','lightly-guided');else url.searchParams.delete('module');location.href=url.href;};
+if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent='Slightly guided · 10 minutes · three brief reminders with long quiet stretches. Opening and closing bells are connected; matching reminder recordings are not attached yet. Your guided training draft is saved separately.';}

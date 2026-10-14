@@ -1,0 +1,14 @@
+'use strict';
+// Existing Working Master wording and proposed cue windows; new VO is pending.
+window.CIModulePresets={lightlyGuided(){
+ const card=(label,text,duration,kind='content',audioOffset=0)=>({label,text,spoken:text,same:true,image:'',audio:'',audioText:'',mode:'fixed',duration,silence:0,fadeIn:text?1:0,fadeOut:text?1:0,kind,audioOffset});
+ return {version:1,moduleType:'lightly-guided',title:'Slightly Guided — 10 minutes',bellAudio:'/players/audio/coming-back-to-yourself-10m.ogg',opening:{text:'SLIGHTLY GUIDED',hold:3,fade:1,expand:1},cards:[
+  card('Opening guidance','Let breathing happen naturally, notice its sensations, and gently return when you realize your attention has wandered.',30,'content',5),
+  card('Quiet practice','',150,'silence'),
+  card('Gentle return','If your attention has wandered, gently return to your breath.',15),
+  card('Quiet practice','',225,'silence'),
+  card('Begin again','Begin again with the feeling of breathing.',15),
+  card('Quiet practice','',160,'silence'),
+  card('Closing bell','',5,'silence'),
+ ]};
+}};

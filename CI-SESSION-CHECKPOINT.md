@@ -46,3 +46,10 @@ Older PR2/5/7/11/34 are prototypes or superseded work; do not merge wholesale. C
 ## Next-session rule
 
 Start from the actual current `main` and published commit, read this checkpoint and the latest Bible checkpoint, then address Scott's next requested revision. Update this file and the Bible with the real result, evidence, recovery point and open issues. Never restart from an old preview or claim unfinished voice-over/backups are complete.
+
+
+## Slightly guided editor — 2026-10-14 in progress
+
+Scott paused Command Center work and approved loading the slightly guided ten-minute session in the same module editor. Guided training is preserved at the original URL/storage key. The new version uses ?module=lightly-guided and a separate draft key. Three Working Master reminders are placed at 00:05, 03:00 and 07:00, with long blank quiet stretches and only opening/closing bells. New VO remains pending; the editor labels its missing recordings. Original assets and locked player files remain untouched.
+
+Implementation is prepared, but rendered verification is blocked: the cached local Chromium binary is truncated and crashes; the official replacement download returns an HTML network-denial page; the cloud browser cannot reach this runtime's local preview. Do not claim the 21 browser tests passed: they failed before opening the page. Syntax checks pass. Need private Deploy Preview browser verification before merge/publication, as required by root AGENTS.md. Today's Bible backup was copied and text-verified before work.

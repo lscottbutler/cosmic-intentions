@@ -3,17 +3,19 @@
 <head>
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
  <meta name="robots" content="noindex,nofollow"><title>CI Module Editor</title>
- <link rel="stylesheet" href="module-editor.css?v=20261012-studio"><script src="module-editor.js?v=20261012-studio" defer></script>
+ <link rel="stylesheet" href="module-editor.css?v=20261012-studio"><script src="module-presets.js?v=20261014-lightly" defer></script><script src="module-editor.js?v=20261014-lightly" defer></script>
 </head>
 <body>
  <header><div><p>COSMIC INTENTIONS · MODULE STUDIO</p><h1>Module editor</h1></div><span class="workspace-description">Slides · Narration · Sequence</span></header>
  <main>
   <section class="toolbar" aria-label="Project controls">
+   <label>Session version<select id="module-version"><option value="guided">Guided training</option><option value="lightly-guided">Slightly guided</option></select></label>
    <label>Module title<input id="title" maxlength="120"></label>
    <button id="save">Save draft</button><button id="restore">Restore previous</button><button id="export">Download backup</button>
    <label class="filebutton">Open backup<input id="import" type="file" accept="application/json"></label>
   </section>
   <p id="status" role="status">Edits save automatically on this device at this address.</p>
+  <p id="module-note" class="timeline-help" hidden></p>
   <div class="editor-workspace">
    <aside class="slide-library panel">
     <div class="panel-heading"><h2>Project slides</h2><span id="slide-count"></span></div>
@@ -43,3 +45,4 @@
  </main>
 </body>
 </html>
+
