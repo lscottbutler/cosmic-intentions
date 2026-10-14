@@ -13,6 +13,7 @@ function setVoiceDuration(i,value) {
 }
 function setSlideDuration(i,value) {
  if(!Number.isFinite(value)||value<1){tell('Slide duration must be at least one second.');return false;}
+ if(mini()&&['Quiet countdown','Closing bell'].includes(model.cards[i].label)){tell('Choose the quiet-practice minutes above; the closing bell stays five seconds.');return false;}
  const b=boundaries();return i===model.cards.length-1?setBoundary(i-1,b[i].end-value):setBoundary(i,b[i].start+(i===0?lead():0)+value);
 }
 function setUploadedDuration(i,value) {
@@ -36,10 +37,10 @@ function renderOpeningEditor() {
    model.opening=next;stop(false);openingView=true;mark();render();renderOpening(0);
   });
  }
- const note=document.createElement('p');note.className='note';note.textContent='Title holds, fades out, then the box expands. Opening total: '+openingTiming().duration.toFixed(1)+' seconds. The complete module stays ten minutes.';box.append(note);
+ const note=document.createElement('p');note.className='note';note.textContent='Title holds, fades out, then the box expands. Opening total: '+openingTiming().duration.toFixed(1)+' seconds. '+(mini()?'The image sequence is followed by your selected quiet-practice time.':'The complete module stays ten minutes.');box.append(note);
 }
 function renderOpening(t) {
- if(!surface)return;const p=surface.querySelector('p'),img=surface.querySelector('img'),o=openingTiming();
+ if(!surface)return;if(mini())surface.style.background='#000';const p=surface.querySelector('p'),img=surface.querySelector('img'),o=openingTiming();
  const expandStart=o.hold+o.fade,expansion=o.expand?Math.max(0,Math.min(1,(t-expandStart)/o.expand)):(t>=expandStart?1:0);
  p.closest('svg').parentElement.style.transform='translateY('+(-Math.min(100,surface.clientWidth/8)*(1-expansion))+'px)';img.style.display='none';
  const plate=surface.querySelector('rect'),scale=.5+expansion*.5;plate.setAttribute('y',447.5-232.5*scale);plate.setAttribute('height',465*scale);
@@ -51,12 +52,15 @@ function renderOpening(t) {
 
 const $ = id => document.getElementById(id);
 const lightlyGuided=new URLSearchParams(location.search).get('module')==='lightly-guided';
-const key=lightlyGuided?'ci-module-editor-lightly-10m-v1':'ci-module-editor-10m-v1';
+const earlierTen=lightlyGuided&&new URLSearchParams(location.search).get('session')==='10m';
+const key=lightlyGuided?(earlierTen?'ci-module-editor-lightly-10m-v1':'ci-module-editor-lightly-mini-v2'):'ci-module-editor-10m-v1';
 const voiceLengths = [23.36,23.44,22.32,23.28,23.20,26.32,19.52,20.48,26.56,30];
-let model = lightlyGuided?window.CIModulePresets.lightlyGuided():sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
+let model = lightlyGuided?(earlierTen?window.CIModulePresets.lightlyGuided():window.CIModulePresets.gratitudeStyle()):sample(), focusedSlide = 0, running = false, paused = false, elapsed = 0;
 let index = -1, openingView = true;
 let audio = null, cardAudio = null, cardAudioIndex = -1, surface = null, raf = 0, last = 0;
 let dirty = false, unreadableDraft = false, autosaveTimer = 0;
+const mini = () => model.presentation==='gratitude-mini';
+const quietStart = () => boundaries().find((b,i)=>model.cards[i].label==='Quiet countdown')?.start??total();
 const total = () => model.cards.reduce((sum,c) => sum+c.duration,0) + (Number(model.narrationDelay)||0);
 const lead = () => Number(model.narrationDelay)||0;
 const stamp = seconds => { const t=Math.round(seconds*10); return `${String(Math.floor(t/600)).padStart(2,'0')}:${((t%600)/10).toFixed(1).padStart(4,'0')}`; };
@@ -66,6 +70,8 @@ function validate(m) {
  if(m?.bellAudio&&m.bellAudio!=='/players/audio/coming-back-to-yourself-10m.ogg')throw Error('Unrecognized bell recording');
  if(lightlyGuided&&m.sessionAudio)throw Error('The guided training recording does not belong in this version.');
  if(m?.version!==1 || typeof m.title!=='string' || !Array.isArray(m.cards) || !m.cards.length || m.cards.length>50) throw Error('Invalid module backup');
+ if(m.presentation!==undefined&&m.presentation!=='gratitude-mini')throw Error('Invalid presentation');
+ if(m.presentation==='gratitude-mini'&&(![1,2,3,4,5].includes(m.quietMinutes)||m.cards.filter(c=>c.label==='Quiet countdown').length!==1||m.cards.at(-1).label!=='Closing bell'||m.cards.at(-1).duration!==5||m.cards.find(c=>c.label==='Quiet countdown').duration!==m.quietMinutes*60))throw Error('Invalid quiet countdown');
  if(m.opening&&(typeof m.opening.text!=='string'||['hold','fade','expand'].some(k=>!Number.isFinite(m.opening[k])||m.opening[k]<0)||m.opening.hold+m.opening.fade+m.opening.expand<.1))throw Error('Invalid opening title');
  if(m.voiceDurations&&(!Array.isArray(m.voiceDurations)||m.voiceDurations.length!==10||m.voiceDurations.some((v,i)=>!Number.isFinite(v)||v<.1||v>(i===9?55:60))))throw Error('Invalid narration durations');
  if(m.sessionAudio && m.sessionAudio!=='/players/audio/coming-back-to-yourself-10m.ogg') throw Error('Unrecognized recording');
@@ -75,7 +81,7 @@ function validate(m) {
   for(const k of ['duration','silence','fadeIn','fadeOut']) if(!Number.isFinite(c[k])||c[k]<0||c[k]>3600) throw Error('Invalid slide timing');
   if(c.audioOffset!==undefined&&(!Number.isFinite(c.audioOffset)||c.audioOffset<0||c.audioOffset>=c.duration))throw Error('Invalid narration start offset');
   if(c.duration<1||c.fadeIn+c.fadeOut>c.duration) throw Error('Slide fades exceed its duration');
-  for(const k of ['image','audio']) if(typeof c[k]!=='string'||(c[k]&&!c[k].startsWith(k==='image'?'data:image/':'data:audio/'))) throw Error('Invalid media');
+  for(const k of ['image','audio']) if(typeof c[k]!=='string'||(c[k]&&!c[k].startsWith(k==='image'?'data:image/':'data:audio/')&&!(k==='image'&&/^\/images\/gratitude\/test-module-1\/(a-great-burger|a-walk-in-nature|comfort-food|exotic-beach-vacation|for-my-life-partner)\.avif$/.test(c[k])))) throw Error('Invalid media');
  }
  if(m.voiceStarts!==undefined && (!Array.isArray(m.voiceStarts)||m.voiceStarts.length!==10||m.voiceStarts.some((v,i)=>!Number.isFinite(v)||v<0||v+(m.voiceDurations?.[i]??voiceLengths[i])>(i===9?m.cards.reduce((s,c)=>s+c.duration,0)-5:m.voiceStarts[i+1])))) throw Error('Recorded narration overlaps');
  return m;
@@ -105,11 +111,11 @@ function releaseCustom() {if(cardAudio){cardAudio.pause();cardAudio.src='';cardA
 function stop(reset=true) {
  running=false;paused=false;cancelAnimationFrame(raf);audio?.pause();releaseCustom();
  if(reset){elapsed=0;openingView=true;if($('opening-editor')){renderOpeningEditor();renderSlideList();document.querySelectorAll('#cards .card').forEach(el=>el.hidden=true);}}$('play').textContent='Play preview';$('progress').textContent='Ready';
- if(mount()){surface.style.opacity='1';renderOpening(0);}updatePlayhead();
+ if(mount()){surface.style.opacity='1';renderOpening(0);if(mini())renderMini(0);}updatePlayhead();
 }
 function showSlide(i,time=boundaries()[i].start) {
  if(!mount())return;index=i;const c=model.cards[i];surface.style.opacity='1';renderOpening(Math.max(6,time));
- const p=surface.querySelector('p');p.textContent=c.kind==='title'||$('sound').checked?c.text:c.spoken;p.style.opacity='1';
+ const p=surface.querySelector('p');p.textContent=c.kind==='title'||$('sound').checked?c.text:c.spoken;p.style.opacity='1';if(mini())renderMini(time);
 }
 function selectSlide(i,preview=true) {
  openingView=false;focusedSlide=Math.max(0,Math.min(model.cards.length-1,i));
@@ -132,16 +138,16 @@ async function measure(c) {
  return new Promise((resolve,reject)=>{const player=new Audio(c.audio),timer=setTimeout(()=>{player.src='';reject(Error('Narration could not load'));},10000);player.onloadedmetadata=()=>{clearTimeout(timer);const duration=player.duration;player.src='';Number.isFinite(duration)?resolve(duration):reject(Error('Narration duration unavailable'));};player.onerror=()=>{clearTimeout(timer);reject(Error('Narration could not load'));};});
 }
 function media(box,i) {
- const c=model.cards[i],label=document.createElement('label');label.textContent='Upload narration';const input=document.createElement('input');input.type='file';input.accept='audio/*';
+ const c=model.cards[i];if(mini()&&['Quiet countdown','Closing bell'].includes(c.label)){const note=document.createElement('p');note.textContent=c.label==='Quiet countdown'?'Black screen with countdown only. Choose 1–5 minutes above.':'Bell icon and closing bell; no narration.';box.append(note);return;}if(mini()&&!['Quiet countdown','Closing bell'].includes(c.label)){const l=document.createElement('label');l.textContent='Replace image';const f=document.createElement('input');f.type='file';f.accept='image/*';f.onchange=async()=>{const file=f.files[0];if(!file)return;if(file.size>4*1024*1024){tell('Choose an image smaller than 4 MB.');return;}const reader=new FileReader();reader.onload=()=>{c.image=reader.result;mark();refreshText(i);};reader.readAsDataURL(file);};l.append(f);box.append(l);}const label=document.createElement('label');label.textContent='Upload narration';const input=document.createElement('input');input.type='file';input.accept='audio/*';
  input.onchange=async()=>{const file=input.files[0];if(!file)return;if(file.size>8*1024*1024){tell('Choose a recording smaller than 8 MB.');return;}
   try { const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});const duration=await measure({audio:data});if(duration>c.duration-(c.audioOffset||0))throw Error('Recording is longer than this slide. Adjust slide timing first.');c.audio=data;c.audioDuration=duration;c.audioText=c.spoken;mark();render();selectSlide(i); }
   catch(e){tell('Recording not added: '+e.message);}
  };label.append(input);box.append(label);const status=document.createElement('p');status.className='narration-status';status.textContent=narrationStatus(i);box.append(status);
  if(c.audio){const player=document.createElement('audio');player.controls=true;player.src=c.audio;box.append(player);const remove=document.createElement('button');remove.textContent='Remove uploaded narration';remove.onclick=()=>{c.audio='';c.audioText='';delete c.audioDuration;mark();render();selectSlide(i);};box.append(remove);}
 }
-function limits(i){const b=boundaries();return {min:b[i].start+(i===0?lead():0)+Math.max(1,model.cards[i].fadeIn+model.cards[i].fadeOut,i===0?openingTiming().duration:0),max:b[i+1].end-Math.max(1,model.cards[i+1].fadeIn+model.cards[i+1].fadeOut,(model.cards[i+1].audioOffset||0)+.1)};}
+function limits(i){const b=boundaries();return {min:b[i].start+(i===0?lead():0)+Math.max(1,model.cards[i].fadeIn+model.cards[i].fadeOut,i===0?openingTiming().duration:0,(model.cards[i].audioOffset||0)+.1),max:b[i+1].end-Math.max(1,model.cards[i+1].fadeIn+model.cards[i+1].fadeOut,(model.cards[i+1].audioOffset||0)+.1)};}
 function setBoundary(i,time) {
- if(i<0||i>=model.cards.length-1)return false;const {min,max}=limits(i);if(!Number.isFinite(time)||time<min||time>max){tell('Choose a cut between '+stamp(min)+' and '+stamp(max)+'.');return false;}
+ if(i<0||i>=model.cards.length-1)return false;if(mini()&&(model.cards[i].label==='Quiet countdown'||model.cards[i+1].label==='Quiet countdown'||model.cards[i+1].label==='Closing bell')){tell('The quiet countdown begins after the images. Choose its duration above.');return false;}const {min,max}=limits(i);if(!Number.isFinite(time)||time<min||time>max){tell('Choose a cut between '+stamp(min)+' and '+stamp(max)+'.');return false;}
  const b=boundaries();const left=+(time-b[i].start-(i===0?lead():0)).toFixed(2),right=+(b[i+1].end-time).toFixed(2);if((model.cards[i].audioPlayDuration??model.cards[i].audioDuration??0)+(model.cards[i].audioOffset||0)>left||(model.cards[i+1].audioPlayDuration??model.cards[i+1].audioDuration??0)+(model.cards[i+1].audioOffset||0)>right){tell('The cut would shorten a slide below its uploaded recording. Trim narration first.');return false;}model.cards[i].duration=left;model.cards[i+1].duration=right;stop(false);mark();render();showSlide(focusedSlide);return true;
 }
 function timingFields(box,i) {
@@ -150,12 +156,12 @@ function timingFields(box,i) {
  for(const [name,key]of [['Text fade in (seconds)','fadeIn'],['Text fade out (seconds)','fadeOut']])field(box,name,'number',model.cards[i][key],value=>{if(value<0||value+model.cards[i][key==='fadeIn'?'fadeOut':'fadeIn']>model.cards[i].duration){tell('Fades must fit within the slide.');return;}model.cards[i][key]=value;renderTimeline();});
 }
 function render() {
- focusedSlide=Math.min(focusedSlide,model.cards.length-1);$('title').value=model.title;$('preview-duration').textContent=stamp(total());$('seek').max=total();$('narration-delay').value=voiceStart(0);$('narration-delay').min=openingTiming().duration;$('narration-delay').max=voiceLimits(0).max;
+ focusedSlide=Math.min(focusedSlide,model.cards.length-1);$('title').value=model.title;$('quiet-duration-label').hidden=!mini();if(mini())$('quiet-duration').value=String(model.quietMinutes);$('preview-duration').textContent=stamp(total());$('seek').max=total();$('narration-delay').value=voiceStart(0);$('narration-delay').min=openingTiming().duration;$('narration-delay').max=voiceLimits(0).max;
  $('cards').replaceChildren();model.cards.forEach((c,i)=>{const box=document.createElement('article');box.className='card';box.classList.toggle('selected-card',i===focusedSlide);box.id='slide-card-'+i;box.hidden=openingView||i!==focusedSlide;
   const row=document.createElement('div');row.className='row';const h=document.createElement('h3');h.textContent=slideName(i);row.append(h);
   const preview=document.createElement('button');preview.textContent='Preview this slide';preview.onclick=()=>selectSlide(i);row.append(preview);
   const insert=document.createElement('button');insert.textContent='Insert title card after';insert.onclick=()=>insertCard(i,'title');insert.disabled=model.cards.length>=50;row.append(insert);
-  const del=document.createElement('button');del.textContent='Delete';del.disabled=model.cards.length===1||(!c.kind&&!c.audio);del.onclick=()=>{if(lightlyGuided&&i===0&&model.cards[1].duration<openingTiming().duration){tell('Keep room for the opening title.');return;}if(i>0)model.cards[i-1].duration+=c.duration;else model.cards[1].duration+=c.duration;model.cards.splice(i,1);focusedSlide=Math.max(0,i-1);stop(false);mark();render();showSlide(focusedSlide);};row.append(del);box.append(row);
+  const del=document.createElement('button');del.textContent='Delete';del.disabled=model.cards.length===1||(!c.kind&&!c.audio)||(mini()&&['Quiet countdown','Closing bell'].includes(c.label));del.onclick=()=>{if(lightlyGuided&&i===0&&model.cards[1].duration<openingTiming().duration){tell('Keep room for the opening title.');return;}if(i>0)model.cards[i-1].duration+=c.duration;else model.cards[1].duration+=c.duration;model.cards.splice(i,1);focusedSlide=Math.max(0,i-1);stop(false);mark();render();showSlide(focusedSlide);};row.append(del);box.append(row);
   field(box,c.kind==='title'?'Title card text':'On-screen instruction','textarea',c.text,value=>{c.text=value;if(c.same)c.spoken=value;refreshText(i);});
   const same=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=c.same;check.onchange=()=>{c.same=check.checked;if(c.same)c.spoken=c.text;mark();render();showSlide(i);};same.append(check,' Use the same text for narration');box.append(same);
   if(!c.same)field(box,'Spoken text','textarea',c.spoken,value=>{c.spoken=value;refreshText(i);});
@@ -164,7 +170,7 @@ function render() {
 }
 function insertCard(after,kind='content') {
  if(model.cards.length>=50){tell('Maximum 50 slides.');return;}const i=Math.max(0,Math.min(model.cards.length-1,after)),c=model.cards[i];const minimum=Math.max(1,c.fadeIn+c.fadeOut,(c.audioOffset||0)+.1);if(c.duration<minimum*2){tell('Select a longer slide to split.');return;}
- const duration=c.duration/2;if(c.audio&&(c.audioPlayDuration??c.audioDuration??c.duration)+(c.audioOffset||0)>duration){tell('Trim the uploaded narration before splitting this slide.');return;}if(i===0&&duration<openingTiming().duration){tell('Slide 1 needs room for the opening title. Shorten the opening or split another slide.');return;}c.duration=duration;model.cards.splice(i+1,0,{...c,text:'',spoken:'',same:true,kind,label:undefined,audioOffset:0,audio:'',audioText:'',audioDuration:undefined,audioPlayDuration:undefined,duration});focusedSlide=i+1;openingView=false;stop(false);mark();render();showSlide(focusedSlide);const box=$('slide-card-'+focusedSlide);box.scrollIntoView({block:'nearest'});box.querySelector('textarea').focus();
+ if(mini()&&['Quiet countdown','Closing bell'].includes(c.label)){tell('Select an image or instruction to insert another card.');return;}const duration=c.duration/2;if(c.audio&&(c.audioPlayDuration??c.audioDuration??c.duration)+(c.audioOffset||0)>duration){tell('Trim the uploaded narration before splitting this slide.');return;}if(i===0&&duration<openingTiming().duration){tell('Slide 1 needs room for the opening title. Shorten the opening or split another slide.');return;}c.duration=duration;model.cards.splice(i+1,0,{...c,text:'',spoken:'',same:true,kind,label:undefined,audioOffset:0,audio:'',audioText:'',audioDuration:undefined,audioPlayDuration:undefined,duration});focusedSlide=i+1;openingView=false;stop(false);mark();render();showSlide(focusedSlide);const box=$('slide-card-'+focusedSlide);box.scrollIntoView({block:'nearest'});box.querySelector('textarea').focus();
 }
 function segment(track,start,end,text,className,click) {const el=document.createElement('div');el.className=className;el.style.left=start/total()*100+'%';el.style.width=(end-start)/total()*100+'%';const select=document.createElement('button');select.type='button';select.className='clip-select';select.textContent=text;select.title=text;select.onclick=click;el.append(select);track.append(el);return el;}
 function dragHandle(track,time,label,onChange,min,max) {
@@ -176,7 +182,7 @@ function renderTimeline() {
  const ruler=document.createElement('div');ruler.className='ruler';for(let t=0;t<=total();t+=60){const mark=document.createElement('span');mark.style.left=t/total()*100+'%';mark.textContent=stamp(t);ruler.append(mark);}root.append(ruler);
  const original=document.createElement('div');original.className='voice-track';segment(original,0,voiceStart(0),'Opening title','quiet',()=>seekPreview(0));
  for(let j=0;j<(model.sessionAudio?10:0);j++){const start=voiceStart(j),end=start+voiceDuration(j);const recorded=segment(original,start,end,'Recorded '+(j+1)+'\n'+stamp(start)+'–'+stamp(end),'voice',()=>seekPreview(start));durationInput(recorded,'Recorded narration '+(j+1)+' duration',voiceDuration(j),j===9?55:60,v=>setVoiceDuration(j,v));const silenceEnd=j===9?total()-5:voiceStart(j+1);if(silenceEnd>end)segment(original,end,silenceEnd,'','quiet',()=>seekPreview(end));const lim=voiceLimits(j);dragHandle(original,start,'Move narration '+(j+1)+' start',v=>moveVoice(j,v),lim.min,lim.max);}
- if(lightlyGuided){original.replaceChildren();segment(original,0,5,'Opening bell','voice',()=>seekPreview(0));segment(original,5,total()-5,'Quiet practice · 3 reminder slots','quiet',()=>seekPreview(30));segment(original,total()-5,total(),'Closing bell','voice',()=>seekPreview(total()-5));}root.append(original);
+ if(lightlyGuided){original.replaceChildren();if(!mini())segment(original,0,5,'Opening bell','voice',()=>seekPreview(0));segment(original,mini()?0:5,total()-5,mini()?'Images → black countdown':'Quiet practice · 3 reminder slots','quiet',()=>seekPreview(mini()?quietStart():30));segment(original,total()-5,total(),'Closing bell','voice',()=>seekPreview(total()-5));}root.append(original);
  const clips=document.createElement('div');clips.className='slide-voice-track';const slides=document.createElement('div');slides.className='slide-track';const b=boundaries();
  b.forEach((v,i)=>{const c=model.cards[i];const clip=segment(clips,v.start,v.end,'Slide '+(i+1)+'\n'+narrationStatus(i),c.audio?'narration-slot uploaded-narration':'narration-slot',()=>{selectSlide(i);$('slide-card-'+i).scrollIntoView({block:'nearest'});});clip.dataset.slide=String(i);if(c.audio)durationInput(clip,'Slide '+(i+1)+' narration duration',c.audioPlayDuration??c.audioDuration??c.duration,c.audioDuration??c.duration,v=>setUploadedDuration(i,v));
   const slide=segment(slides,v.start,v.end,slideName(i)+'\n'+labelText(i)+'\n'+stamp(v.start)+'–'+stamp(v.end),'slide-region',()=>{selectSlide(i);$('slide-card-'+i).scrollIntoView({block:'nearest'});});slide.classList.toggle('current-slide',i===focusedSlide);slide.dataset.slide=String(i);durationInput(slide,'Slide '+(i+1)+' duration',c.duration,total(),value=>setSlideDuration(i,value));
@@ -194,7 +200,7 @@ function syncVoice() {
   audio?.pause();if(cardAudioIndex!==i){releaseCustom();cardAudio=new Audio(c.audio);cardAudioIndex=i;}cardAudio.muted=!$('sound').checked;if(Math.abs(cardAudio.currentTime-(elapsed-start))>.3)cardAudio.currentTime=elapsed-start;if(paused)cardAudio.pause();else if(cardAudio.paused)cardAudio.play().catch(()=>{paused=true;tell('Recording could not play. Press Resume to retry.');});return;
  }
  releaseCustom();if(lightlyGuided){
-  const bell=elapsed<5||elapsed>=total()-5;if(!model.bellAudio||!bell||paused){audio?.pause();return;}
+  const bell=(!mini()&&elapsed<5)||elapsed>=total()-5;if(!model.bellAudio||!bell||paused){audio?.pause();return;}
   if(!audio)audio=new Audio(model.bellAudio);audio.muted=!$('sound').checked;const position=595+(elapsed<5?elapsed:elapsed-(total()-5));if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;if(audio.paused)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start the bell.');});return;
  }if(!model.sessionAudio)return;if(!audio)audio=new Audio(model.sessionAudio);audio.muted=!$('sound').checked;
  const j=voiceLengths.findIndex((duration,i)=>elapsed>=voiceStart(i)&&elapsed<voiceStart(i)+voiceDuration(i)),bell=elapsed>=total()-5;
@@ -202,33 +208,48 @@ function syncVoice() {
 }
 function renderPlayback() {
  const i=slideAt(elapsed),openingChanged=openingView!==(elapsed<openingTiming().duration);openingView=elapsed<openingTiming().duration;if(i!==focusedSlide||openingChanged){focusedSlide=i;renderSlideList();renderTimeline();}
- const c=model.cards[i],b=boundaries()[i],local=elapsed-b.start;showSlide(i,elapsed);$('opening-editor').hidden=!openingView;document.querySelectorAll('#cards .card').forEach((el,j)=>el.hidden=openingView||j!==i);const p=surface?.querySelector('p');if(p)p.style.opacity=String(Math.min(1,c.fadeIn?local/c.fadeIn:1,c.fadeOut?(b.end-elapsed)/c.fadeOut:1));renderOpening(elapsed);
+ const c=model.cards[i],b=boundaries()[i],local=elapsed-b.start;showSlide(i,elapsed);$('opening-editor').hidden=!openingView;document.querySelectorAll('#cards .card').forEach((el,j)=>el.hidden=openingView||j!==i);const p=surface?.querySelector('p');if(p)p.style.opacity=String(Math.min(1,c.fadeIn?local/c.fadeIn:1,c.fadeOut?(b.end-elapsed)/c.fadeOut:1));renderOpening(elapsed);if(mini())renderMini(elapsed);
  if(elapsed>=openingTiming().duration&&i!==0&&p)p.textContent=c.kind==='title'||$('sound').checked?c.text:c.spoken;
  $('progress').textContent='Slide '+(i+1)+' of '+model.cards.length+' · '+stamp(elapsed);updatePlayhead();
 }
-function tick(now) {if(!running)return;if(!paused)elapsed+=(now-last)/1000;last=now;if(elapsed>=total()){stop(false);elapsed=total();if(surface)surface.querySelector('p').textContent='Session complete';$('progress').textContent='Session complete';updatePlayhead();return;}renderPlayback();syncVoice();raf=requestAnimationFrame(tick);}
+function tick(now) {if(!running)return;if(!paused)elapsed+=(now-last)/1000;last=now;if(elapsed>=total()){stop(false);elapsed=total();if(surface){surface.querySelector('p').textContent='Session complete';if(mini())renderMini(total(),true);}$('progress').textContent='Session complete';updatePlayhead();return;}renderPlayback();syncVoice();raf=requestAnimationFrame(tick);}
 async function seekPreview(time) {if(!mount())return;elapsed=Math.max(0,Math.min(total()-.1,time));if(!running){running=true;paused=true;last=performance.now();raf=requestAnimationFrame(tick);}renderPlayback();syncVoice();$('play').textContent=paused?'Resume':'Pause';}
 async function play() {
  if(model.cards.some(c=>c.audio&&c.audioText!==c.spoken)){tell('Slide text changed: replace its uploaded narration before playback.');return;}
  if(model.cards.some(c=>c.audio&&(c.audioPlayDuration??c.audioDuration)>c.duration-(c.audioOffset||0))){tell('An uploaded recording exceeds its slide duration. Adjust its timing before playback.');return;}
  if(running){paused=!paused;last=performance.now();if(paused){audio?.pause();cardAudio?.pause();}$('play').textContent=paused?'Resume':'Pause';syncVoice();return;}
- try{validate(model);const durations=await Promise.all(model.cards.map(measure));durations.forEach((d,i)=>{if(d&&Math.min(d,model.cards[i].audioPlayDuration??d)>model.cards[i].duration-(model.cards[i].audioOffset||0))throw Error('Slide '+(i+1)+' recording exceeds its duration');if(d&&model.cards[i].audioText!==model.cards[i].spoken)throw Error('Slide '+(i+1)+' text changed: replace its narration');if(d)model.cards[i].audioDuration=d;});if(!mount())throw Error('Preview is loading');elapsed=0;focusedSlide=0;running=true;paused=false;last=performance.now();renderPlayback();syncVoice();$('play').textContent='Pause';raf=requestAnimationFrame(tick);}catch(e){tell(e.message);}
+ try{validate(model);if(mini())await Promise.all(model.cards.filter(c=>c.image).map(c=>new Promise((resolve,reject)=>{const img=new Image(),timer=setTimeout(()=>reject(Error('An image could not load. Replace it or reload before playing.')),10000);img.onload=()=>{clearTimeout(timer);resolve();};img.onerror=()=>{clearTimeout(timer);reject(Error('An image could not load. Replace it or reload before playing.'));};img.src=c.image;})));const durations=await Promise.all(model.cards.map(measure));durations.forEach((d,i)=>{if(d&&Math.min(d,model.cards[i].audioPlayDuration??d)>model.cards[i].duration-(model.cards[i].audioOffset||0))throw Error('Slide '+(i+1)+' recording exceeds its duration');if(d&&model.cards[i].audioText!==model.cards[i].spoken)throw Error('Slide '+(i+1)+' text changed: replace its narration');if(d)model.cards[i].audioDuration=d;});if(!mount())throw Error('Preview is loading');elapsed=0;focusedSlide=0;running=true;paused=false;last=performance.now();renderPlayback();syncVoice();$('play').textContent='Pause';raf=requestAnimationFrame(tick);}catch(e){tell(e.message);}
 }
 function restoreTenMinutes(initial=false) {
  if(model.cards.length!==10){tell('Added slides are preserved. Adjust their cuts on the timeline.');return;}model.narrationDelay=0;model.voiceStarts=Array.from({length:10},(_,i)=>i===9?565:i*60);model.cards.forEach((c,i)=>{c.duration=i===8?85:i===9?35:60;c.fadeIn=1;c.fadeOut=1;c.mode='fixed';});model.timingVersion=3;if(!initial)mark();render();
 }
 $('title').onchange=()=>{model.title=$('title').value;mark();};$('add').onclick=()=>insertCard(focusedSlide);$('save').onclick=()=>saveDraft(true);
 $('restore').onclick=()=>{try{const old=localStorage.getItem(key+'-previous');if(!old){tell('No previous saved draft.');return;}const next=validate(JSON.parse(old));stop();model=next;focusedSlide=0;dirty=true;render();tell('Previous draft loaded. Save draft to keep it.');}catch(e){tell('Previous draft could not be read: '+e.message);}};
-$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=lightlyGuided?'CI-slightly-guided-10m-backup.json':'CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(model,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=lightlyGuided?'CI-slightly-guided-backup.json':'CI-module-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('import').onchange=async()=>{try{const file=$('import').files[0];if(!file)return;if(file.size>30*1024*1024)throw Error('Backup exceeds 30 MB');const next=validate(JSON.parse(await file.text()));stop();model=next;focusedSlide=0;dirty=true;render();tell('Backup opened. Save draft to keep it.');}catch(e){tell('Backup could not be opened: '+e.message);}};
 $('play').onclick=play;$('restart').onclick=async()=>{stop();await play();};$('stop').onclick=()=>stop();$('seek').oninput=()=>seekPreview(Number($('seek').value));$('sound').onchange=()=>{if(audio)audio.muted=!$('sound').checked;if(cardAudio)cardAudio.muted=!$('sound').checked;renderPlayback();};
 $('narration-delay').onchange=()=>moveVoice(0,Number($('narration-delay').value));$('timeline-prev').onclick=()=>selectSlide(focusedSlide-1);$('timeline-next').onclick=()=>selectSlide(focusedSlide+1);$('restore-ten').onclick=()=>restoreTenMinutes();
 window.addEventListener('beforeunload',e=>{if(dirty)saveDraft();if(dirty){e.preventDefault();e.returnValue='';}});window.addEventListener('pagehide',()=>stop(false));
-function initPreview(){if(mount())renderOpening(0);}
+function initPreview(){if(mount()){renderOpening(0);if(mini())renderMini(0);}}
 $('player').addEventListener('load',initPreview);
 if(model.sessionAudio&&model.timingVersion!==3&&model.cards.length===10)restoreTenMinutes(true);else render();initPreview();
 
 
-$('module-version').value=lightlyGuided?'lightly-guided':'guided';
-$('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=lightlyGuided?'lightly-guided':'guided';return;}const url=new URL(location.href);if($('module-version').value==='lightly-guided')url.searchParams.set('module','lightly-guided');else url.searchParams.delete('module');location.href=url.href;};
-if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent='Slightly guided · 10 minutes · three brief reminders with long quiet stretches. Opening and closing bells are connected; matching reminder recordings are not attached yet. Your guided training draft is saved separately.';}
+$('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';
+$('module-version').onchange=()=>{if(dirty&&!saveDraft()){ $('module-version').value=lightlyGuided?(earlierTen?'lightly-guided-10m':'lightly-guided'):'guided';return;}const url=new URL(location.href);if($('module-version').value.startsWith('lightly-guided'))url.searchParams.set('module','lightly-guided');else url.searchParams.delete('module');if($('module-version').value==='lightly-guided-10m')url.searchParams.set('session','10m');else url.searchParams.delete('session');location.href=url.href;};
+if(lightlyGuided){$('module-note').hidden=false;$('module-note').textContent=earlierTen?'Earlier ten-minute slightly guided draft · three reminder slots · new VO pending.':'Slightly guided · expanding title → five editable reference images → black quiet countdown (1–5 minutes) → closing bell. Matching reminder recordings are not attached yet. Your guided training and earlier ten-minute drafts are preserved separately.';}
+
+function renderMini(time,finished=false){
+ if(!surface||!mini())return;
+ const svg=surface.querySelector('svg'),p=surface.querySelector('p'),plate=surface.querySelector('rect'),box=surface.querySelector('#ci-opening-box'),img=surface.querySelector('img'),dot=surface.querySelector('#ci-editor-scrub-dot');
+ let group=surface.querySelector('#ci-mini-counter');
+ if(!group){group=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','g');group.id='ci-mini-counter';group.innerHTML='<path d="M0 805 Q835 705 1669 805 L1669 939 L0 939 Z" fill="#83ab76" stroke="#08788b" stroke-width="30"/><circle cx="835" cy="820" r="76" fill="white" stroke="#08788b" stroke-width="16"/><text x="835" y="833" text-anchor="middle" fill="#111" font-family="Arial" font-size="42" font-weight="bold"></text><path id="ci-mini-bell" d="M805 832 L865 832 L859 822 L859 802 Q859 777 835 777 Q811 777 811 802 L811 822 Z M826 843 Q835 856 844 843" fill="none" stroke="#111" stroke-width="5" stroke-linejoin="round"/>';svg.append(group);}
+ const opening=time<openingTiming().duration,quiet=time>=quietStart(),ending=finished||time>=total()-5;
+ plate.style.display=quiet?'none':'';if(box)box.style.display=quiet?'none':'';dot.style.visibility='hidden';group.style.display=quiet?'':'none';
+ p.closest('foreignObject').setAttribute('y',215);p.closest('foreignObject').setAttribute('height',465);p.style.visibility=quiet?'hidden':'visible';
+ surface.style.background='#000';surface.style.border='12px solid #08788b';surface.style.boxSizing='border-box';img.style.display='none';
+ if(!opening&&!quiet){const c=model.cards[slideAt(time)];if(c.image){if(img.getAttribute('src')!==c.image)img.src=c.image;img.alt=c.label||'Session image';img.style.display='block';plate.style.display='none';if(box)box.style.display='none';p.closest('foreignObject').setAttribute('y',760);p.closest('foreignObject').setAttribute('height',150);p.style.fontSize='27px';p.style.color='#fff';p.style.background='rgba(0,0,0,.8)';}}
+ else {p.style.color='#000';p.style.background='transparent';}
+ group.querySelector('text').textContent=ending?'':(()=>{const sec=Math.max(0,Math.ceil(total()-5-time));return sec>=60?Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'):String(sec);})();group.querySelector('#ci-mini-bell').style.display=ending?'':'none';
+}
+$('quiet-duration').onchange=()=>{const minutes=Number($('quiet-duration').value);if(!mini()||![1,2,3,4,5].includes(minutes))return;stop();model.quietMinutes=minutes;model.cards.find(c=>c.label==='Quiet countdown').duration=minutes*60;mark();render();initPreview();};

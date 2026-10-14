@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-const path='/standalone/module-editor.html?module=lightly-guided';
+const path='/standalone/module-editor.html?module=lightly-guided&session=10m';
 
 test('slightly guided has three cue slots, long silence and exactly ten minutes',async({page})=>{
  await page.goto(path);await expect(page.locator('#module-version')).toHaveValue('lightly-guided');

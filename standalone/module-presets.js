@@ -1,6 +1,11 @@
 'use strict';
 // Existing Working Master wording and proposed cue windows; new VO is pending.
-window.CIModulePresets={lightlyGuided(){
+window.CIModulePresets={gratitudeStyle(){
+ const files=['a-great-burger.avif','a-walk-in-nature.avif','comfort-food.avif','exotic-beach-vacation.avif','for-my-life-partner.avif'];
+ const texts=['Let breathing happen naturally.','Notice the sensations of breathing.','Gently return when you realize your attention has wandered.','If your attention has wandered, gently return to your breath.','Begin again with the feeling of breathing.'];
+ const card=(label,text,duration,kind)=>({label,text,spoken:text,same:true,image:'',audio:'',audioText:'',mode:'fixed',duration,silence:0,fadeIn:text?1:0,fadeOut:text?1:0,kind,audioOffset:0});
+ return {version:1,moduleType:'lightly-guided',presentation:'gratitude-mini',quietMinutes:1,title:'Slightly Guided — Image sequence + quiet practice',bellAudio:'/players/audio/coming-back-to-yourself-10m.ogg',opening:{text:'SLIGHTLY GUIDED',hold:3,fade:1,expand:1},cards:[...files.map((file,i)=>({...card('Image '+(i+1),texts[i],i===0?13:8,'content'),image:'/images/gratitude/test-module-1/'+file,audioOffset:i===0?5:0})),card('Quiet countdown','',60,'silence'),card('Closing bell','',5,'silence')]};
+},lightlyGuided(){
  const card=(label,text,duration,kind='content',audioOffset=0)=>({label,text,spoken:text,same:true,image:'',audio:'',audioText:'',mode:'fixed',duration,silence:0,fadeIn:text?1:0,fadeOut:text?1:0,kind,audioOffset});
  return {version:1,moduleType:'lightly-guided',title:'Slightly Guided — 10 minutes',bellAudio:'/players/audio/coming-back-to-yourself-10m.ogg',opening:{text:'SLIGHTLY GUIDED',hold:3,fade:1,expand:1},cards:[
   card('Opening guidance','Let breathing happen naturally, notice its sensations, and gently return when you realize your attention has wandered.',30,'content',5),
