@@ -46,3 +46,36 @@ Older PR2/5/7/11/34 are prototypes or superseded work; do not merge wholesale. C
 ## Next-session rule
 
 Start from the actual current `main` and published commit, read this checkpoint and the latest Bible checkpoint, then address Scott's next requested revision. Update this file and the Bible with the real result, evidence, recovery point and open issues. Never restart from an old preview or claim unfinished voice-over/backups are complete.
+
+
+## Slightly guided editor — 2026-10-14 in progress
+
+Scott paused Command Center work and approved loading the slightly guided ten-minute session in the same module editor. Guided training is preserved at the original URL/storage key. The new version uses ?module=lightly-guided and a separate draft key. Three Working Master reminders are placed at 00:05, 03:00 and 07:00, with long blank quiet stretches and only opening/closing bells. New VO remains pending; the editor labels its missing recordings. Original assets and locked player files remain untouched.
+
+Implementation is prepared, but rendered verification is blocked: the cached local Chromium binary is truncated and crashes; the official replacement download returns an HTML network-denial page; the cloud browser cannot reach this runtime's local preview. Do not claim the 21 browser tests passed: they failed before opening the page. Syntax checks pass. Need private Deploy Preview browser verification before merge/publication, as required by root AGENTS.md. Today's Bible backup was copied and text-verified before work.
+
+Private Netlify preview for PR68 is ready at the slightly guided entry route, source caae33dfef9c1dae77e315c82bb4a23af0fdd7a9. Preview is password protected. Secure browser authentication was attempted; the rendered page reported Wrong password, please try again. Authentication success is not established. Manual secure browser handoff is the next action. Production is unchanged. Do not merge PR68 before rendered verification; once access is available, verify mode switching, separate autosave/reload, three cue times, silent intervals and original bell playback. Reminder VO remains pending.
+
+
+## Gratitude-style slightly guided revision — 2026-10-14 13:03 ICT
+
+Scott explicitly requested the gratitude narrow-box expansion, five images/text, selectable 1–5 minutes of black-screen quiet countdown, then the bell icon. Prepared in the same PR68 integration branch, not a new competing branch. The default slightly guided route now uses a separate mini-session storage key; earlier ten-minute slightly guided remains selectable with session=10m and its existing key. Guided training is untouched. Five existing test-module-1 image assets are loaded as editable reference images, with upload replacement controls and existing Working Master reminders. Quiet practice begins after the image sequence (default 45 seconds), runs the entire selected interval, then five seconds for the original closing-bell excerpt. Reminder VO remains pending. The member player is not wired to this editor-only revision yet.
+
+Three model/backup unit checks pass (all five minute settings, malformed backups and media restrictions, preserved ten-minute model), and JS syntax checks pass. Rendered desktop/mobile, pause/resume/restart and audible bell checks remain blocked by protected preview access and the unavailable local browser. Do not claim this is fully verified or merge/publish yet. Production, Supabase, protected player files and privacy settings remain unchanged. Bible morning backup verified; this later revision is recorded here and needs final Bible synchronization after verification.
+
+
+### 13:26 ICT clarification — expanded-banner script stage
+
+Scott confirmed 1–5 minutes applies ONLY to black-screen countdown after images. Updated mini presentation to opening title/expansion complete at 0:04, three individual breath-instruction cards in expanded white banner, then five existing editable images with separate breath-caption cards, then selected quiet countdown and closing bell. Default instruction plus image prelude is 66 seconds, independent of selected quiet minutes. Each text card has its own uploadable narration slot and editable duration; actual matching VO is still pending, so recorded dialogue synchronization is not certified. Existing mini drafts receive added instruction cards while retaining user text/media, and normal previous-draft storage preserves their earlier serialization. Source syntax and four timing/backup tests pass; rendered verification remains blocked by password access. No production/member-player or Supabase change.
+
+
+### 13:40 ICT correction — gratitude is the current module
+
+Scott corrected the prior conflation: this is the GRATITUDE module, not meditation. Transcribed the original uploaded Screen Recording 2026-10-07 131009.mp4: four intro passages, five captions (comfy chair/electricity/exotic travel/good book/friends), and the reflection instruction. Preserved source spelling, including “psychogical” and “your grateful”; original health claims are source transcription, not verified evidence, and need content/legal review before public launch. Extracted corresponding photo areas from that recording into images/gratitude/video-reference; these are private reference assets, commercial rights remain unverified.
+
+New dedicated entry ?module=gratitude and storage ci-module-editor-gratitude-v1. Meditation modes/drafts remain separately selectable; original guided training stays unchanged. Header GRATITUDE, expansion at 0:04, four intro cards, five captioned matching images, reflection instruction, then chosen 1–5 minute black countdown and closing bell. Prelude duration is editable; current default 102 seconds. No matching narration attached yet, no audible sync certification. Source syntax and timing/backup tests run; remote rendered verification remains gated. Same active PR68 branch; no production, Supabase or locked player modification.
+
+
+### 14:04 ICT — five-image design reference
+
+Scott supplied image(20261014-070345).png as the authoritative five-image card layout: full teal frame, large image window with curved lower edge, green curved caption band, widely spaced white condensed capitals. Applied a dedicated SVG photo-card group to all five Gratitude images using the existing extracted source photos and editable captions. Removed the previous floating small caption box in this mode. Opening/instruction/countdown stages and meditation modes are unchanged. Syntax and existing timing/backup checks pass. Rendered visual match remains unverified because the private preview is password gated. Keep this on the current integration PR68; production remains unchanged pending required rendered verification.
