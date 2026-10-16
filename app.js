@@ -4955,7 +4955,7 @@ function ensureAdminPageBoxStyles() {
     #page-setup #pbAddIntentionRow[hidden]{display:none!important}
     #page-setup #pbAddIntentionRow{margin-bottom:16px}
     @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
-    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #ad1457;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #303030;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
     .ci-admin-page-box.ci-carousel{border:0;border-radius:0;box-shadow:none;background:transparent;aspect-ratio:16/9;position:relative;overflow:hidden}
     .ci-carousel-card{position:absolute;inset:0;background:#fff;display:grid;place-items:center}
     .ci-carousel-text{margin:0;padding:8%;font:400 clamp(20px,3vw,46px)/1.3 Inter,sans-serif;text-align:center;color:#171717}
