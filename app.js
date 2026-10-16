@@ -4713,7 +4713,7 @@ const ADMIN_PAGE_BOXES = {
 };
 
 function _adminPageBoxSlug(pageId, boxNumber) {
-  return boxNumber === 1 ? 'intro-note-' + pageId : 'page-note-' + pageId + '-2';
+  return boxNumber === 1 ? 'intro-note-' + pageId : 'page-note-' + pageId + '-' + boxNumber;
 }
 
 function _adminPenIcon() {
@@ -4806,6 +4806,7 @@ function wireAdminPageBoxes() {
     topStack = document.createElement('div');
     topStack.className = 'ci-admin-page-box-stack ci-admin-page-box-stack--top';
     topStack.setAttribute('aria-label', label + ' administrator text box 1');
+    topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 3));
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
 
     const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
@@ -4821,7 +4822,7 @@ function wireAdminPageBoxes() {
     }
   }
 
-  topStack.querySelectorAll('.ci-admin-page-box').forEach(shell=>attachTrough(shell,pageId));
+  topStack.querySelectorAll('.ci-admin-page-box[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
   // Scott removed Box 2 from every player page on 2026-10-10.
@@ -4840,7 +4841,7 @@ function wireAdminPageBoxes() {
 function _adminEditorMarkup(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
-    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Archived — hidden on player pages') + '</span></div>' +
+    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span></div>' +
     '<div class="admin-toolbar">' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
@@ -4866,7 +4867,7 @@ function ensureAdminPageBoxEditors() {
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
-      '<p class="ci-page-box-admin-help">Choose a page and edit its opening Box 1, then Save. Box 2 is archived here for recovery and is hidden on player pages.</p>' +
+      '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above the artwork or Box 1 with the artwork, then Save. Box 2 is archived for recovery and hidden on player pages.</p>' +
       '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
@@ -4908,7 +4909,7 @@ function ensureAdminPageBoxEditors() {
       option.textContent = pageNumber + ' · ' + label;
       section.querySelector('#adminPageFinder').appendChild(option);
     }
-    for (let boxNumber = 1; boxNumber <= 2; boxNumber += 1) {
+    for (const boxNumber of [3, 1, 2]) {
       const slug = _adminPageBoxSlug(pageId, boxNumber);
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
@@ -4917,7 +4918,7 @@ function ensureAdminPageBoxEditors() {
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 1 ? 'Top' : 'Archived — hidden on player pages') + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span>';
       }
       entry.classList.add('ci-page-box-admin-entry');
       entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
@@ -5025,7 +5026,7 @@ if (typeof window !== 'undefined') {
 // intro-note-<page> maps to its page automatically; the rest are listed here.
 function _blockPage(slug) {
   if (slug.indexOf('intro-note-') === 0) return slug.slice('intro-note-'.length);
-  const pageBoxMatch = slug.match(/^page-note-(.+)-2$/);
+  const pageBoxMatch = slug.match(/^page-note-(.+)-[23]$/);
   if (pageBoxMatch) return pageBoxMatch[1];
   const M = {
     'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
@@ -5753,14 +5754,23 @@ async function initCitadelNoteFrame() {
     window.parent.postMessage({ type: 'ci-citadel-note-height', height, pageId }, location.origin);
   };
   try {
-    const [block, auth] = await Promise.all([
+    const aboveSlug = _adminPageBoxSlug(pageId, 3);
+    const [block, auth, above] = await Promise.all([
       sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
       sb.auth.getUser(),
+      sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle(),
     ]);
-    if (block.error) throw block.error;
+    if (block.error || above.error) throw block.error || above.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     _blockCache[slug] = block.data?.body || '';
+    _blockCache[aboveSlug] = above.data?.body || '';
+    const aboveBox = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
+    if (aboveBox.style.display !== 'none') {
+      mount.style.padding = '20px';
+      aboveBox.style.marginBottom = '16px';
+      mount.appendChild(aboveBox);
+    }
     const box = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
     if (_previewActive() && box.style.display === 'none') {
       box.style.display = '';
