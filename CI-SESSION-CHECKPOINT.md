@@ -46,3 +46,13 @@ Older PR2/5/7/11/34 are prototypes or superseded work; do not merge wholesale. C
 ## Next-session rule
 
 Start from the actual current `main` and published commit, read this checkpoint and the latest Bible checkpoint, then address Scott's next requested revision. Update this file and the Bible with the real result, evidence, recovery point and open issues. Never restart from an old preview or claim unfinished voice-over/backups are complete.
+
+## 2026-10-16 — Rotating trough artwork in CI.com admin boxes
+
+Scott supplied troughs.zip (38 PSD designs) and authorized web optimization plus different artwork per player/page, refreshed on return. Source baseline: main 57912dcdb85e38dda1370c5688d583b78fc2496c. Netlify site bf7cacf8-3b22-42be-b187-baf4ab0ebe9c remains password protected. This targets CI.com, separately from the Sites Gratitude V2 editor.
+
+Added 640px/1280px WebP variants (76 files, 3,723,128 bytes), preserving the complete 1280×720 composition. docs/trough-assets.json records original names. Original uploaded ZIP is unchanged; no PSDs added to Git. Artwork is user supplied; independent ownership/license verification was not performed.
+
+The shared app.js Box 1 renderer displays artwork above existing editable text. Assignments persist locally, avoid each page's previous image and other pages' assigned designs. Editing/rehydration does not rotate artwork. Auth, owner-only editing, archived Box 2, Supabase, API and locked player shells are unchanged.
+
+Validation: production build and player integrity gate pass; two rotation tests cover 18 unique assignments, 100 returns, reload persistence and storage errors. Actual Chromium rendering inspected at 1440×1000 and 390×844: images load, pages differ, return visits rotate, owner text saves without removing art, members see art without edit controls, anonymous empty boxes remain hidden. Service calls used isolated mocks and made no live writes. Verify Netlify's merged commit before reporting live. Main parent preserves recovery; native pre-update Bible copy saved 2026-10-16. Original protected source files unchanged.

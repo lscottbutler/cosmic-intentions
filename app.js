@@ -1,3 +1,4 @@
+import { visitTroughPage, attachTrough } from './shared/trough-rotation.js';
 import { memberEntryUrl } from './shared/member-entry.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
@@ -4725,7 +4726,7 @@ function _syncAdminPageBox(contentEl, hasContent) {
   const owner = !!window.ciOwnerAccess;
   shell.classList.toggle('is-empty', !hasContent);
   shell.classList.toggle('is-owner', owner);
-  shell.style.display = (hasContent || owner) ? '' : 'none';
+  shell.style.display = (hasContent || owner || (currentUser && shell.querySelector('.ci-admin-trough-art'))) ? '' : 'none';
   if (!hasContent && owner) {
     contentEl.innerHTML = '<span class="ci-admin-page-box-placeholder">Empty — click the pen to add text.</span>';
     contentEl.style.display = '';
@@ -4746,6 +4747,7 @@ function _buildLiveAdminPageBox(pageId, label, boxNumber) {
   shell.innerHTML =
     '<div class="ci-admin-page-box-content" data-block="' + slug + '"></div>' +
     '<span class="ci-admin-page-box-edit-slot" data-owner-only>' + editButton + '</span>';
+  if(boxNumber===1 && Object.hasOwn(ADMIN_PAGE_BOXES,pageId))attachTrough(shell,pageId);
   const content = shell.querySelector('[data-block]');
   _fillBlockEl(content, _blockCache[slug] || '');
   return shell;
@@ -4795,6 +4797,7 @@ function wireAdminPageBoxes() {
   if (!active) return;
   const pageId = active.id.replace('page-', '');
   const label = ADMIN_PAGE_BOXES[pageId];
+  visitTroughPage(pageId,!!label);
   if (!label) return;
 
   let topStack = active.querySelector(':scope .ci-admin-page-box-stack--top');
@@ -4818,6 +4821,7 @@ function wireAdminPageBoxes() {
     }
   }
 
+  topStack.querySelectorAll('.ci-admin-page-box').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
   // Scott removed Box 2 from every player page on 2026-10-10.
@@ -4946,7 +4950,7 @@ function ensureAdminPageBoxStyles() {
     #page-setup #pbAddIntentionRow{margin-bottom:16px}
     @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
     .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #ad1457;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
-    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
+    .ci-admin-trough-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}\n    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
@@ -5730,6 +5734,7 @@ async function initCitadelNoteFrame() {
     return;
   }
   const slug = _adminPageBoxSlug(pageId, boxNumber);
+  visitTroughPage(pageId,true);
   ensureAdminPageBoxStyles();
   document.body.replaceChildren();
   document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
