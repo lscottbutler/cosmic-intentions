@@ -60,3 +60,10 @@ Validation: production build and player integrity gate pass; two rotation tests 
 
 ## 2026-10-16 — Additional admin box above artwork
 Scott requested another admin box directly above the rotating-trough box. Added an independent text-only Box 3 (page-note-<page>-3) to both the shared page stack and inline player frame; existing artwork/text remains Box 1. Both have owner-only pens and separate saved content; empty upper boxes remain hidden to members. Admin library includes the new above-artwork editor; archived Box 2 remains unchanged. Production build/integrity gate and rotation tests pass. Chromium desktop/mobile verified placement, owner saves and reload persistence for both independent boxes, member permissions and anonymous empty hiding. Parent main 29f1c59c3d58fb80bf129151638d6dcd5053e685 is recovery point. No database migration or protected player edits.
+
+## 2026-10-16 — The Carousel replaces the artwork admin box
+Scott renamed the lower artwork area The Carousel: remove its red border, placeholder and editing, retain the separate editable admin box above. The Carousel is now a read-only 16:9 region with no editable block, pen or surrounding red border. Original Box 1 saved text remains in storage, not displayed; its live Admin editor is removed. Upper Box 3 stays editable.
+
+Curated shared/carousel-feed.json contains the existing 38 trough designs and supports typed affirmation/belief/other image or plain-text cards. No new affirmation/belief wording invented. Default 12-second automatic rotation with one-second crossfade after successful image load; revisit uniqueness remains. Hidden/inactive pages pause; removed elements stop timers. No paid API or scheduled content generation. See docs/carousel.md for feed format.
+
+Build/integrity and rotation tests pass. Actual Chromium desktop/mobile inspected; no red carousel border, placeholder or edit controls, upper text saves, automatic rotation occurs, revisit works and no browser page errors. Source baseline/recovery main 63e22182888aeb223118379e453569363c28d2bf; protected player shells, Supabase schema/data and API unchanged. Browser service requests used isolated mocks only.

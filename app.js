@@ -4738,6 +4738,11 @@ function _buildLiveAdminPageBox(pageId, label, boxNumber) {
   const shell = document.createElement('section');
   shell.className = 'ci-admin-page-box';
   shell.dataset.pageBox = String(boxNumber);
+  if(boxNumber===1 && Object.hasOwn(ADMIN_PAGE_BOXES,pageId)){
+    shell.style.display=currentUser||window.ciOwnerAccess?'':'none';
+    attachTrough(shell,pageId);
+    return shell;
+  }
   const editButton =
     '<button type="button" class="ci-admin-page-box-edit" onclick="adminEditBlock(\'' + slug + '\');event.stopPropagation()" aria-label="Edit ' + label + ' Box ' + boxNumber + '" title="Edit ' + label + ' Box ' + boxNumber + '">' +
       _adminPenIcon() +
@@ -4867,7 +4872,7 @@ function ensureAdminPageBoxEditors() {
     section.className = 'ci-page-box-admin-section';
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
-      '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above the artwork or Box 1 with the artwork, then Save. Box 2 is archived for recovery and hidden on player pages.</p>' +
+      '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above The Carousel, then Save. The Carousel is read-only; its rotating feed is managed separately. Box 2 is archived for recovery and hidden on player pages.</p>' +
       '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
@@ -4909,7 +4914,7 @@ function ensureAdminPageBoxEditors() {
       option.textContent = pageNumber + ' · ' + label;
       section.querySelector('#adminPageFinder').appendChild(option);
     }
-    for (const boxNumber of [3, 1, 2]) {
+    for (const boxNumber of [3, 2]) {
       const slug = _adminPageBoxSlug(pageId, boxNumber);
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
@@ -4951,6 +4956,9 @@ function ensureAdminPageBoxStyles() {
     #page-setup #pbAddIntentionRow{margin-bottom:16px}
     @media(max-width:600px){#page-setup .ci-goals-top-row{grid-template-columns:minmax(0,1fr) 132px;gap:10px}#page-setup .ci-goals-add-toggle{font-size:11px;min-height:100px}#page-setup .ci-goals-add-plus{width:44px;height:44px;font-size:30px}}
     .ci-admin-page-box{position:relative;box-sizing:border-box;background:#f2f2f2;border:3px solid #ad1457;border-radius:12px;color:#171717;box-shadow:0 5px 18px rgba(18,32,55,.06);overflow:hidden}
+    .ci-admin-page-box.ci-carousel{border:0;border-radius:0;box-shadow:none;background:transparent;aspect-ratio:16/9;position:relative;overflow:hidden}
+    .ci-carousel-card{position:absolute;inset:0;background:#fff;display:grid;place-items:center}
+    .ci-carousel-text{margin:0;padding:8%;font:400 clamp(20px,3vw,46px)/1.3 Inter,sans-serif;text-align:center;color:#171717}
     .ci-admin-trough-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}\n    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
@@ -5773,9 +5781,11 @@ async function initCitadelNoteFrame() {
     }
     const box = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
     if (_previewActive() && box.style.display === 'none') {
+      if(box.classList.contains('ci-carousel')){ box.style.display=''; }else{
       box.style.display = '';
       box.querySelector('.ci-admin-page-box-content').textContent = (boxNumber === 1 ? 'Opening' : 'Closing') + ' administrator text box. Sign in as the administrator to add text.';
       box.querySelector('.ci-admin-page-box-content').style.display = '';
+      }
     }
     if (box.style.display !== 'none') {
       // Inset the entire pink-bordered box; empty member boxes stay collapsed.

@@ -1,3 +1,4 @@
+import feed from './carousel-feed.json' with { type: 'json' };
 // Static, user-supplied artwork. Only artwork IDs are stored; no member content.
 export function createTroughPicker(ids, storage, random = Math.random) {
   const key = 'ci-trough-assignments-v1';
@@ -19,7 +20,9 @@ export function createTroughPicker(ids, storage, random = Math.random) {
 export const TROUGH_IDS=["2-cats", "address-book", "affirmation-trough-master-copy-1-copy-1", "blue-car", "buildings", "city-scape", "city-skyline", "death-valley", "digital-highway", "diver", "dog-star", "dots", "dragon-fly", "dragon-flys", "elephant", "everest", "fish-microphone", "fish", "fishes", "flowers", "green-fish", "hard-easy", "head-shoulders", "jumpers", "love-posters", "luers", "mountain-climber", "planets", "purple-mountains", "robots", "rocket", "sky-line-sun-rise", "sky-scrappers", "superman", "sushi-roll", "town", "tree-birds", "ufo"];
 
 let storage;try{storage=globalThis.localStorage;}catch{}
-const pick=createTroughPicker(TROUGH_IDS,storage);
+export const CAROUSEL_ITEMS=feed.items;
+const items=new Map(CAROUSEL_ITEMS.map(item=>[item.id,item]));
+const pick=createTroughPicker(CAROUSEL_ITEMS.map(item=>item.id),storage);
 const selections=new Map();let lastPage=null;
 export function visitTroughPage(pageId, eligible=true){
  if(lastPage===pageId)return;
@@ -28,12 +31,39 @@ export function visitTroughPage(pageId, eligible=true){
 }
 export function attachTrough(shell,pageId){
  if(!selections.has(pageId))selections.set(pageId,pick(pageId));
- const id=selections.get(pageId);
- let image=shell.querySelector('.ci-admin-trough-art');
- if(!image){image=document.createElement('img');image.className='ci-admin-trough-art';image.alt='';image.width=1280;image.height=720;image.decoding='async';shell.prepend(image);}
- if(image.dataset.trough===id)return;
- image.dataset.trough=id;
- image.srcset=`/images/troughs-web/${id}-640.webp 640w, /images/troughs-web/${id}-1280.webp 1280w`;
- image.sizes='(max-width: 700px) 100vw, 960px';
- image.src=`/images/troughs-web/${id}-1280.webp`;
+ shell.classList.add('ci-carousel');
+ shell.setAttribute('aria-label','The Carousel');
+ shell.setAttribute('role','region');
+ const render=()=>{
+  const item=items.get(selections.get(pageId));
+  if(!item)return;
+  const card=document.createElement('div');card.className='ci-carousel-card';card.dataset.carouselId=item.id;
+  card.dataset.contentType=item.type;
+  if(item.image){
+   const image=document.createElement('img');image.className='ci-admin-trough-art';
+   image.alt=item.alt||'';image.width=1280;image.height=720;image.decoding='async';image.dataset.trough=item.id;
+   image.src=item.image;
+   if(item.smallImage){image.srcset=`${item.smallImage} 640w, ${item.image} 1280w`;image.sizes='(max-width: 700px) 100vw, 960px';}
+   card.appendChild(image);
+  }else{
+   const text=document.createElement('p');text.className='ci-carousel-text';text.textContent=item.text||'';card.appendChild(text);
+  }
+  const previous=shell.firstElementChild;
+  const reveal=()=>{
+   if(!shell.isConnected && previous)return;
+   if(previous && previous.dataset.carouselId===item.id)return;
+   shell.appendChild(card);
+   if(previous){card.animate([{opacity:0},{opacity:1}],{duration:1000,easing:'ease-in-out'});setTimeout(()=>previous.remove(),1000);}
+  };
+  const image=card.querySelector('img');
+  if(image&&!image.complete){image.addEventListener('load',reveal,{once:true});image.addEventListener('error',()=>{}, {once:true});}else reveal();
+ };
+ if(shell.dataset.carouselReady){if(shell.firstElementChild?.dataset.carouselId!==selections.get(pageId))render();return;}
+ shell.dataset.carouselReady='true';render();
+ const timer=setInterval(()=>{
+  if(!shell.isConnected){clearInterval(timer);return;}
+  const page=shell.closest('.page');
+  if(document.hidden||(page&&!page.classList.contains('active')))return;
+  selections.set(pageId,pick(pageId));render();
+ },Math.max(4000,feed.intervalMs||12000));
 }
