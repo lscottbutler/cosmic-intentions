@@ -67,3 +67,6 @@ Scott renamed the lower artwork area The Carousel: remove its red border, placeh
 Curated shared/carousel-feed.json contains the existing 38 trough designs and supports typed affirmation/belief/other image or plain-text cards. No new affirmation/belief wording invented. Default 12-second automatic rotation with one-second crossfade after successful image load; revisit uniqueness remains. Hidden/inactive pages pause; removed elements stop timers. No paid API or scheduled content generation. See docs/carousel.md for feed format.
 
 Build/integrity and rotation tests pass. Actual Chromium desktop/mobile inspected; no red carousel border, placeholder or edit controls, upper text saves, automatic rotation occurs, revisit works and no browser page errors. Source baseline/recovery main 63e22182888aeb223118379e453569363c28d2bf; protected player shells, Supabase schema/data and API unchanged. Browser service requests used isolated mocks only.
+
+
+2026-10-16 — Scott requested dark dark grey admin box border. Shared 3px border changed from pink #ad1457 to charcoal #303030. Carousel remains borderless; editable admin box retains its existing size, text and pen. Recovery parent main deb795e3c408cb9c25c7e5ee2f441bd4908bb69e.
