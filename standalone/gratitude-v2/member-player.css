@@ -65,3 +65,9 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .gratitude-controls-panel{transition:transform var(--nav-duration) ease-in-out;opacity:1}
 .preview.nav-controls-hidden .gratitude-controls-panel{transform:translateY(calc(-22100cqw / 1669));opacity:1;pointer-events:none}
 .preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{content:attr(data-control-label);background:none;width:auto;height:auto;font:600 1.5cqw/1 Arial,sans-serif;letter-spacing:.3cqw;text-indent:.3cqw;color:#292929;white-space:nowrap}
+
+.gratitude-module-grid[hidden],.gratitude-time-grid[hidden]{display:none}
+.gratitude-section-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.7cqw;padding:.5cqw;border:0;background:transparent;color:#fff;font:inherit;letter-spacing:normal;min-height:0;cursor:pointer;box-shadow:none}
+.gratitude-section-toggle::after{content:'';width:.65cqw;height:.65cqw;border-right:.16cqw solid currentColor;border-bottom:.16cqw solid currentColor;transform:translateY(-.15cqw) rotate(45deg)}
+.gratitude-section-toggle[aria-expanded=true]::after{transform:translateY(.15cqw) rotate(225deg)}
+.gratitude-controls-panel .gratitude-section-toggle:hover,.gratitude-controls-panel .gratitude-section-toggle[aria-expanded=true]{background:transparent;color:#fff}

@@ -24,6 +24,13 @@ for(const n of minutes){
  button.onclick=()=>{select.value=String(n);select.dispatchEvent(new Event('change'));timeGrid.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.minutes)===n)));};timeGrid.append(button);
 }
 select.value=String(window.PlayerEditor.get().quietMinutes);timeGroup.append(timeGrid);panel.append(timeGroup);document.querySelector('.preview-viewport').after(shell);
+function makeDisclosure(title,choices,id){
+ choices.id=id;choices.hidden=true;
+ const toggle=document.createElement('button');toggle.type='button';toggle.className='gratitude-section-toggle';toggle.textContent=title.textContent;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls',id);
+ toggle.onclick=()=>{const expanded=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(expanded));choices.hidden=!expanded;};title.replaceChildren(toggle);
+}
+makeDisclosure(heading,grid,'gratitude-module-choices');makeDisclosure(timeHeading,timeGrid,'gratitude-time-choices');
+
 let sessionCircle=false,canLift=false;
 function syncPlay(){
  if(play.textContent==='Play preview')play.textContent='Play';
