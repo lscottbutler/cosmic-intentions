@@ -7,8 +7,8 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .preview-viewport{margin:0;aspect-ratio:1669/939;width:100%}
 .playback-label{padding:10px 16px 0}
 .transport{padding:10px 16px}
-.transport button{font-size:14px;min-height:40px}
+.transport button{font-size:14px;min-height:40px;color:#fff}
 #gratitude-member-menu{margin:8px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font:14px Arial,sans-serif}
-#gratitude-site-menu{margin-left:auto;min-width:44px;min-height:44px}
+#gratitude-site-menu{margin-left:auto;min-width:44px;min-height:44px;color:#fff}
 #gratitude-member-menu select{padding:8px;font:inherit}
 #progress{padding-bottom:10px}
