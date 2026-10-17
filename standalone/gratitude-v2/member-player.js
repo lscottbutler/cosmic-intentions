@@ -28,7 +28,7 @@ let sessionCircle=false,canLift=false;
 function syncPlay(){
  if(play.textContent==='Play preview')play.textContent='Play';
  const label=play.textContent;play.dataset.state=label==='Pause'?'playing':'ready';play.setAttribute('aria-label',label);
- const active=label==='Pause';preview.classList.toggle('nav-playing',active&&canLift);
+ const active=label==='Pause';play.dataset.controlLabel=active?'PAUSE':label==='Resume'?'RESUME':'PLAY';preview.classList.toggle('nav-controls-hidden',active);preview.classList.toggle('nav-playing',active&&canLift);
  modules.inert=active;timeGroup.inert=active;preview.classList.toggle('nav-session-circle',active&&sessionCircle);
 }
 window.addEventListener('gratitude-playback-phase',event=>{

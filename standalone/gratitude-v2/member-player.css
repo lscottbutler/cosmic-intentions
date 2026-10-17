@@ -60,3 +60,8 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 
 /* Lower navigation ring is charcoal; preserve the session-circle teal ring. */
 .preview #play.gratitude-central-play{border-color:#303030}
+
+/* Side controls retract immediately on Play; circle lift waits for clear text. */
+.gratitude-controls-panel{transition:transform var(--nav-duration) ease-in-out;opacity:1}
+.preview.nav-controls-hidden .gratitude-controls-panel{transform:translateY(calc(-22100cqw / 1669));opacity:1;pointer-events:none}
+.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{content:attr(data-control-label);background:none;width:auto;height:auto;font:600 1.5cqw/1 Arial,sans-serif;letter-spacing:.3cqw;text-indent:.3cqw;color:#292929;white-space:nowrap}
