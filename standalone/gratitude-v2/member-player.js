@@ -24,14 +24,15 @@ for(const n of minutes){
  button.onclick=()=>{select.value=String(n);select.dispatchEvent(new Event('change'));timeGrid.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.minutes)===n)));};timeGrid.append(button);
 }
 select.value=String(window.PlayerEditor.get().quietMinutes);timeGroup.append(timeGrid);panel.append(timeGroup);document.querySelector('.preview-viewport').after(shell);
-let sessionCircle=false;
+let sessionCircle=false,canLift=false;
 function syncPlay(){
  if(play.textContent==='Play preview')play.textContent='Play';
  const label=play.textContent;play.dataset.state=label==='Pause'?'playing':'ready';play.setAttribute('aria-label',label);
- const active=label==='Pause';preview.classList.toggle('nav-playing',active);
+ const active=label==='Pause';preview.classList.toggle('nav-playing',active&&canLift);
  modules.inert=active;timeGroup.inert=active;preview.classList.toggle('nav-session-circle',active&&sessionCircle);
 }
 window.addEventListener('gratitude-playback-phase',event=>{
+ canLift=Boolean(event.detail.canLift);preview.classList.toggle('nav-playing',play.dataset.state==='playing'&&canLift);
  sessionCircle=event.detail.sessionCircle;preview.classList.toggle('nav-session-circle',play.dataset.state==='playing'&&sessionCircle);
  const doc=document.getElementById('player').contentDocument,group=doc?.querySelector('#ci-mini-counter');
  if(group&&!group.querySelector('#ci-navigation-circle-hit')){
