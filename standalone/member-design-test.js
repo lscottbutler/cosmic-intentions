@@ -115,7 +115,7 @@
   if(action==='gratitude'||action==='new-gratitude'){
    playerAction='gratitude';gratitudeV2=true;newGratitude=false;
    frame.src='/standalone/gratitude-v2/index.html?module=gratitude-v2';
-   if(headerNote)headerNote.hidden=true;
+   if(headerNote){headerNote.hidden=false;headerNoteFrame.style.height='1px';headerNoteFrame.src='/?masterInline=citadel-note&notePage=gratitude&preview=1';}
    renderFeature('gratitude');return;
   }
   if(gratitudeV2){
@@ -152,6 +152,7 @@
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow||event.data?.type!=='ci-citadel-note-height')return;
   const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+  if(gratitudeV2&&!height)return;
   headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
  });
  function watchDocument(doc){
