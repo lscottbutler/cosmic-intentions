@@ -10,6 +10,18 @@
 <meta property="og:url" content="https://cosmicintentions.com/">
 <meta property="og:image" content="https://cosmicintentions.com/images/home-welcome-languages.jpg">
 <title>Cosmic Intentions</title>
+<!-- Embedded player destinations must never paint the default landing page,
+     including while styles, modules, or session restoration are still loading. -->
+<script>
+(function(){
+  if (!new URLSearchParams(location.search).get('masterInline')) return;
+  document.documentElement.classList.add('master-inline-mode');
+  var guard = document.createElement('style');
+  guard.id = 'ci-inline-first-paint';
+  guard.textContent = 'html.master-inline-mode #page-home,html.master-inline-mode .loading-screen,html.master-inline-mode body > header,html.master-inline-mode #topNav,html.master-inline-mode #tabBar{display:none!important}';
+  document.head.appendChild(guard);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;600;800;900&family=Lora:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3162,4 +3174,5 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 </body>
 </html>
+
 

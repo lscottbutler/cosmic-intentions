@@ -70,3 +70,8 @@ Build/integrity and rotation tests pass. Actual Chromium desktop/mobile inspecte
 
 
 2026-10-16 — Scott requested dark dark grey admin box border. Shared 3px border changed from pink #ad1457 to charcoal #303030. Carousel remains borderless; editable admin box retains its existing size, text and pen. Recovery parent main deb795e3c408cb9c25c7e5ee2f441bd4908bb69e.
+
+
+## 2026-10-17 — Player navigation landing-page flash
+Scott reported a brief landing-page flash when selecting players from the hamburger. The embedded destination loads the root document, whose default page-home markup could paint before DOMContentLoaded and destination selection. Added a tiny inline first-paint style before external fonts/scripts in index.html, scoped to masterInline URLs; hides landing markup and duplicate loading/header chrome throughout embedded startup. No auth, content, timing, Carousel, Supabase, or protected player template changes.
+Browser regression under delayed JS/CSS reproduced 2–3 landing paints in baseline Goals/Gratitude/Journal on desktop and phone, and zero after the fix. Production build and template guard pass. Native private Bible backup verified 2026-10-17 08:39 ICT. Recovery production/main: 2c8635ed9df05080e6c1ea7fdfb4a99eab8a1e4d. Active branch review/player-first-paint-20261017. Release verification pending; production not yet changed by this task.
