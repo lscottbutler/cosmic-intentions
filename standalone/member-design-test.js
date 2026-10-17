@@ -102,6 +102,8 @@
   if(newGratitude&&action==='meditation')action='new-gratitude';
   if(!features[action])return;
   if(dashboard.open)return;
+  document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
+  const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude');
   current=action;const copy=features[action];
   if(title.textContent!==copy[0])title.textContent=copy[0];
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
@@ -549,3 +551,4 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
   else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();
+
