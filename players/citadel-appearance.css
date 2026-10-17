@@ -17,3 +17,8 @@
 .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
 .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818)}
 .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
+
+/* Scott, 2026-10-17: Habits opens on its checklist, without the 16:9 card. */
+.shell.daily-habits-mode #lfmToolRotation{display:none!important}
+.shell.daily-habits-mode{--trough-fill:#fff!important;--trough-ink:#292929!important}
+.shell.daily-habits-mode #experienceFrame{background:#fff}
