@@ -50,3 +50,10 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 @media(prefers-reduced-motion:reduce){.preview.panel{--nav-duration:0s}}
 
 .preview #play.gratitude-central-play{background:#fff;border-color:#05728b;box-shadow:none}
+
+/* Scott's default navigation circle: exact existing SVG circle/bell proportions. */
+.preview #play.gratitude-central-play{width:calc(20600cqw / 1669);height:calc(20600cqw / 1669);border-width:calc(2200cqw / 1669);box-sizing:border-box}
+.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{content:'';width:calc(8540cqw / 1669);height:calc(9380cqw / 1669);margin:0;border:0;background:url('./icons/bell-clean.png') center / contain no-repeat;box-sizing:border-box}
+.preview #play.gratitude-central-play:focus-visible{outline:3px solid #fff;outline-offset:4px}
+
+.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
