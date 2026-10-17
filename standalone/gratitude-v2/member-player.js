@@ -27,7 +27,7 @@ select.value=String(window.PlayerEditor.get().quietMinutes);timeGroup.append(tim
 function makeDisclosure(title,choices,id){
  choices.id=id;choices.hidden=true;
  const toggle=document.createElement('button');toggle.type='button';toggle.className='gratitude-section-toggle';toggle.textContent=title.textContent;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls',id);
- toggle.onclick=()=>{const expanded=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(expanded));choices.hidden=!expanded;};title.replaceChildren(toggle);
+ toggle.onclick=()=>{const expanded=toggle.getAttribute('aria-expanded')!=='true';panel.querySelectorAll('.gratitude-section-toggle').forEach(control=>{control.setAttribute('aria-expanded',String(expanded));document.getElementById(control.getAttribute('aria-controls')).hidden=!expanded;});};title.replaceChildren(toggle);
 }
 makeDisclosure(heading,grid,'gratitude-module-choices');makeDisclosure(timeHeading,timeGrid,'gratitude-time-choices');
 
