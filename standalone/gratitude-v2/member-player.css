@@ -57,3 +57,6 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .preview #play.gratitude-central-play:focus-visible{outline:3px solid #fff;outline-offset:4px}
 
 .preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+
+/* Lower navigation ring is charcoal; preserve the session-circle teal ring. */
+.preview #play.gratitude-central-play{border-color:#303030}
