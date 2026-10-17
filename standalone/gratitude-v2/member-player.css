@@ -79,6 +79,6 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .gratitude-section-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
 
 /* Add 200 design pixels below the existing photo caption without moving its text. */
-.preview.photo-caption-expanded .preview-viewport{aspect-ratio:1669/1139}
-.preview.photo-caption-expanded .gratitude-controls-shell{top:calc(113900cqw / 1669)}
-.preview.photo-caption-expanded .gratitude-central-play{top:calc(124950cqw / 1669)}
+.preview.photo-caption-expanded .preview-viewport{aspect-ratio:1669/1259}
+.preview.photo-caption-expanded .gratitude-controls-shell{top:calc(125900cqw / 1669)}
+.preview.photo-caption-expanded .gratitude-central-play{top:calc(136950cqw / 1669)}
