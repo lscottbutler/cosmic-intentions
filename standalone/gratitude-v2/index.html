@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow"><title>Gratitude</title><meta name="theme-color" content="#17191c"><script src="player-v2-sequence.js?v=46-bell-fade-cue" defer></script><script src="player-workspaces.js?v=20" defer></script>
+ <link rel="stylesheet" href="module-editor.css?v=20261015-smaller-countdown-v24"><script src="module-presets.js?v=20261015-smaller-countdown-v24" defer></script><script src="module-editor.js?v=46-bell-fade-cue" defer></script>
+<link rel="stylesheet" href="member-player.css"></head>
+<body>
+ <header><div><p>COSMIC INTENTIONS · PLAYER EDITOR</p><h1 id="app-title">Player Editor / Gratitude</h1></div><span class="workspace-description">Your private player workspace</span></header>
+ <main><section class="panel ai-studio" aria-label="Ask for a revision"><div class="panel-heading"><h2>Ask for a revision</h2><span id="shared-budget">Shared AI budget: $15 / month</span></div><p>Describe a text, timing or narrow-box position change. You’ll see a preview before applying it. Simple box moves preview instantly without an API charge.</p><label>Your revision<textarea id="revision-request" placeholder="Example: Move the narrow gratitude box (NB) down 10 px." rows="3"></textarea></label><div class="row"><button id="generate-revision">Generate preview</button><button id="apply-revision" disabled>Apply revision</button><button id="cancel-revision" disabled>Keep current version</button><button id="undo-revision" disabled>Undo last revision</button><button id="install-app">Install / bookmark app</button><a href="/">Command Center</a></div><p id="revision-status" role="status">Choose a player and describe your change.</p><div id="revision-summary"></div><details><summary>Saved version history</summary><button id="refresh-history">Show saved versions</button><div id="version-history"></div></details><p id="cloud-status" role="status">Connecting private cloud saving…</p><div class="row" id="cloud-choice" hidden><button id="load-cloud">Use cloud copy</button><button id="keep-browser">Save browser copy</button></div></section>
+  <section class="toolbar" aria-label="Project controls">
+   <label>Choose player<select id="module-version"><option value="gratitude">GRATITUDE WITH INSTRUCTIONS</option><option value="gratitude-v2">GRATITUDE VER 2</option><option value="meditation">Meditation</option><option value="visualization">Visualization</option><option value="affirmations">Affirmations</option></select></label>
+   <label id="quiet-duration-label" hidden>Quiet practice after images<select id="quiet-duration"><option value="1">1 minute</option><option value="2">2 minutes</option><option value="3">3 minutes</option><option value="4">4 minutes</option><option value="5">5 minutes</option></select></label>
+   <label>Module title<input id="title" maxlength="120"></label>
+   <button id="save">Save draft</button><button id="restore">Restore previous</button><button id="export">Download backup</button>
+   <label class="filebutton">Open backup<input id="import" type="file" accept="application/json"></label>
+  </section>
+  <p id="status" role="status">Edits save automatically on this device at this address.</p>
+  <p id="module-note" class="timeline-help" hidden></p>
+  <div class="editor-workspace">
+   <aside class="slide-library panel">
+    <div class="panel-heading"><h2>Project slides</h2><span id="slide-count"></span></div>
+    <nav id="slide-list" aria-label="All module slides"></nav>
+    <button id="add">Add slide after selected</button>
+   </aside>
+   <section class="preview panel" aria-label="Program preview">
+    <div class="panel-heading"><h2>Program preview</h2><span id="preview-state" role="status">Saved draft</span><span id="preview-duration">10:00.0</span></div>
+    <div class="preview-viewport"><iframe id="player" srcdoc="<!doctype html><html><head><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}#player{position:relative;width:100%;height:100%}</style></head><body><div id=player></div></body></html>" title="Module preview" allow="autoplay"></iframe></div>
+    <label class="playback-label">Playback position <output id="playhead-time">00:00.0</output><input id="seek" type="range" min="0" max="600" step="0.1" value="0"></label>
+    <div class="row preview-actions" id="preview-actions" hidden><button id="preview-apply">Apply this preview</button><button id="preview-cancel">Keep current version</button></div><div class="row transport"><button id="skip-back" aria-label="Back 5 seconds">← Back 5 s</button><button id="play">Play preview</button><button id="skip-forward" aria-label="Forward 5 seconds">Forward 5 s →</button><button id="restart">Restart</button><button id="stop">Stop</button><label><input id="sound" type="checkbox" checked> Sound</label></div>
+    <p id="progress" role="status">Ready</p>
+   </section>
+   <section class="inspector panel" aria-label="Selected slide controls">
+    <div class="panel-heading"><h2>Edit selected slide</h2></div>
+    <div id="opening-editor"></div><div id="cards"></div>
+   </section>
+  </div>
+  <section class="timeline-panel panel" aria-labelledby="timeline-heading">
+   <div class="panel-heading"><h2 id="timeline-heading">Sequence · narration &amp; slides</h2><strong id="timeline-focus"></strong></div>
+   <div class="row timeline-navigation"><button id="timeline-prev">Previous slide</button><button id="timeline-next">Next slide</button><button id="restore-ten">Restore 10-minute pauses</button><button id="close-gaps" hidden>Remove long gaps</button><label>First recorded narration starts at (seconds)<input id="narration-delay" type="number" min="0" max="120" step="0.1" value="6"></label></div>
+   <p class="timeline-help">Gold: original audio. Cream: each slide’s narration. Blue: slides. Type seconds directly into a clip or the selected-slide controls. Scroll horizontally to navigate the complete sequence.</p>
+   <div class="timeline-scroll"><div id="timeline"></div></div>
+   <p id="cut-status" role="status">Select the opening title or a slide to edit its text and duration.</p>
+   <details class="timing-notes"><summary>Recording and timing notes</summary><div id="silence-list"></div></details>
+  </section>
+ </main>
+<script src="member-player.js" defer></script></body>
+</html>
+

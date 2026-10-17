@@ -1,0 +1,14 @@
+html,body{margin:0;background:#f2ede7;color:#292929;min-width:0;--text:#292929;--muted:#555}
+.playback-label,.transport label,#gratitude-member-menu label{color:#292929}
+body>header,.toolbar,#status,#module-note,.slide-library,.inspector,.timeline-panel,.preview>.panel-heading,.preview-actions,.ai-studio{display:none!important}
+main{padding:0!important;max-width:none!important;margin:0!important}
+.editor-workspace{display:block!important}
+.preview.panel{border:0;border-radius:0;box-shadow:none;background:transparent}
+.preview-viewport{margin:0;aspect-ratio:1669/939;width:100%}
+.playback-label{padding:10px 16px 0}
+.transport{padding:10px 16px}
+.transport button{font-size:14px;min-height:40px}
+#gratitude-member-menu{margin:8px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font:14px Arial,sans-serif}
+#gratitude-site-menu{margin-left:auto;min-width:44px;min-height:44px}
+#gratitude-member-menu select{padding:8px;font:inherit}
+#progress{padding-bottom:10px}
