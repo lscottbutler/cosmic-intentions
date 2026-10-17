@@ -101,7 +101,7 @@ function validate(m) {
  if(lightlyGuided&&m.sessionAudio)throw Error('The guided training recording does not belong in this version.');
  if(m?.version!==1 || typeof m.title!=='string' || !Array.isArray(m.cards) || !m.cards.length || m.cards.length>50) throw Error('Invalid module backup');
  if(m.presentation!==undefined&&m.presentation!=='gratitude-mini')throw Error('Invalid presentation');
- if(m.presentation==='gratitude-mini'&&(![1,2,3,4,5].includes(m.quietMinutes)||m.cards.filter(c=>c.label==='Quiet countdown').length!==1||m.cards.at(-1).label!=='Closing bell'||m.cards.at(-1).duration!==closingDuration()||m.cards.find(c=>c.label==='Quiet countdown').duration!==m.quietMinutes*60))throw Error('Invalid quiet countdown');
+ if(m.presentation==='gratitude-mini'&&(![1,2,3,5,10,15,30,45,60].includes(m.quietMinutes)||m.cards.filter(c=>c.label==='Quiet countdown').length!==1||m.cards.at(-1).label!=='Closing bell'||m.cards.at(-1).duration!==closingDuration()||m.cards.find(c=>c.label==='Quiet countdown').duration!==m.quietMinutes*60))throw Error('Invalid quiet countdown');
  if(m.opening&&(typeof m.opening.text!=='string'||['hold','fade','expand'].some(k=>!Number.isFinite(m.opening[k])||m.opening[k]<0)||m.opening.hold+m.opening.fade+m.opening.expand<.1))throw Error('Invalid opening title');
  if(m.voiceDurations&&(!Array.isArray(m.voiceDurations)||m.voiceDurations.length!==10||m.voiceDurations.some((v,i)=>!Number.isFinite(v)||v<.1||v>(i===9?55:60))))throw Error('Invalid narration durations');
  if(m.sessionAudio && m.sessionAudio!=='/players/audio/coming-back-to-yourself-10m.ogg') throw Error('Unrecognized recording');
@@ -315,7 +315,7 @@ function renderMini(time,finished=false){
 
  let frame=surface.querySelector('#ci-transition-frame');if(!frame){frame=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','g');frame.id='ci-transition-frame';frame.style.pointerEvents='none';frame.innerHTML='<path fill="#05728b" fill-rule="evenodd" d="M0 0H1669V939H0Z M35 30H1634V910H35Z"/>';svg.append(frame);}frame.style.display=quiet?'none':'';}
 }
-$('quiet-duration').onchange=()=>{const minutes=Number($('quiet-duration').value);if(!mini()||![1,2,3,4,5].includes(minutes))return;stop();model.quietMinutes=minutes;model.cards.find(c=>c.label==='Quiet countdown').duration=minutes*60;mark();render();initPreview();};
+$('quiet-duration').onchange=()=>{const minutes=Number($('quiet-duration').value);if(!mini()||![1,2,3,5,10,15,30,45,60].includes(minutes))return;stop();model.quietMinutes=minutes;model.cards.find(c=>c.label==='Quiet countdown').duration=minutes*60;mark();render();initPreview();};
 
 window.PlayerEditor={get:()=>structuredClone(model),validate,
  replace(next,save=false){stop();model=validate(structuredClone(next));focusedSlide=0;openingView=true;render();initPreview();if(save){mark();saveDraft();}},
