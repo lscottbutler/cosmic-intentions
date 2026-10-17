@@ -310,7 +310,7 @@ function renderMini(time,finished=false){
   let scrub=group.querySelector('#ci-countdown-scrubber');
   if(!scrub){
    const ns='http://www.w3.org/2000/svg';scrub=surface.ownerDocument.createElementNS(ns,'g');scrub.id='ci-countdown-scrubber';scrub.setAttribute('role','slider');scrub.setAttribute('tabindex','0');scrub.setAttribute('aria-label','Gratitude countdown position');scrub.setAttribute('aria-valuemin','0');scrub.style.touchAction='none';scrub.style.cursor='pointer';
-   scrub.innerHTML='<path class="ci-countdown-track" d="M35 803 Q835 737 1634 803" fill="none" stroke="none" stroke-width="8" stroke-linecap="round"/><path class="ci-countdown-hit" d="M35 803 Q835 737 1634 803" fill="none" stroke="transparent" stroke-width="44"/><circle class="ci-countdown-thumb" r="16" fill="#034b5b"/>';
+   scrub.innerHTML='<path class="ci-countdown-track" d="M35 803 Q835 737 1634 803" fill="none" stroke="none" stroke-width="8" stroke-linecap="round"/><path class="ci-countdown-hit" d="M35 803 Q835 737 1634 803" fill="none" stroke="transparent" stroke-width="44"/><circle class="ci-countdown-thumb" r="16.5" fill="#034b5b"/>';
    group.insertBefore(scrub,group.querySelector('circle'));
    const move=e=>{const matrix=svg.getScreenCTM();if(!matrix)return;const point=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());const ratio=Math.max(0,Math.min(1,(point.x-35)/1599));seekPreview(quietStart()+ratio*(closingStart()-quietStart()));};
    scrub.addEventListener('pointerdown',e=>{e.preventDefault();scrub.setPointerCapture(e.pointerId);move(e);});
