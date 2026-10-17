@@ -77,3 +77,8 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .gratitude-section-toggle{gap:.8cqw;font-weight:700}
 .gratitude-section-toggle::after{content:'';display:block;flex:none;width:2.5cqw;height:2.5cqw;border:0;border-radius:50%;transform:none;background:#000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M5 8h4l3 4 3-4h4l-7 9z'/%3E%3C/svg%3E") center / 82% no-repeat}
 .gratitude-section-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
+
+/* Add 200 design pixels below the existing photo caption without moving its text. */
+.preview.photo-caption-expanded .preview-viewport{aspect-ratio:1669/1139}
+.preview.photo-caption-expanded .gratitude-controls-shell{top:calc(113900cqw / 1669)}
+.preview.photo-caption-expanded .gratitude-central-play{top:calc(124950cqw / 1669)}

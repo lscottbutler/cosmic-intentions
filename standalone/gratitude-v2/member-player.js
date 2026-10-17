@@ -39,6 +39,7 @@ function syncPlay(){
  modules.inert=active;timeGroup.inert=active;preview.classList.toggle('nav-session-circle',active&&sessionCircle);
 }
 window.addEventListener('gratitude-playback-phase',event=>{
+ preview.classList.toggle('photo-caption-expanded',Boolean(event.detail.photoCard));
  canLift=Boolean(event.detail.canLift);preview.classList.toggle('nav-playing',play.dataset.state==='playing'&&canLift);
  sessionCircle=event.detail.sessionCircle;preview.classList.toggle('nav-session-circle',play.dataset.state==='playing'&&sessionCircle);
  const doc=document.getElementById('player').contentDocument,group=doc?.querySelector('#ci-mini-counter');
