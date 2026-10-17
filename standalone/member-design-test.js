@@ -95,7 +95,7 @@
  });
  const inlinePages={setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',gratitude:'gratitude',wins:'wins',tasknotes:'task-notes',goalworkspace:'goal-workspace',cosmiclibrary:'cosmic-library',entrepreneurlibrary:'entrepreneur-library',entcard:'ent-card',admin:'admin'};
  let enabled=true,current='home',last=null,scheduled=false,playerAction='home';
- let newGratitude=false,gratitudeModule=0;
+ let newGratitude=false,gratitudeModule=0,gratitudeV2=false;
  const docs=new WeakSet(),frames=new WeakSet();
  try{const saved=sessionStorage.getItem('ci-review-last-feature');if(features[saved]&&saved!=='home'&&saved!=='admin')last=saved;}catch(_){/* Comparison remains usable without storage. */}
  function renderFeature(action){
@@ -110,6 +110,17 @@
 
  }
  function openFeature(action){
+  if(action==='gratitude'||action==='new-gratitude'){
+   playerAction='gratitude';gratitudeV2=true;newGratitude=false;
+   frame.src='/standalone/gratitude-v2/index.html?module=gratitude-v2';
+   if(headerNote)headerNote.hidden=true;
+   renderFeature('gratitude');return;
+  }
+  if(gratitudeV2){
+   gratitudeV2=false;playerAction=action;
+   frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);
+   renderFeature(action);return;
+  }
   playerAction=action;
   if(action==='new-gratitude'){
    newGratitude=true;gratitudeModule=1;frame.src='/players/master-player.html?start=meditation&preview=1&reviewPage=new-gratitude';renderFeature(action);return;
@@ -118,6 +129,8 @@
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
  const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
+ delete menuLabels['new-gratitude'];
+ features.gratitude=['Gratitude','Make space for your chosen gratitude practice.','Press Play to begin. Keep Sound checked for narration.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{menu.close();openFeature(action);});document.getElementById('review-menu-items').append(button);}
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
@@ -522,6 +535,8 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
   if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
   const type=event.data?.type;
   if(type==='ci-site-menu-toggle'){if(menu.open)menu.close();else menu.showModal();return;}
+  if(type==='ci-gratitude-v2-height'&&gratitudeV2){const height=Number(event.data.height);if(Number.isFinite(height)&&height>100)frame.style.height=Math.ceil(height)+'px';return;}
+  if(type==='ci-lfm-mode'&&['gratitude','new-gratitude'].includes(event.data.action)&&!gratitudeV2){openFeature('gratitude');return;}
   if(type==='ci-lfm-mode'){if(features[event.data.action])playerAction=event.data.action;else if(event.data.action==='citadel')playerAction='home';renderFeature(playerAction);schedule();}
   if(type==='ci-lfm-height'&&Math.abs(Number(event.data.height)+2-parseFloat(frame.style.height||'0'))>2)schedule();
  });
@@ -530,7 +545,7 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
  const initialFeature=new URLSearchParams(location.search).get('feature');
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
-  if(initialFeature==='new-gratitude')openFeature(initialFeature);
+  if(initialFeature==='new-gratitude'||initialFeature==='gratitude')openFeature(initialFeature);
   else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();
