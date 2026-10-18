@@ -205,6 +205,7 @@
     #standaloneSiteMenu{inset:76px auto auto max(12px,8vw);max-height:calc(100dvh - 88px)}
   </style>
   <link rel="stylesheet" href="/players/citadel-appearance.css">
+  <link rel="stylesheet" href="/players/meditation-design.css">
 </head>
 <body>
   <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
@@ -285,6 +286,7 @@
     </nav>
   </main>
   <nav id="standaloneSiteMenu" popover aria-label="Site menu"></nav>
+  <script src="/players/meditation-design.js"></script>
   <script type="module">
     (() => {
       const params=new URLSearchParams(location.search);
@@ -537,6 +539,7 @@
       }
       let meditationMenuAnimation=null;
       function setMeditationMenuOpen(open,fadeOut=false){
+        if(shell.classList.contains("meditation-player-mode")&&window.CIMeditationDesign){meditationMenuOpen=open;window.CIMeditationDesign.setMenuOpen(open);return;}
         const opacity=Number.parseFloat(getComputedStyle(meditationMenu).opacity);
         if(meditationMenuAnimation){
           meditationMenuAnimation.cancel();
@@ -845,7 +848,7 @@
       document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
         const command=button.dataset.medCommand;
         if(command==='back'){homeMode();return}
-        if(command==='menu'){setMeditationMenuOpen(!meditationMenuOpen,true);return}
+        if(command==='menu'){if(shell.classList.contains('meditation-player-mode')&&window.CIMeditationDesign){window.CIMeditationDesign.toggleMenu();return}setMeditationMenuOpen(!meditationMenuOpen,true);return}
         if(command==='toggle'){sendMeditation('toggle');return}
         if(command==='mode'){meditationMode=['unguided','lightly-guided','guided'][(['unguided','lightly-guided','guided'].indexOf(meditationMode)+1)%3];reloadMeditation();return}
         const index=meditationTimes.indexOf(meditationMinutes);

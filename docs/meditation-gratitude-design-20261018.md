@@ -1,0 +1,11 @@
+# Meditation design transfer — 18 October 2026
+
+Scott requested transferring the approved NEW GRATITUDE design to Meditation. The Gratitude engine remains separate and unchanged. Meditation retains its original forest image, guidance, bells, narration recording, three modes, nine durations, relaxation option and session engine.
+
+The shared Master Player now loads Meditation-specific presentation files: teal curved title and guidance cards, linked mode/time disclosures, a central circular Play button, retracting choices, quiet-stage countdown and a marker on the curved seek area. Pointer and keyboard seeking remain available. Desktop uses the same75/25 columns as NEW GRATITUDE; phones use full width. Existing rounded sections and60px section gaps remain.
+
+Validation: `tests/meditation-design.cjs` passes54 lifecycle combinations at1440/390px, linked disclosures, relaxation selection, all ten recorded guidance passages, real OGG playback, quiet-stage animation, keyboard seek, completion/replay, separate Gratitude navigation, reduced motion, no missing assets and no page exceptions. Updated audio regression uses the new visible controls and checks real audio pause/resume/seek/replay. Screenshots of opening, expanded choices, guidance and quiet states were inspected at both sizes. `npm run build` and the authorized scoped template-integrity baseline pass.
+
+Limitations: browser speech uses the host's available voices; isolated cue checks use a speech stub. Unrelated account/admin surfaces are empty fixtures in player tests. Repository-wide lint has a pre-existing parser failure on `with { type: 'json' }` in shared/trough-rotation.js under itsECMAScript2022 configuration. GitHub Actions is affected by the separately recorded account/billing block. Neither issue was changed in this scoped revision.
+
+Review branch: `review/meditation-gratitude-design-20261018`. Recovery: `f6a9d9da9f73fa050153d0cffcc447f4576c2e59`. Release follows Scott's standing October11/12 authorization; publish only the reviewed commit to the existing password-protected site. No Supabase, authentication or access-control changes. Bible records the actual release commit and deployment result. Backup setup stays paused as Scott requested.

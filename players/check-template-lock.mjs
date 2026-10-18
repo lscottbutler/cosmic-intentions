@@ -67,9 +67,15 @@ import { readFileSync } from 'node:fs';
 // Shared outer borders removed via external appearance CSS; master source unchanged.
 // Isolated desktop/phone all-page geometry and Meditation rendering reviewed.
 // Recovery: 3bad304868c32d9ccb311f556025830e9db5f9b8.
+// 2026-10-18: Scott explicitly requested applying the approved NEW GRATITUDE
+// design to Meditation. Scoped teal curved cards, linked menus, circle/countdown,
+// quiet-stage rail and 75/25 layout verified visually at1440/390px.
+// All54 mode/duration lifecycles, all10 recorded text cards, real audio playback,
+// keyboard seeking and reduced motion pass. Engine scripts/timing unchanged.
+// Recovery: f6a9d9da9f73fa050153d0cffcc447f4576c2e59.
 const lockedFiles = {
-  "players/master-player.html": "416d33163dd788e2a5de74bf6f6b1b9269cf39fe",
-  "players/meditation.html": "4739b49ffc609658900b4157d6398bd35c378350"
+  "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
+  "players/meditation.html": "35c6fdad3f16da7ced51cad63c9339f6857c2133"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
