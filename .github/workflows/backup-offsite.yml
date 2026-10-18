@@ -1,124 +1,58 @@
 name: Encrypted off-site backup
 
-# Hourly: pg_dump -> ENCRYPT (gpg AES-256) -> upload the CIPHERTEXT to BOTH
-# Google Drive and OneDrive. The clouds only ever hold unreadable ciphertext;
-# the passphrase lives ONLY as a GitHub secret. Repo stays PRIVATE.
-#
-# It no-ops safely until you add these three repo secrets
-# (Settings -> Secrets and variables -> Actions):
-#   SUPABASE_DB_PASSWORD = your Supabase DB password (already set if the 6h backup runs)
-#   BACKUP_PASSPHRASE    = a strong passphrase used to encrypt every backup.
-#                          *** SAVE THIS IN YOUR PASSWORD MANAGER *** — without it the
-#                          backups are permanently unrecoverable. Do NOT store it in Drive/OneDrive.
-#   RCLONE_CONF          = the full contents of your rclone.conf, containing a `gdrive:`
-#                          (Google Drive) and an `onedrive:` (OneDrive) remote (see setup below).
-#   (MAIL_USERNAME / MAIL_PASSWORD reused from the daily-brief workflow -> failure alert email.)
-#
-# rclone setup (one time, on your PC): install rclone (rclone.org) -> run `rclone config`
-#   -> new remote named `gdrive`, type Google Drive, do the browser sign-in
-#   -> new remote named `onedrive`, type OneDrive, do the browser sign-in
-#   -> run `rclone config file` to find rclone.conf, open it, copy ALL text -> paste as RCLONE_CONF.
-
 on:
   schedule:
-    - cron: '0 * * * *'    # hourly
+    - cron: '17 */6 * * *'
   workflow_dispatch: {}
+  workflow_call: {}
 
 permissions:
   contents: read
 
 concurrency:
-  group: backup-offsite
+  group: ci-encrypted-backup
   cancel-in-progress: false
 
 jobs:
   offsite:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
-      - name: Gate — only run once fully configured
-        id: gate
+      - name: Require backup credentials
         env:
-          P1: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          P2: ${{ secrets.BACKUP_PASSPHRASE }}
-          P3: ${{ secrets.RCLONE_CONF }}
-        run: |
-          if [ -z "$P1" ] || [ -z "$P2" ] || [ -z "$P3" ]; then
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Off-site backup is not configured. Add SUPABASE_DB_PASSWORD, BACKUP_PASSPHRASE, and RCLONE_CONF."
-            exit 1
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Install pg_dump 17 + rclone
-        if: steps.gate.outputs.ready == 'true'
-        run: |
-          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17
-          curl -fsSL https://rclone.org/install.sh | sudo bash
-
-      - name: Dump database
-        if: steps.gate.outputs.ready == 'true'
-        env:
-          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-        run: |
-          export PGCONNECT_TIMEOUT=12
-          OK=0
-          for H in aws-0-ap-northeast-1.pooler.supabase.com aws-1-ap-northeast-1.pooler.supabase.com; do
-            if pg_dump -h "$H" -p 5432 -U postgres.wbqzwbubbeorcknevips -d postgres \
-                       --no-owner --no-privileges --clean --if-exists -f /tmp/dump.sql 2>/tmp/pgerr; then
-              OK=1; break
-            fi
-          done
-          [ "$OK" = 1 ] || { echo "::error::pg_dump failed"; cat /tmp/pgerr; exit 1; }
-          echo "Dumped $(du -h /tmp/dump.sql | cut -f1)"
-
-      - name: Encrypt (AES-256, symmetric)
-        if: steps.gate.outputs.ready == 'true'
-        env:
+          DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           PASS: ${{ secrets.BACKUP_PASSPHRASE }}
-        run: |
-          STAMP=$(date -u +%Y-%m-%dT%H%M)
-          OUT="/tmp/ci-backup-$STAMP.sql.gpg"
-          gpg --batch --yes --passphrase "$PASS" --symmetric --cipher-algo AES256 -o "$OUT" /tmp/dump.sql
-          echo "ENC=$OUT" >> "$GITHUB_ENV"
-          echo "Encrypted -> $(basename "$OUT") ($(du -h "$OUT" | cut -f1))"
-
-      - name: Configure rclone
-        if: steps.gate.outputs.ready == 'true'
-        env:
+          STORAGE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         run: |
-          mkdir -p ~/.config/rclone
-          printf '%s' "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
-
-      - name: Upload ciphertext to Google Drive + OneDrive
-        if: steps.gate.outputs.ready == 'true'
-        run: |
-          for REMOTE in gdrive onedrive; do
-            echo "Uploading to $REMOTE:CI-Backups ..."
-            rclone copy "$ENC" "$REMOTE:CI-Backups/" --no-traverse
-          done
-
-      - name: Prune backups older than 30 days
-        if: steps.gate.outputs.ready == 'true'
-        run: |
-          for REMOTE in gdrive onedrive; do
-            rclone delete "$REMOTE:CI-Backups/" --min-age 30d 2>/dev/null || true
-          done
-
-      - name: Email on failure
-        if: failure()
-        uses: dawidd6/action-send-mail@v3
+          test -n "$DB_PASSWORD$DB_URL" && test -n "$PASS" && test -n "$STORAGE_KEY" && test -n "$RCLONE_CONF" || {
+            echo "::error::Backup credentials missing. Review the required secret NAMES in docs/BACKUP-RECOVERY.md."
+            exit 1
+          }
+      - name: Checkout complete history
+        uses: actions/checkout@v4
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          from: CI Backup Bot <${{ secrets.MAIL_USERNAME }}>
-          to: lscottbutler@gmail.com
-          subject: "⚠ CI encrypted off-site backup FAILED"
-          body: "The hourly encrypted off-site backup failed. Check the GitHub Actions run."
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install backup tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common rclone gnupg
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq postgresql-client-17
+      - name: Capture, encrypt and verify both offsite copies
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        run: bash scripts/backup-offsite.sh
+      - name: Record outcome
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+        run: |
+          printf '## Backup result: %s\n\n' "$RESULT" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Success requires encrypted code/history, database and Storage uploads verified by downloading from BOTH configured remotes. No old backup is deleted. A backup is not a proven full recovery until an isolated restore is tested. Billing can prevent this job from starting; inspect Actions when no fresh success exists.' >> "$GITHUB_STEP_SUMMARY"
