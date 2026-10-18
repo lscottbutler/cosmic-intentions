@@ -62,9 +62,14 @@ import { readFileSync } from 'node:fs';
 // 2026-10-09: Authorized Citadel-only frame removal, dark circles, white controls,
 // and 40px artwork padding. Desktop/mobile rendered checks passed; Meditation unchanged.
 // Recovery: 2480dc5.
+// 2026-10-18: Scott explicitly approved removal of the outer35px border on all pages.
+// Meditation now hides only the rectangular frame; image fills its existing stage.
+// Shared outer borders removed via external appearance CSS; master source unchanged.
+// Isolated desktop/phone all-page geometry and Meditation rendering reviewed.
+// Recovery: 3bad304868c32d9ccb311f556025830e9db5f9b8.
 const lockedFiles = {
   "players/master-player.html": "416d33163dd788e2a5de74bf6f6b1b9269cf39fe",
-  "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
+  "players/meditation.html": "4739b49ffc609658900b4157d6398bd35c378350"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
