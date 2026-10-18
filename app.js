@@ -5721,9 +5721,13 @@ function injectPlaceholderCards() {
     const wrap = page.querySelector('.viz-main, .pg-screen, .wins-screen') || page.firstElementChild || page;
     const anchor = page.querySelector(cfg[id]);
     const card = id === 'habits' ? createHabitMindsetCard(() => currentUser?.id || '') : _makePhCard();
-    if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
+    if (id === 'habits') {
+      const periods = createHabitPeriodMenu();
+      if (anchor) anchor.insertAdjacentElement('afterend', periods);
+      else wrap.insertBefore(periods, wrap.firstChild);
+      wrap.append(card);
+    } else if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
-    if (id === 'habits') card.insertAdjacentElement('beforebegin', createHabitPeriodMenu());
     // (bottom placeholder card removed — one admin-controlled info box per page)
   });
 }
@@ -6484,3 +6488,4 @@ if (typeof window !== 'undefined') {
   window.openMasterInlineDestination = openMasterInlineDestination;
   window.closeMasterInlineDestination = closeMasterInlineDestination;
 }
+
