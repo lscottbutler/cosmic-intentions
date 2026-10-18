@@ -23,7 +23,7 @@
 .shell.daily-habits-mode{--trough-fill:#fff!important;--trough-ink:#292929!important}
 .shell.daily-habits-mode #experienceFrame{background:#fff}
 
-/* Habits frame: a consistent 10 CSS-pixel border at every viewport size. */
-.shell.daily-habits-mode{--frame-border:10px;--frame-bottom-border:10px}
-.shell.daily-habits-mode #experienceView{padding-bottom:10px}
-.shell.daily-habits-mode .deck::before{bottom:10px}
+/* Habits: remove the outer frame and content/footer divider. */
+.shell.daily-habits-mode{--frame-border:0px;--frame-bottom-border:0px}
+.shell.daily-habits-mode #experienceView{padding-bottom:0}
+.shell.daily-habits-mode .deck::before{bottom:0;border-radius:0}
