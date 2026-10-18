@@ -82,3 +82,8 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .preview.photo-caption-expanded .preview-viewport{aspect-ratio:1669/1259}
 .preview.photo-caption-expanded .gratitude-controls-shell{top:calc(125900cqw / 1669)}
 .preview.photo-caption-expanded .gratitude-central-play{top:calc(136950cqw / 1669)}
+
+/* Match the site's section corners while keeping the circular controls intact. */
+.preview.panel{border-radius:10px;overflow:hidden}
+.preview-viewport iframe{border-radius:10px}
+.gratitude-controls-shell{border-radius:0 0 10px 10px}
