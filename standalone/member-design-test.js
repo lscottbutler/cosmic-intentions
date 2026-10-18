@@ -103,7 +103,8 @@
   if(!features[action])return;
   if(dashboard.open)return;
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
-  const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude');
+  document.body.classList.toggle('meditation-two-column',action==='meditation');
+  const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||action==='meditation');
   current=action;const copy=features[action];
   if(title.textContent!==copy[0])title.textContent=copy[0];
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];

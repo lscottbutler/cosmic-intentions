@@ -1,0 +1,14 @@
+/* Approved Gratitude frame geometry, retaining Meditation's own background/text. */
+body{background:transparent}
+body.external .player{background:#05728b}
+.session-card{background:#05728b url('/images/meditation/meditation-1.jpg') center/cover no-repeat;border-radius:10px}
+.session-card>img{display:none}
+.session-card p{font-weight:400;font-size:36px;letter-spacing:.015em;line-height:1.35;white-space:normal;padding:6px 12px}
+.meditation-title{fill:#202426;font-family:Arial,Helvetica,sans-serif;font-size:150px;font-weight:400;letter-spacing:18px;stroke:#fff;stroke-width:7px;paint-order:fill stroke;stroke-linejoin:round;text-anchor:middle}
+body.external .timer,body.external .ccb-curve,body.external .ccb-scrubber{display:none}
+.meditation-seek:focus{outline:none;stroke:#fff8!important}
+body.meditation-stage-ready .session-card foreignObject{visibility:hidden}
+body:not(.meditation-stage-ready) .meditation-title{display:none}
+body.meditation-stage-quiet .session-card{background:#000}
+body.meditation-stage-quiet .meditation-banner{display:none}
+body:not(.meditation-stage-quiet) .meditation-quiet-art{display:none}

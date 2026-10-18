@@ -1,0 +1,48 @@
+/* Meditation uses the approved NEW GRATITUDE presentation, with its own engine. */
+.shell.meditation-player-mode .stage{position:relative;container-type:inline-size;border-radius:10px;overflow:hidden}
+.shell.meditation-player-mode #experienceFrame{border-radius:10px 10px 0 0!important}
+#meditationDesignControls,#meditationDesignPlay{display:none}
+.shell.meditation-player-mode #meditationDesignControls{display:block;position:relative;min-height:calc(22100cqw / 1669);background:#05728b;color:#fff;transition:min-height 1.2s ease-in-out}
+.shell.meditation-player-mode #meditationMenu{display:grid;margin:0;padding:1cqw 5cqw;grid-template-columns:39% 16% 39%;justify-content:space-between;align-items:start;border:0;border-radius:0;background:transparent;color:white;animation:none;min-height:calc(22100cqw / 1669);transition:transform 1.2s ease-in-out}
+.meditation-design-group{min-width:0;align-self:center}
+.meditation-design-times{grid-column:3}
+.meditation-design-group h2{margin:0 0 .6cqw;text-align:center;font:700 clamp(11px,2cqw,18px)/1.3 Arial,Helvetica,sans-serif;color:#fff}
+.meditation-design-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.8cqw;border:0;background:transparent;color:inherit;font:inherit;padding:.5cqw;cursor:pointer;min-height:32px}
+.meditation-design-toggle::after{content:'';flex:none;width:2.5cqw;height:2.5cqw;min-width:14px;min-height:14px;border-radius:50%;background:#000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M5 8h4l3 4 3-4h4l-7 9z'/%3E%3C/svg%3E") center/82% no-repeat}
+.meditation-design-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
+.shell #meditationMenu .med-menu-row.mode{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7cqw;margin:0;max-width:none}
+.shell #meditationMenu .med-time-stack{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5cqw;padding:0;margin:0}
+.shell #meditationMenu [hidden]{display:none!important}
+.shell #meditationMenu :is(.med-mode-option,.med-time-option){background:transparent;color:#fff;gap:.4cqw;border:0;padding:0;min-height:44px}
+.shell #meditationMenu :is(.med-mode-circle,.med-time-circle){width:3.4cqw;height:3.4cqw;min-width:25px;min-height:25px;background:#e5e5e5;color:#292929;border:1px solid #777;box-shadow:none;font:700 clamp(12px,1.7cqw,20px)/1 Arial,sans-serif}
+.shell #meditationMenu :is(.med-mode-option,.med-time-option).active :is(.med-mode-circle,.med-time-circle){border:clamp(2px,.35cqw,4px) solid #fff;box-shadow:0 0 0 1px #303030;background:#c4c4c4}
+.shell #meditationMenu :is(.med-mode-label,.med-time-label){font:700 clamp(8px,1cqw,12px)/1.25 Arial,sans-serif;color:white;letter-spacing:0}
+.shell #meditationMenu .relaxation-toggle-row{margin:1.5cqw 0 0}
+.shell #meditationMenu .relaxation-toggle{display:flex;align-items:center;justify-content:center;gap:7px;padding:4px;color:white;min-height:36px}
+.shell #meditationMenu .relaxation-toggle-icon{width:26px;height:26px;background:#e5e5e5;color:#292929;border:1px solid #777;box-shadow:none;font-size:18px}
+.shell #meditationMenu .relaxation-toggle-label{font:700 clamp(9px,1.3cqw,13px)/1.2 Arial,sans-serif;letter-spacing:0}
+.shell #meditationMenu .guided-note{grid-column:1/-1;margin:1.5cqw 0 1cqw;color:#fff;font:400 clamp(11px,1.6cqw,14px)/1.5 Arial,sans-serif;text-align:center;max-width:none}
+.shell.meditation-player-mode #meditationDesignPlay{display:grid;place-items:center;position:absolute;z-index:8;left:50%;top:calc(104950cqw / 1669);transform:translate(-50%,-50%);width:calc(20600cqw / 1669);height:calc(20600cqw / 1669);min-width:44px;min-height:44px;padding:0;border:calc(2200cqw / 1669) solid #303030;border-radius:50%;background:#fff;color:#292929;font:600 clamp(8px,1.5cqw,16px)/1 Arial,sans-serif;letter-spacing:.3cqw;text-indent:.3cqw;cursor:pointer;transition:top 1.2s ease-in-out,border-color 1.2s}
+.shell.meditation-player-mode.meditation-design-quiet #meditationDesignPlay{top:calc(78200cqw / 1669);border-color:#05728b;font:500 italic clamp(14px,4.7cqw,48px)/1 Arial,sans-serif;letter-spacing:0;text-indent:0}
+.shell.meditation-player-mode.meditation-design-running #meditationMenu{transform:translateY(-110%);pointer-events:none}
+.shell.meditation-player-mode #meditationDesignControls{overflow:hidden}
+.shell.meditation-player-mode.meditation-design-running #meditationDesignControls{height:calc(22100cqw / 1669)}
+.shell.meditation-player-mode.meditation-design-quiet #meditationDesignControls{min-height:calc(600cqw / 1669);height:calc(600cqw / 1669)}
+.shell.meditation-player-mode .deck{background:transparent;padding:0;margin-top:60px}
+.shell.meditation-player-mode .deck::before{display:none}
+.shell.meditation-player-mode .deck:not(.meditation-session-active){display:none}
+.shell.meditation-player-mode #medProgress{display:none}
+.shell #meditationMenu button:focus-visible,#meditationDesignPlay:focus-visible{outline:3px solid white;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.shell.meditation-player-mode :is(#meditationDesignControls,#meditationMenu,#meditationDesignPlay){transition:none}}
+
+@container(max-width:500px){
+ .shell #meditationMenu .med-time-stack{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 4px}
+ .shell #meditationMenu .med-menu-row.mode{grid-template-columns:1fr;gap:10px}
+ .shell #meditationMenu .med-mode-option{display:flex;align-items:center;gap:6px;text-align:left;min-height:36px}
+ .shell #meditationMenu .med-mode-label{font-size:10px;text-align:left}
+ .shell #meditationMenu .med-time-label{font-size:0}
+ .shell #meditationMenu .med-time-label::after{content:'min';font-size:9px;text-transform:none}
+ .shell #meditationMenu .med-time-circle{width:30px;height:30px}
+ .shell #meditationMenu .relaxation-toggle{padding:0;text-align:left}
+ .meditation-design-group h2{min-height:38px}
+}

@@ -2,7 +2,7 @@ name: Meditation text card visual review
 on:
   pull_request:
     branches: [main]
-    paths: ['players/meditation.html', '.github/workflows/meditation-text-cards.yml']
+    paths: ['players/meditation*', 'tests/meditation*', '.github/workflows/meditation-text-cards.yml']
 permissions:
   contents: read
 jobs:
@@ -13,18 +13,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install isolated browser tools
+      - name: Install browser tools
         run: |
-          mkdir /tmp/ci-browser
-          cd /tmp/ci-browser
-          npm init -y
-          npm install playwright
+          npm ci
           npx playwright install --with-deps chromium
+      - name: Verify Meditation design and all mode durations
+        run: node tests/meditation-design.cjs
       - name: Render and check all cards
         run: |
           mkdir -p review-output
           python3 -m http.server 8765 >/tmp/ci-http.log 2>&1 &
-          NODE_PATH=/tmp/ci-browser/node_modules node <<'JS'
+          node <<'JS'
           const {chromium}=require('playwright');
           const assert=require('node:assert/strict');
           (async()=>{
@@ -49,7 +48,8 @@ jobs:
             await p.evaluate(()=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio:0},location.origin));
             await p.waitForTimeout(30);await p.screenshot({path:'review-output/mobile.png'});
             await p.goto('http://127.0.0.1:8765/players/meditation.html?t=15&mode=guided&external=1');
-            assert.equal(await p.locator('.session-card').count(),0);
+            assert.equal(await p.locator('.session-card').count(),1);
+            assert.equal(await p.locator('.meditation-title').textContent(),'MEDITATION');
             assert.deepEqual(errors,[]);
             await b.close();
           })().catch(e=>{console.error(e);process.exit(1)});
@@ -58,4 +58,6 @@ jobs:
         if: always()
         with:
           name: meditation-text-cards
-          path: review-output/
+          path: |
+            review-output/
+            test-results/meditation-design/

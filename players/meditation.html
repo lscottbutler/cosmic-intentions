@@ -35,6 +35,7 @@ body.text-card-session .image,body.text-card-session .ccb-curve ellipse{display:
 body.text-card-session .timer{left:50%;top:90%;width:7%;border-width:5px;background:#747474}
 body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
 </style>
+<link rel="stylesheet" href="/players/meditation-stage.css">
 </head>
 <body>
 <main class="player" id="player" aria-label="Meditation player">
@@ -51,6 +52,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   </button>
 </main>
 <script src="/players/meditation-sessions.js"></script>
+<script src="/players/meditation-stage.js"></script>
 <script>
 (()=>{
   const allowed=CIMeditationSessions.durations;
@@ -81,7 +83,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     textStage=document.createElement('div');textStage.className='session-card';
     textStage.innerHTML='<img src="/images/gratitude/test-module-1/opening-card.webp" alt=""><svg viewBox="0 0 1669 939" preserveAspectRatio="xMidYMid meet"><rect x="290" y="215" width="1090" height="465" fill="#fff"/><foreignObject x="300" y="215" width="1070" height="465"><p xmlns="http://www.w3.org/1999/xhtml"></p></foreignObject><path d="M243 734 Q840.5 817 1438 734" fill="none" stroke="transparent" stroke-width="28" style="pointer-events:stroke;cursor:pointer"/><circle cx="243" cy="734" r="14" fill="#fff" stroke="#292929" stroke-width="4"/></svg>';
     player.prepend(textStage);scrubber.hidden=true;
-    textStage.querySelector('path').addEventListener('click',event=>{const rect=textStage.getBoundingClientRect(),scale=Math.min(rect.width/1669,rect.height/939),left=rect.left+(rect.width-1669*scale)/2;seek(((event.clientX-left)/scale-243)/1195)});
+    textStage.querySelector('path').addEventListener('click',event=>{const rect=textStage.getBoundingClientRect(),scale=Math.min(rect.width/1669,rect.height/939),left=rect.left+(rect.width-1669*scale)/2;seek(((event.clientX-left)/scale-35)/1599)});
   }
   function renderTextCard(){
     if(!textStage)return;
@@ -189,12 +191,12 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     scrubber.style.left=(x/19.2)+'%';
     scrubber.style.top=(y/10.8)+'%';
   }
-  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining},location.origin)}
+  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,hasGuidance:Boolean(textStage?.querySelector('p')?.textContent.trim())},location.origin)}
   function render(){
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();syncNarration();notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();window.CIMeditationPresentation?.render({state,remaining,totalMs});syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
@@ -221,6 +223,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   });
   addEventListener('message',event=>{
     if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
+    if(event.data.command==='status')notify();
     if(event.data.command==='toggle')toggle();
     if(event.data.command==='seek')seek(event.data.ratio);
   });
