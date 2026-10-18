@@ -4,7 +4,7 @@ const {chromium,expect}=require('@playwright/test');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'test-results/meditation-design');
 fs.mkdirSync(out,{recursive:true});
 (async()=>{
- const browser=await chromium.launch({executablePath:process.env.CI_CHROMIUM||'/tmp/ci-chromium',args:['--no-sandbox']});
+ const browser=await chromium.launch({executablePath:process.env.CI_CHROMIUM||(fs.existsSync('/tmp/ci-chromium')?'/tmp/ci-chromium':undefined),args:['--no-sandbox']});
  try{for(const width of [1440,390]){
   const context=await browser.newContext({viewport:{width,height:1000}}),missing=[],errors=[];
   await context.route('**/*',async route=>{
