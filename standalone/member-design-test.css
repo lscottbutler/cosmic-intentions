@@ -77,3 +77,6 @@ body.gratitude-two-column #ci-review-frame{min-width:0;width:100%}
 /* One restrained radius across the page's section surfaces. */
 :root{--section-radius:10px}
 .orientation,#ci-review-frame,.dashboard-section,.dashboard-form,.dashboard-entry,.dashboard-task-group{border-radius:var(--section-radius)}
+
+/* Shared spacing between the upper section and the player section. */
+.member-player-columns{margin-top:60px}
