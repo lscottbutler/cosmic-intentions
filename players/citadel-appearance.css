@@ -42,3 +42,7 @@
 .shell .deck,.shell .deck::before{border-radius:var(--section-radius)!important}
 /* Rounded content edges reveal the page, without dark frame-colour corners. */
 .shell,.shell:not(.home-mode) .stage,.shell #experienceView{background:transparent!important}
+
+/* Keep the same 60px rhythm between the player page's main sections. */
+.shell:not(.daily-habits-mode) .lfm-tool-rotation:not([hidden]) + .experience-frame{margin-top:60px}
+.shell .deck{margin-top:60px}
