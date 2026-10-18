@@ -35,3 +35,10 @@
 .shell .deck.meditation-mode{border:0;border-radius:0}
 .shell.meditation-player-mode{background:var(--trough-fill)}
 .shell .inspiration::after{box-shadow:none}
+
+/* Shared section corners match the existing orientation card. */
+.shell{--section-radius:10px;border-radius:var(--section-radius)}
+.shell :is(.experience-frame,.inspiration,.lfm-tool-rotation){border-radius:var(--section-radius)!important}
+.shell .deck,.shell .deck::before{border-radius:var(--section-radius)!important}
+/* Rounded content edges reveal the page, without dark frame-colour corners. */
+.shell,.shell:not(.home-mode) .stage,.shell #experienceView{background:transparent!important}

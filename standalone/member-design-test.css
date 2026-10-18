@@ -73,3 +73,7 @@ main{padding-top:24px}
 body.gratitude-two-column .member-player-columns{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);align-items:start}
 body.gratitude-two-column #ci-review-frame{min-width:0;width:100%}
 @media(max-width:650px){body.gratitude-two-column .member-player-columns{grid-template-columns:minmax(0,1fr)}}
+
+/* One restrained radius across the page's section surfaces. */
+:root{--section-radius:10px}
+.orientation,#ci-review-frame,.dashboard-section,.dashboard-form,.dashboard-entry,.dashboard-task-group{border-radius:var(--section-radius)}

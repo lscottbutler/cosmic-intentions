@@ -4605,3 +4605,9 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
   margin-top: 12px;
   text-align: right;
 }
+
+/* Shared subtle corners for member sections; circular controls retain their shape. */
+:root{--section-radius:10px}
+.page :is(section,.setup-page,.pg-screen,.wins-screen,.ci-admin-page-box,.ci-ph-card,.ci-carousel,.ci-habit-mindset,.ent-panel,.ent-resource-card,.cosmic-concept-card){border-radius:var(--section-radius)!important}
+.ci-admin-page-box,.ci-carousel{border-radius:var(--section-radius)!important}
+.ci-carousel{overflow:hidden}
