@@ -454,8 +454,9 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
    if(!doc.querySelector('#homeView')?.hidden)renderFeature('home');else if(features[playerAction])renderFeature(playerAction);
    const shell=doc.querySelector('.shell');
    const height=Math.ceil(shell.getBoundingClientRect().height)+2;
-   // Ignore subpixel/one-pixel resize noise from nested frame transitions.
-   if(height>100&&Math.abs(height-parseFloat(frame.style.height||'0'))>2)frame.style.height=height+'px';
+   // Citadel can be empty after removing its cards and lower navigation box.
+   // Keep the normal transition guard for tool pages, while collapsing that space.
+   if((height>100||shell.classList.contains('home-mode'))&&(!frame.style.height||Math.abs(height-parseFloat(frame.style.height))>2))frame.style.height=height+'px';
    const message=enabled?'Test improvements on · upper trough removed · hamburger and existing controls retained.':'Original appearance · improvements hidden.';
    if(status.textContent!==message)status.textContent=message;
   }catch(_){status.textContent='The review frame could not be inspected. Reload this private preview.';}
