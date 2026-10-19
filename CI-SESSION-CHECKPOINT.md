@@ -262,3 +262,6 @@ Scott clarified Meditation countdown must dim forest by75%, not replace it with 
 
 ## 2026-10-19 — Meditation crossbar35
 Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; reduced to35, matching established player-border design units (scales with player). Pale yellow dot radius16.5 fits within35-wide rail; engine/curve path unchanged. Focused desktop/phone layout/audio/keyboard/navigation checks; existing backups retained. Branch review/meditation-crossbar-35-20261019; recoveryc30c4b3212da2516cb0007c730196e62f6448c5a. Publish requested visual correction under standing authorization. No data/privacy changes.
+
+
+2026-10-19 Bangkok — Scott requested the PLAY circle border match the teal crossbar, from image20261019-130426. Meditation-only CSS ring changed #303030 to #05728b, preserving dimensions. Desktop1440/phone390 renders inspected and focused layout/audio/pause/resume/keyboard/navigation checks passed. Recovery a3bd607995df5f7c26c78343119799d0a7940f02; implementation afab785d83ba83298d3357e6243470548e3051d4 on review/meditation-play-teal-20261019, PR117. Release under standing October11/12 authorization; publication pending. No Supabase or privacy changes. Existing backup retained; no new full backup or external Bible update claimed.
