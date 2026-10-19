@@ -47,7 +47,7 @@
 /* Rounded content edges reveal the page, without dark frame-colour corners. */
 .shell,.shell:not(.home-mode) .stage,.shell #experienceView{background:transparent!important}
 
-/* Scott, 2026-10-19: remove the lower grey box and its navigation buttons. */
-.shell .deck{display:none!important;margin:0}
+/* Remove tool-page footers; retain Citadel's primary shortcut buttons. */
+.shell:not(.home-mode) .deck{display:none!important;margin:0}
 /* Keep the existing top menu reachable when Citadel is opened on its own. */
 html:not(.embedded-player) .shell.home-mode{min-height:76px}
