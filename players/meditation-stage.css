@@ -1,7 +1,7 @@
 /* Approved Gratitude frame geometry, retaining Meditation's own background/text. */
 body{background:transparent}
 body.external .player{background:#05728b}
-.session-card{background:#05728b url('/images/meditation/meditation-1.jpg') center/cover no-repeat;border-radius:10px}
+.session-card{background:#05728b url('/images/meditation/meditation-1.jpg') center/cover no-repeat;border-radius:0}
 .session-card>img{display:none}
 .session-card p{font-weight:400;font-size:360px;color:#ffff00;letter-spacing:0;line-height:1.08;white-space:normal;padding:0;text-shadow:0 2px 5px #000,0 0 12px #0009}
 .meditation-banner{display:none}
