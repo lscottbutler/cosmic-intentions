@@ -22,14 +22,28 @@ jobs:
         env:
           DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE || secrets.BACK_PASSPHRASE }}
           STORAGE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         run: |
-          test -n "$DB_PASSWORD$DB_URL" && test -n "$PASS" && test -n "$STORAGE_KEY" && test -n "$RCLONE_CONF" || {
-            echo "::error::Backup credentials missing. Review the required secret NAMES in docs/BACKUP-RECOVERY.md."
-            exit 1
-          }
+          missing=0
+          if [ -z "$DB_PASSWORD$DB_URL" ]; then
+            echo "::error::Missing SUPABASE_DB_PASSWORD or SUPABASE_DB_URL"
+            missing=1
+          fi
+          if [ -z "$PASS" ]; then
+            echo "::error::Missing BACKUP_PASSPHRASE (legacy BACK_PASSPHRASE also accepted)"
+            missing=1
+          fi
+          if [ -z "$STORAGE_KEY" ]; then
+            echo "::error::Missing SUPABASE_SERVICE_ROLE_KEY"
+            missing=1
+          fi
+          if [ -z "$RCLONE_CONF" ]; then
+            echo "::error::Missing RCLONE_CONF (gdrive and onedrive connections)"
+            missing=1
+          fi
+          exit "$missing"
       - name: Checkout complete history
         uses: actions/checkout@v4
         with:
@@ -45,7 +59,7 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE || secrets.BACK_PASSPHRASE }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         run: bash scripts/backup-offsite.sh
