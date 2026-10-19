@@ -51,3 +51,5 @@
 /* Collapse the choices area with its slide, retaining a 35px lower teal rim. */
 .shell.meditation-player-mode #meditationDesignControls{transition:min-height 1.2s ease-in-out,height 1.2s ease-in-out}
 .shell.meditation-player-mode.meditation-design-running #meditationDesignControls{min-height:calc(600cqw / 1669);height:calc(600cqw / 1669)}
+
+.shell.meditation-player-mode{border-radius:0!important}
