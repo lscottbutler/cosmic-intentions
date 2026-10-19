@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import {installUsage} from '../standalone/usage-service.js';
+global.window={};let calls=[],pages=0;
+const query={select(){return this},eq(k,v){calls.push([k,v]);return this},gte(){return this},order(){return this},async range(){pages++;return {data:pages===1?Array.from({length:1000},(_,i)=>({id:i,event_type:'login',created_at:'2026-10-20T00:00:00Z',metadata:{todo:'private text excluded'}})):[{id:1001,event_type:'meditation',created_at:'2026-10-20T00:00:00Z',metadata:{duration_s:60}}]};},async insert(row){calls.push(row);return {error:null}}};
+installUsage({auth:{getUser:async()=>({data:{user:{id:'account-a'}}})},from:name=>{assert.equal(name,'activity_log');return query}});
+const r=await window.CIUsage.read();assert.equal(r.events.length,1001);assert.equal(r.events[0].seconds,null);assert.equal(r.events[1000].seconds,60);assert.equal(r.events[0].metadata,undefined);assert.deepEqual(calls,[['user_id','account-a'],['user_id','account-a']]);assert.equal(await window.CIUsage.complete(-1,'test'),false);assert.equal(await window.CIUsage.complete(60,'test'),true);assert.equal(calls.at(-1).user_id,'account-a');assert.equal(calls.at(-1).metadata.duration_s,60);
+installUsage({auth:{getUser:async()=>({data:{user:null}})},from:()=>{throw Error('Signed-out query prohibited')}});assert.equal((await window.CIUsage.read()).signedIn,false);assert.equal(await window.CIUsage.complete(60,'test'),false);console.log('PASS own-account pagination, metadata minimization, validation, signed-out access');

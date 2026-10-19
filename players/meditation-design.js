@@ -6,7 +6,8 @@
  const relaxation=menu.querySelector('.relaxation-toggle-row'),note=document.getElementById('guidedNote');
  const footer=document.createElement('section');footer.id='meditationDesignControls';footer.setAttribute('aria-label','Meditation session choices');
  const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';play.textContent='PLAY';play.setAttribute('aria-label','Start meditation');play.disabled=true;
- let expanded=false,playback='ready';
+ const sessionID=()=>crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');
+ let expanded=false,playback='ready',activeSeconds=0,lastTick=0,recorded=false,session=sessionID();
  const groups=[];
  function group(label,content,className){
   const box=document.createElement('div');box.className='meditation-design-group '+className;
@@ -37,10 +38,15 @@
   else setExpanded(!expanded);
  }};
  // Mode/duration reloads retain selection semantics and reset the visible control.
- frame.addEventListener('load',()=>{play.disabled=true;playback='ready';shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
+ frame.addEventListener('load',()=>{play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ci-meditation-state'||!shell.classList.contains('meditation-player-mode'))return;
-  const data=event.data;playback=data.state;play.disabled=false;
+  const data=event.data,now=performance.now();
+  if(playback==='running'&&lastTick)activeSeconds+=Math.max(0,(now-lastTick)/1000);
+  if((playback==='complete'||playback==='ready')&&data.state==='running'){activeSeconds=0;recorded=false;session=sessionID();}
+  lastTick=now;playback=data.state;play.disabled=false;
+  if(playback==='complete'&&!recorded&&activeSeconds>=data.minutes*60*.95){recorded=true;import('/standalone/usage-client.js').then(m=>m.recordMeditation(activeSeconds,session)).catch(()=>{const status=document.createElement('p');status.setAttribute('role','status');status.textContent='Your session finished, but activity tracking could not save.';footer.append(status);});}
+
   const running=playback==='running',quiet=running&&!data.hasGuidance;
   shell.classList.toggle('meditation-design-running',running);shell.classList.toggle('meditation-design-quiet',quiet);menu.hidden=false;menu.inert=running;
   const action=playback==='ready'?'Start':running?'Pause':playback==='paused'?'Resume':'Replay';

@@ -1,0 +1,16 @@
+# My Usage — 20 October 2026
+
+Scott approved a Three.js usage board with Day default and Week/Month/Year switches. Entry: /usage-board.html and My Usage in the member application's site menu. Teal/sage presentation, raised activity tiles, clickable date details, current streak, active days and recorded practice minutes. Local calendar days; Monday-first weeks; leap years use actual calendar length. Shows two years of existing history. All views have HTML controls; WebGL failure leaves readable calendar intact. Reduced motion disables pointer tilt; no perpetual rendering loop.
+
+## Sources and data limits
+Existing public.activity_log: id, user_id, event_type, metadata, points, created_at. Verified schema and owner RLS (auth.uid()=user_id for ALL) via metadata-only SQL. No schema/policy/service configuration changes. Read operations use the current authenticated user's ID and paginate 1000 rows at a time. Only event type, time and duration reach the board; journal/goal/action text is excluded. No third-party analytics or data transfers, URL data, added persistent browser storage, or public sharing. Existing account data retention/deletion applies; no new retention policy. Product displays durations only where recorded, never invents historical minutes; not an all-site screen-time monitor.
+
+Meditation now records a completion in the same table with duration_s and a random session ID, zero points. The presentation tracks actual running elapsed time; at least95% of the chosen duration is required to record. Pause time excluded, seeks do not manufacture practice. Signed-out sessions are not stored. Capture starts with this release; prior absent activity is not reconstructed. Existing activity module now explicitly imports the shared Supabase client: its previously unbound sb reference prevented reliable legacy logging.
+
+The hidden same-origin account bridge exposes only read and bounded meditation completion operations, obtains the signed-in identity itself, and skips normal app initialization. No token is sent through postMessage. Existing RLS remains enforced. No real account records were inserted during QA. Production-personal-account rendering is not independently tested; isolated fixtures and query construction verified.
+
+## Validation and recovery
+Desktop1440 and phone390: all views/counts, selected-day details, date navigation, Today, future-period blocking, responsive layout, signed-out state, connection failure, real WebGL and fallback rendering. Service tests cover owner-scoped queries, pagination, minimal metadata, input validation and signed-out blocking. Existing Meditation regression preserves independent menus, audio, controls, pause/resume, seeking, completion and navigation. Build and template integrity gate pass. Use previous main74db419f0d2d12c542d885770cb1744c910ee73c for rollback. Existing offsite backup workflow retained; this document is not proof of another completed backup. External Bible not updated in this focused task.
+
+## Asset rights
+Three.js0.186.1, MIT license, pinned npm dependency with lockfile. Source: https://github.com/mrdoob/three.js. MIT license retained at docs/licenses/three-MIT.txt. All new board visuals are generated in browser from geometry, not downloaded artwork. Existing site fonts and asset rights unchanged.

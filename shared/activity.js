@@ -1,4 +1,4 @@
-import { LS, currentUser, esc, getPB } from '../app.js';
+import { LS, currentUser, esc, getPB, sb } from '../app.js';
 /* ── ACTIVITY & PROGRESS MODULE ─────────────────────────
    Depends on globals: currentUser, sb, getPB, LS, esc,
    setEl (defined in index.html)

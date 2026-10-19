@@ -28,7 +28,7 @@ export default defineConfig({
     // Keep the classic global scripts working: don't let Rollup try to bundle
     // the script tags it finds — they're copied verbatim and load in order.
     rollupOptions: {
-      input: 'index.html',
+      input: {main:'index.html',usage:'usage-board.html'},
     },
   },
   plugins: [
