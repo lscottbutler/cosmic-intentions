@@ -1,6 +1,9 @@
 name: Encrypted off-site backup
 
 on:
+  push:
+    branches: ['review/backup-credentials-20261019']
+    paths: ['.github/workflows/backup-offsite.yml']
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch: {}
