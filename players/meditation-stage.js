@@ -8,8 +8,10 @@
   const outer=document.createElementNS(ns,'rect');for(const [k,v] of Object.entries({x:17.5,y:17.5,width:1634,height:904,fill:'none',stroke:'#05728b','stroke-width':35}))outer.setAttribute(k,v);svg.prepend(outer);
   title=document.createElementNS(ns,'text');title.classList.add('meditation-title');title.setAttribute('x','835');title.setAttribute('y','388');title.setAttribute('textLength','960');title.setAttribute('lengthAdjust','spacingAndGlyphs');title.textContent='MEDITATION';svg.append(title);
   quietArt=document.createElementNS(ns,'g');quietArt.classList.add('meditation-quiet-art');quietArt.innerHTML='<rect width="1669" height="939" fill="#05728b"/><path d="M35 35 H1634 V790 Q835 724 35 790 Z" fill="#000"/><path d="M35 816 Q835 750 1634 816 V910 H35 Z" fill="#7ea573"/>';svg.prepend(quietArt);
+  // Keep the green lower trough visible during guidance and paused states too.
+  const lowerFill=document.createElementNS(ns,'path');lowerFill.classList.add('meditation-lower-fill');lowerFill.setAttribute('d','M35 816 Q835 750 1634 816 V910 H35 Z');lowerFill.setAttribute('fill','#7ea573');lowerFill.style.pointerEvents='none';svg.prepend(lowerFill);
   // Use the existing seek path, preserving the engine's existing click handler.
-  slider=[...svg.children].find(e=>e.tagName==='path'&&!e.classList.contains('meditation-banner'));
+  slider=[...svg.children].find(e=>e.tagName==='path'&&!e.classList.contains('meditation-banner')&&!e.classList.contains('meditation-lower-fill'));
   slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','slider');slider.setAttribute('tabindex','0');slider.setAttribute('aria-label','Meditation playback position');slider.setAttribute('aria-valuemin','0');slider.setAttribute('aria-valuemax','100');slider.setAttribute('stroke-width','40');
   slider.setAttribute('stroke','#05728b');
   dot=svg.querySelector('circle');dot.setAttribute('fill','#034b5b');dot.setAttribute('stroke','none');dot.setAttribute('r','16.5');dot.style.pointerEvents='none';
