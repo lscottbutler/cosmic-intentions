@@ -47,3 +47,7 @@
  .shell #meditationMenu .relaxation-toggle{padding:0;text-align:left}
  .meditation-design-group h2{min-height:38px}
 }
+
+/* Collapse the choices area with its slide, retaining a 35px lower teal rim. */
+.shell.meditation-player-mode #meditationDesignControls{transition:min-height 1.2s ease-in-out,height 1.2s ease-in-out}
+.shell.meditation-player-mode.meditation-design-running #meditationDesignControls{min-height:max(0px,calc(35px - 2900cqw / 1669));height:max(0px,calc(35px - 2900cqw / 1669))}
