@@ -13,3 +13,5 @@ body:not(.meditation-stage-ready) .meditation-title{display:none}
 body.meditation-stage-quiet .session-card{background:#000}
 body.meditation-stage-quiet .meditation-banner{display:none}
 body:not(.meditation-stage-quiet) .meditation-quiet-art{display:none}
+
+html,body,body.external .player,.session-card,.session-card>svg{border-radius:0!important}
