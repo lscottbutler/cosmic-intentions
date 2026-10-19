@@ -58,8 +58,8 @@
 .shell.meditation-player-mode #meditationMenu{padding-top:0;align-items:start}
 .meditation-design-group{align-self:start}
 .meditation-design-group h2{min-height:0;margin:0;text-align:center}
-.meditation-design-toggle{display:flex;flex-direction:column;width:100%;padding:0;gap:.4cqw}
-.meditation-design-toggle::after{width:7.5cqw;height:7.5cqw;min-width:42px;min-height:42px;transition:transform .3s ease}
+.meditation-design-toggle{display:flex;flex-direction:row;width:100%;padding:0;gap:.8cqw}
+.meditation-design-toggle::after{width:5.25cqw;height:5.25cqw;min-width:29.4px;min-height:29.4px;transition:transform .3s ease}
 .meditation-design-selection{margin:.4cqw 0 1cqw;text-align:center;color:#fff;font:400 clamp(12px,1.8cqw,18px)/1.4 Arial,sans-serif}
 .meditation-design-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease;visibility:hidden}
 .meditation-design-panel>div{min-height:0;overflow:hidden}
