@@ -23,7 +23,13 @@ psql "${DB_ARGS[@]}" -XAtqc "select coalesce(json_agg(b),'[]'::json) from storag
 pg_dump "${DB_ARGS[@]}" --format=custom --file="$PAYLOAD/database.dump"
 pg_restore --list "$PAYLOAD/database.dump" > "$PAYLOAD/database-contents.txt"
 test -s "$PAYLOAD/database-contents.txt"
-pg_dumpall "${DB_ARGS[@]}" --roles-only --no-role-passwords > "$PAYLOAD/roles.sql"
+# pg_dumpall -d expects a connection string, unlike psql/pg_dump -d.
+if [ -n "${SUPABASE_DB_URL:-}" ]; then
+  ROLE_ARGS=(--dbname="$SUPABASE_DB_URL" --database=postgres)
+else
+  ROLE_ARGS=("${DB_ARGS[@]:0:${#DB_ARGS[@]}-2}" --database=postgres)
+fi
+pg_dumpall "${ROLE_ARGS[@]}" --roles-only --no-role-passwords > "$PAYLOAD/roles.sql"
 python3 scripts/backup-storage.py "$PAYLOAD/storage-inventory.json" "$PAYLOAD/storage"
 psql "${DB_ARGS[@]}" -XAtqc "$INVENTORY_SQL" > "$TASK_DIR/storage-after.json"
 cmp "$PAYLOAD/storage-inventory.json" "$TASK_DIR/storage-after.json"
