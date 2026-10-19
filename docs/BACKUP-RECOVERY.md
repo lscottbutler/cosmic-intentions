@@ -1,11 +1,14 @@
 # Cosmic Intentions backup and recovery
 
-Status on 2026-10-19: credentials accepted; runner and database export confirmed.
-Review verification is in progress, not yet a successful offsite backup or proven
-restore. Run 39207456853 exposed a pg_dumpall connection-argument defect after
-the database dump; repaired in commit 2f53f342524a46614fd0be67c21d32a13e9935f5.
-Replacement verification run: 39207643347. The earlier account billing block no
-longer prevents these runs from starting. Inspect the actual final outcome.
+Status on 2026-10-19: encrypted offsite capture VERIFIED by successful run
+39207643347 (completed 06:06 UTC / 13:06 Bangkok) at source commit
+f13e4d641d8d4d829320d6988a6e92ea08d9a772. Database dump, role export, Git bundle,
+archive encryption/decryption comparison and both cloud download checks passed.
+Google Drive encrypted/ and OneDrive CI-Backups/ each reported two matching files
+and zero differences. The SQL storage inventory contained zero objects; this does
+not establish preservation of media held elsewhere. Full isolated restoration is
+NOT yet proven. The earlier runner billing block no longer prevents execution.
+Run 39207456853 exposed a pg_dumpall argument defect; fixed before this success.
 
 One six-hour schedule runs `.github/workflows/backup-offsite.yml`. The former
 Supabase backup entry point is manual-only and invokes the same encrypted job.
