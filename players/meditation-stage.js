@@ -30,7 +30,7 @@
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
   box.setAttribute('d',ready?'M232 217 Q835 169 1437 217 L1437 475 Q835 525 232 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
-  slider.hidden=ready;slider.style.visibility=ready?'hidden':'visible';dot.style.visibility=ready?'hidden':'visible';
+  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents=ready?'none':'stroke';slider.setAttribute('tabindex',ready?'-1':'0');slider.setAttribute('aria-disabled',String(ready));dot.style.visibility=ready?'hidden':'visible';
   const progress=Math.max(0,Math.min(1,1-remaining/totalMs));dot.setAttribute('cx',35+1599*progress);dot.setAttribute('cy',816-132*progress*(1-progress));
   // Tenfold headline size; fit complete passages instead of clipping their words.
   const target=text.textContent.length>440?300:360;
