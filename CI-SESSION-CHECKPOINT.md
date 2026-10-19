@@ -268,3 +268,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-20 Bangkok — Scott authorized raised Meditation mode/time headers, triple-size chevrons, visible current selections and downward accordion menus. External presentation CSS/JS only; independent accessible toggles, animated grid disclosure, existing choices and engine retained. Desktop1440/phone390 render and focused audio/control/navigation/reduced-motion checks passed; build/template gate passed. PR118 review/meditation-accordions-20261020, recovery53016c3ee59637e5b7a510a2b6c36dcedd7b2ae5. Publish under standing authorization. No Supabase/privacy changes. Existing backup retained; external Bible not updated in this focused task.
+
+
+2026-10-20 Bangkok — Scott requested chevrons right of Meditation headings,30% smaller. CSS row layout and70% dimensions only. Desktop1440/phone390 renders inspected; selection, accordion, playback/audio/keyboard/reduced-motion checks passed. PR119 recoveryff1e668128e997f5788ca28ab1f53efd0e881dca, implementation39f06c15b11e04d8d09bf4015606bf0fbc671290. Existing backups retained; no Supabase/privacy changes or external Bible update. Release under standing authorization.
