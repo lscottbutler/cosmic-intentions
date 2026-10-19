@@ -1,3 +1,4 @@
+import { installUsage } from './standalone/usage-service.js';
 import { visitTroughPage, attachTrough } from './shared/trough-rotation.js';
 import { memberEntryUrl } from './shared/member-entry.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
@@ -137,7 +138,7 @@ const authStorage = (() => {
 })();
 // persistSession + autoRefreshToken keep the login on this device across
 // refreshes/restarts so testing doesn't require a fresh sign-in each visit.
-const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+export const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
 });
 
@@ -185,6 +186,7 @@ window.ciAuthToken = async () => {
   catch { return null; }
 };
 export let   currentUser   = null;
+installUsage(sb);
 let   currentMember = false; // true = active paying member
 let   syncPending   = false; // true while syncFromSupabase is in flight
 
@@ -5806,6 +5808,7 @@ async function initCitadelNoteFrame() {
 }
 
 export async function init() {
+  if(new URLSearchParams(location.search).get('usageBridge')==='1')return;
   if (new URLSearchParams(location.search).get('masterInline') === 'citadel-note') {
     await initCitadelNoteFrame();
     return;
