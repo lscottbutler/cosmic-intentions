@@ -1,8 +1,14 @@
 # Cosmic Intentions backup and recovery
 
-Status on 2026-10-18: automation repaired in source; NOT yet run successfully.
-GitHub Actions is blocked by an account payment/spending-limit error. A green
-source review does not establish that credentials, uploads or recovery work.
+Status on 2026-10-19: encrypted offsite capture VERIFIED by successful run
+39207643347 (completed 06:06 UTC / 13:06 Bangkok) at source commit
+f13e4d641d8d4d829320d6988a6e92ea08d9a772. Database dump, role export, Git bundle,
+archive encryption/decryption comparison and both cloud download checks passed.
+Google Drive encrypted/ and OneDrive CI-Backups/ each reported two matching files
+and zero differences. The SQL storage inventory contained zero objects; this does
+not establish preservation of media held elsewhere. Full isolated restoration is
+NOT yet proven. The earlier runner billing block no longer prevents execution.
+Run 39207456853 exposed a pg_dumpall argument defect; fixed before this success.
 
 One six-hour schedule runs `.github/workflows/backup-offsite.yml`. The former
 Supabase backup entry point is manual-only and invokes the same encrypted job.
@@ -10,7 +16,7 @@ This replaces hourly overlapping work. Existing backups and Git history stay int
 
 Required GitHub Actions secret NAMES (never put values in this document):
 SUPABASE_DB_PASSWORD or SUPABASE_DB_URL, SUPABASE_SERVICE_ROLE_KEY,
-BACKUP_PASSPHRASE, RCLONE_CONF. The last must configure `gdrive` and `onedrive`.
+BACKUP_PASSPHRASE (or existing legacy BACK_PASSPHRASE), RCLONE_CONF. The last must configure `gdrive` and `onedrive`.
 Store the encryption passphrase separately in the owner's password manager.
 Loss of the passphrase makes encrypted backups unrecoverable.
 
