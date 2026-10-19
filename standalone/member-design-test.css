@@ -80,3 +80,5 @@ body:is(.gratitude-two-column,.meditation-two-column) #ci-review-frame{min-width
 
 /* Shared spacing between the upper section and the player section. */
 .member-player-columns{margin-top:60px}
+
+#ci-review-frame[src*="start=meditation"]:not([src*="reviewPage=new-gratitude"]){border-radius:0!important}
