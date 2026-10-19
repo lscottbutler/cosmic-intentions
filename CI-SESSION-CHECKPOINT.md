@@ -258,3 +258,7 @@ Scott's image20261019-113911 request: square OUTER border, pale yellow scrubber 
 
 ## 2026-10-19 — Apply75% countdown dimming to Meditation
 Scott clarified Meditation countdown must dim forest by75%, not replace it with black. Prior dimming applied only to GratitudeV2. Meditation quiet layer now retains same forest clipped to upper image window plus black75% overlay, fading1.2s on quiet-countdown entry/exit. Removed instant black background switch so fade has visible underlying image. Timer/circle/teal/green remain outside mask. Desktop1440/phone390 layout/audio/seek/navigation/reduced-motion checks pass; rendered dimmed forest inspected; existing square/pale-yellow/small-number refinements preserved. Branch review/meditation-countdown-dimming-20261019; recoverybe9f466935439b73fbf7b479cdf8413096208393. No engine timing/data/privacy changes; existing backups retained. Publish requested correction under standing authorization.
+
+
+## 2026-10-19 — Meditation crossbar35
+Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; reduced to35, matching established player-border design units (scales with player). Pale yellow dot radius16.5 fits within35-wide rail; engine/curve path unchanged. Focused desktop/phone layout/audio/keyboard/navigation checks; existing backups retained. Branch review/meditation-crossbar-35-20261019; recoveryc30c4b3212da2516cb0007c730196e62f6448c5a. Publish requested visual correction under standing authorization. No data/privacy changes.
