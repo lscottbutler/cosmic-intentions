@@ -11,6 +11,7 @@
   // Use the existing seek path, preserving the engine's existing click handler.
   slider=[...svg.children].find(e=>e.tagName==='path'&&!e.classList.contains('meditation-banner'));
   slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','slider');slider.setAttribute('tabindex','0');slider.setAttribute('aria-label','Meditation playback position');slider.setAttribute('aria-valuemin','0');slider.setAttribute('aria-valuemax','100');slider.setAttribute('stroke-width','40');
+  slider.setAttribute('stroke','#05728b');
   dot=svg.querySelector('circle');dot.setAttribute('fill','#034b5b');dot.setAttribute('stroke','none');dot.setAttribute('r','16.5');dot.style.pointerEvents='none';
   const seek=ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin);
   function pointer(event){const r=svg.getBoundingClientRect(),ratio=((event.clientX-r.left)/r.width*1669-35)/1599;seek(ratio);}
@@ -26,10 +27,13 @@
   const quiet=state==='running'&&!guidance;
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
   box.setAttribute('d',ready?'M232 217 Q835 169 1437 217 L1437 475 Q835 525 232 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
-  const foreign=text.closest('foreignObject');foreign.setAttribute('x','300');foreign.setAttribute('y','215');foreign.setAttribute('width','1070');foreign.setAttribute('height','465');
+  const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   slider.hidden=ready;slider.style.visibility=ready?'hidden':'visible';dot.style.visibility=ready?'hidden':'visible';
   const progress=Math.max(0,Math.min(1,1-remaining/totalMs));dot.setAttribute('cx',35+1599*progress);dot.setAttribute('cy',816-132*progress*(1-progress));
-  text.style.fontSize=text.textContent.length>440?'30px':'36px';
+  // Tenfold headline size; fit complete passages instead of clipping their words.
+  const target=text.textContent.length>440?300:360;
+  let size=target;text.style.fontSize=size+'px';
+  while(size>36&&(text.scrollHeight>text.clientHeight+1||text.scrollWidth>text.clientWidth+1)){size-=4;text.style.fontSize=size+'px';}
   slider.setAttribute('aria-valuenow',String(Math.round((1-remaining/totalMs)*100)));slider.setAttribute('aria-valuetext',Math.ceil(remaining/1000)+' seconds remaining');
  }};
 })();
