@@ -10,8 +10,10 @@ body.external .timer,body.external .ccb-curve,body.external .ccb-scrubber{displa
 .meditation-seek:focus{outline:none;stroke:#fff8!important}
 body.meditation-stage-ready .session-card foreignObject{visibility:hidden}
 body:not(.meditation-stage-ready) .meditation-title{display:none}
-body.meditation-stage-quiet .session-card{background:#000}
+
 body.meditation-stage-quiet .meditation-banner{display:none}
-body:not(.meditation-stage-quiet) .meditation-quiet-art{display:none}
+.meditation-quiet-art{opacity:0;pointer-events:none;transition:opacity 1.2s ease-in-out}
+body.meditation-stage-quiet .meditation-quiet-art{opacity:1}
+@media(prefers-reduced-motion:reduce){.meditation-quiet-art{transition:none}}
 
 html,body,body.external .player,.session-card,.session-card>svg{border-radius:0!important}
