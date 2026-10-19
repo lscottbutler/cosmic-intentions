@@ -18,8 +18,12 @@
 .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818)}
 .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
 
-/* Scott, 2026-10-17: Habits opens on its checklist, without the 16:9 card. */
-.shell.daily-habits-mode #lfmToolRotation{display:none!important}
+/* Scott, 2026-10-19: remove the word-collage image cards from every player. */
+.shell :is(#dailyInspiration,#lfmToolRotation){display:none!important}
+.shell.home-mode #homeView{display:none!important}
+.shell.home-mode #stage{padding:0;min-height:0}
+
+/* Habits retains its white checklist surface. */
 .shell.daily-habits-mode{--trough-fill:#fff!important;--trough-ink:#292929!important}
 .shell.daily-habits-mode #experienceFrame{background:#fff}
 
@@ -44,5 +48,4 @@
 .shell,.shell:not(.home-mode) .stage,.shell #experienceView{background:transparent!important}
 
 /* Keep the same 60px rhythm between the player page's main sections. */
-.shell:not(.daily-habits-mode) .lfm-tool-rotation:not([hidden]) + .experience-frame{margin-top:60px}
 .shell .deck{margin-top:60px}
