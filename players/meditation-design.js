@@ -12,13 +12,19 @@
   const box=document.createElement('div');box.className='meditation-design-group '+className;
   const heading=document.createElement('h2'),toggle=document.createElement('button');toggle.type='button';toggle.className='meditation-design-toggle';toggle.textContent=label;
   const choices=document.createElement('div');choices.id=content.id+'Choices';choices.append(content);
-  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setExpanded(!expanded);
-  heading.append(toggle);box.append(heading,choices);groups.push({toggle,choices});return box;
+  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setGroup(entry,toggle.getAttribute('aria-expanded')!=='true');
+  const selection=document.createElement('p');selection.className='meditation-design-selection';selection.setAttribute('aria-live','polite');
+  const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
+  const entry={toggle,choices,panel,selection,content};heading.append(toggle);box.append(heading,selection,panel);groups.push(entry);return box;
  }
- const left=group('MEDITATION MODES',modes,'meditation-design-modes');left.lastElementChild.append(relaxation);
+ const left=group('MEDITATION MODES',modes,'meditation-design-modes');groups[0].choices.append(relaxation);
  const right=group('Meditation Times',times,'meditation-design-times');
  menu.replaceChildren(left,right,note);footer.append(menu);stage.append(footer,play);
- function setExpanded(value){expanded=value;for(const g of groups){g.toggle.setAttribute('aria-expanded',String(value));g.choices.hidden=!value;}note.hidden=!value;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(value));}
+ function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
+ function setExpanded(value){for(const g of groups)setGroup(g,value);}
+ function selections(){for(const g of groups){const active=g.content.querySelector('.active');if(!active)continue;const label=active.querySelector('.med-mode-label');g.selection.textContent=label?active.getAttribute('aria-label')||label.innerText.trim():active.dataset.medTime+' minutes';}}
+ new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});
+ selections();
  setExpanded(false);
  const send=()=>frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
  play.addEventListener('click',send);
