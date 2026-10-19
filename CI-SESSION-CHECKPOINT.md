@@ -265,3 +265,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-19 Bangkok — Scott requested the PLAY circle border match the teal crossbar, from image20261019-130426. Meditation-only CSS ring changed #303030 to #05728b, preserving dimensions. Desktop1440/phone390 renders inspected and focused layout/audio/pause/resume/keyboard/navigation checks passed. Recovery a3bd607995df5f7c26c78343119799d0a7940f02; implementation afab785d83ba83298d3357e6243470548e3051d4 on review/meditation-play-teal-20261019, PR117. Release under standing October11/12 authorization; publication pending. No Supabase or privacy changes. Existing backup retained; no new full backup or external Bible update claimed.
+
+
+2026-10-20 Bangkok — Scott authorized raised Meditation mode/time headers, triple-size chevrons, visible current selections and downward accordion menus. External presentation CSS/JS only; independent accessible toggles, animated grid disclosure, existing choices and engine retained. Desktop1440/phone390 render and focused audio/control/navigation/reduced-motion checks passed; build/template gate passed. PR118 review/meditation-accordions-20261020, recovery53016c3ee59637e5b7a510a2b6c36dcedd7b2ae5. Publish under standing authorization. No Supabase/privacy changes. Existing backup retained; external Bible not updated in this focused task.
