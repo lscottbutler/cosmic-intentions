@@ -295,3 +295,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-20 Bangkok — Restore narrow Meditation opening title box per Scott: existing white narrow curved banner displayed in ready state, teal#05728b35-unit border matches frame/crossbar, MEDITATION black with no white outline. Guidance/relaxation playback styling unchanged. Desktop1440/phone390 renders inspected; linked menus,relaxation/off,30s/30m automatic phase boundaries,pause/replay/audio checks pass; build/template gate pass. recovery0c10288fc622feb8f7bb1f83d373e78077c5cd7a; review/meditation-title-card-20261020. Existing verified daily private Bible snapshot retained. No Supabase/privacy changes. Release recorded in Bible separately.
+
+
+2026-10-20 Bangkok — Scott narrowed Relaxation options to30seconds,1,3,5,7,10,15,30minutes. Off retained. Replaces every-whole-minute list; unavailable prior per-tab selection resetsOff. Desktop1440/phone390 exact option list,linked chevrons,quiet phase,natural handoff,pause/replay/off checks pass; renders inspected; build/template gate pass. recovery3b87369577b8ed89b519df36522a3a71324265c8; review/relaxation-time-options-20261020. Existing private daily Bible snapshot retained; no engine/Supabase/privacy changes. Release/Bible recorded separately.
