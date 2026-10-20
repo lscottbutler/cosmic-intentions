@@ -129,12 +129,27 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     voiceStatus.hidden=true;speechSynthesis.resume();speechSynthesis.speak(utterance);
   }
 
+  function syncRelaxationSpeech(){
+    if(!('speechSynthesis' in window)){voiceStatus.textContent='Temporary relaxation voice is unavailable in this browser.';voiceStatus.hidden=false;return;}
+    if(state==='paused'){speechSynthesis.pause();return;}
+    if(state!=='running'){stopSpeech();return;}
+    if(spokenCue==='relaxation'){if(speechSynthesis.paused)speechSynthesis.resume();return;}
+    // Start once at the beginning; seeking later into the intro leaves quiet time.
+    if(totalMs-remaining>2000)return;
+    stopSpeech();spokenCue='relaxation';
+    const utterance=new SpeechSynthesisUtterance(CIMeditationSessions.relaxationScript(relaxationMs/1000));utterance.lang='en-US';utterance.rate=.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Temporary relaxation voice could not play.';voiceStatus.hidden=false;}};
+    voiceStatus.hidden=true;speechSynthesis.resume();speechSynthesis.speak(utterance);
+  }
+
   let voicePending=false,voiceGeneration=0;
   const bellAudio=draftSession?new Audio('/players/audio/coming-back-to-yourself-10m.ogg'):null;
   if(bellAudio)bellAudio.preload='metadata';
   if(narration)narration.preload='metadata';
   function syncNarration(){
-    if(inRelaxation()){voiceGeneration++;stopSpeech();narration?.pause();bellAudio?.pause();return;}
+    if(inRelaxation()){voiceGeneration++;narration?.pause();bellAudio?.pause();syncRelaxationSpeech();return;}
+    if(spokenCue==='relaxation')stopSpeech();
     if(bellAudio){
       const elapsed=meditationElapsed();
       const end=meditationMs/1000;

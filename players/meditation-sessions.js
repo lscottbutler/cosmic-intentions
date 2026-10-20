@@ -51,5 +51,8 @@
   }
   cues.push({start:closingStart,end:total-5,text:closing});return cues;
  }
- window.CIMeditationSessions={durations,session};
+ const relaxationScript=seconds=>seconds===30
+  ? 'Take a moment to get comfortable. Move if you need to. Let your hands find somewhere to rest. Let your body settle at its own pace.'
+  : 'Take a moment to get comfortable. Move if you need to. Let your hands find somewhere to rest. There’s no need to match a particular breathing rhythm or reach a certain feeling. Let your body settle at its own pace. Your mind can take its time, too.';
+ window.CIMeditationSessions={durations,session,relaxationScript};
 })();

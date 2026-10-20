@@ -61,7 +61,7 @@ fs.mkdirSync(out,{recursive:true});
   const h=await master.locator('#meditationDesignControls').evaluate(e=>e.getBoundingClientRect().height);console.log('motion sample',width,fade,initialHeight,h);assert(Math.abs(h-initialHeight)<2);
   await page.waitForTimeout(2400);await expect(master.locator('#meditationMenu')).toHaveCSS('opacity','0');
   await expect(engine.locator('body')).toHaveClass(/meditation-stage-relaxation/);await expect(play).toHaveAttribute('data-control','pause');
-  assert(await engine.locator('body').evaluate(()=>window.__medAudio.every(a=>a.paused)));assert.equal(await engine.locator('body').evaluate(()=>window.__spoken.length),0);
+  assert(await engine.locator('body').evaluate(()=>window.__medAudio.every(a=>a.paused)));assert(await engine.locator('body').evaluate(()=>window.__spoken.some(text=>text.startsWith('Take a moment to get comfortable.'))));
   await page.waitForTimeout(2500);await master.locator('#stage').screenshot({path:path.join(out,'relaxation-running-'+width+'.png')});
   await play.click();await state('paused');await expect(play).toHaveAttribute('data-control','play');await play.click();await state('running');
   await engine.locator('body').evaluate(()=>{window.__states=[];parent.addEventListener('message',e=>{if(e.data?.type==='ci-meditation-state')window.__states.push(e.data.state)});});
