@@ -75,3 +75,4 @@
 .shell #meditationMenu :is(.med-mode-option,.med-time-option).active::before,.shell #meditationMenu .relaxation-toggle[aria-pressed=true]::before{background:#fff}
 .shell #meditationMenu .med-time-option::after{content:attr(data-med-time) ' minutes'}
 .shell #meditationMenu .relaxation-toggle-row{margin-top:8px}
+.shell #meditationMenu .med-time-option[data-med-time="1"]::after{content:"1 minute"}
