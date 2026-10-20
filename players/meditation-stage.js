@@ -46,11 +46,11 @@
  }
  window.CIMeditationPresentation={render({state,remaining,totalMs,phase}){
   if(!mounted&&!mount())return;
-  const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';title.setAttribute('y',state==='ready'?'365':'388');
+  const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';title.setAttribute('y',state==='ready'||relaxation?'365':'388');
   const ready=state==='ready',text=stage.querySelector('p'),guidance=Boolean(text.textContent.trim());
   const quiet=state==='running'&&!guidance;
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
-  box.setAttribute('d',ready?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
+  box.setAttribute('d',ready||relaxation?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
