@@ -18,11 +18,12 @@
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
   const entry={toggle,choices,panel,content};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
+ const relaxationDurations=[0,30,60,180,300,420,600,900,1800];
  let relaxationSeconds=0;
- try{const saved=Number(sessionStorage.getItem('ci-relaxation-seconds'));if(Number.isInteger(saved)&&(saved===0||saved>=30&&saved<=1800))relaxationSeconds=saved;}catch{}
+ try{const saved=Number(sessionStorage.getItem('ci-relaxation-seconds'));if(relaxationDurations.includes(saved))relaxationSeconds=saved;}catch{}
  const relaxationChoices=document.createElement('div');relaxationChoices.id='meditationRelaxation';
  const durationLabel=s=>s===0?'Off':s===30?'30 seconds':(s/60)+(s===60?' minute':' minutes');
- for(const seconds of [0,30,...Array.from({length:30},(_,i)=>(i+1)*60)]){
+ for(const seconds of relaxationDurations){
   const button=document.createElement('button');button.type='button';button.className='med-relaxation-option';button.dataset.relaxationSeconds=seconds;button.textContent=durationLabel(seconds);button.setAttribute('aria-pressed',String(seconds===relaxationSeconds));
   button.onclick=()=>{relaxationSeconds=seconds;try{sessionStorage.setItem('ci-relaxation-seconds',String(seconds));}catch{}for(const b of relaxationChoices.children)b.setAttribute('aria-pressed',String(Number(b.dataset.relaxationSeconds)===seconds));selections();const url=new URL(frame.src,location.origin);frame.src=url.href;};
   relaxationChoices.append(button);
