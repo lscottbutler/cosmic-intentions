@@ -25,7 +25,7 @@ fs.mkdirSync(out,{recursive:true});
   });
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://ci.local/standalone/member-design-test.html?feature=meditation');
-  const master=page.frameLocator('#ci-review-frame'),engine=master.frameLocator('#experienceFrame'),play=master.locator('#meditationDesignPlay');
+  const master=page.frameLocator('#ci-review-frame'),engine=master.frameLocator('#experienceFrame'),play=engine.locator('.meditation-dot-control');
   const seek=ratio=>engine.locator('body').evaluate((_,ratio)=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin),ratio);
   const state=value=>expect(engine.locator('#player')).toHaveAttribute('data-state',value);
   await expect(play).toBeEnabled();await expect(master.locator('.meditation-design-summary')).toContainText(' / ');await expect(engine.locator('.meditation-title')).toHaveText('MEDITATION');

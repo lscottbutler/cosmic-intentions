@@ -30,3 +30,7 @@ body.meditation-stage-ready .meditation-title-summary{display:block}
 /* Plain teal description on the white opening title card. */
 .meditation-title-summary rect{display:none}
 .meditation-title-summary text{fill:#05728b}
+
+.meditation-dot-control,.meditation-seek{cursor:pointer;touch-action:none}
+.meditation-dot-control:focus{outline:none}
+.meditation-dot-control:focus-visible circle{stroke:#fff!important;stroke-width:8px!important}

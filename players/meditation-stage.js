@@ -1,5 +1,5 @@
 (()=>{
- let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='';
+ let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='',transport,transportIcon,clockText;
  const ns='http://www.w3.org/2000/svg';
  function updateSummary(){
   if(!description)return;
@@ -22,17 +22,26 @@
   quietArt=document.createElementNS(ns,'g');quietArt.classList.add('meditation-quiet-art');quietArt.innerHTML='<rect width="1669" height="939" fill="#05728b"/><defs><clipPath id="meditation-dim-window"><path d="M35 35 H1634 V790 Q835 724 35 790 Z"/></clipPath></defs><image href="/images/meditation/meditation-1.jpg" width="1669" height="939" preserveAspectRatio="xMidYMid slice" clip-path="url(#meditation-dim-window)"/><path d="M35 35 H1634 V790 Q835 724 35 790 Z" fill="#000" fill-opacity=".75"/><path d="M35 816 Q835 750 1634 816 V939 H35 Z" fill="#7ea573"/>';svg.prepend(quietArt);
   // Keep the green lower trough visible during guidance and paused states too.
   const lowerFill=document.createElementNS(ns,'path');lowerFill.classList.add('meditation-lower-fill');lowerFill.setAttribute('d','M35 816 Q835 750 1634 816 V939 H35 Z');lowerFill.setAttribute('fill','#7ea573');lowerFill.style.pointerEvents='none';svg.prepend(lowerFill);
-  // Use the existing seek path, preserving the engine's existing click handler.
   slider=[...svg.children].find(e=>e.tagName==='path'&&!e.classList.contains('meditation-banner')&&!e.classList.contains('meditation-lower-fill'));
-  slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','slider');slider.setAttribute('tabindex','0');slider.setAttribute('aria-label','Meditation playback position');slider.setAttribute('aria-valuemin','0');slider.setAttribute('aria-valuemax','100');slider.setAttribute('stroke-width','35');
-  slider.setAttribute('stroke','#05728b');
-  dot=svg.querySelector('circle');dot.setAttribute('fill','#fff59d');dot.setAttribute('stroke','none');dot.setAttribute('r','49.5');dot.style.pointerEvents='none';
+  slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','button');slider.setAttribute('tabindex','0');slider.setAttribute('stroke-width','35');slider.setAttribute('stroke','#05728b');
+  dot=svg.querySelector('circle');dot.setAttribute('fill','#fff59d');dot.setAttribute('stroke','none');dot.setAttribute('r','49.5');dot.style.pointerEvents='all';
+  const clock=document.createElementNS(ns,'g');clock.setAttribute('aria-hidden','true');clock.style.pointerEvents='none';
+  const face=document.createElementNS(ns,'circle');for(const [k,v] of Object.entries({cx:834.5,cy:783,r:90.5,fill:'#303030',stroke:'#05728b','stroke-width':25}))face.setAttribute(k,v);
+  clockText=document.createElementNS(ns,'text');for(const [k,v] of Object.entries({x:834.5,y:783,fill:'#fff','font-family':'Arial,sans-serif','font-size':60,'text-anchor':'middle','dominant-baseline':'central'}))clockText.setAttribute(k,v);clockText.classList.add('meditation-center-countdown');clock.append(face,clockText);svg.append(clock);
+  transport=document.createElementNS(ns,'g');transport.classList.add('meditation-dot-control');transport.setAttribute('role','button');transport.setAttribute('tabindex','0');svg.append(transport);transport.append(dot);
+  transportIcon=document.createElementNS(ns,'path');transportIcon.setAttribute('fill','#303030');transportIcon.style.pointerEvents='none';transport.append(transportIcon);
+  const toggle=()=>window.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
   const seek=ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin);
-  function pointer(event){const r=svg.getBoundingClientRect(),ratio=((event.clientX-r.left)/r.width*1669-35)/1599;seek(ratio);}
-  slider.addEventListener('pointerdown',event=>{slider.setPointerCapture(event.pointerId);pointer(event);});
-  slider.addEventListener('pointermove',event=>{if(slider.hasPointerCapture(event.pointerId))pointer(event);});
-  slider.addEventListener('pointerup',event=>{if(slider.hasPointerCapture(event.pointerId))slider.releasePointerCapture(event.pointerId);});
-  slider.addEventListener('keydown',event=>{let v=Number(slider.getAttribute('aria-valuenow'))/100;const delta=event.key==='ArrowRight'?.01:event.key==='ArrowLeft'?-.01:0;if(event.key==='Home')v=0;else if(event.key==='End')v=1;else if(delta)v+=delta;else return;event.preventDefault();seek(v);});
+  let drag=null;
+  const pointerRatio=event=>{const r=svg.getBoundingClientRect();return ((event.clientX-r.left)/r.width*1669-88)/1493;};
+  for(const control of [slider,transport]){
+   control.addEventListener('pointerdown',event=>{event.stopImmediatePropagation();control.setPointerCapture(event.pointerId);drag={x:event.clientX,y:event.clientY,moved:false};});
+   control.addEventListener('pointermove',event=>{if(!drag||!control.hasPointerCapture(event.pointerId))return;event.stopImmediatePropagation();if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>5)drag.moved=true;if(drag.moved)seek(pointerRatio(event));});
+   control.addEventListener('pointerup',event=>{event.stopImmediatePropagation();if(control.hasPointerCapture(event.pointerId))control.releasePointerCapture(event.pointerId);if(drag&&!drag.moved)toggle();drag=null;});
+   control.addEventListener('pointercancel',()=>{drag=null});
+   control.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();if(event.detail===0)toggle();},true);
+   control.addEventListener('keydown',event=>{if(event.key===' '||event.key==='Enter'){event.preventDefault();toggle();return;}let v=Number(slider.dataset.progress)||0;const delta=event.key==='ArrowRight'?.01:event.key==='ArrowLeft'?-.01:0;if(event.key==='Home')v=0;else if(event.key==='End')v=1;else if(delta)v+=delta;else return;event.preventDefault();seek(v);});
+  }
   mounted=true;return true;
  }
  window.CIMeditationPresentation={render({state,remaining,totalMs,phase}){
@@ -43,12 +52,17 @@
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
   box.setAttribute('d',ready?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
-  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents=ready?'none':'stroke';slider.setAttribute('tabindex',ready?'-1':'0');slider.setAttribute('aria-disabled',String(ready));dot.style.visibility=ready?'hidden':'visible';
-  const progress=Math.max(0,Math.min(1,1-remaining/totalMs));const dotX=88+1493*progress,dotRatio=(dotX-35)/1599;dot.setAttribute('cx',dotX);dot.setAttribute('cy',816-132*dotRatio*(1-dotRatio));
+  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
+  const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
+  const seconds=Math.max(0,Math.ceil((relaxation?remaining-meditationMs:remaining)/1000));clockText.textContent=seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
+  const action=state==='running'?'Pause':state==='complete'?'Replay':state==='paused'?'Resume':'Play';
+  slider.setAttribute('aria-label',action+' meditation; drag to seek');transport.setAttribute('aria-label',action+' meditation');transport.dataset.control=state==='running'?'pause':state==='complete'?'replay':'play';
+  transportIcon.setAttribute('d',state==='running'?'M-20 -25 H-5 V25 H-20 Z M5 -25 H20 V25 H5 Z':state==='complete'?'M-15 -12 V-30 L-35 -10 L-15 8 V-5 A23 23 0 1 1 -20 16 L-30 22 A34 34 0 1 0 -15 -16 Z':'M-13 -27 L29 0 L-13 27 Z');
+  const progress=Math.max(0,Math.min(1,1-remaining/totalMs));const dotX=88+1493*progress,dotRatio=(dotX-35)/1599,railY=816-132*dotRatio*(1-dotRatio),clockOffset=dotX-834.5,dotY=Math.abs(clockOffset)<165?Math.min(railY,783-Math.sqrt(165*165-clockOffset*clockOffset)):railY;dot.setAttribute('cx',dotX);dot.setAttribute('cy',dotY);transportIcon.setAttribute('transform','translate('+dotX+' '+dotY+')');slider.dataset.progress=progress;
   // Tenfold headline size; fit complete passages instead of clipping their words.
   const target=text.textContent.length>440?300:360;
   let size=target;text.style.fontSize=size+'px';
   while(size>36&&(text.scrollHeight>text.clientHeight+1||text.scrollWidth>text.clientWidth+1)){size-=4;text.style.fontSize=size+'px';}
-  slider.setAttribute('aria-valuenow',String(Math.round((1-remaining/totalMs)*100)));slider.setAttribute('aria-valuetext',Math.ceil(remaining/1000)+' seconds remaining');
+
  }};
 })();
