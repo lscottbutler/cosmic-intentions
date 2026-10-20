@@ -17,3 +17,5 @@ body.meditation-stage-quiet .meditation-quiet-art{opacity:1}
 @media(prefers-reduced-motion:reduce){.meditation-quiet-art{transition:none}}
 
 html,body,body.external .player,.session-card,.session-card>svg{border-radius:0!important}
+
+body.meditation-stage-relaxation .meditation-title{display:block;font-size:90px;letter-spacing:10px;stroke-width:4px}
