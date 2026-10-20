@@ -26,3 +26,7 @@ body.meditation-stage-ready .meditation-title{fill:#000;stroke:none}
 
 .meditation-title-summary{display:none}
 body.meditation-stage-ready .meditation-title-summary{display:block}
+
+/* Plain teal description on the white opening title card. */
+.meditation-title-summary rect{display:none}
+.meditation-title-summary text{fill:#05728b}
