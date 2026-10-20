@@ -147,14 +147,23 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const bellAudio=draftSession?new Audio('/players/audio/coming-back-to-yourself-10m.ogg'):null;
   if(bellAudio)bellAudio.preload='metadata';
   if(narration)narration.preload='metadata';
+  const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
+  let completionBellPlayed=false;
+  completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
   function syncNarration(){
+    if(state==='complete'){
+      stopSpeech();narration?.pause();bellAudio?.pause();
+      if(!completionBellPlayed){completionBellPlayed=true;completionBell.currentTime=595;completionBell.play().then(()=>{if(state!=='complete')completionBell.pause();}).catch(()=>{voiceStatus.textContent='The session is complete, but the closing bell could not play.';voiceStatus.hidden=false;});}
+      return;
+    }
+    completionBellPlayed=false;completionBell.pause();
     if(inRelaxation()){voiceGeneration++;narration?.pause();bellAudio?.pause();syncRelaxationSpeech();return;}
     if(spokenCue==='relaxation')stopSpeech();
     if(bellAudio){
       const elapsed=meditationElapsed();
       const end=meditationMs/1000;
       syncSpeech(elapsed);
-      const ringing=elapsed<5||elapsed>=end-5&&elapsed<end;
+      const ringing=elapsed<5;
       if(state!=='running'||!ringing){voiceGeneration++;bellAudio.pause();return}
       const position=595+(elapsed<5?elapsed:elapsed-(end-5));
       if(Math.abs(bellAudio.currentTime-position)>.35)bellAudio.currentTime=position;
@@ -163,7 +172,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     }
     if(!narration)return;
     const elapsed=meditationElapsed();
-    if(state!=='running'||(elapsed>=540&&elapsed<565)){
+    if(state!=='running'||elapsed>=595||(elapsed>=540&&elapsed<565)){
       voiceGeneration++;narration.pause();return;
     }
     // Final passage 9:25–9:55, closing bell 9:55–10:00.
@@ -183,7 +192,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
       });
     }
   }
-  addEventListener('pagehide',()=>{stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause()});
+  addEventListener('pagehide',()=>{stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause();completionBell.pause()});
 
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
