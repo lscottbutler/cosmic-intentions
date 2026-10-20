@@ -292,3 +292,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-20 Bangkok — Scott requested synchronized chevrons: open any of3 opens all; close any closes all. Replaced individual toggle handler with existing shared expansion function. Desktop1440/phone390 pointer and keyboard toggles for every heading verified, full quiet relaxation/phase-boundary/pause/replay/off regression passed; renders inspected, build/template gate passed. No engine, layout, Supabase or privacy changes. recovery7288b8810d1d9ec75f214d0d387f30fcc2515922; review/linked-meditation-menus-20261020. Today's verified private Bible snapshot retained. Publication/final Bible note recorded separately.
+
+
+2026-10-20 Bangkok — Restore narrow Meditation opening title box per Scott: existing white narrow curved banner displayed in ready state, teal#05728b35-unit border matches frame/crossbar, MEDITATION black with no white outline. Guidance/relaxation playback styling unchanged. Desktop1440/phone390 renders inspected; linked menus,relaxation/off,30s/30m automatic phase boundaries,pause/replay/audio checks pass; build/template gate pass. recovery0c10288fc622feb8f7bb1f83d373e78077c5cd7a; review/meditation-title-card-20261020. Existing verified daily private Bible snapshot retained. No Supabase/privacy changes. Release recorded in Bible separately.
