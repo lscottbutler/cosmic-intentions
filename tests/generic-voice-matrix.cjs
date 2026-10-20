@@ -27,7 +27,7 @@ fs.mkdirSync(out,{recursive:true});
   const command=async(command,extra={})=>page.evaluate(({command,extra})=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>{removeEventListener('message',listener);reject(new Error('No engine status'))},5000);function listener(e){if(e.data?.type==='ci-meditation-state'){clearTimeout(timer);removeEventListener('message',listener);resolve(e.data);}}addEventListener('message',listener);postMessage({type:'ci-meditation-command',command,...extra},location.origin)}),{command,extra});
   for(const minutes of [1,2,3,5,10,15,30,45,60])for(const mode of ['unguided','lightly-guided','guided']){
    await page.goto('http://ci.local/players/meditation.html?external=1&t='+minutes+'&mode='+mode);
-   await expect(page.locator('.meditation-dot-control')).toBeVisible();
+   await expect(page.locator('.meditation-start-control')).toBeVisible();
    for(const seconds of [0,30,60,180,300,420,600,900,1800]){const status=await command('configure-relaxation',{seconds});assert.equal(status.totalSeconds,minutes*60+seconds);}
    await command('configure-relaxation',{seconds:60});await command('toggle');
    assert.equal(await page.evaluate(()=>window.__spoken.length),1);assert((await page.evaluate(()=>window.__spoken[0])).includes('Your mind can take its time, too.'));
