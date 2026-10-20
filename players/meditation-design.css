@@ -117,3 +117,13 @@
 
 /* Icon-only playback control; elapsed progress is shown on the curved rail. */
 #meditationDesignPlay svg{display:block;width:42%;height:42%;overflow:visible}
+
+/* Larger headings with centered, white-rimmed chevrons underneath. */
+.meditation-design-group h2{font-size:clamp(20px,3.6cqw,36px)}
+.meditation-design-toggle{flex-direction:column;flex-wrap:nowrap;gap:1cqw;line-height:1.3;min-height:calc(2.6em + max(8.4cqw,44px) + 4px + 1cqw);justify-content:space-between}
+.meditation-design-toggle::after{box-sizing:content-box;width:8.4cqw;height:8.4cqw;min-width:44px;min-height:44px;border:2px solid #fff}
+
+@container(max-width:500px){
+ .shell.meditation-player-mode #meditationMenu{padding-left:.5cqw;padding-right:.5cqw;column-gap:0}
+ .meditation-design-group h2{letter-spacing:-1.3px}
+}
