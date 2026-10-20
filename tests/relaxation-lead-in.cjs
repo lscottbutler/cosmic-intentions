@@ -35,13 +35,14 @@ fs.mkdirSync(out,{recursive:true});
   await master.locator('#stage').screenshot({path:path.join(out,'ready-'+width+'.png')});
 
   const toggles=master.locator('.meditation-design-toggle');
-  await toggles.nth(0).click();await toggles.nth(1).click();await toggles.nth(2).click();
+  await toggles.nth(0).click();
+  for(let i=0;i<3;i++){await expect(toggles.nth(i)).toHaveAttribute('aria-expanded','true');await toggles.nth(i).click();for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','false');await toggles.nth(i).focus();await page.keyboard.press('Enter');for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','true');}
   await expect(master.locator('[data-relaxation-seconds]')).toHaveCount(32);
   await master.locator('[data-med-mode="guided"]').click();await master.locator('[data-med-time="10"]').click();await expect(play).toBeEnabled();
   await master.locator('[data-relaxation-seconds="30"]').click();await expect(play).toBeEnabled();
   await expect(master.locator('.meditation-design-summary')).toHaveText('30 seconds Relaxation → Guided for 10 Minutes');
   await master.locator('#stage').screenshot({path:path.join(out,'relaxation-options-'+width+'.png')});
-  await toggles.nth(0).click();await toggles.nth(1).click();await toggles.nth(2).click();
+  await toggles.nth(0).click();
   await master.locator('#stage').screenshot({path:path.join(out,'relaxation-ready-'+width+'.png')});
   await play.click();await state('running');await expect(engine.locator('body')).toHaveClass(/meditation-stage-relaxation/);await expect(play).toHaveText('30');
   assert(await engine.locator('body').evaluate(()=>window.__medAudio.every(a=>a.paused)));assert.equal(await engine.locator('body').evaluate(()=>window.__spoken.length),0);

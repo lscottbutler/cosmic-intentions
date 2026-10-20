@@ -14,7 +14,7 @@
   const box=document.createElement('div');box.className='meditation-design-group '+className;
   const heading=document.createElement('h2'),toggle=document.createElement('button');toggle.type='button';toggle.className='meditation-design-toggle';toggle.textContent=label;
   const choices=document.createElement('div');choices.id=content.id+'Choices';choices.append(content);
-  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setGroup(entry,toggle.getAttribute('aria-expanded')!=='true');
+  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setExpanded(toggle.getAttribute('aria-expanded')!=='true');
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
   const entry={toggle,choices,panel,content};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
