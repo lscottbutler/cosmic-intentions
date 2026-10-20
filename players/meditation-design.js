@@ -19,11 +19,13 @@
  const groups=[];
  function group(label,content,className){
   const box=document.createElement('div');box.className='meditation-design-group '+className;
-  const heading=document.createElement('h2'),toggle=document.createElement('button');toggle.type='button';toggle.className='meditation-design-toggle';toggle.textContent=label;
+  const heading=document.createElement('h2'),toggle=document.createElement('button');toggle.type='button';toggle.className='meditation-design-toggle';
+  const indicator=document.createElement('span');indicator.className='meditation-design-status';indicator.setAttribute('aria-hidden','true');
+  const caption=document.createElement('span');caption.className='meditation-design-caption';caption.textContent=label;toggle.append(indicator,caption);
   const choices=document.createElement('div');choices.id=content.id+'Choices';choices.append(content);
   toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setExpanded(toggle.getAttribute('aria-expanded')!=='true');
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
-  const entry={toggle,choices,panel,content};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
+  const entry={toggle,choices,panel,content,indicator};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
  const relaxationDurations=[0,30,60,180,300,420,600,900,1800];
  let relaxationSeconds=0;
@@ -48,6 +50,9 @@
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
+  const symbols=[relaxationSeconds?'✓':'',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
+  const states=[relaxationSeconds?'Relaxation on':'Relaxation off',mode.dataset.medMode==='unguided'?'No guidance, bells only':mode.dataset.medMode==='lightly-guided'?'Slightly guided':'Instructions',minutes+' minutes'];
+  groups.forEach((g,i)=>{if(g.indicator.textContent!==symbols[i])g.indicator.textContent=symbols[i];g.toggle.setAttribute('aria-label',g.toggle.querySelector('.meditation-design-caption').textContent+': '+states[i]);});
   summary.textContent=label+' / '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
   sendSummary();
  }

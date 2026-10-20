@@ -132,3 +132,14 @@
  .meditation-design-toggle::after{transform:scaleX(1.333333)}
  .meditation-design-toggle[aria-expanded=true]::after{transform:scaleX(1.333333) rotate(180deg)}
 }
+
+/* Stacked choice headers: status at left, heading, chevron at right. */
+.shell.meditation-player-mode #meditationMenu{grid-template-columns:minmax(0,1fr);padding:1cqw 4cqw;row-gap:1.5cqw;--choice-chevron:clamp(22px,4.2cqw,44px)}
+.meditation-design-relaxation,.meditation-design-modes,.meditation-design-times{grid-row:auto;grid-column:1}
+.meditation-design-group h2{font-size:clamp(20px,3.6cqw,36px);letter-spacing:0}
+.meditation-design-toggle{display:grid;grid-template-columns:calc(2 * var(--choice-chevron)) minmax(0,1fr) var(--choice-chevron);align-items:center;justify-content:initial;gap:2cqw;width:100%;min-height:0;margin:0;transform:none;text-align:left}
+.meditation-design-caption{min-width:0}
+.meditation-design-status{display:grid;place-items:center;box-sizing:border-box;width:calc(2 * var(--choice-chevron));height:calc(2 * var(--choice-chevron));border:2px solid #fff;border-radius:50%;background:#303030;color:#fff;font:700 clamp(22px,5cqw,48px)/1 Arial,sans-serif}
+.meditation-design-toggle::after{box-sizing:border-box;width:var(--choice-chevron);height:var(--choice-chevron);min-width:0;min-height:0;transform:none}
+.meditation-design-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
+.meditation-design-panel{margin-left:calc(2 * var(--choice-chevron) + 2cqw)}
