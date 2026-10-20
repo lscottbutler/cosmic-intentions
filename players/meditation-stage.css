@@ -19,3 +19,7 @@ body.meditation-stage-quiet .meditation-quiet-art{opacity:1}
 html,body,body.external .player,.session-card,.session-card>svg{border-radius:0!important}
 
 body.meditation-stage-relaxation .meditation-title{display:block;font-size:90px;letter-spacing:10px;stroke-width:4px}
+
+/* Restore the original narrow title card on the opening screen. */
+body.meditation-stage-ready .meditation-banner{display:block;fill:#fff;stroke:#05728b;stroke-width:35px}
+body.meditation-stage-ready .meditation-title{fill:#000;stroke:none}
