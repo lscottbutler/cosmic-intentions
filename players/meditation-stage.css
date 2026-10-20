@@ -23,3 +23,6 @@ body.meditation-stage-relaxation .meditation-title{display:block;font-size:90px;
 /* Restore the original narrow title card on the opening screen. */
 body.meditation-stage-ready .meditation-banner{display:block;fill:#fff;stroke:#05728b;stroke-width:35px}
 body.meditation-stage-ready .meditation-title{fill:#000;stroke:none}
+
+.meditation-title-summary{display:none}
+body.meditation-stage-ready .meditation-title-summary{display:block}
