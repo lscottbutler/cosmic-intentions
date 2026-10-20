@@ -1,5 +1,5 @@
 (()=>{
- let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='',transport,transportIcon,clockText;
+ let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='',transport,transportIcon,clockText,relaxationEnd;
  const ns='http://www.w3.org/2000/svg';
  function updateSummary(){
   if(!description)return;
@@ -28,6 +28,7 @@
   const clock=document.createElementNS(ns,'g');clock.setAttribute('aria-hidden','true');clock.style.pointerEvents='none';
   const face=document.createElementNS(ns,'path');for(const [k,v] of Object.entries({d:'M744 783 a90.5 90.5 0 1 0 181 0 a90.5 90.5 0 1 0 -181 0',fill:'#303030',stroke:'#05728b','stroke-width':25}))face.setAttribute(k,v);
   clockText=document.createElementNS(ns,'text');for(const [k,v] of Object.entries({x:834.5,y:783,fill:'#fff','font-family':'Arial,sans-serif','font-size':60,'text-anchor':'middle','dominant-baseline':'central'}))clockText.setAttribute(k,v);clockText.classList.add('meditation-center-countdown');clock.append(face,clockText);svg.append(clock);
+  relaxationEnd=document.createElementNS(ns,'line');relaxationEnd.classList.add('meditation-relaxation-end');for(const [k,v] of Object.entries({stroke:'#fff59d','stroke-width':12,'stroke-linecap':'round'}))relaxationEnd.setAttribute(k,v);relaxationEnd.style.pointerEvents='none';const boundaryTitle=document.createElementNS(ns,'title');boundaryTitle.textContent='Relaxation ends — meditation begins';relaxationEnd.append(boundaryTitle);svg.append(relaxationEnd);
   transport=document.createElementNS(ns,'g');transport.classList.add('meditation-dot-control');transport.setAttribute('role','button');transport.setAttribute('tabindex','0');svg.append(transport);transport.append(dot);
   transportIcon=document.createElementNS(ns,'path');transportIcon.setAttribute('fill','#303030');transportIcon.style.pointerEvents='none';transport.append(transportIcon);
   const toggle=()=>window.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
@@ -54,6 +55,8 @@
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
+  const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryOffset=boundaryX-834.5,boundaryY=Math.abs(boundaryOffset)<165?Math.min(boundaryRailY,783-Math.sqrt(165*165-boundaryOffset*boundaryOffset)):boundaryRailY;
+  relaxationEnd.style.display=relaxationMs?'':'none';relaxationEnd.dataset.progress=boundary;for(const [k,v] of Object.entries({x1:boundaryX,x2:boundaryX,y1:boundaryY-28,y2:boundaryY+28}))relaxationEnd.setAttribute(k,v);
   const seconds=Math.max(0,Math.ceil((relaxation?remaining-meditationMs:remaining)/1000));clockText.textContent=seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
   const action=state==='running'?'Pause':state==='complete'?'Replay':state==='paused'?'Resume':'Play';
   slider.setAttribute('aria-label',action+' meditation; drag to seek');transport.setAttribute('aria-label',action+' meditation');transport.dataset.control=state==='running'?'pause':state==='complete'?'replay':'play';
