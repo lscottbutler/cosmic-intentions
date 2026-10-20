@@ -8,22 +8,28 @@
  const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';play.textContent='PLAY';play.setAttribute('aria-label','Start meditation');play.disabled=true;
  const sessionID=()=>crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');
  let expanded=false,playback='ready',activeSeconds=0,lastTick=0,recorded=false,session=sessionID();
+ const summary=document.createElement('p');summary.className='meditation-design-summary';summary.setAttribute('aria-live','polite');
  const groups=[];
  function group(label,content,className){
   const box=document.createElement('div');box.className='meditation-design-group '+className;
   const heading=document.createElement('h2'),toggle=document.createElement('button');toggle.type='button';toggle.className='meditation-design-toggle';toggle.textContent=label;
   const choices=document.createElement('div');choices.id=content.id+'Choices';choices.append(content);
   toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setGroup(entry,toggle.getAttribute('aria-expanded')!=='true');
-  const selection=document.createElement('p');selection.className='meditation-design-selection';selection.setAttribute('aria-live','polite');
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
-  const entry={toggle,choices,panel,selection,content};heading.append(toggle);box.append(heading,selection,panel);groups.push(entry);return box;
+  const entry={toggle,choices,panel,content};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
  const left=group('MEDITATION MODES',modes,'meditation-design-modes');groups[0].choices.append(relaxation);
  const right=group('Meditation Times',times,'meditation-design-times');
- menu.replaceChildren(left,right,note);footer.append(menu);stage.append(footer,play);
+ menu.replaceChildren(summary,left,right,note);footer.append(menu);stage.append(footer,play);
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
  function setExpanded(value){for(const g of groups)setGroup(g,value);}
- function selections(){for(const g of groups){const active=g.content.querySelector('.active');if(!active)continue;const label=active.querySelector('.med-mode-label');g.selection.textContent=label?active.getAttribute('aria-label')||label.innerText.trim():active.dataset.medTime+' minutes';}}
+ function selections(){
+  const mode=modes.querySelector('.active'),time=times.querySelector('.active');
+  if(!mode||!time)return;
+  const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
+  const minutes=time.dataset.medTime;
+  summary.textContent=label+' for '+minutes+(minutes==='1'?' Minute':' Minutes');
+ }
  new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});
  selections();
  setExpanded(false);
