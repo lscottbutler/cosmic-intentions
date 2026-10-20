@@ -38,8 +38,8 @@
  }
  relaxation.remove();
  const first=group('Relaxation',relaxationChoices,'meditation-design-relaxation');
- const left=group('MEDITATION MODES',modes,'meditation-design-modes');
- const right=group('Meditation Times',times,'meditation-design-times');
+ const left=group('Meditation Guidance',modes,'meditation-design-modes');
+ const right=group('Meditation Time',times,'meditation-design-times');
  menu.replaceChildren(summary,first,left,right,note);footer.append(menu);stage.append(footer,play);
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
  function setExpanded(value){for(const [i,g] of groups.entries())setGroup(g,value&&i===0);}
@@ -51,7 +51,8 @@
   const minutes=time.dataset.medTime;
   const symbols=[relaxationSeconds?'✓':'',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
   const states=[relaxationSeconds?'Relaxation on':'Relaxation off',mode.dataset.medMode==='unguided'?'No guidance, bells only':mode.dataset.medMode==='lightly-guided'?'Slightly guided':'Instructions',minutes+' minutes'];
-  const details=[relaxationSeconds?' for '+durationLabel(relaxationSeconds):' Off',' / '+label,' for '+minutes+(minutes==='1'?' Minute':' Minutes')];
+  const guidance=mode.dataset.medMode==='unguided'?'UNGUIDED':mode.dataset.medMode==='lightly-guided'?'SLIGHTLY GUIDED':'GUIDED';
+  const details=[' Is '+(relaxationSeconds?durationLabel(relaxationSeconds).replace('seconds','Seconds').replace('minute','Minute'):'OFF'),' Is '+guidance,' Is '+minutes+(minutes==='1'?' Minute':' Minutes')];
   groups.forEach((g,i)=>{if(g.detail.textContent!==details[i])g.detail.textContent=details[i];if(g.indicator.textContent!==symbols[i])g.indicator.textContent=symbols[i];g.toggle.setAttribute('aria-label',g.label+': '+states[i]);});
   summary.textContent=label+' / '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
   sendSummary();
