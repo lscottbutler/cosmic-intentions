@@ -34,3 +34,7 @@ body.meditation-stage-ready .meditation-title-summary{display:block}
 .meditation-dot-control,.meditation-seek{cursor:pointer;touch-action:none}
 .meditation-dot-control:focus{outline:none}
 .meditation-dot-control:focus-visible circle{stroke:#fff!important;stroke-width:8px!important}
+
+/* Relaxation uses the same narrow white/teal title card as Meditation. */
+body.meditation-stage-relaxation .meditation-banner{display:block;fill:#fff;stroke:#05728b;stroke-width:35px}
+body.meditation-stage-relaxation .meditation-title{fill:#000;stroke:none;font-size:150px;letter-spacing:18px}
