@@ -298,3 +298,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-20 Bangkok — Scott narrowed Relaxation options to30seconds,1,3,5,7,10,15,30minutes. Off retained. Replaces every-whole-minute list; unavailable prior per-tab selection resetsOff. Desktop1440/phone390 exact option list,linked chevrons,quiet phase,natural handoff,pause/replay/off checks pass; renders inspected; build/template gate pass. recovery3b87369577b8ed89b519df36522a3a71324265c8; review/relaxation-time-options-20261020. Existing private daily Bible snapshot retained; no engine/Supabase/privacy changes. Release/Bible recorded separately.
+
+
+2026-10-20 Bangkok — Scott requested summary 'Lightly Guided for 1 Minute with Relaxation Intro'. Summary now shows selected mode and meditation duration first, appends' with Relaxation Intro'when enabled;Off omits intro phrase. Replaces duration-first arrow wording. Exact requested singular example verified at1440/390 and renders inspected; focused full quiet-prelude/menus/phase/pause/replay/off checks and build/template gate pass. recovery0546ea3466fcf07fe68846ddfd47aa0433d20ed0; review/meditation-summary-wording-20261020. No engine/Supabase/privacy changes; today's private Bible backup retained. Publication/Bible recorded separately.
