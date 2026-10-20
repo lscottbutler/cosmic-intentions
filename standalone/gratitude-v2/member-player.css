@@ -87,3 +87,6 @@ main{padding:0!important;max-width:none!important;margin:0!important}
 .preview.panel{border-radius:10px;overflow:hidden}
 .preview-viewport iframe{border-radius:10px}
 .gratitude-controls-shell{border-radius:0 0 10px 10px}
+
+/* Square outer Gratitude player surfaces, preserving the inner curved rail. */
+.preview.panel,.preview-viewport iframe,.gratitude-controls-shell{border-radius:0!important}
