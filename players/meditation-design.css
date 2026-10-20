@@ -114,3 +114,6 @@
 /* Remove the empty band left after moving the description into the title. */
 .shell.meditation-player-mode #meditationMenu{padding-top:0;row-gap:0;min-height:0}
 .shell.meditation-player-mode:not(.meditation-design-running) #meditationDesignControls{min-height:0}
+
+/* Icon-only playback control; elapsed progress is shown on the curved rail. */
+#meditationDesignPlay svg{display:block;width:42%;height:42%;overflow:visible}
