@@ -49,7 +49,7 @@
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
-  const symbols=[relaxationSeconds?'✓':'X',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
+  const symbols=[relaxationSeconds?(relaxationSeconds===30?'30s':String(relaxationSeconds/60)):'X',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
   const states=[relaxationSeconds?'Relaxation on':'Relaxation off',mode.dataset.medMode==='unguided'?'No guidance, bells only':mode.dataset.medMode==='lightly-guided'?'Slightly guided':'Instructions',minutes+' minutes'];
   const guidance=mode.dataset.medMode==='unguided'?'UNGUIDED':mode.dataset.medMode==='lightly-guided'?'SLIGHTLY GUIDED':'GUIDED';
   const details=[' Is '+(relaxationSeconds?durationLabel(relaxationSeconds).replace('seconds','Seconds').replace('minute','Minute'):'OFF'),' Is '+guidance,' Is '+minutes+(minutes==='1'?' Minute':' Minutes')];
