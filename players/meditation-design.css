@@ -103,3 +103,7 @@
 .shell.meditation-player-mode #meditationDesignControls{height:var(--meditation-menu-height,auto);transition:min-height 1.8s ease-in-out,height 1.8s ease-in-out}
 .shell.meditation-player-mode.meditation-design-running #meditationDesignControls{transition-delay:.5s}
 @media(prefers-reduced-motion:reduce){.shell.meditation-player-mode :is(#meditationMenu,#meditationDesignControls){transition:none;transition-delay:0s}}
+
+/* Continue the green trough through the controls, inside the teal frame. */
+.shell.meditation-player-mode #meditationDesignControls{box-sizing:border-box;background:#7ea573;border:0 solid #05728b;border-width:0 calc(3500cqw / 1669) calc(3500cqw / 1669);height:calc(var(--meditation-menu-height,0px) + 3500cqw / 1669)}
+.shell.meditation-player-mode.meditation-design-running #meditationDesignControls{min-height:calc(3500cqw / 1669);height:calc(3500cqw / 1669)}
