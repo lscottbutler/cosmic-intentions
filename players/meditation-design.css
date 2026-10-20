@@ -107,3 +107,6 @@
 /* Continue the green trough through the controls, inside the teal frame. */
 .shell.meditation-player-mode #meditationDesignControls{box-sizing:border-box;background:#7ea573;border:0 solid #05728b;border-width:0 calc(3500cqw / 1669) calc(3500cqw / 1669);height:calc(var(--meditation-menu-height,0px) + 3500cqw / 1669)}
 .shell.meditation-player-mode.meditation-design-running #meditationDesignControls{min-height:calc(3500cqw / 1669);height:calc(3500cqw / 1669)}
+
+/* The visible session description is now inside the opening title card. */
+.meditation-design-summary{width:1px;height:1px;max-width:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
