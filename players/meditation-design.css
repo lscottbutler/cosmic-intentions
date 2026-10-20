@@ -76,3 +76,11 @@
 .shell #meditationMenu .med-time-option::after{content:attr(data-med-time) ' minutes'}
 .shell #meditationMenu .relaxation-toggle-row{margin-top:8px}
 .shell #meditationMenu .med-time-option[data-med-time="1"]::after{content:"1 minute"}
+
+/* Shared selection in the marked strip; headings and chevrons below it. */
+.shell.meditation-player-mode #meditationMenu{row-gap:1.5cqw;padding-top:calc(30px + 2cqw)}
+.meditation-design-summary{position:absolute;top:0;left:50%;transform:translate(-50%,0);box-sizing:border-box;max-width:100%;width:max-content;margin:0;background:#000;color:#fff;padding:.6cqw 2cqw;text-align:center;font:400 clamp(12px,2cqw,20px)/1.4 Arial,sans-serif}
+.meditation-design-modes,.meditation-design-times{grid-row:2}
+.meditation-design-panel{margin-top:1cqw}
+
+.shell.meditation-player-mode:not(.meditation-design-running) #meditationDesignControls{overflow:visible}
