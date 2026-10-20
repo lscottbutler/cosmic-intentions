@@ -127,3 +127,8 @@
  .shell.meditation-player-mode #meditationMenu{padding-left:.5cqw;padding-right:.5cqw;column-gap:0}
  .meditation-design-group h2{letter-spacing:-1.3px}
 }
+@container(max-width:500px){
+ .meditation-design-toggle{width:117.647%;margin-left:-8.8235%;transform:scaleX(.85)}
+ .meditation-design-toggle::after{transform:scaleX(1.17647)}
+ .meditation-design-toggle[aria-expanded=true]::after{transform:scaleX(1.17647) rotate(180deg)}
+}
