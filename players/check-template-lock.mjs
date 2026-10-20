@@ -79,9 +79,11 @@ import { readFileSync } from 'node:fs';
 // Existing frame preserved. Recovery:2bd59aad6cd5fdc234a1c48f9c95196d7bb1bdc0.
 // 2026-10-20: Scott authorized temporary relaxation voice. Desktop/phone renders,
 // 27 session lifecycles and243 relaxation configurations passed; geometry unchanged.
+// 2026-10-20: Scott requested closing bell at zero. Desktop/phone natural-zero
+// checks across three modes and full playback regression pass; geometry unchanged.
 const lockedFiles = {
   "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
-  "players/meditation.html": "fb9426208c1e4cdea78f452f68d52e6d70438ca7"
+  "players/meditation.html": "8a837075429856790e3c99e558e31634667a378b"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
