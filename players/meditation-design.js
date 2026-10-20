@@ -45,6 +45,7 @@
  new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});
  selections();
  setExpanded(false);
+ new ResizeObserver(()=>footer.style.setProperty('--meditation-menu-height',menu.offsetHeight+'px')).observe(menu);
  const send=()=>frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
  play.addEventListener('click',send);
  window.CIMeditationDesign={setMenuOpen(open){
