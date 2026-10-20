@@ -55,3 +55,7 @@ html:not(.embedded-player) .shell.home-mode{min-height:76px}
 /* Scott, 20 October 2026: square outer player corners; inner curves stay intact. */
 .shell{--section-radius:0px!important;border-radius:0!important}
 .shell .stage{border-radius:0!important}
+
+/* Menu heading indicator, matching the black-circle dropdown style. */
+#directoryView .view-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#directoryView .view-head::after{content:'';flex:none;width:44px;height:44px;box-sizing:border-box;border:2px solid #fff;border-radius:50%;background:#000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M5 8h4l3 4 3-4h4l-7 9z'/%3E%3C/svg%3E") center/82% no-repeat}
