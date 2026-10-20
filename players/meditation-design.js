@@ -35,12 +35,14 @@
  menu.replaceChildren(summary,first,left,right,note);footer.append(menu);stage.append(footer,play);
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
  function setExpanded(value){for(const g of groups)setGroup(g,value);}
+ function sendSummary(){frame.contentWindow?.postMessage({type:'ci-meditation-summary',text:summary.textContent},location.origin);}
  function selections(){
   const mode=modes.querySelector('.active'),time=times.querySelector('.active');
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
   summary.textContent=label+' for '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
+  sendSummary();
  }
  new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});
  selections();
@@ -57,7 +59,7 @@
   else setExpanded(!expanded);
  }};
  // Mode/duration reloads retain selection semantics and reset the visible control.
- frame.addEventListener('load',()=>{play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
+ frame.addEventListener('load',()=>{sendSummary();play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ci-meditation-state'||!shell.classList.contains('meditation-player-mode'))return;
   const data=event.data,now=performance.now();
