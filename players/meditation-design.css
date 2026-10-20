@@ -110,3 +110,7 @@
 
 /* The visible session description is now inside the opening title card. */
 .meditation-design-summary{width:1px;height:1px;max-width:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Remove the empty band left after moving the description into the title. */
+.shell.meditation-player-mode #meditationMenu{padding-top:0;row-gap:0;min-height:0}
+.shell.meditation-player-mode:not(.meditation-design-running) #meditationDesignControls{min-height:0}
