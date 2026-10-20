@@ -84,3 +84,15 @@
 .meditation-design-panel{margin-top:1cqw}
 
 .shell.meditation-player-mode:not(.meditation-design-running) #meditationDesignControls{overflow:visible}
+
+/* Three independent controls: relaxation, mode, meditation duration. */
+.shell.meditation-player-mode #meditationMenu{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:2cqw;padding-left:3cqw;padding-right:3cqw}
+.meditation-design-relaxation,.meditation-design-modes,.meditation-design-times{grid-row:2;grid-column:auto}
+.meditation-design-group h2{font-size:clamp(10px,1.8cqw,18px)}
+.meditation-design-toggle{gap:.5cqw}
+.meditation-design-toggle::after{width:4.2cqw;height:4.2cqw;min-width:22px;min-height:22px}
+#meditationRelaxation{display:flex;flex-direction:column;gap:3px}
+.shell #meditationMenu .med-relaxation-option{display:flex;align-items:center;gap:10px;background:transparent;border:0;color:#fff;min-height:40px;padding:5px 3px;text-align:left;font:400 clamp(12px,1.7cqw,16px)/1.35 Arial,sans-serif;cursor:pointer}
+.med-relaxation-option::before{content:'';flex:none;width:8px;height:8px;border:1px solid #fff;border-radius:50%}
+.med-relaxation-option[aria-pressed=true]::before{background:#fff}
+@container(max-width:500px){.meditation-design-toggle{flex-wrap:nowrap}.meditation-design-summary{width:max-content;max-width:95%;font-size:11px}.shell.meditation-player-mode #meditationMenu{padding-top:calc(44px + 2cqw)}}

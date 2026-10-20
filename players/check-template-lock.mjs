@@ -73,9 +73,13 @@ import { readFileSync } from 'node:fs';
 // All54 mode/duration lifecycles, all10 recorded text cards, real audio playback,
 // keyboard seeking and reduced motion pass. Engine scripts/timing unchanged.
 // Recovery: f6a9d9da9f73fa050153d0cffcc447f4576c2e59.
+// 2026-10-20 Scott authorized a quiet selectable relaxation lead-in (30s–30m),
+// followed automatically by the existing Meditation session. Scoped engine timing
+// only; desktop/phone phase, silence, pause/replay and natural-boundary checks pass.
+// Existing frame preserved. Recovery:2bd59aad6cd5fdc234a1c48f9c95196d7bb1bdc0.
 const lockedFiles = {
   "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
-  "players/meditation.html": "35c6fdad3f16da7ced51cad63c9339f6857c2133"
+  "players/meditation.html": "90b9e967db3c70e6f77e78da8af7105bdac143ef"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

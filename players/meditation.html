@@ -61,7 +61,10 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const external=search.get('external')==='1';
   if(external)document.body.classList.add('external');
   const minutes=allowed.includes(requested)?requested:15;
-  const totalMs=minutes*60000;
+  const meditationMs=minutes*60000;
+  let relaxationMs=0,totalMs=meditationMs;
+  const inRelaxation=()=>relaxationMs>0&&totalMs-remaining<relaxationMs;
+  const meditationElapsed=()=>(totalMs-remaining-relaxationMs)/1000;
   const mode=['unguided','lightly-guided','guided'].includes(search.get('mode'))?search.get('mode'):'unguided';
   const draftSession=!(minutes===10&&mode==='guided');
   const cues=CIMeditationSessions.session(minutes,mode);
@@ -87,7 +90,8 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   }
   function renderTextCard(){
     if(!textStage)return;
-    const elapsed=(totalMs-remaining)/1000;
+    const elapsed=meditationElapsed();
+    if(inRelaxation()&&state!=='ready'){textStage.querySelector('p').textContent='';textIndex=-1;return;}
     if(draftSession){
       const cue=state==='ready'?cues[0]:cues.find(c=>elapsed>=c.start&&elapsed<c.end);
       const p=textStage.querySelector('p');
@@ -130,9 +134,10 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   if(bellAudio)bellAudio.preload='metadata';
   if(narration)narration.preload='metadata';
   function syncNarration(){
+    if(inRelaxation()){voiceGeneration++;stopSpeech();narration?.pause();bellAudio?.pause();return;}
     if(bellAudio){
-      const elapsed=(totalMs-remaining)/1000;
-      const end=totalMs/1000;
+      const elapsed=meditationElapsed();
+      const end=meditationMs/1000;
       syncSpeech(elapsed);
       const ringing=elapsed<5||elapsed>=end-5&&elapsed<end;
       if(state!=='running'||!ringing){voiceGeneration++;bellAudio.pause();return}
@@ -142,7 +147,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
       return;
     }
     if(!narration)return;
-    const elapsed=(totalMs-remaining)/1000;
+    const elapsed=meditationElapsed();
     if(state!=='running'||(elapsed>=540&&elapsed<565)){
       voiceGeneration++;narration.pause();return;
     }
@@ -191,12 +196,12 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     scrubber.style.left=(x/19.2)+'%';
     scrubber.style.top=(y/10.8)+'%';
   }
-  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,hasGuidance:Boolean(textStage?.querySelector('p')?.textContent.trim())},location.origin)}
+  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,totalSeconds:totalMs/1000,phase:inRelaxation()?'relaxation':'meditation',phaseRemaining:inRelaxation()?remaining-meditationMs:remaining,hasGuidance:Boolean(textStage?.querySelector('p')?.textContent.trim())},location.origin)}
   function render(){
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();window.CIMeditationPresentation?.render({state,remaining,totalMs});syncNarration();notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();window.CIMeditationPresentation?.render({state,remaining,totalMs,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
@@ -223,6 +228,10 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   });
   addEventListener('message',event=>{
     if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
+    if(event.data.command==='configure-relaxation'&&state==='ready'){
+      const seconds=Number(event.data.seconds);
+      if(Number.isInteger(seconds)&&(seconds===0||seconds>=30&&seconds<=1800)){relaxationMs=seconds*1000;totalMs=meditationMs+relaxationMs;remaining=totalMs;render();}
+    }
     if(event.data.command==='status')notify();
     if(event.data.command==='toggle')toggle();
     if(event.data.command==='seek')seek(event.data.ratio);
