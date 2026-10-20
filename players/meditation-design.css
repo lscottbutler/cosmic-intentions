@@ -148,3 +148,6 @@
 .shell.meditation-player-mode #meditationDesignPlay,.shell.meditation-player-mode.meditation-design-quiet #meditationDesignPlay{pointer-events:none;cursor:default;font:500 clamp(10px,3cqw,32px)/1 Arial,sans-serif;letter-spacing:0;text-indent:0}
 
 .shell.meditation-player-mode #meditationDesignPlay{opacity:0}
+
+/* Keep current selections visible beside each collapsed or expanded heading. */
+.meditation-design-header-detail{font-weight:400;font-size:.72em;white-space:normal}
