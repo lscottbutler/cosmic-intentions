@@ -51,3 +51,7 @@
 .shell:not(.home-mode) .deck{display:none!important;margin:0}
 /* Keep the existing top menu reachable when Citadel is opened on its own. */
 html:not(.embedded-player) .shell.home-mode{min-height:76px}
+
+/* Scott, 20 October 2026: square outer player corners; inner curves stay intact. */
+.shell{--section-radius:0px!important;border-radius:0!important}
+.shell .stage{border-radius:0!important}
