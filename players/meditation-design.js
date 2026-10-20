@@ -41,7 +41,7 @@
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
-  summary.textContent=label+' for '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
+  summary.textContent=label+' / '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
   sendSummary();
  }
  new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});

@@ -316,3 +316,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 2026-10-20 Bangkok — Scott requested removing black description box and matching text to outer border. CSS hides subtitle background rect,sets subtitle text fill#05728b; main MEDITATION title remainsblack,white card unchanged. Desktop1440/phone390 stable renders inspected; description updates/longest fit,menus/fades/quiet prelude/handoff/pause/replay/off checks and build/template gate passed. recovery398de5d68f79910b2084c6dda0797821b6544ab1; review/meditation-teal-description-20261020. No engine/Supabase/privacy changes; private daily Bible snapshot retained. Release/Bible recorded separately.
+
+
+2026-10-20 Bangkok — Scott requested'Unguided / 10 Minutes',remove'for'. Selected mode/duration separator now' / 'for all modes/times,existing withRelaxationIntro suffix remainswhenenabled. ExactUnguided10min ready renders inspected at1440/390; focused title description fit/updates,menus/fades/quiet prelude/handoff/pause/replay/off checks and build/template gate pass. recovery94df04ebf3d40cc6cf980d24222599dacb6257eb; review/meditation-description-slash-20261020. No engine/Supabase/privacy changes; private daily Bible snapshot retained. Release/Bible recorded separately.
