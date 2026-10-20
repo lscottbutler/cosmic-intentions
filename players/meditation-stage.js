@@ -23,8 +23,9 @@
   slider.addEventListener('keydown',event=>{let v=Number(slider.getAttribute('aria-valuenow'))/100;const delta=event.key==='ArrowRight'?.01:event.key==='ArrowLeft'?-.01:0;if(event.key==='Home')v=0;else if(event.key==='End')v=1;else if(delta)v+=delta;else return;event.preventDefault();seek(v);});
   mounted=true;return true;
  }
- window.CIMeditationPresentation={render({state,remaining,totalMs}){
+ window.CIMeditationPresentation={render({state,remaining,totalMs,phase}){
   if(!mounted&&!mount())return;
+  const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';
   const ready=state==='ready',text=stage.querySelector('p'),guidance=Boolean(text.textContent.trim());
   const quiet=state==='running'&&!guidance;
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
