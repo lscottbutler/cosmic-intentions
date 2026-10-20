@@ -37,7 +37,8 @@ fs.mkdirSync(out,{recursive:true});
   const toggles=master.locator('.meditation-design-toggle');
   await toggles.nth(0).click();
   for(let i=0;i<3;i++){await expect(toggles.nth(i)).toHaveAttribute('aria-expanded','true');await toggles.nth(i).click();for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','false');await toggles.nth(i).focus();await page.keyboard.press('Enter');for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','true');}
-  await expect(master.locator('[data-relaxation-seconds]')).toHaveCount(32);
+  await expect(master.locator('[data-relaxation-seconds]')).toHaveCount(9);
+  assert.deepEqual(await master.locator('[data-relaxation-seconds]').evaluateAll(es=>es.map(e=>Number(e.dataset.relaxationSeconds))),[0,30,60,180,300,420,600,900,1800]);
   await master.locator('[data-med-mode="guided"]').click();await master.locator('[data-med-time="10"]').click();await expect(play).toBeEnabled();
   await master.locator('[data-relaxation-seconds="30"]').click();await expect(play).toBeEnabled();
   await expect(master.locator('.meditation-design-summary')).toHaveText('30 seconds Relaxation → Guided for 10 Minutes');
@@ -61,7 +62,7 @@ fs.mkdirSync(out,{recursive:true});
   await master.locator('[data-relaxation-seconds="0"]').click();await expect(play).toBeEnabled();await expect(master.locator('.meditation-design-summary')).toHaveText('Guided for 10 Minutes');
   await play.click();await expect(engine.locator('body')).not.toHaveClass(/meditation-stage-relaxation/);await state('running');await play.click();
   assert.deepEqual(errors,[]);assert.deepEqual([...new Set(missing)],[]);
-  console.log('PASS three columns,32 choices, quiet prelude, pause, natural transition, replay,30min/off',width);
+  console.log('PASS three columns,9 choices, quiet prelude, pause, natural transition, replay,30min/off',width);
   await context.close();
  }}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
