@@ -96,3 +96,10 @@
 .med-relaxation-option::before{content:'';flex:none;width:8px;height:8px;border:1px solid #fff;border-radius:50%}
 .med-relaxation-option[aria-pressed=true]::before{background:#fff}
 @container(max-width:500px){.meditation-design-toggle{flex-wrap:nowrap}.meditation-design-summary{width:max-content;max-width:95%;font-size:11px}.shell.meditation-player-mode #meditationMenu{padding-top:calc(44px + 2cqw)}}
+
+/* Fade the summary/choices before the lower panel rises more gently. */
+.shell.meditation-player-mode #meditationMenu{opacity:1;transition:opacity .5s ease 1.8s,transform 1.8s ease-in-out}
+.shell.meditation-player-mode.meditation-design-running #meditationMenu{opacity:0;transition:opacity .5s ease,transform 1.8s ease-in-out .5s}
+.shell.meditation-player-mode #meditationDesignControls{height:var(--meditation-menu-height,auto);transition:min-height 1.8s ease-in-out,height 1.8s ease-in-out}
+.shell.meditation-player-mode.meditation-design-running #meditationDesignControls{transition-delay:.5s}
+@media(prefers-reduced-motion:reduce){.shell.meditation-player-mode :is(#meditationMenu,#meditationDesignControls){transition:none;transition-delay:0s}}
