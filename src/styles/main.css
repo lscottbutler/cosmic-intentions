@@ -4611,3 +4611,7 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
 .page :is(section,.setup-page,.pg-screen,.wins-screen,.ci-admin-page-box,.ci-ph-card,.ci-carousel,.ci-habit-mindset,.ent-panel,.ent-resource-card,.cosmic-concept-card){border-radius:var(--section-radius)!important}
 .ci-admin-page-box,.ci-carousel{border-radius:var(--section-radius)!important}
 .ci-carousel{overflow:hidden}
+
+
+/* Scott,20 October2026: square all administrator artwork boxes. */
+.page .ci-admin-page-box,.page .ci-carousel,.ci-admin-page-box,.ci-carousel,.ci-carousel-card,.ci-admin-trough-art{border-radius:0!important}
