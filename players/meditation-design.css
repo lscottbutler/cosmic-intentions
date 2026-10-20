@@ -128,7 +128,7 @@
  .meditation-design-group h2{letter-spacing:-1.3px}
 }
 @container(max-width:500px){
- .meditation-design-toggle{width:117.647%;margin-left:-8.8235%;transform:scaleX(.85)}
- .meditation-design-toggle::after{transform:scaleX(1.17647)}
- .meditation-design-toggle[aria-expanded=true]::after{transform:scaleX(1.17647) rotate(180deg)}
+ .meditation-design-toggle{width:133.333%;margin-left:-16.6665%;transform:scaleX(.75)}
+ .meditation-design-toggle::after{transform:scaleX(1.333333)}
+ .meditation-design-toggle[aria-expanded=true]::after{transform:scaleX(1.333333) rotate(180deg)}
 }
