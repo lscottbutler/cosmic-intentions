@@ -5,7 +5,14 @@
  const modes=document.getElementById('meditationModes'),times=document.getElementById('meditationTimes');
  const relaxation=menu.querySelector('.relaxation-toggle-row'),note=document.getElementById('guidedNote');
  const footer=document.createElement('section');footer.id='meditationDesignControls';footer.setAttribute('aria-label','Meditation session choices');
- const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';play.textContent='PLAY';play.setAttribute('aria-label','Start meditation');play.disabled=true;
+ const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';renderControl('ready');play.setAttribute('aria-label','Start meditation');play.disabled=true;
+ function renderControl(state){
+  const icon=state==='running'?'pause':state==='complete'?'replay':'play';
+  if(play.dataset.control===icon)return;
+  play.dataset.control=icon;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  const shape=document.createElementNS(svg.namespaceURI,'path');shape.setAttribute('d',icon==='play'?'M7 3 L22 12 L7 21 Z':icon==='pause'?'M5 3 H10 V21 H5 Z M14 3 H19 V21 H14 Z':'M5 7 V2 L1 6 L5 10 V7 A8 8 0 1 1 4 16 L2 17 A10 10 0 1 0 5 5 Z');shape.setAttribute('fill','currentColor');svg.append(shape);play.replaceChildren(svg);
+ }
  const sessionID=()=>crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');
  let expanded=false,playback='ready',activeSeconds=0,lastTick=0,recorded=false,session=sessionID();
  const summary=document.createElement('p');summary.className='meditation-design-summary';summary.setAttribute('aria-live','polite');
@@ -59,7 +66,7 @@
   else setExpanded(!expanded);
  }};
  // Mode/duration reloads retain selection semantics and reset the visible control.
- frame.addEventListener('load',()=>{sendSummary();play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
+ frame.addEventListener('load',()=>{sendSummary();play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');renderControl('ready');frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ci-meditation-state'||!shell.classList.contains('meditation-player-mode'))return;
   const data=event.data,now=performance.now();
@@ -72,8 +79,7 @@
   shell.classList.toggle('meditation-design-running',running);shell.classList.toggle('meditation-design-quiet',quiet);menu.hidden=false;menu.inert=running;
   const action=playback==='ready'?'Start':running?'Pause':playback==='paused'?'Resume':'Replay';
   play.setAttribute('aria-label',action+' '+(data.phase==='relaxation'?'relaxation':'meditation'));
-  const seconds=Math.max(0,Math.ceil((data.phaseRemaining??data.remaining)/1000));
-  play.textContent=quiet?(seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')):action==='Start'?'PLAY':action.toUpperCase();
+  renderControl(playback);
   for(const button of menu.querySelectorAll('[data-med-time],[data-med-mode]'))button.setAttribute('aria-pressed',String(button.classList.contains('active')));
   note.hidden=!expanded;
  });
