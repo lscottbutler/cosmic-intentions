@@ -22,7 +22,7 @@
   const indicator=document.createElement('span');indicator.className='meditation-design-status';indicator.setAttribute('aria-hidden','true');
   const caption=document.createElement('span');caption.className='meditation-design-caption';caption.textContent=label;const detail=document.createElement('span');detail.className='meditation-design-header-detail';caption.append(detail);toggle.append(indicator,caption);
   const choices=document.createElement('div');choices.id=content.id+'Choices';choices.append(content);
-  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>setExpanded(toggle.getAttribute('aria-expanded')!=='true');
+  toggle.setAttribute('aria-controls',choices.id);toggle.onclick=()=>{const open=toggle.getAttribute('aria-expanded')!=='true';for(const g of groups)setGroup(g,g.toggle===toggle&&open);};
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
   const entry={toggle,choices,panel,content,indicator,detail,label};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
@@ -42,7 +42,7 @@
  const right=group('Meditation Times',times,'meditation-design-times');
  menu.replaceChildren(summary,first,left,right,note);footer.append(menu);stage.append(footer,play);
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
- function setExpanded(value){for(const g of groups)setGroup(g,value);}
+ function setExpanded(value){for(const [i,g] of groups.entries())setGroup(g,value&&i===0);}
  function sendSummary(){frame.contentWindow?.postMessage({type:'ci-meditation-summary',text:summary.textContent},location.origin);}
  function selections(){
   const mode=modes.querySelector('.active'),time=times.querySelector('.active');

@@ -35,21 +35,24 @@ fs.mkdirSync(out,{recursive:true});
   await master.locator('#stage').screenshot({path:path.join(out,'ready-'+width+'.png')});
 
   const toggles=master.locator('.meditation-design-toggle');
-  await toggles.nth(0).click();
-  for(let i=0;i<3;i++){await expect(toggles.nth(i)).toHaveAttribute('aria-expanded','true');await toggles.nth(i).click();for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','false');await toggles.nth(i).focus();await page.keyboard.press('Enter');for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','true');}
+  for(let i=0;i<3;i++){
+   await toggles.nth(i).click();for(let j=0;j<3;j++)await expect(toggles.nth(j)).toHaveAttribute('aria-expanded',String(i===j));
+   await toggles.nth(i).focus();await page.keyboard.press('Enter');for(const t of await toggles.all())await expect(t).toHaveAttribute('aria-expanded','false');
+  }
+  const choose=async selector=>{const option=master.locator(selector),toggle=option.locator('xpath=ancestor::*[contains(@class,"meditation-design-group")]').locator('.meditation-design-toggle');if(await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();await option.click();};
   await expect(master.locator('[data-relaxation-seconds]')).toHaveCount(9);
   assert.deepEqual(await master.locator('[data-relaxation-seconds]').evaluateAll(es=>es.map(e=>Number(e.dataset.relaxationSeconds))),[0,30,60,180,300,420,600,900,1800]);
-  await master.locator('[data-med-mode="guided"]').click();await master.locator('[data-med-time="10"]').click();await expect(play).toBeEnabled();
-  await master.locator('[data-relaxation-seconds="30"]').click();await expect(play).toBeEnabled();
+  await choose('[data-med-mode="guided"]');await choose('[data-med-time="10"]');await expect(play).toBeEnabled();
+  await choose('[data-relaxation-seconds="30"]');await expect(play).toBeEnabled();
   await expect(master.locator('.meditation-design-summary')).toHaveText('Guided / 10 Minutes with Relaxation Intro');
-  await master.locator('[data-med-mode=lightly-guided]').click();await master.locator('[data-med-time="1"]').click();await expect(play).toBeEnabled();
+  await choose('[data-med-mode=lightly-guided]');await choose('[data-med-time="1"]');await expect(play).toBeEnabled();
   await expect(master.locator('.meditation-design-summary')).toHaveText('Lightly Guided / 1 Minute with Relaxation Intro');
   await expect(engine.locator('.meditation-title-summary text')).toHaveText('Lightly Guided / 1 Minute with Relaxation Intro');await master.locator('#stage').screenshot({path:path.join(out,'summary-wording-'+width+'.png')});
-  await master.locator('[data-med-time="60"]').click();await expect(play).toBeEnabled();await expect(engine.locator('.meditation-title-summary text')).toHaveText('Lightly Guided / 60 Minutes with Relaxation Intro');
+  await choose('[data-med-time="60"]');await expect(play).toBeEnabled();await expect(engine.locator('.meditation-title-summary text')).toHaveText('Lightly Guided / 60 Minutes with Relaxation Intro');
   const fit=await engine.locator('.meditation-title-summary text').evaluate(e=>{const b=e.getBBox();return b.x>=190&&b.x+b.width<=1479});assert(fit);
-  await master.locator('[data-med-mode=guided]').click();await master.locator('[data-med-time="10"]').click();await expect(play).toBeEnabled();
+  await choose('[data-med-mode=guided]');await choose('[data-med-time="10"]');await expect(play).toBeEnabled();
   await master.locator('#stage').screenshot({path:path.join(out,'relaxation-options-'+width+'.png')});
-  await toggles.nth(0).click();
+  for(const t of await toggles.all())if(await t.getAttribute('aria-expanded')==='true')await t.click();
   await page.waitForTimeout(2500);await expect(engine.locator('.meditation-title-summary text')).toHaveText('Guided / 10 Minutes with Relaxation Intro');await master.locator('#stage').screenshot({path:path.join(out,'relaxation-ready-'+width+'.png')});
   await page.waitForTimeout(2500);
   const initialHeight=await master.locator('#meditationDesignControls').evaluate(e=>e.getBoundingClientRect().height);
@@ -68,13 +71,13 @@ fs.mkdirSync(out,{recursive:true});
   await seek(60/630);await expect(engine.locator('.session-card p')).toContainText('give yourself permission');
   await seek(1);await state('complete');await expect(play).toHaveAttribute('data-control','replay');await play.click();await state('running');await expect(engine.locator('body')).toHaveClass(/meditation-stage-relaxation/);await play.click();
   for(const t of await toggles.all())if(await t.getAttribute('aria-expanded')!=='true')await t.click();
-  await master.locator('[data-relaxation-seconds="1800"]').click();await expect(play).toBeEnabled();await play.click();await expect(play).toHaveAttribute('data-control','pause');await state('running');
+  await choose('[data-relaxation-seconds="1800"]');await expect(play).toBeEnabled();await play.click();await expect(play).toHaveAttribute('data-control','pause');await state('running');
   await seek(1799.8/2400);await expect(engine.locator('body')).not.toHaveClass(/meditation-stage-relaxation/);await state('running');await play.click();
   for(const t of await toggles.all())if(await t.getAttribute('aria-expanded')!=='true')await t.click();
-  await master.locator('[data-relaxation-seconds="0"]').click();await expect(play).toBeEnabled();await expect(master.locator('.meditation-design-summary')).toHaveText('Guided / 10 Minutes');
+  await choose('[data-relaxation-seconds="0"]');await expect(play).toBeEnabled();await expect(master.locator('.meditation-design-summary')).toHaveText('Guided / 10 Minutes');
   await play.click();await expect(engine.locator('body')).not.toHaveClass(/meditation-stage-relaxation/);await state('running');await play.click();
   assert.deepEqual(errors,[]);assert.deepEqual([...new Set(missing)],[]);
-  console.log('PASS three columns,9 choices, quiet prelude, pause, natural transition, replay,30min/off',width);
+  console.log('PASS exclusive sections,9 choices, quiet prelude, pause, natural transition, replay,30min/off',width);
   await context.close();
  }}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
