@@ -26,7 +26,7 @@
   slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','button');slider.setAttribute('tabindex','0');slider.setAttribute('stroke-width','35');slider.setAttribute('stroke','#05728b');
   dot=svg.querySelector('circle');dot.setAttribute('fill','#fff59d');dot.setAttribute('stroke','none');dot.setAttribute('r','49.5');dot.style.pointerEvents='all';
   const clock=document.createElementNS(ns,'g');clock.setAttribute('aria-hidden','true');clock.style.pointerEvents='none';
-  const face=document.createElementNS(ns,'circle');for(const [k,v] of Object.entries({cx:834.5,cy:783,r:90.5,fill:'#303030',stroke:'#05728b','stroke-width':25}))face.setAttribute(k,v);
+  const face=document.createElementNS(ns,'path');for(const [k,v] of Object.entries({d:'M744 783 a90.5 90.5 0 1 0 181 0 a90.5 90.5 0 1 0 -181 0',fill:'#303030',stroke:'#05728b','stroke-width':25}))face.setAttribute(k,v);
   clockText=document.createElementNS(ns,'text');for(const [k,v] of Object.entries({x:834.5,y:783,fill:'#fff','font-family':'Arial,sans-serif','font-size':60,'text-anchor':'middle','dominant-baseline':'central'}))clockText.setAttribute(k,v);clockText.classList.add('meditation-center-countdown');clock.append(face,clockText);svg.append(clock);
   transport=document.createElementNS(ns,'g');transport.classList.add('meditation-dot-control');transport.setAttribute('role','button');transport.setAttribute('tabindex','0');svg.append(transport);transport.append(dot);
   transportIcon=document.createElementNS(ns,'path');transportIcon.setAttribute('fill','#303030');transportIcon.style.pointerEvents='none';transport.append(transportIcon);
@@ -46,11 +46,11 @@
  }
  window.CIMeditationPresentation={render({state,remaining,totalMs,phase}){
   if(!mounted&&!mount())return;
-  const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';title.setAttribute('y',state==='ready'?'365':'388');
+  const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';title.setAttribute('y',state==='ready'||relaxation?'365':'388');
   const ready=state==='ready',text=stage.querySelector('p'),guidance=Boolean(text.textContent.trim());
   const quiet=state==='running'&&!guidance;
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
-  box.setAttribute('d',ready?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
+  box.setAttribute('d',ready||relaxation?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
