@@ -18,9 +18,20 @@
   const panel=document.createElement('div');panel.className='meditation-design-panel';panel.append(choices);
   const entry={toggle,choices,panel,content};heading.append(toggle);box.append(heading,panel);groups.push(entry);return box;
  }
- const left=group('MEDITATION MODES',modes,'meditation-design-modes');groups[0].choices.append(relaxation);
+ let relaxationSeconds=0;
+ try{const saved=Number(sessionStorage.getItem('ci-relaxation-seconds'));if(Number.isInteger(saved)&&(saved===0||saved>=30&&saved<=1800))relaxationSeconds=saved;}catch{}
+ const relaxationChoices=document.createElement('div');relaxationChoices.id='meditationRelaxation';
+ const durationLabel=s=>s===0?'Off':s===30?'30 seconds':(s/60)+(s===60?' minute':' minutes');
+ for(const seconds of [0,30,...Array.from({length:30},(_,i)=>(i+1)*60)]){
+  const button=document.createElement('button');button.type='button';button.className='med-relaxation-option';button.dataset.relaxationSeconds=seconds;button.textContent=durationLabel(seconds);button.setAttribute('aria-pressed',String(seconds===relaxationSeconds));
+  button.onclick=()=>{relaxationSeconds=seconds;try{sessionStorage.setItem('ci-relaxation-seconds',String(seconds));}catch{}for(const b of relaxationChoices.children)b.setAttribute('aria-pressed',String(Number(b.dataset.relaxationSeconds)===seconds));selections();const url=new URL(frame.src,location.origin);frame.src=url.href;};
+  relaxationChoices.append(button);
+ }
+ relaxation.remove();
+ const first=group('Relaxation',relaxationChoices,'meditation-design-relaxation');
+ const left=group('MEDITATION MODES',modes,'meditation-design-modes');
  const right=group('Meditation Times',times,'meditation-design-times');
- menu.replaceChildren(summary,left,right,note);footer.append(menu);stage.append(footer,play);
+ menu.replaceChildren(summary,first,left,right,note);footer.append(menu);stage.append(footer,play);
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
  function setExpanded(value){for(const g of groups)setGroup(g,value);}
  function selections(){
@@ -28,7 +39,7 @@
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
-  summary.textContent=label+' for '+minutes+(minutes==='1'?' Minute':' Minutes');
+  summary.textContent=(relaxationSeconds?durationLabel(relaxationSeconds)+' Relaxation → ':'')+label+' for '+minutes+(minutes==='1'?' Minute':' Minutes');
  }
  new MutationObserver(selections).observe(menu,{subtree:true,attributes:true,attributeFilter:['class']});
  selections();
@@ -44,20 +55,20 @@
   else setExpanded(!expanded);
  }};
  // Mode/duration reloads retain selection semantics and reset the visible control.
- frame.addEventListener('load',()=>{play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
+ frame.addEventListener('load',()=>{play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');play.textContent='PLAY';frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ci-meditation-state'||!shell.classList.contains('meditation-player-mode'))return;
   const data=event.data,now=performance.now();
   if(playback==='running'&&lastTick)activeSeconds+=Math.max(0,(now-lastTick)/1000);
   if((playback==='complete'||playback==='ready')&&data.state==='running'){activeSeconds=0;recorded=false;session=sessionID();}
   lastTick=now;playback=data.state;play.disabled=false;
-  if(playback==='complete'&&!recorded&&activeSeconds>=data.minutes*60*.95){recorded=true;import('/standalone/usage-client.js').then(m=>m.recordMeditation(activeSeconds,session)).catch(()=>{const status=document.createElement('p');status.setAttribute('role','status');status.textContent='Your session finished, but activity tracking could not save.';footer.append(status);});}
+  if(playback==='complete'&&!recorded&&activeSeconds>=(data.totalSeconds||data.minutes*60)*.95){recorded=true;import('/standalone/usage-client.js').then(m=>m.recordMeditation(activeSeconds,session)).catch(()=>{const status=document.createElement('p');status.setAttribute('role','status');status.textContent='Your session finished, but activity tracking could not save.';footer.append(status);});}
 
   const running=playback==='running',quiet=running&&!data.hasGuidance;
   shell.classList.toggle('meditation-design-running',running);shell.classList.toggle('meditation-design-quiet',quiet);menu.hidden=false;menu.inert=running;
   const action=playback==='ready'?'Start':running?'Pause':playback==='paused'?'Resume':'Replay';
-  play.setAttribute('aria-label',action+' meditation');
-  const seconds=Math.max(0,Math.ceil(data.remaining/1000));
+  play.setAttribute('aria-label',action+' '+(data.phase==='relaxation'?'relaxation':'meditation'));
+  const seconds=Math.max(0,Math.ceil((data.phaseRemaining??data.remaining)/1000));
   play.textContent=quiet?(seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')):action==='Start'?'PLAY':action.toUpperCase();
   for(const button of menu.querySelectorAll('[data-med-time],[data-med-mode]'))button.setAttribute('aria-pressed',String(button.classList.contains('active')));
   note.hidden=!expanded;
