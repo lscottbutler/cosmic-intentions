@@ -91,3 +91,15 @@ body.citadel-header-clean .orientation>div:first-child>p{display:none}
 body.citadel-header-clean .shortcuts #player-search{width:100%;flex:none;margin:0;align-self:stretch}
 body.citadel-header-clean .shortcuts #player-search button{padding:0;min-height:0;flex:0 0 36px}
 body.citadel-header-clean .shortcuts #player-search input{padding:6px;font-size:14px}
+
+/* One original welcome-page encouragement graphic per member page. */
+#header-admin-note{grid-row:2 / span 3}
+#header-encouragement{grid-column:2;grid-row:3;justify-self:center;align-self:center;width:100%;height:160px;padding:8px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer}
+#header-encouragement img{display:block;max-width:100%;max-height:140px;object-fit:contain}
+#player-search{grid-row:4}
+@media(max-width:650px){
+ #header-admin-note{grid-row:5}
+ #header-encouragement{grid-column:2;grid-row:2 / span 2;height:110px;padding:3px}
+ #header-encouragement img{max-height:100px}
+ #player-search{grid-row:4}
+}
