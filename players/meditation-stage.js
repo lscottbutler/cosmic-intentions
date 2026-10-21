@@ -58,7 +58,7 @@
   box.setAttribute('d',ready||relaxation?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   const complete=state==='complete',running=state==='running';
-  clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
+  clock.dataset.opening=openingPhase;clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
   const eye=state==='running'&&(openingPhase==='open'||openingPhase==='closed')?openingPhase:null;
   const icon=eye?'eyes-'+eye:complete?'home':running?'pause':'play';
   if(clockIcon.dataset.icon!==icon){clockIcon.dataset.icon=icon;clockIcon.classList.toggle('meditation-eye-closed',eye==='closed');}
