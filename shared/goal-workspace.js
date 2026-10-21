@@ -1,7 +1,7 @@
 import { esc, intentions, goalLetter, openMasterDestination } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
-import { goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
+import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
 
 let selectedGoalId = null;
 let initialSelectionRead = false;
@@ -176,6 +176,7 @@ export function goalWorkspaceSelect(select) {
 
 export function renderGoalWorkspace() {
   if (!activeWorkspace()) return;
+  renderMasterPriorities();
   const select = document.getElementById('goalWorkspaceSelect');
   const eligibleGoals = goalWorkspaceGoals();
   if (!initialSelectionRead) {
@@ -205,7 +206,20 @@ export function renderGoalWorkspace() {
   renderGoalWorkspaceNotes();
 }
 
+function renderMasterPriorities() {
+  if (!activeWorkspace()) return;
+  let host = document.getElementById('masterPriorityTasks');
+  if (!host) {
+    host = document.createElement('section'); host.id = 'masterPriorityTasks';
+    host.className = 'goal-workspace-section';
+    document.querySelector('.goal-workspace-selector').before(host);
+  }
+  const rows = masterPriorityTaskMarkup();
+  host.innerHTML = '<h2 style="background:#8b5cc7;color:white">MASTER TO-DO LIST</h2><p>Unfinished priorities from all your goals. Tap P on any task to add it here.</p>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
+}
+
 export function renderGoalWorkspaceTasks() {
+  renderMasterPriorities();
   if (!activeWorkspace() || !selectedGoal()) return;
   const idx = intentions.findIndex(g => String(g.id) === selectedGoalId);
   const tasks = goalWorkspaceTaskMarkup(idx);

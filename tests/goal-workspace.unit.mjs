@@ -134,3 +134,34 @@ storage.set('ci_notes', JSON.stringify([added.record, seed[0]]));
 assert.equal(notes.randomNote(), null, 'private goal notes never surface as random thoughts');
 assert.equal(notes.dailyNote(), null);
 console.log('PASS: goal and action isolation, inline notes/Journal placement, relinking, shared-record persistence, save failures, task counts, and private-note isolation.');
+
+const quick = wrap.goalWorkspaceTaskMarkup(0).my;
+assert.match(quick, /class="goal-task-quick-delete"[^>]+deleteRoadmapUserTask/);
+assert.match(quick, /class="goal-task-quick-delete"[^>]+wrapSubDelete/);
+if (process.env.CI_TASK_FIXTURE) (await import('node:fs/promises')).writeFile('/tmp/ci-task-fixture.html', '<html><body style="margin:20px;background:#292929;font-family:Arial">'+quick+'</body></html>');
+
+intentions[0].roadmapAI.intention = intentions[0].title;
+assert.equal(wrap.masterPriorityTaskMarkup(), '', 'master list starts with no unmarked tasks');
+wrap.wrapTogglePriority(encodeURIComponent(myKey));
+assert.equal(intentions[0].roadmapAI.userTasks[0].priority, true);
+assert.match(wrap.masterPriorityTaskMarkup(), /Find seeds/);
+assert.doesNotMatch(wrap.masterPriorityTaskMarkup(), /Water the seeds|Compare seeds|Prepare soil/);
+wrap.wrapTogglePriority(encodeURIComponent(roadmapKey));
+assert.doesNotMatch(wrap.masterPriorityTaskMarkup(), /Prepare soil/, 'completed priorities stay out');
+intentions[0].roadmapAI.done[0] = false;
+assert.match(wrap.masterPriorityTaskMarkup(), /Prepare soil/);
+intentions[0].roadmapAI.userTasks[0].done = true;
+assert.doesNotMatch(wrap.masterPriorityTaskMarkup(), /Find seeds/);
+wrap.wrapTogglePriority(encodeURIComponent(roadmapKey));
+assert.equal(wrap.masterPriorityTaskMarkup(), '', 'unmarking removes task immediately');
+intentions[0].roadmapAI.userTasks[0].done = false;
+intentions[1].roadmapAI.userTasks = [{id: 99, text: 'Practice chords', priority: true}];
+assert.match(wrap.masterPriorityTaskMarkup(), /Find seeds/);
+assert.match(wrap.masterPriorityTaskMarkup(), /Practice chords/, 'all goals appear even without workspace notes');
+assert.equal(JSON.parse(JSON.stringify(intentions[0].roadmapAI)).userTasks[0].priority, true, 'priority included in existing roadmap JSON save');
+if (process.env.CI_TASK_FIXTURE) {
+  const css = await readFile('src/styles/main.css','utf8');
+  const html = '<html><head><style>'+css+'</style><style>body{margin:0}.wcard-menu{display:none}.task-note-panel{display:none}</style></head><body><main class="goal-workspace-page"><h1>Goal Workspace</h1><section class="goal-workspace-section"><h2 style="background:#8b5cc7">MASTER TO-DO LIST</h2><p>Unfinished priorities from all your goals.</p>'+wrap.masterPriorityTaskMarkup()+'</section><h2>All tasks</h2>'+wrap.goalWorkspaceTaskMarkup(0).my+'</main></body></html>';
+  await (await import('node:fs/promises')).writeFile('/tmp/ci-priority-fixture.html', html);
+}
+console.log('PASS priority filter, completion, removal, all goals and saved JSON');
