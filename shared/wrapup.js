@@ -2,7 +2,7 @@ import { ringsSummary, ringsWeekSummary, currentTier } from './rings.js';
 import { renderPBIntentionList } from './card-builder.js';
 import { LS, esc, toast, buildContext, getPB, goalBadge, goalCase, intentions, GREY_SHADES, GOAL_COLORS, saveIntentions, dayKey, currentUser } from '../app.js';
 import { setTaskWin } from './wins.js';
-import { taskNoteContext, taskNoteButton, taskNotePanel, taskLinkedEntriesHTML } from './task-notes.js';
+import { taskNoteKey, taskNoteContext, taskNoteButton, taskNotePanel, taskLinkedEntriesHTML } from './task-notes.js';
 /* ── EVENING WRAP-UP ─────────────────────────────────────
    Phase 1: a STORY recap (daily + weekly), not a dashboard.
    "Here's what you did today / here's your week."
@@ -89,6 +89,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex:1;min-width:0;font-size:15px;line-height:1.45;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
       <!-- Goal-code box: code on top, ⋯ overflow menu in the lower half. -->
+      ${noteContext ? `<button type="button" class="task-priority" aria-label="Priority task ${esc(code)}" aria-pressed="${!!taskIsPriority(noteContext)}" onclick="wrapTogglePriority('${encodeURIComponent(taskNoteKey(noteContext)).replace(/'/g,'%27')}')" title="Toggle priority" style="flex-shrink:0;width:32px;height:32px;border:2px solid #8b5cc7;border-radius:50%;background:${taskIsPriority(noteContext) ? '#8b5cc7' : '#fff'};color:${taskIsPriority(noteContext) ? '#fff' : '#8b5cc7'};font-weight:700;cursor:pointer;">P</button>` : ''}
       ${showLinkedEntries && deleteCall ? `<button type="button" class="goal-task-quick-delete" onclick="event.stopPropagation();${deleteCall}" title="Delete this task" aria-label="Delete task ${esc(code)}" style="flex-shrink:0;width:32px;height:32px;border:1px solid #8b5cc7;border-radius:50%;background:#8b5cc7;color:#fff;font-size:20px;line-height:1;cursor:pointer;">×</button>` : ''}
       ${taskNoteButton(noteContext)}
       <div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
@@ -512,7 +513,7 @@ function _ensureCodes(it) {
    sub-steps (recursive). Top level keeps the win-logging toggle + promote;
    nested steps use lightweight path-based toggle/delete. codePrefix carries
    the parent card's STABLE code down the tree (e.g. "D2" → "D2.1"). */
-function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false) {
+function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false, priorityOnly = false) {
   if (!Array.isArray(tasks) || !tasks.length) return '';
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
   const letter = _goalLetter(idx);
@@ -537,8 +538,8 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
-    return _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries, deleteCall })
-         + _renderUserTree(u.children, p, idx, code, showLinkedEntries);
+    return (priorityOnly && (d || !taskIsPriority(noteContext)) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries, deleteCall }))
+         + _renderUserTree(u.children, p, idx, code, showLinkedEntries, priorityOnly);
   }).join('');
 }
 
@@ -557,7 +558,7 @@ function _countTree(nodes) {
 /* Nightly checklist: every goal's 10 "Today I Will" actions with their
    done status. Clicking a row toggles it (logs a win + momentum) via the
    same toggleRoadmapTaskDone wiring, which re-renders this wrap-up. */
-function _roadmapCards(it, idx, showLinkedEntries = false) {
+function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false) {
     const rai = it.roadmapAI || {};
     const _raiTasksOK = !rai.intention || String(rai.intention).trim() === String(it.title || "").trim();
     const dones = rai.done || {};
@@ -579,6 +580,7 @@ function _roadmapCards(it, idx, showLinkedEntries = false) {
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
       const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
+      if(priorityOnly && (d || !taskIsPriority(noteContext))) return '';
       return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext, showLinkedEntries, deleteCall: `deleteRoadmapTask(${idx},${i})` });
     });
 }
@@ -729,6 +731,44 @@ function _todayChecklist() {
 }
 
 // Both pages render the same task cards and call the same save/toggle handlers.
+function findPriorityNode(nodes, id) {
+  for (const node of nodes || []) {
+    if (String(node.id) === String(id)) return node;
+    const child = findPriorityNode(node.children, id); if (child) return child;
+  }
+  return null;
+}
+function taskIsPriority(context) {
+  const rai = intentions.find(g => String(g.id) === context.goalId)?.roadmapAI;
+  return context.kind === 'my' ? !!findPriorityNode(rai?.userTasks, context.taskId)?.priority
+    : !!rai?.priorityTasks?.[taskNoteKey(context)];
+}
+export function wrapTogglePriority(encodedKey) {
+  let key, parts;
+  try { key = decodeURIComponent(encodedKey); parts = JSON.parse(key); } catch (_) { return; }
+  const goal = intentions.find(g => String(g.id) === parts[0]);
+  if (!goal?.roadmapAI) return;
+  if (parts[1] === 'my') {
+    const node = findPriorityNode(goal.roadmapAI.userTasks, parts[2]);
+    if (!node) return; node.priority = !node.priority;
+  } else if (parts[1] === 'roadmap') {
+    goal.roadmapAI.priorityTasks ||= {};
+    if (goal.roadmapAI.priorityTasks[key]) delete goal.roadmapAI.priorityTasks[key];
+    else goal.roadmapAI.priorityTasks[key] = true;
+  } else return;
+  saveIntentions(); renderWrapup();
+}
+
+export function masterPriorityTaskMarkup() {
+  return intentions.map((goal, idx) => {
+    _ensureGoalLetters();
+    if (_ensureCodes(goal)) saveIntentions();
+    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, true)
+      + _roadmapCards(goal, idx, true, true).join('');
+    return rows ? `<section><h3 style="font-size:16px;color:#292929">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
+  }).join('');
+}
+
 export function goalWorkspaceTaskMarkup(idx) {
   const it = intentions[idx];
   if (!it) return { my: '', roadmap: '', done: 0, total: 0 };
@@ -1000,6 +1040,7 @@ if (typeof window !== 'undefined') {
   window.wrapPinResource = wrapPinResource;   // pin/unpin a resource (kept on refresh)
   window.wrapFavResource = wrapFavResource;   // ♥ favorite a resource → Favorites panel shortcut
   window.wrapDrillDown = wrapDrillDown;       // break a My-Action into deeper sub-steps
+  window.wrapTogglePriority = wrapTogglePriority;
   window.wrapSubToggle = wrapSubToggle;       // toggle a nested sub-step done
   window.wrapSubDelete = wrapSubDelete;       // delete a nested sub-step
   window.wrapCardMenu = wrapCardMenu;         // open/close a card's ⋯ overflow menu
