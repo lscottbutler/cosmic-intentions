@@ -53,11 +53,17 @@ function renderOpening(t) {
  if(gratitude){
   const svg=p.closest('svg');let title=surface.querySelector('#ci-gratitude-title');
   if(!title){title=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','text');title.id='ci-gratitude-title';for(const [key,value] of Object.entries({x:835,'text-anchor':'middle',fill:'#000','font-family':'Arial,Helvetica,sans-serif','font-size':72,'font-weight':400,'letter-spacing':8}))title.setAttribute(key,value);svg.append(title);}
+  const memberIntro=surface.querySelector('#ci-intro-scene');
+  if(gratitudeV2&&window.CIGratitudeMaster&&memberIntro){
+   let dim=surface.querySelector('#ci-master-intro-dim');if(!dim){dim=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','path');dim.id='ci-master-intro-dim';dim.setAttribute('d','M35 35 H1634 V816 Q835 750 35 816 Z');dim.setAttribute('fill','#000');dim.style.pointerEvents='none';memberIntro.insertBefore(dim,memberIntro.children[1]);}
+   // Fade the title first; the image reaches 75% darkness at 5s, before intro VO.
+   dim.style.opacity=String(t<model.cards[0].duration ? .75*Math.max(0,Math.min(1,(t-2)/3)):0);
+  }
   if(gratitudeV2&&window.CIGratitudeMaster&&t<model.cards[0].duration){
    // The member opening keeps the ready title geometry throughout its fade.
    box.setAttribute('d','M232 217 Q835 169 1437 217 L1437 475 Q835 525 232 475 Z');box.setAttribute('stroke-width','35');box.setAttribute('stroke','#05728b');box.style.display='';plate.style.display='none';
    const opacity=Math.max(0,1-t/2);box.style.opacity=String(opacity);title.style.opacity=String(opacity);title.style.display='';title.textContent=o.text;title.setAttribute('x','835');title.setAttribute('y','410');title.setAttribute('font-family','Arial,Helvetica,sans-serif');title.setAttribute('font-size','150');title.setAttribute('font-weight','400');title.setAttribute('letter-spacing','18');title.setAttribute('fill','#000');title.setAttribute('stroke','none');title.setAttribute('textLength','960');title.setAttribute('lengthAdjust','spacingAndGlyphs');
-   const fo=p.closest('foreignObject');fo.setAttribute('x','300');fo.setAttribute('y','250');fo.setAttribute('width','1070');fo.setAttribute('height','450');p.style.fontFamily='Arial,Helvetica,sans-serif';p.style.fontWeight='400';p.style.fontSize='96px';p.style.letterSpacing='0';p.style.lineHeight='1.08';p.style.padding='0';p.style.color='#303030';p.style.background='transparent';p.style.textShadow='none';p.textContent=t<2?'':model.cards[0].text;p.style.opacity=String(Math.max(0,Math.min(1,(t-2)/2)));return;
+   const fo=p.closest('foreignObject');fo.setAttribute('x','300');fo.setAttribute('y','250');fo.setAttribute('width','1070');fo.setAttribute('height','450');p.style.fontFamily='Arial,Helvetica,sans-serif';p.style.fontWeight='400';p.style.fontSize='96px';p.style.letterSpacing='0';p.style.lineHeight='1.08';p.style.padding='0';p.style.color='#b8b8b8';p.style.background='transparent';p.style.textShadow='none';p.textContent=t<2?'':model.cards[0].text;p.style.opacity=String(Math.max(0,Math.min(1,(t-2)/2)));return;
   }
   box.style.opacity='1';title.style.opacity='1';
   const left=290-47*expansion,right=1380+58*expansion,bottom=300+432*expansion;box.setAttribute('d','M'+left+' 169 Q835 79 '+right+' 169 L'+right+' '+bottom+' Q835 '+(bottom+86)+' '+left+' '+bottom+' Z');plate.style.display='none';
