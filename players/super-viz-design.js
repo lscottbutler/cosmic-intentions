@@ -34,10 +34,17 @@
  }
  relaxation.remove();
  const first=group('Relaxation',relaxationChoices,'meditation-design-relaxation');
+ let boardImages=[],boardTitle='',boardEnabled=false;
+ try{const raw=JSON.parse(localStorage.getItem('ci_dvb_images')||'[]');if(Array.isArray(raw))boardImages=raw.filter(src=>typeof src==='string'&&(src.startsWith('/')&&!src.startsWith('//')||src.startsWith('https://')||src.startsWith('data:image/'))).slice(0,5);boardTitle=localStorage.getItem('ci_dvb_title')||'Saved goal';boardEnabled=boardImages.length>0&&sessionStorage.getItem('ci-super-viz-board')==='on';}catch{}
+ const boardChoices=document.createElement('div');boardChoices.id='superVizBoard';
+ const boardHelp=document.createElement('p');boardHelp.textContent=boardImages.length?'Goal: '+boardTitle+' · '+boardImages.length+' saved images. Images change every 7 seconds after relaxation.':'Open a goal’s Digital Vision Board to save its images, then return to Super Viz.';
+ function sendBoard(){frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-vision-board',enabled:boardEnabled,images:boardImages},location.origin);}
+ for(const enabled of [false,true]){const b=document.createElement('button');b.type='button';b.className='med-relaxation-option';b.dataset.visionBoard=enabled?'on':'off';b.textContent=enabled?'On — focus on goal images':'Off';b.disabled=enabled&&!boardImages.length;b.setAttribute('aria-pressed',String(enabled===boardEnabled));b.onclick=()=>{boardEnabled=enabled;try{sessionStorage.setItem('ci-super-viz-board',enabled?'on':'off');}catch{}for(const button of boardChoices.querySelectorAll('button'))button.setAttribute('aria-pressed',String((button.dataset.visionBoard==='on')===enabled));selections();frame.src=frame.src;};boardChoices.append(b);}boardChoices.append(boardHelp);
+ const board=group('Digital Vision Board',boardChoices,'super-viz-design-board');
  const left=group('Visualization Guidance',modes,'meditation-design-modes');
  const right=group('Visualization Time',times,'meditation-design-times');
  const customize=document.createElement('button');customize.type='button';customize.className='meditation-customize-toggle';const currentHeading=document.createElement('span');currentHeading.className='meditation-current-heading';currentHeading.textContent='CURRENTLY PLAYING';const currentSettings=document.createElement('span');currentSettings.className='meditation-current-settings';customize.append(currentHeading,currentSettings);
- const customPanel=document.createElement('div');customPanel.id='meditationCustomization';customPanel.append(first,left,right,note);customize.setAttribute('aria-controls',customPanel.id);customize.onclick=()=>setCustomizeOpen(!expanded);
+ const customPanel=document.createElement('div');customPanel.id='meditationCustomization';customPanel.append(first,board,left,right,note);customize.setAttribute('aria-controls',customPanel.id);customize.onclick=()=>setCustomizeOpen(!expanded);
  menu.replaceChildren(summary,customize,customPanel);footer.append(menu);stage.append(footer,play);
  function setCustomizeOpen(value){expanded=value;customize.setAttribute('aria-expanded',String(value));customPanel.hidden=!value;customPanel.inert=!value;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(value));}
  function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));note.hidden=!groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');}
@@ -48,12 +55,12 @@
   if(!mode||!time)return;
   const label=mode.getAttribute('aria-label')||mode.querySelector('.med-mode-label').innerText.trim();
   const minutes=time.dataset.medTime;
-  const symbols=[relaxationSeconds?(relaxationSeconds===30?'30s':String(relaxationSeconds/60)):'X',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
-  const states=[relaxationSeconds?'Relaxation on':'Relaxation off',mode.dataset.medMode==='unguided'?'No guidance, bells only':mode.dataset.medMode==='lightly-guided'?'Slightly guided':'Instructions',minutes+' minutes'];
+  const symbols=[relaxationSeconds?(relaxationSeconds===30?'30s':String(relaxationSeconds/60)):'X',boardEnabled?'✓':'X',mode.dataset.medMode==='unguided'?'X':mode.dataset.medMode==='lightly-guided'?'S':'I',minutes];
+  const states=[relaxationSeconds?'Relaxation on':'Relaxation off',boardEnabled?'Goal images on':'Goal images off',mode.dataset.medMode==='unguided'?'No guidance, bells only':mode.dataset.medMode==='lightly-guided'?'Slightly guided':'Instructions',minutes+' minutes'];
   const guidance=mode.dataset.medMode==='unguided'?'UNGUIDED':mode.dataset.medMode==='lightly-guided'?'SLIGHTLY GUIDED':'GUIDED';
-  const details=[' Is '+(relaxationSeconds?durationLabel(relaxationSeconds).replace('seconds','Seconds').replace('minute','Minute'):'OFF'),' Is '+guidance,' Is '+minutes+(minutes==='1'?' Minute':' Minutes')];
+  const details=[' Is '+(relaxationSeconds?durationLabel(relaxationSeconds).replace('seconds','Seconds').replace('minute','Minute'):'OFF'),' Is '+(boardEnabled?'ON':'OFF'),' Is '+guidance,' Is '+minutes+(minutes==='1'?' Minute':' Minutes')];
   groups.forEach((g,i)=>{if(g.detail.textContent!==details[i])g.detail.textContent=details[i];if(g.indicator.textContent!==symbols[i])g.indicator.textContent=symbols[i];g.toggle.setAttribute('aria-label',g.label+': '+states[i]);});
-  currentSettings.textContent=minutes+' MINUTE / '+guidance+' / '+(relaxationSeconds?durationLabel(relaxationSeconds).toUpperCase()+' RELAXATION MODULE':'NO RELAXATION MODULE');
+  currentSettings.textContent=minutes+' MINUTE / '+guidance+' / '+(relaxationSeconds?durationLabel(relaxationSeconds).toUpperCase()+' RELAXATION MODULE':'NO RELAXATION MODULE')+(boardEnabled?' / VISION BOARD':'');
   summary.textContent=label+' / '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
   sendSummary();
  }
@@ -72,7 +79,7 @@
   else setExpanded(!expanded);
  }};
  // Mode/duration reloads retain selection semantics and reset the visible control.
- frame.addEventListener('load',()=>{sendSummary();play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');renderControl('ready');frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
+ frame.addEventListener('load',()=>{sendBoard();sendSummary();play.disabled=true;playback='ready';activeSeconds=0;lastTick=0;recorded=false;session=sessionID();shell.classList.remove('meditation-design-running','meditation-design-quiet');renderControl('ready');frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'configure-relaxation',seconds:relaxationSeconds},location.origin);frame.contentWindow?.postMessage({type:'ci-meditation-command',command:'status'},location.origin);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ci-meditation-state'||!shell.classList.contains('meditation-player-mode'))return;
   const data=event.data,now=performance.now();

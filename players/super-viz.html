@@ -142,7 +142,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
   let completionBellPlayed=false;
   completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
-  const openingText='OK, close your eyes and begin';
+  let openingText='OK, close your eyes and begin';
   let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingVoiceEnded=false,openingGeneration=0;
   function syncOpening(){
     if(openingPhase==='ready'||openingPhase==='done')return false;
@@ -268,6 +268,11 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   });
   addEventListener('message',event=>{
     if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
+    if(event.data.command==='configure-vision-board'&&event.source!==parent)return;
+    if(event.data.command==='configure-vision-board'&&state==='ready'){
+      const images=Array.isArray(event.data.images)?event.data.images.filter(src=>typeof src==='string'&&(src.startsWith('/')&&!src.startsWith('//')||src.startsWith('https://')||src.startsWith('data:image/'))).slice(0,5):[];
+      window.CISuperVizBoard={enabled:event.data.enabled===true&&images.length>0,images};openingText=window.CISuperVizBoard.enabled?'Keep your eyes open and focus on the images of your goal.':'OK, close your eyes and begin';render();return;
+    }
     if(event.data.command==='configure-relaxation'&&state==='ready'){
       const seconds=Number(event.data.seconds);
       if(Number.isInteger(seconds)&&(seconds===0||seconds>=30&&seconds<=1800)){relaxationMs=seconds*1000;totalMs=meditationMs+relaxationMs;remaining=totalMs;render();}
