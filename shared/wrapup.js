@@ -538,7 +538,7 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
-    return (priorityOnly && (d || !taskIsPriority(noteContext)) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries, deleteCall }))
+    return (priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext))) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries, deleteCall }))
          + _renderUserTree(u.children, p, idx, code, showLinkedEntries, priorityOnly);
   }).join('');
 }
@@ -580,7 +580,7 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
         _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
       const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
-      if(priorityOnly && (d || !taskIsPriority(noteContext))) return '';
+      if(priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext)))) return '';
       return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext, showLinkedEntries, deleteCall: `deleteRoadmapTask(${idx},${i})` });
     });
 }
@@ -759,12 +759,13 @@ export function wrapTogglePriority(encodedKey) {
   saveIntentions(); renderWrapup();
 }
 
-export function masterPriorityTaskMarkup() {
+export function masterPriorityTaskMarkup(priority = true) {
+  const filter = priority ? true : 'nonpriority';
   return intentions.map((goal, idx) => {
     _ensureGoalLetters();
     if (_ensureCodes(goal)) saveIntentions();
-    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, true)
-      + _roadmapCards(goal, idx, true, true).join('');
+    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, filter)
+      + _roadmapCards(goal, idx, true, filter).join('');
     const shade = GREY_SHADES[idx % GREY_SHADES.length];
     const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
     const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];
