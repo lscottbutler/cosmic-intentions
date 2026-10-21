@@ -32,6 +32,7 @@ fs.mkdirSync(out,{recursive:true});
   await expect(member.locator('.gratitude-master-toggle')).toHaveCount(2);
   await expect(member.locator('#gratitude-relaxation,#gratitude-guidance')).toHaveCount(0);
   await member.locator('[aria-controls="gratitude-times"]').click();await member.locator('#gratitude-times [data-value="1"]').click();
+  await member.locator('[aria-controls="gratitude-modules"]').click();const random=member.locator('#gratitude-modules [data-value="random"]');await expect(random).toHaveText('Random');await random.click();await expect(random).toHaveAttribute('aria-pressed','true');await expect(summary).toContainText('RANDOM · MODULE 1');await page.screenshot({path:path.join(out,'gratitude-random-'+width+'.png'),fullPage:true});await member.locator('#gratitude-modules [data-value="1"]').click();await expect(random).toHaveAttribute('aria-pressed','false');
   await expect(summary).toContainText('1 MINUTE / MODULE 1');await expect(summary).not.toContainText('RELAXATION');await expect(summary).not.toContainText('GUIDED');
   await page.screenshot({path:path.join(out,'gratitude-simplified-'+width+'.png'),fullPage:true});await summary.click();
   await play.click();await expect.poll(()=>member.locator('body').evaluate(()=>PlayerEditor.state().running),{timeout:15000}).toBe(true);
