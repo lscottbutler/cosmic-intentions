@@ -65,7 +65,7 @@
   if(clockIcon.dataset.icon!==icon){clockIcon.dataset.icon=icon;clockIcon.classList.toggle('meditation-eye-closed',eye==='closed');}
   clock.dataset.icon=icon;clockIcon.setAttribute('stroke',eye?'#fff':'none');clockIcon.setAttribute('stroke-width',eye?'6':'0');clockIcon.setAttribute('fill',eye?'none':'#fff');clockIcon.setAttribute('stroke-linecap','round');
   if(eye)clockIcon.setAttribute('d',eye==='open'?'M-54 0 Q0 -52 54 0 Q0 52 -54 0 Z M-16 0 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0':'M-50 -10 Q0 35 50 -10 M-35 3 L-46 19 M-16 14 L-20 33 M16 14 L20 33 M35 3 L46 19');
-  else clockIcon.setAttribute('d',complete?'M-43 -2 L0 -39 L43 -2 L34 8 L29 4 V40 H9 V13 H-9 V40 H-29 V4 L-34 8 Z':running?'M-26 -39 H-7 V39 H-26 Z M7 -39 H26 V39 H7 Z':'M-22 -42 L43 0 L-22 42 Z');
+  else clockIcon.setAttribute('d',complete?'M-43 -2 L0 -39 L43 -2 L34 8 L29 4 V40 H9 V13 H-9 V40 H-29 V4 L-34 8 Z':running?'M-30 -33 H-9 V33 H-30 Z M9 -33 H30 V33 H9 Z':'M-22 -42 L43 0 L-22 42 Z');
   slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';const showDot=!ready&&!['title','wait','dim'].includes(openingPhase);dot.style.visibility=showDot?'visible':'hidden';transport.style.opacity=showDot?'1':'0';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
   const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryY=boundaryRailY;
