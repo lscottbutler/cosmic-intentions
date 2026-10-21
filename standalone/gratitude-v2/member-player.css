@@ -18,3 +18,10 @@ main{padding:0!important;max-width:none!important;margin:0!important}.editor-wor
 @media(prefers-reduced-motion:reduce){.gratitude-master-controls{transition:none}}
 
 .gratitude-current span{font-family:Arial,Helvetica,sans-serif}.gratitude-master-transport [role]{outline:none}.gratitude-master-transport [role]:focus-visible{outline:5px solid white;outline-offset:5px}
+
+/* Compact centered summary and persistent lower-right audio control. */
+.gratitude-footer-row{position:relative;display:flex;align-items:center;justify-content:center;min-height:48px}
+.gratitude-footer-row .gratitude-current{width:max-content;max-width:calc(100% - 100px);padding:1.5cqw 3cqw;box-sizing:border-box}
+.gratitude-mute{position:absolute;right:0;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:8px;border:1px solid white;border-radius:50%;background:#303030;color:white;cursor:pointer;box-shadow:none}
+.gratitude-mute .sound-muted{display:none}.gratitude-mute[aria-pressed=true] .sound-muted{display:block}.gratitude-mute[aria-pressed=true] .sound-waves{display:none}
+.gratitude-master-controls.is-playing{max-height:none;padding-top:0;padding-bottom:0}.gratitude-master-controls.is-playing .gratitude-current,.gratitude-master-controls.is-playing #gratitude-customization{display:none}.gratitude-master-controls.is-playing .gratitude-footer-row{min-height:48px}
