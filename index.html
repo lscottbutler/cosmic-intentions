@@ -1249,9 +1249,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
   <div class="page" id="page-goalworkspace">
-    <section class="goal-workspace-page" aria-labelledby="goalWorkspaceTitle">
-      <h1 id="goalWorkspaceTitle">MY TO DO LIST</h1>
-      <p>Manage one goal: your notes, your to-dos, and your journal entries.</p>
+    <section class="goal-workspace-page" aria-label="MY TO DO LIST">
       <label class="goal-workspace-selector">Choose a goal<select id="goalWorkspaceSelect" onchange="goalWorkspaceSelect(this)" disabled><option value="">— Choose a goal —</option></select></label>
       <p id="goalWorkspaceEmpty" class="goal-workspace-empty">No goals with saved notes or journal entries yet. Link a note or journal entry to a goal in Roadmap or Journal to see it here.</p>
       <div id="goalWorkspaceContent" hidden>
