@@ -152,7 +152,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
   <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
   <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
-  <button class="tnav-btn" onclick="openGoalWorkspace()">Goal Workspace</button>
+  <button class="tnav-btn" onclick="openGoalWorkspace()">MY TO DO LIST</button>
   <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
   <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
   <button class="tnav-btn" onclick="navTo('meditation')">Meditation</button>
@@ -1014,7 +1014,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
       <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
-  <button class="tnav-btn" onclick="openGoalWorkspace()">Goal Workspace</button>
+  <button class="tnav-btn" onclick="openGoalWorkspace()">MY TO DO LIST</button>
             <button class="tnav-btn" onclick="openMyRoadmap()">Roadmap</button>
             <button class="tnav-btn" onclick="openVizLibrary()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path fill-rule="evenodd" d="M2 12 Q12 3.2 22 12 Q12 20.8 2 12 Z M12 7.8 A4.2 4.2 0 1 0 12.01 16.2 A4.2 4.2 0 1 0 12 7.8 Z"/><circle cx="12" cy="12" r="1.9"/></svg>Visualization Library</button>
             <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>
@@ -1242,7 +1242,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <section class="task-notes-page" aria-labelledby="taskNotesTitle">
       <div class="task-notes-heading"><h1 id="taskNotesTitle">Notes</h1><span id="taskNotesCount"></span></div>
       <p>Your goal notes and notes from My Actions and Roadmap tasks.</p>
-      <button type="button" class="goal-workspace-link" onclick="openGoalWorkspace()">Open goal workspace · Notes / To-do / Journal</button>
+      <button type="button" class="goal-workspace-link" onclick="openGoalWorkspace()">Open MY TO DO LIST · Notes / To-do / Journal</button>
       <div id="taskNotesList"></div>
     </section>
   </div>
@@ -1250,7 +1250,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <!-- DASHBOARD 3 — THE CROWN JEWEL -->
   <div class="page" id="page-goalworkspace">
     <section class="goal-workspace-page" aria-labelledby="goalWorkspaceTitle">
-      <h1 id="goalWorkspaceTitle">Goal Workspace</h1>
+      <h1 id="goalWorkspaceTitle">MY TO DO LIST</h1>
       <p>Manage one goal: your notes, your to-dos, and your journal entries.</p>
       <label class="goal-workspace-selector">Choose a goal<select id="goalWorkspaceSelect" onchange="goalWorkspaceSelect(this)" disabled><option value="">— Choose a goal —</option></select></label>
       <p id="goalWorkspaceEmpty" class="goal-workspace-empty">No goals with saved notes or journal entries yet. Link a note or journal entry to a goal in Roadmap or Journal to see it here.</p>
