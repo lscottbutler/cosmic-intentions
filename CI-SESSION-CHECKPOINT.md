@@ -369,3 +369,6 @@ Scott requested reducing curved crossbar to35. Existing stroke was40 SVG units; 
 
 
 21October2026 — Approved Currently Playing display: remove subtitle beneath MEDITATION; lower box now has centered CURRENTLY PLAYING and dynamic settings, e.g.10 MINUTE / UNGUIDED / NO RELAXATION MODULE. Remove lower-box chevron; retain click/keyboard customization and settings. Desktop1440/phone390 visual renders inspected; title subtitle hidden, no chevron, default/dynamic settings and keyboard/selection retention checks pass; build/template gate pass. Branch review/meditation-currently-playing-20261021; recovery5eb3a9b38ad089aac43b13f67766edf5213ac8da. No protected engine/template/Supabase/access-setting changes. Publication pending verification. DailyBiblebackup retained; sixhourbackup issue unresolved.
+
+
+21October2026 — Approved hide initial yellow scrubber dot: marker visibility hidden only in ready state, visible after Play (including paused/completed). Desktop1440/phone390 opening renders inspected; initialhidden/afterPlayvisible assertions and centralplay/pause/Home checks pass; build/template gate pass. Branch review/meditation-hide-ready-dot-20261021; recoveryca7d461aede6b10b0bb367f464d086f8f9847061. No protected engine/template, Supabase, or access-setting changes. Publication pending verification; dailyBiblebackupretained, sixhourbackupissueunresolved.
