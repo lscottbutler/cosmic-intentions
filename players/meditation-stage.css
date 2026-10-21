@@ -38,3 +38,6 @@ body.meditation-stage-ready .meditation-title-summary{display:block}
 /* Relaxation uses the same narrow white/teal title card as Meditation. */
 body.meditation-stage-relaxation .meditation-banner{display:block;fill:#fff;stroke:#05728b;stroke-width:35px}
 body.meditation-stage-relaxation .meditation-title{fill:#000;stroke:none;font-size:150px;letter-spacing:18px}
+
+/* Session details now appear in the lower CURRENTLY PLAYING box. */
+body .meditation-title-summary{display:none!important}
