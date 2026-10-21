@@ -765,7 +765,10 @@ export function masterPriorityTaskMarkup() {
     if (_ensureCodes(goal)) saveIntentions();
     const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, true)
       + _roadmapCards(goal, idx, true, true).join('');
-    return rows ? `<section><h3 style="font-size:16px;color:#292929;text-align:center">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
+    const shade = GREY_SHADES[idx % GREY_SHADES.length];
+    const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
+    const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];
+    return rows ? `<section><h3 style="font-size:16px;color:${shade.text};background:${shade.bg};border:2px solid ${color.bg};border-radius:10px;padding:12px 16px;text-align:center;overflow-wrap:anywhere">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
   }).join('');
 }
 
