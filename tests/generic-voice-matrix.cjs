@@ -21,7 +21,7 @@ fs.mkdirSync(out,{recursive:true});
    const NativeAudio=window.Audio;window.__medAudio=[];
    window.Audio=function(...args){const a=new NativeAudio(...args);window.__medAudio.push(a);return a;};window.Audio.prototype=NativeAudio.prototype;
    // Host speech voices vary. Capture cue dispatch; recorded audio below remains real.
-   window.__spoken=[];Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[],cancel(){},pause(){this.paused=true},resume(){this.paused=false},speak(u){window.__spoken.push(u.text)},paused:false}});
+   window.__spoken=[];Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[],cancel(){},pause(){this.paused=true},resume(){this.paused=false},speak(u){window.__spoken.push(u.text);if(u.text==='OK, close your eyes and begin')setTimeout(()=>u.onend?.(),0);},paused:false}});
   });
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   const command=async(command,extra={})=>page.evaluate(({command,extra})=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>{removeEventListener('message',listener);reject(new Error('No engine status'))},5000);function listener(e){if(e.data?.type==='ci-meditation-state'){clearTimeout(timer);removeEventListener('message',listener);resolve(e.data);}}addEventListener('message',listener);postMessage({type:'ci-meditation-command',command,...extra},location.origin)}),{command,extra});
@@ -30,7 +30,7 @@ fs.mkdirSync(out,{recursive:true});
    await expect(page.locator('.meditation-start-control')).toBeVisible();
    for(const seconds of [0,30,60,180,300,420,600,900,1800]){const status=await command('configure-relaxation',{seconds});assert.equal(status.totalSeconds,minutes*60+seconds);}
    await command('configure-relaxation',{seconds:60});await command('toggle');
-   assert.equal(await page.evaluate(()=>window.__spoken.length),1);assert((await page.evaluate(()=>window.__spoken[0])).includes('Your mind can take its time, too.'));
+   await page.waitForTimeout(3500);assert.equal(await page.evaluate(()=>window.__spoken.filter(t=>t!=='OK, close your eyes and begin').length),1);assert((await page.evaluate(()=>window.__spoken.find(t=>t!=='OK, close your eyes and begin'))).includes('Your mind can take its time, too.'));
    await command('toggle');assert(await page.evaluate(()=>speechSynthesis.paused));await command('toggle');assert(!(await page.evaluate(()=>speechSynthesis.paused)));
    await page.evaluate(()=>{window.__spoken=[]});const status=await command('seek',{ratio:66/(minutes*60+60)});assert.equal(status.phase,'meditation');
    if(mode==='unguided')assert.equal(await page.evaluate(()=>window.__spoken.length),0);
