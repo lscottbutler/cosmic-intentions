@@ -41,3 +41,11 @@ body.meditation-stage-relaxation .meditation-title{fill:#000;stroke:none;font-si
 
 /* Session details now appear in the lower CURRENTLY PLAYING box. */
 body .meditation-title-summary{display:none!important}
+
+/* Play immediately dims the image by75%; opening eyes lead into Pause. */
+body.meditation-stage-active .meditation-quiet-art{opacity:1;transition:none}
+.meditation-eye-closed{animation:meditation-eye-close .6s ease both}
+@keyframes meditation-eye-close{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.meditation-eye-closed{animation:none}}
+
+body.meditation-stage-opening :is(.meditation-banner,.meditation-title){display:none!important}
