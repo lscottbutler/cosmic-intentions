@@ -225,7 +225,7 @@ function renderMasterPriorities() {
     for (const node of [selector, document.getElementById('goalWorkspaceEmpty'), document.getElementById('goalWorkspaceContent')]) manage.append(node);
   }
   const rows = masterPriorityTaskMarkup();
-  host.innerHTML = '<h2 style="background:#8b5cc7;color:white">MASTER TO-DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
+  host.innerHTML = '<h2 style="background:#8b5cc7;color:white;justify-content:center;text-align:center">MASTER TO-DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
 }
 
 export function renderGoalWorkspaceTasks() {
