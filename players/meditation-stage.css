@@ -57,3 +57,9 @@ body.meditation-stage-opening .session-card p{color:#303030;text-shadow:none}
 body.meditation-stage-preface .session-card p{visibility:hidden}
 .meditation-progress-marker{transition:opacity .6s ease}
 @media(prefers-reduced-motion:reduce){.meditation-progress-marker{transition:none}}
+
+/* Fade the unchanged opening title card before the existing start sequence. */
+.meditation-banner,.meditation-title{opacity:1;transition:opacity 2s ease-in-out}
+body.meditation-title-fading :is(.meditation-banner,.meditation-title){display:block!important;opacity:0}
+body.meditation-title-fading .meditation-title{fill:#000;stroke:none}
+@media(prefers-reduced-motion:reduce){.meditation-banner,.meditation-title{transition:none}}
