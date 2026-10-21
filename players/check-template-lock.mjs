@@ -85,9 +85,11 @@ import { readFileSync } from 'node:fs';
 // Desktop/phone eye states rendered/reviewed; frame geometry unchanged.
 // 2026-10-21: Scott requested1s delay,3s dim, dotfade, eyes then voice/closedeye.
 // Desktop/phone ordered opening rendered and inspected; frame geometry unchanged.
+// 2026-10-21: Scott requested a slow title-card fade before the opening routine.
+// Title fade rendered and inspected; frame geometry unchanged.
 const lockedFiles = {
   "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
-  "players/meditation.html": "67327ae883fd7f1d68d1738a37a184a6d3fec024"
+  "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
