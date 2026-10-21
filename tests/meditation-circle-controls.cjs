@@ -36,8 +36,8 @@ fs.mkdirSync(out,{recursive:true});
 
   const center=play,dot=engine.locator('.meditation-progress-marker circle');
   await expect(center).toHaveAttribute('role','button');await expect(engine.locator('.meditation-center-countdown')).toHaveCount(0);
-  await expect(engine.locator('.meditation-dot-control')).toHaveCount(0);await expect(dot).toHaveAttribute('r','16.5');
-  await center.focus();await page.keyboard.press('Enter');await state('running');await expect(center).toHaveAttribute('data-control','pause');
+  await expect(engine.locator('.meditation-dot-control')).toHaveCount(0);await expect(dot).toHaveAttribute('r','16.5');await expect(dot).toBeHidden();await master.locator('#stage').screenshot({path:path.join(out,'dot-hidden-ready-'+width+'.png')});
+  await center.focus();await page.keyboard.press('Enter');await state('running');await expect(dot).toBeVisible();await expect(center).toHaveAttribute('data-control','pause');
   await center.click();await state('paused');await expect(center).toHaveAttribute('data-control','play');
   await center.focus();await page.keyboard.press('Space');await state('running');
   await seek(.3);await state('running');

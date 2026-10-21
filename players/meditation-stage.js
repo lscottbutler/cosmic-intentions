@@ -59,7 +59,7 @@
   const complete=state==='complete',running=state==='running';
   clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
   clockIcon.setAttribute('d',complete?'M-43 -2 L0 -39 L43 -2 L34 8 L29 4 V40 H9 V13 H-9 V40 H-29 V4 L-34 8 Z':running?'M-26 -39 H-7 V39 H-26 Z M7 -39 H26 V39 H7 Z':'M-22 -42 L43 0 L-22 42 Z');
-  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
+  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility=ready?'hidden':'visible';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
   const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryY=boundaryRailY;
   relaxationEnd.style.display=relaxationMs?'':'none';relaxationEnd.dataset.progress=boundary;for(const [k,v] of Object.entries({x1:boundaryX,x2:boundaryX,y1:boundaryY-28,y2:boundaryY+28}))relaxationEnd.setAttribute(k,v);
