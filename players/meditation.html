@@ -151,19 +151,20 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   let completionBellPlayed=false;
   completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
   const openingText='OK, close your eyes and begin';
-  let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingGeneration=0;
+  let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingVoiceEnded=false,openingGeneration=0;
   function syncOpening(){
     if(openingPhase==='ready'||openingPhase==='done')return false;
     narration?.pause();bellAudio?.pause();
     if(state==='paused'){if('speechSynthesis' in window)speechSynthesis.pause();return true;}
     if(state!=='running')return false;
-    if(openingPhase==='closed'){
+    if(['wait','dim','dot','open'].includes(openingPhase))return true;
+    if(openingSpoken){
+      if(!openingVoiceEnded){if('speechSynthesis' in window&&speechSynthesis.paused)speechSynthesis.resume();return true;}
       if(totalMs-remaining-openingClosedElapsed>=3000){openingPhase='done';openingEndElapsed=totalMs-remaining;return false;}
       return true;
     }
-    if(openingSpoken){if('speechSynthesis' in window&&speechSynthesis.paused)speechSynthesis.resume();return true;}
     openingSpoken=true;const generation=openingGeneration;
-    const closeEyes=()=>{if(generation!==openingGeneration||openingPhase!=='open')return;openingPhase='closed';openingClosedElapsed=totalMs-remaining;render();};
+    const closeEyes=()=>{if(generation!==openingGeneration||openingPhase!=='closed')return;openingVoiceEnded=true;openingClosedElapsed=totalMs-remaining;render();};
     if(!('speechSynthesis' in window)){closeEyes();return true;}
     stopSpeech();const utterance=new SpeechSynthesisUtterance(openingText);utterance.lang='en-US';utterance.rate=.9;
     const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
@@ -243,16 +244,17 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   }
   function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,totalSeconds:totalMs/1000,phase:inRelaxation()?'relaxation':'meditation',phaseRemaining:inRelaxation()?remaining-meditationMs:remaining,hasGuidance:Boolean(textStage?.querySelector('p')?.textContent.trim())},location.origin)}
   function render(){
+    if(state==='running'&&['wait','dim','dot','open'].includes(openingPhase)){const elapsed=totalMs-remaining;openingPhase=elapsed<1000?'wait':elapsed<4000?'dim':elapsed<4600?'dot':elapsed<5200?'open':'closed';}
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();if(openingPhase==='open'||openingPhase==='closed'){textStage.querySelector('p').textContent=openingText;textStage.querySelector('p').style.opacity='1';}window.CIMeditationPresentation?.render({state,remaining,totalMs,openingPhase,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();if(openingPhase==='closed'){textStage.querySelector('p').textContent=openingText;textStage.querySelector('p').style.opacity='1';}window.CIMeditationPresentation?.render({state,remaining,totalMs,openingPhase,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
   function toggle(){
     clearTick();
-    if(state==='ready'||state==='complete'){openingGeneration++;openingPhase='open';openingSpoken=false;openingEndElapsed=0;remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
+    if(state==='ready'||state==='complete'){openingGeneration++;openingPhase='wait';openingSpoken=false;openingVoiceEnded=false;openingEndElapsed=0;remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
     if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
     if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
   }

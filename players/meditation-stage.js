@@ -51,21 +51,21 @@
  window.CIMeditationPresentation={render({state,remaining,totalMs,phase,openingPhase}){
   if(!mounted&&!mount())return;
   const relaxation=phase==='relaxation';document.body.classList.toggle('meditation-stage-relaxation',relaxation&&state!=='ready');title.textContent=relaxation&&state!=='ready'?'RELAXATION':'MEDITATION';title.setAttribute('y',state==='ready'||relaxation?'365':'388');
-  document.body.classList.toggle('meditation-stage-opening',openingPhase==='open'||openingPhase==='closed');
+  const opening=['wait','dim','dot','open','closed'].includes(openingPhase);document.body.classList.toggle('meditation-stage-opening',opening);document.body.classList.toggle('meditation-stage-preface',['wait','dim','dot','open'].includes(openingPhase));
   const ready=state==='ready',text=stage.querySelector('p'),guidance=Boolean(text.textContent.trim());
-  const quiet=state==='running'&&!guidance;
-  document.body.classList.toggle('meditation-stage-active',state==='running');document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
+  const quiet=state==='running'&&!guidance&&!opening;
+  document.body.classList.toggle('meditation-stage-active',state==='running'&&openingPhase!=='wait');document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
   box.setAttribute('d',ready||relaxation?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   const complete=state==='complete',running=state==='running';
-  clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
+  clock.dataset.opening=openingPhase;clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
   const eye=state==='running'&&(openingPhase==='open'||openingPhase==='closed')?openingPhase:null;
   const icon=eye?'eyes-'+eye:complete?'home':running?'pause':'play';
   if(clockIcon.dataset.icon!==icon){clockIcon.dataset.icon=icon;clockIcon.classList.toggle('meditation-eye-closed',eye==='closed');}
   clock.dataset.icon=icon;clockIcon.setAttribute('stroke',eye?'#fff':'none');clockIcon.setAttribute('stroke-width',eye?'6':'0');clockIcon.setAttribute('fill',eye?'none':'#fff');clockIcon.setAttribute('stroke-linecap','round');
   if(eye)clockIcon.setAttribute('d',eye==='open'?'M-54 0 Q0 -52 54 0 Q0 52 -54 0 Z M-16 0 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0':'M-50 -10 Q0 35 50 -10 M-35 3 L-46 19 M-16 14 L-20 33 M16 14 L20 33 M35 3 L46 19');
   else clockIcon.setAttribute('d',complete?'M-43 -2 L0 -39 L43 -2 L34 8 L29 4 V40 H9 V13 H-9 V40 H-29 V4 L-34 8 Z':running?'M-26 -39 H-7 V39 H-26 Z M7 -39 H26 V39 H7 Z':'M-22 -42 L43 0 L-22 42 Z');
-  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility=ready?'hidden':'visible';
+  slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';const showDot=!ready&&!['wait','dim'].includes(openingPhase);dot.style.visibility=showDot?'visible':'hidden';transport.style.opacity=showDot?'1':'0';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
   const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryY=boundaryRailY;
   relaxationEnd.style.display=relaxationMs?'':'none';relaxationEnd.dataset.progress=boundary;for(const [k,v] of Object.entries({x1:boundaryX,x2:boundaryX,y1:boundaryY-28,y2:boundaryY+28}))relaxationEnd.setAttribute(k,v);

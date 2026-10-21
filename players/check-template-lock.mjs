@@ -83,9 +83,11 @@ import { readFileSync } from 'node:fs';
 // checks across three modes and full playback regression pass; geometry unchanged.
 // 2026-10-21: Scott requested spoken eye-opening sequence and immediate75%dim.
 // Desktop/phone eye states rendered/reviewed; frame geometry unchanged.
+// 2026-10-21: Scott requested1s delay,3s dim, dotfade, eyes then voice/closedeye.
+// Desktop/phone ordered opening rendered and inspected; frame geometry unchanged.
 const lockedFiles = {
   "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
-  "players/meditation.html": "571e9062debd66e3bc9d553144ba93bae2a4577d"
+  "players/meditation.html": "67327ae883fd7f1d68d1738a37a184a6d3fec024"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

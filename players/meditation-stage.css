@@ -52,3 +52,8 @@ body.meditation-stage-opening :is(.meditation-banner,.meditation-title){display:
 
 body.meditation-stage-opening .session-card p{color:#303030;text-shadow:none}
 @media(prefers-reduced-motion:reduce){body.meditation-stage-active .meditation-quiet-art{transition:none}}
+
+/* Ordered opening:1second wait,3second dim, marker fade, eyes, spoken cue. */
+body.meditation-stage-preface .session-card p{visibility:hidden}
+.meditation-progress-marker{transition:opacity .6s ease}
+@media(prefers-reduced-motion:reduce){.meditation-progress-marker{transition:none}}
