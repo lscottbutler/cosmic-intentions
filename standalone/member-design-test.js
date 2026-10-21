@@ -26,8 +26,8 @@
   journal:['My Journal','Reflect in your own words.','Link an entry to a goal with the existing goal selector.'],
   gratitude:['Gratitude','Choose from your existing gratitude practices.','Use the current page choices to select a practice.'],
   wins:['My Wins','Record the progress you notice.','Add a win using the existing form; your entries remain yours.'],
-  'task-notes':['Notes','Find your goal and action notes in one place.','Open Goal Workspace to see the connected notes and journal entries.'],
-  'goal-workspace':['Goal Workspace','Keep a goal’s notes, actions and journal entries together.','Choose a goal with linked notes or journal entries. Use the existing Save controls to keep edits.'],
+  'task-notes':['Notes','Find your goal and action notes in one place.','Open MY TO DO LIST to see the connected notes and journal entries.'],
+  'goal-workspace':['MY TO DO LIST','Keep a goal’s notes, actions and journal entries together.','Choose a goal with linked notes or journal entries. Use the existing Save controls to keep edits.'],
   'cosmic-library':['Cosmic Library','Explore your existing collection of ideas and lessons.','Search by topic, or clear your filters to return to the full collection.'],
   'entrepreneur-library':['Entrepreneur Library','Explore your existing entrepreneur skills.','Choose a skill card to open its individual experience.'],
   'ent-card':['Entrepreneur Skill Cards','Work with the selected skill.','Use the existing tabs for Mindset, Go Deeper and My Notes.'],
@@ -133,7 +133,7 @@
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
+ const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';document.getElementById('review-menu-items').append(usageLink);
  delete menuLabels.gratitude;
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
