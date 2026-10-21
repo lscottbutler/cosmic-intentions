@@ -108,9 +108,9 @@ assert.deepEqual(Array.from(taskNotes.taskLinkedRecords(myAction), n => n.id).so
 assert.deepEqual(Array.from(taskNotes.taskLinkedRecords(roadmapAction), n => n.id), [added.record.id]);
 const linkedMarkup = wrap.goalWorkspaceTaskMarkup(0);
 assert.match(linkedMarkup.my, /class="goal-action-records"/);
-assert.match(linkedMarkup.my, /<h4>Journal entry<\/h4>\s*<p>Journal for My Actions A1<\/p>/);
+assert.match(linkedMarkup.my, /<h4[^>]*>JOURNAL<\/h4>\s*<p>Journal for My Actions A1<\/p>/);
 assert.doesNotMatch(linkedMarkup.roadmap, /Journal for My Actions A1/);
-assert.match(linkedMarkup.roadmap, /<h4>Note<\/h4>\s*<p>Note for Roadmap A1<\/p>/);
+assert.match(linkedMarkup.roadmap, /<h4[^>]*>NOTE<\/h4>\s*<p>Note for Roadmap A1<\/p>/);
 assert.equal(taskNotes.taskLinkedRecords({ ...myAction, goalId: 'g2' }).length, 0);
 assert.ok(workspace.saveGoalWorkspaceRecord({ cat: 'note', goalId: 'g2', text: 'Wrong goal action', taskKey: myKey }).error);
 const countBeforeRelink = notes.readNotes().length;

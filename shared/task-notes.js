@@ -22,10 +22,13 @@ export function taskLinkedRecords(context, records = readNotes()) {
 }
 
 export function taskLinkedEntriesHTML(context, records = readNotes()) {
-  return taskLinkedRecords(context, records).map(n => `<section class="goal-action-entry">
-    <h4>${n.cat === 'note' ? 'Journal entry' : 'Note'}</h4>
-    <p>${esc(n.text)}</p>
-  </section>`).join('');
+  const linked = taskLinkedRecords(context, records);
+  return [{ label: 'NOTE', color: '#2e7d32', entries: linked.filter(n => n.cat !== 'note'), empty: 'No note yet.' },
+    { label: 'JOURNAL', color: '#1e90ff', entries: linked.filter(n => n.cat === 'note'), empty: 'No journal entry yet.' }]
+    .map(group => `<section class="goal-action-entry">
+      <h4 style="display:inline-block;padding:6px 12px;border:1px solid ${group.color};border-radius:5px;background:${group.color};color:#fff">${group.label}</h4>
+      ${group.entries.length ? group.entries.map(n => `<p>${esc(n.text)}</p>`).join('') : `<p>${group.empty}</p>`}
+    </section>`).join('');
 }
 
 function savedTaskNote(context) {
