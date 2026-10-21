@@ -165,3 +165,9 @@ if (process.env.CI_TASK_FIXTURE) {
   await (await import('node:fs/promises')).writeFile('/tmp/ci-priority-fixture.html', html);
 }
 console.log('PASS priority filter, completion, removal, all goals and saved JSON');
+const nonpriority = wrap.masterPriorityTaskMarkup(false);
+assert.match(nonpriority, /Water the seeds/);
+assert.match(nonpriority, /Prepare soil/);
+assert.doesNotMatch(nonpriority, /Find seeds|Practice chords|Compare seeds/, 'other tasks exclude priorities and completed tasks');
+if (process.env.CI_TASK_FIXTURE) await (await import('node:fs/promises')).writeFile('/tmp/ci-nonpriority-data.json', JSON.stringify({priority:wrap.masterPriorityTaskMarkup(),other:nonpriority}));
+console.log('PASS nonpriority task and linked-record partition');
