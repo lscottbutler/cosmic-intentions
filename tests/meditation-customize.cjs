@@ -35,11 +35,12 @@ fs.mkdirSync(out,{recursive:true});
   await master.locator('#stage').screenshot({path:path.join(out,'ready-'+width+'.png')});
 
   const customize=master.locator('.meditation-customize-toggle'),headers=master.locator('.meditation-design-toggle');
-  await expect(customize).toHaveText('CUSTOMIZE MY MEDITATION SESSION');await expect(customize).toHaveAttribute('aria-expanded','false');await expect(headers.first()).toBeHidden();
+  await expect(customize.locator('.meditation-current-heading')).toHaveText('CURRENTLY PLAYING');await expect(customize.locator('.meditation-current-settings')).toHaveText('10 MINUTE / UNGUIDED / NO RELAXATION MODULE');await expect(engine.locator('.meditation-title-summary')).toBeHidden();assert.equal(await customize.evaluate(e=>getComputedStyle(e,'::after').display),'none');await expect(customize).toHaveAttribute('aria-expanded','false');await expect(headers.first()).toBeHidden();
   await master.locator('#stage').screenshot({path:path.join(out,'customize-collapsed-'+width+'.png')});
   await customize.focus();await page.keyboard.press('Enter');await expect(customize).toHaveAttribute('aria-expanded','true');await expect(headers).toHaveCount(3);await expect(headers.first()).toBeVisible();
   for(const [index,selector] of [[0,'[data-relaxation-seconds="60"]'],[1,'[data-med-mode="lightly-guided"]'],[2,'[data-med-time="15"]']]){await headers.nth(index).click();await master.locator(selector).click();await expect(play).toBeVisible();}
   await expect(master.locator('.meditation-design-summary')).toHaveText('Lightly Guided / 15 Minutes with Relaxation Intro');
+  await expect(customize.locator('.meditation-current-settings')).toHaveText('15 MINUTE / SLIGHTLY GUIDED / 1 MINUTE RELAXATION MODULE');
   await master.locator('#stage').screenshot({path:path.join(out,'customize-expanded-'+width+'.png')});
   await customize.focus();await page.keyboard.press('Space');await expect(headers.first()).toBeHidden();await expect(customize).toHaveAttribute('aria-expanded','false');
   await customize.click();await expect(master.locator('[data-med-time="15"]')).toHaveClass(/active/);await expect(master.locator('[data-relaxation-seconds="60"]')).toHaveAttribute('aria-pressed','true');
