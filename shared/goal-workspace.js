@@ -212,7 +212,17 @@ function renderMasterPriorities() {
   if (!host) {
     host = document.createElement('section'); host.id = 'masterPriorityTasks';
     host.className = 'goal-workspace-section';
-    document.querySelector('.goal-workspace-selector').before(host);
+    const selector = document.querySelector('.goal-workspace-selector');
+    selector.before(host);
+    const manage = document.createElement('details');
+    manage.id = 'goalWorkspaceManage';
+    manage.style.marginTop = '24px';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Manage all tasks and notes';
+    summary.style.cssText = 'cursor:pointer;padding:12px;border:1px solid #c9ccd1;border-radius:8px;font-weight:700';
+    manage.append(summary);
+    host.after(manage);
+    for (const node of [selector, document.getElementById('goalWorkspaceEmpty'), document.getElementById('goalWorkspaceContent')]) manage.append(node);
   }
   const rows = masterPriorityTaskMarkup();
   host.innerHTML = '<h2 style="background:#8b5cc7;color:white">MASTER TO-DO LIST</h2><p>Unfinished priorities from all your goals. Tap P on any task to add it here.</p>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
