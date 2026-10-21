@@ -36,7 +36,7 @@
  const first=group('Relaxation',relaxationChoices,'meditation-design-relaxation');
  const left=group('Meditation Guidance',modes,'meditation-design-modes');
  const right=group('Meditation Time',times,'meditation-design-times');
- const customize=document.createElement('button');customize.type='button';customize.className='meditation-customize-toggle';customize.textContent='CUSTOMIZE MY MEDITATION SESSION';
+ const customize=document.createElement('button');customize.type='button';customize.className='meditation-customize-toggle';const currentHeading=document.createElement('span');currentHeading.className='meditation-current-heading';currentHeading.textContent='CURRENTLY PLAYING';const currentSettings=document.createElement('span');currentSettings.className='meditation-current-settings';customize.append(currentHeading,currentSettings);
  const customPanel=document.createElement('div');customPanel.id='meditationCustomization';customPanel.append(first,left,right,note);customize.setAttribute('aria-controls',customPanel.id);customize.onclick=()=>setCustomizeOpen(!expanded);
  menu.replaceChildren(summary,customize,customPanel);footer.append(menu);stage.append(footer,play);
  function setCustomizeOpen(value){expanded=value;customize.setAttribute('aria-expanded',String(value));customPanel.hidden=!value;customPanel.inert=!value;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(value));}
@@ -53,6 +53,7 @@
   const guidance=mode.dataset.medMode==='unguided'?'UNGUIDED':mode.dataset.medMode==='lightly-guided'?'SLIGHTLY GUIDED':'GUIDED';
   const details=[' Is '+(relaxationSeconds?durationLabel(relaxationSeconds).replace('seconds','Seconds').replace('minute','Minute'):'OFF'),' Is '+guidance,' Is '+minutes+(minutes==='1'?' Minute':' Minutes')];
   groups.forEach((g,i)=>{if(g.detail.textContent!==details[i])g.detail.textContent=details[i];if(g.indicator.textContent!==symbols[i])g.indicator.textContent=symbols[i];g.toggle.setAttribute('aria-label',g.label+': '+states[i]);});
+  currentSettings.textContent=minutes+' MINUTE / '+guidance+' / '+(relaxationSeconds?durationLabel(relaxationSeconds).toUpperCase()+' RELAXATION MODULE':'NO RELAXATION MODULE');
   summary.textContent=label+' / '+minutes+(minutes==='1'?' Minute':' Minutes')+(relaxationSeconds?' with Relaxation Intro':'');
   sendSummary();
  }
