@@ -85,3 +85,9 @@ body:is(.gratitude-two-column,.meditation-two-column) #ci-review-frame{min-width
 
 /* Square every player wrapper while retaining circular controls. */
 #ci-review-frame{border-radius:0!important}
+
+/* Citadel: title only, with Search directly below the header shortcuts. */
+body.citadel-header-clean .orientation>div:first-child>p{display:none}
+body.citadel-header-clean .shortcuts #player-search{width:100%;flex:none;margin:0;align-self:stretch}
+body.citadel-header-clean .shortcuts #player-search button{padding:0;min-height:0;flex:0 0 36px}
+body.citadel-header-clean .shortcuts #player-search input{padding:6px;font-size:14px}
