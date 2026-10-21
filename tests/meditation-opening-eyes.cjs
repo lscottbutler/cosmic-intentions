@@ -36,7 +36,8 @@ fs.mkdirSync(out,{recursive:true});
 
   const center=play,art=engine.locator('.meditation-quiet-art'),marker=engine.locator('.meditation-progress-marker'),dot=marker.locator('circle');
   await expect(dot).toBeHidden();await center.click();await state('running');
-  await page.waitForTimeout(500);await expect(art).toHaveCSS('opacity','0');await expect(dot).toBeHidden();assert.deepEqual(await engine.locator('body').evaluate(()=>window.__spoken),[]);
+  await page.waitForTimeout(700);const titleOpacity=Number(await engine.locator('.meditation-banner').evaluate(e=>getComputedStyle(e).opacity));assert(titleOpacity>0&&titleOpacity<1);await expect(art).toHaveCSS('opacity','0');await expect(dot).toBeHidden();await page.screenshot({path:path.join(out,'title-fading-'+width+'.png'),animations:'allow'});await expect(center).toHaveAttribute('data-opening','wait',{timeout:2500});
+  await expect(art).toHaveCSS('opacity','0');await expect(dot).toBeHidden();assert.deepEqual(await engine.locator('body').evaluate(()=>window.__spoken),[]);
   await page.waitForTimeout(1500);const midway=Number(await art.evaluate(e=>getComputedStyle(e).opacity));assert(midway>0&&midway<1);await expect(dot).toBeHidden();
   await expect(dot).toBeVisible({timeout:3500});const markerFade=Number(await marker.evaluate(e=>getComputedStyle(e).opacity));assert(markerFade<1);
   await expect(art).toHaveCSS('opacity','1',{timeout:1000});await expect(center).toHaveAttribute('data-icon','eyes-open',{timeout:1500});assert.deepEqual(await engine.locator('body').evaluate(()=>window.__spoken),[]);
@@ -48,7 +49,7 @@ fs.mkdirSync(out,{recursive:true});
   await center.click();await state('paused');assert(await engine.locator('body').evaluate(()=>speechSynthesis.paused));await center.click();await state('running');await expect(center).toHaveAttribute('data-icon','eyes-closed');
   const endedAt=Date.now();await engine.locator('body').evaluate(()=>window.__openingUtterance.onend());await page.waitForTimeout(1800);await expect(center).toHaveAttribute('data-icon','eyes-closed');await expect(center).toHaveAttribute('data-icon','pause',{timeout:2500});assert(Date.now()-endedAt>=2900);
   assert.equal(await engine.locator('body').evaluate(()=>window.__spoken.filter(t=>t==='OK, close your eyes and begin').length),1);
-  await seek(1);await state('complete');await expect(center).toHaveAttribute('data-icon','home');assert.deepEqual(errors,[]);console.log('PASS1sec wait,3sec dim, dotfade, openeyes, concurrentvoice/closedeyes,3sec hold, pause',width);
+  await seek(1);await state('complete');await expect(center).toHaveAttribute('data-icon','home');assert.deepEqual(errors,[]);console.log('PASS2sec titlefade,1sec wait,3sec dim, dotfade, openeyes, concurrentvoice/closedeyes,3sec hold, pause',width);
   await context.close();
  }}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
