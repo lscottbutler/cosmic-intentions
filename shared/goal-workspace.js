@@ -177,33 +177,6 @@ export function goalWorkspaceSelect(select) {
 export function renderGoalWorkspace() {
   if (!activeWorkspace()) return;
   renderMasterPriorities();
-  const select = document.getElementById('goalWorkspaceSelect');
-  const eligibleGoals = goalWorkspaceGoals();
-  if (!initialSelectionRead) {
-    initialSelectionRead = true;
-    const raw = new URLSearchParams(location.search).get('goal');
-    const idx = raw === null ? 0 : Number(raw);
-    selectedGoalId = intentions[idx] ? String(intentions[idx].id) : null;
-    if (!eligibleGoals.some(({ goal }) => String(goal.id) === selectedGoalId)) {
-      selectedGoalId = eligibleGoals.length ? String(eligibleGoals[0].goal.id) : null;
-    }
-  }
-  if (selectedGoalId && !eligibleGoals.some(({ goal }) => String(goal.id) === selectedGoalId)) selectedGoalId = null;
-  select.innerHTML = '<option value="">— Choose a goal —</option>' + eligibleGoals.map(({ goal: g, index }) =>
-    `<option value="${esc(String(g.id))}">${esc(goalLetter(g, index) + ' · ' + (g.title || 'Untitled goal'))}</option>`).join('');
-  const goal = selectedGoal();
-  select.value = goal ? selectedGoalId : '';
-  select.disabled = !eligibleGoals.length;
-  document.getElementById('goalWorkspaceContent').hidden = !goal;
-  const empty = document.getElementById('goalWorkspaceEmpty');
-  empty.hidden = !!goal;
-  empty.textContent = eligibleGoals.length ? 'Choose a goal to see its notes, to-dos, and journal entries.' : 'No goals with saved notes or journal entries yet. Link a note or journal entry to a goal in Roadmap or Journal to see it here.';
-  if (!goal) return;
-  document.getElementById('goalWorkspaceGoal').textContent = goal.title || 'Untitled goal';
-  document.getElementById('goalWorkspaceNoteComposer').innerHTML = entryForm('goal-note');
-  document.getElementById('goalWorkspaceJournalComposer').innerHTML = entryForm('note');
-  renderGoalWorkspaceTasks();
-  renderGoalWorkspaceNotes();
 }
 
 function renderMasterPriorities() {
@@ -214,17 +187,15 @@ function renderMasterPriorities() {
     host.className = 'goal-workspace-section';
     const selector = document.querySelector('.goal-workspace-selector');
     selector.before(host);
-    const manage = document.createElement('details');
-    manage.id = 'goalWorkspaceManage';
-    manage.style.marginTop = '24px';
-    const summary = document.createElement('summary');
-    summary.textContent = 'Manage all tasks and notes';
-    summary.style.cssText = 'cursor:pointer;padding:12px;border:1px solid #c9ccd1;border-radius:8px;font-weight:700';
-    manage.append(summary);
-    host.after(manage);
-    for (const node of [selector, document.getElementById('goalWorkspaceEmpty'), document.getElementById('goalWorkspaceContent')]) manage.append(node);
+    const other = document.createElement('section');
+    other.id = 'otherTodoTasks'; other.className = 'goal-workspace-section';
+    host.after(other);
+    selector.hidden = true;
+    document.getElementById('goalWorkspaceEmpty').style.display = 'none';
+    document.getElementById('goalWorkspaceContent').style.display = 'none';
   }
   const rows = masterPriorityTaskMarkup();
+  document.getElementById('otherTodoTasks').innerHTML = '<h2 style="justify-content:center;text-align:center">TO-DO</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
   host.innerHTML = '<h2 style="background:#8b5cc7;color:white;justify-content:center;text-align:center">MASTER TO-DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
 }
 
