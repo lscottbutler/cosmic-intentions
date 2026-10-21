@@ -53,6 +53,13 @@ function renderOpening(t) {
  if(gratitude){
   const svg=p.closest('svg');let title=surface.querySelector('#ci-gratitude-title');
   if(!title){title=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','text');title.id='ci-gratitude-title';for(const [key,value] of Object.entries({x:835,'text-anchor':'middle',fill:'#000','font-family':'Arial,Helvetica,sans-serif','font-size':72,'font-weight':400,'letter-spacing':8}))title.setAttribute(key,value);svg.append(title);}
+  if(gratitudeV2&&window.CIGratitudeMaster&&t<model.cards[0].duration){
+   // The member opening keeps the ready title geometry throughout its fade.
+   box.setAttribute('d','M232 217 Q835 169 1437 217 L1437 475 Q835 525 232 475 Z');box.setAttribute('stroke-width','35');box.setAttribute('stroke','#05728b');box.style.display='';plate.style.display='none';
+   const opacity=Math.max(0,1-t/2);box.style.opacity=String(opacity);title.style.opacity=String(opacity);title.style.display='';title.textContent=o.text;title.setAttribute('x','835');title.setAttribute('y','410');title.setAttribute('font-family','Arial,Helvetica,sans-serif');title.setAttribute('font-size','150');title.setAttribute('font-weight','400');title.setAttribute('letter-spacing','18');title.setAttribute('fill','#000');title.setAttribute('stroke','none');title.setAttribute('textLength','960');title.setAttribute('lengthAdjust','spacingAndGlyphs');
+   const fo=p.closest('foreignObject');fo.setAttribute('x','300');fo.setAttribute('y','250');fo.setAttribute('width','1070');fo.setAttribute('height','450');p.style.fontFamily='Arial,Helvetica,sans-serif';p.style.fontWeight='400';p.style.fontSize='96px';p.style.letterSpacing='0';p.style.lineHeight='1.08';p.style.padding='0';p.style.color='#303030';p.style.background='transparent';p.style.textShadow='none';p.textContent=t<2?'':model.cards[0].text;p.style.opacity=String(Math.max(0,Math.min(1,(t-2)/2)));return;
+  }
+  box.style.opacity='1';title.style.opacity='1';
   const left=290-47*expansion,right=1380+58*expansion,bottom=300+432*expansion;box.setAttribute('d','M'+left+' 169 Q835 79 '+right+' 169 L'+right+' '+bottom+' Q835 '+(bottom+86)+' '+left+' '+bottom+' Z');plate.style.display='none';
   if(gratitudeV2){const left=232,right=1437,bottom=475+257*expansion;box.setAttribute('d','M'+left+' 217 Q835 169 '+right+' 217 L'+right+' '+bottom+' Q835 '+(525+293*expansion)+' '+left+' '+bottom+' Z');box.setAttribute('stroke-width','35');box.setAttribute('stroke','#05728b');}
   title.textContent=o.text;title.setAttribute('y',gratitudeV2?372:260);title.style.display='';
@@ -338,6 +345,7 @@ const open=icons.querySelector('#ci-v2-open-eye'),closed=icons.querySelector('#c
  if(photoVisible&&model.cards[currentIndex+1]?.label==='Post-slideshow message'){const b=boundaries()[currentIndex];photos.style.opacity=String(ease((b.end-time)/2));}
 
  let frame=surface.querySelector('#ci-transition-frame');if(!frame){frame=surface.ownerDocument.createElementNS('http://www.w3.org/2000/svg','g');frame.id='ci-transition-frame';frame.style.pointerEvents='none';frame.innerHTML='<path fill="#05728b" fill-rule="evenodd" d="M0 0H1669V939H0Z M35 30H1634V910H35Z"/>';svg.append(frame);}frame.querySelector('path').setAttribute('d',photoVisible?'M0 0H1669V1259H0Z M35 30H1634V1230H35Z':'M0 0H1669V939H0Z M35 30H1634V910H35Z');frame.style.display=quiet?'none':'';}
+ if(gratitudeV2&&window.CIGratitudeMaster&&time<model.cards[0].duration)renderOpening(time);
 }
 $('quiet-duration').onchange=()=>{const minutes=Number($('quiet-duration').value);if(!mini()||![1,2,3,5,10,15,30,45,60].includes(minutes))return;stop();model.quietMinutes=minutes;model.cards.find(c=>c.label==='Quiet countdown').duration=minutes*60;mark();render();initPreview();};
 
