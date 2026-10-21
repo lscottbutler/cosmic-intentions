@@ -36,6 +36,7 @@ fs.mkdirSync(out,{recursive:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await master.locator('#stage').screenshot({path:path.join(out,'ready-'+width+'.png')});
 
+  await master.locator('.meditation-customize-toggle').click();
   const toggles=master.locator('.meditation-design-toggle');
   for(let i=0;i<3;i++){
    await toggles.nth(i).click();for(let j=0;j<3;j++)await expect(toggles.nth(j)).toHaveAttribute('aria-expanded',String(i===j));
