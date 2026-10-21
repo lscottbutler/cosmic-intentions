@@ -107,6 +107,10 @@
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
   current=action;const copy=features[action];
+  document.body.classList.toggle('citadel-header-clean',action==='home');
+  const headerSearch=document.getElementById('player-search');
+  const searchParent=action==='home'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
+  if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
   if(title.dataset.lettermark!==copy[0]){
    title.dataset.lettermark=copy[0];title.setAttribute('aria-label',copy[0]);title.replaceChildren();
    let letterIndex=0;
