@@ -1,5 +1,5 @@
 (()=>{
- let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='',transport,transportIcon,clockText,relaxationEnd,clock,clockIcon;
+ let mounted=false,slider,dot,box,title,quietArt,stage,description,descriptionBox,summaryText='',transport,relaxationEnd,clock,clockIcon;
  const ns='http://www.w3.org/2000/svg';
  function updateSummary(){
   if(!description)return;
@@ -24,21 +24,21 @@
   const lowerFill=document.createElementNS(ns,'path');lowerFill.classList.add('meditation-lower-fill');lowerFill.setAttribute('d','M35 816 Q835 750 1634 816 V939 H35 Z');lowerFill.setAttribute('fill','#7ea573');lowerFill.style.pointerEvents='none';svg.prepend(lowerFill);
   slider=[...svg.children].find(e=>e.tagName==='path'&&!e.classList.contains('meditation-banner')&&!e.classList.contains('meditation-lower-fill'));
   slider.classList.add('meditation-seek');slider.setAttribute('d','M35 816 Q835 750 1634 816');slider.setAttribute('role','button');slider.setAttribute('tabindex','0');slider.setAttribute('stroke-width','35');slider.setAttribute('stroke','#05728b');
-  dot=svg.querySelector('circle');dot.setAttribute('fill','#fff59d');dot.setAttribute('stroke','none');dot.setAttribute('r','49.5');dot.style.pointerEvents='all';
+  dot=svg.querySelector('circle');dot.setAttribute('fill','#fff59d');dot.setAttribute('stroke','none');dot.setAttribute('r','16.5');dot.style.pointerEvents='none';
   clock=document.createElementNS(ns,'g');clock.classList.add('meditation-start-control');clock.style.outline='none';
   const face=document.createElementNS(ns,'path');for(const [k,v] of Object.entries({d:'M744 783 a90.5 90.5 0 1 0 181 0 a90.5 90.5 0 1 0 -181 0',fill:'#303030',stroke:'#05728b','stroke-width':25}))face.setAttribute(k,v);
-  clockText=document.createElementNS(ns,'text');for(const [k,v] of Object.entries({x:834.5,y:783,fill:'#fff','font-family':'Arial,sans-serif','font-size':60,'text-anchor':'middle','dominant-baseline':'central'}))clockText.setAttribute(k,v);clockText.classList.add('meditation-center-countdown');clockIcon=document.createElementNS(ns,'path');clockIcon.setAttribute('d','M-22 -42 L43 0 L-22 42 Z');clockIcon.setAttribute('fill','#fff');clockIcon.setAttribute('transform','translate(834.5 783)');clock.append(face,clockText,clockIcon);svg.append(clock);
+  clockIcon=document.createElementNS(ns,'path');clockIcon.setAttribute('fill','#fff');clockIcon.setAttribute('transform','translate(834.5 783)');clock.append(face,clockIcon);svg.append(clock);
   relaxationEnd=document.createElementNS(ns,'line');relaxationEnd.classList.add('meditation-relaxation-end');for(const [k,v] of Object.entries({stroke:'#fff59d','stroke-width':12,'stroke-linecap':'round'}))relaxationEnd.setAttribute(k,v);relaxationEnd.style.pointerEvents='none';const boundaryTitle=document.createElementNS(ns,'title');boundaryTitle.textContent='Relaxation ends — meditation begins';relaxationEnd.append(boundaryTitle);svg.append(relaxationEnd);
-  transport=document.createElementNS(ns,'g');transport.classList.add('meditation-dot-control');transport.setAttribute('role','button');transport.setAttribute('tabindex','0');svg.append(transport);transport.append(dot);
-  transportIcon=document.createElementNS(ns,'path');transportIcon.setAttribute('fill','#303030');transportIcon.style.pointerEvents='none';transport.append(transportIcon);
+  transport=document.createElementNS(ns,'g');transport.classList.add('meditation-progress-marker');transport.style.pointerEvents='none';svg.insertBefore(transport,clock);transport.append(dot);
   const toggle=()=>window.postMessage({type:'ci-meditation-command',command:'toggle'},location.origin);
   clock.addEventListener('focus',()=>face.setAttribute('stroke','#fff'));clock.addEventListener('blur',()=>face.setAttribute('stroke','#05728b'));
-  clock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();if(clock.dataset.ready==='true')toggle();});
-  clock.addEventListener('keydown',event=>{if(clock.dataset.ready==='true'&&(event.key===' '||event.key==='Enter')){event.preventDefault();toggle();}});
+  const activate=()=>{if(clock.dataset.control==='home')parent.postMessage({type:'ci-meditation-home'},location.origin);else toggle();};
+  clock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();activate();});
+  clock.addEventListener('keydown',event=>{if(event.key===' '||event.key==='Enter'){event.preventDefault();activate();}});
   const seek=ratio=>window.postMessage({type:'ci-meditation-command',command:'seek',ratio},location.origin);
   let drag=null;
   const pointerRatio=event=>{const r=svg.getBoundingClientRect();return ((event.clientX-r.left)/r.width*1669-88)/1493;};
-  for(const control of [slider,transport]){
+  for(const control of [slider]){
    control.addEventListener('pointerdown',event=>{event.stopImmediatePropagation();control.setPointerCapture(event.pointerId);drag={x:event.clientX,y:event.clientY,moved:false};});
    control.addEventListener('pointermove',event=>{if(!drag||!control.hasPointerCapture(event.pointerId))return;event.stopImmediatePropagation();if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>5)drag.moved=true;if(drag.moved)seek(pointerRatio(event));});
    control.addEventListener('pointerup',event=>{event.stopImmediatePropagation();if(control.hasPointerCapture(event.pointerId))control.releasePointerCapture(event.pointerId);if(drag&&!drag.moved)toggle();drag=null;});
@@ -56,17 +56,15 @@
   document.body.classList.toggle('meditation-stage-ready',ready);document.body.classList.toggle('meditation-stage-quiet',quiet);
   box.setAttribute('d',ready||relaxation?'M170 217 Q835 169 1499 217 L1499 475 Q835 525 170 475 Z':'M232 169 Q835 79 1437 169 L1437 732 Q835 818 232 732 Z');
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
-  if(!ready&&document.activeElement===clock)clock.blur();
-  clock.dataset.ready=String(ready);clock.setAttribute('role',ready?'button':'timer');clock.setAttribute('tabindex',ready?'0':'-1');clock.setAttribute('aria-label',ready?'Start meditation':'Meditation countdown');clock.style.pointerEvents=ready?'all':'none';clock.style.cursor=ready?'pointer':'default';clockText.style.display=ready||state==='complete'?'none':'';clockIcon.style.display=ready||state==='complete'?'':'none';clockIcon.setAttribute('d',state==='complete'?'M-34 25 H34 L25 12 V-10 Q25 -34 0 -34 Q-25 -34 -25 -10 V12 Z M-10 34 Q0 49 10 34 Z M-5 -40 H5 V-32 H-5 Z':'M-22 -42 L43 0 L-22 42 Z');if(state==='complete')clock.setAttribute('aria-label','Session complete, closing bell');transport.style.display=ready?'none':'';
+  const complete=state==='complete',running=state==='running';
+  clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause meditation':state==='paused'?'Resume meditation':'Start meditation');clock.style.pointerEvents='all';clock.style.cursor='pointer';
+  clockIcon.setAttribute('d',complete?'M-43 -2 L0 -39 L43 -2 L34 8 L29 4 V40 H9 V13 H-9 V40 H-29 V4 L-34 8 Z':running?'M-26 -39 H-7 V39 H-26 Z M7 -39 H26 V39 H7 Z':'M-22 -42 L43 0 L-22 42 Z');
   slider.hidden=false;slider.style.visibility='visible';slider.style.pointerEvents='stroke';dot.style.visibility='visible';
   const meditationMs=(Number(new URLSearchParams(location.search).get('t'))||15)*60000;
-  const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryOffset=boundaryX-834.5,boundaryY=Math.abs(boundaryOffset)<165?Math.min(boundaryRailY,783-Math.sqrt(165*165-boundaryOffset*boundaryOffset)):boundaryRailY;
+  const relaxationMs=Math.max(0,totalMs-meditationMs),boundary=relaxationMs/totalMs,boundaryX=88+1493*boundary,boundaryRatio=(boundaryX-35)/1599,boundaryRailY=816-132*boundaryRatio*(1-boundaryRatio),boundaryY=boundaryRailY;
   relaxationEnd.style.display=relaxationMs?'':'none';relaxationEnd.dataset.progress=boundary;for(const [k,v] of Object.entries({x1:boundaryX,x2:boundaryX,y1:boundaryY-28,y2:boundaryY+28}))relaxationEnd.setAttribute(k,v);
-  const seconds=Math.max(0,Math.ceil((relaxation?remaining-meditationMs:remaining)/1000));clockText.textContent=seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
-  const action=state==='running'?'Pause':state==='complete'?'Replay':state==='paused'?'Resume':'Play';
-  slider.setAttribute('aria-label',action+' meditation; drag to seek');transport.setAttribute('aria-label',action+' meditation');transport.dataset.control=state==='running'?'pause':state==='complete'?'replay':'play';
-  transportIcon.setAttribute('d',state==='running'?'M-20 -25 H-5 V25 H-20 Z M5 -25 H20 V25 H5 Z':state==='complete'?'M-15 -12 V-30 L-35 -10 L-15 8 V-5 A23 23 0 1 1 -20 16 L-30 22 A34 34 0 1 0 -15 -16 Z':'M-13 -27 L29 0 L-13 27 Z');
-  const progress=Math.max(0,Math.min(1,1-remaining/totalMs));const dotX=88+1493*progress,dotRatio=(dotX-35)/1599,railY=816-132*dotRatio*(1-dotRatio),clockOffset=dotX-834.5,dotY=Math.abs(clockOffset)<165?Math.min(railY,783-Math.sqrt(165*165-clockOffset*clockOffset)):railY;dot.setAttribute('cx',dotX);dot.setAttribute('cy',dotY);transportIcon.setAttribute('transform','translate('+dotX+' '+dotY+')');slider.dataset.progress=progress;
+  slider.setAttribute('aria-label',(running?'Pause':'Play')+' meditation; drag to seek');
+  const progress=Math.max(0,Math.min(1,1-remaining/totalMs));const dotX=88+1493*progress,dotRatio=(dotX-35)/1599,dotY=816-132*dotRatio*(1-dotRatio);dot.setAttribute('cx',dotX);dot.setAttribute('cy',dotY);slider.dataset.progress=progress;
   // Tenfold headline size; fit complete passages instead of clipping their words.
   const target=text.textContent.length>440?300:360;
   let size=target;text.style.fontSize=size+'px';
