@@ -34,6 +34,19 @@
   admin:['Admin','Your existing administrator workspace.','Owner access is required. Member presentation changes do not apply here.']
  };
 
+
+ const headerSticker=document.createElement('button');headerSticker.id='header-encouragement';headerSticker.type='button';
+ headerSticker.setAttribute('aria-label','Tap for encouragement');headerSticker.title='Tap to hear a little encouragement';
+ const headerStickerImage=document.createElement('img');headerStickerImage.alt='';headerStickerImage.draggable=false;headerSticker.append(headerStickerImage);
+ document.querySelector('.orientation').append(headerSticker);
+ const headerStickerFiles=['rocket','baloon','doll','paint-brush','hand-bird','lungs','tiger','flowers','record-player','panda','messenger','dino','respect','dog','bullhorn','ship','travel','hand-puppet','batter'];
+ headerSticker.addEventListener('click',()=>{
+  const docs=[...searchDocuments(),...searchDocuments(document.getElementById('header-admin-note-frame')?.contentDocument)];
+  const voice=docs.map(doc=>doc.defaultView).find(win=>typeof win?.playEncouragement==='function');
+  if(voice){voice.playEncouragement();headerSticker.title='Tap to hear a little encouragement';}
+  else headerSticker.title='Voice-over is still loading. Please try again.';
+ });
+
  const searchForm=document.getElementById('player-search');
  const searchInput=document.getElementById('player-search-input');
  const searchDialog=document.getElementById('player-search-results');
@@ -107,6 +120,8 @@
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
   current=action;const copy=features[action];
+  headerSticker.hidden=action==='admin';
+  headerStickerImage.src='/images/home-row/home-'+headerStickerFiles[Object.keys(features).indexOf(action)%headerStickerFiles.length]+'.webp';
   document.body.classList.toggle('citadel-header-clean',action==='home');
   const headerSearch=document.getElementById('player-search');
   const searchParent=action==='home'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
