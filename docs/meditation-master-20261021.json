@@ -1,0 +1,15 @@
+{
+  "status": "Approved and locked by Scott",
+  "date": "2026-10-21",
+  "sourceCommit": "23df2a257bc2382f83ca3ac0560ef522cab0baad",
+  "recoveryBranch": "checkpoint/meditation-master-20261021",
+  "files": {
+    "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
+    "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278",
+    "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
+    "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
+    "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
+    "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
+    "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5"
+  }
+}
