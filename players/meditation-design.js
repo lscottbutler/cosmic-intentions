@@ -36,9 +36,12 @@
  const first=group('Relaxation',relaxationChoices,'meditation-design-relaxation');
  const left=group('Meditation Guidance',modes,'meditation-design-modes');
  const right=group('Meditation Time',times,'meditation-design-times');
- menu.replaceChildren(summary,first,left,right,note);footer.append(menu);stage.append(footer,play);
- function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));expanded=groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');note.hidden=!expanded;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(expanded));}
- function setExpanded(value){for(const [i,g] of groups.entries())setGroup(g,value&&i===0);}
+ const customize=document.createElement('button');customize.type='button';customize.className='meditation-customize-toggle';customize.textContent='CUSTOMIZE MY MEDITATION SESSION';
+ const customPanel=document.createElement('div');customPanel.id='meditationCustomization';customPanel.append(first,left,right,note);customize.setAttribute('aria-controls',customPanel.id);customize.onclick=()=>setCustomizeOpen(!expanded);
+ menu.replaceChildren(summary,customize,customPanel);footer.append(menu);stage.append(footer,play);
+ function setCustomizeOpen(value){expanded=value;customize.setAttribute('aria-expanded',String(value));customPanel.hidden=!value;customPanel.inert=!value;document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(value));}
+ function setGroup(g,value){g.toggle.setAttribute('aria-expanded',String(value));g.panel.classList.toggle('is-open',value);g.choices.inert=!value;g.panel.setAttribute('aria-hidden',String(!value));note.hidden=!groups.some(g=>g.toggle.getAttribute('aria-expanded')==='true');}
+ function setExpanded(value){setCustomizeOpen(value);for(const [i,g] of groups.entries())setGroup(g,value&&i===0);}
  function sendSummary(){frame.contentWindow?.postMessage({type:'ci-meditation-summary',text:summary.textContent},location.origin);}
  function selections(){
   const mode=modes.querySelector('.active'),time=times.querySelector('.active');
