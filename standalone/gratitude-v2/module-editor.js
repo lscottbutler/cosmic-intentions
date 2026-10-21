@@ -230,12 +230,12 @@ function updateCardScrubber(){updatePlayhead();}
 function slideAt(time){const b=boundaries();return Math.max(0,b.findIndex((v,i)=>time<v.end||i===b.length-1));}
 function syncVoice() {
  if(!running)return;const i=slideAt(elapsed),c=model.cards[i],start=boundaries()[i].start+narrationOffset(i);
- if(c.audio&&elapsed>=start&&elapsed<start+(c.audioPlayDuration??c.audioDuration??c.duration)){
-  audio?.pause();if(cardAudioIndex!==i){releaseCustom();cardAudio=new Audio(c.audio);cardAudioIndex=i;}cardAudio.muted=!$('sound').checked;if(Math.abs(cardAudio.currentTime-(elapsed-start))>.3)cardAudio.currentTime=elapsed-start;if(paused)cardAudio.pause();else if(cardAudio.paused)cardAudio.play().catch(()=>{paused=true;tell('Recording could not play. Press Resume to retry.');});return;
+ if(window.CIGratitudeNarration!==false&&c.audio&&elapsed>=start&&elapsed<start+(c.audioPlayDuration??c.audioDuration??c.duration)){
+  audio?.pause();if(cardAudioIndex!==i){releaseCustom();cardAudio=new Audio(c.audio);cardAudioIndex=i;}cardAudio.muted=!$('sound').checked;if(Math.abs(cardAudio.currentTime-(elapsed-start))>.3)cardAudio.currentTime=elapsed-start;if(paused)cardAudio.pause();else if(cardAudio.paused){const pendingAudio=cardAudio;pendingAudio.play().catch(error=>{if(cardAudio!==pendingAudio||!running||error?.name==='AbortError')return;paused=true;tell('Recording could not play. Press Resume to retry.');});}return;
  }
  releaseCustom();if(lightlyGuided){
-  const bell=(!mini()&&elapsed<5)||elapsed>=total()-5;if(!model.bellAudio||!bell||paused){audio?.pause();return;}
-  if(!audio)audio=new Audio(model.bellAudio);audio.muted=!$('sound').checked;const position=(model.bellOffset??595)+((!mini()&&elapsed<5)?elapsed:elapsed-bellStart());if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;audio.loop=false;if(audio.paused&&!audio.ended)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start the bell.');});return;
+  const bell=(!mini()&&elapsed<5)||elapsed>=(window.CIGratitudeMaster?closingStart():total()-5);if(!model.bellAudio||!bell||paused){audio?.pause();return;}
+  if(!audio)audio=new Audio(model.bellAudio);audio.muted=!$('sound').checked;const position=(model.bellOffset??595)+((!mini()&&elapsed<5)?elapsed:elapsed-(window.CIGratitudeMaster?closingStart():bellStart()));if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;audio.loop=false;if(audio.paused&&!audio.ended)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start the bell.');});return;
  }if(!model.sessionAudio)return;if(!audio)audio=new Audio(model.sessionAudio);audio.muted=!$('sound').checked;
  const j=voiceLengths.findIndex((duration,i)=>elapsed>=voiceStart(i)&&elapsed<voiceStart(i)+voiceDuration(i)),bell=elapsed>=total()-5;
  if(paused||(!bell&&j<0)){audio.pause();return;}const position=bell?595+elapsed-bellStart():j*60+elapsed-voiceStart(j);if(Math.abs(audio.currentTime-position)>.3)audio.currentTime=position;if(audio.paused)audio.play().catch(()=>{paused=true;$('play').textContent='Resume';tell('Press Resume to start narration.');});
@@ -342,6 +342,9 @@ const open=icons.querySelector('#ci-v2-open-eye'),closed=icons.querySelector('#c
 $('quiet-duration').onchange=()=>{const minutes=Number($('quiet-duration').value);if(!mini()||![1,2,3,5,10,15,30,45,60].includes(minutes))return;stop();model.quietMinutes=minutes;model.cards.find(c=>c.label==='Quiet countdown').duration=minutes*60;mark();render();initPreview();};
 
 window.PlayerEditor={get:()=>structuredClone(model),validate,
+ state:()=>({running,paused,elapsed,total:total(),quietStart:quietStart(),eyeStart:eyeStart(),closingStart:closingStart(),finished:elapsed>=total(),photoCard:Boolean(model.cards[slideAt(elapsed)]?.image)&&elapsed<eyeStart(),phase:gratitudeV2?window.CIPlayerV2.phase(elapsed,eyeStart(),quietStart(),closingStart(),elapsed>=total()):null}),
+ seek:seekPreview,toggle:play,stop:()=>stop(),
+ narration(enabled){window.CIGratitudeNarration=enabled;releaseCustom();syncVoice();},
  replace(next,save=false){stop();model=validate(structuredClone(next));focusedSlide=0;openingView=true;render();initPreview();if(save){mark();saveDraft();}},
  save(){return saveDraft(true);},
  preview(next){clearTimeout(autosaveTimer);dirty=false;this.replace(next);aiPreview=true;document.querySelectorAll('.toolbar,.slide-library,.inspector,.timeline-panel').forEach(el=>el.inert=true);$('progress').textContent='AI preview — not applied';},
