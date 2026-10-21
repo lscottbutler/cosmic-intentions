@@ -548,7 +548,7 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
  addNote.addEventListener('click',()=>openDashboard('notes'));
 
- document.getElementById('to-do').addEventListener('click',()=>openDashboard('tasks'));
+ document.getElementById('to-do').addEventListener('click',()=>openFeature('goal-workspace'));
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
   const type=event.data?.type;
