@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>Super Viz · Cosmic Intentions</title>
+<link rel="stylesheet" href="member-design-test.css?v=audited-release-20261012">
+<script src="member-design-test.js?v=audited-release-20261012" defer></script>
+</head>
+<body data-initial-feature="super-viz">
+<main>
+<section class="orientation" aria-labelledby="feature-title"><div><p class="eyebrow">YOUR INNER CITADEL</p><h1 id="feature-title">Citadel</h1><p id="feature-purpose">Start with a goal, or choose a practice from your existing menu.</p><p id="feature-next">Open a goal to choose Visualization or Roadmap.</p></div><div class="shortcuts"><button id="begin" type="button">Open Goals</button><button id="add-note" type="button" aria-haspopup="dialog">Add a note</button><button id="to-do" type="button" aria-haspopup="dialog">TO DO</button></div><div id="header-admin-note" hidden><iframe id="header-admin-note-frame" title="Opening administrator text" scrolling="no"></iframe></div><button id="review-menu-trigger" type="button" aria-label="Open site menu" aria-haspopup="dialog" aria-controls="review-menu"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button><form id="player-search" role="search"><input id="player-search-input" type="search" aria-label="Search CI" placeholder="Search" maxlength="120" autocomplete="off"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2"/></svg></button></form></section>
+<div class="member-player-columns">
+<iframe id="ci-review-frame" src="/players/super-viz-player.html?start=super-viz&amp;preview=1" title="Current Cosmic Intentions member application" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
+<aside class="member-player-side-column" aria-label="Gratitude side column" hidden></aside>
+</div>
+<p id="review-status" role="status" hidden>Loading the current build…</p>
+</main>
+<dialog id="citadel-dashboard" aria-labelledby="dashboard-title">
+<header class="dashboard-heading"><div><p class="eyebrow">YOUR INNER CITADEL</p><h2 id="dashboard-title">Your to-do list</h2></div><button id="close-dashboard" type="button" aria-label="Close dashboard">Close</button></header>
+<p class="dashboard-intro">Take the next step. Keep the thoughts and reflections that belong with it.</p>
+<nav class="dashboard-tabs" aria-label="Dashboard views"><button type="button" data-dashboard-view="tasks" aria-pressed="true">TO DO</button><button type="button" data-dashboard-view="notes" aria-pressed="false">Notes</button><button type="button" data-dashboard-view="journal" aria-pressed="false">Journal</button></nav>
+<p id="dashboard-state" role="status">Loading your existing list…</p>
+<div id="dashboard-ready" hidden>
+<section id="dashboard-tasks"><div class="dashboard-list-heading"><h3>To do <span id="dashboard-task-count"></span></h3><label><input id="dashboard-completed" type="checkbox"> Show completed</label></div><div id="dashboard-task-list"></div>
+<form id="dashboard-add-task" class="dashboard-form"><h3>Add a to-do</h3><label>Your next action<input id="dashboard-task-text" maxlength="160" required placeholder="What will you do next?"></label><label>Linked goal<select id="dashboard-task-goal"></select></label><button type="submit">Add to-do</button></form></section>
+<section id="dashboard-entries" hidden><div id="dashboard-entry-list"></div></section>
+<form id="dashboard-add-entry" class="dashboard-form" hidden><h3 id="dashboard-entry-heading">Add a note</h3><label>Entry<textarea id="dashboard-entry-text" rows="4" maxlength="10000" required></textarea></label><div class="dashboard-link-fields"><label>Linked goal<select id="dashboard-entry-goal"></select></label><label>Related action<select id="dashboard-entry-task"></select></label></div><button id="dashboard-save-entry" type="submit">Save note</button></form>
+</div>
+</dialog>
+<dialog id="review-menu" aria-labelledby="review-menu-title"><header><h2 id="review-menu-title">Site menu</h2><button id="close-menu" type="button">Close</button></header><nav id="review-menu-items" aria-label="CI pages"></nav></dialog>
+<dialog id="player-search-results" aria-labelledby="player-search-title"><header><h2 id="player-search-title">Search CI</h2><button id="player-search-close" type="button">Close</button></header><p id="player-search-status" role="status"></p><div id="player-search-list"></div></dialog>
+</body>
+</html>
+

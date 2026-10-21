@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Super Viz | Cosmic Intentions</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
+body{display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif}
+.player{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;background:#4c812f;border:0;overflow:hidden}
+.image{position:absolute;inset:0;background:url('/images/meditation/meditation-1.jpg') center center/cover no-repeat}
+.ccb-curve{position:absolute;z-index:2;inset:0;width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}
+.ccb-scrubber{position:absolute;z-index:5;left:1.8229167%;top:89.8148148%;width:1.5625%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;border-radius:50%;background:#a7c526;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
+.timer{position:absolute;z-index:4;left:50%;top:85.1851852%;transform:translate(-50%,-50%);width:10.4166667%;aspect-ratio:1;border:clamp(4px,1.5625vw,30px) solid #82ad77;border-radius:50%;padding:0;background:#a7c526;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.timer::before{display:none}
+.timer:focus-visible{outline:none}
+.value,.playicon{position:relative;z-index:1;color:#fff}
+.value{font-size:clamp(22px,3.1vw,44px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:pre-line;text-align:center}
+.playicon{width:0;height:0;border-top:clamp(10px,1.3vw,20px) solid transparent;border-bottom:clamp(10px,1.3vw,20px) solid transparent;border-left:clamp(16px,2vw,30px) solid #fff;margin-left:7%}
+[hidden]{display:none!important}
+body.external .player{width:100vw;height:100vh;aspect-ratio:auto;border:0;background:#292929}
+body.external .image{inset:0}
+body.external .ccb-curve rect{display:none}
+body.external .ccb-curve ellipse{fill:#292929;stroke:#747474}
+body.external .ccb-scrubber{background:#f2f2f2}
+body.external .timer{background:#747474;border-color:#292929}
+
+body.text-card-session .ccb-curve{pointer-events:none}
+body.text-card-session .image,body.text-card-session .ccb-curve ellipse{display:none}
+.session-card{position:absolute;inset:0;z-index:1;background:#fff}
+.session-card>img,.session-card>svg{position:absolute;width:100%;height:100%;object-fit:contain}
+.session-card p{height:100%;margin:0;display:flex;align-items:center;justify-content:center;padding:6px 12px;color:#000;text-align:center;font:700 36px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.04em}
+body.text-card-session .timer{left:50%;top:90%;width:7%;border-width:5px;background:#747474}
+body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
+</style>
+<link rel="stylesheet" href="/players/super-viz-stage.css">
+</head>
+<body>
+<main class="player" id="player" aria-label="Super Viz player">
+  <div class="image" aria-hidden="true"></div>
+  <svg class="ccb-curve" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <ellipse cx="960" cy="1189" rx="1379" ry="296" fill="#292929" stroke="#747474" stroke-width="30"/>
+    <rect x="17.5" y="17.5" width="1885" height="1045" fill="none" stroke="none"/>
+  </svg>
+  <span class="ccb-scrubber" id="ccbScrubber" aria-hidden="true"></span>
+  <button class="timer" id="timer" type="button" aria-label="Start visualization">
+    <span class="playicon" id="playIcon" aria-hidden="true"></span>
+    <span class="value" id="value" hidden>15
+00</span>
+  </button>
+</main>
+<script src="/players/super-viz-sessions.js"></script>
+<script src="/players/super-viz-stage.js"></script>
+<script>
+(()=>{
+  const allowed=CISuperVizSessions.durations;
+  const search=new URLSearchParams(location.search);
+  const requested=Number(search.get('t'));
+  const external=search.get('external')==='1';
+  if(external)document.body.classList.add('external');
+  const minutes=allowed.includes(requested)?requested:15;
+  const meditationMs=minutes*60000;
+  let relaxationMs=0,totalMs=meditationMs;
+  const inRelaxation=()=>relaxationMs>0&&totalMs-remaining<relaxationMs;
+  const meditationElapsed=()=>(totalMs-remaining-relaxationMs)/1000;
+  const mode=['unguided','lightly-guided','guided'].includes(search.get('mode'))?search.get('mode'):'unguided';
+  const draftSession=true;
+  const cues=CISuperVizSessions.session(minutes,mode);
+  const player=document.getElementById('player');
+  const button=document.getElementById('timer');
+  const value=document.getElementById('value');
+  const playIcon=document.getElementById('playIcon');
+  const curve=document.querySelector('.ccb-curve');
+  const scrubber=document.getElementById('ccbScrubber');
+  let state='ready',remaining=totalMs,deadline=0,tickHandle=0;
+  // Narration belongs to the real Meditation engine, not its review wrapper.
+  const narration=null;
+
+  let textStage=null,textIndex=-1;
+  if(narration||draftSession){
+    document.body.classList.add('text-card-session');
+    textStage=document.createElement('div');textStage.className='session-card';
+    textStage.innerHTML='<img src="/images/gratitude/test-module-1/opening-card.webp" alt=""><svg viewBox="0 0 1669 939" preserveAspectRatio="xMidYMid meet"><rect x="290" y="215" width="1090" height="465" fill="#fff"/><foreignObject x="300" y="215" width="1070" height="465"><p xmlns="http://www.w3.org/1999/xhtml"></p></foreignObject><path d="M243 734 Q840.5 817 1438 734" fill="none" stroke="transparent" stroke-width="28" style="pointer-events:stroke;cursor:pointer"/><circle cx="243" cy="734" r="14" fill="#fff" stroke="#292929" stroke-width="4"/></svg>';
+    player.prepend(textStage);scrubber.hidden=true;
+    textStage.querySelector('path').addEventListener('click',event=>{const rect=textStage.getBoundingClientRect(),scale=Math.min(rect.width/1669,rect.height/939),left=rect.left+(rect.width-1669*scale)/2;seek(((event.clientX-left)/scale-35)/1599)});
+  }
+  function renderTextCard(){
+    if(!textStage)return;
+    const elapsed=meditationElapsed();
+    if(inRelaxation()&&state!=='ready'){textStage.querySelector('p').textContent='';textIndex=-1;return;}
+    if(draftSession){
+      const cue=state==='ready'?cues[0]:cues.find(c=>elapsed>=c.start&&elapsed<c.end);
+      const p=textStage.querySelector('p');
+      p.textContent=state==='complete'?'Session complete':cue?.text||'';
+      const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      p.style.opacity=!cue||state!=='running'||reduced?1:Math.max(0,Math.min(1,elapsed-cue.start,cue.end-elapsed));
+      const progress=elapsed/(totalMs/1000),dot=textStage.querySelector('circle');dot.setAttribute('cx',243+1195*progress);dot.setAttribute('cy',734+166*progress*(1-progress));
+      return;
+    }
+
+  }
+
+  let spokenCue=null;
+  const voiceStatus=document.createElement('div');
+  voiceStatus.setAttribute('role','status');voiceStatus.style.cssText='position:absolute;top:8px;left:8px;right:8px;z-index:5;text-align:center;background:white;color:#292929;font:14px Arial';voiceStatus.hidden=true;player.append(voiceStatus);
+  function stopSpeech(){if('speechSynthesis' in window)speechSynthesis.cancel();spokenCue=null;}
+  function syncSpeech(elapsed){
+    if(mode==='unguided')return;
+    if(!('speechSynthesis' in window)){voiceStatus.textContent='Voice unavailable on this browser. Read the guidance on screen.';voiceStatus.hidden=false;return;}
+    if(state==='paused'){speechSynthesis.pause();return;}
+    if(state!=='running'){stopSpeech();return;}
+    const cue=cues.find(c=>elapsed>=c.start&&elapsed<c.end);
+    if(!cue){if(spokenCue!==null)stopSpeech();return;}
+    if(spokenCue===cue.start){if(speechSynthesis.paused)speechSynthesis.resume();return;}
+    stopSpeech();spokenCue=cue.start;
+    const utterance=new SpeechSynthesisUtterance(cue.text);utterance.lang='en-US';utterance.rate=0.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Voice could not play. Guidance remains available on screen.';voiceStatus.hidden=false;}};
+    voiceStatus.hidden=true;speechSynthesis.resume();speechSynthesis.speak(utterance);
+  }
+
+  function syncRelaxationSpeech(){
+    if(!('speechSynthesis' in window)){voiceStatus.textContent='Temporary relaxation voice is unavailable in this browser.';voiceStatus.hidden=false;return;}
+    if(state==='paused'){speechSynthesis.pause();return;}
+    if(state!=='running'){stopSpeech();return;}
+    if(spokenCue==='relaxation'){if(speechSynthesis.paused)speechSynthesis.resume();return;}
+    // Start once at the beginning; seeking later into the intro leaves quiet time.
+    if(totalMs-remaining>openingEndElapsed+2000)return;
+    stopSpeech();spokenCue='relaxation';
+    const utterance=new SpeechSynthesisUtterance(CISuperVizSessions.relaxationScript(relaxationMs/1000));utterance.lang='en-US';utterance.rate=.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Temporary relaxation voice could not play.';voiceStatus.hidden=false;}};
+    voiceStatus.hidden=true;speechSynthesis.resume();speechSynthesis.speak(utterance);
+  }
+
+  let voicePending=false,voiceGeneration=0;
+  const bellAudio=draftSession?new Audio('/players/audio/coming-back-to-yourself-10m.ogg'):null;
+  if(bellAudio)bellAudio.preload='metadata';
+  if(narration)narration.preload='metadata';
+  const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
+  let completionBellPlayed=false;
+  completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
+  const openingText='OK, close your eyes and begin';
+  let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingVoiceEnded=false,openingGeneration=0;
+  function syncOpening(){
+    if(openingPhase==='ready'||openingPhase==='done')return false;
+    narration?.pause();bellAudio?.pause();
+    if(state==='paused'){if('speechSynthesis' in window)speechSynthesis.pause();return true;}
+    if(state!=='running')return false;
+    if(['title','wait','dim','dot','open'].includes(openingPhase))return true;
+    if(openingSpoken){
+      if(!openingVoiceEnded){if('speechSynthesis' in window&&speechSynthesis.paused)speechSynthesis.resume();return true;}
+      if(totalMs-remaining-openingClosedElapsed>=3000){openingPhase='done';openingEndElapsed=totalMs-remaining;return false;}
+      return true;
+    }
+    openingSpoken=true;const generation=openingGeneration;
+    const closeEyes=()=>{if(generation!==openingGeneration||openingPhase!=='closed')return;openingVoiceEnded=true;openingClosedElapsed=totalMs-remaining;render();};
+    if(!('speechSynthesis' in window)){closeEyes();return true;}
+    stopSpeech();const utterance=new SpeechSynthesisUtterance(openingText);utterance.lang='en-US';utterance.rate=.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onend=closeEyes;utterance.onerror=event=>{if(generation!==openingGeneration)return;if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Opening voice could not play. Follow the words on screen.';voiceStatus.hidden=false;closeEyes();}};
+    speechSynthesis.resume();speechSynthesis.speak(utterance);return true;
+  }
+  function syncNarration(){
+    if(state==='complete'){
+      stopSpeech();narration?.pause();bellAudio?.pause();
+      if(!completionBellPlayed){completionBellPlayed=true;completionBell.currentTime=595;completionBell.play().then(()=>{if(state!=='complete')completionBell.pause();}).catch(()=>{voiceStatus.textContent='The session is complete, but the closing bell could not play.';voiceStatus.hidden=false;});}
+      return;
+    }
+    completionBellPlayed=false;completionBell.pause();
+    if(syncOpening())return;
+    if(inRelaxation()){voiceGeneration++;narration?.pause();bellAudio?.pause();syncRelaxationSpeech();return;}
+    if(spokenCue==='relaxation')stopSpeech();
+    if(bellAudio){
+      const elapsed=meditationElapsed();
+      const end=meditationMs/1000;
+      syncSpeech(elapsed);
+      const ringing=elapsed<5;
+      if(state!=='running'||!ringing){voiceGeneration++;bellAudio.pause();return}
+      const position=595+(elapsed<5?elapsed:elapsed-(end-5));
+      if(Math.abs(bellAudio.currentTime-position)>.35)bellAudio.currentTime=position;
+      if(bellAudio.paused&&!voicePending){voicePending=true;const generation=voiceGeneration;bellAudio.play().then(()=>{voicePending=false;if(generation!==voiceGeneration||state!=='running')bellAudio.pause()}).catch(()=>{voicePending=false;if(generation!==voiceGeneration||state!=='running')return;clearTick();remaining=Math.max(0,deadline-performance.now());state='paused';render();button.setAttribute('aria-label','Resume meditation and retry bell')})}
+      return;
+    }
+    if(!narration)return;
+    const elapsed=meditationElapsed();
+    if(state!=='running'||elapsed>=595||(elapsed>=540&&elapsed<565)){
+      voiceGeneration++;narration.pause();return;
+    }
+    // Final passage 9:25–9:55, closing bell 9:55–10:00.
+    const position=elapsed>=595?elapsed:elapsed>=565?540+elapsed-565:elapsed;
+    if(Math.abs(narration.currentTime-position)>.35)narration.currentTime=position;
+    if(narration.paused&&!voicePending){
+      voicePending=true;const generation=voiceGeneration;
+      narration.play().then(()=>{
+        voicePending=false;
+        if(generation!==voiceGeneration||state!=='running')narration.pause();
+      }).catch(()=>{
+        voicePending=false;
+        if(generation!==voiceGeneration||state!=='running')return;
+        clearTick();remaining=Math.max(0,deadline-performance.now());state='paused';
+        render();
+        button.setAttribute('aria-label','Resume meditation and retry narration');
+      });
+    }
+  }
+  addEventListener('pagehide',()=>{openingGeneration++;stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause();completionBell.pause()});
+
+  const shown=()=>{
+    const seconds=Math.max(0,Math.ceil(remaining/1000));
+    return `${Math.floor(seconds/60)}\n${String(seconds%60).padStart(2,'0')}`;
+  };
+  function renderScrubber(){
+    const progress=Math.max(0,Math.min(1,1-remaining/totalMs));
+    const x=35+progress*1850;
+    const dx=(x-960)/1379;
+    let y=1189-296*Math.sqrt(Math.max(0,1-dx*dx));
+    // Follow the center of the timer rim where it rises above the lower curve.
+    const curveBox=curve.getBoundingClientRect();
+    const timerBox=button.getBoundingClientRect();
+    if(curveBox.width&&curveBox.height){
+      const scaleX=1920/curveBox.width,scaleY=1080/curveBox.height;
+      const radius=timerBox.width/2-parseFloat(getComputedStyle(button).borderTopWidth)/2;
+      const centerX=(timerBox.left+timerBox.width/2-curveBox.left)*scaleX;
+      const centerY=(timerBox.top+timerBox.height/2-curveBox.top)*scaleY;
+      const circleX=(x-centerX)/(radius*scaleX);
+      if(Math.abs(circleX)<=1){
+        const rimY=centerY-radius*scaleY*Math.sqrt(Math.max(0,1-circleX*circleX));
+        y=Math.min(y,rimY);
+      }
+    }
+    scrubber.style.left=(x/19.2)+'%';
+    scrubber.style.top=(y/10.8)+'%';
+  }
+  function notify(){parent.postMessage({type:'ci-meditation-state',state,minutes,remaining,totalSeconds:totalMs/1000,phase:inRelaxation()?'relaxation':'meditation',phaseRemaining:inRelaxation()?remaining-meditationMs:remaining,hasGuidance:Boolean(textStage?.querySelector('p')?.textContent.trim())},location.origin)}
+  function render(){
+    if(state==='running'&&['title','wait','dim','dot','open'].includes(openingPhase)){const elapsed=totalMs-remaining;openingPhase=elapsed<2000?'title':elapsed<3000?'wait':elapsed<6000?'dim':elapsed<6600?'dot':elapsed<7200?'open':'closed';}
+    const ready=state==='ready';
+    playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
+    const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
+    button.setAttribute('aria-label',`${action} ${minutes} minute visualization`); player.dataset.state=state;renderTextCard();if(openingPhase==='closed'){textStage.querySelector('p').textContent=openingText;textStage.querySelector('p').style.opacity='1';}window.CIMeditationPresentation?.render({state,remaining,totalMs,openingPhase,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
+  }
+  function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
+  function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
+  function toggle(){
+    clearTick();
+    if(state==='ready'||state==='complete'){openingGeneration++;openingPhase='title';openingSpoken=false;openingVoiceEnded=false;openingEndElapsed=0;remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
+    if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
+    if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
+  }
+  function seek(ratio){
+    openingGeneration++;openingPhase='done';
+    stopSpeech();
+    const progress=Math.max(0,Math.min(1,Number(ratio)||0));
+    remaining=totalMs*(1-progress);
+    if(remaining<=0){state='complete';clearTick();}
+    else if(state==='running')deadline=performance.now()+remaining;
+    else if(state==='ready')state='paused';
+    render();
+  }
+  button.addEventListener('click',toggle);
+  curve.addEventListener('click',event=>{
+    const rect=curve.getBoundingClientRect();
+    const x=(event.clientX-rect.left)/rect.width*1920;
+    seek((x-35)/1850);
+  });
+  addEventListener('message',event=>{
+    if(event.origin!==location.origin||event.data?.type!=='ci-meditation-command')return;
+    if(event.data.command==='configure-relaxation'&&state==='ready'){
+      const seconds=Number(event.data.seconds);
+      if(Number.isInteger(seconds)&&(seconds===0||seconds>=30&&seconds<=1800)){relaxationMs=seconds*1000;totalMs=meditationMs+relaxationMs;remaining=totalMs;render();}
+    }
+    if(event.data.command==='status')notify();
+    if(event.data.command==='toggle')toggle();
+    if(event.data.command==='seek')seek(event.data.ratio);
+  });
+  addEventListener('resize',renderScrubber);
+  render();
+})();
+</script>
+</body>
+</html>
+

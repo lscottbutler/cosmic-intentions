@@ -18,6 +18,7 @@
   'daily-habits':['Habits','Work through your existing daily routine.','Choose MORNING, DAY, EVENING or BEFORE SLEEP. Select a habit circle to check it off.'],
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
+  'super-viz':['Super Viz','Rehearse the next step toward your goal.','Choose relaxation, Guided or Unguided, and your practice time. Visualization guidance is a temporary draft.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Choose Unguided, Lightly Guided or Guided, then select 1 to 60 minutes. Press Play to begin.'],
   'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
@@ -103,8 +104,8 @@
   if(!features[action])return;
   if(dashboard.open)return;
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
-  document.body.classList.toggle('meditation-two-column',action==='meditation');
-  const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||action==='meditation');
+  document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
+  const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
   current=action;const copy=features[action];
   if(title.textContent!==copy[0])title.textContent=copy[0];
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
@@ -113,6 +114,7 @@
 
  }
  function openFeature(action){
+  if(action==='super-viz'){playerAction=action;frame.src='/players/super-viz-player.html?preview=1&start=super-viz';renderFeature(action);return;}
   if(action==='gratitude'||action==='new-gratitude'){
    playerAction='gratitude';gratitudeV2=true;newGratitude=false;
    frame.src='/standalone/gratitude-v2/index.html?module=gratitude-v2';
@@ -131,7 +133,7 @@
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
+ const menuLabels={home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'Goal Workspace',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';document.getElementById('review-menu-items').append(usageLink);
  delete menuLabels.gratitude;
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Keep Sound checked for narration.'];
@@ -548,10 +550,10 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
  });
  window.addEventListener('resize',schedule);
  renderFeature('home');
- const initialFeature=new URLSearchParams(location.search).get('feature');
+ const initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
-  if(initialFeature==='new-gratitude'||initialFeature==='gratitude')openFeature(initialFeature);
+  if(initialFeature==='new-gratitude'||initialFeature==='gratitude'||initialFeature==='super-viz')openFeature(initialFeature);
   else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();

@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>MASTER PLAYER TEMPLATE | Cosmic Intentions</title>
+  <script>if(window.parent!==window)document.documentElement.classList.add('embedded-player')</script>
+  <style>
+    .citadel-note[hidden]{display:none}
+    .citadel-note.is-loading{height:0;padding-block:0;overflow:hidden}
+    .citadel-note{padding:12px var(--frame-border);background:var(--header)}
+    #citadelNote{padding-bottom:0}
+    #citadelBottomNote{padding-block:0}
+    .citadel-note iframe{display:block;width:100%;height:1px;border:0;overflow:hidden;background:transparent}
+    /* MASTER PLAYER TEMPLATE — APPROVED AND LOCKED 2026-09-24
+       Permanent shared shell for all member players.
+       Outer shell: #292929. Title/icon troughs: #747474.
+       Preserve the approved spacing, curves, typography and icon layout.
+       Page-specific content may change; this shared chrome must remain consistent. */
+    :root{color-scheme:light;--frame:#292929;--header:#292929;--paper:#f2ede7;--deck:#292929;--trough-fill:#747474;--trough-ink:#fff;--frame-border:17.5px;--frame-bottom-border:clamp(6px,1.823vw,18px);--trough-curve:35px;--cap-height:calc(clamp(78px,9.5vw,96px) + 30px);--cap-center-y:calc(50% + (var(--frame-border) / 2));--ink:#1f2724;--muted:#fff;--line:#050706}
+    *{box-sizing:border-box}
+    html,body{width:100%;margin:0;overflow-x:hidden;overflow-y:auto;background:transparent;font-family:"Arial Narrow","Nimbus Sans Narrow","Roboto Condensed",Arial,sans-serif}
+    html.embedded-player,html.embedded-player body{overflow:hidden}
+    body{padding:0}
+    button{font:inherit}
+    .shell{width:100%;max-width:900px;margin:0 auto;border:0;background:var(--header);overflow:hidden;transition:min-height .35s ease}
+    /* MASTER PLAYER TEMPLATE: only the upper and lower troughs curve; the 16:9 stage stays between them. */
+    .shell.home-mode{background:var(--header);padding:0}
+    .shell.daily-habits-mode{border:0!important;outline:0!important;box-shadow:none!important}
+    .shell.daily-habits-mode .stage{background:#292929!important}
+    /* LOCKED UPPER TROUGH GEOMETRY — title and site menu share one immutable centerline. */
+    .cap{position:relative;isolation:isolate;width:100%;height:var(--cap-height);margin:0;padding:0;background:var(--header);color:var(--trough-ink);text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:0;transition:background-color .25s ease}
+    .cap::before{content:"";position:absolute;z-index:-1;inset:var(--frame-border) var(--frame-border) 0;background:var(--trough-fill);box-sizing:border-box;border:3px solid #ededed;border-radius:50% 50% 0 0/var(--trough-curve) var(--trough-curve) 0 0;pointer-events:none;transition:background-color .25s ease}
+    #capTitleText{position:absolute;z-index:1;left:calc(var(--frame-border) + 72px);right:calc(var(--frame-border) + 72px);top:var(--cap-center-y);transform:translateY(-50%);display:block;line-height:1.05;text-align:center;white-space:nowrap}
+    .site-menu-button{position:absolute;z-index:2;left:calc(var(--frame-border) + 20px);top:var(--cap-center-y);transform:translateY(-50%);width:48px;height:48px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);color:#fff;padding:10px;display:grid;align-content:center;gap:5px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    .site-menu-button span{display:block;width:100%;height:4px;border-radius:3px;background:currentColor}
+    .site-menu-button:hover,.site-menu-button:focus-visible{background:rgba(255,255,255,.26);outline:2px solid rgba(255,255,255,.72);outline-offset:2px}
+
+    /* Standalone player navigation uses the top layer, preserving the frame geometry. */
+    #standaloneSiteMenu{position:fixed;inset:calc(var(--cap-height) - 8px) auto auto max(12px,8vw);width:min(280px,calc(100vw - 24px));max-height:calc(100dvh - var(--cap-height) - 12px);margin:0;padding:8px;overflow-y:auto;border:1px solid #747474;border-radius:8px;background:#292929;color:#fff;box-shadow:0 8px 24px #0006}
+    #standaloneSiteMenu button,#standaloneSiteMenu a{display:block;width:100%;padding:10px 14px;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}
+    #standaloneSiteMenu button:hover,#standaloneSiteMenu a:hover,#standaloneSiteMenu button:focus-visible,#standaloneSiteMenu a:focus-visible{background:#747474;outline:2px solid #fff;outline-offset:-2px}
+    .stage{position:relative;margin:0;background:var(--paper);color:var(--ink);min-height:134px;padding:28px 28px 26px;overflow:hidden;opacity:1;transition:min-height .35s ease,padding .35s ease,opacity .58s ease}
+    .ci-visual-transition{will-change:opacity}
+    .ci-visual-transition .inspiration-card{transition:none}
+    .view{animation:none}
+    .view[hidden]{display:none}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .inspiration{position:relative;width:100%;min-height:0;align-self:stretch;display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;text-align:center;text-transform:uppercase}
+    .inspiration-card{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center;opacity:0;transition:none}
+    .player-card-background,.player-word-card{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+    .player-word-card{pointer-events:none}
+    /* The visible 16:9 frame sits above the image so the image cannot cover it. */
+    .shell.home-mode .inspiration::after,.lfm-tool-rotation .inspiration::after{content:"";position:absolute;inset:0;z-index:5;box-shadow:inset 0 0 0 var(--frame-border) #292929;pointer-events:none}
+    .inspiration.has-card .inspiration-card{opacity:1}
+    .inspiration.has-card .inspiration-kind,.inspiration.has-card .statement,.inspiration.has-card .inspiration-author{visibility:hidden}
+    .inspiration-kind{align-self:start;font-size:clamp(9px,1.7vw,12px);font-weight:800;letter-spacing:2px;color:#6b716d}
+    .statement{margin:0;display:grid;place-items:center;text-align:center;font-size:clamp(17px,4.5vw,31px);font-weight:800;line-height:1.35;letter-spacing:clamp(1.2px,.34vw,2.2px)}
+    .inspiration-author{align-self:end;font-size:clamp(9px,1.8vw,12px);font-weight:800;letter-spacing:1.3px;color:#59605b}
+    .shell.home-mode .stage{width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:0;background:transparent;display:grid}
+    .shell.home-mode #homeView{width:100%;min-height:0;aspect-ratio:16/9;align-self:stretch;display:grid}
+    .view-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.experience-toolbar{justify-content:flex-end}
+    .view-title{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:1.4px;text-transform:uppercase}
+    .back{border:0;border-radius:9px;background:#fff;color:#1f2724;padding:7px 9px;font-weight:800;cursor:pointer}
+    .nav[hidden]{display:none}
+    .hamb-lines{display:grid;gap:4.2px;width:30.8px}.hamb-lines i{display:block;height:4.2px;background:currentColor;border-radius:2px}
+    .directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .directory button,.launch{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;border:1px solid #bdc1bc;border-radius:8px;background:#fff;color:#202622;padding:11px 14px;text-align:left;font-weight:800;letter-spacing:.45px;cursor:pointer}
+    .directory button:hover,.directory button:focus-visible,.launch:hover,.launch:focus-visible{outline:2px solid #1f2724;outline-offset:2px}
+    #experienceView{width:100%;min-height:0}
+    .lfm-tool-rotation{width:100%;min-height:0;padding:14px;background:var(--frame);display:grid;overflow:hidden;transition:background .25s ease}
+    .lfm-tool-rotation[hidden]{display:none}
+    .lfm-tool-rotation .inspiration{width:100%;height:auto;aspect-ratio:16/9;padding:0;background:var(--paper)}
+    .experience-frame{display:block;width:100%;height:600px;border:0;background:#fff;border-radius:8px;overflow:hidden;transition:height .3s ease}
+    .shell.experience-mode .stage{padding:0;background:var(--header)}
+    .shell.experience-mode .experience-frame{border-radius:0}
+    .shell.lfm-shared-frame-mode{background:var(--header)}
+    .shell.lfm-shared-frame-mode #experienceView{background:var(--header);padding-bottom:17.5px}
+    .shell.lfm-shared-frame-mode .stage{margin-left:0;margin-right:0}
+    .shell.lfm-shared-frame-mode .lfm-tool-rotation{padding:0;background:transparent}
+    .shell.lfm-shared-frame-mode .lfm-tool-rotation .inspiration{background:var(--paper)}
+    .shell.experience-mode:not(.meditation-player-mode) .experience-frame{width:calc(100% - 2 * var(--frame-border));margin:0 var(--frame-border)}
+    .shell:not(.home-mode):not(.experience-mode) .stage{border-inline:var(--frame-border) solid var(--header)}
+    .experience-copy,.launch{display:none}
+    .deck{position:relative;isolation:isolate;margin:0;padding:14px 10px calc(17px + 3in);background:var(--deck);border-radius:0;display:grid;transition:background-color .25s ease;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+    .deck::before{content:"";position:absolute;z-index:-1;inset:0 var(--frame-border) 35px;background:var(--trough-fill);border-radius:0 0 50% 50%/0 0 var(--trough-curve) var(--trough-curve);pointer-events:none;transition:background-color .25s ease}
+    .shell.home-mode .deck{min-height:329px;margin-bottom:0;padding:24px 22px 117px;column-gap:14px;row-gap:22px;align-content:start;border-radius:0}
+    .shell.home-mode .deck::before{border-radius:0 0 50% 50%/0 0 var(--trough-curve) var(--trough-curve)}
+    .nav{min-width:0;border:0;background:transparent;color:var(--trough-ink);padding:3px 2px;cursor:pointer;display:grid;grid-template-rows:58px auto;align-items:start;justify-items:center;gap:8px}
+    .nav:hover,.nav:focus-visible,.nav.active{color:var(--trough-ink);outline:none}
+    .nav svg{width:56px;height:56px;padding:9px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    .nav span:last-child{font-size:18px;line-height:1.1;font-weight:800;letter-spacing:1px;text-transform:uppercase;white-space:normal;text-align:center}
+    .nav .hamb-lines{width:56px;height:56px;padding:15px 11px;display:grid;align-content:center;gap:5px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    .nav .hamb-lines i{height:4px}
+    .deck.meditation-mode .normal-control{position:absolute;opacity:0;pointer-events:none}
+    /* Meditation sides match the upper player's 35-unit stroke on its 1920-unit canvas.
+       The bottom border and its existing curve remain unchanged. */
+    .deck.meditation-mode:not(.meditation-session-active){padding:50px 45px 70px}
+    .deck.meditation-mode{background:var(--trough-fill);border:35px solid #292929;border-top:0;border-inline-width:var(--meditation-side-border,17.5px);border-radius:0 0 50% 50%/0 0 calc(var(--trough-curve) + 35px) calc(var(--trough-curve) + 35px);margin:0}
+    .deck.meditation-mode::before{display:none}
+    /* Fill only the outside lower corners; retain the curved white controls area. */
+    .shell.meditation-player-mode{background:linear-gradient(#292929,#292929) bottom/100% calc(var(--trough-curve) + 35px) no-repeat}
+    .deck.compact-trough-mode{padding-bottom:20px}
+    .deck.workspace-trough-hidden{display:none}
+    /* Scott, 2026-09-29: white Entrepreneur card trough without the three-button cluster. */
+    .deck.ent-card-trough::before{background:#fff}
+    .deck.ent-card-trough #lfmToolControls{visibility:hidden}
+    .lfm-tool-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
+    .deck.lfm-tool-mode{padding:18px 10px 90px;border-radius:0}
+    .deck.lfm-tool-mode .normal-control{display:none}
+    .deck.lfm-tool-mode .lfm-tool-controls{display:grid;animation:controlFadeIn .28s .08s ease both}
+    .deck.meditation-mode.meditation-session-active{padding:18px 10px 55px}
+    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;grid-template-columns:repeat(3,58px);padding:0}
+    .med-progress{position:absolute;z-index:3;top:0;left:0;right:0;display:none;width:auto;height:30px;border:0;background:transparent;padding:0 25px;cursor:pointer;transform:translateY(-50%);-webkit-tap-highlight-color:transparent}
+    .med-progress-track{display:block;position:relative;width:100%;height:3px;border-radius:999px;background:rgba(255,255,255,.28);overflow:visible}
+    .med-progress-fill{position:relative;display:block;width:0;height:100%;border-radius:inherit;background:#a7c526;transition:width .2s linear}
+    .med-progress-fill::after{content:"";position:absolute;top:50%;right:-15px;width:30px;height:30px;border:3px solid #315f12;border-radius:50%;background:#a7c526;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:translateY(-50%)}
+    .med-progress:focus-visible{outline:2px solid #fff;outline-offset:2px}
+    .deck.meditation-mode .med-progress{display:none}
+    .med-controls{grid-column:1/-1;display:none;grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
+    .med-controls[hidden]{display:none!important}
+    .deck.meditation-mode .med-controls{display:none}
+    .deck.meditation-mode.meditation-session-active .med-controls{display:grid;animation:controlFadeIn 3s ease both}
+    .med-control{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:5px;padding:0;cursor:pointer;outline:none}
+    .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;border-radius:50%;display:grid;place-items:center;background:#000;color:#fff;font-size:24px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.28);transition:transform .18s ease,background .18s ease}
+    .med-control:hover .med-circle,.med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
+    .med-control.play-control{position:relative;transform:translateY(10px)}
+    .med-countdown{position:absolute;left:100%;bottom:calc(100% + 13px);transform:translateX(-50%);min-width:54px;text-align:center;font-size:14px!important;font-weight:800!important;letter-spacing:1px!important;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;pointer-events:none}
+    .med-control.play-control .med-circle{width:58px;height:58px;background:#000;border:7px solid #8f8f8f;font-size:24px}
+    .med-control span:last-child{font-size:8px;font-weight:800;letter-spacing:.45px;text-transform:uppercase}
+    /* APPROVED SHARED PLAYER NAV — Scott's centered black/grey three-button cluster.
+       Used by every workspace and Meditation; labels stay accessible but are not displayed. */
+    .shell :is(.lfm-tool-controls,.med-controls){grid-template-columns:repeat(3,58px);justify-content:center;align-items:center;gap:18px;padding:0}
+    .shell .deck.lfm-tool-mode{padding-top:18px;padding-bottom:90px}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control{display:grid;place-items:center}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-circle{width:58px;height:58px;border:7px solid #8f8f8f;background:#000;color:#fff;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control:hover .med-circle,
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control:focus-visible .med-circle{background:#000;filter:brightness(1.12);transform:translateY(-1px)}
+    .shell :is(.lfm-tool-controls,.med-controls) .med-control>span:last-child{display:none}
+    /* Shared lower-trough navigation: reduced by 55%; menu centered beneath arrows. */
+    :is(#meditationControls,#lfmToolControls){grid-template-columns:repeat(2,minmax(0,65.25px));column-gap:18px;row-gap:12px}
+    :is(#meditationControls,#lfmToolControls) .med-control{min-width:0}
+    :is(#meditationControls,#lfmToolControls) :is([data-med-command="back"],[data-home]){grid-column:1;grid-row:1}
+    :is(#meditationControls,#lfmToolControls) [data-lfm-mini-command="forward"]{grid-column:2;grid-row:1}
+    :is(#meditationControls,#lfmToolControls) .med-circle{width:100%;max-width:65.25px;height:auto;aspect-ratio:1;border-width:7.875px;font-size:27px}
+    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]){grid-column:1/-1;grid-row:2;justify-self:center;width:52.2px}
+    :is(#meditationControls,#lfmToolControls) :is([data-med-command="menu"],[data-lfm-mini-command="menu"]) .med-circle{border-width:6.3px;font-size:21.6px}
+    .med-menu{grid-column:1/-1;margin:0;padding:9px;border:1px solid #7f847e;border-radius:8px;background:#292929;color:#fff;animation:fadeIn .22s ease both}
+    .deck.meditation-mode .med-menu{background:transparent;border:0}
+    .deck.meditation-mode .med-menu{color:#292929}
+    .deck.meditation-mode .med-mode-option,.deck.meditation-mode .med-mode-option.active,.deck.meditation-mode .med-time-choice .med-time-option,.deck.meditation-mode .med-time-choice .med-time-option.active,.deck.meditation-mode .relaxation-toggle{color:#292929}
+    .deck.meditation-mode .med-mode-circle,.deck.meditation-mode .med-time-circle,.deck.meditation-mode .relaxation-toggle-icon{background:#e5e5e5;border-color:#777;box-shadow:none}
+    .deck.meditation-mode .med-mode-option.active .med-mode-circle,.deck.meditation-mode .med-time-choice .med-time-option.active .med-time-circle,.deck.meditation-mode .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon{background:#c4c4c4;box-shadow:0 0 0 2px #555}
+    .deck.meditation-mode .med-time-choice .med-time-option.active .med-time-circle{border:7px solid #fff;box-shadow:none}
+    .deck:not(.meditation-mode) .med-menu{display:none}
+    .med-menu[hidden]{display:none}
+    .med-menu-row{display:grid;gap:5px;margin-top:5px}
+    .med-menu-row.mode{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:420px;margin:0 auto 4px}
+    .med-option{border:1px solid #aab1a6;border-radius:999px;background:#6b706a;color:#fff;padding:5px 4px;font-size:13px;font-weight:800;cursor:pointer}
+    .med-option.active{background:#171b18;color:#fff;border-color:#a7c526}
+    .med-mode-option{min-width:0;border:0;border-radius:0;background:transparent;padding:0;display:grid;justify-items:center;gap:7px;color:#fff}
+    .med-mode-circle{width:56px;height:56px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:18px;font-weight:900;transition:background .2s ease,box-shadow .2s ease,transform .2s ease}
+    .med-mode-label{font-size:12px;line-height:1.05;font-weight:900;letter-spacing:.8px;text-transform:uppercase}
+    .med-mode-option:hover .med-mode-circle,.med-mode-option:focus-visible .med-mode-circle{background:rgba(255,255,255,.23);transform:translateY(-1px)}
+    .med-mode-option:focus-visible{outline:none}
+    .med-mode-option.active{border:0;background:transparent;color:#fff}
+    .med-mode-option.active .med-mode-circle{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
+    .relaxation-toggle-row{display:flex;justify-content:center;margin:12px 0 10px}
+    .relaxation-toggle{border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:6px;padding:2px 12px;cursor:pointer}
+    .relaxation-toggle-icon{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:25px;line-height:1;transition:background .2s ease,box-shadow .2s ease}
+    .relaxation-toggle-label{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-icon::after{content:"✓";font-size:24px;font-weight:900}
+    .relaxation-toggle[aria-pressed="true"] .relaxation-toggle-glyph{display:none}
+    .med-time-stack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px;margin-top:7px;padding:8px 0 4px;background:transparent}
+    .med-time-choice{display:block;min-width:0}
+    .med-time-choice .med-time-option{width:100%;min-width:0;border:0;border-radius:0;background:transparent;color:#fff;padding:0;display:grid;justify-items:center;gap:7px;cursor:pointer}
+    .med-time-circle{width:56px;height:56px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:18px;font-weight:900;transition:background .2s ease,box-shadow .2s ease,transform .2s ease}
+    .med-time-label{font-size:12px;line-height:1.05;font-weight:900;letter-spacing:.8px;text-transform:uppercase;text-align:center}
+    .med-time-choice .med-time-option:hover .med-time-circle,.med-time-choice .med-time-option:focus-visible .med-time-circle{background:rgba(255,255,255,.23);transform:translateY(-1px)}
+    .med-time-choice .med-time-option:focus-visible{outline:none}
+    .med-time-choice .med-time-option.active{background:transparent;color:#fff;box-shadow:none}
+    .med-time-choice .med-time-option.active .med-time-circle{background:rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(255,255,255,.72)}
+    .guided-note{margin:10px 0 0;font-size:12px;color:#dedbd2}
+    @keyframes controlFadeOut{to{opacity:0;transform:translateY(6px)}}@keyframes controlFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @media(max-width:620px){
+      .cap{font-size:22px;letter-spacing:2px}
+      #capTitleText{left:calc(var(--frame-border) + 62px);right:calc(var(--frame-border) + 62px)}
+      .site-menu-button{left:calc(var(--frame-border) + 16px);width:42px;height:42px;padding:9px;gap:4px}
+      .stage{margin:0;padding:22px 14px}
+      .shell.home-mode .stage{height:auto;max-height:none;aspect-ratio:auto;padding:0}
+      .directory{grid-template-columns:1fr}
+      .deck{margin:0;grid-template-columns:repeat(4,minmax(0,1fr))}
+      .shell.home-mode .deck{min-height:317px;padding:22px 10px 113px;column-gap:7px;row-gap:18px}
+      .nav span:last-child{font-size:16px;letter-spacing:1px}
+    }
+    @media(prefers-reduced-motion:reduce){.shell,.stage{transition:none}.view{animation:none}.stage.ci-stage-fade-out{opacity:1}}
+    /* Scott's scoped revision, 2026-10-04: remove the upper trough globally.
+       Keep its menu at the upper-left without a replacement title band. */
+    .shell .cap{height:0;z-index:30;overflow:visible}
+    .shell .cap::before{content:none}
+    .shell #capTitleText{visibility:hidden;pointer-events:none}
+    .shell .site-menu-button{top:20px;transform:none;background:#292929}
+    #standaloneSiteMenu{inset:76px auto auto max(12px,8vw);max-height:calc(100dvh - 88px)}
+  </style>
+  <link rel="stylesheet" href="/players/citadel-appearance.css">
+  <link rel="stylesheet" href="/players/super-viz-design.css">
+</head>
+<body>
+  <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
+    <header class="cap" id="capTitle" aria-label="Site navigation"><span id="capTitleText"></span><button class="site-menu-button" id="siteMenuButton" type="button" aria-label="Open site menu" title="Site menu"><span></span><span></span><span></span></button></header>
+    <div class="citadel-note" id="citadelNote" hidden><iframe id="citadelNoteFrame" title="Citadel opening message" scrolling="no"></iframe></div>
+    <section class="stage" id="stage">
+      <div class="view" id="homeView">
+        <div class="inspiration" id="dailyInspiration" aria-label="16:9 inspiration card">
+          <div class="inspiration-card">
+            <img class="player-card-background" id="inspirationCard" alt="" decoding="async" fetchpriority="high">
+            <img class="player-word-card" id="inspirationWords" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+          </div>
+        </div>
+      </div>
+      <div class="view" id="directoryView" hidden>
+        <div class="view-head"><h1 class="view-title">Menu</h1></div>
+        <div class="directory" id="directory"></div>
+      </div>
+      <div class="view" id="experienceView" hidden>
+        <section class="lfm-tool-rotation" id="lfmToolRotation" aria-label="16:9 inspiration card" hidden>
+          <div class="inspiration" id="toolDailyInspiration">
+            <div class="inspiration-card">
+              <img class="player-card-background" id="toolInspirationCard" alt="" decoding="async">
+              <img class="player-word-card" id="toolInspirationWords" alt="" aria-hidden="true" decoding="async">
+            </div>
+          </div>
+        </section>
+        <iframe class="experience-frame" id="experienceFrame" title="Cosmic Intentions tool" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>
+      </div>
+    </section>
+    <div class="citadel-note" id="citadelBottomNote" hidden><iframe id="citadelBottomNoteFrame" title="Citadel closing message" scrolling="no"></iframe></div>
+    <nav class="deck" data-template-region="lower-icon-trough" aria-label="MASTER PLAYER TEMPLATE controls">
+      <button class="nav normal-control" data-action="super-viz" aria-label="Super Viz"><svg viewBox="0 0 28 28"><circle cx="12" cy="5" r="2"/><path d="M12 9v7l-6 7m6-6 7 2m-7-6 5-4M5 23h15"/></svg><span>Super Viz</span></button>
+      <button class="nav normal-control" data-action="daily-habits" aria-label="Daily Habits"><svg viewBox="0 0 28 28"><path d="M7 5h14v19H7zM11 2h6v6h-6zM11 12h6m-6 4h6m-6 4h5"/></svg><span>Habits</span></button>
+      <button class="nav normal-control" data-action="goals" aria-label="Goals"><svg viewBox="0 0 28 28"><circle cx="13" cy="14" r="10"/><circle cx="13" cy="14" r="6"/><circle cx="13" cy="14" r="2"/><path d="m15 12 9-9m-4 0h4v4"/></svg><span>Goals</span></button>
+      <button class="nav normal-control" data-action="visualization" aria-label="Visualize"><svg viewBox="0 0 28 28"><path d="M2 14q12-12 24 0-12 12-24 0Z"/><circle cx="14" cy="14" r="4"/></svg><span>Visualize</span></button>
+      <button class="nav normal-control" data-action="action-plan" aria-label="Action Plan"><svg viewBox="0 0 28 28"><path d="M8 5c4 2 5 7 2 11s-7 3-8-1 2-8 6-10Zm12 7c4 2 6 7 3 10s-7 1-7-3 1-6 4-7Z"/></svg><span>Action Plan</span></button>
+      <button class="nav normal-control" data-action="cosmic-library" aria-label="Cosmic Library"><svg viewBox="0 0 28 28"><path d="M12 18q8-7 10-16-9 2-16 10Z"/><circle cx="17" cy="7" r="2"/><path d="m8 14-6 2 5 3m5-5 2 6-4 1m-4 1-3 4"/></svg><span>Library</span></button>
+      <button class="nav normal-control" data-action="task-notes" aria-label="Notes"><svg viewBox="0 0 28 28"><path d="m18 3 6 6-13 13-7 2 2-7Z"/><path d="m16 5 6 6"/></svg><span>Notes</span></button>
+      <button class="nav normal-control" id="lfmBack" data-home aria-label="Back" hidden><svg viewBox="0 0 28 28"><path d="M22 14H6m7-7-7 7 7 7"/></svg><span>Back</span></button>
+      <button class="nav normal-control" id="lfmMenu" data-menu aria-label="Menu"><span class="hamb-lines" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span></button>
+      <div class="lfm-tool-controls" id="lfmToolControls" aria-label="Long Form Manifestation controls">
+        <button class="med-control" type="button" data-home aria-label="Back"><span class="med-circle">◀</span><span>Back</span></button>
+        <button class="med-control" type="button" data-lfm-mini-command="menu" aria-label="LFM Menu"><span class="med-circle">☰</span><span>LFM Menu</span></button>
+        <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
+      </div>
+      <button class="med-progress" id="medProgress" type="button" aria-label="Visualization progress; click to seek"><span class="med-progress-track"><span class="med-progress-fill" id="medProgressFill"><span class="med-countdown" id="medCountdown">15:00</span></span></span></button>
+      <div class="med-controls" id="meditationControls" aria-label="Visualization controls" hidden>
+        <button class="med-control" type="button" data-med-command="back" aria-label="Back"><span class="med-circle">◀</span><span>Back</span></button>
+        <button class="med-control" type="button" data-med-command="menu" aria-label="Visualization Menu" aria-controls="meditationMenu" aria-expanded="false"><span class="med-circle">☰</span><span>Visualization Menu</span></button>
+        <button class="med-control" type="button" data-lfm-mini-command="forward" aria-label="Next"><span class="med-circle">▶</span><span>Next</span></button>
+      </div>
+        <section class="med-menu" id="meditationMenu" aria-label="Visualization choices" hidden>
+          <div class="med-menu-row mode" id="meditationModes">
+            <button class="med-option med-mode-option active" type="button" data-med-mode="unguided" aria-label="Unguided"><span class="med-mode-circle" aria-hidden="true">U</span><span class="med-mode-label">Unguided<br>Bells only</span></button>
+            <button class="med-option med-mode-option" type="button" data-med-mode="guided" aria-label="Guided"><span class="med-mode-circle" aria-hidden="true">G</span><span class="med-mode-label">Guided</span></button>
+          </div>
+          <div class="relaxation-toggle-row">
+            <button class="relaxation-toggle" type="button" data-relaxation-toggle aria-pressed="false" aria-label="Relaxation Module off">
+              <span class="relaxation-toggle-icon" aria-hidden="true"><span class="relaxation-toggle-glyph">☾</span></span>
+              <span class="relaxation-toggle-label">Relaxation Module</span>
+            </button>
+          </div>
+          <div class="med-time-stack" id="meditationTimes">
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="1" aria-label="1 Minute"><span class="med-time-circle" aria-hidden="true">1</span><span class="med-time-label">Minute</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="2" aria-label="2 Minutes"><span class="med-time-circle" aria-hidden="true">2</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="3" aria-label="3 Minutes"><span class="med-time-circle" aria-hidden="true">3</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="5" aria-label="5 Minutes"><span class="med-time-circle" aria-hidden="true">5</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="10" aria-label="10 Minutes"><span class="med-time-circle" aria-hidden="true">10</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option active" type="button" data-med-time="15" aria-label="15 Minutes"><span class="med-time-circle" aria-hidden="true">15</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="30" aria-label="30 Minutes"><span class="med-time-circle" aria-hidden="true">30</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="45" aria-label="45 Minutes"><span class="med-time-circle" aria-hidden="true">45</span><span class="med-time-label">Minutes</span></button></div>
+            <div class="med-time-choice"><button class="med-option med-time-option" type="button" data-med-time="60" aria-label="60 Minutes"><span class="med-time-circle" aria-hidden="true">60</span><span class="med-time-label">Minutes</span></button></div>
+          </div>
+          <p class="guided-note" id="guidedNote" hidden>Guided mode is selected. Guided audio will connect here as sessions are added.</p>
+        </section>
+    </nav>
+  </main>
+  <nav id="standaloneSiteMenu" popover aria-label="Site menu"></nav>
+  <script src="/players/super-viz-design.js"></script>
+  <script type="module">
+    (() => {
+      const params=new URLSearchParams(location.search);
+      const entrepreneurCards=[
+        'ENT - FAIRNESS.PNG',
+        'ENT - GOOD LISTENER.PNG',
+        'ENT - METICULOUS PLANNER.PNG',
+        'ENT AWARE OF LIMITATIONS.PNG',
+        'ENT BALANCE IN LIFE.PNG',
+        'ENT CHARMING copy.PNG',
+        'ENT COMFORTABLE DELEGATING.PNG',
+        'ENT COMPETITIVE.PNG',
+        'ENT DETERMINED TO SUCCEED.PNG',
+        'ENT DISCIPLINED.PNG',
+        'ENT EMPATHETIC.PNG',
+        'ENT EXECUTING CONCEPT.PNG',
+        'ENT EXECUTING STRATEGY.PNG',
+        'ENT FACILITATOR.PNG',
+        'ENT GREAT SALES PERSON.PNG',
+        'ENT LIVING THE BRAND.PNG',
+        'ENT MANAGING TIME WISELY.PNG',
+        'ENT OUTSIDE BOX.PNG',
+        'ENT PASSIONATE.PNG',
+        'ENT PROFITABLE.PNG',
+        'ENT QUALITY PEOPLE.PNG',
+        'ENT RESPECTED MANAGER.PNG',
+        'ENT RISK TAKER.PNG',
+        'ENT SELF CONFIDENT.PNG',
+        'ENT SELF PROMOTER.PNG',
+        'ENT SELF STARTER.PNG',
+        'ENT SKILLFUL COMMUNICATOR.PNG',
+        'ENT STRATEGIC THINKER.PNG',
+        'ENT STRONG WORK ETHIC.PNG',
+        'ENT SUCCESSFUL NEGOTIATOR.PNG',
+        'ORGANIZATIONAL SKILLS.JPG'
+      ];
+      const toolCardByAction={
+        goals:'ENT STRATEGIC THINKER.PNG',
+        'daily-habits':'ENT DISCIPLINED.PNG',
+        'action-plan':'ENT - METICULOUS PLANNER.PNG',
+        visualization:'ENT OUTSIDE BOX.PNG',
+        meditation:'ENT BALANCE IN LIFE.PNG',
+        favorites:'ENT MANAGING TIME WISELY.PNG',
+        gratitude:'ENT EMPATHETIC.PNG',
+        journal:'ENT - GOOD LISTENER.PNG',
+        thoughts:'ENT SKILLFUL COMMUNICATOR.PNG',
+        wins:'ENT SELF CONFIDENT.PNG',
+        proof:'ENT LIVING THE BRAND.PNG',
+        'cosmic-library':'ENT QUALITY PEOPLE.PNG',
+        'quickie-move':'ENT SELF STARTER.PNG',
+        admin:'ORGANIZATIONAL SKILLS.JPG'
+      };
+      const cardAlt=file=>file.replace(/\.(png|jpe?g)$/i,'').replace(/^ENT\s*-?\s*/i,'Entrepreneur affirmation: ').replace(/\s+copy$/i,'');
+      const goalRaw=params.get('goal')??params.get('idx');
+      let goalIndex=goalRaw===null?null:Number.parseInt(goalRaw,10);
+      let entCardKey=params.get('ent')||null;
+      const goalColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
+      const items=[
+        ['goals','Goals','Review and work with your active intentions.'],
+        ['daily-habits','Habits','Build the repeatable actions that support your goals.'],
+        ['action-plan','Roadmap','Turn intentions into clear next steps.'],
+        ['visualization','Visualize','Enter the visual manifestation experience.'],
+        ['super-viz','Super Viz','Choose and play a visualization session.'],
+        ['favorites','My Favorites Autoplay','Build and play your saved daily sequence.'],
+        ['gratitude','Gratitude','Practice gratitude and guided reflection.'],
+        ['journal','My Journal','Write and revisit your journal entries.'],
+        ['thoughts','My Thoughts','Capture ideas, notes and reflections.'],
+        ['task-notes','Notes','Review your notes from My Actions and Roadmap tasks.'],
+        ['goal-workspace','Goal Workspace','Manage a goal with its notes, to-dos, and journal entries.'],
+        ['wins','My Wins','Record and review progress worth celebrating.'],
+        ['proof','Proof','Collect evidence that your intentions are becoming real.'],
+        ['cosmic-library','Cosmic Library','Browse every Cosmic Intentions resource.'],
+        ['entrepreneur-library','Entrepreneur Library','Explore the 31 entrepreneur skills.'],
+        ['ent-card','Entrepreneur Skill Cards','Study one entrepreneurial skill at a time.'],
+        ['quickie-move','Quickie Move','Take one fast action right now.'],
+        ['admin','Admin','Manage content and site controls.']
+      ];
+      const lfmTemplateActions=new Set(['goals','daily-habits','favorites','thoughts','journal','action-plan','visualization','gratitude','wins','cosmic-library','entrepreneur-library','ent-card','task-notes','goal-workspace']);
+      const pagesWithoutLowerTrough=new Set(['journal','goals','favorites','thoughts','action-plan','visualization','gratitude','wins','goal-workspace']);
+      const shell=document.querySelector('.shell');
+      const stage=document.getElementById('stage');
+      const home=document.getElementById('homeView'),directoryView=document.getElementById('directoryView'),experience=document.getElementById('experienceView');
+      const experienceFrame=document.getElementById('experienceFrame'),cap=document.getElementById('capTitleText');
+      cap.textContent="";
+      const toolRotation=document.getElementById('lfmToolRotation');
+      const deck=document.querySelector('.deck'),meditationMenu=document.getElementById('meditationMenu'),meditationControls=document.getElementById('meditationControls');
+      function dockDeck(){
+        // The shared lower trough always closes the full page, after its content.
+        if(deck.parentElement!==shell||shell.lastElementChild!==deck)shell.appendChild(deck);
+      }
+      const meditationTimes=[1,2,3,5,10,15,30,45,60];let meditationMinutes=10,meditationMode='unguided',meditationSessionActive=false,meditationMenuOpen=false;
+      let relaxationModuleEnabled=sessionStorage.getItem('ci-super-viz-relaxation-module')==='on',relaxationThenVisualization=false;
+      const requestedCard=Number.parseInt(params.get('card'),10);
+      let cardIndex;
+      if(Number.isInteger(requestedCard)){
+        cardIndex=((requestedCard%entrepreneurCards.length)+entrepreneurCards.length)%entrepreneurCards.length;
+      }else{
+        let lastCardIndex=-1;
+        try{lastCardIndex=Number.parseInt(sessionStorage.getItem('ci-last-ent-card'),10)}catch(error){}
+        const randomValue=globalThis.crypto?.getRandomValues
+          ? globalThis.crypto.getRandomValues(new Uint32Array(1))[0]
+          : Math.floor(Math.random()*0x100000000);
+        cardIndex=randomValue%entrepreneurCards.length;
+        if(entrepreneurCards.length>1&&cardIndex===lastCardIndex)cardIndex=(cardIndex+1)%entrepreneurCards.length;
+        try{sessionStorage.setItem('ci-last-ent-card',String(cardIndex))}catch(error){}
+      }
+      const cardFile=entrepreneurCards[cardIndex];
+      const inspirationCard=document.getElementById('inspirationCard');
+      const inspirationPanel=document.getElementById('dailyInspiration');
+      let homeTroughColors={outer:'#000',inner:'#000'};
+      function colorFromBucket(entry){
+        const channel=value=>Math.round(value/entry.count).toString(16).padStart(2,'0');
+        return '#'+channel(entry.r)+channel(entry.g)+channel(entry.b);
+      }
+      function applyTroughColors(){
+        shell.style.setProperty('--header','#292929');
+        shell.style.setProperty('--deck','#292929');
+        shell.style.setProperty('--trough-fill','#747474');
+        shell.style.setProperty('--trough-ink','#fff');
+      }
+      function matchTroughsToCard(img,rememberHome=false){
+        try{
+          const canvas=document.createElement('canvas');
+          canvas.width=96;canvas.height=54;
+          const context=canvas.getContext('2d',{willReadFrequently:true});
+          context.drawImage(img,0,0,canvas.width,canvas.height);
+          const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
+          const edgeBuckets=new Map(),allBuckets=new Map();
+          const addPixel=(buckets,offset)=>{
+            const key=(pixels[offset]>>4)+','+(pixels[offset+1]>>4)+','+(pixels[offset+2]>>4);
+            const entry=buckets.get(key)||{count:0,r:0,g:0,b:0};
+            entry.count++;entry.r+=pixels[offset];entry.g+=pixels[offset+1];entry.b+=pixels[offset+2];
+            buckets.set(key,entry);
+          };
+          for(let y=0;y<canvas.height;y++){
+            for(let x=0;x<canvas.width;x++){
+              const offset=(y*canvas.width+x)*4;
+              if(pixels[offset+3]<220)continue;
+              addPixel(allBuckets,offset);
+              if(x<=4||x>=canvas.width-5||y<=4||y>=canvas.height-5)addPixel(edgeBuckets,offset);
+            }
+          }
+          const outerEntry=[...edgeBuckets.values()].sort((a,b)=>b.count-a.count)[0];
+          if(!outerEntry)throw new Error('No readable border pixels');
+          const outerRgb=[outerEntry.r,outerEntry.g,outerEntry.b].map(value=>value/outerEntry.count);
+          const innerEntry=[...allBuckets.values()]
+            .filter(entry=>{
+              const rgb=[entry.r,entry.g,entry.b].map(value=>value/entry.count);
+              const max=Math.max(...rgb),min=Math.min(...rgb);
+              const distance=Math.hypot(rgb[0]-outerRgb[0],rgb[1]-outerRgb[1],rgb[2]-outerRgb[2]);
+              return !(min>224&&max>238)&&max>35&&distance>48;
+            })
+            .sort((a,b)=>b.count-a.count)[0]||outerEntry;
+          const colors={outer:colorFromBucket(outerEntry),inner:colorFromBucket(innerEntry)};
+          if(rememberHome)homeTroughColors=colors;
+          applyTroughColors(colors.outer,colors.inner);
+        }catch(error){
+          const colors={outer:'#000',inner:'#000'};
+          if(rememberHome)homeTroughColors=colors;
+          applyTroughColors(colors.outer,colors.inner);
+        }
+      }
+      const cardTitles={citadel:'Citadel',goals:'Goals','daily-habits':'Habits','action-plan':'Roadmap',visualization:'Visualize',meditation:'Meditate',favorites:'Favorites',gratitude:'Gratitude',journal:'Journal',thoughts:'Thoughts',wins:'Wins',proof:'Proof','cosmic-library':'Cosmic Library','quickie-move':'Quickie Move',admin:'Admin'};
+      function loadCardLayer(image,src){
+        return new Promise(resolve=>{
+          image.onload=()=>resolve(true);
+          image.onerror=()=>resolve(false);
+          image.src=src;
+        });
+      }
+      function loadPlayerCard(background,words,file,action){
+        background.alt=cardTitles[action]+' word collage';
+        return Promise.all([
+          loadCardLayer(background,'/images/entrepreneur-library/'+encodeURIComponent(file)),
+          loadCardLayer(words,'/images/player-word-cards/'+action+'.svg')
+        ]).then(loaded=>loaded.every(Boolean));
+      }
+      const inspirationWords=document.getElementById('inspirationWords');
+      inspirationPanel.setAttribute('aria-label','16:9 Citadel home card');
+      loadPlayerCard(inspirationCard,inspirationWords,cardFile,'citadel').then(loaded=>{
+        if(!loaded)return;
+        inspirationPanel.classList.add('has-card');
+        matchTroughsToCard(inspirationCard,true);
+      });
+      const toolInspirationCard=document.getElementById('toolInspirationCard');
+      const toolInspirationWords=document.getElementById('toolInspirationWords');
+      const toolInspirationPanel=document.getElementById('toolDailyInspiration');
+      let toolCardTransitionId=0;
+      async function setToolCard(action){
+        const transitionId=++toolCardTransitionId;
+        const itemIndex=Math.max(0,items.findIndex(item=>item[0]===action));
+        const file=toolCardByAction[action]||entrepreneurCards[(cardIndex+itemIndex+1)%entrepreneurCards.length];
+        toolInspirationPanel.classList.remove('has-card');
+        toolRotation.setAttribute('aria-label','16:9 '+cardTitles[action]+' home card');
+        const loaded=await loadPlayerCard(toolInspirationCard,toolInspirationWords,file,action);
+        if(transitionId!==toolCardTransitionId||!loaded)return;
+        matchTroughsToCard(toolInspirationCard);
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(transitionId===toolCardTransitionId)toolInspirationPanel.classList.add('has-card');
+          resolve();
+        })));
+      }
+      let selected=null,heightFrame=0;
+      function reportHeight(){
+        if(heightFrame)return;
+        heightFrame=requestAnimationFrame(()=>{
+          heightFrame=0;
+          const height=Math.ceil(shell.getBoundingClientRect().height);
+          parent.postMessage({type:'ci-lfm-height',height},location.origin);
+        });
+      }
+      const citadelNotes=[
+        {box:document.getElementById('citadelNote'),frame:document.getElementById('citadelNoteFrame'),url:'/?masterInline=citadel-note',height:0},
+        {box:document.getElementById('citadelBottomNote'),frame:document.getElementById('citadelBottomNoteFrame'),url:'/?masterInline=citadel-note&box=2',height:0}
+      ];
+      const notePages={home:'dashboard',citadel:'dashboard',goals:'setup','daily-habits':'habits','action-plan':'myroadmap',visualization:'vizlibrary',meditation:'super-viz',favorites:'dailyfocus',gratitude:'gratitude',journal:'mynotes',thoughts:'notes',wins:'wins',proof:'proof','cosmic-library':'cosmiclibrary','entrepreneur-library':'entcard','ent-card':'entcard','task-notes':'tasknotes','goal-workspace':'goalworkspace','quickie-move':'entcard'};
+      let citadelHomeVisible=false,notePage=null;
+      {
+        addEventListener('message',event=>{
+          if(event.origin!==location.origin||event.data?.type!=='ci-citadel-note-height')return;
+          const note=citadelNotes.find(item=>event.source===item.frame.contentWindow);
+          if(!note||event.data.pageId&&event.data.pageId!==notePage)return;
+          note.height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+          note.frame.style.height=Math.max(1,note.height)+'px';
+          note.box.classList.remove('is-loading');
+          note.box.hidden=!citadelHomeVisible||!note.height;
+          reportHeight();
+        });
+      }
+      function show(view){
+        const nextPage=view===home?'dashboard':selected==='super-viz'&&params.get('reviewPage')==='new-gratitude'?'gratitude':notePages[selected]||null;
+        const changedPage=nextPage!==notePage;
+        notePage=nextPage;citadelHomeVisible=!!notePage;
+        citadelNotes.forEach((note,index)=>{
+          note.box.hidden=!citadelHomeVisible||!note.height;
+          if(citadelHomeVisible&&(changedPage||!note.frame.getAttribute('src'))){
+            note.height=0;note.box.hidden=false;note.box.classList.add('is-loading');
+            const url=new URL(note.url,location.origin);url.searchParams.set('notePage',notePage);
+            if(params.has('preview'))url.searchParams.set('preview','1');
+            note.frame.title=notePage+' '+(index===0?'opening':'closing')+' administrator text';
+            note.frame.src=url.pathname+url.search;
+          }
+        });
+        shell.classList.toggle('home-mode',view===home);
+        shell.classList.toggle('experience-mode',view===experience);
+        [home,directoryView,experience].forEach(v=>v.hidden=v!==view);
+        document.querySelectorAll('.nav[data-action]').forEach(n=>n.classList.toggle('active',n.dataset.action===selected));
+        document.getElementById('lfmBack').hidden=view===home;
+        reportHeight();
+      }
+      let meditationMenuAnimation=null;
+      function setMeditationMenuOpen(open,fadeOut=false){
+        if(shell.classList.contains("meditation-player-mode")&&window.CIMeditationDesign){meditationMenuOpen=open;window.CIMeditationDesign.setMenuOpen(open);return;}
+        const opacity=Number.parseFloat(getComputedStyle(meditationMenu).opacity);
+        if(meditationMenuAnimation){
+          meditationMenuAnimation.cancel();
+          meditationMenuAnimation=null;
+        }
+        meditationMenuOpen=open;
+        meditationMenu.inert=!open;
+        document.querySelector('[data-med-command="menu"]')?.setAttribute('aria-expanded',String(open));
+        if(open){
+          meditationMenu.hidden=false;
+          reportHeight();
+          return;
+        }
+        if(!fadeOut||meditationMenu.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          meditationMenu.hidden=true;
+          reportHeight();
+          return;
+        }
+        // Keep the options in place until the five-second fade has finished.
+        const animation=meditationMenu.animate(
+          [{opacity:Number.isFinite(opacity)?opacity:1},{opacity:0}],
+          {duration:5000,easing:'linear',fill:'forwards'}
+        );
+        meditationMenuAnimation=animation;
+        animation.finished.then(()=>{
+          if(meditationMenuAnimation!==animation)return;
+          meditationMenu.hidden=true;
+          animation.cancel();
+          meditationMenuAnimation=null;
+          reportHeight();
+        },()=>{});
+      }
+      function setMeditationMode(active){
+        if(!active)meditationSessionActive=false;
+        deck.classList.toggle('meditation-mode',active);
+        deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
+        shell.classList.toggle('meditation-player-mode',active);
+        meditationControls.hidden=!active||!meditationSessionActive;
+        setMeditationMenuOpen(active);
+      }
+      function notifyParentMode(action){
+        try{parent.postMessage({type:'ci-lfm-mode',action:action},location.origin)}catch(_){}
+      }
+      let experienceObserver=null,experienceMutationObserver=null,settleTimer=0;
+      function clearExperienceObservers(){
+        if(experienceObserver){experienceObserver.disconnect();experienceObserver=null}
+        if(experienceMutationObserver){experienceMutationObserver.disconnect();experienceMutationObserver=null}
+        if(settleTimer){window.clearTimeout(settleTimer);settleTimer=0}
+      }
+      let stageTransitionId=0,stageAnimation=null,stageSurface=null;
+      function currentVisualSurface(){
+        if(!home.hidden)return home;
+        if(!experience.hidden)return toolRotation.hidden?experienceFrame:toolRotation;
+        return directoryView;
+      }
+      function isStaticPlayerImage(surface){
+        return surface===home||surface===toolRotation||(surface===experienceFrame&&selected==='super-viz');
+      }
+      async function transitionStage(commit){
+        const transitionId=++stageTransitionId;
+        if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
+        if(stageSurface){
+          stageSurface.style.opacity='';
+          stageSurface.classList.remove('ci-visual-transition');
+        }
+        const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const fade=async(surface,from,to,duration)=>{
+          stageSurface=surface;
+          surface.classList.add('ci-visual-transition');
+          stageAnimation=surface.animate([{opacity:from},{opacity:to}],{duration,easing:'ease',fill:'both'});
+          try{await stageAnimation.finished}catch(_){return false}
+          return transitionId===stageTransitionId;
+        };
+        try{
+          const outgoingSurface=currentVisualSurface();
+          if(!reduced&&!isStaticPlayerImage(outgoingSurface)&&!await fade(outgoingSurface,1,0,250))return;
+          const outgoing=stageSurface||outgoingSurface;
+          const ready=commit();
+          const incoming=currentVisualSurface();
+          if(stageAnimation){stageAnimation.cancel();stageAnimation=null}
+          if(outgoing&&outgoing!==incoming)outgoing.classList.remove('ci-visual-transition');
+          stageSurface=incoming;
+          incoming.classList.add('ci-visual-transition');
+          const staticImage=isStaticPlayerImage(incoming);
+          incoming.style.opacity=reduced||staticImage?'1':'0';
+          let readyTimeout;
+          try{await Promise.race([Promise.resolve(ready),new Promise(resolve=>{readyTimeout=window.setTimeout(resolve,8000)})])}
+          finally{window.clearTimeout(readyTimeout)}
+          if(transitionId!==stageTransitionId)return;
+          fitExperience();
+          if(!reduced&&!staticImage)await fade(incoming,0,1,580);
+        }finally{
+          if(transitionId===stageTransitionId){
+            if(stageSurface){
+              stageSurface.style.opacity='';
+              stageSurface.classList.remove('ci-visual-transition');
+            }
+            if(stageAnimation)stageAnimation.cancel();
+            stageAnimation=null;stageSurface=null;
+            reportHeight();
+          }
+        }
+      }
+      function applyHomeMode(){
+        notifyParentMode('home');
+        selected=null;dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden','ent-card-trough');toolRotation.hidden=true;setMeditationMode(false);clearExperienceObservers();experienceFrame.src='about:blank';experienceFrame.style.height='600px';shell.style.setProperty('--frame','#292929');shell.style.setProperty('--paper','#f2ede7');applyTroughColors(homeTroughColors.outer,homeTroughColors.inner);cap.textContent="";show(home);
+      }
+      function homeMode(){transitionStage(applyHomeMode)}
+      function visibleContentHeight(root){
+        const view=root.ownerDocument.defaultView;
+        const scrollTop=view?view.scrollY:0;
+        const rootTop=root.getBoundingClientRect().top+scrollTop;
+        let bottom=rootTop;
+        root.querySelectorAll('*').forEach(el=>{
+          const style=getComputedStyle(el);
+          if(style.display==='none'||style.visibility==='hidden'||style.opacity==='0'||style.position==='fixed')return;
+          const rect=el.getBoundingClientRect();
+          if(rect.width<=0||rect.height<=0)return;
+          bottom=Math.max(bottom,rect.bottom+scrollTop);
+        });
+        const paddingBottom=parseFloat(getComputedStyle(root).paddingBottom)||0;
+        return Math.ceil(Math.max(1,root.scrollHeight,bottom-rootTop+paddingBottom));
+      }
+      function fitExperience(){
+        if(!selected)return;
+        if(selected==='super-viz'){
+          deck.style.setProperty('--meditation-side-border',(experienceFrame.clientWidth*35/1920)+'px');
+          experienceFrame.style.height=(experienceFrame.clientWidth*9/16)+'px';
+          reportHeight();
+          return;
+        }
+        try{
+          const doc=experienceFrame.contentDocument;
+          if(!doc)return;
+          const active=doc.querySelector('.page.active, main, [role="main"]');
+          if(!active)return;
+          const height=Math.max(180,selected==='cosmic-library'?active.scrollHeight:visibleContentHeight(active));
+          if(height>0&&Math.abs(height-experienceFrame.offsetHeight)>2){
+            experienceFrame.style.height=height+'px';
+          }
+        }catch(_){}
+        reportHeight();
+      }
+      experienceFrame.addEventListener('load',()=>{
+        clearExperienceObservers();
+        [80,250,600,1200,2500,5000].forEach(delay=>window.setTimeout(fitExperience,delay));
+        window.setTimeout(()=>{
+          fitExperience();
+          if(selected==='super-viz')return;
+          try{
+            const doc=experienceFrame.contentDocument;
+            const active=doc&&doc.querySelector('.page.active, main, [role="main"]');
+            if(!active)return;
+            if('ResizeObserver'in window){
+              experienceObserver=new ResizeObserver(()=>fitExperience());
+              const resizeTargets=[active];
+              resizeTargets.filter(Boolean).forEach(node=>experienceObserver.observe(node));
+            }
+            if('MutationObserver'in window){
+              experienceMutationObserver=new MutationObserver(()=>{
+                fitExperience();
+                if(settleTimer)window.clearTimeout(settleTimer);
+                settleTimer=window.setTimeout(fitExperience,120);
+              });
+              experienceMutationObserver.observe(active,{subtree:true,childList:true,characterData:true,attributes:true});
+            }
+          }catch(_){}
+        },350);
+      });
+      function destinationUrl(action){
+        if(action==='super-viz')return '/players/super-viz.html?v=lfm-16x9-1&t='+meditationMinutes+'&mode='+meditationMode+'&external=1';
+        const url=new URL('/',location.origin);
+        url.searchParams.set('masterInline',action);
+        url.searchParams.set('lfm','fullheight-1');
+        url.searchParams.set('playerNotes','1');
+        if(Number.isInteger(goalIndex))url.searchParams.set('goal',String(goalIndex));
+        if(action==='ent-card'&&entCardKey)url.searchParams.set('ent',entCardKey);
+        return url.pathname+url.search;
+      }
+      function applySelection(action){
+        deck.classList.toggle('ent-card-trough',action==='ent-card');
+        if(action==='citadel'){
+          applyHomeMode();
+          cap.textContent="";
+          notifyParentMode('citadel');
+          reportHeight();
+          return;
+        } // Safety: never embed Citadel inside its own LFM shell.
+        notifyParentMode(action);
+        if(action==='everything'){selected='everything';dockDeck();shell.classList.remove('daily-habits-mode','goals-mode','three-button-nav-mode','lfm-shared-frame-mode');deck.classList.remove('compact-trough-mode','lfm-tool-mode','workspace-trough-hidden');toolRotation.hidden=true;cap.textContent='Cosmic Intentions Dashboard';show(directoryView);return}
+        const item=items.find(i=>i[0]===action); if(!item)return;
+        selected=action;
+        const usesLfmTemplate=lfmTemplateActions.has(action);
+        deck.classList.toggle('workspace-trough-hidden',pagesWithoutLowerTrough.has(action));
+        dockDeck();
+        shell.classList.toggle('daily-habits-mode',action==='daily-habits');
+        shell.classList.toggle('goals-mode',action==='goals');
+        shell.classList.toggle('three-button-nav-mode',['daily-habits','goals','visualization','action-plan','cosmic-library'].includes(action));
+        shell.classList.toggle('lfm-shared-frame-mode',usesLfmTemplate);
+        deck.classList.toggle('compact-trough-mode',usesLfmTemplate);
+        deck.classList.toggle('lfm-tool-mode',usesLfmTemplate);
+        toolRotation.hidden=!usesLfmTemplate||['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action);
+        const cardReady=usesLfmTemplate&&!['task-notes','goal-workspace','entrepreneur-library','ent-card'].includes(action)?setToolCard(action):Promise.resolve();
+        setMeditationMode(action==='super-viz');
+        const paletteIndex=Number.isInteger(goalIndex)&&goalIndex>=0?goalIndex:0;
+        shell.style.setProperty('--frame','#292929');
+        shell.style.setProperty('--paper',action==='daily-habits'?'#5f645e':'#f2ede7');
+        clearExperienceObservers();
+        cap.textContent=usesLfmTemplate&&!['entrepreneur-library','ent-card'].includes(action)?'':(action==='entrepreneur-library'?'Cosmic Library':(action==='daily-habits'?'Habits':item[1]));
+        experienceFrame.title=item[1];
+        experienceFrame.style.height=action==='super-viz'?(stage.clientWidth*9/16)+'px':'600px';
+        const nextUrl=destinationUrl(action);
+        const frameReady=new Promise(resolve=>{
+          let settled=false;
+          const done=()=>{
+            if(settled)return;
+            settled=true;
+            window.clearTimeout(timeout);
+            experienceFrame.removeEventListener('load',done);
+            resolve();
+          };
+          const timeout=window.setTimeout(done,8000);
+          experienceFrame.addEventListener('load',done,{once:true});
+        });
+        experienceFrame.src=nextUrl;show(experience);
+        return Promise.all([frameReady,cardReady]);
+      }
+      function select(action){
+        if(action==='visualization'&&relaxationModuleEnabled&&!relaxationThenVisualization){
+          relaxationThenVisualization=true;
+          transitionStage(()=>Promise.resolve(applySelection('super-viz')).then(()=>sendMeditation('toggle')));
+          return;
+        }
+        transitionStage(()=>applySelection(action));
+      }
+      function syncMeditationUI(){
+        document.querySelectorAll('[data-med-time]').forEach(b=>b.classList.toggle('active',Number(b.dataset.medTime)===meditationMinutes));
+        document.querySelectorAll('[data-med-mode]').forEach(b=>b.classList.toggle('active',b.dataset.medMode===meditationMode));
+        const modeIcon=document.getElementById('medModeIcon');
+        const modeLabel=document.getElementById('medModeLabel');
+        if(modeIcon)modeIcon.textContent=meditationMode==='guided'?'G':meditationMode==='lightly-guided'?'L':'U';
+        if(modeLabel)modeLabel.textContent=meditationMode==='guided'?'Guided':meditationMode==='lightly-guided'?'Lightly Guided':'Unguided';
+        const guidanceNote=document.getElementById('guidedNote');
+        guidanceNote.hidden=false;
+        guidanceNote.textContent=meditationMode==='unguided'?'Visualization with opening and closing bells.':'Temporary visualization guidance uses your browser voice. Final visualization scripts are pending.';
+        const relaxationToggle=document.querySelector('[data-relaxation-toggle]');
+        if(relaxationToggle){
+          relaxationToggle.setAttribute('aria-pressed',String(relaxationModuleEnabled));
+          relaxationToggle.setAttribute('aria-label','Relaxation Module '+(relaxationModuleEnabled?'on':'off'));
+        }
+      }
+      function reloadMeditation(){experienceFrame.src=destinationUrl('super-viz');syncMeditationUI()}
+      function sendMeditation(command,extra={}){experienceFrame.contentWindow?.postMessage({type:'ci-meditation-command',command,...extra},location.origin)}
+      const siteMenuButton=document.getElementById('siteMenuButton');
+      const standaloneSiteMenu=document.getElementById('standaloneSiteMenu');
+      if(parent===window){
+        siteMenuButton.setAttribute('aria-controls','standaloneSiteMenu');
+        siteMenuButton.setAttribute('aria-expanded','false');
+        const siteChoices=[
+          ['citadel','Citadel'],['goals','Goals'],['daily-habits','Habits'],
+          ['favorites','My Favorites Autoplay'],['thoughts','My Thoughts'],
+          ['journal','My Journal'],['action-plan','Roadmap'],
+          ['visualization','Visualization Library'],['super-viz','Super Viz'],
+          ['gratitude','Gratitude'],['cosmic-library','Cosmic Library'],['entrepreneur-library','Entrepreneur Library'],['ent-card','Entrepreneur Skill Cards'],['wins','My Wins'],['task-notes','Notes'],['goal-workspace','Goal Workspace'],['admin','Admin']
+        ];
+        siteChoices.forEach(([action,label])=>{
+          const button=document.createElement('button');
+          button.type='button';
+          button.textContent=label;
+          button.addEventListener('click',()=>{
+            standaloneSiteMenu.hidePopover();
+            siteMenuButton.focus();
+            select(action);
+          });
+          standaloneSiteMenu.appendChild(button);
+        });
+        [['/landing','Landing Page 1'],['/landing-v2','Landing Page 2'],['/landing-v3','Landing Page 3'],['/about','About Us']].forEach(([href,label])=>{
+          const link=document.createElement('a');
+          link.href=href;link.textContent=label;link.target='_blank';link.rel='noopener';
+          link.addEventListener('click',()=>standaloneSiteMenu.hidePopover());
+          standaloneSiteMenu.appendChild(link);
+        });
+        standaloneSiteMenu.addEventListener('toggle',event=>{
+          const open=event.newState==='open';
+          siteMenuButton.setAttribute('aria-expanded',String(open));
+          siteMenuButton.setAttribute('aria-label',open?'Close site menu':'Open site menu');
+        });
+      }
+      siteMenuButton.addEventListener('click',event=>{
+        event.stopPropagation();
+        if(parent===window){standaloneSiteMenu.togglePopover();return}
+        try{parent.postMessage({type:'ci-site-menu-toggle'},location.origin)}catch(_){}
+      });
+      document.getElementById('medProgress').addEventListener('click',event=>{
+        const rect=event.currentTarget.querySelector('.med-progress-track').getBoundingClientRect();
+        const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+        sendMeditation('seek',{ratio});
+      });
+      document.querySelectorAll('[data-lfm-mini-command]').forEach(button=>button.addEventListener('click',()=>{
+        const command=button.dataset.lfmMiniCommand;
+        if(command==='menu'){select('everything');return}
+        const current=Math.max(0,items.findIndex(item=>item[0]===selected));
+        const step=command==='back'?-1:1;
+        select(items[(current+step+items.length)%items.length][0]);
+      }));
+      document.querySelectorAll('[data-med-command]').forEach(button=>button.addEventListener('click',()=>{
+        const command=button.dataset.medCommand;
+        if(command==='back'){homeMode();return}
+        if(command==='menu'){if(shell.classList.contains('meditation-player-mode')&&window.CIMeditationDesign){window.CIMeditationDesign.toggleMenu();return}setMeditationMenuOpen(!meditationMenuOpen,true);return}
+        if(command==='toggle'){sendMeditation('toggle');return}
+        if(command==='mode'){meditationMode=['unguided','guided'][(['unguided','guided'].indexOf(meditationMode)+1)%2];reloadMeditation();return}
+        const index=meditationTimes.indexOf(meditationMinutes);
+        if(command==='shorter'&&index>0){meditationMinutes=meditationTimes[index-1];reloadMeditation()}
+        if(command==='longer'&&index<meditationTimes.length-1){meditationMinutes=meditationTimes[index+1];reloadMeditation()}
+      }));
+      document.querySelectorAll('[data-med-time]').forEach(button=>button.addEventListener('click',()=>{meditationMinutes=Number(button.dataset.medTime);reloadMeditation()}));
+      document.querySelector('[data-relaxation-toggle]')?.addEventListener('click',event=>{
+        relaxationModuleEnabled=!relaxationModuleEnabled;
+        sessionStorage.setItem('ci-super-viz-relaxation-module',relaxationModuleEnabled?'on':'off');
+        syncMeditationUI();
+        event.currentTarget.focus();
+      });
+      document.querySelectorAll('[data-med-mode]').forEach(button=>button.addEventListener('click',()=>{meditationMode=button.dataset.medMode;reloadMeditation()}));
+      addEventListener('message',event=>{
+        if(event.origin!==location.origin||event.source!==parent)return;
+        const data=event.data||{};
+        if(data.type==='ci-lfm-select'&&data.action){if(data.action==='goal-workspace')goalIndex=Number.isInteger(data.goalIndex)?data.goalIndex:null;if(data.action==='ent-card'&&typeof data.entKey==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.entKey))entCardKey=data.entKey;if(data.action==='home')homeMode();else select(data.action);return}
+        if(data.type==='ci-lfm-guide-command'){
+          if(data.command==='back'){homeMode();return}
+          if(data.command==='menu'){select('everything');return}
+          if(data.command==='forward'){
+            const current=Math.max(0,items.findIndex(item=>item[0]===selected));
+            select(items[(current+1)%items.length][0]);
+          }
+        }
+      });
+      addEventListener('message',event=>{
+        if(event.origin!==location.origin||event.source!==experienceFrame.contentWindow)return;
+        const data=event.data||{};
+        if(data.type==='ci-open-goal-branch'&&
+           ['visualization','action-plan'].includes(data.action)&&
+           Number.isInteger(data.goalIndex)&&data.goalIndex>=0){
+          goalIndex=data.goalIndex;
+          select(data.action);
+          return;
+        }
+        if(data.type==='ci-open-ent-card'&&typeof data.key==='string'&&/^[A-Z][A-Z ]{1,40}$/.test(data.key)){
+          entCardKey=data.key;
+          select('ent-card');
+          return;
+        }
+        if(data.type==='ci-open-entrepreneur-library'){
+          select('entrepreneur-library');
+          return;
+        }
+        if(data.type==='ci-open-goal-workspace'){
+          goalIndex=Number.isInteger(data.goalIndex)&&data.goalIndex>=0?data.goalIndex:null;
+          select('goal-workspace');return;
+        }
+        if(data.type==='ci-lfm-mini-nav'){
+          if(data.command==='menu'){select('everything');return}
+          const current=Math.max(0,items.findIndex(item=>item[0]===selected));
+          const step=data.command==='back'?-1:1;
+          select(items[(current+step+items.length)%items.length][0]);
+          return;
+        }
+        if(data.type!=='ci-meditation-state')return;
+        if(data.state==='complete'&&relaxationThenVisualization){
+          relaxationThenVisualization=false;
+          transitionStage(()=>applySelection('visualization'));
+          return;
+        }
+        const sessionActive=data.state!=='ready';
+        if(sessionActive!==meditationSessionActive){
+          meditationSessionActive=sessionActive;
+          deck.classList.toggle('meditation-session-active',sessionActive);
+          meditationControls.hidden=!sessionActive;
+          setMeditationMenuOpen(sessionActive?false:meditationMenuOpen);
+        }
+        const running=data.state==='running';
+        const remaining=Math.max(0,Number(data.remaining)||0);
+        const total=Math.max(1,(Number(data.minutes)||meditationMinutes)*60000);
+        const wholeSeconds=Math.max(0,Math.ceil(remaining/1000));
+        const mm=Math.floor(wholeSeconds/60),ss=wholeSeconds%60;
+        document.getElementById('medCountdown').textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+        document.getElementById('medProgressFill').style.width=(Math.max(0,Math.min(1,1-remaining/total))*100)+'%';
+        const playIcon=document.getElementById('medPlayIcon');
+        const playLabel=document.getElementById('medPlayLabel');
+        if(playIcon)playIcon.textContent=running?'Ⅱ':'▶';
+        if(playLabel)playLabel.textContent=running?'Pause':data.state==='paused'?'Resume':'Play';
+      });
+      syncMeditationUI();
+      const grid=document.getElementById('directory');
+      items.forEach(([key,label])=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span>'+label+'</span><span aria-hidden="true">›</span>';b.addEventListener('click',()=>select(key));grid.appendChild(b)});
+      document.querySelectorAll('.nav[data-action]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.action)));
+      document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',homeMode));
+      document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',()=>select('everything')));
+      addEventListener('resize',()=>{fitExperience();reportHeight()});
+      if('ResizeObserver'in window)new ResizeObserver(reportHeight).observe(shell);
+      const initialAction=params.get('start');
+      if(initialAction&&items.some(item=>item[0]===initialAction))applySelection(initialAction);
+      else show(home);
+      reportHeight();
+      window.setTimeout(reportHeight,120);
+      window.setTimeout(reportHeight,600);
+    })();
+  </script>
+</body>
+</html>
+
