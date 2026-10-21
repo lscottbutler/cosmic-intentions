@@ -60,7 +60,7 @@
   const foreign=text.closest('foreignObject');foreign.setAttribute('x','84');foreign.setAttribute('y','65');foreign.setAttribute('width','1500');foreign.setAttribute('height','635');
   const complete=state==='complete',running=state==='running';
   clock.dataset.opening=openingPhase;clock.dataset.ready=String(ready);clock.dataset.control=complete?'home':running?'pause':'play';clock.setAttribute('role','button');clock.setAttribute('tabindex','0');clock.setAttribute('aria-label',complete?'Home — return to the Citadel':running?'Pause visualization':state==='paused'?'Resume visualization':'Start visualization');clock.style.pointerEvents='all';clock.style.cursor='pointer';
-  const eye=state==='running'&&(openingPhase==='open'||openingPhase==='closed')?openingPhase:null;
+  const eye=state==='running'&&(openingPhase==='open'||openingPhase==='closed')?(window.CISuperVizBoard?.enabled?'open':openingPhase):null;
   const icon=eye?'eyes-'+eye:complete?'home':running?'pause':'play';
   if(clockIcon.dataset.icon!==icon){clockIcon.dataset.icon=icon;clockIcon.classList.toggle('meditation-eye-closed',eye==='closed');}
   clock.dataset.icon=icon;clockIcon.setAttribute('stroke',eye?'#fff':'none');clockIcon.setAttribute('stroke-width',eye?'6':'0');clockIcon.setAttribute('fill',eye?'none':'#fff');clockIcon.setAttribute('stroke-linecap','round');
@@ -72,6 +72,11 @@
   relaxationEnd.style.display=relaxationMs?'':'none';relaxationEnd.dataset.progress=boundary;for(const [k,v] of Object.entries({x1:boundaryX,x2:boundaryX,y1:boundaryY-28,y2:boundaryY+28}))relaxationEnd.setAttribute(k,v);
   slider.setAttribute('aria-label',(running?'Pause':'Play')+' visualization; drag to seek');
   const progress=Math.max(0,Math.min(1,1-remaining/totalMs));const dotX=88+1493*progress,dotRatio=(dotX-35)/1599,dotY=816-132*dotRatio*(1-dotRatio);dot.setAttribute('cx',dotX);dot.setAttribute('cy',dotY);slider.dataset.progress=progress;
+  const svg=stage.querySelector('svg');
+  const board=window.CISuperVizBoard,showBoard=board?.enabled&&!ready&&phase!=='relaxation'&&openingPhase==='done'&&state!=='complete';
+  let boardImage=svg.querySelector('.super-viz-board-image');if(!boardImage){boardImage=document.createElementNS(ns,'image');boardImage.classList.add('super-viz-board-image');for(const [k,v] of Object.entries({width:1669,height:939,preserveAspectRatio:'xMidYMid meet','clip-path':'url(#meditation-dim-window)'}))boardImage.setAttribute(k,v);quietArt.append(boardImage);}
+  boardImage.style.display=showBoard?'':'none';text.style.visibility=showBoard?'hidden':'';
+  if(showBoard){const elapsed=Math.max(0,totalMs-remaining-relaxationMs)/1000,index=Math.floor(elapsed/7)%board.images.length;const source=board.images[index];if(boardImage.getAttribute('href')!==source)boardImage.setAttribute('href',source);}
   // Tenfold headline size; fit complete passages instead of clipping their words.
   const target=text.textContent.length>440?300:360;
   let size=target;text.style.fontSize=size+'px';
