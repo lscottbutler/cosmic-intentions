@@ -765,7 +765,7 @@ export function masterPriorityTaskMarkup() {
     if (_ensureCodes(goal)) saveIntentions();
     const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, true)
       + _roadmapCards(goal, idx, true, true).join('');
-    return rows ? `<section><h3 style="font-size:16px;color:#292929">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
+    return rows ? `<section><h3 style="font-size:16px;color:#292929;text-align:center">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
   }).join('');
 }
 
