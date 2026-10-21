@@ -6,12 +6,8 @@
  const relaxation=menu.querySelector('.relaxation-toggle-row'),note=document.getElementById('guidedNote');
  const footer=document.createElement('section');footer.id='meditationDesignControls';footer.setAttribute('aria-label','Meditation session choices');
  const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';renderControl('ready');play.setAttribute('aria-label','Start meditation');play.disabled=true;
- function renderControl(state,remaining=0){
-  play.dataset.control='countdown';
-  const seconds=Math.max(0,Math.ceil(remaining/1000));
-  play.textContent=seconds<60?String(seconds):Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
-  play.setAttribute('aria-label',seconds+' seconds remaining');
- }
+ function renderControl(state){play.textContent='';play.setAttribute('aria-hidden','true');}
+ addEventListener('message',event=>{if(event.origin===location.origin&&event.source===frame.contentWindow&&event.data?.type==='ci-meditation-home'&&playback==='complete')document.querySelector('[data-home]')?.click();});
  const sessionID=()=>crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');
  let expanded=false,playback='ready',activeSeconds=0,lastTick=0,recorded=false,session=sessionID();
  const summary=document.createElement('p');summary.className='meditation-design-summary';summary.setAttribute('aria-live','polite');
