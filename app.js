@@ -4701,6 +4701,7 @@ const ADMIN_PAGE_BOXES = {
   vizlibrary:    'VISUALIZE',
   vizgoal:       'GOAL VISUALIZATION',
   meditation:    'MEDITATION',
+  'super-viz':   'SUPER VIZ',
   dailyfocus:    'FAVORITES',
   notes:         'THOUGHTS',
   mynotes:       'JOURNAL',
