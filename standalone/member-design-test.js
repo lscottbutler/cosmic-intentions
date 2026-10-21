@@ -107,7 +107,13 @@
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
   current=action;const copy=features[action];
-  if(title.textContent!==copy[0])title.textContent=copy[0];
+  if(title.dataset.lettermark!==copy[0]){
+   title.dataset.lettermark=copy[0];title.setAttribute('aria-label',copy[0]);title.replaceChildren();
+   let letterIndex=0;
+   for(const char of copy[0]){const tile=document.createElement('span');tile.textContent=char;tile.setAttribute('aria-hidden','true');tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+(letterIndex++%2?'#777':'#333')+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';title.append(tile);}
+   title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
+   title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
+  }
   if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
   if(next.textContent!==copy[2])next.textContent=copy[2];
   if(action!=='home'&&action!=='admin'){last=action;try{sessionStorage.setItem('ci-review-last-feature',action);}catch(_){}}

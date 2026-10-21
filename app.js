@@ -1,6 +1,6 @@
 import { installUsage } from './standalone/usage-service.js';
 import { visitTroughPage, attachTrough } from './shared/trough-rotation.js';
-import { memberEntryUrl } from './shared/member-entry.js';
+import { memberEntryUrl, memberToolUrl } from './shared/member-entry.js';
 import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
@@ -620,6 +620,10 @@ export function openFavoritesInLfm() {
 }
 
 export function navTo(id) {
+  const currentDestination = memberToolUrl(id);
+  if (window.self === window.top && currentUser && currentUser.id !== 'preview' && currentDestination) {
+    closeDrawer(); location.assign(currentDestination); return;
+  }
   if (id === 'dailyfocus') {
     openFavoritesInLfm();
     return;
@@ -914,6 +918,7 @@ export async function goMemberDashboard() {
     if (!error && data?.user) user = data.user;
   } catch (e) { /* network blip — keep the session user, stay logged in */ }
   currentUser = user;
+  if (window.self === window.top) { location.assign(memberToolUrl('dashboard')); return; }
   updateUI(user);
   await syncFromSupabase();
   await syncIntentionsFromSupabase();
