@@ -1,11 +1,11 @@
-/* Presentation only. Existing Meditation choices and engine remain authoritative. */
+/* Presentation only. Existing Visualization choices and engine remain authoritative. */
 (()=>{
  const shell=document.querySelector('.shell'),stage=document.getElementById('stage');
  const frame=document.getElementById('experienceFrame'),menu=document.getElementById('meditationMenu');
  const modes=document.getElementById('meditationModes'),times=document.getElementById('meditationTimes');
  const relaxation=menu.querySelector('.relaxation-toggle-row'),note=document.getElementById('guidedNote');
- const footer=document.createElement('section');footer.id='meditationDesignControls';footer.setAttribute('aria-label','Meditation session choices');
- const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';renderControl('ready');play.setAttribute('aria-label','Start meditation');play.disabled=true;
+ const footer=document.createElement('section');footer.id='meditationDesignControls';footer.setAttribute('aria-label','Visualization session choices');
+ const play=document.createElement('button');play.id='meditationDesignPlay';play.type='button';renderControl('ready');play.setAttribute('aria-label','Start visualization');play.disabled=true;
  function renderControl(state){play.textContent='';play.setAttribute('aria-hidden','true');}
  addEventListener('message',event=>{if(event.origin===location.origin&&event.source===frame.contentWindow&&event.data?.type==='ci-meditation-home'&&playback==='complete')document.querySelector('[data-home]')?.click();});
  const sessionID=()=>crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16)).join('-');
