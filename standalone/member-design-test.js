@@ -160,6 +160,16 @@
   headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
  });
  function watchDocument(doc){
+  const visualize=doc.querySelector('.nav[data-action="visualization"]');
+  if(visualize){
+   const superViz=visualize.cloneNode(true);
+   superViz.dataset.action='super-viz';
+   superViz.setAttribute('aria-label','Super Viz');
+   superViz.querySelector('span').textContent='Super Viz';
+   superViz.style.setProperty('--citadel-button','#262626');
+   superViz.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();openFeature('super-viz');});
+   visualize.replaceWith(superViz);
+  }
   if(!doc?.documentElement)return;
   const opening=doc===frame.contentDocument?doc.getElementById('citadelNoteFrame'):null;
   if(opening){
