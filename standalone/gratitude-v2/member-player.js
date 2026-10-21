@@ -1,53 +1,53 @@
 'use strict';
 (()=>{
-const minutes=[1,2,3,5,10,15,30,45,60];
-const preview=document.querySelector('.preview');
-const shell=document.createElement('section');shell.className='gratitude-controls-shell';shell.setAttribute('aria-label','New Gratitude controls');
-const panel=document.createElement('div');panel.className='gratitude-controls-panel';shell.append(panel);
-const modules=document.createElement('div');modules.className='gratitude-modules';
-const heading=document.createElement('h2');heading.textContent='GRATITUDE MODULES';modules.append(heading);
-const grid=document.createElement('div');grid.className='gratitude-module-grid';
-for(let n=1;n<=5;n++){
- const button=document.createElement('button');button.type='button';button.className='gratitude-choice';button.disabled=n!==1;button.setAttribute('aria-label','Gratitude module '+n+(n===1?'':' — not connected'));button.setAttribute('aria-pressed',String(n===1));
- const circle=document.createElement('span');circle.className='gratitude-choice-circle';circle.textContent=n;button.append(circle);if(n===1)button.onclick=()=>window.PlayerEditor.replace(window.PlayerEditor.get());grid.append(button);
-}
-modules.append(grid);const note=document.createElement('p');note.className='gratitude-module-status';note.textContent='Module 1 · five slides';modules.append(note);panel.append(modules);
-const play=document.getElementById('play');play.classList.add('gratitude-central-play');preview.append(play);
-const timeGroup=document.createElement('div');timeGroup.className='gratitude-times';timeGroup.setAttribute('role','group');timeGroup.setAttribute('aria-label','Expressing Gratitude Times');
-const timeHeading=document.createElement('h2');timeHeading.textContent='Expressing Gratitude Times';timeGroup.append(timeHeading);
-const timeGrid=document.createElement('div');timeGrid.className='gratitude-time-grid';
+window.CIGratitudeMaster=true;
+const api=window.PlayerEditor,preview=document.querySelector('.preview'),viewport=document.querySelector('.preview-viewport'),legacyPlay=document.getElementById('play');
+const ns='http://www.w3.org/2000/svg',key='ci-gratitude-master-settings-v1';
+let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}');}catch{}
+let relaxation=[0,30,60,180,300,420,600,900,1800].includes(saved.relaxation)?saved.relaxation:0,guided=saved.guided!==false;
+const persist=()=>{try{localStorage.setItem(key,JSON.stringify({relaxation,guided}));}catch{}};
+api.narration(guided);
+const controls=document.createElement('section');controls.className='gratitude-master-controls';controls.setAttribute('aria-label','Customize gratitude session');
+const summary=document.createElement('button');summary.className='gratitude-current';summary.type='button';summary.setAttribute('aria-expanded','false');summary.setAttribute('aria-controls','gratitude-customization');
+const settings=document.createElement('div');settings.id='gratitude-customization';settings.hidden=true;controls.append(summary,settings);viewport.after(controls);
+summary.onclick=()=>{const open=settings.hidden;settings.hidden=!open;summary.setAttribute('aria-expanded',String(open));reportHeight();};
+let toggles=[];
+function section(id,label,badge){const group=document.createElement('div');group.className='gratitude-setting';const toggle=document.createElement('button');toggle.type='button';toggle.className='gratitude-master-toggle';toggle.innerHTML='<span class="gratitude-status-circle"></span><span class="gratitude-setting-label"></span><span class="gratitude-chevron" aria-hidden="true">⌄</span>';toggle.querySelector('.gratitude-setting-label').textContent=label;toggle.querySelector('.gratitude-status-circle').textContent=badge;const choices=document.createElement('div');choices.className='gratitude-master-choices';choices.id=id;choices.hidden=true;toggle.setAttribute('aria-controls',id);toggle.setAttribute('aria-expanded','false');toggle.onclick=()=>{const open=choices.hidden;for(const t of toggles){const c=document.getElementById(t.getAttribute('aria-controls'));c.hidden=true;t.setAttribute('aria-expanded','false');}choices.hidden=!open;toggle.setAttribute('aria-expanded',String(open));reportHeight();};toggles.push(toggle);group.append(toggle,choices);settings.append(group);return {toggle,choices};}
+function choice(parent,text,action,value){const b=document.createElement('button');b.type='button';b.textContent=text;b.dataset.value=String(value);b.onclick=action;parent.append(b);return b;}
+const relax=section('gratitude-relaxation','Relaxation','X'),module=section('gratitude-modules','Gratitude Module','1'),guide=section('gratitude-guidance','Gratitude Guidance',guided?'I':'X'),time=section('gratitude-times','Gratitude Time',api.get().quietMinutes);
+for(const n of [0,30,60,180,300,420,600,900,1800])choice(relax.choices,n===0?'Off':n===30?'30 seconds':n/60+' minute'+(n===60?'':'s'),()=>{resetSession();relaxation=n;persist();refresh();},n);
+for(let n=1;n<=5;n++){const b=choice(module.choices,'Module '+n,()=>{},n);b.disabled=n!==1;b.setAttribute('aria-pressed',String(n===1));if(n!==1)b.title='Not connected yet';}
+for(const mode of ['unguided','guided'])choice(guide.choices,mode==='guided'?'Guided':'Unguided',()=>{resetSession();guided=mode==='guided';api.narration(guided);persist();refresh();},mode);
 const select=document.getElementById('quiet-duration');select.replaceChildren();
-for(const n of minutes){
- const option=document.createElement('option');option.value=String(n);option.textContent=n+' minute'+(n===1?'':'s');select.append(option);
- const button=document.createElement('button');button.type='button';button.className='gratitude-choice';button.dataset.minutes=n;button.setAttribute('aria-label',n+' minute'+(n===1?'':'s'));button.setAttribute('aria-pressed',String(n===window.PlayerEditor.get().quietMinutes));
- const circle=document.createElement('span');circle.className='gratitude-choice-circle';circle.textContent=n;const caption=document.createElement('span');caption.className='gratitude-minute-label';caption.textContent=n===1?'MINUTE':'MINUTES';button.append(circle,caption);
- button.onclick=()=>{select.value=String(n);select.dispatchEvent(new Event('change'));timeGrid.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.minutes)===n)));};timeGrid.append(button);
-}
-select.value=String(window.PlayerEditor.get().quietMinutes);timeGroup.append(timeGrid);panel.append(timeGroup);document.querySelector('.preview-viewport').after(shell);
-function makeDisclosure(title,choices,id){
- choices.id=id;choices.hidden=true;
- const toggle=document.createElement('button');toggle.type='button';toggle.className='gratitude-section-toggle';toggle.textContent=title.textContent;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls',id);
- toggle.onclick=()=>{const expanded=toggle.getAttribute('aria-expanded')!=='true';panel.querySelectorAll('.gratitude-section-toggle').forEach(control=>{control.setAttribute('aria-expanded',String(expanded));document.getElementById(control.getAttribute('aria-controls')).hidden=!expanded;});};title.replaceChildren(toggle);
-}
-makeDisclosure(heading,grid,'gratitude-module-choices');makeDisclosure(timeHeading,timeGrid,'gratitude-time-choices');
-
-let sessionCircle=false,canLift=false;
-function syncPlay(){
- if(play.textContent==='Play preview')play.textContent='Play';
- const label=play.textContent;play.dataset.state=label==='Pause'?'playing':'ready';play.setAttribute('aria-label',label);
- const active=label==='Pause';play.dataset.controlLabel=active?'PAUSE':label==='Resume'?'RESUME':'PLAY';preview.classList.toggle('nav-controls-hidden',active);preview.classList.toggle('nav-playing',active&&canLift);
- modules.inert=active;timeGroup.inert=active;preview.classList.toggle('nav-session-circle',active&&sessionCircle);
-}
-window.addEventListener('gratitude-playback-phase',event=>{
- preview.classList.toggle('photo-caption-expanded',Boolean(event.detail.photoCard));
- canLift=Boolean(event.detail.canLift);preview.classList.toggle('nav-playing',play.dataset.state==='playing'&&canLift);
- sessionCircle=event.detail.sessionCircle;preview.classList.toggle('nav-session-circle',play.dataset.state==='playing'&&sessionCircle);
- const doc=document.getElementById('player').contentDocument,group=doc?.querySelector('#ci-mini-counter');
- if(group&&!group.querySelector('#ci-navigation-circle-hit')){
-  const hit=doc.createElementNS('http://www.w3.org/2000/svg','circle');hit.id='ci-navigation-circle-hit';hit.setAttribute('cx','835');hit.setAttribute('cy','782');hit.setAttribute('r','92');hit.setAttribute('fill','transparent');hit.setAttribute('role','button');hit.setAttribute('tabindex','0');hit.setAttribute('aria-label','Pause and show gratitude controls');hit.style.cursor='pointer';hit.onclick=()=>play.click();hit.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play.click();}};group.append(hit);
- }
-});
-new MutationObserver(syncPlay).observe(play,{childList:true});syncPlay();
+for(const n of [1,2,3,5,10,15,30,45,60]){const o=document.createElement('option');o.value=n;o.textContent=n+' minutes';select.append(o);choice(time.choices,n+' minute'+(n===1?'':'s'),()=>{resetSession();select.value=n;select.dispatchEvent(new Event('change'));refresh();},n);}
+select.value=api.get().quietMinutes;
+const help=document.createElement('p');help.className='gratitude-master-help';help.textContent='Time is your quiet gratitude practice after the images. Guided includes the recorded slide narration; Unguided keeps the images and closing bell. Modules 2–5 are not connected yet.';settings.append(help);
+function refresh(){const n=api.get().quietMinutes;summary.innerHTML='<span>CURRENTLY PLAYING</span><span>'+n+' MINUTE / '+(guided?'GUIDED':'UNGUIDED')+' / '+(relaxation?(relaxation===30?'30 SECOND':relaxation/60+' MINUTE')+' RELAXATION MODULE':'NO RELAXATION MODULE')+'</span>';relax.toggle.querySelector('.gratitude-status-circle').textContent=relaxation?(relaxation===30?'½':relaxation/60):'X';guide.toggle.querySelector('.gratitude-status-circle').textContent=guided?'I':'X';time.toggle.querySelector('.gratitude-status-circle').textContent=n;for(const [group,value] of [[relax,relaxation],[guide,guided?'guided':'unguided'],[time,n]])for(const b of group.choices.children)b.setAttribute('aria-pressed',String(b.dataset.value===String(value)));reportHeight();}
+const overlay=document.createElementNS(ns,'svg');overlay.classList.add('gratitude-master-transport');overlay.setAttribute('viewBox','0 0 1669 939');overlay.innerHTML='<defs><clipPath id="gratitude-relax-window"><path d="M35 35 H1634 V816 Q835 750 35 816 Z"/></clipPath></defs><g id="gratitude-relax-scene" style="display:none"><image href="/standalone/gratitude-v2/images/gratitude-v2-background.webp" width="1669" height="939" preserveAspectRatio="xMidYMid slice"/><path id="gratitude-relax-mask" d="M35 35 H1634 V816 Q835 750 35 816 Z" fill="#000"/><g id="gratitude-relax-title"><path d="M120 270 H1549 V440 Q835 475 120 440 Z" fill="white" stroke="#05728b" stroke-width="35"/><text x="835" y="390" text-anchor="middle" font-family="Arial" font-size="100" letter-spacing="10">GRATITUDE</text></g><foreignObject x="160" y="400" width="1349" height="240"><p xmlns="http://www.w3.org/1999/xhtml" class="gratitude-relax-copy">Let your body settle at its own pace.</p></foreignObject></g><path id="gratitude-master-frame" fill="none" stroke="#05728b" stroke-width="35"/><path id="gratitude-master-fill" fill="#7ea573"/><path id="gratitude-master-track" fill="none" stroke="#05728b" stroke-width="35"/><path id="gratitude-master-hit" fill="none" stroke="transparent" stroke-width="70" role="slider" tabindex="0" aria-label="Gratitude playback position" aria-valuemin="0"/><line id="gratitude-relax-end" stroke="#fff59d" stroke-width="12"><title>Relaxation ends — gratitude begins</title></line><circle id="gratitude-master-dot" r="16.5" fill="#fff59d"/><g id="gratitude-master-play" role="button" tabindex="0" aria-label="Play gratitude"><path d="M-90.5 0 a90.5 90.5 0 1 0 181 0 a90.5 90.5 0 1 0 -181 0" fill="#303030" stroke="#05728b" stroke-width="25"/><path id="gratitude-master-icon" fill="#fff"/></g>';
+viewport.append(overlay);
+const $=id=>overlay.querySelector('#'+id),play=$('gratitude-master-play'),rail=$('gratitude-master-hit'),dot=$('gratitude-master-dot'),scene=$('gratitude-relax-scene');
+let prelude=false,preludePaused=false,preludeElapsed=0,last=performance.now(),started=false,spoken=false,ending=false,drag=false,dragged=false;
+function resetSession(){prelude=false;preludePaused=false;preludeElapsed=0;started=false;spoken=false;ending=false;api.stop();window.speechSynthesis?.cancel();}
+const preludeDuration=()=>relaxation?6+relaxation:0;
+function speakRelaxation(){if(spoken)return;spoken=true;if(!window.speechSynthesis)return;const text=relaxation===30?'Take a moment to get comfortable. Move if you need to. Let your hands find somewhere to rest. Let your body settle at its own pace.':'Take a moment to get comfortable. Move if you need to. Let your hands find somewhere to rest. There’s no need to match a particular breathing rhythm or reach a certain feeling. Let your body settle at its own pace. Your mind can take its time, too.';const u=new SpeechSynthesisUtterance(text);u.rate=.9;u.onerror=()=>{help.textContent='Relaxation voice is unavailable. The quiet relaxation timer continues.';};speechSynthesis.speak(u);}
+async function toggle(){const s=api.state();if(s.finished){parent.postMessage({type:'ci-gratitude-home'},location.origin);if(parent===window)location.href='/standalone/member-design-test.html';return;}if(prelude){preludePaused=!preludePaused;if(window.speechSynthesis){if(preludePaused)speechSynthesis.pause();else speechSynthesis.resume();}return;}if(!started&&relaxation){started=true;prelude=true;preludePaused=false;preludeElapsed=0;spoken=false;last=performance.now();settings.hidden=true;summary.setAttribute('aria-expanded','false');return;}started=true;await api.toggle();if(api.state().running){settings.hidden=true;summary.setAttribute('aria-expanded','false');}}
+play.onclick=toggle;play.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
+function seek(seconds){started=true;if(prelude&&window.speechSynthesis)speechSynthesis.cancel();if(relaxation&&seconds<preludeDuration()){api.stop();prelude=true;preludeElapsed=Math.max(0,seconds);preludePaused=false;spoken=true;}else{prelude=false;api.seek(Math.max(0,seconds-preludeDuration()));}}
+function pointer(e){const matrix=overlay.getScreenCTM();if(!matrix)return;const p=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());const s=api.state();seek(Math.max(0,Math.min(1,(p.x-35)/1599))*(s.total+preludeDuration()));}
+rail.onpointerdown=e=>{drag=true;dragged=false;rail.setPointerCapture(e.pointerId);};rail.onpointermove=e=>{if(drag){dragged=true;pointer(e);}};rail.onpointerup=e=>{if(dragged)pointer(e);else toggle();drag=false;};rail.onpointercancel=()=>{drag=false;};rail.onkeydown=e=>{const s=api.state(),at=prelude?preludeElapsed:preludeDuration()+s.elapsed,steps={ArrowLeft:-5,ArrowDown:-5,ArrowRight:5,ArrowUp:5};if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}else if(e.key in steps||e.key==='Home'||e.key==='End'){e.preventDefault();seek(e.key==='Home'?0:e.key==='End'?s.total+preludeDuration():at+steps[e.key]);}};
 function reportHeight(){parent.postMessage({type:'ci-gratitude-v2-height',height:Math.ceil(document.querySelector('main').getBoundingClientRect().height)},location.origin);}
-new ResizeObserver(reportHeight).observe(document.querySelector('main'));reportHeight();
+new ResizeObserver(reportHeight).observe(document.querySelector('main'));
+function frame(now){const dt=(now-last)/1000;last=now;if(prelude&&!preludePaused){preludeElapsed+=dt;if(preludeElapsed>=6)speakRelaxation();if(preludeElapsed>=preludeDuration()){prelude=false;window.speechSynthesis?.cancel();api.toggle();}}
+ const s=api.state(),active=prelude?!preludePaused:s.running&&!s.paused,photo=!prelude&&s.photoCard,h=photo?1259:939,y=h-156,trackY=h-123;preview.classList.toggle('gratitude-master-photo',photo);preview.classList.toggle('gratitude-master-active',active);controls.inert=active;controls.classList.toggle('is-playing',active);overlay.setAttribute('viewBox','0 0 1669 '+h);
+ $('gratitude-master-frame').setAttribute('d',`M17.5 ${h} V17.5 H1651.5 V${h}`);const d=`M35 ${trackY} Q835 ${trackY-66} 1634 ${trackY}`;$('gratitude-master-track').setAttribute('d',d);rail.setAttribute('d',d);$('gratitude-master-fill').setAttribute('d',d+` V${h} H35 Z`);play.setAttribute('transform',`translate(834.5 ${y})`);
+ const elapsed=prelude?preludeElapsed:s.elapsed+preludeDuration(),total=s.total+preludeDuration(),ratio=Math.max(0,Math.min(1,elapsed/total));dot.setAttribute('cx',35+1599*ratio);dot.setAttribute('cy',trackY-132*ratio*(1-ratio));dot.style.display=started&&(!prelude||preludeElapsed>=6)?'':'none';rail.setAttribute('aria-valuemax',total);rail.setAttribute('aria-valuenow',Math.min(total,elapsed));rail.setAttribute('aria-valuetext',Math.ceil(Math.max(0,total-elapsed))+' seconds remaining');
+ const marker=$('gratitude-relax-end'),r=preludeDuration()/total,x=35+1599*r,ym=trackY-132*r*(1-r);marker.style.display=relaxation?'':'none';marker.setAttribute('x1',x);marker.setAttribute('x2',x);marker.setAttribute('y1',ym-18);marker.setAttribute('y2',ym+18);
+ scene.style.display=prelude?'':'none';if(prelude){$('gratitude-relax-title').style.opacity=String(Math.max(0,1-preludeElapsed/2));$('gratitude-relax-mask').style.opacity=String(.75*Math.max(0,Math.min(1,(preludeElapsed-3)/3)));overlay.querySelector('.gratitude-relax-copy').style.opacity=preludeElapsed>=6?'1':'0';}
+ const phase=s.phase,eyes=!prelude&&s.running&&s.elapsed>=s.eyeStart&&phase?.stage==='eyes';let icon=s.finished?'home':eyes?(phase.closed>.5?'eyes-closed':'eyes-open'):active?'pause':'play';play.dataset.icon=icon;play.setAttribute('aria-label',s.finished?'Return to Citadel':active?'Pause gratitude':started?'Resume gratitude':'Play gratitude');const paths={play:'M-24 -39 L40 0 L-24 39 Z',pause:'M-30 -33 H-9 V33 H-30 Z M9 -33 H30 V33 H9 Z',home:'M-43 -4 L0 -40 L43 -4 L32 9 V40 H9 V14 H-9 V40 H-32 V9 Z','eyes-open':'M-48 0 Q0 -45 48 0 Q0 45 -48 0 Z M-14 0 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0','eyes-closed':'M-48 -8 Q0 38 48 -8 M-33 6 L-43 20 M-12 14 L-16 31 M12 14 L16 31 M33 6 L43 20'};const ip=$('gratitude-master-icon');ip.setAttribute('d',paths[icon]);ip.setAttribute('fill',icon.startsWith('eyes')?'none':'#fff');ip.setAttribute('stroke',icon.startsWith('eyes')?'#fff':'none');ip.setAttribute('stroke-width','7');
+ // Keep the established Gratitude text/photo/VO sequence; replace its old timer and transport only.
+ const doc=document.getElementById('player').contentDocument;if(doc?.head&&!doc.getElementById('gratitude-master-engine-style')){const style=doc.createElement('style');style.id='gratitude-master-engine-style';style.textContent='#ci-mini-counter>circle,#ci-mini-counter>text,#ci-v2-icons,#ci-mini-bell,#ci-countdown-scrubber,#ci-navigation-circle-hit,#ci-editor-scrub-dot{display:none!important}';doc.head.append(style);}
+ if(s.finished&&!ending){ending=true;reportHeight();}requestAnimationFrame(frame);
+}
+window.CIGratitudeControls={toggle,seek,get:()=>({relaxation,guided,prelude,preludeElapsed,preludePaused}),reset:resetSession};
+addEventListener('pagehide',()=>{if(prelude)window.speechSynthesis?.cancel();});refresh();requestAnimationFrame(frame);
 })();
