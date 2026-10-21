@@ -196,7 +196,7 @@ function renderMasterPriorities() {
   }
   const rows = masterPriorityTaskMarkup();
   document.getElementById('otherTodoTasks').innerHTML = '<h2 style="justify-content:center;text-align:center">TO-DO</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
-  host.innerHTML = '<h2 style="background:#8b5cc7;color:white;justify-content:center;text-align:center">MASTER TO-DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
+  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center">MASTER TO-DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil, #otherTodoTasks .task-note-pencil').forEach(button => button.remove());
 }
 
