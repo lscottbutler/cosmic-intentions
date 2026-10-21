@@ -1,92 +1,20 @@
 html,body{margin:0;background:#f2ede7;color:#292929;min-width:0;--text:#292929;--muted:#555}
 body>header,.toolbar,#status,#module-note,.slide-library,.inspector,.timeline-panel,.preview>.panel-heading,.preview-actions,.ai-studio,.playback-label,.transport,#progress{display:none!important}
-main{padding:0!important;max-width:none!important;margin:0!important}
-.editor-workspace{display:block!important}
-.preview.panel{border:0;border-radius:0;box-shadow:none;background:transparent;container-type:inline-size}
-.preview-viewport{margin:0 0 calc(22100cqw / 1669);aspect-ratio:1669/939;width:100%;overflow:visible}
-/* The SVG bottom edge is 939 - 910 = 29 design pixels. Extend it by
-   221 to make exactly 250, outside the preserved 16:9 picture. */
-.preview-viewport::after{content:'';position:absolute;top:100%;left:0;width:100%;height:calc(22100cqw / 1669);background:#05728b;pointer-events:none}
-.gratitude-controls-shell{background:#292929;padding:0 1.8% 4%;border-top:.6cqw solid #292929}
-.gratitude-controls-panel{background:#747474;border-radius:0 0 50% 50% / 0 0 5% 5%;display:grid;grid-template-columns:31% 26% 31%;justify-content:space-between;align-items:start;aspect-ratio:4/3;padding:7% 7% 8%;box-sizing:border-box}
-.gratitude-controls-panel h2{font:400 clamp(7px,1.65cqw,18px)/1.3 Arial,sans-serif;text-align:center;color:#171717;margin:0 0 3cqw;white-space:nowrap;text-transform:none;letter-spacing:normal}
-.gratitude-module-grid,.gratitude-time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:3cqw;row-gap:2.5cqw}
-.gratitude-choice{display:flex;align-items:center;flex-direction:column;justify-content:flex-start;gap:1cqw;background:transparent;border:0;padding:0;min-height:8.3cqw;color:#292929;cursor:pointer}
-.gratitude-choice-circle{display:grid;place-items:center;box-sizing:border-box;width:6.2cqw;height:6.2cqw;border:1px solid #777;border-radius:50%;background:#e5e5e5;font:700 clamp(9px,2.35cqw,24px)/1 Arial,sans-serif;color:#292929}
-.gratitude-choice[aria-pressed=true] .gratitude-choice-circle{border:.7cqw solid #fff}
-.gratitude-controls-panel .gratitude-choice[aria-pressed=true]{background:transparent;box-shadow:none}
-.gratitude-choice:disabled{opacity:.4;cursor:default}
-.gratitude-minute-label{font:700 clamp(6px,1.4cqw,14px)/1.1 Arial,sans-serif;letter-spacing:.07em;color:#171717}
-.gratitude-module-status{font:400 clamp(7px,1.4cqw,14px)/1.4 Arial,sans-serif;text-align:center;color:#171717;margin:2cqw 0 0}
-.gratitude-central-play{align-self:start;justify-self:center;margin:0;width:9.4cqw;height:9.4cqw;min-width:0;padding:0;border:1.4cqw solid #3d3d3d;border-radius:50%;background:#747474;color:#fff;font-size:0;display:grid;place-items:center;cursor:pointer}
-.gratitude-controls-panel #play{background:#747474;border-color:#3d3d3d}
-.gratitude-central-play::after{content:'';width:0;height:0;border-top:1.35cqw solid transparent;border-bottom:1.35cqw solid transparent;border-left:2cqw solid white;margin-left:.5cqw}
-.gratitude-central-play[data-state=playing]::after{width:1.9cqw;height:2.6cqw;border:0;border-left:.7cqw solid white;border-right:.7cqw solid white;margin:0;box-sizing:border-box}
-.gratitude-controls-panel button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+main{padding:0!important;max-width:none!important;margin:0!important}.editor-workspace{display:block!important}
+.preview.panel{position:relative;border:0;border-radius:0;box-shadow:none;background:transparent;container-type:inline-size;overflow:hidden}
+.preview-viewport{position:relative;margin:0;aspect-ratio:1669/939;width:100%;overflow:hidden}.gratitude-master-photo .preview-viewport{aspect-ratio:1669/1259}
+.preview-viewport iframe{border:0;border-radius:0;width:100%;height:100%}.preview #play{display:none!important}
+.gratitude-master-transport{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.gratitude-master-transport [role]{pointer-events:auto;cursor:pointer;touch-action:none}.gratitude-master-transport [role]:focus-visible{outline:5px solid white;outline-offset:5px}
+.gratitude-master-controls{box-sizing:border-box;padding:0 2.1% 2.1%;border:0 solid #05728b;border-width:0 calc(3500cqw / 1669) calc(3500cqw / 1669);background:#7ea573;overflow:hidden}
+.gratitude-current{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;gap:1cqw;padding:2cqw 1cqw;background:#303030;color:white;border:2px solid white;border-radius:6px;font:400 clamp(10px,2.25cqw,25px)/1.35 Arial;text-align:center;cursor:pointer;box-shadow:none}.gratitude-current span:first-child{font-weight:700}.gratitude-current span:last-child{font-size:clamp(9px,1.75cqw,22px)}
+#gratitude-customization{padding:2cqw 0}#gratitude-customization[hidden],.gratitude-master-choices[hidden]{display:none}
+.gratitude-master-toggle{display:grid;grid-template-columns:8cqw 1fr 4cqw;align-items:center;gap:1.8cqw;width:100%;padding:1.5cqw 0;background:transparent;color:#111;border:0;font:400 clamp(12px,2.4cqw,25px)/1.2 Arial;text-align:left;box-shadow:none;cursor:pointer}
+.gratitude-status-circle{display:grid;place-items:center;border:2px solid white;border-radius:50%;width:7cqw;height:7cqw;background:#303030;color:white;font-size:3cqw}.gratitude-chevron{display:grid;place-items:center;width:3.5cqw;height:3.5cqw;border:1px solid white;border-radius:50%;background:#000;color:#fff;font-size:3cqw}.gratitude-master-toggle[aria-expanded=true] .gratitude-chevron{transform:rotate(180deg)}
+.gratitude-setting-label{padding:.8cqw;border:2px solid #05728b;background:#fff;color:#111;text-align:center}
+.gratitude-master-choices{display:flex;flex-wrap:wrap;gap:1cqw;padding:1cqw 0 2cqw}.gratitude-master-choices button{border:2px solid transparent;border-radius:6px;padding:1.2cqw 1.6cqw;font:400 clamp(12px,1.7cqw,20px)/1.3 Arial;background:#303030;color:white;cursor:pointer;min-height:38px}.gratitude-master-choices button[aria-pressed=true]{border-color:white}.gratitude-master-choices button:disabled{opacity:.4;cursor:default}
+.gratitude-master-controls button:focus-visible{outline:3px solid white;outline-offset:3px}.gratitude-master-help{font:400 clamp(12px,1.6cqw,17px)/1.5 Arial;color:#202020;margin:1cqw 0}
+.gratitude-master-controls.is-playing{max-height:0;padding-top:0;padding-bottom:0;border-bottom-width:calc(600cqw / 1669)}.gratitude-master-controls{transition:max-height 1.8s ease,padding 1.8s ease;max-height:1600px}.gratitude-master-controls.is-playing .gratitude-current,.gratitude-master-controls.is-playing #gratitude-customization{visibility:hidden}
+.gratitude-relax-copy{font:400 48px/1.5 Arial;text-align:center;color:#303030}.gratitude-master-transport #gratitude-relax-title{transition:opacity .15s}
+@media(prefers-reduced-motion:reduce){.gratitude-master-controls{transition:none}}
 
-/* Navigation lives inside the expanded teal border, at reference positions 1–3. */
-.preview.panel{position:relative;--nav-duration:1.2s}
-.preview-viewport{margin-bottom:calc(22100cqw / 1669);transition:margin-bottom var(--nav-duration) ease-in-out}
-.preview-viewport::after{height:calc(22100cqw / 1669);transition:height var(--nav-duration) ease-in-out}
-.gratitude-controls-shell{position:absolute;top:calc(93900cqw / 1669);left:0;width:100%;height:calc(22100cqw / 1669);padding:0;border:0;background:#05728b;overflow:hidden;transition:height var(--nav-duration) ease-in-out}
-.gratitude-controls-panel{height:calc(22100cqw / 1669);aspect-ratio:auto;background:transparent;border-radius:0;padding:1cqw 5cqw;grid-template-columns:39% 16% 39%;align-items:center;transition:transform var(--nav-duration) ease-in-out,opacity var(--nav-duration) ease-in-out}
-.gratitude-controls-panel h2{color:#fff;margin:0 0 .6cqw;font-size:1.55cqw}
-.gratitude-module-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:.5cqw}
-.gratitude-time-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:.25cqw .5cqw}
-.gratitude-choice{min-height:0;gap:.15cqw}
-.gratitude-choice-circle{width:3.4cqw;height:3.4cqw;font-size:1.7cqw}
-.gratitude-choice[aria-pressed=true] .gratitude-choice-circle{border:.35cqw solid white}
-.gratitude-minute-label{font-size:.6cqw;color:white;letter-spacing:0}
-.gratitude-module-status{display:none}
-.gratitude-times{grid-column:3}
-.gratitude-central-play{position:absolute;z-index:5;left:50%;top:calc(104950cqw / 1669);transform:translate(-50%,-50%);width:9.4cqw;height:9.4cqw;background:white;border:.85cqw solid #05728b;transition:top var(--nav-duration) ease-in-out,opacity .3s}
-.gratitude-central-play::after{border-left-color:#292929}
-.gratitude-central-play[data-state=playing]::after{border-left-color:#292929;border-right-color:#292929}
-.preview.nav-playing .preview-viewport{margin-bottom:calc(600cqw / 1669)}
-.preview.nav-playing .preview-viewport::after,.preview.nav-playing .gratitude-controls-shell{height:calc(600cqw / 1669)}
-.preview.nav-playing .gratitude-controls-panel{transform:translateY(calc(-22100cqw / 1669));opacity:0;pointer-events:none}
-.preview.nav-playing .gratitude-central-play{top:calc(78200cqw / 1669)}
-.preview.nav-session-circle .gratitude-central-play{opacity:0;pointer-events:none}
-@media(prefers-reduced-motion:reduce){.preview.panel{--nav-duration:0s}}
-
-.preview #play.gratitude-central-play{background:#fff;border-color:#05728b;box-shadow:none}
-
-/* Scott's default navigation circle: exact existing SVG circle/bell proportions. */
-.preview #play.gratitude-central-play{width:calc(20600cqw / 1669);height:calc(20600cqw / 1669);border-width:calc(2200cqw / 1669);box-sizing:border-box}
-.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{content:'';width:calc(8540cqw / 1669);height:calc(9380cqw / 1669);margin:0;border:0;background:url('./icons/bell-clean.png') center / contain no-repeat;box-sizing:border-box}
-.preview #play.gratitude-central-play:focus-visible{outline:3px solid #fff;outline-offset:4px}
-
-.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
-
-/* Lower navigation ring is charcoal; preserve the session-circle teal ring. */
-.preview #play.gratitude-central-play{border-color:#303030}
-
-/* Side controls retract immediately on Play; circle lift waits for clear text. */
-.gratitude-controls-panel{transition:transform var(--nav-duration) ease-in-out;opacity:1}
-.preview.nav-controls-hidden .gratitude-controls-panel{transform:translateY(calc(-22100cqw / 1669));opacity:1;pointer-events:none}
-.preview #play.gratitude-central-play::after,.preview #play.gratitude-central-play[data-state=playing]::after{content:attr(data-control-label);background:none;width:auto;height:auto;font:600 1.5cqw/1 Arial,sans-serif;letter-spacing:.3cqw;text-indent:.3cqw;color:#292929;white-space:nowrap}
-
-.gratitude-module-grid[hidden],.gratitude-time-grid[hidden]{display:none}
-.gratitude-section-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.7cqw;padding:.5cqw;border:0;background:transparent;color:#fff;font:inherit;letter-spacing:normal;min-height:0;cursor:pointer;box-shadow:none}
-.gratitude-section-toggle::after{content:'';width:.65cqw;height:.65cqw;border-right:.16cqw solid currentColor;border-bottom:.16cqw solid currentColor;transform:translateY(-.15cqw) rotate(45deg)}
-.gratitude-section-toggle[aria-expanded=true]::after{transform:translateY(.15cqw) rotate(225deg)}
-.gratitude-controls-panel .gratitude-section-toggle:hover,.gratitude-controls-panel .gratitude-section-toggle[aria-expanded=true]{background:transparent;color:#fff}
-
-/* Larger bold disclosure titles with solid white chevrons in black discs. */
-.gratitude-controls-panel h2{font-size:2cqw;font-weight:700}
-.gratitude-section-toggle{gap:.8cqw;font-weight:700}
-.gratitude-section-toggle::after{content:'';display:block;flex:none;width:2.5cqw;height:2.5cqw;border:0;border-radius:50%;transform:none;background:#000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M5 8h4l3 4 3-4h4l-7 9z'/%3E%3C/svg%3E") center / 82% no-repeat}
-.gratitude-section-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
-
-/* Add 200 design pixels below the existing photo caption without moving its text. */
-.preview.photo-caption-expanded .preview-viewport{aspect-ratio:1669/1259}
-.preview.photo-caption-expanded .gratitude-controls-shell{top:calc(125900cqw / 1669)}
-.preview.photo-caption-expanded .gratitude-central-play{top:calc(136950cqw / 1669)}
-
-/* Match the site's section corners while keeping the circular controls intact. */
-.preview.panel{border-radius:10px;overflow:hidden}
-.preview-viewport iframe{border-radius:10px}
-.gratitude-controls-shell{border-radius:0 0 10px 10px}
-
-/* Square outer Gratitude player surfaces, preserving the inner curved rail. */
-.preview.panel,.preview-viewport iframe,.gratitude-controls-shell{border-radius:0!important}
+.gratitude-current span{font-family:Arial,Helvetica,sans-serif}.gratitude-master-transport [role]{outline:none}.gratitude-master-transport [role]:focus-visible{outline:5px solid white;outline-offset:5px}
