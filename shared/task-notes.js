@@ -149,7 +149,7 @@ export function renderTaskNotesList() {
     <div class="master-task-note-source"><strong>Note</strong></div>
     <p class="master-task-note-goal">${esc(intentions.find(g => String(g.id) === String(note.goal))?.title || note.goalTitle || (note.goal ? 'Unavailable goal' : 'General note'))}</p>
     <p class="goal-note-text">${esc(note.text)}</p>
-    ${note.goal ? `<button type="button" class="goal-workspace-link" data-goal-id="${esc(String(note.goal))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open goal workspace</button>` : ''}
+    ${note.goal ? `<button type="button" class="goal-workspace-link" data-goal-id="${esc(String(note.goal))}" onclick="openGoalWorkspace(this.dataset.goalId)">Open MY TO DO LIST</button>` : ''}
   </article>` : `<article class="master-task-note">
     <div class="master-task-note-source"><strong>${esc(note.task.code)}</strong><span>${note.task.kind === 'roadmap' ? 'Roadmap' : 'My Actions'}</span></div>
     <p class="master-task-note-goal">${esc(linkedGoalTitle(note.task, note))}</p>
