@@ -56,6 +56,7 @@ fs.mkdirSync(out,{recursive:true});
   await play.click();await expect(play).toHaveAttribute('data-icon','play');await play.click();await expect(play).toHaveAttribute('data-icon','pause');
   await member.locator('body').evaluate(()=>{const m=PlayerEditor.get();const i=m.cards.findIndex(c=>c.image);const t=m.cards.slice(0,i).reduce((n,c)=>n+c.duration,0)+3;CIGratitudeControls.seek(t);});
   await page.waitForTimeout(1900);await page.screenshot({path:path.join(out,'gratitude-master-photo-'+width+'.png'),fullPage:true});
+  await expect(member.frameLocator('#player').locator('svg').first()).toHaveAttribute('viewBox','0 0 1669 939');await expect(member.locator('#gratitude-master-track')).toHaveAttribute('d','M35 816 Q835 750 1634 816');
   const count=await member.locator('body').evaluate(()=>PlayerEditor.get().cards.filter(c=>c.image).length);assert.equal(count,5);
   await member.locator('body').evaluate(()=>CIGratitudeControls.seek(PlayerEditor.state().quietStart+2));await expect(play).toHaveAttribute('data-icon','pause');
   await page.waitForTimeout(1900);await page.screenshot({path:path.join(out,'gratitude-master-quiet-'+width+'.png'),fullPage:true});
