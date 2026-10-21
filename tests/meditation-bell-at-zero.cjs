@@ -33,7 +33,7 @@ fs.mkdirSync(out,{recursive:true});
    assert(await page.evaluate(()=>window.__medAudio.at(-1).paused));assert.equal(await page.evaluate(()=>window.__closingPlays.length),0);
    await command('seek',{ratio:(minutes*60-.2)/(minutes*60)});await expect(page.locator('#player')).toHaveAttribute('data-state','complete');
    await expect.poll(()=>page.evaluate(()=>window.__closingPlays.length)).toBe(1);assert.deepEqual(await page.evaluate(()=>window.__closingPlays),['complete']);
-   await expect(page.locator('.meditation-center-countdown')).toBeHidden();await expect(page.locator('.meditation-start-control')).toHaveAttribute('aria-label','Session complete, closing bell');
+   await expect(page.locator('.meditation-center-countdown')).toHaveCount(0);await expect(page.locator('.meditation-start-control')).toHaveAttribute('aria-label','Home — return to the Citadel');
    await command('seek',{ratio:1});assert.equal(await page.evaluate(()=>window.__closingPlays.length),1);
    await page.locator('.session-card').screenshot({path:path.join(out,'bell-zero-'+mode+'-'+minutes+'.png')});
   }
