@@ -135,7 +135,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(state!=='running'){stopSpeech();return;}
     if(spokenCue==='relaxation'){if(speechSynthesis.paused)speechSynthesis.resume();return;}
     // Start once at the beginning; seeking later into the intro leaves quiet time.
-    if(totalMs-remaining>2000)return;
+    if(totalMs-remaining>openingEndElapsed+2000)return;
     stopSpeech();spokenCue='relaxation';
     const utterance=new SpeechSynthesisUtterance(CIMeditationSessions.relaxationScript(relaxationMs/1000));utterance.lang='en-US';utterance.rate=.9;
     const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
@@ -150,6 +150,26 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
   let completionBellPlayed=false;
   completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
+  const openingText='OK, close your eyes and begin';
+  let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingGeneration=0;
+  function syncOpening(){
+    if(openingPhase==='ready'||openingPhase==='done')return false;
+    narration?.pause();bellAudio?.pause();
+    if(state==='paused'){if('speechSynthesis' in window)speechSynthesis.pause();return true;}
+    if(state!=='running')return false;
+    if(openingPhase==='closed'){
+      if(totalMs-remaining-openingClosedElapsed>=3000){openingPhase='done';openingEndElapsed=totalMs-remaining;return false;}
+      return true;
+    }
+    if(openingSpoken){if('speechSynthesis' in window&&speechSynthesis.paused)speechSynthesis.resume();return true;}
+    openingSpoken=true;const generation=openingGeneration;
+    const closeEyes=()=>{if(generation!==openingGeneration||openingPhase!=='open')return;openingPhase='closed';openingClosedElapsed=totalMs-remaining;render();};
+    if(!('speechSynthesis' in window)){closeEyes();return true;}
+    stopSpeech();const utterance=new SpeechSynthesisUtterance(openingText);utterance.lang='en-US';utterance.rate=.9;
+    const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.startsWith('en')&&v.localService)||voices.find(v=>v.lang.startsWith('en'));if(voice)utterance.voice=voice;
+    utterance.onend=closeEyes;utterance.onerror=event=>{if(generation!==openingGeneration)return;if(!['canceled','interrupted'].includes(event.error)){voiceStatus.textContent='Opening voice could not play. Follow the words on screen.';voiceStatus.hidden=false;closeEyes();}};
+    speechSynthesis.resume();speechSynthesis.speak(utterance);return true;
+  }
   function syncNarration(){
     if(state==='complete'){
       stopSpeech();narration?.pause();bellAudio?.pause();
@@ -157,6 +177,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
       return;
     }
     completionBellPlayed=false;completionBell.pause();
+    if(syncOpening())return;
     if(inRelaxation()){voiceGeneration++;narration?.pause();bellAudio?.pause();syncRelaxationSpeech();return;}
     if(spokenCue==='relaxation')stopSpeech();
     if(bellAudio){
@@ -192,7 +213,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
       });
     }
   }
-  addEventListener('pagehide',()=>{stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause();completionBell.pause()});
+  addEventListener('pagehide',()=>{openingGeneration++;stopSpeech();voiceGeneration++;if(narration)narration.pause();if(bellAudio)bellAudio.pause();completionBell.pause()});
 
   const shown=()=>{
     const seconds=Math.max(0,Math.ceil(remaining/1000));
@@ -225,17 +246,18 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     const ready=state==='ready';
     playIcon.hidden=!ready; value.hidden=ready; value.textContent=shown(); renderScrubber();
     const action=state==='ready'?'Start':state==='running'?'Pause':state==='paused'?'Resume':'Replay';
-    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();window.CIMeditationPresentation?.render({state,remaining,totalMs,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
+    button.setAttribute('aria-label',`${action} ${minutes} minute meditation`); player.dataset.state=state;renderTextCard();if(openingPhase==='open'||openingPhase==='closed'){textStage.querySelector('p').textContent=openingText;textStage.querySelector('p').style.opacity='1';}window.CIMeditationPresentation?.render({state,remaining,totalMs,openingPhase,phase:inRelaxation()?'relaxation':'meditation'});syncNarration();notify();
   }
   function clearTick(){if(tickHandle){clearTimeout(tickHandle);tickHandle=0}}
   function tick(){if(state!=='running')return;remaining=Math.max(0,deadline-performance.now());if(remaining<=0){state='complete';clearTick();render();return}render();tickHandle=setTimeout(tick,250)}
   function toggle(){
     clearTick();
-    if(state==='ready'||state==='complete'){remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
+    if(state==='ready'||state==='complete'){openingGeneration++;openingPhase='open';openingSpoken=false;openingEndElapsed=0;remaining=totalMs;deadline=performance.now()+remaining;state='running';render();tick();return}
     if(state==='running'){remaining=Math.max(0,deadline-performance.now());state='paused';render();return}
     if(state==='paused'){deadline=performance.now()+remaining;state='running';render();tick()}
   }
   function seek(ratio){
+    openingGeneration++;openingPhase='done';
     stopSpeech();
     const progress=Math.max(0,Math.min(1,Number(ratio)||0));
     remaining=totalMs*(1-progress);

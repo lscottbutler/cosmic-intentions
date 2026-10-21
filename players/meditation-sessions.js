@@ -28,7 +28,7 @@
  ];
  function session(minutes,mode){
   const total=minutes*60;
-  if(mode==='unguided')return [{start:0,end:5,text:'Begin'}];
+  if(mode==='unguided')return [{start:0,end:5,text:'OK, close your eyes and begin'}];
   if(mode==='lightly-guided'){
    const count=({1:1,2:2,3:2,5:3,10:3,15:4,30:5,45:7,60:8})[minutes];
    const opening=minutes<=2?'Let your breath move naturally. Feel one breath, and return gently when your attention wanders.':'Let breathing happen naturally, notice its sensations, and gently return when you realize your attention has wandered.';

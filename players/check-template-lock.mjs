@@ -81,9 +81,11 @@ import { readFileSync } from 'node:fs';
 // 27 session lifecycles and243 relaxation configurations passed; geometry unchanged.
 // 2026-10-20: Scott requested closing bell at zero. Desktop/phone natural-zero
 // checks across three modes and full playback regression pass; geometry unchanged.
+// 2026-10-21: Scott requested spoken eye-opening sequence and immediate75%dim.
+// Desktop/phone eye states rendered/reviewed; frame geometry unchanged.
 const lockedFiles = {
   "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
-  "players/meditation.html": "8a837075429856790e3c99e558e31634667a378b"
+  "players/meditation.html": "571e9062debd66e3bc9d553144ba93bae2a4577d"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];
