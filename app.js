@@ -6226,7 +6226,11 @@ function updatePbLoop() {
 }
 
 setInterval(updatePbLoop, 120000);
-document.addEventListener('DOMContentLoaded', updatePbLoop);
+function whenAppDomReady(callback) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', callback, { once: true });
+  else queueMicrotask(callback);
+}
+whenAppDomReady(updatePbLoop);
 
 /* ── ENTREPRENEUR SLIDESHOW ─────────────────────────────── */
 const ENT_SLIDES = [
@@ -6282,9 +6286,9 @@ function startEntSlideshow() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', startEntSlideshow);
+whenAppDomReady(startEntSlideshow);
 
-document.addEventListener('DOMContentLoaded', () => { applyColBOrder(); startAffirmationLoop(null); });
+whenAppDomReady(() => { applyColBOrder(); startAffirmationLoop(null); });
 
 
 
