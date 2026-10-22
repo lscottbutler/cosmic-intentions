@@ -202,8 +202,8 @@ export function renderCosmicLibrary() {
     if (!concepts) {
       concepts = document.createElement('section');
       concepts.id = 'cosmicConceptLibrary';
-      library.prepend(concepts);
     }
+    library.append(concepts);
     mountCosmicConceptLibrary(concepts);
   }
   // "The Successful Entrepreneur" overview (from the Entrepreneur Library card)
