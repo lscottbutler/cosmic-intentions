@@ -63,7 +63,7 @@ export function createHabitPeriodMenu() {
   nav.className = 'habit-period-menu';
   nav.setAttribute('aria-label', 'Habit time of day');
   nav.innerHTML = HABIT_PERIODS.map(([cat, label], index) =>
-    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle" aria-hidden="true">${index + 1}</span><span class="habit-period-label">${label}</span></button>`).join('');
+    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle"><span class="habit-period-label">${label}</span></span></button>`).join('');
   nav.addEventListener('click', event => {
     const button = event.target.closest('[data-habit-period]');
     if (!button) return;
