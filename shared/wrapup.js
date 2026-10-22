@@ -775,7 +775,7 @@ export function masterPriorityTaskMarkup(priority = true) {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];
     const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
     const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];
-    return rows ? `<section data-workspace-goal="${esc(goal.id)}"><h3 style="font-size:16px;color:${color.text};background:${color.bg};border:2px solid ${color.bg};border-radius:10px;padding:12px 16px;text-align:left;width:fit-content;max-width:min(100%,max(55%,280px));box-sizing:border-box;margin-right:auto;white-space:normal;word-break:normal;overflow-wrap:break-word;text-wrap:balance">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
+    return rows ? `<section data-workspace-goal="${esc(goal.id)}"><h3 class="goal-workspace-goal-title" style="font-size:16px;color:${color.text};background:${color.bg};border:2px solid ${color.bg};border-radius:10px;padding:12px 16px;text-align:left;width:fit-content;max-width:min(100%,max(55%,280px));box-sizing:border-box;margin-right:auto;white-space:normal;word-break:normal;overflow-wrap:break-word;text-wrap:balance">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
   }).join('');
 }
 

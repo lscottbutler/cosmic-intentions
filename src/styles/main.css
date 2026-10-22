@@ -4627,3 +4627,8 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
 
 /* Editing fields use the full-strength blue edit-control highlight. */
 :root .ci-admin-page-box .ci-admin-page-box-inline-editor:focus{border-color:#1e90ff;box-shadow:0 0 0 2px #1e90ff}
+
+/* Goal titles align with task text; wider screens keep a single line. */
+.goal-workspace-goal-title{margin-left:42px!important;margin-right:0!important;width:max-content!important;max-width:calc(100% - 42px)!important;white-space:nowrap!important;text-wrap:nowrap!important}
+.goal-workspace-goal-title>span{white-space:inherit;text-wrap:inherit;overflow-wrap:normal}
+@media(max-width:650px){.goal-workspace-goal-title{margin-left:0!important;max-width:100%!important;white-space:normal!important;text-wrap:balance!important}}
