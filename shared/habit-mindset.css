@@ -38,3 +38,7 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 @media(hover:hover){.habit-mindset-links a:hover .habit-mindset-circle,.habit-period-menu button:hover .habit-period-circle{background:#111;border-color:#777}}
 @media(max-width:600px){.habit-period-menu{gap:6px;padding:8px 0 18px}.habit-period-menu button{font-size:10px;letter-spacing:.2px}.habit-period-circle{width:48px;height:48px;border-width:4px;font-size:20px}.ci-habit-mindset{padding:18px 0 24px}.habit-mindset-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}.habit-mindset-circle{width:64px;height:64px;font-size:23px}.habit-mindset-links a{padding:4px 0}.habit-mindset-links strong{font-size:13px;letter-spacing:.2px}.habit-mindset-links small{font-size:12px}.habit-daily-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.habit-mindset-circle,.habit-period-circle{transition:none}}
+
+/* Editor heading matches the mindset link headlines. */
+#page-habits .habits-editor-title{margin:18px 0 16px;font:900 16px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.45px;text-align:center;color:#292929}
+@media(max-width:600px){#page-habits .habits-editor-title{font-size:13px;letter-spacing:.2px}}
