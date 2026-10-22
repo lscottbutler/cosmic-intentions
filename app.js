@@ -5797,7 +5797,10 @@ async function initCitadelNoteFrame(nextPage) {
       aboveBox.style.marginBottom = '16px';
       mount.appendChild(aboveBox);
     }
-    const box = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
+    // Retain the displayed artwork layer so page changes can dissolve into it.
+    const previousCarousel = document.querySelector('[data-citadel-header-mount] .ci-carousel');
+    const box = previousCarousel || _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
+    if (previousCarousel) attachTrough(box, pageId);
     if (_previewActive() && box.style.display === 'none') {
       if(box.classList.contains('ci-carousel')){ box.style.display=''; }else{
       box.style.display = '';
