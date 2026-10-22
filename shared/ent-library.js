@@ -297,11 +297,14 @@ export function renderEntLibrary() {
     goals: intentions || [],
     getAccount: () => currentUser?.id || '',
     notesHTML: _entNotesSection(c),
-    mindsetHTML:
-      _greenSection('AFFIRMATIONS', c.affirmations, 'aff', c.key) +
-      _greenSection('BELIEFS', c.beliefs, 'belief', c.key) +
-      (ENT_MINDSET[c.key] ? _greenSection('STOIC PRINCIPLES', ENT_MINDSET[c.key].stoic, 'num') +
-       _greenSection('WINNING ATTITUDES', ENT_MINDSET[c.key].attitudes, 'num') : ''),
+    mindsetSections: [
+      {title:'AFFIRMATIONS',items:c.affirmations,mode:'aff'},
+      {title:'BELIEFS',items:c.beliefs,mode:'belief'},
+      ...(ENT_MINDSET[c.key] ? [
+        {title:'STOIC PRINCIPLES',items:ENT_MINDSET[c.key].stoic,mode:'stoic'},
+        {title:'WINNING ATTITUDES',items:ENT_MINDSET[c.key].attitudes,mode:'attitude'}
+      ] : [])
+    ],
   });
 }
 
