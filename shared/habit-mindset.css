@@ -1,5 +1,8 @@
 /* Habits: white working surface with black and charcoal controls.
    Keep this inside Habits; the approved outer player and other tools stay separate. */
+.habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:76px;padding:14px 10px;border-radius:999px;font-size:15px;line-height:1.3;white-space:normal;color:#fff}
+@media(max-width:600px){.habit-period-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:60px;padding:10px 8px;font-size:13px}}
+#page-habits > .ci-habit-mindset{margin:24px 0 0;padding:24px;border:1px solid #c9c4be;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
 html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master-inline-daily-habits #page-habits,#page-habits{background:#fff!important;color:#292929;--text:#292929;--widget-text:#292929;--muted:#292929;--widget-border:#c4c4c4}
 #page-habits .setup-page{--font-head:Arial,Helvetica,sans-serif;--font-body:Arial,Helvetica,sans-serif;--vault-mono:Arial,Helvetica,sans-serif;font-family:Arial,Helvetica,sans-serif;color:#292929}
 #page-habits .setup-page-header p{color:#292929}
@@ -43,13 +46,6 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #page-habits .habits-editor-title{margin:18px 0 16px;font:900 16px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.45px;text-align:center;color:#292929}
 @media(max-width:600px){#page-habits .habits-editor-title{font-size:13px;letter-spacing:.2px}}
 
-/* Standalone mindset card below the Habits workspace. */
-#page-habits > .ci-habit-mindset{margin:24px 0 0;padding:24px;border:1px solid #c9c4be;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-
-/* Time-of-day labels inside elongated charcoal controls. */
-.habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:76px;padding:14px 10px;border-radius:999px;font-size:15px;line-height:1.3;white-space:normal;color:#fff}
-@media(max-width:600px){.habit-period-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:60px;padding:10px 8px;font-size:13px}}
-
 /* Time-of-day colors stay visible in selected, hover and focus states. */
 .habit-period-menu [data-habit-period="MORNING"]{--period-color:#367ca3}
 .habit-period-menu [data-habit-period="DAY"]{--period-color:#967000}
@@ -58,3 +54,11 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 .habit-period-menu button[data-habit-period] .habit-period-circle{background:var(--period-color);color:#fff;border-color:transparent}
 .habit-period-menu button[data-habit-period][aria-current="location"] .habit-period-circle{border-color:#292929}
 .habit-period-menu button[data-habit-period]:is(:hover,:focus-visible) .habit-period-circle{border-color:#777}
+
+/* Separate Habits working cards, with evening and sleep grouped together. */
+#page-habits .habit-orientation-card,#page-habits .habit-checklist-card{background:#fff;border:1px solid #c9c4be;border-radius:12px;padding:20px;margin:0 0 20px;box-sizing:border-box}
+#page-habits .habit-orientation-card .habit-period-menu{border:0;padding-bottom:0}
+#page-habits #habitsWidget .habit-checklist-card .habit-drop{margin-bottom:0!important}
+#page-habits #habitsWidget .habit-checklist-card .habit-drop+.habit-drop{margin-top:16px}
+#page-habits .setup-page{background:transparent!important;border:0;box-shadow:none;padding:0}
+@media(max-width:600px){#page-habits .habit-orientation-card,#page-habits .habit-checklist-card{padding:16px;margin-bottom:16px}}
