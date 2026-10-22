@@ -77,3 +77,12 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #page-habits .habit-orientation-card .setup-page-header{grid-column:1;grid-row:1;min-width:0}
 #page-habits .habit-orientation-card>.habits-view-button{grid-column:2;grid-row:1;justify-self:end;margin:0}
 #page-habits .habit-orientation-card .habit-period-menu{grid-column:1 / -1;grid-row:2;margin:0}
+
+/* Section headings repeat their time tab color; counts have black badges. */
+#habitsWidget [data-habit-card="MORNING"]{--period-color:#367ca3}
+#habitsWidget [data-habit-card="DAY"]{--period-color:#967000}
+#habitsWidget [data-habit-card="EVENING"]{--period-color:#b6511b}
+#habitsWidget [data-habit-card="BEDTIME"]{--period-color:#101b35}
+#habitsWidget [data-habit-card="HEALTH"]{--period-color:#2e7d32}
+#page-habits #habitsWidget .habit-checklist-card .habit-drop>summary{background:var(--period-color,#3b3b3b)!important;color:#fff!important;padding:12px 16px!important;border:0!important;border-radius:8px!important}
+#page-habits #habitsWidget .habit-completion-count{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;border-radius:50%;background:#000;color:#fff;font-size:12px;font-weight:800;letter-spacing:0;line-height:1;white-space:nowrap}
