@@ -1,3 +1,4 @@
+import { mountMindsetSlides } from './mindset-slideshow.js';
 import './entrepreneur-player.css';
 import { resourceForCard } from './entrepreneur-player-resources.js';
 
@@ -25,7 +26,7 @@ function loadYouTube() {
   return youtubeAPI;
 }
 
-export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, navigationHTML = '', goals = [], getAccount = () => '', initialTab = 'deeper', habit = null }) {
+export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetSections = [], notesHTML, navigationHTML = '', goals = [], getAccount = () => '', initialTab = 'deeper', habit = null }) {
   const account = String(getAccount() || 'local-preview');
   const storageKey = `ci_ent_player_v1:${account}:${card.key}`;
   const view = views.get(storageKey) || { tab: initialTab, note: '', action: '', goal: '', resourceTab: 'youtube' };
@@ -67,7 +68,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, na
       <h3 class="ent-list-title">MY ACTIONS</h3><p class="ent-muted">Your to-dos for this card. Check one off when it’s done.</p><ul class="ent-action-list ent-record-list"></ul>
       <h3 class="ent-list-title">MY NOTES</h3><p class="ent-muted">Keep an idea here, then add it to your actions when you’re ready.</p><ul class="ent-action-notes ent-record-list"></ul>
     </section>
-    <section class="ent-panel" id="ent-panel-mindset" role="tabpanel" aria-labelledby="ent-tab-mindset" data-panel="mindset"><div class="ent-eyebrow">PREPARE THE PERSON DOING THE WORK</div><h3>Practise how you show up</h3><p>Choose a belief or affirmation to use alongside your next action. Your favourites stay connected to this card.</p>${mindsetHTML}</section>
+    <section class="ent-panel" id="ent-panel-mindset" role="tabpanel" aria-labelledby="ent-tab-mindset" data-panel="mindset"><div class="ent-eyebrow">PREPARE THE PERSON DOING THE WORK</div><h3>Practise how you show up</h3><p>Choose a belief or affirmation to use alongside your next action. Your favourites stay connected to this card.</p><div data-mindset-slides>${mindsetHTML}</div></section>
     <section class="ent-panel" id="ent-panel-deeper" role="tabpanel" aria-labelledby="ent-tab-deeper" data-panel="deeper">
     ${resource ? `<div class="ent-section-top"><div><div class="ent-eyebrow">GO DEEPER</div><h3>Find the moment you need.</h3></div><p class="ent-muted">Watch. Take something useful.<br>Put it into practice.</p></div>
       <div class="ent-resource-switch" role="group" aria-label="Resource format">${[['youtube','YouTube'],['podcast','Podcasts'],['article','Articles']].map(([key,label]) => `<button data-format="${key}" aria-pressed="${view.resourceTab === key}">${label}</button>`).join('')}</div>
@@ -81,7 +82,10 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, na
     </section>
     <section class="ent-panel" id="ent-panel-notes" role="tabpanel" aria-labelledby="ent-tab-notes" data-panel="notes"><div class="ent-eyebrow">KEEP WHAT MOVES YOU FORWARD</div><h3>Notes, moments & next steps</h3><p class="ent-muted">Saved on this device${account === 'local-preview' ? ' for this preview' : ' for your account'}. Return to a moment, put it to work, or remove it.</p><div data-capture-slot="notes"></div><ul class="ent-saved-list ent-record-list"></ul><p class="ent-status" role="status" data-status="notes"></p>${notesHTML}</section>`;
 
+  const mindsetSlides=mountMindsetSlides(root.querySelector('[data-mindset-slides]'),mindsetSections,card.key);
+
   function setTab(tab, focusBar = null) {
+    if(tab!=='mindset')mindsetSlides.pause();
     view.tab = tab;
     // One composer follows the active workspace; drafts and element IDs stay unique.
     if (tab === 'action' || tab === 'notes') root.querySelector(`[data-capture-slot="${tab}"]`).append(root.querySelector('.ent-notes-capture'));
@@ -262,7 +266,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML, notesHTML, na
     if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => containsTime(m, r.seconds)); if (i >= 0) paintMoment(i); play(r.seconds); }
     if (b.dataset.remove) { const panel = b.closest('[data-panel]').dataset.panel; if (write(records.filter(r => r.id !== b.dataset.remove), panel)) { paintEditor(); status('Saved item removed.', panel); } }
   });
-  function cleanup() { disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
+  function cleanup() { mindsetSlides.dispose(); disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
   setTab(view.tab); setFormat(view.resourceTab); renderSaved(); paintEditor(); if (resource) paintMoment(0);
   if (readFailed) status('Existing saved items could not be read. They were left untouched.', 'notes');
   return cleanup;
