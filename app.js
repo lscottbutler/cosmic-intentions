@@ -5741,9 +5741,11 @@ function injectPlaceholderCards() {
 }
 
 // The standalone Master Player renders Citadel outside the main app's dashboard.
-async function initCitadelNoteFrame() {
+let citadelNoteRenderVersion = 0, citadelNoteResizeObserver;
+async function initCitadelNoteFrame(nextPage) {
+  const renderVersion = ++citadelNoteRenderVersion;
   const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
-  const requestedPage = new URLSearchParams(location.search).get('notePage') || 'dashboard';
+  const requestedPage = nextPage || new URLSearchParams(location.search).get('notePage') || 'dashboard';
   const pageId = Object.hasOwn(ADMIN_PAGE_BOXES, requestedPage) ? requestedPage : 'dashboard';
   // Closing frames still exist in the locked shared shell, but must render
   // no box, reserve no space, and perform no content/auth request.
@@ -5754,17 +5756,20 @@ async function initCitadelNoteFrame() {
     window.parent.postMessage({ type: 'ci-citadel-note-height', height: 0, pageId }, location.origin);
     return;
   }
+  window.ciSetCitadelNotePage = page => initCitadelNoteFrame(page);
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   visitTroughPage(pageId,true);
   ensureAdminPageBoxStyles();
-  document.body.replaceChildren();
+  // Keep the previous header visible until its replacement is ready.
+  if (!document.querySelector('[data-citadel-header-mount]')) document.body.replaceChildren();
   document.documentElement.style.cssText = 'background:transparent;overflow:hidden';
   document.body.style.cssText = 'margin:0;padding:0;background:transparent;overflow:hidden';
   const mount = document.createElement('div');
+  mount.dataset.citadelHeaderMount = '';
   mount.style.cssText = 'padding:0;width:100%;box-sizing:border-box';
-  document.body.appendChild(mount);
+
   // The inline Save handler uses the app's existing toast region.
-  const toastWrap = document.createElement('div');
+  const toastWrap = document.getElementById('toastWrap') || document.createElement('div');
   toastWrap.id = 'toastWrap';
   toastWrap.className = 'toast-wrap';
   toastWrap.setAttribute('aria-live', 'polite');
@@ -5780,6 +5785,7 @@ async function initCitadelNoteFrame() {
       sb.auth.getUser(),
       sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle(),
     ]);
+    if (renderVersion !== citadelNoteRenderVersion) return;
     if (block.error || above.error) throw block.error || above.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
@@ -5804,11 +5810,18 @@ async function initCitadelNoteFrame() {
       mount.style.padding = '20px';
       mount.appendChild(box);
     }
-    if ('ResizeObserver' in window) new ResizeObserver(report).observe(mount);
+    citadelNoteResizeObserver?.disconnect();
+    document.body.replaceChildren(mount, toastWrap);
+    if ('ResizeObserver' in window) {
+      citadelNoteResizeObserver = new ResizeObserver(report);
+      citadelNoteResizeObserver.observe(mount);
+    }
     report();
   } catch (error) {
+    if (renderVersion !== citadelNoteRenderVersion) return;
     console.error('[citadel-note] Could not load box:', boxNumber);
     mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Administrator text could not load. Reload to try again.</p>';
+    document.body.replaceChildren(mount, toastWrap);
     report();
   }
 }
