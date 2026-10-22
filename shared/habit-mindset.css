@@ -49,3 +49,12 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 /* Time-of-day labels inside elongated charcoal controls. */
 .habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:76px;padding:14px 10px;border-radius:999px;font-size:15px;line-height:1.3;white-space:normal;color:#fff}
 @media(max-width:600px){.habit-period-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.habit-period-menu .habit-period-circle{width:100%;height:auto;min-height:60px;padding:10px 8px;font-size:13px}}
+
+/* Time-of-day colors stay visible in selected, hover and focus states. */
+.habit-period-menu [data-habit-period="MORNING"]{--period-color:#367ca3}
+.habit-period-menu [data-habit-period="DAY"]{--period-color:#967000}
+.habit-period-menu [data-habit-period="EVENING"]{--period-color:#b6511b}
+.habit-period-menu [data-habit-period="BEDTIME"]{--period-color:#101b35}
+.habit-period-menu button[data-habit-period] .habit-period-circle{background:var(--period-color);color:#fff;border-color:transparent}
+.habit-period-menu button[data-habit-period][aria-current="location"] .habit-period-circle{border-color:#292929}
+.habit-period-menu button[data-habit-period]:is(:hover,:focus-visible) .habit-period-circle{border-color:#777}
