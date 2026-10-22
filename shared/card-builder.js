@@ -845,7 +845,7 @@ export function renderPBIntentionList(resetOpen = false) {
       </summary>
       <div class="pb-goal-fork" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#2E2E2E;padding:14px;border-top:1px solid #3a3a3a;">
         <button type="button" onclick="pbOpenGoalBranch(${idx},'visualization')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#7C5CC4;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">VISUALIZATION</button>
-        <button type="button" onclick="pbOpenGoalBranch(${idx},'action-plan')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#D62828;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">ROADMAP</button>
+        <button type="button" onclick="pbOpenGoalBranch(${idx},'action-plan')" style="min-width:0;padding:16px 10px;border:2px solid #fff;border-radius:10px;background:#2e7d32;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">ROADMAP</button>
       </div>
     </details>`;
   }).join('');
