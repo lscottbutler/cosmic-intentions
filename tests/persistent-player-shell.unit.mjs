@@ -19,7 +19,7 @@ console.log('PASS lower-card fade, rapid navigation cancellation, ready state an
 let children=[],pending=[],writes=0;
 function element(){return {style:{},dataset:{},setAttribute(){},appendChild(el){(this.children??=[]).push(el)},getBoundingClientRect:()=>({height:220}),querySelector:()=>({style:{}})}}
 const body={style:{},replaceChildren(...els){children=els},appendChild(el){if(!children.includes(el))children.push(el)}};
-const document={body,documentElement:{style:{}},querySelector:()=>children.find(el=>'citadelHeaderMount' in (el.dataset||{})),getElementById:id=>children.find(el=>el.id===id),createElement:element};
+const document={body,documentElement:{style:{}},querySelector:selector=>selector.includes('.ci-carousel')?null:children.find(el=>'citadelHeaderMount' in (el.dataset||{})),getElementById:id=>children.find(el=>el.id===id),createElement:element};
 const query=()=>({select(){return this},eq(){return this},maybeSingle(){return new Promise(resolve=>pending.push(resolve))}});
 const ctx=vm.createContext({document,location:{search:'?notePage=dashboard',origin:'https://example.test'},URLSearchParams,ADMIN_PAGE_BOXES:{dashboard:{},setup:{},journal:{}},_adminPageBoxSlug:(p,n)=>p+n,visitTroughPage(){},ensureAdminPageBoxStyles(){},sb:{from:query,auth:{getUser:async()=>({data:{user:null}})}},window:{parent:{postMessage(){}},ResizeObserver:class{observe(){}disconnect(){}}},ResizeObserver:class{observe(){}disconnect(){}},_blockCache:{},currentUser:null,_buildLiveAdminPageBox:(page,cfg,n)=>Object.assign(element(),{page,number:n}),_previewActive:()=>false,console});
 const start=app.indexOf('let citadelNoteRenderVersion =');const end=app.indexOf('\nexport async function init()',start);
