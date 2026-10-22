@@ -4632,3 +4632,13 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
 .goal-workspace-goal-title{margin-left:42px!important;margin-right:0!important;width:max-content!important;max-width:calc(100% - 42px)!important;white-space:nowrap!important;text-wrap:nowrap!important}
 .goal-workspace-goal-title>span{white-space:inherit;text-wrap:inherit;overflow-wrap:normal}
 @media(max-width:650px){.goal-workspace-goal-title{margin-left:0!important;max-width:100%!important;white-space:normal!important;text-wrap:balance!important}}
+
+/* Goals: compact entry control at the upper right, without repeated instructions. */
+html.master-inline-goals #page-setup .setup-page-header{display:none!important}
+html.master-inline-goals #page-setup .ci-goals-top-row{
+ display:flex!important;justify-content:flex-end!important;align-items:flex-start!important;
+ margin:0 0 20px!important;gap:0!important
+}
+html.master-inline-goals #page-setup .ci-goals-add-toggle{
+ flex:0 0 auto!important;width:132px!important;min-height:100px!important;margin:0!important
+}

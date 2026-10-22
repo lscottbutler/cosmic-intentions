@@ -15,7 +15,7 @@
  menuTrigger.addEventListener('click',()=>menu.showModal());
  const features={
   home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
-  goals:['Goals','Keep your direction visible, in your own words.','Select a goal to choose Visualization or Roadmap. ADD A GOAL opens the entry field.'],
+  goals:['Goals','Keep your direction visible, in your own words.',''],
   'daily-habits':['Habits','Work through your existing daily routine.',''],
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
@@ -486,7 +486,7 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
    if(features[action]){
     renderFeature(action);
     if(pendingDashboard&&doc.defaultView.ciCitadelDashboardReview){pendingDashboard=false;dashboardApi=doc.defaultView.ciCitadelDashboardReview;loadDashboard();}
-    if(action==='goal-workspace'||action==='daily-habits')page.querySelector(':scope > .ci-review-guidance')?.remove();
+    if(action==='goals'||action==='goal-workspace'||action==='daily-habits')page.querySelector(':scope > .ci-review-guidance')?.remove();
     if(features[action][2]&&!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
     page.querySelectorAll('.ci-goals-add-toggle,.pb-goal-add-save,button[onclick="notesToggleQuickAdd()"],.goal-workspace-entry-save,[data-save-note]').forEach(button=>{if(!button.classList.contains('ci-review-key-action'))button.classList.add('ci-review-key-action');});
    }
