@@ -130,6 +130,6 @@ body.meditation-two-column .member-player-columns{background:var(--surface);bord
 @media(max-width:650px){body.meditation-two-column .member-player-columns{padding:12px}}
 
 /* Shared player calendar card. */
-#header-calendar{background:#fff;color:#292929;border:5px solid #000;border-radius:0;padding:14px 10px}
+#header-calendar{background:#fff;color:#292929;border:5px solid #000;border-radius:0;box-shadow:inset 0 0 0 2px #d5d5d5;padding:14px 10px}
 
 @media(max-width:650px){#header-calendar strong{white-space:normal}}
