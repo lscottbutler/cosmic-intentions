@@ -5733,7 +5733,7 @@ function injectPlaceholderCards() {
       const periods = createHabitPeriodMenu();
       if (anchor) anchor.insertAdjacentElement('afterend', periods);
       else wrap.insertBefore(periods, wrap.firstChild);
-      wrap.append(card);
+      page.append(card);
     } else if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
     // (bottom placeholder card removed — one admin-controlled info box per page)
