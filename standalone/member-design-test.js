@@ -194,6 +194,12 @@
   headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
  });
  function watchDocument(doc){
+
+  const homeDeck=doc.querySelector('.shell.home-mode .deck');
+  if(homeDeck&&!doc.getElementById('citadel-action-heading')){
+   const heading=doc.createElement('h2');heading.id='citadel-action-heading';heading.textContent='WHAT DO YOU WANT TO DO?';
+   homeDeck.prepend(heading);
+  }
   const visualize=doc.querySelector('.nav[data-action="visualization"]');
   if(visualize){
    const superViz=visualize.cloneNode(true);
