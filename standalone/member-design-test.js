@@ -138,14 +138,14 @@
   current=action;const copy=features[action];
   headerSticker.hidden=action==='admin';
   headerStickerImage.src='/images/home-row/home-'+headerStickerFiles[Object.keys(features).indexOf(action)%headerStickerFiles.length]+'.webp';
-  document.body.classList.toggle('citadel-header-clean',action==='home');
+  document.body.classList.toggle('master-control-panel',action!=='admin');
   const headerSearch=document.getElementById('player-search');
-  const searchParent=action==='home'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
+  const searchParent=action!=='admin'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
   if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
 
   const headerOrientation=document.querySelector('.orientation'),headerCopy=headerOrientation.querySelector('div:first-child'),headerShortcuts=document.querySelector('.shortcuts');
   const adminBox=document.getElementById('header-admin-note'),menuButton=document.getElementById('review-menu-trigger');
-  if(action==='home'){
+  if(action!=='admin'){
    headerCopy.append(adminBox);
    headerShortcuts.append(menuButton,headerSticker,headerCalendar);
   }else{
