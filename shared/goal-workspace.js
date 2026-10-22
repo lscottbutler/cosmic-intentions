@@ -179,6 +179,39 @@ export function renderGoalWorkspace() {
   renderMasterPriorities();
 }
 
+const expandedTodoGoals = new Set();
+
+export function setupTodoDisclosure(host) {
+  if (!host) return;
+  host.querySelectorAll(':scope > section[data-workspace-goal]').forEach(group => {
+    const cards = [...group.querySelectorAll('.wcard')];
+    const title = group.querySelector(':scope > h3');
+    if (!title || cards.length <= 5) return;
+    const key = group.dataset.workspaceGoal;
+    const label = document.createElement('span');
+    while (title.firstChild) label.append(title.firstChild);
+    label.style.minWidth = '0';
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'todo-goal-chevron';
+    button.style.cssText = 'display:inline-grid;place-items:center;flex-shrink:0;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:#000;color:#fff;font-size:26px;line-height:1;cursor:pointer';
+    title.style.display = 'flex'; title.style.alignItems = 'center'; title.style.gap = '14px';
+    title.append(label, button);
+    function paint() {
+      const expanded = expandedTodoGoals.has(key);
+      cards.forEach((card, index) => { card.hidden = !expanded && index >= 5; });
+      button.textContent = expanded ? '▲' : '▼';
+      button.setAttribute('aria-expanded', String(expanded));
+      button.setAttribute('aria-label', expanded ? 'Show first five tasks' : `Show all ${cards.length} tasks`);
+      button.title = button.getAttribute('aria-label');
+    }
+    button.addEventListener('click', () => {
+      if (expandedTodoGoals.has(key)) expandedTodoGoals.delete(key); else expandedTodoGoals.add(key);
+      paint();
+    });
+    paint();
+  });
+}
+
 function renderMasterPriorities() {
   if (!activeWorkspace()) return;
   let host = document.getElementById('masterPriorityTasks');
@@ -198,6 +231,7 @@ function renderMasterPriorities() {
   document.getElementById('otherTodoTasks').innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
   host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">PRIORITY TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil, #otherTodoTasks .task-note-pencil').forEach(button => button.remove());
+  setupTodoDisclosure(document.getElementById('otherTodoTasks'));
 }
 
 export function renderGoalWorkspaceTasks() {
