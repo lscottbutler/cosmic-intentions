@@ -62,3 +62,12 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #page-habits #habitsWidget .habit-checklist-card .habit-drop+.habit-drop{margin-top:16px}
 #page-habits .setup-page{background:transparent!important;border:0;box-shadow:none;padding:0}
 @media(max-width:600px){#page-habits .habit-orientation-card,#page-habits .habit-checklist-card{padding:16px;margin-bottom:16px}}
+
+/* Pale time-of-day surfaces keep the checklist text readable. */
+#habitsWidget [data-habit-card="MORNING"]{--habit-tint:#e1ecf1}
+#habitsWidget [data-habit-card="DAY"]{--habit-tint:#f3edd9}
+#habitsWidget [data-habit-card="EVENING"]{--habit-tint:#f4e5dd}
+#habitsWidget [data-habit-card="BEDTIME"]{--habit-tint:#e2e4ea}
+#habitsWidget [data-habit-card="HEALTH"]{--habit-tint:#e1f1e7}
+#page-habits #habitsWidget .habit-checklist-card{background:var(--habit-tint,#fff)}
+#page-habits #habitsWidget .habit-checklist-card .habit-period-body{background:transparent!important}
