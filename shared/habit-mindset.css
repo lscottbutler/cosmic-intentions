@@ -42,3 +42,6 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 /* Editor heading matches the mindset link headlines. */
 #page-habits .habits-editor-title{margin:18px 0 16px;font:900 16px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.45px;text-align:center;color:#292929}
 @media(max-width:600px){#page-habits .habits-editor-title{font-size:13px;letter-spacing:.2px}}
+
+/* Standalone mindset card below the Habits workspace. */
+#page-habits > .ci-habit-mindset{margin:24px 0 0;padding:24px;border:1px solid #c9c4be;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
