@@ -4615,3 +4615,8 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
 
 /* Scott,20 October2026: square all administrator artwork boxes. */
 .page .ci-admin-page-box,.page .ci-carousel,.ci-admin-page-box,.ci-carousel,.ci-carousel-card,.ci-admin-trough-art{border-radius:0!important}
+
+/* Opening administrator text: borderless rounded card and charcoal edit control. */
+:root .ci-admin-page-box[data-page-box="3"]{border:0!important;border-radius:10px!important}
+:root .ci-admin-page-box .ci-admin-page-box-edit{background:#292929!important;color:#fff!important;border-color:#292929!important}
+:root .ci-admin-page-box .ci-admin-page-box-edit:hover,:root .ci-admin-page-box .ci-admin-page-box-edit:focus-visible{background:#404040!important;outline-color:#292929}
