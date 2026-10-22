@@ -90,8 +90,10 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       <span style="flex:${showLinkedEntries ? '1 1 150px' : '1'};min-width:0;font-size:15px;line-height:1.45;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
       ${showLinkedEntries && noteContext ? `<div class="goal-task-entry-buttons" style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${[['note','#2e7d32'],['journal','#1e90ff']].map(([kind,color]) => `<button type="button" aria-expanded="false" aria-label="Show ${kind} for task ${esc(code)}" onclick="const panel=this.closest('.wcard').querySelector('[data-linked-kind=${kind}]');panel.hidden=!panel.hidden;this.setAttribute('aria-expanded',String(!panel.hidden));" style="background:${color};color:#fff;border:0;border-radius:5px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer">${kind.toUpperCase()}</button>`).join('')}</div>` : ''}
       <!-- Goal-code box: code on top, ⋯ overflow menu in the lower half. -->
+      ${showLinkedEntries && noteContext ? '<div class="goal-task-priority-controls" style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;align-items:center">' : ''}
       ${noteContext ? `<button type="button" class="task-priority" aria-label="Priority task ${esc(code)}" aria-pressed="${!!taskIsPriority(noteContext)}" onclick="wrapTogglePriority('${encodeURIComponent(taskNoteKey(noteContext)).replace(/'/g,'%27')}')" title="Toggle priority" style="flex-shrink:0;width:32px;height:32px;border:2px solid #8b5cc7;border-radius:50%;background:${taskIsPriority(noteContext) ? '#8b5cc7' : '#fff'};color:${taskIsPriority(noteContext) ? '#fff' : '#8b5cc7'};font-weight:700;cursor:pointer;">P</button>` : ''}
       ${showLinkedEntries && deleteCall ? `<button type="button" class="goal-task-quick-delete" onclick="event.stopPropagation();${deleteCall}" title="Delete this task" aria-label="Delete task ${esc(code)}" style="flex-shrink:0;width:32px;height:32px;border:1px solid #8b5cc7;border-radius:50%;background:#8b5cc7;color:#fff;font-size:20px;line-height:1;cursor:pointer;">×</button>` : ''}
+      ${showLinkedEntries && noteContext ? '</div>' : ''}
       ${taskNoteButton(noteContext)}
       <div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
         <span style="display:flex;align-items:center;justify-content:center;padding:7px 4px 5px;color:${shade.text};font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:.4px;line-height:1;">${esc(code)}</span>
@@ -770,7 +772,7 @@ export function masterPriorityTaskMarkup(priority = true) {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];
     const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
     const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];
-    return rows ? `<section><h3 style="font-size:16px;color:${color.text};background:${color.bg};border:2px solid ${color.bg};border-radius:10px;padding:12px 16px;text-align:left;width:fit-content;max-width:min(100%,max(55%,280px));box-sizing:border-box;margin-right:auto;overflow-wrap:anywhere">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
+    return rows ? `<section><h3 style="font-size:16px;color:${color.text};background:${color.bg};border:2px solid ${color.bg};border-radius:10px;padding:12px 16px;text-align:left;width:fit-content;max-width:min(100%,max(55%,280px));box-sizing:border-box;margin-right:auto;white-space:normal;word-break:normal;overflow-wrap:break-word;text-wrap:balance">${esc(goal.title || 'Untitled goal')}</h3>${rows}</section>` : '';
   }).join('');
 }
 
