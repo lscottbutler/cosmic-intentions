@@ -126,6 +126,15 @@
   const headerSearch=document.getElementById('player-search');
   const searchParent=action==='home'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
   if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
+
+  const headerOrientation=document.querySelector('.orientation'),headerCopy=headerOrientation.querySelector('div:first-child'),headerShortcuts=document.querySelector('.shortcuts');
+  const adminBox=document.getElementById('header-admin-note'),menuButton=document.getElementById('review-menu-trigger');
+  if(action==='home'){
+   headerCopy.append(adminBox);
+   headerShortcuts.append(menuButton,headerSticker);
+  }else{
+   headerOrientation.append(adminBox,menuButton,headerSticker);
+  }
   if(title.dataset.lettermark!==copy[0]){
    title.dataset.lettermark=copy[0];title.setAttribute('aria-label',copy[0]);title.replaceChildren();
    let letterIndex=0;
