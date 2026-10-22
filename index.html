@@ -24,8 +24,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;600;800;900&family=Lora:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+
 <script>/* DEV-ONLY error surface — only on localhost; inert in production. Surfaces any
    runtime error as a visible red overlay so nothing fails silently while testing. */
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -83,7 +83,7 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
   } catch (e) {}
 })();
 </script>
-<script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/entry.js"></script>
 <!-- THEME: apply saved theme before paint (no flash) + expose setTheme for the header picker -->
 <script>(function(){var q;try{q=new URLSearchParams(location.search).get('theme');}catch(e){}try{var t=q||localStorage.getItem('ci_theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(q)localStorage.setItem('ci_theme',q);}catch(e){document.documentElement.setAttribute('data-theme','dark');}
 window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}document.documentElement.setAttribute('data-theme',n);};})();</script>
@@ -820,7 +820,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
           <!-- Video A — full width -->
           <div class="home-vid-block">
-            <iframe src="https://iframe.cloudflarestream.com/7c488e507897f9c22e7f027f6ca74b6b"
+            <iframe data-ci-player-src="https://iframe.cloudflarestream.com/7c488e507897f9c22e7f027f6ca74b6b"
               allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
           </div>
 
@@ -842,13 +842,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="home-vid-grid">
             <div>
               <div class="home-vid-block">
-                <iframe src="https://iframe.cloudflarestream.com/f7b2cf9e57a6b29c97bdee0c99dcb3ec"
+                <iframe data-ci-player-src="https://iframe.cloudflarestream.com/f7b2cf9e57a6b29c97bdee0c99dcb3ec"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
             </div>
             <div>
               <div class="home-vid-block">
-                <iframe src="https://iframe.cloudflarestream.com/5c2e75172bfcfddf618c3715b332b6be"
+                <iframe data-ci-player-src="https://iframe.cloudflarestream.com/5c2e75172bfcfddf618c3715b332b6be"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
             </div>
@@ -875,13 +875,13 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="home-vid-grid">
             <div>
               <div class="home-vid-block">
-                <iframe src="https://iframe.cloudflarestream.com/3b456ab7735aa0e8aed6633e2385961d"
+                <iframe data-ci-player-src="https://iframe.cloudflarestream.com/3b456ab7735aa0e8aed6633e2385961d"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
             </div>
             <div>
               <div class="home-vid-block">
-                <iframe src="https://iframe.cloudflarestream.com/43813e0e2c419930e548850a9101cf6b"
+                <iframe data-ci-player-src="https://iframe.cloudflarestream.com/43813e0e2c419930e548850a9101cf6b"
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
               </div>
             </div>
@@ -1384,7 +1384,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
         <!-- MASTER PLAYER — BELOW WELCOME IN CITADEL COLUMN A -->
         <section id="ciApprovedMasters" aria-label="Cosmic Intentions Master Player" style="display:grid;gap:14px;width:calc(100% - 40px);margin:0 20px 18px;box-sizing:border-box;">
-          <iframe id="ciMasterPlayerFrame" src="/players/master-player.html?v=approved-fade-20260924-1" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+          <iframe id="ciMasterPlayerFrame" data-ci-player-src="/players/master-player.html?v=approved-fade-20260924-1" title="Cosmic Intentions Master Dashboard" loading="eager" allow="fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:340px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
           <div id="masterInlineWorkspace" hidden style="background:var(--card,#fff);border:1px solid var(--border,#d8dce2);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.14);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;">
               <span id="masterInlineTitle" style="font-weight:800;font-size:14px;letter-spacing:.6px;text-transform:uppercase;">Master Player</span>
@@ -2143,7 +2143,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="pg-2col-main">
             <!-- APPROVED CITADEL MASTER PLAYER — Meditate uses the same locked shell as every LFM destination. -->
             <section class="ci-meditation-master" aria-label="Cosmic Intentions Meditation Master Player" style="width:100%;margin:0 0 16px;">
-              <iframe id="ciMeditationMasterPlayerFrame" src="/players/master-player.html?v=approved-fade-20260924-1&amp;start=meditation" title="Cosmic Intentions Meditation Master Player" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:900px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
+              <iframe id="ciMeditationMasterPlayerFrame" data-ci-player-src="/players/master-player.html?v=approved-fade-20260924-1&amp;start=meditation" title="Cosmic Intentions Meditation Master Player" loading="eager" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:900px;overflow:hidden;border:0;background:transparent;transition:height .35s ease;"></iframe>
             </section>
             <script>
               (function () {
