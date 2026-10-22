@@ -99,3 +99,22 @@
 #page-cosmiclibrary .cl-section-drop[open]>.cl-library-header .cl-library-chevron{transform:rotate(90deg)}
 #page-cosmiclibrary .cl-library-header:focus-visible{outline:3px solid #1e90ff;outline-offset:2px}
 #page-cosmiclibrary .cl-library-eyebrow{font-size:16px;line-height:1.55}
+
+/* Each Cosmic Library collection occupies its own card. */
+#page-cosmiclibrary .wins-frame,
+#page-cosmiclibrary .wins-bezel,
+#page-cosmiclibrary .wins-screen{background:transparent}
+#page-cosmiclibrary .wins-screen{padding:0}
+#page-cosmiclibrary #cosmicLibraryBody{display:grid;gap:24px;background:transparent}
+#page-cosmiclibrary #cosmicLibraryBody>#cosmicConceptLibrary,
+#page-cosmiclibrary #cosmicLibraryBody>.cl-section-drop{
+ min-width:0;margin:0;padding:16px;background:#fff;
+ border:1px solid #c9c4be;border-radius:12px;box-sizing:border-box;
+ box-shadow:0 2px 8px rgba(0,0,0,.05)
+}
+#page-cosmiclibrary #cosmicConceptLibrary .cl-concepts-header{border:1px solid #c7cec3;border-radius:10px}
+@media(max-width:600px){
+ #page-cosmiclibrary #cosmicLibraryBody{gap:16px}
+ #page-cosmiclibrary #cosmicLibraryBody>#cosmicConceptLibrary,
+ #page-cosmiclibrary #cosmicLibraryBody>.cl-section-drop{padding:12px}
+}
