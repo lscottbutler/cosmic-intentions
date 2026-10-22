@@ -46,6 +46,7 @@ export function mountMindsetSlides(host, sections, cardKey) {
   function silentAdvance(myToken){timer=setTimeout(()=>finished(myToken),Math.max(4000,items[index].split(/\s+/).length*450));}
   async function speak(){
    stopVoice();const myToken=token;setStatus('');if(!playing||disposed)return;
+   let browserStarted=false;const fallback=()=>{if(!browserStarted){browserStarted=true;browserVoice(myToken);}};
    if(muted){silentAdvance(myToken);return;}
    // Existing cached ElevenLabs connection; browser voice if unavailable.
    if(typeof window.ciApiJson==='function'){
@@ -53,10 +54,10 @@ export function mountMindsetSlides(host, sections, cardKey) {
     try{
      const result=await window.ciApiJson('tts-elevenlabs',{text:items[index]});
      if(disposed||!playing||myToken!==token)return;
-     setStatus('');if(result?.url){audio=new Audio(result.url);audio.onended=()=>finished(myToken);audio.onerror=()=>browserVoice(myToken);await audio.play();return;}
+     setStatus('');if(result?.url){audio=new Audio(result.url);audio.onended=()=>finished(myToken);audio.onerror=fallback;await audio.play();return;}
     }catch{if(disposed||!playing||myToken!==token)return;}
    }
-   setStatus('');browserVoice(myToken);
+   setStatus('');fallback();
   }
   function start(){if(activePlayer&&activePlayer!==controller)activePlayer.pause();activePlayer=controller;playing=true;paintPlay();speak();}
   function move(next){stopVoice();index=Math.max(0,Math.min(items.length-1,next));paint();setStatus('');if(playing)speak();}
@@ -79,6 +80,6 @@ export function mountMindsetSlides(host, sections, cardKey) {
   });paint();
  }
  const pauseAll=()=>players.forEach(player=>player.pause());
- const visibility=()=>{if(document.hidden)pauseAll();};document.addEventListener('visibilitychange',visibility);
- return {pause:pauseAll,dispose(){players.forEach(player=>player.dispose());document.removeEventListener('visibilitychange',visibility);host.replaceChildren();}};
+ const visibility=()=>{if(document.hidden)pauseAll();};document.addEventListener('visibilitychange',visibility);window.addEventListener('pagehide',pauseAll);
+ return {pause:pauseAll,dispose(){players.forEach(player=>player.dispose());document.removeEventListener('visibilitychange',visibility);window.removeEventListener('pagehide',pauseAll);host.replaceChildren();}};
 }
