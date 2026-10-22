@@ -118,3 +118,8 @@
  #page-cosmiclibrary #cosmicLibraryBody>#cosmicConceptLibrary,
  #page-cosmiclibrary #cosmicLibraryBody>.cl-section-drop{padding:12px}
 }
+
+html.master-inline-mode #page-cosmiclibrary.active{background:#f2ede7!important}
+html.master-inline-mode #page-cosmiclibrary .wins-frame,
+html.master-inline-mode #page-cosmiclibrary .wins-bezel,
+html.master-inline-mode #page-cosmiclibrary .wins-screen{background:transparent!important}
