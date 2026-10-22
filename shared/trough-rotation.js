@@ -30,11 +30,17 @@ export function visitTroughPage(pageId, eligible=true){
  if(eligible)selections.set(pageId,pick(pageId));
 }
 export function attachTrough(shell,pageId){
+ if(shell.dataset.carouselPage!==pageId){
+  shell.ciCarouselDispose?.();
+  shell.dataset.carouselPage=pageId;
+  delete shell.dataset.carouselReady;
+ }
  if(!selections.has(pageId))selections.set(pageId,pick(pageId));
  shell.classList.add('ci-carousel');
  shell.setAttribute('aria-label','The Carousel');
  shell.setAttribute('role','region');
  const render=()=>{
+  const request=shell.ciCarouselRequest=(shell.ciCarouselRequest||0)+1;
   const item=items.get(selections.get(pageId));
   if(!item)return;
   const card=document.createElement('div');card.className='ci-carousel-card';card.dataset.carouselId=item.id;
@@ -50,10 +56,10 @@ export function attachTrough(shell,pageId){
   }
   const previous=shell.firstElementChild;
   const reveal=()=>{
-   if(!shell.isConnected && previous)return;
+   if(request!==shell.ciCarouselRequest||(!shell.isConnected && previous))return;
    if(previous && previous.dataset.carouselId===item.id)return;
    shell.appendChild(card);
-   if(previous){card.animate([{opacity:0},{opacity:1}],{duration:1000,easing:'ease-in-out'});setTimeout(()=>previous.remove(),1000);}
+   if(previous){card.animate([{opacity:0},{opacity:1}],{duration:5000,easing:'ease-in-out'});setTimeout(()=>previous.remove(),5000);}
   };
   const image=card.querySelector('img');
   if(image&&!image.complete){image.addEventListener('load',reveal,{once:true});image.addEventListener('error',()=>{}, {once:true});}else reveal();
@@ -65,5 +71,6 @@ export function attachTrough(shell,pageId){
   const page=shell.closest('.page');
   if(globalThis.ciHoldCarousel||document.hidden||(page&&!page.classList.contains('active')))return;
   selections.set(pageId,pick(pageId));render();
- },Math.max(4000,feed.intervalMs||12000));
+ },Math.max(6000,feed.intervalMs||12000));
+ shell.ciCarouselDispose=()=>clearInterval(timer);
 }
