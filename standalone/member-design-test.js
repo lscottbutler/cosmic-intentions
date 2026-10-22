@@ -239,6 +239,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  const headerNote=document.getElementById('header-admin-note');
  const headerNoteFrame=document.getElementById('header-admin-note-frame');
  function updateHeaderNote(src){
+  // A hidden iframe has no layout height. Reveal it before loading/measuring
+  // so its text and artwork can report their real size.
+  headerNote.hidden=current==='admin';
   if(headerNoteFrame.dataset.noteSource===src)return;
   headerNoteFrame.dataset.noteSource=src;
   const pageId=new URL(src,location.origin).searchParams.get('notePage')||'dashboard';
@@ -256,7 +259,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow||event.data?.type!=='ci-citadel-note-height')return;
   const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
   if(gratitudeV2&&!height)return;
-  headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
+  headerNoteFrame.style.height=Math.max(1,height)+'px';headerNote.hidden=current==='admin';
  });
  function watchDocument(doc){
   const homeDeck=doc.querySelector('.shell.home-mode .deck');
