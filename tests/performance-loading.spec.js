@@ -103,4 +103,6 @@ test('Styles arrive before a slow SDK connection', async ({ page }) => {
     await expect(page.locator('#page-dashboard')).toBeHidden();
   } finally { release(); }
   await expect(page.locator('#page-dashboard')).toBeVisible();
+  await expect(page.locator('#entSlideshow')).toHaveAttribute('data-started', '1');
+  await expect(page.locator('#entSlideshow .ent-slide')).toHaveCount(31);
 });
