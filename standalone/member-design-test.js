@@ -349,7 +349,7 @@ html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
 html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818);box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]){grid-template-rows:114px auto}
-html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:112px;height:112px;padding:29.4px;color:#aaa;box-shadow:inset 0 0 0 14px var(--citadel-ring,transparent)}
+html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:112px;height:112px;padding:29.4px;color:#000;background:#fff;box-shadow:inset 0 0 0 14px var(--citadel-ring,transparent)}
 @media(max-width:650px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(2,minmax(0,1fr))}}
 `;
    doc.head.append(style);
