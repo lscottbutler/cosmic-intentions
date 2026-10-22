@@ -78,11 +78,12 @@ function _shade(hex, f) {
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
-function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false, deleteCall }) {
+function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false, deleteCall, railColor }) {
   // White card, black text. Wide, rounded left rail: BLACK for My Actions
   // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
   // The code chip retains the goal's shade.
-  const rail = variant === 'roadmap' ? ROADMAP_COLOR : '#000';
+  // To-do lists use provenance colors; the Roadmap player retains its tab colors.
+  const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : '#000');
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;${showLinkedEntries ? 'flex-wrap:wrap;' : ''}">
@@ -520,6 +521,8 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
   if (!Array.isArray(tasks) || !tasks.length) return '';
   const shade  = GREY_SHADES[idx % GREY_SHADES.length];   // goal color → rail + code chip
   const letter = _goalLetter(idx);
+  const colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
+  const goalRail = GOAL_COLORS[colorIndex % GOAL_COLORS.length]?.bg || '#000';
   return tasks.map((u, i) => {
     const p = [...path, i];
     const pStr = p.join('.');
@@ -541,7 +544,7 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
       _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
-    return (priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext))) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: depth > 0, noteContext, showLinkedEntries, deleteCall }))
+    return (priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext))) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: !showLinkedEntries && depth > 0, noteContext, showLinkedEntries, deleteCall, railColor: depth > 0 ? '#292929' : goalRail }))
          + _renderUserTree(u.children, p, idx, code, showLinkedEntries, priorityOnly);
   }).join('');
 }
