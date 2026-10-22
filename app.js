@@ -5731,8 +5731,11 @@ function injectPlaceholderCards() {
     const card = id === 'habits' ? createHabitMindsetCard(() => currentUser?.id || '') : _makePhCard();
     if (id === 'habits') {
       const periods = createHabitPeriodMenu();
-      if (anchor) anchor.insertAdjacentElement('afterend', periods);
-      else wrap.insertBefore(periods, wrap.firstChild);
+      const periodCard = document.createElement('section');
+      periodCard.className = 'habit-orientation-card';
+      const habitsRoot = page.querySelector('.setup-page') || wrap;
+      if (anchor) { anchor.before(periodCard); periodCard.append(anchor, periods); }
+      else { habitsRoot.prepend(periodCard); periodCard.append(periods); }
       page.append(card);
     } else if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
