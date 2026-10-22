@@ -59,3 +59,8 @@ html:not(.embedded-player) .shell.home-mode{min-height:76px}
 /* Menu heading indicator, matching the black-circle dropdown style. */
 #directoryView .view-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
 #directoryView .view-head::after{content:'';flex:none;width:44px;height:44px;box-sizing:border-box;border:2px solid #fff;border-radius:50%;background:#000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M5 8h4l3 4 3-4h4l-7 9z'/%3E%3C/svg%3E") center/82% no-repeat}
+
+/* Citadel action panel: rounded white card with a clear prompt above its tools. */
+.shell.home-mode .deck,.shell.home-mode .deck::before{border-radius:10px!important}
+.shell.home-mode .deck{overflow:hidden}
+#citadel-action-heading{grid-column:1 / -1;margin:0 0 4px;text-align:center;color:#292929;font:800 clamp(18px,3vw,28px)/1.25 'Arial Narrow',Arial,sans-serif;letter-spacing:1px}
