@@ -103,3 +103,12 @@ body.citadel-header-clean .shortcuts #player-search input{padding:6px;font-size:
  #header-encouragement img{max-height:100px}
  #player-search{grid-row:4}
 }
+
+/* Citadel: lift the note/artwork beneath the centered title. */
+body.citadel-header-clean #feature-title{justify-content:center}
+body.citadel-header-clean #header-admin-note{margin-top:18px}
+body.citadel-header-clean .shortcuts #review-menu-trigger{flex:none;margin-top:2px}
+body.citadel-header-clean .shortcuts #header-encouragement{flex:none;min-height:0;border:0;border-radius:0;background:transparent;padding:8px;height:160px}
+@media(max-width:650px){
+ body.citadel-header-clean .shortcuts #header-encouragement{height:110px;padding:3px}
+}
