@@ -307,7 +307,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    superViz.dataset.action='super-viz';
    superViz.setAttribute('aria-label','Super Viz');
    superViz.querySelector('span').textContent='Super Viz';
-   superViz.style.setProperty('--citadel-button','#262626');
+   superViz.style.setProperty('--citadel-button','#0053a4');
+   superViz.style.setProperty('--citadel-ring','#0076a3');
    superViz.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();openFeature('super-viz');});
    visualize.replaceWith(superViz);
   }
@@ -337,15 +338,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     html.ci-review-test .shell.home-mode .nav{color:#171717}
     html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){color:#fff}
     html.ci-review-test .shell.home-mode .nav:focus-visible{outline-color:#171717}
-html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#080808}
-html.ci-review-test .shell.home-mode [data-action="daily-habits"]{--citadel-button:#121212}
-html.ci-review-test .shell.home-mode [data-action="goals"]{--citadel-button:#1c1c1c}
-html.ci-review-test .shell.home-mode [data-action="visualization"]{--citadel-button:#262626}
-html.ci-review-test .shell.home-mode [data-action="action-plan"]{--citadel-button:#303030}
+html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#9d0b0f;--citadel-ring:#ec1c23}
+html.ci-review-test .shell.home-mode [data-action="daily-habits"]{--citadel-button:#a0400d;--citadel-ring:#f26420}
+html.ci-review-test .shell.home-mode [data-action="goals"]{--citadel-button:#aaa001;--citadel-ring:#fef200}
+html.ci-review-test .shell.home-mode [data-action="visualization"]{--citadel-button:#0053a4;--citadel-ring:#0076a3}
+html.ci-review-test .shell.home-mode [data-action="action-plan"]{--citadel-button:#005e1f;--citadel-ring:#187a2f}
 html.ci-review-test .shell.home-mode [data-action="cosmic-library"]{--citadel-button:#3a3a3a}
 html.ci-review-test .shell.home-mode [data-action="task-notes"]{--citadel-button:#444444}
 html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
-html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818)}
+html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818);box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}`;
    doc.head.append(style);
   }
