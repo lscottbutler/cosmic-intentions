@@ -28,7 +28,7 @@
   gratitude:['Gratitude','Choose from your existing gratitude practices.','Use the current page choices to select a practice.'],
   wins:['My Wins','Record the progress you notice.','Add a win using the existing form; your entries remain yours.'],
   'task-notes':['Notes','Find your goal and action notes in one place.','Open MY TO DO LIST to see the connected notes and journal entries.'],
-  'goal-workspace':['MY TO DO LIST','Keep a goal’s notes, actions and journal entries together.','Choose a goal with linked notes or journal entries. Use the existing Save controls to keep edits.'],
+  'goal-workspace':['MY TO DO LIST','Keep a goal’s notes, actions and journal entries together.',''],
   'cosmic-library':['Cosmic Library','Explore your existing collection of ideas and lessons.','Search by topic, or clear your filters to return to the full collection.'],
   'entrepreneur-library':['Entrepreneur Library','Explore your existing entrepreneur skills.','Choose a skill card to open its individual experience.'],
   'ent-card':['Entrepreneur Skill Cards','Work with the selected skill.','Use the existing tabs for Mindset, Go Deeper and My Notes.'],
@@ -400,7 +400,8 @@ html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #17171
    if(features[action]){
     renderFeature(action);
     if(pendingDashboard&&doc.defaultView.ciCitadelDashboardReview){pendingDashboard=false;dashboardApi=doc.defaultView.ciCitadelDashboardReview;loadDashboard();}
-    if(!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
+    if(action==='goal-workspace')page.querySelector(':scope > .ci-review-guidance')?.remove();
+    if(features[action][2]&&!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
     page.querySelectorAll('.ci-goals-add-toggle,.pb-goal-add-save,button[onclick="notesToggleQuickAdd()"],.goal-workspace-entry-save,[data-save-note]').forEach(button=>{if(!button.classList.contains('ci-review-key-action'))button.classList.add('ci-review-key-action');});
    }
   }
