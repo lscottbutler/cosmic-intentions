@@ -7,6 +7,7 @@
  const title=document.getElementById('feature-title');
  const purpose=document.getElementById('feature-purpose');
  const next=document.getElementById('feature-next');
+ purpose.remove();next.remove();title.parentElement.querySelector('.eyebrow')?.remove();
  const addNote=document.getElementById('add-note');
  let pendingDashboard=false,dashboardLoadTimer=0;
  const menu=document.getElementById('review-menu');
@@ -158,8 +159,6 @@
    title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
    title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
   }
-  if(purpose.textContent!==copy[1])purpose.textContent=copy[1];
-  if(next.textContent!==copy[2])next.textContent=copy[2];
   if(action!=='home'&&action!=='admin'){last=action;try{sessionStorage.setItem('ci-review-last-feature',action);}catch(_){}}
 
  }
