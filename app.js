@@ -5736,6 +5736,8 @@ function injectPlaceholderCards() {
       const habitsRoot = page.querySelector('.setup-page') || wrap;
       if (anchor) { anchor.before(periodCard); periodCard.append(anchor, periods); }
       else { habitsRoot.prepend(periodCard); periodCard.append(periods); }
+      const editHabits = page.querySelector('#habitsDailyView > .habits-view-button');
+      if (editHabits) periodCard.append(editHabits);
       page.append(card);
     } else if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
