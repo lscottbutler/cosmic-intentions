@@ -9,7 +9,7 @@ for(const reduced of [false,true]){
  const card={style:{opacity:1},inert:false,attrs:{},setAttribute(k,v){this.attrs[k]=v},removeAttribute(k){delete this.attrs[k]},animate(frames,opts){animations.push({frames,opts});return {finished:Promise.resolve(),cancel(){}}}};
  let page='goals';
  const doc={readyState:'complete',URL:'https://example.test/players/master-player.html',getElementById(){return {contentDocument:{querySelector(sel){return sel===`#page-${page}.active`?{}:null}}}}};
- const ctx=vm.createContext({document:{querySelector:()=>card},frame:{contentDocument:doc},features:{goals:[],journal:[]},inlinePages:{goals:'goals',journal:'journal'},navigateFeature:a=>{navigated.push(a);page=a},getComputedStyle:()=>({opacity:card.style.opacity}),matchMedia:()=>({matches:reduced}),URL,performance,setTimeout});
+ const ctx=vm.createContext({headerNoteFrame:{dataset:{},contentWindow:{}},queueHeaderChange(){},document:{querySelector:()=>card},frame:{contentDocument:doc},features:{goals:[],journal:[]},inlinePages:{goals:'goals',journal:'journal'},navigateFeature:a=>{navigated.push(a);page=a},getComputedStyle:()=>({opacity:card.style.opacity}),matchMedia:()=>({matches:reduced}),URL,performance,setTimeout});
  vm.runInContext(transition+';globalThis.open=openFeature;',ctx);
  await ctx.open('goals');assert.equal(card.style.opacity,1);assert.equal(card.inert,false);assert.equal(card.attrs['aria-busy'],undefined);
  await Promise.all([ctx.open('goals'),ctx.open('journal')]);assert.equal(navigated.at(-1),'journal');assert.equal(card.style.opacity,1);assert.equal(card.inert,false);
@@ -37,9 +37,21 @@ const headerStart=wrapper.indexOf(' function updateHeaderNote(src){');
 const headerEnd=wrapper.indexOf(" headerNoteFrame.addEventListener('load'",headerStart);
 const headerNote={hidden:true};
 const headerFrame={dataset:{},contentWindow:{},set src(value){assert.equal(headerNote.hidden,false,'header must be visible before iframe navigation');this.loaded=value}};
-const headerCtx=vm.createContext({headerNote,headerNoteFrame:headerFrame,current:'home',URL,location:{origin:'https://example.test'}});
+const headerCtx=vm.createContext({headerNote,headerNoteFrame:headerFrame,current:'home',URL,location:{origin:'https://example.test'},queueHeaderChange(){}});
 vm.runInContext(wrapper.slice(headerStart,headerEnd)+';globalThis.update=updateHeaderNote;',headerCtx);
 headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,false);
 headerNote.hidden=true;headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,false,'same-page sizing must not remain hidden');
 headerCtx.current='admin';headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,true);
 console.log('PASS hidden header sizing regression and admin visibility');
+
+const queueStart=wrapper.indexOf(' let headerChangeTimer=0,headerChangeVersion=0;');
+const queueEnd=wrapper.indexOf(' function updateHeaderNote(src){',queueStart);
+let now=0,id=0;const jobs=new Map(),updates=[];
+const timedFrame={dataset:{appliedNoteSource:'old'},contentWindow:{ciSetCitadelNotePage:page=>updates.push({page,at:now})}};
+const timed=vm.createContext({headerNoteFrame:timedFrame,pageNavigationPending:true,URL,location:{origin:'https://example.test'},setTimeout:(fn,ms)=>{jobs.set(++id,{fn,at:now+ms});return id},clearTimeout:id=>jobs.delete(id)});
+vm.runInContext(wrapper.slice(queueStart,queueEnd)+';globalThis.queue=queueHeaderChange;',timed);
+function tick(ms){const end=now+ms;for(;;){const next=[...jobs].sort((a,b)=>a[1].at-b[1].at)[0];if(!next||next[1].at>end)break;now=next[1].at;jobs.delete(next[0]);next[1].fn()}now=end}
+timed.queue('/?notePage=setup');tick(4000);assert.equal(updates.length,0,'retain artwork throughout page loading');assert.equal(timedFrame.contentWindow.ciHoldCarousel,true);
+timed.pageNavigationPending=false;tick(50);tick(1999);assert.equal(updates.length,0);tick(1);assert.equal(updates[0].page,'setup');assert.equal(timedFrame.contentWindow.ciHoldCarousel,false);
+timed.queue('/?notePage=habits');tick(1000);timed.queue('/?notePage=mynotes');tick(1999);assert.equal(updates.length,1);tick(1);assert.equal(updates.at(-1).page,'mynotes');
+console.log('PASS artwork held during loading, full two-second delay and newest navigation wins');
