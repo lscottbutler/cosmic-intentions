@@ -133,3 +133,9 @@ body.meditation-two-column .member-player-columns{background:var(--surface);bord
 #header-calendar{background:#fff;color:#292929;border:5px solid #000;border-radius:0;box-shadow:inset 0 0 0 2px #d5d5d5;padding:14px 10px}
 
 @media(max-width:650px){#header-calendar strong{white-space:normal}}
+
+/* Gratitude player gets its own card, matching the shared control panel. */
+body.gratitude-two-column .member-player-columns{
+ background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:26px
+}
+@media(max-width:650px){body.gratitude-two-column .member-player-columns{padding:12px}}
