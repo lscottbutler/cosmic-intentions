@@ -4619,8 +4619,8 @@ html.master-inline-citadel-note .ci-admin-page-box-edit-slot {
 /* Opening administrator text: borderless rounded card and charcoal edit control. */
 :root .ci-admin-page-box[data-page-box="3"]{border:0!important;border-radius:10px!important}
 /* Shared editable-control identity: Dodger Blue circle, cream tilted lowercase e. */
-:root .ci-admin-page-box .ci-admin-page-box-edit{width:36px;height:36px;min-width:36px;min-height:36px;padding:0;border:0!important;border-radius:50%!important;background:#1e90ff!important;color:#fff4dc!important;display:inline-grid;place-items:center}
+:root .ci-admin-page-box .ci-admin-page-box-edit{width:28px;height:28px;min-width:28px;min-height:28px;padding:0;border:0!important;border-radius:50%!important;background:#1e90ff!important;color:#fff4dc!important;display:inline-grid;place-items:center}
 :root .ci-admin-page-box .ci-admin-page-box-edit svg{display:none}
-:root .ci-admin-page-box .ci-admin-page-box-edit::after{content:'e';display:block;font:italic 32px/1 Georgia,serif;transform:rotate(-12deg) translateY(-1px);color:inherit}
+:root .ci-admin-page-box .ci-admin-page-box-edit::after{content:'e';display:block;font:24px/1 Georgia,serif;transform:translateY(-2px) rotate(-12deg);color:inherit}
 :root .ci-admin-page-box .ci-admin-page-box-edit:hover{background:#167bdc!important}
 :root .ci-admin-page-box .ci-admin-page-box-edit:focus-visible{outline:3px solid #1e90ff;outline-offset:3px}
