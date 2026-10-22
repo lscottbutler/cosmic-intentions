@@ -91,3 +91,16 @@ test('Connection failure gives a visible recovery message', async ({ page }) => 
   await page.goto('/?preview=1', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#loadingScreen')).toContainText('could not connect');
 });
+
+test('Styles arrive before a slow SDK connection', async ({ page }) => {
+  await offline(page);
+  let release;
+  const pending = new Promise(resolve => { release = resolve; });
+  await page.route('**/supabase.min.js', async route => { await pending; return route.fallback(); });
+  try {
+    await page.goto('/?preview=1', { waitUntil: 'commit' });
+    await expect(page.locator('#loadingScreen')).toHaveCSS('position', 'fixed');
+    await expect(page.locator('#page-dashboard')).toBeHidden();
+  } finally { release(); }
+  await expect(page.locator('#page-dashboard')).toBeVisible();
+});
