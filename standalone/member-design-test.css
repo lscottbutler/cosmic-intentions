@@ -124,3 +124,7 @@ body.citadel-header-clean .shortcuts #header-calendar{flex:none;width:100%;margi
  #player-search{grid-row:5}
  #header-admin-note{grid-row:6}
 }
+
+/* Give the Meditation player its own white card, matching the header above. */
+body.meditation-two-column .member-player-columns{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:26px}
+@media(max-width:650px){body.meditation-two-column .member-player-columns{padding:12px}}
