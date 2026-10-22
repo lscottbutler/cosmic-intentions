@@ -59,6 +59,7 @@ export function attachTrough(shell,pageId){
    if(request!==shell.ciCarouselRequest||(!shell.isConnected && previous))return;
    if(previous && previous.dataset.carouselId===item.id)return;
    shell.appendChild(card);
+   globalThis.parent?.postMessage({type:'ci-carousel-border-color',color:item.borderColor,duration:previous?5000:0},globalThis.location?.origin);
    if(previous){card.animate([{opacity:0},{opacity:1}],{duration:5000,easing:'ease-in-out'});setTimeout(()=>previous.remove(),5000);}
   };
   const image=card.querySelector('img');

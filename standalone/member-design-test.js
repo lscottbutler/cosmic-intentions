@@ -281,7 +281,16 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   }
  });
  window.addEventListener('message',event=>{
-  if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow||event.data?.type!=='ci-citadel-note-height')return;
+  if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
+  if(event.data?.type==='ci-carousel-border-color'){
+   const color=event.data.color;
+   if(/^#[0-9a-f]{6}$/i.test(color)){
+    headerCalendar.style.transition='border-color '+(event.data.duration===5000?5000:0)+'ms ease-in-out';
+    headerCalendar.style.borderColor=color;
+   }
+   return;
+  }
+  if(event.data?.type!=='ci-citadel-note-height')return;
   const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
   if(gratitudeV2&&!height)return;
   headerNoteFrame.style.height=Math.max(1,height)+'px';headerNote.hidden=current==='admin';
