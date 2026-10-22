@@ -47,6 +47,22 @@
   else headerSticker.title='Voice-over is still loading. Please try again.';
  });
 
+
+ const headerCalendar=document.createElement('div');headerCalendar.id='header-calendar';
+ const calendarDate=document.createElement('time'),calendarDay=document.createElement('strong');headerCalendar.append(calendarDate,calendarDay);
+ document.querySelector('.orientation').append(headerCalendar);
+ function updateHeaderCalendar(){
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth(),day=now.getDate();
+  const ordinal=Math.floor((Date.UTC(year,month,day)-Date.UTC(year,0,0))/86400000);
+  const days=(Date.UTC(year+1,0,1)-Date.UTC(year,0,1))/86400000;
+  calendarDate.dateTime=year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+  calendarDate.textContent=new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
+  calendarDay.textContent='DAY '+ordinal+' OF '+days;
+ }
+ updateHeaderCalendar();setInterval(updateHeaderCalendar,60000);
+ window.addEventListener('focus',updateHeaderCalendar);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateHeaderCalendar();});
+
  const searchForm=document.getElementById('player-search');
  const searchInput=document.getElementById('player-search-input');
  const searchDialog=document.getElementById('player-search-results');
@@ -131,9 +147,9 @@
   const adminBox=document.getElementById('header-admin-note'),menuButton=document.getElementById('review-menu-trigger');
   if(action==='home'){
    headerCopy.append(adminBox);
-   headerShortcuts.append(menuButton,headerSticker);
+   headerShortcuts.append(menuButton,headerSticker,headerCalendar);
   }else{
-   headerOrientation.append(adminBox,menuButton,headerSticker);
+   headerOrientation.append(adminBox,menuButton,headerSticker,headerCalendar);
   }
   if(title.dataset.lettermark!==copy[0]){
    title.dataset.lettermark=copy[0];title.setAttribute('aria-label',copy[0]);title.replaceChildren();

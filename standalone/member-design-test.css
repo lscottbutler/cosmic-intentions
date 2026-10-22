@@ -112,3 +112,15 @@ body.citadel-header-clean .shortcuts #header-encouragement{flex:none;min-height:
 @media(max-width:650px){
  body.citadel-header-clean .shortcuts #header-encouragement{height:110px;padding:3px}
 }
+
+/* Local calendar below each player header's encouragement illustration. */
+#header-calendar{grid-column:2;grid-row:4;display:grid;gap:8px;align-self:center;text-align:center;color:#292929;padding:10px 0;font-size:14px;line-height:1.4;min-width:0;overflow-wrap:anywhere}
+#header-calendar strong{display:block;font-size:13px;font-weight:700;letter-spacing:.5px}
+#player-search{grid-row:5}
+body.citadel-header-clean .shortcuts #header-calendar{flex:none;width:100%;margin-top:4px}
+@media(max-width:650px){
+ #header-calendar{grid-column:2;grid-row:4;font-size:12px;gap:6px}
+ #header-calendar strong{font-size:10px;letter-spacing:0;white-space:nowrap}
+ #player-search{grid-row:5}
+ #header-admin-note{grid-row:6}
+}
