@@ -31,3 +31,15 @@ const second=ctx.render('journal');flush();await second;assert.equal(children[0]
 for(const done of earlier)done({data:{body:'older'},error:null});await first;assert.equal(children[0].children[0].page,'journal','stale response cannot replace latest page');assert.equal(typeof ctx.window.ciSetCitadelNotePage,'function');
 assert.equal(writes,0);
 console.log('PASS header stays mounted during queries, page-scoped replacement, newest response wins; no writes');
+
+// A hidden header iframe measures zero, so reveal it before loading or updating.
+const headerStart=wrapper.indexOf(' function updateHeaderNote(src){');
+const headerEnd=wrapper.indexOf(" headerNoteFrame.addEventListener('load'",headerStart);
+const headerNote={hidden:true};
+const headerFrame={dataset:{},contentWindow:{},set src(value){assert.equal(headerNote.hidden,false,'header must be visible before iframe navigation');this.loaded=value}};
+const headerCtx=vm.createContext({headerNote,headerNoteFrame:headerFrame,current:'home',URL,location:{origin:'https://example.test'}});
+vm.runInContext(wrapper.slice(headerStart,headerEnd)+';globalThis.update=updateHeaderNote;',headerCtx);
+headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,false);
+headerNote.hidden=true;headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,false,'same-page sizing must not remain hidden');
+headerCtx.current='admin';headerCtx.update('/?masterInline=citadel-note&notePage=dashboard');assert.equal(headerNote.hidden,true);
+console.log('PASS hidden header sizing regression and admin visibility');
