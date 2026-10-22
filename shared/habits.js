@@ -295,17 +295,16 @@ export function renderHabits() {
   });
   el.innerHTML = (html || '<p>No habits yet. Choose Edit habits to add your first one.</p>') +
     `<div class="habit-health-note" style="font-size:10px;color:#888;line-height:1.4;padding:10px 4px 2px;">⚕ Not medical advice. Cosmic Intentions is not a medical device and does not diagnose or treat. For any health metric, consult a qualified healthcare professional.</div>`;
-  // Independent cards follow the marked grouping; evening and sleep share one.
-  let nightCard;
+  // Each period, including Health when present, owns its own tinted card.
+  let lastCard;
   el.querySelectorAll('details[data-habit-section]').forEach(section => {
-    const cat = section.dataset.habitSection;
-    if (cat === 'BEDTIME' && nightCard) { nightCard.append(section); return; }
     const card = document.createElement('section');
     card.className = 'habit-checklist-card';
+    card.dataset.habitCard = section.dataset.habitSection;
     section.before(card); card.append(section);
-    if (cat === 'EVENING') nightCard = card;
+    lastCard = card;
   });
-  if (nightCard) nightCard.append(el.querySelector('.habit-health-note'));
+  if (lastCard) lastCard.append(el.querySelector('.habit-health-note'));
   document.querySelectorAll('.habit-period-menu [data-habit-period]').forEach(button => {
     button.setAttribute('aria-current', button.dataset.habitPeriod === _selectedPeriod ? 'location' : 'false');
   });
