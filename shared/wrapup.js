@@ -12,7 +12,7 @@ import { taskNoteKey, taskNoteContext, taskNoteButton, taskNotePanel, taskLinked
 
 const BRAND = '#F5A623';
 const DONE  = '#4ADE80';
-const ROADMAP_COLOR = '#D62828';
+const ROADMAP_COLOR = '#2e7d32';
 
 /* ── CODE-CARD SYSTEM (Phase 1) ───────────────────────────────────────────
    Every action row is a quiet white card: a thin goal-color rail, one visible
@@ -79,10 +79,8 @@ function _shade(hex, f) {
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false, deleteCall, railColor }) {
-  // White card, black text. Wide, rounded left rail: BLACK for My Actions
-  // (matches the black MY ACTIONS tab), red for Roadmap — matching its tab.
+  // To-do lists retain provenance colors; Roadmap cards match their green tab.
   // The code chip retains the goal's shade.
-  // To-do lists use provenance colors; the Roadmap player retains its tab colors.
   const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : '#000');
   return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
@@ -613,7 +611,9 @@ function _todayChecklist() {
   let allTaskCards = '';   // MY TASK LIST: every proven action across all goals, flattened into one list
   items.forEach(({ it, idx }) => {
     const shade = GREY_SHADES[idx % GREY_SHADES.length];   // same color as this goal's card in Column A
-    const gc = GOAL_COLORS[idx % GOAL_COLORS.length] || { bg: '#000', text: '#fff' };   // colored letter circle
+    const goalLetter = _goalLetter(idx);
+    const colorIndex = /^[A-Z]$/.test(goalLetter) ? goalLetter.charCodeAt(0) - 65 : idx;
+    const gc = GOAL_COLORS[colorIndex % GOAL_COLORS.length] || { bg: '#000', text: '#fff' };
     const rai = it.roadmapAI || {};                         // goal may have no roadmap yet
     // A roadmap belongs to ONE goal — it records the title it was built for.
     // If that doesn't match THIS goal, it's a stale/mismatched roadmap (belongs
@@ -693,7 +693,7 @@ function _todayChecklist() {
         <section class="roadmap-goal-section roadmap-goal-todo" data-goal-section="todo">
           <h3>TO DO</h3>
       <div class="wtabs">
-        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:#000;color:#fff;" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:${gc.bg};color:${gc.text};" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
         <button id="wtab-both-${idx}" class="wtab-combine${activeTab === 'both' ? ' wtab-active' : ''}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" aria-label="Show My Actions and Roadmap together" aria-pressed="${activeTab === 'both'}">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
@@ -701,7 +701,7 @@ function _todayChecklist() {
       </div>
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
-          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:#000;border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:${gc.text};background:${gc.bg};border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
           ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
           <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:${ROADMAP_COLOR};border:1px solid ${ROADMAP_COLOR};border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
           ${roadmapBox}
