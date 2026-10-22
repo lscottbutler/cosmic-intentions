@@ -322,12 +322,7 @@ export function renderPBHabitList() {
         + g.items.map(d => `<option value="${d}"${cur === d ? ' selected' : ''}>${d}</option>`).join('')
         + '</optgroup>').join('');
 
-  let html = `
-    <nav class="lfm-mini-nav" aria-label="Long Form Manifestation navigation">
-      <button type="button" onclick="lfmMiniNav('back')" aria-label="Previous LFM tool" title="Previous"><span aria-hidden="true">◀</span></button>
-      <button type="button" onclick="lfmMiniNav('menu')" aria-label="Open LFM menu" title="Menu"><span aria-hidden="true">☰</span></button>
-      <button type="button" onclick="lfmMiniNav('forward')" aria-label="Next LFM tool" title="Next"><span aria-hidden="true">▶</span></button>
-    </nav>`;
+  let html = '';
   [...HABIT_CATS, ''].forEach(cat => {
     const items = groups[cat];
     if (cat === '' && !items.length) return;   // hide empty Unsorted; always show the 5 named banners
