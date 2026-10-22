@@ -1,0 +1,50 @@
+.mindset-slideshow{margin:24px 0;padding:18px;background:#fff;border:1px solid #c9c4be;border-radius:10px;color:#292929;min-width:0}
+.mindset-slideshow>header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.mindset-slideshow>header h3{margin:0!important;font:800 17px/1.3 Arial,sans-serif!important;letter-spacing:1px}
+.mindset-slideshow>header label{display:flex;align-items:center;gap:8px;font:13px Arial,sans-serif}
+.mindset-slideshow select{max-width:100%;padding:9px;border:1px solid #c9c4be;border-radius:6px;background:#fff;color:#292929;font:14px Arial,sans-serif}
+.mindset-stage{container-type:inline-size;position:relative;isolation:isolate;aspect-ratio:16/9;overflow:hidden;background:#292929;border:10px solid #292929}
+.mindset-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mindset-caption{position:absolute;inset:0;display:grid;place-items:center;padding:6%;background:#fff;color:#292929;text-align:center}
+.mindset-caption p{margin:0!important;font:600 clamp(12px,3.5cqw,34px)/1.35 Arial,sans-serif!important;overflow-wrap:anywhere;text-wrap:balance}
+.mindset-stage[data-design=trough] .mindset-caption{inset:58% -2% -1%;border-radius:50% 50% 0 0/18% 18% 0 0;background:#747474;color:#fff;padding:6% 8% 4%}
+.mindset-stage[data-design=trough] .mindset-caption p{font-size:clamp(12px,2.8cqw,28px)!important}
+.mindset-stage[data-design=third] .mindset-caption{right:66.666%;padding:3%}
+.mindset-stage[data-design=third] .mindset-caption p{font-size:clamp(11px,2.8cqw,27px)!important}
+.mindset-stage[data-design=third] .mindset-art{left:33.333%;width:66.667%}
+.mindset-stage[data-design=half] .mindset-caption{right:50%;padding:4%}
+.mindset-stage[data-design=half] .mindset-art{left:50%;width:50%}
+.mindset-stage[data-design=full] .mindset-caption{inset:35% 0 0;background:linear-gradient(transparent,#000d);color:#fff;align-items:end;padding:8% 7%}
+.mindset-enter .mindset-caption p{animation:mindset-reveal .55s ease both}
+.mindset-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:14px}
+.mindset-controls button{display:grid;place-items:center;min-width:40px;min-height:40px;padding:7px 10px;border:0;border-radius:50%;background:#292929;color:#fff;font:15px Arial,sans-serif;cursor:pointer}
+.mindset-controls [data-control=play]{width:48px;height:48px;font-size:20px}
+.mindset-controls [data-control=mute]{border-radius:8px;font-size:12px}
+.mindset-controls [data-control=favorite]{font-size:25px}
+.mindset-count{margin-right:auto;font:13px Arial,sans-serif;white-space:nowrap}
+.mindset-slideshow :is(button,select,input):focus-visible{outline:3px solid #1e90ff;outline-offset:3px}
+.mindset-scrubber{display:block;margin-top:12px}.mindset-scrubber input{width:100%;accent-color:#e9c733;cursor:pointer}
+.mindset-status{margin:8px 0 0!important;min-height:18px;font:12px/1.4 Arial,sans-serif!important;color:#565656}
+.mindset-slideshow:fullscreen{display:flex;flex-direction:column;justify-content:center;overflow:auto;border:0;border-radius:0;margin:0}.mindset-slideshow:fullscreen .mindset-stage{max-height:78vh;aspect-ratio:16/9}
+@keyframes mindset-reveal{from{opacity:0}to{opacity:1}}
+@media(max-width:600px){.mindset-slideshow{padding:12px}.mindset-stage{aspect-ratio:4/3;border-width:6px}.mindset-controls{gap:6px}.mindset-controls button{min-width:34px;min-height:38px;padding:6px}.mindset-slideshow>header h3{font-size:15px!important}}
+@media(prefers-reduced-motion:reduce){.mindset-enter .mindset-caption p{animation:none}}
+/* Keep these controls circular inside the existing library's global styles. */
+.mindset-slideshow .mindset-controls button{border-radius:50%!important}
+.mindset-slideshow .mindset-controls [data-control=mute]{border-radius:8px!important}
+.mindset-slideshow .mindset-fullscreen{display:grid;place-items:center;flex:none;width:34px;height:34px;padding:7px;border:0;border-radius:50%!important;background:#292929;color:#fff;cursor:pointer}
+.mindset-slideshow>header label{margin-left:auto}
+.mindset-scrubber .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.mindset-slideshow .mindset-controls button{width:40px;height:40px;min-width:40px;min-height:40px;flex:0 0 40px;font:15px/1 Arial,sans-serif}
+.mindset-slideshow .mindset-controls [data-control=play]{width:48px;height:48px;min-width:48px;min-height:48px;flex-basis:48px;font-size:20px}
+.mindset-slideshow .mindset-controls [data-control=favorite]{font-size:25px}
+.mindset-slideshow .mindset-controls [data-control=mute]{width:auto;flex:0 0 auto;font-size:12px}
+@media(max-width:600px){
+ .mindset-slideshow>header{display:grid;grid-template-columns:minmax(0,1fr) 34px}
+ .mindset-slideshow>header h3{grid-column:1 / -1}
+ .mindset-slideshow>header label{margin-left:0;min-width:0}
+ .mindset-slideshow>header select{min-width:0;flex:1}
+ .mindset-slideshow .mindset-controls button{width:34px;height:34px;min-width:34px;min-height:34px;flex-basis:34px}
+ .mindset-slideshow .mindset-controls [data-control=play]{width:42px;height:42px;min-width:42px;min-height:42px;flex-basis:42px}
+ .mindset-slideshow .mindset-controls [data-control=mute]{width:auto;flex-basis:auto}
+}
