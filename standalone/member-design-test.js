@@ -161,7 +161,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  // Only the lower content card changes opacity. The shared header stays mounted.
  const contentCard=document.querySelector('.member-player-columns');
- let navigationVersion=0,contentFade;
+ let navigationVersion=0,contentFade,pageNavigationPending=false;
  async function fadeContent(opacity,duration){
   const from=getComputedStyle(contentCard).opacity;
   contentFade?.cancel();
@@ -173,6 +173,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  async function openFeature(action){
   if(!features[action])return;
   const version=++navigationVersion;
+  pageNavigationPending=true;
+  if(headerNoteFrame?.contentWindow)headerNoteFrame.contentWindow.ciHoldCarousel=true;
   contentCard.setAttribute('aria-busy','true');contentCard.inert=true;
   await fadeContent(0,180);
   if(version!==navigationVersion)return;
@@ -195,6 +197,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const started=performance.now();
   while(version===navigationVersion&&!ready()&&performance.now()-started<15000)await new Promise(resolve=>setTimeout(resolve,50));
   if(version!==navigationVersion)return;
+  pageNavigationPending=false;
+  if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
   contentCard.inert=false;contentCard.removeAttribute('aria-busy');
   await fadeContent(1,300);
  }
@@ -238,21 +242,42 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;inspect();});}
  const headerNote=document.getElementById('header-admin-note');
  const headerNoteFrame=document.getElementById('header-admin-note-frame');
+ let headerChangeTimer=0,headerChangeVersion=0;
+ function queueHeaderChange(src){
+  const version=++headerChangeVersion;
+  clearTimeout(headerChangeTimer);
+  const win=headerNoteFrame.contentWindow;
+  if(win)win.ciHoldCarousel=true;
+  const waitForPage=()=>{
+   if(version!==headerChangeVersion)return;
+   if(pageNavigationPending){headerChangeTimer=setTimeout(waitForPage,50);return;}
+   headerChangeTimer=setTimeout(()=>{
+    if(version!==headerChangeVersion)return;
+    if(pageNavigationPending){waitForPage();return;}
+    if(win)win.ciHoldCarousel=false;
+    if(headerNoteFrame.dataset.appliedNoteSource===src)return;
+    const pageId=new URL(src,location.origin).searchParams.get('notePage')||'dashboard';
+    if(typeof win?.ciSetCitadelNotePage==='function'){
+     headerNoteFrame.dataset.appliedNoteSource=src;
+     win.ciSetCitadelNotePage(pageId);
+    }else headerNoteFrame.src=src;
+   },2000);
+  };
+  waitForPage();
+ }
  function updateHeaderNote(src){
-  // A hidden iframe has no layout height. Reveal it before loading/measuring
-  // so its text and artwork can report their real size.
+  // Reveal before measuring; retain the existing card until the next page settles.
   headerNote.hidden=current==='admin';
   if(headerNoteFrame.dataset.noteSource===src)return;
   headerNoteFrame.dataset.noteSource=src;
-  const pageId=new URL(src,location.origin).searchParams.get('notePage')||'dashboard';
-  if(typeof headerNoteFrame.contentWindow?.ciSetCitadelNotePage==='function')headerNoteFrame.contentWindow.ciSetCitadelNotePage(pageId);
-  else headerNoteFrame.src=src;
+  if(headerNoteFrame.dataset.appliedNoteSource){queueHeaderChange(src);return;}
+  headerNoteFrame.dataset.appliedNoteSource=src;
+  headerNoteFrame.src=src;
  }
  headerNoteFrame.addEventListener('load',()=>{
   const src=headerNoteFrame.dataset.noteSource;
   if(src&&headerNoteFrame.getAttribute('src')!==src){
-   const pageId=new URL(src,location.origin).searchParams.get('notePage')||'dashboard';
-   headerNoteFrame.contentWindow?.ciSetCitadelNotePage?.(pageId);
+   queueHeaderChange(src);
   }
  });
  window.addEventListener('message',event=>{
