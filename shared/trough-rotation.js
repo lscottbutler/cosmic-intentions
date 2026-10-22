@@ -63,7 +63,7 @@ export function attachTrough(shell,pageId){
  const timer=setInterval(()=>{
   if(!shell.isConnected){clearInterval(timer);return;}
   const page=shell.closest('.page');
-  if(document.hidden||(page&&!page.classList.contains('active')))return;
+  if(globalThis.ciHoldCarousel||document.hidden||(page&&!page.classList.contains('active')))return;
   selections.set(pageId,pick(pageId));render();
  },Math.max(4000,feed.intervalMs||12000));
 }
