@@ -1,3 +1,5 @@
+import './styles/main.css';
+
 // Keep invisible legacy players and intentionally empty note frames off the
 // application startup path. The approved player itself is unchanged.
 const params = new URLSearchParams(location.search);
