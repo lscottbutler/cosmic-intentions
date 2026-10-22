@@ -87,10 +87,10 @@ body:is(.gratitude-two-column,.meditation-two-column) #ci-review-frame{min-width
 #ci-review-frame{border-radius:0!important}
 
 /* Citadel: title only, with Search directly below the header shortcuts. */
-body.citadel-header-clean .orientation>div:first-child>p{display:none}
-body.citadel-header-clean .shortcuts #player-search{width:100%;flex:none;margin:0;align-self:stretch}
-body.citadel-header-clean .shortcuts #player-search button{padding:0;min-height:0;flex:0 0 36px}
-body.citadel-header-clean .shortcuts #player-search input{padding:6px;font-size:14px}
+body.master-control-panel .orientation>div:first-child>p{display:none}
+body.master-control-panel .shortcuts #player-search{width:100%;flex:none;margin:0;align-self:stretch}
+body.master-control-panel .shortcuts #player-search button{padding:0;min-height:0;flex:0 0 36px}
+body.master-control-panel .shortcuts #player-search input{padding:6px;font-size:14px}
 
 /* One original welcome-page encouragement graphic per member page. */
 #header-admin-note{grid-row:2 / span 3}
@@ -105,19 +105,19 @@ body.citadel-header-clean .shortcuts #player-search input{padding:6px;font-size:
 }
 
 /* Citadel: lift the note/artwork beneath the centered title. */
-body.citadel-header-clean #feature-title{justify-content:center}
-body.citadel-header-clean #header-admin-note{margin-top:18px}
-body.citadel-header-clean .shortcuts #review-menu-trigger{flex:none;margin-top:2px}
-body.citadel-header-clean .shortcuts #header-encouragement{flex:none;min-height:0;border:0;border-radius:0;background:transparent;padding:8px;height:160px}
+body.master-control-panel #feature-title{justify-content:center}
+body.master-control-panel #header-admin-note{margin-top:18px}
+body.master-control-panel .shortcuts #review-menu-trigger{flex:none;margin-top:2px}
+body.master-control-panel .shortcuts #header-encouragement{flex:none;min-height:0;border:0;border-radius:0;background:transparent;padding:8px;height:160px}
 @media(max-width:650px){
- body.citadel-header-clean .shortcuts #header-encouragement{height:110px;padding:3px}
+ body.master-control-panel .shortcuts #header-encouragement{height:110px;padding:3px}
 }
 
 /* Local calendar below each player header's encouragement illustration. */
 #header-calendar{grid-column:2;grid-row:4;display:grid;gap:8px;align-self:center;text-align:center;color:#292929;padding:10px 0;font-size:14px;line-height:1.4;min-width:0;overflow-wrap:anywhere}
 #header-calendar strong{display:block;font-size:13px;font-weight:700;letter-spacing:.5px}
 #player-search{grid-row:5}
-body.citadel-header-clean .shortcuts #header-calendar{flex:none;width:100%;margin-top:4px}
+body.master-control-panel .shortcuts #header-calendar{flex:none;width:100%;margin-top:4px}
 @media(max-width:650px){
  #header-calendar{grid-column:2;grid-row:4;font-size:12px;gap:6px}
  #header-calendar strong{font-size:10px;letter-spacing:0;white-space:nowrap}
