@@ -71,3 +71,9 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #habitsWidget [data-habit-card="HEALTH"]{--habit-tint:#e1f1e7}
 #page-habits #habitsWidget .habit-checklist-card{background:var(--habit-tint,#fff)}
 #page-habits #habitsWidget .habit-checklist-card .habit-period-body{background:transparent!important}
+
+/* Edit Habits belongs in the upper-right of the time-of-day card. */
+#page-habits .habit-orientation-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+#page-habits .habit-orientation-card .setup-page-header{grid-column:1;grid-row:1;min-width:0}
+#page-habits .habit-orientation-card>.habits-view-button{grid-column:2;grid-row:1;justify-self:end;margin:0}
+#page-habits .habit-orientation-card .habit-period-menu{grid-column:1 / -1;grid-row:2;margin:0}
