@@ -285,7 +285,7 @@ export function renderHabits() {
     html += `<details class="habit-drop" id="habit-period-${cat}" data-habit-section="${cat}" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
       <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
         <span>${SECTION_LABEL[cat]}</span>
-        <span style="display:flex;align-items:center;gap:9px;"><span style="opacity:.85;font-size:11px;">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
+        <span style="display:flex;align-items:center;gap:9px;"><span class="habit-completion-count">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div class="habit-period-body" style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
         <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], false)).join('')}</div>
