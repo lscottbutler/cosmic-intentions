@@ -1,3 +1,4 @@
+import { mountActionTaskCards } from './action-task-cards.js';
 import { mountMindsetSlides } from './mindset-slideshow.js';
 import './entrepreneur-player.css';
 import { resourceForCard } from './entrepreneur-player-resources.js';
@@ -63,8 +64,8 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetS
     ${tabBar('ent-tab', 'Entrepreneur learning sections')}
     <section class="ent-panel" id="ent-panel-action" role="tabpanel" aria-labelledby="ent-tab-action" data-panel="action">
       <div class="ent-eyebrow">MAKE IT REAL</div><h3>Your next useful step</h3><p>Use this card’s practical steps to move a goal forward. Choose one to start today.</p>
-      <ol class="ent-steps">${card.roadmap.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
-      <div data-capture-slot="action"><div class="ent-notes-capture"><h3>NOTES / TO-DO</h3><div class="ent-capture"><label for="ent-action-note">Add a note or to-do</label><textarea id="ent-action-note" maxlength="2000" placeholder="Capture an idea, or write what you’ll do next…">${esc(view.action)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Connected to this card and your selected goal. Saved on this device.</span><div class="ent-note-buttons"><button class="ent-button ent-button-secondary" data-save-note>Save note</button><button class="ent-button" data-save-action>Save my next step</button><button class="ent-button ent-button-secondary" data-cancel-edit hidden>Cancel edit</button></div></div><p class="ent-status" role="status" data-status="action"></p></div></div></div>
+      <ol class="ent-steps"></ol><button type="button" class="ent-button ent-button-secondary" data-restore-steps hidden>Restore hidden suggestions</button>
+      <div data-capture-slot="action"><div class="ent-notes-capture"><h3>ADD A NOTE / TO-DO</h3><div class="ent-capture"><label for="ent-action-note">Add a note or to-do</label><textarea id="ent-action-note" maxlength="2000" placeholder="Capture an idea, or write what you’ll do next…">${esc(view.action)}</textarea><div class="ent-capture-footer"><span class="ent-muted">Connected to this card and your selected goal. Saved on this device.</span><div class="ent-note-buttons"><button class="ent-button ent-button-secondary" data-save-note>Save note</button><button class="ent-button" data-save-action>Save my next step</button><button class="ent-button ent-button-secondary" data-cancel-edit hidden>Cancel edit</button></div></div><p class="ent-status" role="status" data-status="action"></p></div></div></div>
       <h3 class="ent-list-title">MY ACTIONS</h3><p class="ent-muted">Your to-dos for this card. Check one off when it’s done.</p><ul class="ent-action-list ent-record-list"></ul>
       <h3 class="ent-list-title">MY NOTES</h3><p class="ent-muted">Keep an idea here, then add it to your actions when you’re ready.</p><ul class="ent-action-notes ent-record-list"></ul>
     </section>
@@ -83,6 +84,8 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetS
     <section class="ent-panel" id="ent-panel-notes" role="tabpanel" aria-labelledby="ent-tab-notes" data-panel="notes"><div class="ent-eyebrow">KEEP WHAT MOVES YOU FORWARD</div><h3>Notes, moments & next steps</h3><p class="ent-muted">Saved on this device${account === 'local-preview' ? ' for this preview' : ' for your account'}. Return to a moment, put it to work, or remove it.</p><div data-capture-slot="notes"></div><ul class="ent-saved-list ent-record-list"></ul><p class="ent-status" role="status" data-status="notes"></p>${notesHTML}</section>`;
 
   const mindsetSlides=mountMindsetSlides(root.querySelector('[data-mindset-slides]'),mindsetSections,card.key);
+
+  const actionCards = mountActionTaskCards(root, { storageKey, canSave: () => String(getAccount() || 'local-preview') === account, status, getGoal: () => view.goal });
 
   function setTab(tab, focusBar = null) {
     if(tab!=='mindset')mindsetSlides.pause();
@@ -158,7 +161,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetS
     const actions = records.filter(r => r.kind === 'action');
     const notes = records.filter(r => r.kind === 'note');
     root.querySelector('.ent-saved-list').innerHTML = records.length ? records.map(row).join('') : '<li>No saved items yet. Add a note, save your next step, or keep a moment from GO DEEPER.</li>';
-    root.querySelector('.ent-action-list').innerHTML = actions.length ? actions.map(row).join('') : '<li>No to-dos yet. Save your next step above or turn a note into an action.</li>';
+    actionCards.render(card.roadmap, actions);
     root.querySelector('.ent-action-notes').innerHTML = notes.length ? notes.map(row).join('') : '<li>No notes yet. Capture an idea in the box above.</li>';
   }
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -197,7 +200,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetS
   });
   root.querySelector('[data-goal]').value = view.goal;
   const paintGoal = () => { root.querySelector('[data-goal-context]').textContent = goalLabel() ? `For your goal: ${goalLabel()}. Saved moments and next steps will carry this goal.` : 'Choose a goal to connect your learning, or use this card for personal practice.'; };
-  root.querySelector('[data-goal]').addEventListener('change', e => { view.goal = e.target.value; paintGoal(); });
+  root.querySelector('[data-goal]').addEventListener('change', e => { view.goal = e.target.value; paintGoal(); renderSaved(); });
   paintGoal();
   root.addEventListener('keydown', e => {
     if (!e.target.matches('[data-tab]') || !['ArrowRight','ArrowLeft','Home','End'].includes(e.key)) return;
@@ -266,7 +269,7 @@ export function mountEntrepreneurPlayer(root, { card, mindsetHTML = '', mindsetS
     if (b.dataset.replay) { const r = records.find(x => x.id === b.dataset.replay); if (!r || !Number.isFinite(r.seconds)) return; setTab('deeper'); setFormat('youtube'); const i = resource.moments.findIndex(m => containsTime(m, r.seconds)); if (i >= 0) paintMoment(i); play(r.seconds); }
     if (b.dataset.remove) { const panel = b.closest('[data-panel]').dataset.panel; if (write(records.filter(r => r.id !== b.dataset.remove), panel)) { paintEditor(); status('Saved item removed.', panel); } }
   });
-  function cleanup() { mindsetSlides.dispose(); disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
+  function cleanup() { actionCards.dispose(); mindsetSlides.dispose(); disposed = true; clearInterval(timer); clearTimeout(readyTimeout); player?.destroy?.(); }
   setTab(view.tab); setFormat(view.resourceTab); renderSaved(); paintEditor(); if (resource) paintMoment(0);
   if (readFailed) status('Existing saved items could not be read. They were left untouched.', 'notes');
   return cleanup;
