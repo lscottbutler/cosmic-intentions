@@ -4795,6 +4795,11 @@ function wireGoalsAddControl(active, topStack) {
       if (!form.hidden) form.querySelector('#pbNewIntentionInput')?.focus();
     });
   }
+  if (!row.querySelector('.ci-goals-admin-note')) {
+    const note = _buildLiveAdminPageBox('setup', 'GOALS', 4);
+    note.classList.add('ci-goals-admin-note');
+    row.prepend(note);
+  }
   const form = active.querySelector('#pbAddIntentionRow');
   if (form && form.previousElementSibling !== row) row.insertAdjacentElement('afterend', form);
 }
@@ -4842,7 +4847,7 @@ function wireAdminPageBoxes() {
   // Preserve saved closing text in the admin content library.
   active.querySelectorAll('.ci-admin-page-box-stack--bottom').forEach(group => group.remove());
 
-  [topStack].forEach(group => {
+  [topStack, active.querySelector('.ci-goals-top-row')].filter(Boolean).forEach(group => {
     group.querySelectorAll('[data-block]').forEach(el => {
       const slug = el.getAttribute('data-block');
       _fillBlockEl(el, _blockCache[slug] || '');
@@ -4854,7 +4859,7 @@ function wireAdminPageBoxes() {
 function _adminEditorMarkup(pageId, label, boxNumber) {
   const slug = _adminPageBoxSlug(pageId, boxNumber);
   return '<div class="admin-block ci-page-box-admin-entry" id="adminBlock-' + slug + '">' +
-    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span></div>' +
+    '<div class="admin-block-hd"><span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 4 ? 'Beside Add a Goal' : boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span></div>' +
     '<div class="admin-toolbar">' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'bold\')"><b>B</b></button>' +
       '<button class="admin-tb-btn" onclick="adminFmt(\'' + slug + '\',\'italic\')"><i>I</i></button>' +
@@ -4922,7 +4927,7 @@ function ensureAdminPageBoxEditors() {
       option.textContent = pageNumber + ' · ' + label;
       section.querySelector('#adminPageFinder').appendChild(option);
     }
-    for (const boxNumber of [3, 2]) {
+    for (const boxNumber of (pageId === 'setup' ? [3, 4, 2] : [3, 2])) {
       const slug = _adminPageBoxSlug(pageId, boxNumber);
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
@@ -4931,7 +4936,7 @@ function ensureAdminPageBoxEditors() {
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 4 ? 'Beside Add a Goal' : boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span>';
       }
       entry.classList.add('ci-page-box-admin-entry');
       entry.dataset.adminNumber = pageNumber + '.' + boxNumber;

@@ -4642,3 +4642,12 @@ html.master-inline-goals #page-setup .ci-goals-top-row{
 html.master-inline-goals #page-setup .ci-goals-add-toggle{
  flex:0 0 auto!important;width:132px!important;min-height:100px!important;margin:0!important
 }
+
+/* Independent Goals admin note beside the existing Add a Goal control. */
+html.master-inline-goals #page-setup .ci-goals-top-row{gap:16px!important}
+#page-setup .ci-goals-top-row>.ci-goals-admin-note{flex:1 1 0;min-width:0;min-height:140px}
+#page-setup .ci-goals-admin-note .ci-admin-page-box-content{min-height:140px;box-sizing:border-box}
+@media(max-width:480px){
+ html.master-inline-goals #page-setup .ci-goals-top-row{gap:10px!important}
+ html.master-inline-goals #page-setup .ci-goals-add-toggle{width:100px!important}
+}
