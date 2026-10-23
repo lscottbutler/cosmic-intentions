@@ -4660,3 +4660,13 @@ html.master-inline-goals #page-setup .ci-goals-entry-column .ci-goals-add-toggle
 #page-setup .ci-goals-quick-stats dt{font-size:11px;line-height:1.3;color:#565656}
 #page-setup .ci-goals-quick-stats dd{margin:3px 0 0;font-size:14px;line-height:1.3;font-weight:700;color:#292929;overflow-wrap:anywhere}
 @media(max-width:480px){#page-setup .ci-goals-entry-column{flex-basis:100px}}
+
+/* Wrap long To Do goal headings before the task-control column. */
+.goal-workspace-goal-title{
+ width:fit-content!important;max-width:calc(100% - 192px)!important;
+ white-space:normal!important;text-wrap:wrap!important;overflow-wrap:anywhere
+}
+.goal-workspace-goal-title>span{white-space:normal;text-wrap:wrap;overflow-wrap:anywhere;flex:1 1 auto;min-width:0}
+@media(max-width:650px){
+ .goal-workspace-goal-title{max-width:calc(100% - 150px)!important;text-wrap:wrap!important}
+}
