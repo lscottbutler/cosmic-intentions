@@ -1749,6 +1749,7 @@ async function saveTargetDate(idx, val) {
 }
 
 export async function saveIntentions() {
+  updateGoalsQuickStats();
   if (currentUser) LS.set(`ci_intentions_${currentUser.id}`, _leanForLS(intentions));
   try {
     await syncIntentionsToSupabase();
@@ -4772,6 +4773,37 @@ function _pageBoxRoot(active) {
 }
 
 
+function updateGoalsQuickStats(active = document.getElementById('page-setup')) {
+  const row = active?.querySelector('.ci-goals-top-row');
+  const add = row?.querySelector('.ci-goals-add-toggle');
+  if (!row || !add) return;
+  let controls = row.querySelector('.ci-goals-entry-column');
+  if (!controls) {
+    controls = document.createElement('div');
+    controls.className = 'ci-goals-entry-column';
+    add.before(controls);
+    controls.append(add);
+  }
+  let stats = controls.querySelector('.ci-goals-quick-stats');
+  if (!stats) {
+    stats = document.createElement('dl');
+    stats.className = 'ci-goals-quick-stats';
+    stats.setAttribute('aria-label', 'Goal statistics');
+    controls.append(stats);
+  }
+  const today = dayKey();
+  const dates = intentions.map(goal => goal.targetDate).filter(value =>
+    typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(new Date(value + 'T12:00:00').getTime()));
+  const upcoming = dates.filter(date => date >= today).sort()[0];
+  const nextDate = upcoming
+    ? new Date(upcoming + 'T12:00:00').toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' })
+    : 'Not set';
+  const values = [['Goals', String(intentions.length)], ['Next target', nextDate], ['Overdue', String(dates.filter(date => date < today).length)]];
+  const markup = values.map(([label, value]) => '<div><dt>' + label + '</dt><dd>' + esc(value) + '</dd></div>').join('');
+  if (stats.innerHTML !== markup) stats.innerHTML = markup;
+}
+
 function wireGoalsAddControl(active, topStack) {
   if (active.id !== 'page-setup') return;
   let row = active.querySelector('.ci-goals-top-row');
@@ -4800,6 +4832,7 @@ function wireGoalsAddControl(active, topStack) {
     note.classList.add('ci-goals-admin-note');
     row.prepend(note);
   }
+  updateGoalsQuickStats(active);
   const form = active.querySelector('#pbAddIntentionRow');
   if (form && form.previousElementSibling !== row) row.insertAdjacentElement('afterend', form);
 }
