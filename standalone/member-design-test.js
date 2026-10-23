@@ -24,7 +24,7 @@
   'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
-  journal:['My Journal','Reflect in your own words.','Link an entry to a goal with the existing goal selector.'],
+  journal:['My Journal','Reflect in your own words.',''],
   gratitude:['Gratitude','Choose from your existing gratitude practices.','Use the current page choices to select a practice.'],
   wins:['My Wins','Record the progress you notice.','Add a win using the existing form; your entries remain yours.'],
   'task-notes':['Notes','Find your goal and action notes in one place.','Open MY TO DO LIST to see the connected notes and journal entries.'],
@@ -491,7 +491,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
    if(features[action]){
     renderFeature(action);
     if(pendingDashboard&&doc.defaultView.ciCitadelDashboardReview){pendingDashboard=false;dashboardApi=doc.defaultView.ciCitadelDashboardReview;loadDashboard();}
-    if(action==='goals'||action==='goal-workspace'||action==='daily-habits')page.querySelector(':scope > .ci-review-guidance')?.remove();
+    if(action==='journal'||action==='goals'||action==='goal-workspace'||action==='daily-habits')page.querySelector(':scope > .ci-review-guidance')?.remove();
     if(features[action][2]&&!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
     page.querySelectorAll('.ci-goals-add-toggle,.pb-goal-add-save,button[onclick="notesToggleQuickAdd()"],.goal-workspace-entry-save,[data-save-note]').forEach(button=>{if(!button.classList.contains('ci-review-key-action'))button.classList.add('ci-review-key-action');});
    }
