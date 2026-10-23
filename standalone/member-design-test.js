@@ -155,6 +155,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    for(const char of copy[0]){const tile=document.createElement('span');tile.textContent=char;tile.setAttribute('aria-hidden','true');tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+(letterIndex++%2?'#777':'#333')+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';title.append(tile);}
    title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
    title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
+   if(action==='goals'){
+    title.querySelectorAll('span').forEach(tile=>{
+     const glyph=document.createElement('span');glyph.textContent=tile.textContent;
+     glyph.style.display='inline-block';tile.replaceChildren(glyph);
+     const bounds=glyph.getBoundingClientRect();
+     if(bounds.width>2&&bounds.height>0)glyph.style.transform='scale('+((bounds.width-2)/bounds.width)+','+((bounds.height+2)/bounds.height)+')';
+    });
+   }
   }
   if(action!=='home'&&action!=='admin'){last=action;try{sessionStorage.setItem('ci-review-last-feature',action);}catch(_){}}
 
