@@ -160,7 +160,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      const glyph=document.createElement('span');glyph.textContent=tile.textContent;
      glyph.style.display='inline-block';tile.replaceChildren(glyph);
      const bounds=glyph.getBoundingClientRect();
-     if(bounds.width>2&&bounds.height>0)glyph.style.transform='scale('+((bounds.width-2)/bounds.width)+','+((bounds.height+2)/bounds.height)+')';
+     if(bounds.width>2&&bounds.height>0)glyph.style.transform='scale('+((bounds.width-2)/bounds.width)+','+((bounds.height+4)/bounds.height)+')';
     });
    }
   }
