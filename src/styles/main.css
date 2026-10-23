@@ -4651,3 +4651,12 @@ html.master-inline-goals #page-setup .ci-goals-top-row{gap:16px!important}
  html.master-inline-goals #page-setup .ci-goals-top-row{gap:10px!important}
  html.master-inline-goals #page-setup .ci-goals-add-toggle{width:100px!important}
 }
+
+/* Compact live goal statistics below Add a Goal. */
+#page-setup .ci-goals-entry-column{flex:0 0 140px;min-width:0;display:grid;justify-items:stretch;gap:12px}
+html.master-inline-goals #page-setup .ci-goals-entry-column .ci-goals-add-toggle{width:100%!important}
+#page-setup .ci-goals-quick-stats{margin:0;padding:12px;background:#f2f2f2;border-radius:10px;display:grid;gap:10px;text-align:center}
+#page-setup .ci-goals-quick-stats div{min-width:0}
+#page-setup .ci-goals-quick-stats dt{font-size:11px;line-height:1.3;color:#565656}
+#page-setup .ci-goals-quick-stats dd{margin:3px 0 0;font-size:14px;line-height:1.3;font-weight:700;color:#292929;overflow-wrap:anywhere}
+@media(max-width:480px){#page-setup .ci-goals-entry-column{flex-basis:100px}}
