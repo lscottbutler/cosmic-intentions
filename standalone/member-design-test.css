@@ -146,3 +146,5 @@ body.gratitude-two-column .member-player-columns{
 .orientation #player-search input{background:transparent;color:#fff;caret-color:#fff}
 .orientation #player-search input::placeholder{color:#fff;opacity:1}
 .orientation #player-search button{background:#292929;color:#fff;border-color:#292929}
+
+@media(max-width:650px){.member-player-columns{margin-top:24px}.orientation .shortcuts button{font-size:14px;min-height:44px}.orientation #player-search input{font-size:16px!important;min-width:0}.orientation .shortcuts{min-width:0}}

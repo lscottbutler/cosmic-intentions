@@ -1,3 +1,4 @@
+import { installOwnerLabels } from './shared/owner-labels.js';
 import { installUsage } from './standalone/usage-service.js';
 import { visitTroughPage, attachTrough } from './shared/trough-rotation.js';
 import { memberEntryUrl, memberToolUrl } from './shared/member-entry.js';
@@ -993,6 +994,7 @@ function updateUI(user) {
   // Admin + Notes nav — only for site owner
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   window.ciOwnerAccess = isOwner;
+  if(isOwner)installOwnerLabels(window);
   document.querySelectorAll('[data-owner-only]').forEach(el => {
     if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
@@ -5832,6 +5834,7 @@ async function initCitadelNoteFrame(nextPage) {
     if (block.error || above.error) throw block.error || above.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
+    if(window.ciOwnerAccess)installOwnerLabels(window);
     _blockCache[slug] = block.data?.body || '';
     _blockCache[aboveSlug] = above.data?.body || '';
     const aboveBox = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
