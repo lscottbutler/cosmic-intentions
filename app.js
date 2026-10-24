@@ -5270,6 +5270,13 @@ function adminEditBlock(slug) {
     const save = panel.querySelector('.ci-admin-page-box-inline-save');
     const status = panel.querySelector('[role="status"]');
     editor.innerHTML = _blockCache[slug] || '';
+  const titleSlug = 'home-media-title-' + number;
+  panel.querySelector('#admin-editor-' + titleSlug).textContent = (_blockCache[titleSlug] || '').replace(/<[^>]*>/g,'');
+  panel.querySelector('#admin-save-' + titleSlug).onclick = () => {
+    const titleEditor = panel.querySelector('#admin-editor-' + titleSlug);
+    titleEditor.textContent = titleEditor.textContent.trim();
+    saveContentBlock(titleSlug);
+  };
     box.classList.add('is-editing');
     box.appendChild(panel);
     panel.querySelector('.ci-admin-page-box-inline-cancel').addEventListener('click', () => {
@@ -5427,7 +5434,10 @@ window.ciEditHomeMediaCard = function (number) {
   panel.className = 'ci-home-media-editor';
   panel.style.cssText = 'display:grid;gap:10px;border-top:2px solid #d62828;padding-top:12px;min-width:0';
   panel.innerHTML =
-    '<label for="admin-editor-' + slug + '">Card ' + number + ' content (text, image, voice-over)</label>' +
+    '<label for="admin-editor-home-media-title-' + number + '">HAC ' + number + ' title</label>' +
+    '<div id="admin-editor-home-media-title-' + number + '" contenteditable="true" role="textbox" aria-label="HAC ' + number + ' title" style="min-height:44px;padding:10px;border:2px solid #747474;background:#fff;color:#292929"></div>' +
+    '<div class="ci-home-media-actions"><button type="button" id="admin-save-home-media-title-' + number + '">SAVE TITLE</button><span id="admin-status-home-media-title-' + number + '" role="status"></span></div>' +
+    '<label for="admin-editor-' + slug + '">HAC ' + number + ' content (text, image, voice-over)</label>' +
     '<div id="admin-editor-' + slug + '" class="admin-editor" contenteditable="true" role="textbox" aria-multiline="true" style="min-height:120px;overflow-wrap:anywhere;background:#fff;color:#292929;border:2px solid #747474;padding:12px"></div>' +
     '<div class="ci-home-media-actions">' +
       '<button type="button" data-home-insert-image>ADD IMAGE</button>' +
