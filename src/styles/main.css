@@ -4670,3 +4670,6 @@ html.master-inline-goals #page-setup .ci-goals-entry-column .ci-goals-add-toggle
 @media(max-width:650px){
  .goal-workspace-goal-title{max-width:calc(100% - 150px)!important;text-wrap:wrap!important}
 }
+
+/* Welcome and talking-images page uses square corners throughout. */
+#homeLoggedIn,#homeLoggedIn *{border-radius:0!important}
