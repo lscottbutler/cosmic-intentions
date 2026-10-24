@@ -139,3 +139,10 @@ body.gratitude-two-column .member-player-columns{
  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:26px
 }
 @media(max-width:650px){body.gratitude-two-column .member-player-columns{padding:12px}}
+
+/* Consistent dark header shortcuts and search. */
+.orientation .shortcuts button,
+.orientation #player-search{background:#292929;color:#fff;border-color:#292929}
+.orientation #player-search input{background:transparent;color:#fff;caret-color:#fff}
+.orientation #player-search input::placeholder{color:#fff;opacity:1}
+.orientation #player-search button{background:#292929;color:#fff;border-color:#292929}
