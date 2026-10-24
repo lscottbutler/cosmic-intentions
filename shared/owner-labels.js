@@ -21,6 +21,9 @@ export function installOwnerLabels(ownerWindow) {
       documents.set(doc,{style,observer});
     }
     doc.documentElement.classList.toggle('ci-labels-on',enabled);
+    label(doc,'p', 'Text paragraph');
+    label(doc,'h1,h2,h3,h4', 'Heading');
+    label(doc,'.card,.pb-goal-card,.ent-panel,.ent-resource-card,.cosmic-concept-card,.cl-concept-item,.habit-drop', 'Card');
     label(doc,'.orientation',()=> 'Shared player control card');
     label(doc,'.member-player-columns',()=> 'Page content / player card');
     label(doc,'#feature-title',()=> 'Page title — letter tiles');
@@ -33,9 +36,6 @@ export function installOwnerLabels(ownerWindow) {
     label(doc,'.home-vid-block', 'Video player');
     label(doc,'.goal-workspace-goal-title,.pb-goal-title,.card-goal-statement', 'Goal header');
     label(doc,'.wcard', 'To Do card');
-    label(doc,'p', 'Text paragraph');
-    label(doc,'h1,h2,h3,h4', 'Heading');
-    label(doc,'.card,.pb-goal-card,.ent-panel,.ent-resource-card,.cosmic-concept-card,.cl-concept-item,.habit-drop', 'Card');
     label(doc,'.home-col-left>h2,.home-info-block>div:first-child', 'Section heading');
     label(doc,'.ci-admin-page-box',el=>'Admin text box '+el.dataset.pageBox);
     label(doc,'[data-block]',el=>{
