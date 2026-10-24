@@ -994,7 +994,7 @@ function updateUI(user) {
   // Admin + Notes nav — only for site owner
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   window.ciOwnerAccess = isOwner;
-  document.querySelectorAll('#ci-home-media-cards .ci-home-media-card').forEach(card => card.classList.toggle('ci-home-owner', isOwner));
+  document.querySelectorAll('.ci-home-media-card').forEach(card => card.classList.toggle('ci-home-owner', isOwner));
   if(isOwner)installOwnerLabels(window);
   document.querySelectorAll('[data-owner-only]').forEach(el => {
     if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
