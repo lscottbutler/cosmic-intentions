@@ -19,6 +19,7 @@ export function installOwnerLabels(ownerWindow) {
       style.textContent += 'html.ci-admin-owner-view [data-ci-rotation-label]:not([data-ci-admin-number]){outline:10px dotted #159447!important;outline-offset:3px}html.ci-admin-owner-view [data-ci-rotation-label]:not([data-ci-admin-number])::after{content:attr(data-ci-rotation-label);position:absolute;left:7px;top:7px;z-index:99;padding:4px 7px;background:#159447;color:white;font:700 11px/1.25 Arial,sans-serif;pointer-events:none}html.ci-admin-owner-view [data-ci-rotation-label]:not([data-ci-admin-number]){position:relative}';
       // Make the labeled outer header shells unmistakable, without changing their content or sizing.
       style.textContent += 'html.ci-admin-owner-view #header-admin-note{outline:10px dashed #8e44ad!important;outline-offset:2px}html.ci-admin-owner-view #header-calendar,html.ci-admin-owner-view #header-encouragement{outline:10px dotted #159447!important;outline-offset:2px}';
+      style.textContent += 'html.ci-admin-owner-view [data-ci-component-number]{position:relative}html.ci-admin-owner-view .ci-component-number-dot{position:absolute!important;top:5px;left:5px;z-index:150;display:grid;place-items:center;width:42px;height:42px;border:2px solid #171717;border-radius:50%;box-shadow:0 1px 5px #0005;color:#000!important;font:900 21px/1 Arial,sans-serif!important;letter-spacing:0!important;text-shadow:none!important;pointer-events:none;box-sizing:border-box}html:not(.ci-admin-owner-view) .ci-component-number-dot{display:none!important}';
       doc.head.append(style);
       const observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(refresh,250)});
       observer.observe(doc.body,{childList:true,subtree:true});
@@ -43,6 +44,25 @@ export function installOwnerLabels(ownerWindow) {
     rotatingAreas.forEach(([selector,name])=>doc.querySelectorAll(selector).forEach(el=>{
       if(el.dataset.ciRotationLabel!==name)el.dataset.ciRotationLabel=name;
     }));
+    // Same eleven hues as GOAL_COLORS in app.js, with black numerals for fast scanning.
+    const goalBadgeColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
+    const componentSelector=['#header-admin-note','#header-calendar','#header-encouragement','.ci-admin-page-box','.ci-carousel','.ent-slideshow','.welcome-vo-encouragement','.encourage-band','.home-info-block','.home-vid-block','.orientation','.habit-checklist-card','.habit-orientation-card','.ci-habit-mindset','.pb-goal-card','.goal-workspace-goal-title','.wcard','.member-player-columns','.ci-ph-card','.cl-section-drop'].join(',');
+    const components=[...doc.querySelectorAll(componentSelector)].filter(el=>el.getClientRects().length && !el.closest('.ci-component-number-dot'));
+    const active=new Set(components);
+    doc.querySelectorAll('[data-ci-component-number]').forEach(el=>{
+      if(active.has(el))return;
+      delete el.dataset.ciComponentNumber;
+      el.querySelector(':scope > .ci-component-number-dot')?.remove();
+    });
+    components.forEach((el,index)=>{
+      const number=String(index+1);
+      el.dataset.ciComponentNumber=number;
+      let dot=el.querySelector(':scope > .ci-component-number-dot');
+      if(!dot){dot=doc.createElement('span');dot.className='ci-component-number-dot';dot.setAttribute('aria-hidden','true');el.append(dot);}
+      if(dot.textContent!==number)dot.textContent=number;
+      const color=goalBadgeColors[index%goalBadgeColors.length];
+      if(dot.style.backgroundColor!==color)dot.style.backgroundColor=color;
+    });
     label(doc,'p', 'Text paragraph');
     label(doc,'h1,h2,h3,h4', 'Heading');
     label(doc,'.card,.pb-goal-card,.ent-panel,.ent-resource-card,.cosmic-concept-card,.cl-concept-item,.habit-drop', 'Card');
@@ -85,7 +105,7 @@ export function installOwnerLabels(ownerWindow) {
     }catch(_){}
   }
   function stop(){
-    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.getElementById('ci-label-switch')?.remove();doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
+    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.querySelectorAll('.ci-component-number-dot').forEach(el=>el.remove());doc.querySelectorAll('[data-ci-component-number]').forEach(el=>delete el.dataset.ciComponentNumber);doc.getElementById('ci-label-switch')?.remove();doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
     documents.clear();clearTimeout(timer);clearInterval(recheck);ownerWindow.__ciLabelsInstalled=false;
   }
   const recheck=setInterval(()=>{if(!ownerWindow.ciOwnerAccess)stop()},1000);
