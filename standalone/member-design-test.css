@@ -149,15 +149,15 @@ body.gratitude-two-column .member-player-columns{
 
 @media(max-width:650px){.member-player-columns{margin-top:24px}.orientation .shortcuts button{font-size:14px;min-height:44px}.orientation #player-search input{font-size:16px!important;min-width:0}.orientation .shortcuts{min-width:0}}
 
-/* Goal-palette navigation: larger, bold, uppercase and distinct color for every row. */
+/* Goal-palette navigation: larger regular-weight white uppercase labels. */
 #review-menu-items > a,
 #review-menu-items > button{
   display:block;
   width:100%;
-  font:800 20px/1.25 Arial,sans-serif!important;
+  font:400 20px/1.25 Arial,sans-serif!important;
   text-transform:uppercase;
   letter-spacing:.025em;
-  color:#101010!important;
+  color:#fff!important;
   text-decoration:none;
   border-radius:5px;
   padding:14px 16px!important;
