@@ -753,24 +753,24 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
     <!-- LOGGED IN: member home -->
     <style>
+      .ci-home-media-slot{display:block;margin:12px 0 18px;min-width:0}
       #ci-home-media-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:26px 0;min-width:0}
-      #ci-home-media-cards .ci-home-media-card{min-width:0;box-sizing:border-box;background:#fff;color:#292929;border:0;padding:16px;display:flex;flex-direction:column;gap:12px}
-      html.ci-labels-on #ci-home-media-cards .ci-home-media-card{border:10px dashed #d62828}
-      #ci-home-media-cards .ci-home-media-card>h3{font:700 20px/1.35 Arial,sans-serif;margin:0;color:#292929}
-      #ci-home-media-cards .ci-home-media-body{min-width:0;overflow-wrap:anywhere}
-      #ci-home-media-cards .ci-home-media-body img,#ci-home-media-cards .ci-home-media-body video{display:block;max-width:100%;height:auto}
-      #ci-home-media-cards .ci-home-media-body audio{display:block;width:100%;max-width:100%}
-      #ci-home-media-cards .ci-home-media-empty{font:400 14px/1.4 Arial,sans-serif;color:#666}
-      #ci-home-media-cards .ci-home-media-actions{display:flex;gap:8px;flex-wrap:wrap}
-      #ci-home-media-cards .ci-home-media-actions button{background:#292929;color:white;border:0;padding:10px 14px;font:600 14px Arial,sans-serif;min-height:44px}
-      #ci-home-media-cards .ci-home-media-card:not(.ci-home-owner) .ci-home-media-actions{display:none}
-      #ci-home-media-cards .ci-home-media-card:not(.ci-home-owner):has(.ci-home-media-body:empty){display:none}
-      @media(max-width:700px){#ci-home-media-cards{grid-template-columns:1fr}#ci-home-media-cards .ci-home-media-card{padding:12px}}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card{min-width:0;box-sizing:border-box;background:#fff;color:#292929;border:0;padding:16px;display:flex;flex-direction:column;gap:12px}
+      html.ci-labels-on :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card{border:10px dashed #d62828}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card>h3{font:700 20px/1.35 Arial,sans-serif;margin:0;color:#292929}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-body{min-width:0;overflow-wrap:anywhere}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-body img,:is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-body video{display:block;max-width:100%;height:auto}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-body audio{display:block;width:100%;max-width:100%}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-empty{font:400 14px/1.4 Arial,sans-serif;color:#666}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-actions{display:flex;gap:8px;flex-wrap:wrap}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-actions button{background:#292929;color:white;border:0;padding:10px 14px;font:600 14px Arial,sans-serif;min-height:44px}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card:not(.ci-home-owner) .ci-home-media-actions{display:none}
+      :is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card:not(.ci-home-owner):has(.ci-home-media-body:empty){display:none}
+      @media(max-width:700px){#ci-home-media-cards{grid-template-columns:1fr}:is(#ci-home-media-cards,.ci-home-media-slot) .ci-home-media-card{padding:12px}}
     </style>
     <div id="homeLoggedIn" style="display:none">
 
       <section id="ci-home-media-cards" aria-label="Home Page admin media cards">
-        <article class="ci-home-media-card" data-home-media-card="1"><h3>HOME ADMIN CARD 1</h3><div class="ci-home-media-body" data-block="home-media-card-1"></div><div class="ci-home-media-actions" data-owner-only><button type="button" onclick="ciEditHomeMediaCard(1)">EDIT CARD 1</button></div></article>
         <article class="ci-home-media-card" data-home-media-card="2"><h3>HOME ADMIN CARD 2</h3><div class="ci-home-media-body" data-block="home-media-card-2"></div><div class="ci-home-media-actions" data-owner-only><button type="button" onclick="ciEditHomeMediaCard(2)">EDIT CARD 2</button></div></article>
         <article class="ci-home-media-card" data-home-media-card="3"><h3>HOME ADMIN CARD 3</h3><div class="ci-home-media-body" data-block="home-media-card-3"></div><div class="ci-home-media-actions" data-owner-only><button type="button" onclick="ciEditHomeMediaCard(3)">EDIT CARD 3</button></div></article>
         <article class="ci-home-media-card" data-home-media-card="4"><h3>HOME ADMIN CARD 4</h3><div class="ci-home-media-body" data-block="home-media-card-4"></div><div class="ci-home-media-actions" data-owner-only><button type="button" onclick="ciEditHomeMediaCard(4)">EDIT CARD 4</button></div></article>
@@ -782,6 +782,10 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
         <div class="home-col-left">
 
           <h2 data-block="home-section-heading-1" style="margin:0 0 10px;color:var(--text);font-size:22px;font-weight:800;letter-spacing:.3px;line-height:1.2;">Welcome to the Cosmic Intentions Community</h2>
+          <section class="ci-home-media-slot" aria-label="Home Admin Card 1">
+<article class="ci-home-media-card" data-home-media-card="1"><h3>HOME ADMIN CARD 1</h3><div class="ci-home-media-body" data-block="home-media-card-1"></div><div class="ci-home-media-actions" data-owner-only><button type="button" onclick="ciEditHomeMediaCard(1)">EDIT CARD 1</button></div></article>
+          </section>
+
 
           <!-- Block: home-welcome — admin-editable, directly under the headline (the green zone) -->
           <div class="cb-display" data-block="home-welcome"></div>
