@@ -754,7 +754,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <!-- LOGGED IN: member home -->
     <style>
       #ci-home-media-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:26px 0;min-width:0}
-      #ci-home-media-cards .ci-home-media-card{min-width:0;box-sizing:border-box;background:#fff;color:#292929;border:10px dashed #d62828;padding:16px;display:flex;flex-direction:column;gap:12px}
+      #ci-home-media-cards .ci-home-media-card{min-width:0;box-sizing:border-box;background:#fff;color:#292929;border:0;padding:16px;display:flex;flex-direction:column;gap:12px}
+      html.ci-labels-on #ci-home-media-cards .ci-home-media-card{border:10px dashed #d62828}
       #ci-home-media-cards .ci-home-media-card>h3{font:700 20px/1.35 Arial,sans-serif;margin:0;color:#292929}
       #ci-home-media-cards .ci-home-media-body{min-width:0;overflow-wrap:anywhere}
       #ci-home-media-cards .ci-home-media-body img,#ci-home-media-cards .ci-home-media-body video{display:block;max-width:100%;height:auto}
