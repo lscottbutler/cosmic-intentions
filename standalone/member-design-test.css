@@ -148,3 +148,39 @@ body.gratitude-two-column .member-player-columns{
 .orientation #player-search button{background:#292929;color:#fff;border-color:#292929}
 
 @media(max-width:650px){.member-player-columns{margin-top:24px}.orientation .shortcuts button{font-size:14px;min-height:44px}.orientation #player-search input{font-size:16px!important;min-width:0}.orientation .shortcuts{min-width:0}}
+
+/* Goal-palette navigation: larger, bold, uppercase and distinct color for every row. */
+#review-menu-items > a,
+#review-menu-items > button{
+  display:block;
+  width:100%;
+  font:800 20px/1.25 Arial,sans-serif!important;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+  color:#101010!important;
+  text-decoration:none;
+  border-radius:5px;
+  padding:14px 16px!important;
+  min-height:54px;
+  overflow-wrap:anywhere;
+}
+#review-menu-items > :nth-child(11n + 1){background:#E84040!important}
+#review-menu-items > :nth-child(11n + 2){background:#E86030!important}
+#review-menu-items > :nth-child(11n + 3){background:#E88020!important}
+#review-menu-items > :nth-child(11n + 4){background:#E8A828!important}
+#review-menu-items > :nth-child(11n + 5){background:#E8C830!important}
+#review-menu-items > :nth-child(11n + 6){background:#A8C830!important}
+#review-menu-items > :nth-child(11n + 7){background:#48B860!important}
+#review-menu-items > :nth-child(11n + 8){background:#38A888!important}
+#review-menu-items > :nth-child(11n + 9){background:#2898A8!important}
+#review-menu-items > :nth-child(11n + 10){background:#7888A8!important}
+#review-menu-items > :nth-child(11n){background:#3878A8!important}
+#review-menu-items > :is(a,button):hover,
+#review-menu-items > :is(a,button):focus-visible{
+  filter:brightness(1.12);
+  outline:3px solid #fff;
+  outline-offset:-3px;
+}
+@media(max-width:450px){
+  #review-menu-items > :is(a,button){font-size:18px!important;min-height:52px}
+}
