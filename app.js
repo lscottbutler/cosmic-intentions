@@ -5447,8 +5447,16 @@ window.ciEditHomeMediaCard = function (number) {
     '</div><input id="admin-photo-input-' + slug + '" type="file" accept="image/*" hidden>' +
     '<span id="admin-status-' + slug + '" role="status"></span>';
   card.append(panel);
-  const editor = panel.querySelector('[contenteditable]');
+  const editor = panel.querySelector('#admin-editor-' + slug);
   editor.innerHTML = _blockCache[slug] || '';
+  const titleSlug = 'home-media-title-' + number;
+  const titleEditor = panel.querySelector('#admin-editor-' + titleSlug);
+  titleEditor.textContent = (_blockCache[titleSlug] || '').replace(/<[^>]*>/g, '');
+  panel.querySelector('#admin-save-' + titleSlug).onclick = () => {
+    const title = titleEditor.textContent.trim();
+    titleEditor.textContent = title;
+    saveContentBlock(titleSlug);
+  };
   panel.querySelector('[data-home-insert-image]').onclick = () => adminUploadPhoto(slug);
   panel.querySelector('#admin-photo-input-' + slug).onchange = (event) => adminPhotoSelected(slug, event.currentTarget);
   panel.querySelector('[data-home-insert-audio]').onclick = () => {
