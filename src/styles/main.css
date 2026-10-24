@@ -4673,3 +4673,12 @@ html.master-inline-goals #page-setup .ci-goals-entry-column .ci-goals-add-toggle
 
 /* Welcome and talking-images page uses square corners throughout. */
 #homeLoggedIn,#homeLoggedIn *{border-radius:0!important}
+
+/* Phone layout: readable Welcome content and touch targets. */
+@media(max-width:760px){
+ #homeLoggedIn .home-member-cols{grid-template-columns:minmax(0,1fr);max-width:100%;padding:16px 14px;gap:24px}
+ #homeLoggedIn .home-col-left,#homeLoggedIn .home-col-right{min-width:0;max-width:100%}
+ #homeLoggedIn .home-col-left p,#homeLoggedIn .home-col-right p,#homeLoggedIn .home-info-block ul{font-size:16px!important;line-height:1.6!important;overflow-wrap:anywhere}
+ #homeLoggedIn img,#homeLoggedIn video,#homeLoggedIn iframe{max-width:100%}
+ #homeLoggedIn button,#homeLoggedIn input{min-height:44px}
+}
