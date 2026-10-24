@@ -768,39 +768,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
             <img src="images/home-welcome-languages.jpg" alt="" style="flex:1;min-width:160px;max-width:300px;height:auto;">
           </div>
           <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;opacity:.85;">There are lots of new and exciting things happening including the introduction of the Entrepreneur Library.</p>
-          <!-- Sticker band (home-row webp images) — each image is an ENCOURAGEMENT BUTTON:
-               tap any sticker to hear + see a warm, personalized line (playEncouragement). -->
-          <div class="encourage-band" onclick="if(event.target.tagName==='IMG')playEncouragement()" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 16px;margin:20px 0 6px;">
-            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-tiger.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-panda.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dino.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dog.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-flowers.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-ship.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-baloon.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-rocket.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;display:none;">
-            <img src="images/home-row/home-record-player.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-paint-brush.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-bullhorn.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-lungs.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-bug.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-messenger.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-doll.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-dunk.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-batter.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-hand-bird.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-hand-puppet.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-pidgeon.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-pink-skull.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-poster.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-respect.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-splat.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-travel.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-box.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-            <img src="images/home-row/home-clocks-trash.webp" alt="" loading="lazy" decoding="async" style="height:70px;width:auto;">
-          </div>
-
           <!-- Entrepreneur Library Slideshow -->
           <div class="ent-slideshow"></div>
 
@@ -916,7 +883,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;opacity:.85;">Open the Citadel to review your goals, practices, thoughts, journal, gratitude, and wins from one place.</p>
           <div class="home-member-hero">
 
-            <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
+            <button type="button" class="welcome-vo-encouragement" onclick="playEncouragement()" aria-label="Play VO encouragement" style="display:block;border:0;background:transparent;padding:12px;margin:0 auto 14px;cursor:pointer;"><img src="images/home-row/home-rocket.webp" alt="" style="display:block;height:90px;width:auto;"></button>
+
+          <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
             <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;margin:6px 0 14px;">
               <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">START WITH DIRECTION</div>
               <p style="margin:0;color:var(--text);font-size:14px;line-height:1.6;">Choose the goal that matters most and make the next move obvious.</p>
@@ -3165,6 +3134,18 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLettermarks);
   else initLettermarks();
 })();
+</script>
+
+<template id="aks-vo-encouragements"><h2>VO encouragements</h2><div class="aks-vo-grid"><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-tiger.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-panda.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dino.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dog.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-flowers.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-ship.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-baloon.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-record-player.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-paint-brush.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-bullhorn.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-lungs.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-bug.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-messenger.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-doll.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dunk.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-batter.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-hand-bird.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-hand-puppet.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-pidgeon.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-pink-skull.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-poster.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-respect.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-splat.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-travel.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-box.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-clocks-trash.webp" alt="" loading="lazy" decoding="async"></button></div></template>
+<script>
+if(new URLSearchParams(location.search).get('aksHolding')==='1'){
+ document.documentElement.classList.add('aks-holding-view');
+ const style=document.createElement('style');
+ style.textContent='html.aks-holding-view body>*:not(#aks-vo-root):not(.encourage-pop){display:none!important}html.aks-holding-view body{background:#fff!important;margin:0!important;padding:16px!important}#aks-vo-root{color:#292929;font:16px/1.5 Arial,sans-serif}#aks-vo-root h2{font-size:20px}.aks-vo-grid{display:flex;flex-wrap:wrap;gap:20px;align-items:center}.aks-vo-grid button{border:0;background:transparent;padding:10px;cursor:pointer}.aks-vo-grid img{height:80px;width:auto;max-width:160px;object-fit:contain}.aks-vo-grid button:focus-visible{outline:3px solid #292929;outline-offset:3px}';
+ document.head.append(style);
+ const root=document.createElement('main');root.id='aks-vo-root';
+ root.append(document.getElementById('aks-vo-encouragements').content.cloneNode(true));document.body.append(root);
+}
 </script>
 
 </body>
