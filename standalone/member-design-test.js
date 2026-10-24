@@ -14,6 +14,7 @@
  const menuTrigger=document.getElementById('review-menu-trigger');
  menuTrigger.addEventListener('click',()=>menu.showModal());
  const features={
+  aks:['AKS','Temporary holding space for items we move here.',''],
   home:['Citadel','Start with a goal, or choose a practice from your existing menu.','Open a goal to choose Visualization or Roadmap.'],
   goals:['Goals','Keep your direction visible, in your own words.',''],
   'daily-habits':['Habits','Work through your existing daily routine.',''],
@@ -192,6 +193,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    try{
     const doc=frame.contentDocument;
     if(!doc||doc.readyState==='loading')return false;
+    if(action==='aks')return !!doc.getElementById('aks-holding-area');
     if(['gratitude','new-gratitude'].includes(action))return !!doc.getElementById('gratitude-master-play');
     if(action==='super-viz')return !!doc.getElementById('stage')&&new URL(doc.URL).pathname==='/players/super-viz-player.html';
     if(new URL(doc.URL).pathname!=='/players/master-player.html')return false;
@@ -211,6 +213,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   await fadeContent(1,300);
  }
  function navigateFeature(action){
+  if(action==='aks'){playerAction=action;gratitudeV2=false;newGratitude=false;frame.src='/standalone/aks.html';renderFeature(action);return;}
   if(action==='super-viz'){playerAction=action;frame.src='/players/super-viz-player.html?preview=1&start=super-viz';renderFeature(action);return;}
   if(action==='gratitude'||action==='new-gratitude'){
    playerAction='gratitude';gratitudeV2=true;newGratitude=false;
@@ -230,7 +233,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={'welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
+ const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';document.getElementById('review-menu-items').append(usageLink);
  delete menuLabels.gratitude;
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
@@ -720,7 +723,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  const initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
-  if(initialFeature==='new-gratitude'||initialFeature==='gratitude'||initialFeature==='super-viz')openFeature(initialFeature);
+  if(initialFeature==='aks'||initialFeature==='new-gratitude'||initialFeature==='gratitude'||initialFeature==='super-viz')openFeature(initialFeature);
   else {frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(initialFeature);renderFeature(initialFeature);}
  }
 })();
