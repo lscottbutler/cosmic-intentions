@@ -5422,7 +5422,7 @@ window.ciEditHomeMediaCard = function (number) {
   const card = document.querySelector('[data-home-media-card="' + number + '"]');
   if (!card) return;
   let panel = card.querySelector('.ci-home-media-editor');
-  if (panel) { panel.hidden = !panel.hidden; return; }
+  if (panel) { panel.style.display = panel.style.display === 'none' ? 'grid' : 'none'; return; }
   panel = document.createElement('section');
   panel.className = 'ci-home-media-editor';
   panel.style.cssText = 'display:grid;gap:10px;border-top:2px solid #d62828;padding-top:12px;min-width:0';
@@ -5456,7 +5456,7 @@ window.ciEditHomeMediaCard = function (number) {
     editor.append(audio);
   };
   panel.querySelector('#admin-save-' + slug).onclick = () => saveContentBlock(slug);
-  panel.querySelector('[data-home-close]').onclick = () => { panel.hidden = true; };
+  panel.querySelector('[data-home-close]').onclick = () => { panel.style.display = 'none'; };
 };
 export async function saveContentBlock(slug) {
   if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
