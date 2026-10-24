@@ -159,6 +159,7 @@ body.gratitude-two-column .member-player-columns{
   letter-spacing:.025em;
   color:#fff!important;
   text-decoration:none;
+  border:2px solid #fff!important;
   border-radius:5px;
   padding:14px 16px!important;
   min-height:54px;
