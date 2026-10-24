@@ -5085,7 +5085,7 @@ function _blockPage(slug) {
   const pageBoxMatch = slug.match(/^page-note-(.+)-[23]$/);
   if (pageBoxMatch) return pageBoxMatch[1];
   const M = {
-    'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
+    'home-section-heading-1': 'home', 'home-welcome': 'home', 'home-section-1': 'home', 'home-section-2': 'home',
     'home-video-1': 'dashboard', 'dashboard-note-2': 'dashboard',
     'my-goals-note': 'dashboard', 'goal-viz-note': 'dashboard', 'dashboard-inspiration': 'dashboard',
     'proof-wall': 'proof',
@@ -5412,6 +5412,7 @@ function applyNoteBlobs() {
 
 
 export async function saveContentBlock(slug) {
+  if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
   const ed  = document.getElementById(`admin-editor-${slug}`);
   const btn = document.getElementById(`admin-save-${slug}`);
   const st  = document.getElementById(`admin-status-${slug}`);
