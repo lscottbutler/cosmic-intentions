@@ -994,6 +994,7 @@ function updateUI(user) {
   // Admin + Notes nav — only for site owner
   const isOwner = loggedIn && user.email === 'lscottbutler@gmail.com';
   window.ciOwnerAccess = isOwner;
+  document.querySelectorAll('#ci-home-media-cards .ci-home-media-card').forEach(card => card.classList.toggle('ci-home-owner', isOwner));
   if(isOwner)installOwnerLabels(window);
   document.querySelectorAll('[data-owner-only]').forEach(el => {
     if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
@@ -5411,6 +5412,52 @@ function applyNoteBlobs() {
 }
 
 
+/* Five independent Home Page editorial cards. Reuse the existing guarded content_blocks save.
+   Images can be selected using existing owner photo upload; voice-over can be linked
+   to an existing same-origin or HTTPS audio asset. No new data storage is introduced. */
+window.ciEditHomeMediaCard = function (number) {
+  if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
+  if (!Number.isInteger(number) || number < 1 || number > 5) return;
+  const slug = 'home-media-card-' + number;
+  const card = document.querySelector('[data-home-media-card="' + number + '"]');
+  if (!card) return;
+  let panel = card.querySelector('.ci-home-media-editor');
+  if (panel) { panel.hidden = !panel.hidden; return; }
+  panel = document.createElement('section');
+  panel.className = 'ci-home-media-editor';
+  panel.style.cssText = 'display:grid;gap:10px;border-top:2px solid #d62828;padding-top:12px;min-width:0';
+  panel.innerHTML =
+    '<label for="admin-editor-' + slug + '">Card ' + number + ' content (text, image, voice-over)</label>' +
+    '<div id="admin-editor-' + slug + '" class="admin-editor" contenteditable="true" role="textbox" aria-multiline="true" style="min-height:120px;overflow-wrap:anywhere;background:#fff;color:#292929;border:2px solid #747474;padding:12px"></div>' +
+    '<div class="ci-home-media-actions">' +
+      '<button type="button" data-home-insert-image>ADD IMAGE</button>' +
+      '<button type="button" data-home-insert-audio>ADD VO LINK</button>' +
+      '<button type="button" id="admin-save-' + slug + '">SAVE CARD ' + number + '</button>' +
+      '<button type="button" data-home-close>DONE</button>' +
+    '</div><input id="admin-photo-input-' + slug + '" type="file" accept="image/*" hidden>' +
+    '<span id="admin-status-' + slug + '" role="status"></span>';
+  card.append(panel);
+  const editor = panel.querySelector('[contenteditable]');
+  editor.innerHTML = _blockCache[slug] || '';
+  panel.querySelector('[data-home-insert-image]').onclick = () => adminUploadPhoto(slug);
+  panel.querySelector('#admin-photo-input-' + slug).onchange = (event) => adminPhotoSelected(slug, event.currentTarget);
+  panel.querySelector('[data-home-insert-audio]').onclick = () => {
+    const url = prompt('Enter the HTTPS or site-relative URL of this card’s voice-over audio:');
+    if (url === null) return;
+    const val = url.trim();
+    if (!val || (!/^https:\/\/[^\s]+$/i.test(val) && !/^\/(?!\/)[^\s]*$/.test(val))) {
+      panel.querySelector('[role=status]').textContent = 'Use an HTTPS audio URL or a site-relative path.';
+      return;
+    }
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload = 'none';
+    audio.src = val;
+    editor.append(audio);
+  };
+  panel.querySelector('#admin-save-' + slug).onclick = () => saveContentBlock(slug);
+  panel.querySelector('[data-home-close]').onclick = () => { panel.hidden = true; };
+};
 export async function saveContentBlock(slug) {
   if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
   const ed  = document.getElementById(`admin-editor-${slug}`);
