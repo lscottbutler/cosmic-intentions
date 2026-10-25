@@ -4708,9 +4708,6 @@ body:has(#page-home.active #homeLoggedIn) .hdr #mobileHam.hdr-ham{display:none!i
 html:not(.ci-labels-on) #page-home #ci-home-media-cards > .ci-home-media-card:not(:has(.ci-home-media-body:not(:empty),.ci-hac-title:not(:empty))){
   display:none!important;
 }
-html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(> .ci-home-media-card:not(:has(.ci-home-media-body:empty,.ci-hac-title:empty)))){
-  margin:0;
-}
 /* When all three holding cards are empty, remove the grid itself. */
 html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-body:not(:empty),.ci-hac-title:not(:empty))){
   display:none!important;
