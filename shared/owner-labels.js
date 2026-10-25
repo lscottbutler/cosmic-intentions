@@ -3,6 +3,8 @@ export function installOwnerLabels(ownerWindow) {
   if (ownerWindow.__ciLabelsInstalled) return;
   ownerWindow.__ciLabelsInstalled = true;
   let enabled = true, timer;
+  const refreshKey = Symbol('ci-labels-refresh');
+  let registeredTop = null;
   const documents = new Map();
   function label(doc, selector, name) {
     doc.querySelectorAll(selector).forEach((el, index) => {
@@ -100,16 +102,35 @@ export function installOwnerLabels(ownerWindow) {
     try{
       const top=ownerWindow.top.document;
       if(top!==ownerWindow.document)scan(top);
-      if(!top.getElementById('ci-label-switch')){
-        const button=top.createElement('button');button.id='ci-label-switch';button.type='button';
-        button.onclick=()=>{enabled=!enabled;refresh()};top.body.append(button);
+      // The Home/header and player iframes each install labels. All instances
+      // must follow one toggle state, even after an iframe is replaced.
+      const host=top.defaultView;
+      if(!host.__ciOwnerLabelControl) host.__ciOwnerLabelControl={enabled:true,refreshers:new Map()};
+      const control=host.__ciOwnerLabelControl;
+      control.refreshers.set(refreshKey,refresh);
+      registeredTop=host;
+      enabled=control.enabled;
+      documents.forEach((_,documentToUpdate)=>documentToUpdate.documentElement.classList.toggle('ci-labels-on',enabled));
+      let button=top.getElementById('ci-label-switch');
+      if(!button){
+        button=top.createElement('button');button.id='ci-label-switch';button.type='button';
+        top.body.append(button);
       }
-      const button=top.getElementById('ci-label-switch');
-      button.textContent=enabled?'Labels ON':'Labels OFF';button.setAttribute('aria-pressed',String(enabled));
+      // Rebind on each scan: an old iframe must never leave an inert button.
+      button.onclick=()=>{
+        control.enabled=!control.enabled;
+        for(const repaint of [...control.refreshers.values()]) repaint();
+      };
+      button.textContent=enabled?'Labels ON':'Labels OFF';
+      button.setAttribute('aria-pressed',String(enabled));
     }catch(_){}
   }
   function stop(){
-    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.querySelectorAll('.ci-component-number-dot').forEach(el=>el.remove());doc.querySelectorAll('[data-ci-component-number]').forEach(el=>delete el.dataset.ciComponentNumber);doc.getElementById('ci-label-switch')?.remove();doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
+    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.querySelectorAll('.ci-component-number-dot').forEach(el=>el.remove());doc.querySelectorAll('[data-ci-component-number]').forEach(el=>delete el.dataset.ciComponentNumber);doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
+    if(registeredTop?.__ciOwnerLabelControl){
+      registeredTop.__ciOwnerLabelControl.refreshers.delete(refreshKey);
+      if(registeredTop.__ciOwnerLabelControl.refreshers.size===0)registeredTop.document.getElementById('ci-label-switch')?.remove();
+    }
     documents.clear();clearTimeout(timer);clearInterval(recheck);ownerWindow.__ciLabelsInstalled=false;
   }
   const recheck=setInterval(()=>{if(!ownerWindow.ciOwnerAccess)stop()},1000);
