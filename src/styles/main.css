@@ -4699,3 +4699,19 @@ body:has(#page-home.active #homeLoggedIn) .hdr #mobileHam.hdr-ham{display:none!i
 @media(max-width:767px){
  #page-home .home-lower-ham{width:58px;height:58px;min-width:58px;margin:12px auto 18px}
 }
+
+/* Bring member Home content directly beneath the app bar.
+   Empty HAC holding cards must not reserve blank height with Labels OFF. */
+#page-home #homeLoggedIn > .home-member-cols{
+  padding-top:8px;
+}
+html:not(.ci-labels-on) #page-home #ci-home-media-cards > .ci-home-media-card:not(:has(.ci-home-media-body:not(:empty),.ci-hac-title:not(:empty))){
+  display:none!important;
+}
+/* When all three holding cards are empty, remove the grid itself. */
+html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-body:not(:empty),.ci-hac-title:not(:empty))){
+  display:none!important;
+}
+@media(max-width:760px){
+  #page-home #homeLoggedIn > .home-member-cols{padding-top:8px}
+}
