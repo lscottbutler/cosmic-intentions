@@ -4846,7 +4846,7 @@ function wireGoalsAddControl(active, topStack) {
 const CI_INSTRUCTION_PAGES = new Set(['myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','wins','entcard','proof','runthroughs','habits','goalworkspace','gratitude','cosmiclibrary']);
 const CI_CUSTOM_BOX1 = new Set(['habits','goalworkspace','gratitude','cosmiclibrary']);
 function _makeInstructionPanel(pageId,label) {
-  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-note-' + pageId + '-3' : 'intro-note-' + pageId);
+  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId);
   const box = document.createElement('section');
   box.className='ci-admin-page-box ci-atb1-instructions';
   box.dataset.pageBox='1';
@@ -4902,6 +4902,14 @@ function wireAdminPageBoxes() {
     }
   }
 
+  // Do not show the same admin instruction a second time inside legacy ATB 3.
+  // Its stored value remains unchanged and can be restored by the owner.
+  if (CI_INSTRUCTION_PAGES.has(pageId)) {
+    const instructionSlug = CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
+    const duplicate = _blockCache[instructionSlug]?.trim() && _blockCache[instructionSlug]?.trim() === _blockCache['page-note-' + pageId + '-3']?.trim();
+    const legacy = topStack.querySelector('.ci-admin-page-box[data-page-box="3"]');
+    if (legacy) { legacy.hidden = !!duplicate; legacy.style.display = duplicate ? 'none' : ''; }
+  }
   topStack.querySelectorAll('.ci-admin-page-box.ci-carousel[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
@@ -5922,14 +5930,15 @@ async function initCitadelNoteFrame(nextPage) {
   };
   try {
     const aboveSlug = _adminPageBoxSlug(pageId, 3);
-    const [block, auth, above, meditationInstructions] = await Promise.all([
+    const instructionSlug = ['habits','gratitude','goalworkspace','cosmiclibrary'].includes(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
+    const [block, auth, above, pageInstructions] = await Promise.all([
       sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
       sb.auth.getUser(),
       sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle(),
-      pageId === 'meditation' ? sb.from('content_blocks').select('slug, body').eq('slug', 'intro-note-meditation').maybeSingle() : Promise.resolve({ data:null, error:null }),
+      pageId !== 'dashboard' && pageId !== 'setup' ? sb.from('content_blocks').select('slug, body').eq('slug', instructionSlug).maybeSingle() : Promise.resolve({ data:null, error:null }),
     ]);
     if (renderVersion !== citadelNoteRenderVersion) return;
-    if (block.error || above.error || meditationInstructions.error) throw block.error || above.error || meditationInstructions.error;
+    if (block.error || above.error || pageInstructions.error) throw block.error || above.error || pageInstructions.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     if(window.ciOwnerAccess)installOwnerLabels(window);
@@ -5937,18 +5946,18 @@ async function initCitadelNoteFrame(nextPage) {
     _blockCache[aboveSlug] = above.data?.body || '';
     // A genuinely separate owner-controlled instruction card lives above the
     // existing blue-E/member note. Do not reuse or mutate the member's data.
-    if (pageId === 'meditation' && meditationInstructions.data?.body?.trim()) {
+    if (pageInstructions.data?.body?.trim()) {
       const instructions = document.createElement('section');
-      instructions.className = 'ci-meditation-owner-instructions';
-      instructions.setAttribute('aria-label','Meditation administrator instructions');
+      instructions.className = 'ci-player-owner-instructions';
+      instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
       instructions.style.cssText = 'background:#fff;color:#292929;border:2px solid #303030;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
-      content.innerHTML = _expandBlockTokens(meditationInstructions.data.body);
+      content.innerHTML = _expandBlockTokens(pageInstructions.data.body);
       instructions.appendChild(content);
       if (window.ciOwnerAccess) {
         const edit = document.createElement('button');
         edit.type='button';edit.textContent='EDIT ATB 1';
-        edit.setAttribute('aria-label','Edit Meditation administrator instructions');
+        edit.setAttribute('aria-label','Edit ' + ADMIN_PAGE_BOXES[pageId] + ' administrator instructions');
         edit.style.cssText='display:block;margin-top:12px;padding:10px 14px;background:#292929;color:#fff;border:0;cursor:pointer';
         edit.addEventListener('click',()=>{
           if (instructions.querySelector('textarea')) return;
@@ -5962,9 +5971,9 @@ async function initCitadelNoteFrame(nextPage) {
             const text=field.value.trim();
             const escapeHtml=value=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             const body='<p>'+escapeHtml(text)+'</p>';
-            const {error}=await sb.from('content_blocks').upsert({slug:'intro-note-meditation',body,updated_at:new Date().toISOString()},{onConflict:'slug'});
+            const {error}=await sb.from('content_blocks').upsert({slug:instructionSlug,body,updated_at:new Date().toISOString()},{onConflict:'slug'});
             if(error){status.textContent=' Save failed';save.disabled=false;return;}
-            _blockCache['intro-note-meditation']=body;
+            _blockCache[instructionSlug]=body;
             content.innerHTML=body;
             field.remove();save.remove();status.remove();report();
           });
@@ -5975,8 +5984,12 @@ async function initCitadelNoteFrame(nextPage) {
       mount.style.padding='20px';
       mount.appendChild(instructions);
     }
+    // When the old ATB 3 repeats the approved instruction paragraph, suppress
+    // that duplicate display only. Preserve the saved ATB 3 record for recovery.
+    const duplicateInstruction = !!(pageInstructions.data?.body?.trim() &&
+      above.data?.body?.trim() === pageInstructions.data.body.trim());
     const aboveBox = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
-    if (aboveBox.style.display !== 'none') {
+    if (!duplicateInstruction && aboveBox.style.display !== 'none') {
       mount.style.padding = '20px';
       aboveBox.style.marginBottom = '16px';
       mount.appendChild(aboveBox);
