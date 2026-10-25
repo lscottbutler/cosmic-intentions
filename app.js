@@ -4840,11 +4840,27 @@ function wireGoalsAddControl(active, topStack) {
   if (form && form.previousElementSibling !== row) row.insertAdjacentElement('afterend', form);
 }
 
+// The instruction panel uses previously saved ATB 1 descriptions where available.
+// Six owner-customized Box 1 records are never overwritten; their instructions
+// remain in ATB 3 and are displayed from that existing record instead.
+const CI_INSTRUCTION_PAGES = new Set(['myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','wins','entcard','proof','runthroughs','habits','goalworkspace','gratitude','cosmiclibrary']);
+const CI_CUSTOM_BOX1 = new Set(['habits','goalworkspace','gratitude','cosmiclibrary']);
+function _makeInstructionPanel(pageId,label) {
+  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-note-' + pageId + '-3' : 'intro-note-' + pageId);
+  const box = document.createElement('section');
+  box.className='ci-admin-page-box ci-atb1-instructions';
+  box.dataset.pageBox='1';
+  box.setAttribute('aria-label',label + ' instructions');
+  box.innerHTML='<div class="ci-atb1-caption">ABOUT THIS PAGE</div><div class="ci-admin-page-box-content" data-block="'+slug+'"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit '+label+' instructions" title="Edit instructions">'+_adminPenIcon()+'</button></span>';
+  box.querySelector('button').addEventListener('click',e=>{e.stopPropagation();adminEditBlock(slug,true);});
+  _fillBlockEl(box.querySelector('[data-block]'),_blockCache[slug]||'');
+  return box;
+}
 function wireAdminPageBoxes() {
   if (window.self !== window.top && new URLSearchParams(location.search).get('playerNotes') === '1') {
     if (!document.getElementById('shared-player-note-placement')) {
       const style = document.createElement('style'); style.id = 'shared-player-note-placement';
-      style.textContent = '.ci-admin-page-box-stack{display:none!important}'; document.head.appendChild(style);
+      style.textContent = '.ci-admin-page-box-stack:not(.ci-atb-instruction-layout){display:none!important}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){display:none!important}.ci-admin-page-box-stack--top.ci-atb-instruction-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1!important;grid-row:1!important}'; document.head.appendChild(style);
     }
   }
   const active = document.querySelector('.page.active');
@@ -4862,6 +4878,10 @@ function wireAdminPageBoxes() {
     topStack.setAttribute('aria-label', label + ' administrator text box 1');
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 3));
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
+    if (CI_INSTRUCTION_PAGES.has(pageId)) {
+      topStack.classList.add('ci-atb-instruction-layout');
+      topStack.appendChild(_makeInstructionPanel(pageId,label));
+    }
 
     const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
     const anchor = active.querySelector('.page-intro-card, .ci-ph-card');
@@ -4876,7 +4896,7 @@ function wireAdminPageBoxes() {
     }
   }
 
-  topStack.querySelectorAll('.ci-admin-page-box[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
+  topStack.querySelectorAll('.ci-admin-page-box.ci-carousel[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
   // Scott removed Box 2 from every player page on 2026-10-10.
@@ -4995,6 +5015,13 @@ function ensureAdminPageBoxStyles() {
   style.textContent = `
     .ci-admin-page-box-stack{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
     .ci-admin-page-box-stack--bottom{margin:18px 0 0}
+    .ci-admin-page-box-stack--top.ci-atb-instruction-layout{grid-template-columns:minmax(0,1.6fr) minmax(250px,1fr);gap:14px;align-items:start}
+    .ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:2;grid-row:1 / span 2;min-width:0;background:#fff;border:2px solid #303030;border-radius:0;box-shadow:none}
+    .ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){grid-column:1;min-width:0}
+    .ci-atb-instruction-layout .ci-atb1-instructions .ci-admin-page-box-content{font:400 16px/1.6 Inter,Arial,sans-serif;padding:12px 16px 52px}
+    .ci-atb1-caption{padding:12px 16px 0;font:700 12px/1.4 Inter,Arial,sans-serif;letter-spacing:.08em;color:#303030}
+    @media(max-width:760px){.ci-admin-page-box-stack--top.ci-atb-instruction-layout{grid-template-columns:minmax(0,1fr)}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1;grid-row:auto}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){grid-column:1}}
+
     #page-setup .ci-goals-top-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-bottom:16px}
     #page-setup .ci-goals-top-row .ci-admin-page-box-stack--top{min-width:0;margin:0}
     #page-setup .ci-goals-top-row .ci-admin-page-box{height:100%}
@@ -5247,12 +5274,13 @@ if (typeof window !== 'undefined') {
 
 // Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
 // adminGoToBlock). Scroll to it, flash it, focus the editor for a quick edit.
-function adminEditBlock(slug) {
+function adminEditBlock(slug, preferInstructions = false) {
   // The Goals page runs inside the Master Player iframe. Its showPage guard
   // deliberately keeps that frame on Goals, so navigating to Admin from here
   // cannot reveal the editor. Edit the owner box where it is displayed.
-  const content = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
-    .find(el => el.getAttribute('data-block') === slug);
+  const matchingBlocks = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
+    .filter(el => el.getAttribute('data-block') === slug);
+  const content = (preferInstructions && matchingBlocks.find(el=>el.closest('.ci-atb1-instructions'))) || matchingBlocks[0];
   const box = content?.closest('.ci-admin-page-box');
   if (box) {
     if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
@@ -5270,13 +5298,6 @@ function adminEditBlock(slug) {
     const save = panel.querySelector('.ci-admin-page-box-inline-save');
     const status = panel.querySelector('[role="status"]');
     editor.innerHTML = _blockCache[slug] || '';
-  const titleSlug = 'home-media-title-' + number;
-  panel.querySelector('#admin-editor-' + titleSlug).textContent = (_blockCache[titleSlug] || '').replace(/<[^>]*>/g,'');
-  panel.querySelector('#admin-save-' + titleSlug).onclick = () => {
-    const titleEditor = panel.querySelector('#admin-editor-' + titleSlug);
-    titleEditor.textContent = titleEditor.textContent.trim();
-    saveContentBlock(titleSlug);
-  };
     box.classList.add('is-editing');
     box.appendChild(panel);
     panel.querySelector('.ci-admin-page-box-inline-cancel').addEventListener('click', () => {
