@@ -4908,7 +4908,7 @@ function wireAdminPageBoxes() {
     const instructionSlug = CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
     const duplicate = _blockCache[instructionSlug]?.trim() && _blockCache[instructionSlug]?.trim() === _blockCache['page-note-' + pageId + '-3']?.trim();
     const legacy = topStack.querySelector('.ci-admin-page-box[data-page-box="3"]');
-    if (legacy) legacy.hidden = !!duplicate;
+    if (legacy) { legacy.hidden = !!duplicate; legacy.style.display = duplicate ? 'none' : ''; }
   }
   topStack.querySelectorAll('.ci-admin-page-box.ci-carousel[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
