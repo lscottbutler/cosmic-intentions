@@ -2,7 +2,7 @@
 export function installOwnerLabels(ownerWindow) {
   if (ownerWindow.__ciLabelsInstalled) return;
   ownerWindow.__ciLabelsInstalled = true;
-  let enabled = true, timer;
+  let enabled = false, timer;
   const refreshKey = Symbol('ci-labels-refresh');
   let registeredTop = null;
   const documents = new Map();
@@ -105,7 +105,7 @@ export function installOwnerLabels(ownerWindow) {
       // The Home/header and player iframes each install labels. All instances
       // must follow one toggle state, even after an iframe is replaced.
       const host=top.defaultView;
-      if(!host.__ciOwnerLabelControl) host.__ciOwnerLabelControl={enabled:true,refreshers:new Map()};
+      if(!host.__ciOwnerLabelControl) host.__ciOwnerLabelControl={enabled:false,refreshers:new Map()};
       const control=host.__ciOwnerLabelControl;
       control.refreshers.set(refreshKey,refresh);
       registeredTop=host;
