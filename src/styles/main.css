@@ -4715,3 +4715,35 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 @media(max-width:760px){
   #page-home #homeLoggedIn > .home-member-cols{padding-top:8px}
 }
+
+/* Approved Goal-palette hamburger styling for the actual Home/site #hamMenu.
+   The member-design-test menu has separate styles. */
+#hamMenu.ham-menu--global{background:#fff!important;color:#292929!important}
+#hamMenu.ham-menu--global > button.tnav-btn{
+  box-sizing:border-box;
+  width:100%;
+  min-height:54px;
+  padding:14px 16px!important;
+  border:2px solid #fff!important;
+  border-radius:5px;
+  color:#fff!important;
+  font:400 20px/1.25 Arial,sans-serif!important;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+  text-align:left;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 1){background:#E84040!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 2){background:#E86030!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 3){background:#E88020!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 4){background:#E8A828!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 5){background:#E8C830!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 6){background:#A8C830!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 7){background:#48B860!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 8){background:#38A888!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 9){background:#2898A8!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 10){background:#7888A8!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n){background:#3878A8!important}
+#hamMenu.ham-menu--global > button.tnav-btn:is(:hover,:focus-visible){filter:brightness(1.12);outline:3px solid #292929;outline-offset:-3px}
+@media(max-width:450px){#hamMenu.ham-menu--global > button.tnav-btn{font-size:18px!important;min-height:52px}}
