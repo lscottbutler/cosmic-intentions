@@ -5941,7 +5941,7 @@ async function initCitadelNoteFrame(nextPage) {
     if (pageInstructions.data?.body?.trim()) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
-      instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId] + '');
+      instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
       instructions.style.cssText = 'background:#fff;color:#292929;border:2px solid #303030;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
       content.innerHTML = _expandBlockTokens(pageInstructions.data.body);
@@ -5949,7 +5949,7 @@ async function initCitadelNoteFrame(nextPage) {
       if (window.ciOwnerAccess) {
         const edit = document.createElement('button');
         edit.type='button';edit.textContent='EDIT ATB 1';
-        edit.setAttribute('aria-label','Edit Meditation administrator instructions');
+        edit.setAttribute('aria-label','Edit ' + ADMIN_PAGE_BOXES[pageId] + ' administrator instructions');
         edit.style.cssText='display:block;margin-top:12px;padding:10px 14px;background:#292929;color:#fff;border:0;cursor:pointer';
         edit.addEventListener('click',()=>{
           if (instructions.querySelector('textarea')) return;
