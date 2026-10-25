@@ -915,6 +915,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
             <button type="button" class="welcome-vo-encouragement" onclick="playEncouragement()" aria-label="Play VO encouragement" style="display:block;border:0;background:transparent;padding:12px;margin:0 auto 14px;cursor:pointer;"><img src="images/home-row/home-rocket.webp" alt="" style="display:block;height:90px;width:auto;"></button>
 
+          <!-- Home-only menu trigger: placed in the right column above START WITH DIRECTION. -->
+            <button class="home-lower-ham" type="button" onclick="event.stopPropagation();toggleHamMenu()" aria-label="Open site menu" title="Menu"><span></span><span></span><span></span></button>
+
           <!-- INFO BLOCK (right col) — paragraph + 5 bullets -->
             <div class="home-info-block" style="display:flex;flex-direction:column;gap:10px;text-align:left;margin:6px 0 14px;">
               <div style="font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px;">START WITH DIRECTION</div>
