@@ -5984,6 +5984,66 @@ async function initCitadelNoteFrame(nextPage) {
       mount.style.padding='20px';
       mount.appendChild(instructions);
     }
+    // Personal E-BOX 2 is member-owned and never touches public content_blocks.
+    // Its database row is protected by auth.uid() RLS and keyed by page.
+    if (currentUser?.id && pageId !== 'dashboard' && pageId !== 'setup') {
+      const personal = document.createElement('section');
+      personal.className = 'ci-player-personal-e-box';
+      personal.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' personal notes');
+      personal.style.cssText = 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
+      const heading = document.createElement('div');
+      heading.textContent='MY PERSONAL NOTES';
+      heading.style.cssText='font:700 13px/1.4 Arial,sans-serif;letter-spacing:.04em;margin-bottom:8px';
+      const copy = document.createElement('div');
+      copy.style.whiteSpace='pre-wrap';
+      copy.textContent='';
+      const edit = document.createElement('button');
+      edit.type='button';
+      edit.textContent='e';
+      edit.setAttribute('aria-label','Edit personal notes for ' + ADMIN_PAGE_BOXES[pageId]);
+      edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:#bde1ff;color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
+      personal.append(heading,copy,edit);
+      mount.style.padding='20px';
+      mount.appendChild(personal);
+      let savedBody='';
+      const note = await sb.from('player_personal_notes').select('body')
+        .eq('user_id',currentUser.id).eq('page_id',pageId).maybeSingle();
+      if(renderVersion!==citadelNoteRenderVersion)return;
+      if(note.error){
+        copy.textContent='Personal notes are temporarily unavailable.';
+        edit.disabled=true;
+      } else {
+        savedBody=note.data?.body||'';
+        copy.textContent=savedBody;
+      }
+      edit.addEventListener('click',()=>{
+        if(personal.querySelector('textarea'))return;
+        const input=document.createElement('textarea');
+        input.value=savedBody;
+        input.setAttribute('aria-label','Your private notes');
+        input.style.cssText='width:100%;min-height:120px;box-sizing:border-box;padding:10px;display:block';
+        const actions=document.createElement('div');
+        actions.style.cssText='display:flex;gap:10px;margin-top:10px;flex-wrap:wrap';
+        const save=document.createElement('button');save.textContent='SAVE';save.type='button';
+        const cancel=document.createElement('button');cancel.textContent='CANCEL';cancel.type='button';
+        const status=document.createElement('span');status.setAttribute('role','status');
+        actions.append(save,cancel,status);
+        personal.append(input,actions);
+        edit.hidden=true;
+        cancel.addEventListener('click',()=>{input.remove();actions.remove();edit.hidden=false;report();});
+        save.addEventListener('click',async()=>{
+          save.disabled=true;status.textContent='Saving…';
+          const value=input.value;
+          const result=await sb.from('player_personal_notes').upsert(
+            {user_id:currentUser.id,page_id:pageId,body:value,updated_at:new Date().toISOString()},
+            {onConflict:'user_id,page_id'}
+          );
+          if(result.error){status.textContent='Could not save';save.disabled=false;return;}
+          savedBody=value;copy.textContent=value;input.remove();actions.remove();edit.hidden=false;report();
+        });
+        report();
+      });
+    }
     // When the old ATB 3 repeats the approved instruction paragraph, suppress
     // that duplicate display only. Preserve the saved ATB 3 record for recovery.
     const duplicateInstruction = !!(pageInstructions.data?.body?.trim() &&
