@@ -126,8 +126,11 @@ export function installOwnerLabels(ownerWindow) {
     }catch(_){}
   }
   function stop(){
-    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.querySelectorAll('.ci-component-number-dot').forEach(el=>el.remove());doc.querySelectorAll('[data-ci-component-number]').forEach(el=>delete el.dataset.ciComponentNumber);doc.getElementById('ci-label-switch')?.remove();doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
-    if(registeredTop?.__ciOwnerLabelControl){registeredTop.__ciOwnerLabelControl.refreshers.delete(refreshKey);}
+    documents.forEach(({style,observer},doc)=>{observer.disconnect();style.remove();doc.documentElement.classList.remove('ci-labels-on','ci-admin-owner-view');doc.querySelectorAll('[data-ci-admin-number]').forEach(el=>delete el.dataset.ciAdminNumber);doc.querySelectorAll('[data-ci-rotation-label]').forEach(el=>delete el.dataset.ciRotationLabel);doc.querySelectorAll('.ci-component-number-dot').forEach(el=>el.remove());doc.querySelectorAll('[data-ci-component-number]').forEach(el=>delete el.dataset.ciComponentNumber);doc.querySelectorAll('[data-ci-part]').forEach(el=>delete el.dataset.ciPart)});
+    if(registeredTop?.__ciOwnerLabelControl){
+      registeredTop.__ciOwnerLabelControl.refreshers.delete(refreshKey);
+      if(registeredTop.__ciOwnerLabelControl.refreshers.size===0)registeredTop.document.getElementById('ci-label-switch')?.remove();
+    }
     documents.clear();clearTimeout(timer);clearInterval(recheck);ownerWindow.__ciLabelsInstalled=false;
   }
   const recheck=setInterval(()=>{if(!ownerWindow.ciOwnerAccess)stop()},1000);
