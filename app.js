@@ -4860,7 +4860,7 @@ function wireAdminPageBoxes() {
   if (window.self !== window.top && new URLSearchParams(location.search).get('playerNotes') === '1') {
     if (!document.getElementById('shared-player-note-placement')) {
       const style = document.createElement('style'); style.id = 'shared-player-note-placement';
-      style.textContent = '.ci-admin-page-box-stack:not(.ci-atb-instruction-layout){display:none!important}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){display:none!important}.ci-admin-page-box-stack--top.ci-atb-instruction-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1!important;grid-row:1!important}'; document.head.appendChild(style);
+      style.textContent = '.ci-admin-page-box-stack:not(.ci-atb-instruction-layout){display:none!important}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){display:none!important}.ci-admin-page-box-stack--top.ci-atb-instruction-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important}.ci-admin-page-box-stack--top.ci-atb-meditation-above-member{display:flex!important;flex-direction:column!important}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1!important;grid-row:1!important}'; document.head.appendChild(style);
     }
   }
   const active = document.querySelector('.page.active');
@@ -4880,7 +4880,13 @@ function wireAdminPageBoxes() {
     topStack.appendChild(_buildLiveAdminPageBox(pageId, label, 1));
     if (CI_INSTRUCTION_PAGES.has(pageId)) {
       topStack.classList.add('ci-atb-instruction-layout');
-      topStack.appendChild(_makeInstructionPanel(pageId,label));
+      const instructions = _makeInstructionPanel(pageId,label);
+      if (pageId === 'meditation') {
+        topStack.classList.add('ci-atb-meditation-above-member');
+        topStack.prepend(instructions);
+      } else {
+        topStack.appendChild(instructions);
+      }
     }
 
     const pageTitle = pageId === 'dashboard' ? active.querySelector('.pg-hdr') : null;
@@ -5020,6 +5026,10 @@ function ensureAdminPageBoxStyles() {
     .ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){grid-column:1;min-width:0}
     .ci-atb-instruction-layout .ci-atb1-instructions .ci-admin-page-box-content{font:400 16px/1.6 Inter,Arial,sans-serif;padding:12px 16px 52px}
     .ci-atb1-caption{padding:12px 16px 0;font:700 12px/1.4 Inter,Arial,sans-serif;letter-spacing:.08em;color:#303030}
+    /* Meditation ATB is an independent owner-only instruction card above the member E area. */
+    .ci-admin-page-box-stack--top.ci-atb-meditation-above-member{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+    .ci-atb-meditation-above-member > .ci-atb1-instructions{order:-1;grid-column:auto;grid-row:auto;width:100%}
+    .ci-atb-meditation-above-member > .ci-admin-page-box:not(.ci-atb1-instructions){grid-column:auto;grid-row:auto}
     @media(max-width:760px){.ci-admin-page-box-stack--top.ci-atb-instruction-layout{grid-template-columns:minmax(0,1fr)}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1;grid-row:auto}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){grid-column:1}}
 
     #page-setup .ci-goals-top-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-bottom:16px}
