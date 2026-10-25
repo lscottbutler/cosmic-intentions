@@ -4852,7 +4852,7 @@ function _makeInstructionPanel(pageId,label) {
   box.dataset.pageBox='1';
   box.setAttribute('aria-label',label + ' instructions');
   box.innerHTML='<div class="ci-atb1-caption">ABOUT THIS PAGE</div><div class="ci-admin-page-box-content" data-block="'+slug+'"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit '+label+' instructions" title="Edit instructions">'+_adminPenIcon()+'</button></span>';
-  box.querySelector('button').addEventListener('click',e=>{e.stopPropagation();adminEditBlock(slug);});
+  box.querySelector('button').addEventListener('click',e=>{e.stopPropagation();adminEditBlock(slug,true);});
   _fillBlockEl(box.querySelector('[data-block]'),_blockCache[slug]||'');
   return box;
 }
@@ -5274,12 +5274,13 @@ if (typeof window !== 'undefined') {
 
 // Jump FROM a numbered box on the site TO its editor on the Admin page (reverse of
 // adminGoToBlock). Scroll to it, flash it, focus the editor for a quick edit.
-function adminEditBlock(slug) {
+function adminEditBlock(slug, preferInstructions = false) {
   // The Goals page runs inside the Master Player iframe. Its showPage guard
   // deliberately keeps that frame on Goals, so navigating to Admin from here
   // cannot reveal the editor. Edit the owner box where it is displayed.
-  const content = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
-    .find(el => el.getAttribute('data-block') === slug);
+  const matchingBlocks = Array.from(document.querySelectorAll('.ci-admin-page-box [data-block]'))
+    .filter(el => el.getAttribute('data-block') === slug);
+  const content = (preferInstructions && matchingBlocks.find(el=>el.closest('.ci-atb1-instructions'))) || matchingBlocks[0];
   const box = content?.closest('.ci-admin-page-box');
   if (box) {
     if (!window.ciOwnerAccess || currentUser?.email !== 'lscottbutler@gmail.com') return;
@@ -5297,13 +5298,6 @@ function adminEditBlock(slug) {
     const save = panel.querySelector('.ci-admin-page-box-inline-save');
     const status = panel.querySelector('[role="status"]');
     editor.innerHTML = _blockCache[slug] || '';
-  const titleSlug = 'home-media-title-' + number;
-  panel.querySelector('#admin-editor-' + titleSlug).textContent = (_blockCache[titleSlug] || '').replace(/<[^>]*>/g,'');
-  panel.querySelector('#admin-save-' + titleSlug).onclick = () => {
-    const titleEditor = panel.querySelector('#admin-editor-' + titleSlug);
-    titleEditor.textContent = titleEditor.textContent.trim();
-    saveContentBlock(titleSlug);
-  };
     box.classList.add('is-editing');
     box.appendChild(panel);
     panel.querySelector('.ci-admin-page-box-inline-cancel').addEventListener('click', () => {
