@@ -136,6 +136,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
   current=action;const copy=features[action];
+  if(action==='gratitude'||action==='new-gratitude')
+   updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
   headerStickerImage.src='/images/home-row/home-'+headerStickerFiles[Object.keys(features).indexOf(action)%headerStickerFiles.length]+'.webp';
   document.body.classList.toggle('master-control-panel',action!=='admin');
@@ -331,7 +333,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     style.textContent='#citadelNote{display:none!important}';doc.head.append(style);
    }
    const src=opening.getAttribute('src');
-   if(src)updateHeaderNote(src);
+   // The shared master frame can retain its previous Citadel note while the
+   // new standalone Gratitude player mounts. Never let that stale frame
+   // overwrite Gratitude's page-specific ATB 1 instruction source.
+   if(src && current!=='gratitude' && current!=='new-gratitude') updateHeaderNote(src);
    if(current==='admin')headerNote.hidden=true;
    else if(src===headerNoteFrame.getAttribute('src')&&parseFloat(headerNoteFrame.style.height)>0)headerNote.hidden=false;
   }
