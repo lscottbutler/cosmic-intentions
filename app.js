@@ -5988,8 +5988,11 @@ async function initCitadelNoteFrame(nextPage) {
     // that duplicate display only. Preserve the saved ATB 3 record for recovery.
     const duplicateInstruction = !!(pageInstructions.data?.body?.trim() &&
       above.data?.body?.trim() === pageInstructions.data.body.trim());
-    const aboveBox = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
-    if (!duplicateInstruction && aboveBox.style.display !== 'none') {
+    // Safeguard Goals against an oversized legacy pasted HTML record. Retain the
+    // complete original ATB3 value in storage and the Admin editor for recovery.
+    const oversizedGoalsArticle = pageId === 'setup' && (_blockCache[aboveSlug] || '').length > 10000;
+    const aboveBox = oversizedGoalsArticle ? null : _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
+    if (aboveBox && !duplicateInstruction && aboveBox.style.display !== 'none') {
       mount.style.padding = '20px';
       aboveBox.style.marginBottom = '16px';
       mount.appendChild(aboveBox);
