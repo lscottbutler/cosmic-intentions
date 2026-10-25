@@ -4860,7 +4860,7 @@ function wireAdminPageBoxes() {
   if (window.self !== window.top && new URLSearchParams(location.search).get('playerNotes') === '1') {
     if (!document.getElementById('shared-player-note-placement')) {
       const style = document.createElement('style'); style.id = 'shared-player-note-placement';
-      style.textContent = '.ci-admin-page-box-stack:not(.ci-atb-instruction-layout){display:none!important}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){display:none!important}.ci-admin-page-box-stack--top.ci-atb-instruction-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1!important;grid-row:1!important}'; document.head.appendChild(style);
+      style.textContent = '.ci-admin-page-box-stack:not(.ci-atb-instruction-layout){display:none!important}.ci-atb-instruction-layout > .ci-admin-page-box:not(.ci-atb1-instructions){display:none!important}.ci-admin-page-box-stack--top.ci-atb-instruction-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important}.ci-admin-page-box-stack--top.ci-atb-meditation-above-member{display:flex!important;flex-direction:column!important}.ci-atb-instruction-layout > .ci-atb1-instructions{grid-column:1!important;grid-row:1!important}'; document.head.appendChild(style);
     }
   }
   const active = document.querySelector('.page.active');
