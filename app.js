@@ -5935,7 +5935,7 @@ async function initCitadelNoteFrame(nextPage) {
       sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
       sb.auth.getUser(),
       sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle(),
-      pageId !== 'dashboard' && pageId !== 'setup' ? sb.from('content_blocks').select('slug, body').eq('slug', instructionSlug).maybeSingle() : Promise.resolve({ data:null, error:null }),
+      sb.from('content_blocks').select('slug, body').eq('slug', instructionSlug).maybeSingle(),
     ]);
     if (renderVersion !== citadelNoteRenderVersion) return;
     if (block.error || above.error || pageInstructions.error) throw block.error || above.error || pageInstructions.error;
@@ -6001,7 +6001,7 @@ async function initCitadelNoteFrame(nextPage) {
       edit.type='button';
       edit.textContent='e';
       edit.setAttribute('aria-label','Edit personal notes for ' + ADMIN_PAGE_BOXES[pageId]);
-      edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:#bde1ff;color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
+      edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:#3d92df;color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
