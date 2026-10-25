@@ -5986,7 +5986,7 @@ async function initCitadelNoteFrame(nextPage) {
     }
     // Personal E-BOX 2 is member-owned and never touches public content_blocks.
     // Its database row is protected by auth.uid() RLS and keyed by page.
-    if (currentUser?.id && pageId !== 'dashboard' && pageId !== 'setup') {
+    if (currentUser?.id) {
       const personal = document.createElement('section');
       personal.className = 'ci-player-personal-e-box';
       personal.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' personal notes');
