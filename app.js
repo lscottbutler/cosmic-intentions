@@ -5930,7 +5930,7 @@ async function initCitadelNoteFrame(nextPage) {
   };
   try {
     const aboveSlug = _adminPageBoxSlug(pageId, 3);
-    const instructionSlug = ['habits','gratitude','goalworkspace','cosmiclibrary'].includes(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
+    const instructionSlug = 'page-instructions-' + pageId;
     const [block, auth, above, pageInstructions] = await Promise.all([
       sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
       sb.auth.getUser(),
@@ -5946,13 +5946,13 @@ async function initCitadelNoteFrame(nextPage) {
     _blockCache[aboveSlug] = above.data?.body || '';
     // A genuinely separate owner-controlled instruction card lives above the
     // existing blue-E/member note. Do not reuse or mutate the member's data.
-    if (pageInstructions.data?.body?.trim()) {
+    if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
       instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
       instructions.style.cssText = 'background:#fff;color:#292929;border:2px solid #303030;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
-      content.innerHTML = _expandBlockTokens(pageInstructions.data.body);
+      content.innerHTML = _expandBlockTokens(pageInstructions.data?.body || '');
       instructions.appendChild(content);
       if (window.ciOwnerAccess) {
         const edit = document.createElement('button');
