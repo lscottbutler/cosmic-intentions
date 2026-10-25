@@ -4896,7 +4896,7 @@ function wireAdminPageBoxes() {
     }
   }
 
-  topStack.querySelectorAll('.ci-admin-page-box[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
+  topStack.querySelectorAll('.ci-admin-page-box.ci-carousel[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
   // Scott removed Box 2 from every player page on 2026-10-10.
