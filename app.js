@@ -5987,6 +5987,7 @@ async function initCitadelNoteFrame(nextPage) {
     // Personal E-BOX 2 is member-owned and never touches public content_blocks.
     // Its database row is protected by auth.uid() RLS and keyed by page.
     if (currentUser?.id) {
+      const memberId = currentUser.id;
       const personal = document.createElement('section');
       personal.className = 'ci-player-personal-e-box';
       personal.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' personal notes');
@@ -6007,7 +6008,7 @@ async function initCitadelNoteFrame(nextPage) {
       mount.appendChild(personal);
       let savedBody='';
       const note = await sb.from('player_personal_notes').select('body')
-        .eq('user_id',currentUser.id).eq('page_id',pageId).maybeSingle();
+        .eq('user_id',memberId).eq('page_id',pageId).maybeSingle();
       if(renderVersion!==citadelNoteRenderVersion)return;
       if(note.error){
         copy.textContent='Personal notes are temporarily unavailable.';
@@ -6035,7 +6036,7 @@ async function initCitadelNoteFrame(nextPage) {
           save.disabled=true;status.textContent='Saving…';
           const value=input.value;
           const result=await sb.from('player_personal_notes').upsert(
-            {user_id:currentUser.id,page_id:pageId,body:value,updated_at:new Date().toISOString()},
+            {user_id:memberId,page_id:pageId,body:value,updated_at:new Date().toISOString()},
             {onConflict:'user_id,page_id'}
           );
           if(result.error){status.textContent='Could not save';save.disabled=false;return;}
@@ -6044,19 +6045,8 @@ async function initCitadelNoteFrame(nextPage) {
         report();
       });
     }
-    // When the old ATB 3 repeats the approved instruction paragraph, suppress
-    // that duplicate display only. Preserve the saved ATB 3 record for recovery.
-    const duplicateInstruction = !!(pageInstructions.data?.body?.trim() &&
-      above.data?.body?.trim() === pageInstructions.data.body.trim());
-    // Safeguard Goals against an oversized legacy pasted HTML record. Retain the
-    // complete original ATB3 value in storage and the Admin editor for recovery.
-    const oversizedGoalsArticle = pageId === 'setup' && (_blockCache[aboveSlug] || '').length > 10000;
-    const aboveBox = oversizedGoalsArticle ? null : _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
-    if (aboveBox && !duplicateInstruction && aboveBox.style.display !== 'none') {
-      mount.style.padding = '20px';
-      aboveBox.style.marginBottom = '16px';
-      mount.appendChild(aboveBox);
-    }
+    // Legacy ATB 3 remains safely stored in content_blocks but is not displayed
+    // in the universal two-box header: ATB 1 and private Personal E-Box 2 only.
     // Retain the displayed artwork layer so page changes can dissolve into it.
     const previousCarousel = document.querySelector('[data-citadel-header-mount] .ci-carousel');
     const box = previousCarousel || _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
