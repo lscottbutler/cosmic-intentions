@@ -4846,7 +4846,7 @@ function wireGoalsAddControl(active, topStack) {
 const CI_INSTRUCTION_PAGES = new Set(['myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','wins','entcard','proof','runthroughs','habits','goalworkspace','gratitude','cosmiclibrary']);
 const CI_CUSTOM_BOX1 = new Set(['habits','goalworkspace','gratitude','cosmiclibrary']);
 function _makeInstructionPanel(pageId,label) {
-  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-note-' + pageId + '-3' : 'intro-note-' + pageId);
+  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId);
   const box = document.createElement('section');
   box.className='ci-admin-page-box ci-atb1-instructions';
   box.dataset.pageBox='1';
@@ -4902,6 +4902,14 @@ function wireAdminPageBoxes() {
     }
   }
 
+  // Do not show the same admin instruction a second time inside legacy ATB 3.
+  // Its stored value remains unchanged and can be restored by the owner.
+  if (CI_INSTRUCTION_PAGES.has(pageId)) {
+    const instructionSlug = CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
+    const duplicate = _blockCache[instructionSlug]?.trim() && _blockCache[instructionSlug]?.trim() === _blockCache['page-note-' + pageId + '-3']?.trim();
+    const legacy = topStack.querySelector('.ci-admin-page-box[data-page-box="3"]');
+    if (legacy) legacy.hidden = !!duplicate;
+  }
   topStack.querySelectorAll('.ci-admin-page-box.ci-carousel[data-page-box="1"]').forEach(shell=>attachTrough(shell,pageId));
   wireGoalsAddControl(active, topStack);
 
@@ -5976,8 +5984,12 @@ async function initCitadelNoteFrame(nextPage) {
       mount.style.padding='20px';
       mount.appendChild(instructions);
     }
+    // When the old ATB 3 repeats the approved instruction paragraph, suppress
+    // that duplicate display only. Preserve the saved ATB 3 record for recovery.
+    const duplicateInstruction = !!(pageInstructions.data?.body?.trim() &&
+      above.data?.body?.trim() === pageInstructions.data.body.trim());
     const aboveBox = _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], 3);
-    if (aboveBox.style.display !== 'none') {
+    if (!duplicateInstruction && aboveBox.style.display !== 'none') {
       mount.style.padding = '20px';
       aboveBox.style.marginBottom = '16px';
       mount.appendChild(aboveBox);
