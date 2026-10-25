@@ -4682,3 +4682,20 @@ html.master-inline-goals #page-setup .ci-goals-entry-column .ci-goals-add-toggle
  #homeLoggedIn img,#homeLoggedIn video,#homeLoggedIn iframe{max-width:100%}
  #homeLoggedIn button,#homeLoggedIn input{min-height:44px}
 }
+
+/* Member Home: show the same global menu in the marked right-column position.
+   The header trigger remains available on every other page. */
+body:has(#page-home.active #homeLoggedIn) .hdr #mobileHam.hdr-ham{display:none!important}
+#page-home .home-lower-ham{
+ display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;
+ width:64px;height:64px;min-width:64px;margin:14px auto 20px;padding:0;
+ background:#303030;border:0;border-radius:50%;cursor:pointer;
+ box-shadow:0 8px 20px rgba(0,0,0,.22);position:relative;z-index:10;
+}
+#page-home .home-lower-ham span{
+ display:block;width:30px;height:4px;border-radius:4px;background:#fff;
+}
+#page-home .home-lower-ham:focus-visible{outline:3px solid #1d78c1;outline-offset:3px}
+@media(max-width:767px){
+ #page-home .home-lower-ham{width:58px;height:58px;min-width:58px;margin:12px auto 18px}
+}
