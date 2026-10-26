@@ -187,3 +187,35 @@ body.gratitude-two-column .member-player-columns{
 }
 
 #review-menu header button{color:#292929!important}
+
+/* Meditation Instructions: isolated from the locked playback engine. */
+#meditation-instructions-trigger{grid-column:2;grid-row:5;justify-self:stretch;align-self:start;width:100%;min-height:48px;border:2px solid #e5bd00;border-radius:12px;background:#fff;color:#292929;font:700 16px/1.2 Arial,sans-serif;cursor:pointer}
+#meditation-instructions-trigger:hover,#meditation-instructions-trigger:focus-visible{background:#fff9d0;outline:3px solid #292929;outline-offset:2px}
+#meditation-instructions-trigger[hidden]{display:none!important}
+#meditation-instructions-tour{border:0;border-radius:14px;width:min(680px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;background:#fff;color:#242424;box-shadow:0 22px 90px #0008;overflow:auto}
+#meditation-instructions-tour::backdrop{background:rgba(0,0,0,.74)}
+.ci-tour-panel{padding:22px;display:grid;gap:16px;font:16px/1.5 Arial,sans-serif}
+.ci-tour-top{display:flex;align-items:start;justify-content:space-between;gap:18px}
+.ci-tour-top h2{margin:0;font-size:clamp(20px,3vw,30px);letter-spacing:.025em}
+#ci-tour-close{border:0;background:#292929;color:#fff;border-radius:50%;width:44px;height:44px;flex-shrink:0}
+.ci-tour-stage{position:relative;display:grid;justify-items:center;text-align:center;align-content:center;min-height:300px;padding:20px 20px 32px;border:3px solid #292929;border-radius:10px;background:#f2ede7;overflow:hidden}
+.ci-tour-step-number{font-size:12px;letter-spacing:.12em;font-weight:800;color:#555}
+.ci-tour-heading{font-size:clamp(19px,3vw,25px);margin:10px 0 2px}
+.ci-tour-description{max-width:490px;margin:0;line-height:1.5}
+.ci-tour-simulation{min-height:104px;display:grid;place-items:center;padding:12px}
+.ci-tour-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.ci-tour-choices b,.ci-tour-card{background:#747474;color:#fff;border:5px solid #292929;padding:12px;border-radius:8px;font-size:14px}
+.ci-tour-card{font-weight:800;font-size:20px}
+.ci-tour-card small{font-size:12px;font-weight:400}
+.ci-tour-switch{display:inline-block;background:#217c43;border-radius:50px;margin-left:12px;padding:3px 12px;font-size:13px}
+.ci-tour-play-circle{display:grid;place-items:center;width:95px;height:95px;border-radius:50%;border:14px solid #292929;background:#747474;color:#fff;font-size:40px}
+.ci-tour-pointer{position:absolute;right:22%;top:40%;font-size:34px;transform:rotate(-25deg);animation:ciTourTap 2s infinite ease-in-out;pointer-events:none}
+@keyframes ciTourTap{0%,65%,100%{transform:translate(0,0) rotate(-25deg)}74%{transform:translate(-12px,-12px) rotate(-25deg)}80%{transform:translate(-8px,-8px) rotate(-25deg)}}
+.ci-tour-progress{height:6px;border-radius:10px;background:#dadada;overflow:hidden}
+.ci-tour-progress span{display:block;height:100%;background:#ec1c23;transition:width .3s}
+.ci-tour-actions{display:flex;gap:9px;justify-content:space-between;flex-wrap:wrap}
+.ci-tour-actions button,#ci-tour-try{min-height:44px;padding:10px 14px;border-radius:8px;border:1px solid #777;background:#f3f3f3;color:#292929;font-weight:700;cursor:pointer}
+.ci-tour-actions button:disabled{opacity:.4;cursor:default}
+#ci-tour-try{background:#292929;color:#fff;border-color:#292929;width:100%}
+@media(max-width:650px){#meditation-instructions-trigger{grid-column:2;grid-row:5;font-size:13px;padding:8px 3px}.ci-tour-panel{padding:14px}.ci-tour-stage{min-height:330px;padding:18px 12px 22px}.ci-tour-pointer{right:10%;top:36%}}
+@media(prefers-reduced-motion:reduce){.ci-tour-pointer{animation:none}.ci-tour-progress span{transition:none}}
