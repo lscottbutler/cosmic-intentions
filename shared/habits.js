@@ -51,6 +51,12 @@ export function habitsToggleSection(open) { _open = !!open; }
 const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH', ''];
 const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
 const HABIT_PERIODS = [['MORNING', 'MORNING'], ['DAY', 'DAY'], ['EVENING', 'EVENING'], ['BEDTIME', 'BEFORE SLEEP']];
+const HABIT_PERIOD_ICONS = {
+  MORNING:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 46h48M17 40a15 15 0 0 1 30 0M32 7v7M12 21l5 5M52 21l-5 5M6 36h6M52 36h6"/></svg>',
+  DAY:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><circle cx="32" cy="32" r="13"/><path d="M32 4v9M32 51v9M4 32h9M51 32h9M12 12l7 7M45 45l7 7M52 12l-7 7M19 45l-7 7"/></svg>',
+  EVENING:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 45h48M15 52h34M19 39a13 13 0 0 1 26 0M32 7v7M12 22l6 6M52 22l-6 6"/></svg>',
+  BEDTIME:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M44 47A23 23 0 0 1 22 9a22 22 0 1 0 22 38Z"/><path d="M42 13h9l-9 9h9M53 28h7l-7 7h7"/></svg>'
+};
 let _selectedPeriod = 'MORNING';
 // Sections open FULLY EXPANDED by default; we only remember which ones the user collapses.
 const _closedCats = new Set();
@@ -63,7 +69,7 @@ export function createHabitPeriodMenu() {
   nav.className = 'habit-period-menu';
   nav.setAttribute('aria-label', 'Habit time of day');
   nav.innerHTML = HABIT_PERIODS.map(([cat, label], index) =>
-    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle"><span class="habit-period-label">${label}</span></span></button>`).join('');
+    `<button type="button" aria-label="${label}" data-habit-period="${cat}" aria-controls="habit-period-${cat}" aria-current="${cat === _selectedPeriod ? 'location' : 'false'}"><span class="habit-period-circle"><span class="habit-period-icon" aria-hidden="true">${HABIT_PERIOD_ICONS[cat]}</span><span class="habit-period-label">${label}</span></span></button>`).join('');
   nav.addEventListener('click', event => {
     const button = event.target.closest('[data-habit-period]');
     if (!button) return;

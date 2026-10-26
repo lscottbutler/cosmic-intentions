@@ -86,3 +86,28 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #habitsWidget [data-habit-card="HEALTH"]{--period-color:#2e7d32}
 #page-habits #habitsWidget .habit-checklist-card .habit-drop>summary{background:var(--period-color,#3b3b3b)!important;color:#fff!important;padding:12px 16px!important;border:0!important;border-radius:8px!important}
 #page-habits #habitsWidget .habit-completion-count{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;border-radius:50%;background:#000;color:#fff;font-size:12px;font-weight:800;letter-spacing:0;line-height:1;white-space:nowrap}
+
+/* 2026-10-26 approved four-card Habits navigation (functional buttons unchanged). */
+#page-habits .habit-period-menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:20px 0;padding:14px 0 24px}
+#page-habits .habit-period-menu button{display:block;min-width:0;padding:0;border:0;background:none;box-shadow:none;text-align:center;letter-spacing:normal}
+#page-habits .habit-period-menu .habit-period-circle{display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;width:100%;height:auto;min-height:164px;padding:0;border:0;border-radius:18px;overflow:hidden;background:#3982a8;color:#fff;box-shadow:0 8px 17px rgba(0,0,0,.14);transition:transform .18s ease,box-shadow .18s ease}
+#page-habits .habit-period-menu button:hover .habit-period-circle{transform:translateY(-3px);box-shadow:0 12px 20px rgba(0,0,0,.17)}
+#page-habits .habit-period-menu .habit-period-icon{display:grid;place-items:center;flex:1;min-height:105px;padding:20px;background:#fff;color:#3982a8;border-radius:18px 18px 14px 14px}
+#page-habits .habit-period-menu .habit-period-icon svg{display:block;width:60px;height:60px;max-width:100%;stroke:currentColor}
+#page-habits .habit-period-menu .habit-period-label{display:grid;place-items:center;min-height:59px;padding:10px 4px;font:900 clamp(11px,1.7vw,20px)/1.15 Arial,Helvetica,sans-serif;letter-spacing:.02em;text-transform:uppercase;text-align:center;color:#fff}
+#page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-circle{background:#a78000}
+#page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-icon{color:#a78000}
+#page-habits .habit-period-menu button[data-habit-period="EVENING"] .habit-period-circle{background:#bf521d}
+#page-habits .habit-period-menu button[data-habit-period="EVENING"] .habit-period-icon{color:#bf521d}
+#page-habits .habit-period-menu button[data-habit-period="BEDTIME"] .habit-period-circle{background:#111e3b}
+#page-habits .habit-period-menu button[data-habit-period="BEDTIME"] .habit-period-icon{color:#111e3b}
+#page-habits .habit-period-menu button[aria-current="location"] .habit-period-circle{outline:3px solid #292929;outline-offset:3px;box-shadow:0 8px 17px rgba(0,0,0,.14)}
+#page-habits .habit-period-menu button:focus-visible{outline:3px solid #292929;outline-offset:5px;border-radius:18px}
+@media(max-width:650px){
+ #page-habits .habit-period-menu{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ #page-habits .habit-period-menu .habit-period-circle{min-height:146px}
+ #page-habits .habit-period-menu .habit-period-icon{min-height:94px;padding:12px}
+ #page-habits .habit-period-menu .habit-period-icon svg{width:54px;height:54px}
+ #page-habits .habit-period-menu .habit-period-label{min-height:52px;font-size:clamp(12px,3vw,17px)}
+}
+@media(prefers-reduced-motion:reduce){#page-habits .habit-period-menu .habit-period-circle{transition:none}}
