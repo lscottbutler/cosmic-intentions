@@ -172,7 +172,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    for(const char of copy[0]){
      const tile=document.createElement('span');
      tile.textContent=char;tile.setAttribute('aria-hidden','true');
-     const color=letterIndex++%2?neutral:accent;
+     const color=char===' '?neutral:(letterIndex++%2?neutral:accent);
      tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';
      title.append(tile);
    }
