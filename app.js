@@ -5936,6 +5936,8 @@ async function initCitadelNoteFrame(nextPage) {
   toastWrap.className = 'toast-wrap';
   toastWrap.setAttribute('aria-live', 'polite');
   document.body.appendChild(toastWrap);
+  // Mount the header immediately; do not hold ATB 1 behind the personal-note request.
+  document.body.replaceChildren(mount, toastWrap);
   const report = () => {
     const height = Math.ceil(mount.getBoundingClientRect().height);
     window.parent.postMessage({ type: 'ci-citadel-note-height', height, pageId }, location.origin);
@@ -5943,19 +5945,20 @@ async function initCitadelNoteFrame(nextPage) {
   try {
     const aboveSlug = _adminPageBoxSlug(pageId, 3);
     const instructionSlug = 'page-instructions-' + pageId;
-    const [block, auth, above, pageInstructions] = await Promise.all([
+    // Start optional artwork reads concurrently, but do not block ATB 1 on them.
+    const artworkPromise = Promise.all([
       sb.from('content_blocks').select('slug, body').eq('slug', slug).maybeSingle(),
+      sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle()
+    ]);
+    const [auth, pageInstructions] = await Promise.all([
       sb.auth.getUser(),
-      sb.from('content_blocks').select('slug, body').eq('slug', aboveSlug).maybeSingle(),
-      sb.from('content_blocks').select('slug, body').eq('slug', instructionSlug).maybeSingle(),
+      sb.from('content_blocks').select('slug, body').eq('slug', instructionSlug).maybeSingle()
     ]);
     if (renderVersion !== citadelNoteRenderVersion) return;
-    if (block.error || above.error || pageInstructions.error) throw block.error || above.error || pageInstructions.error;
+    if (pageInstructions.error) throw pageInstructions.error;
     currentUser = auth.data?.user || null;
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     if(window.ciOwnerAccess)installOwnerLabels(window);
-    _blockCache[slug] = block.data?.body || '';
-    _blockCache[aboveSlug] = above.data?.body || '';
     // A genuinely separate owner-controlled instruction card lives above the
     // existing blue-E/member note. Do not reuse or mutate the member's data.
     if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
@@ -5996,6 +5999,8 @@ async function initCitadelNoteFrame(nextPage) {
       mount.style.padding='20px';
       mount.appendChild(instructions);
     }
+    // ATB 1 is now painted as soon as its own content and authorization arrive.
+    report();
     // Personal E-BOX 2 is member-owned and never touches public content_blocks.
     // Its database row is protected by auth.uid() RLS and keyed by page.
     if (currentUser?.id) {
@@ -6097,6 +6102,11 @@ async function initCitadelNoteFrame(nextPage) {
     // Legacy ATB 3 remains safely stored in content_blocks but is not displayed
     // in the universal two-box header: ATB 1 and private Personal E-Box 2 only.
     // Retain the displayed artwork layer so page changes can dissolve into it.
+    const [block, above] = await artworkPromise;
+    if (renderVersion !== citadelNoteRenderVersion) return;
+    if (block.error || above.error) throw block.error || above.error;
+    _blockCache[slug] = block.data?.body || '';
+    _blockCache[aboveSlug] = above.data?.body || '';
     const previousCarousel = document.querySelector('[data-citadel-header-mount] .ci-carousel');
     const box = previousCarousel || _buildLiveAdminPageBox(pageId, ADMIN_PAGE_BOXES[pageId], boxNumber);
     if (previousCarousel) attachTrough(box, pageId);
