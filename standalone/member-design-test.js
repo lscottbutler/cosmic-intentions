@@ -154,8 +154,28 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   }
   if(title.dataset.lettermark!==copy[0]){
    title.dataset.lettermark=copy[0];title.setAttribute('aria-label',copy[0]);title.replaceChildren();
+   // Approved letterbox palette: named practices use their menu-ring color;
+   // all other player titles use the established charcoal/grey pair.
+   const titleAccents={
+     home:'#1e90ff',citadel:'#1e90ff',
+     meditation:'#ec1c23',
+     'daily-habits':'#f26420',
+     goals:'#fef200',
+     visualization:'#0076a3','super-viz':'#0076a3',
+     'action-plan':'#187a2f',
+     'cosmic-library':'#747474','entrepreneur-library':'#747474',
+     library:'#747474'
+   };
+   const accent=titleAccents[action]||'#747474';
+   const neutral=accent==='#747474'?'#303030':'#202020';
    let letterIndex=0;
-   for(const char of copy[0]){const tile=document.createElement('span');tile.textContent=char;tile.setAttribute('aria-hidden','true');tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+(letterIndex++%2?'#777':'#333')+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';title.append(tile);}
+   for(const char of copy[0]){
+     const tile=document.createElement('span');
+     tile.textContent=char;tile.setAttribute('aria-hidden','true');
+     const color=char===' '?neutral:(letterIndex++%2?neutral:accent);
+     tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';
+     title.append(tile);
+   }
    title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
    title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
    if(action==='goals'){
