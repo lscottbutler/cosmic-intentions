@@ -6053,6 +6053,8 @@ async function initCitadelNoteFrame(nextPage) {
         if(edit.disabled||personal.querySelector('textarea'))return;
         collapsed=false;
         displayPersonal();
+        // While editing, show only the editable text area, not a duplicate saved copy.
+        copy.hidden=true;
         const input=document.createElement('textarea');
         input.value=savedBody;
         input.setAttribute('aria-label','Your private notes');
@@ -6084,8 +6086,10 @@ async function initCitadelNoteFrame(nextPage) {
           );
           if(result.error){status.textContent='Could not save';save.disabled=false;cancel.disabled=false;hide.disabled=false;return;}
           savedBody=value;copy.textContent=value;
-          // Saving does not silently change an explicit HIDE preference.
-          try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {}
+          // A successful save closes the note and leaves only the faint blue E.
+          // Keep the note in the existing private member record.
+          collapsed=true;
+          try { localStorage.setItem(visibilityKey,'1'); } catch (_) {}
           closeEditor();
         });
         report();
