@@ -165,17 +165,17 @@ body.gratitude-two-column .member-player-columns{
   min-height:54px;
   overflow-wrap:anywhere;
 }
-#review-menu-items > :nth-child(11n + 1){background:#E84040!important}
-#review-menu-items > :nth-child(11n + 2){background:#E86030!important}
-#review-menu-items > :nth-child(11n + 3){background:#E88020!important}
-#review-menu-items > :nth-child(11n + 4){background:#E8A828!important}
-#review-menu-items > :nth-child(11n + 5){background:#E8C830!important}
-#review-menu-items > :nth-child(11n + 6){background:#A8C830!important}
-#review-menu-items > :nth-child(11n + 7){background:#48B860!important}
-#review-menu-items > :nth-child(11n + 8){background:#38A888!important}
-#review-menu-items > :nth-child(11n + 9){background:#2898A8!important}
-#review-menu-items > :nth-child(11n + 10){background:#7888A8!important}
-#review-menu-items > :nth-child(11n){background:#3878A8!important}
+/* Neutral for all other menu destinations, independent of alphabetical order. */
+#review-menu-items > :is(a,button){background:#292929!important}
+#review-menu-items > :is(a,button):nth-child(4n + 1){background:#151515!important}
+#review-menu-items > :is(a,button):nth-child(4n + 2){background:#404040!important}
+#review-menu-items > :is(a,button):nth-child(4n + 3){background:#666!important}
+/* Five core practices match the rings in the Citadel player navigation. */
+#review-menu-items > [data-ci-menu-action="meditation"]{background:#ec1c23!important}
+#review-menu-items > [data-ci-menu-action="daily-habits"]{background:#f26420!important}
+#review-menu-items > [data-ci-menu-action="goals"]{background:#fef200!important;color:#171717!important}
+#review-menu-items > [data-ci-menu-action="super-viz"]{background:#0076a3!important}
+#review-menu-items > [data-ci-menu-action="action-plan"]{background:#187a2f!important}
 #review-menu-items > :is(a,button):hover,
 #review-menu-items > :is(a,button):focus-visible{
   filter:brightness(1.12);
