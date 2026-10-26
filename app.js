@@ -6002,7 +6002,7 @@ async function initCitadelNoteFrame(nextPage) {
       edit.type='button';
       edit.textContent='e';
       edit.setAttribute('aria-label','Edit personal notes for ' + ADMIN_PAGE_BOXES[pageId]);
-      edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:#3d92df;color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
+      edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(61,146,223,.42);color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
@@ -6030,8 +6030,8 @@ async function initCitadelNoteFrame(nextPage) {
         const status=document.createElement('span');status.setAttribute('role','status');
         actions.append(save,cancel,status);
         personal.append(input,actions);
-        edit.hidden=true;
-        cancel.addEventListener('click',()=>{input.remove();actions.remove();edit.hidden=false;report();});
+        edit.hidden=true;edit.style.display='none';
+        cancel.addEventListener('click',()=>{input.remove();actions.remove();edit.hidden=false;edit.style.display='';report();});
         save.addEventListener('click',async()=>{
           save.disabled=true;status.textContent='Saving…';
           const value=input.value;
@@ -6040,7 +6040,7 @@ async function initCitadelNoteFrame(nextPage) {
             {onConflict:'user_id,page_id'}
           );
           if(result.error){status.textContent='Could not save';save.disabled=false;return;}
-          savedBody=value;copy.textContent=value;input.remove();actions.remove();edit.hidden=false;report();
+          savedBody=value;copy.textContent=value;input.remove();actions.remove();edit.hidden=false;edit.style.display='';report();
         });
         report();
       });
