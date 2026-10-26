@@ -52,6 +52,59 @@
 const headerCalendar=document.createElement('div');headerCalendar.id='header-calendar';
  const calendarDate=document.createElement('time'),calendarDay=document.createElement('strong');headerCalendar.append(calendarDate,calendarDay);
  document.querySelector('.orientation').append(headerCalendar);
+ // Meditation onboarding is separate from the locked Meditation player engine.
+ const instructionsTrigger=document.createElement('button');
+ instructionsTrigger.id='meditation-instructions-trigger';
+ instructionsTrigger.type='button';
+ instructionsTrigger.textContent='Instructions';
+ instructionsTrigger.hidden=true;
+ instructionsTrigger.setAttribute('aria-haspopup','dialog');
+ instructionsTrigger.setAttribute('aria-controls','meditation-instructions-tour');
+ document.querySelector('.orientation').append(instructionsTrigger);
+ const instructionTour=document.createElement('dialog');
+ instructionTour.id='meditation-instructions-tour';
+ instructionTour.setAttribute('aria-labelledby','meditation-tour-title');
+ instructionTour.innerHTML=`<div class="ci-tour-panel">
+   <div class="ci-tour-top"><h2 id="meditation-tour-title">How Meditation Works</h2><button id="ci-tour-close" type="button" aria-label="Close instructions">✕</button></div>
+   <div class="ci-tour-stage" aria-live="polite"><span class="ci-tour-step-number"></span><div class="ci-tour-simulation" aria-hidden="true"></div><h3 class="ci-tour-heading"></h3><p class="ci-tour-description"></p><span class="ci-tour-pointer" aria-hidden="true">☝</span></div>
+   <div class="ci-tour-progress" aria-hidden="true"><span></span></div>
+   <div class="ci-tour-actions"><button id="ci-tour-prev" type="button">Previous</button><button id="ci-tour-play" type="button">Pause demo</button><button id="ci-tour-next" type="button">Next</button></div>
+   <button id="ci-tour-try" type="button">Go to the real Meditation player</button>
+ </div>`;
+ document.body.append(instructionTour);
+ const tourSteps=[
+  {title:'Welcome to Meditation',detail:'The instructions introduce the practice. You can return to them whenever you want.',graphic:'<div class="ci-tour-card">MEDITATION<br><small>Read your instructions here</small></div>'},
+  {title:'Choose your guidance',detail:'Choose Guided, Lightly Guided, or Unguided. Each option changes how much spoken guidance you hear.',graphic:'<div class="ci-tour-choices"><b>GUIDED</b><b>LIGHTLY GUIDED</b><b>UNGUIDED</b></div>'},
+  {title:'Select a session length',detail:'Pick your preferred session duration from the available time controls.',graphic:'<div class="ci-tour-choices"><b>5 MIN</b><b>10 MIN</b><b>15 MIN</b></div>'},
+  {title:'Optional relaxation',detail:'Turn on the relaxation introduction if you want to settle in before the meditation itself.',graphic:'<div class="ci-tour-card">RELAXATION <span class="ci-tour-switch">ON</span></div>'},
+  {title:'Press Play',detail:'Play begins your chosen practice. The actual player presents its instructions, cues, timing and bells according to the chosen mode.',graphic:'<div class="ci-tour-play-circle">▶</div>'},
+  {title:'Pause, resume and finish',detail:'Use the player controls to pause or resume. At the end, the session completes and you can choose another practice.',graphic:'<div class="ci-tour-choices"><b>Ⅱ PAUSE</b><b>▶ RESUME</b><b>✓ FINISH</b></div>'}
+ ];
+ let tourIndex=0,tourPlaying=false,tourInterval=0;
+ const stopTour=()=>{tourPlaying=false;clearInterval(tourInterval);tourInterval=0;instructionTour.querySelector('#ci-tour-play').textContent='Play demo';};
+ const showTourStep=()=>{
+  const step=tourSteps[tourIndex];
+  instructionTour.querySelector('.ci-tour-step-number').textContent='STEP '+(tourIndex+1)+' OF '+tourSteps.length;
+  instructionTour.querySelector('.ci-tour-heading').textContent=step.title;
+  instructionTour.querySelector('.ci-tour-description').textContent=step.detail;
+  instructionTour.querySelector('.ci-tour-simulation').innerHTML=step.graphic;
+  instructionTour.querySelector('.ci-tour-progress span').style.width=((tourIndex+1)/tourSteps.length*100)+'%';
+  instructionTour.querySelector('#ci-tour-prev').disabled=tourIndex===0;
+  instructionTour.querySelector('#ci-tour-next').textContent=tourIndex===tourSteps.length-1?'Replay':'Next';
+ };
+ const startTour=()=>{
+  stopTour();tourPlaying=true;instructionTour.querySelector('#ci-tour-play').textContent='Pause demo';
+  tourInterval=setInterval(()=>{if(tourIndex===tourSteps.length-1){stopTour();return;}tourIndex++;showTourStep();},5500);
+ };
+ instructionsTrigger.addEventListener('click',()=>{tourIndex=0;showTourStep();instructionTour.showModal();startTour();});
+ instructionTour.querySelector('#ci-tour-close').addEventListener('click',()=>instructionTour.close());
+ instructionTour.addEventListener('close',stopTour);
+ instructionTour.addEventListener('click',event=>{if(event.target===instructionTour)instructionTour.close();});
+ instructionTour.querySelector('#ci-tour-play').addEventListener('click',()=>tourPlaying?stopTour():startTour());
+ instructionTour.querySelector('#ci-tour-prev').addEventListener('click',()=>{tourIndex=Math.max(0,tourIndex-1);showTourStep();if(tourPlaying)startTour();});
+ instructionTour.querySelector('#ci-tour-next').addEventListener('click',()=>{tourIndex=(tourIndex+1)%tourSteps.length;showTourStep();if(tourPlaying)startTour();});
+ instructionTour.querySelector('#ci-tour-try').addEventListener('click',()=>{instructionTour.close();openFeature('meditation');document.querySelector('.member-player-columns')?.scrollIntoView({behavior:'smooth',block:'start'});});
+
  function updateHeaderCalendar(){
   const now=new Date(),year=now.getFullYear(),month=now.getMonth(),day=now.getDate();
   const ordinal=Math.floor((Date.UTC(year,month,day)-Date.UTC(year,0,0))/86400000);
@@ -135,7 +188,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
-  current=action;const copy=features[action];
+  current=action;instructionsTrigger.hidden=action!=='meditation';const copy=features[action];
   if(action==='gratitude'||action==='new-gratitude')
    updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
