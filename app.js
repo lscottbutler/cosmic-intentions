@@ -4997,17 +4997,29 @@ function ensureAdminPageBoxEditors() {
       option.textContent = pageNumber + ' · ' + label;
       section.querySelector('#adminPageFinder').appendChild(option);
     }
-    for (const boxNumber of (pageId === 'setup' ? [3, 4, 2] : [3, 2])) {
-      const slug = _adminPageBoxSlug(pageId, boxNumber);
+    // Display numbers follow visible purpose, while legacy storage slugs remain unchanged.
+    // ATB 1 is the owner-controlled instruction record displayed on every player.
+    const boxes = [
+      {slug:'page-instructions-' + pageId, number:1, caption:'ATB 1 — Player instructions'},
+      {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
+      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
+      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
+    ];
+    for (const {slug,number,caption} of boxes) {
+      const boxNumber=number;
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
-        holder.innerHTML = _adminEditorMarkup(pageId, label, boxNumber);
+        holder.innerHTML = slug === 'page-instructions-' + pageId
+          ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
+          : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + boxNumber + ' — ' + (boxNumber === 4 ? 'Beside Add a Goal' : boxNumber === 3 ? 'Above artwork' : boxNumber === 1 ? 'Artwork' : 'Archived — hidden on player pages') + '</span>';
+        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + number + ' — ' + caption + '</span>';
       }
+      const position = entry.querySelector('.ci-admin-box-position');
+      if (position) position.textContent='Box ' + number + ' — ' + caption;
       entry.classList.add('ci-page-box-admin-entry');
       entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
       group.querySelector('.ci-admin-page-pair').appendChild(entry);
