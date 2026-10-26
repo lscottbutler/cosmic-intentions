@@ -99,6 +99,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  instructionsTrigger.addEventListener('click',()=>{tourIndex=0;showTourStep();instructionTour.showModal();startTour();});
  instructionTour.querySelector('#ci-tour-close').addEventListener('click',()=>instructionTour.close());
  instructionTour.addEventListener('close',stopTour);
+ instructionTour.addEventListener('click',event=>{if(event.target===instructionTour)instructionTour.close();});
  instructionTour.querySelector('#ci-tour-play').addEventListener('click',()=>tourPlaying?stopTour():startTour());
  instructionTour.querySelector('#ci-tour-prev').addEventListener('click',()=>{tourIndex=Math.max(0,tourIndex-1);showTourStep();if(tourPlaying)startTour();});
  instructionTour.querySelector('#ci-tour-next').addEventListener('click',()=>{tourIndex=(tourIndex+1)%tourSteps.length;showTourStep();if(tourPlaying)startTour();});
