@@ -294,7 +294,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      headerNoteFrame.dataset.appliedNoteSource=src;
      win.ciSetCitadelNotePage(pageId);
     }else headerNoteFrame.src=src;
-   },2000);
+   },0);
   };
   waitForPage();
  }
