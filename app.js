@@ -6007,18 +6007,40 @@ async function initCitadelNoteFrame(nextPage) {
       mount.style.padding='20px';
       mount.appendChild(personal);
       let savedBody='';
+      // Visibility belongs to this signed-in member and page, not the admin ATB 1.
+      // Only the visibility preference is stored locally; private note text stays in RLS-protected Supabase.
+      const visibilityKey='ci-personal-e-hidden:' + memberId + ':' + pageId;
+      let collapsed=false;
+      try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {}
+      function displayPersonal(){
+        personal.classList.toggle('ci-personal-e-collapsed',collapsed);
+        personal.style.cssText=collapsed
+          ? 'position:relative;box-sizing:border-box;width:34px;height:34px;min-height:0;padding:0;margin:0 0 14px;border:0;border-radius:50%;background:transparent;overflow:visible'
+          : 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
+        heading.hidden=collapsed;copy.hidden=collapsed;
+        edit.style.cssText=collapsed
+          ? 'position:relative;display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(41,119,190,.22);border-radius:50%;padding:0;background:rgba(61,146,223,.15);color:rgba(34,103,168,.48);font:700 21px/1 Arial,sans-serif;cursor:pointer'
+          : 'position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(61,146,223,.42);color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
+        edit.setAttribute('aria-label',collapsed?'Open private notes for ' + ADMIN_PAGE_BOXES[pageId]:'Edit personal notes for ' + ADMIN_PAGE_BOXES[pageId]);
+        edit.hidden=false;
+        report();
+      }
       const note = await sb.from('player_personal_notes').select('body')
         .eq('user_id',memberId).eq('page_id',pageId).maybeSingle();
       if(renderVersion!==citadelNoteRenderVersion)return;
       if(note.error){
+        collapsed=false;
         copy.textContent='Personal notes are temporarily unavailable.';
         edit.disabled=true;
       } else {
         savedBody=note.data?.body||'';
         copy.textContent=savedBody;
       }
+      displayPersonal();
       edit.addEventListener('click',()=>{
-        if(personal.querySelector('textarea'))return;
+        if(edit.disabled||personal.querySelector('textarea'))return;
+        collapsed=false;
+        displayPersonal();
         const input=document.createElement('textarea');
         input.value=savedBody;
         input.setAttribute('aria-label','Your private notes');
@@ -6027,20 +6049,32 @@ async function initCitadelNoteFrame(nextPage) {
         actions.style.cssText='display:flex;gap:10px;margin-top:10px;flex-wrap:wrap';
         const save=document.createElement('button');save.textContent='SAVE';save.type='button';
         const cancel=document.createElement('button');cancel.textContent='CANCEL';cancel.type='button';
+        const hide=document.createElement('button');hide.textContent='HIDE';hide.type='button';
+        hide.setAttribute('aria-label','Hide private notes and show only the small blue E');
         const status=document.createElement('span');status.setAttribute('role','status');
-        actions.append(save,cancel,status);
+        actions.append(save,cancel,hide,status);
         personal.append(input,actions);
         edit.hidden=true;edit.style.display='none';
-        cancel.addEventListener('click',()=>{input.remove();actions.remove();edit.hidden=false;edit.style.display='';report();});
+        function closeEditor(){input.remove();actions.remove();displayPersonal();}
+        cancel.addEventListener('click',()=>{closeEditor();});
+        hide.addEventListener('click',()=>{
+          // HIDE is not SAVE. Discard unsaved draft edits, keep the last saved note.
+          collapsed=true;
+          try { localStorage.setItem(visibilityKey,'1'); } catch (_) {}
+          closeEditor();
+        });
         save.addEventListener('click',async()=>{
-          save.disabled=true;status.textContent='Saving…';
+          save.disabled=true;cancel.disabled=true;hide.disabled=true;status.textContent='Saving…';
           const value=input.value;
           const result=await sb.from('player_personal_notes').upsert(
             {user_id:memberId,page_id:pageId,body:value,updated_at:new Date().toISOString()},
             {onConflict:'user_id,page_id'}
           );
-          if(result.error){status.textContent='Could not save';save.disabled=false;return;}
-          savedBody=value;copy.textContent=value;input.remove();actions.remove();edit.hidden=false;edit.style.display='';report();
+          if(result.error){status.textContent='Could not save';save.disabled=false;cancel.disabled=false;hide.disabled=false;return;}
+          savedBody=value;copy.textContent=value;
+          // Saving does not silently change an explicit HIDE preference.
+          try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {}
+          closeEditor();
         });
         report();
       });
