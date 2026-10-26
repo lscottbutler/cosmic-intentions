@@ -6086,10 +6086,9 @@ async function initCitadelNoteFrame(nextPage) {
           );
           if(result.error){status.textContent='Could not save';save.disabled=false;cancel.disabled=false;hide.disabled=false;return;}
           savedBody=value;copy.textContent=value;
-          // A successful save closes the note and leaves only the faint blue E.
-          // Keep the note in the existing private member record.
-          collapsed=true;
-          try { localStorage.setItem(visibilityKey,'1'); } catch (_) {}
+          // SAVE reveals the newly saved text; only HIDE collapses to the faint E.
+          collapsed=false;
+          try { localStorage.removeItem(visibilityKey); } catch (_) {}
           closeEditor();
         });
         report();
