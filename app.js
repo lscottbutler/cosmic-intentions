@@ -6056,7 +6056,7 @@ async function initCitadelNoteFrame(nextPage) {
         personal.append(input,actions);
         edit.hidden=true;edit.style.display='none';
         function closeEditor(){input.remove();actions.remove();displayPersonal();}
-        cancel.addEventListener('click',()=>{closeEditor();});
+        cancel.addEventListener('click',()=>{try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {} closeEditor();});
         hide.addEventListener('click',()=>{
           // HIDE is not SAVE. Discard unsaved draft edits, keep the last saved note.
           collapsed=true;
