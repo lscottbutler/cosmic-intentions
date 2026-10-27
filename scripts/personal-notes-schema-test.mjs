@@ -19,7 +19,6 @@ if(process.argv[2]==='--write'){
   const url=process.env.CI_NOTES_DATABASE_URL||'';
   assert.match(url,/^postgresql:\/\/[^@]+@(?:localhost|127\.0\.0\.1):5432\/ci_notes_test$/,'Isolated local fixture database required.');
   const sql=`
-\set ON_ERROR_STOP on
 create role authenticated nologin;
 create role anon nologin;
 create schema auth;
