@@ -5903,8 +5903,10 @@ function injectPlaceholderCards() {
 }
 
 // The standalone Master Player renders Citadel outside the main app's dashboard.
-let citadelNoteRenderVersion = 0, citadelNoteResizeObserver;
+let citadelNoteRenderVersion = 0, citadelNoteResizeObserver, citadelPersonalAuthSubscription;
 async function initCitadelNoteFrame(nextPage) {
+  citadelPersonalAuthSubscription?.unsubscribe();
+  citadelPersonalAuthSubscription = null;
   const renderVersion = ++citadelNoteRenderVersion;
   const boxNumber = new URLSearchParams(location.search).get('box') === '2' ? 2 : 1;
   const requestedPage = nextPage || new URLSearchParams(location.search).get('notePage') || 'dashboard';
@@ -6028,7 +6030,9 @@ async function initCitadelNoteFrame(nextPage) {
       mount.appendChild(personal);
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
-      // Only the visibility preference is stored locally; private note text stays in RLS-protected Supabase.
+      // Title and body belong to the same RLS-protected account/page record.
+      // Only the visibility preference remains device-local. A pre-upgrade
+      // browser title is retained as a fallback until the member next saves.
       const visibilityKey='ci-personal-e-hidden:' + memberId + ':' + pageId;
       let collapsed=false;
       try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {}
@@ -6045,9 +6049,18 @@ async function initCitadelNoteFrame(nextPage) {
         edit.hidden=false;
         report();
       }
-      const note = await sb.from('player_personal_notes').select('body')
+      const authWatch = sb.auth.onAuthStateChange((_event, session) => {
+        if (session?.user?.id !== memberId) {
+          // Never leave another account's private content visible after logout.
+          personal.replaceChildren();
+          personal.hidden = true;
+          report();
+        }
+      });
+      citadelPersonalAuthSubscription = authWatch.data?.subscription;
+      const note = await sb.from('player_personal_notes').select('body,title')
         .eq('user_id',memberId).eq('page_id',pageId).maybeSingle();
-      if(renderVersion!==citadelNoteRenderVersion)return;
+      if(renderVersion!==citadelNoteRenderVersion || personal.hidden)return;
       if(note.error){
         collapsed=false;
         copy.textContent='Personal notes are temporarily unavailable.';
@@ -6055,6 +6068,10 @@ async function initCitadelNoteFrame(nextPage) {
       } else {
         savedBody=note.data?.body||'';
         copy.textContent=savedBody;
+        if (typeof note.data?.title === 'string') {
+          customHeading=note.data.title.trim().slice(0,80)||'MY PERSONAL NOTES';
+        }
+        heading.textContent=customHeading;
       }
       displayPersonal();
       edit.addEventListener('click',()=>{
@@ -6094,21 +6111,40 @@ async function initCitadelNoteFrame(nextPage) {
           closeEditor();
         });
         save.addEventListener('click',async()=>{
-          save.disabled=true;cancel.disabled=true;hide.disabled=true;status.textContent='Saving…';
+          if (save.disabled) return;
           const value=input.value;
-          const result=await sb.from('player_personal_notes').upsert(
-            {user_id:memberId,page_id:pageId,body:value,updated_at:new Date().toISOString()},
-            {onConflict:'user_id,page_id'}
-          );
-          if(result.error){status.textContent='Could not save';save.disabled=false;cancel.disabled=false;hide.disabled=false;return;}
-          savedBody=value;copy.textContent=value;
-          customHeading=titleInput.value.trim().slice(0,80)||'MY PERSONAL NOTES';
-          heading.textContent=customHeading;
-          try { localStorage.setItem(headingKey,customHeading); } catch (_) {}
-          // SAVE reveals the newly saved text; only HIDE collapses to the faint E.
-          collapsed=false;
-          try { localStorage.removeItem(visibilityKey); } catch (_) {}
-          closeEditor();
+          const title=titleInput.value.trim().slice(0,80)||'MY PERSONAL NOTES';
+          save.disabled=true;cancel.disabled=true;hide.disabled=true;
+          input.disabled=true;titleInput.disabled=true;
+          status.textContent='Saving…';
+          try {
+            const auth = await sb.auth.getUser();
+            if (auth.error || auth.data?.user?.id !== memberId || personal.hidden) {
+              throw new Error('Account changed');
+            }
+            // One atomic account/page write; require the server's saved row back.
+            const result=await sb.from('player_personal_notes').upsert(
+              {user_id:memberId,page_id:pageId,title,body:value,updated_at:new Date().toISOString()},
+              {onConflict:'user_id,page_id'}
+            ).select('title,body').single();
+            if(result.error || !result.data || result.data.title !== title || result.data.body !== value) {
+              throw new Error('Save not confirmed');
+            }
+            if (renderVersion!==citadelNoteRenderVersion || personal.hidden || !personal.isConnected) return;
+            savedBody=result.data.body;copy.textContent=savedBody;
+            customHeading=result.data.title;heading.textContent=customHeading;
+            // The cloud title is authoritative. Remove only this old local title.
+            try { localStorage.removeItem(headingKey); } catch (_) {}
+            // SAVE shows the saved title/text. Only HIDE collapses to the faint E.
+            collapsed=false;
+            try { localStorage.removeItem(visibilityKey); } catch (_) {}
+            closeEditor();
+          } catch (_) {
+            status.textContent='Could not save. Your edits are still here. Please try again.';
+          } finally {
+            save.disabled=false;cancel.disabled=false;hide.disabled=false;
+            input.disabled=false;titleInput.disabled=false;
+          }
         });
         report();
       });

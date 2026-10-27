@@ -1,0 +1,46 @@
+name: Personal Notes verification
+on:
+  push:
+    branches: ['review/personal-notes-cloud-title-20261027']
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'tests/personal-notes-cloud-title.spec.js'
+      - 'scripts/personal-notes-schema-test.mjs'
+      - 'supabase/migrations/*_player_personal_notes_title.sql'
+      - '.github/workflows/personal-notes-prepare.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci_fixture_only
+          POSTGRES_DB: ci_notes_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify isolated PostgreSQL migration and ownership policies
+        env:
+          CI_NOTES_DATABASE_URL: postgresql://postgres:ci_fixture_only@localhost:5432/ci_notes_test
+        run: node scripts/personal-notes-schema-test.mjs
+      - name: Build and exercise actual desktop and phone UI
+        run: npm test -- tests/personal-notes-cloud-title.spec.js --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: personal-notes-rendered-evidence
+          path: test-results/
+          retention-days: 7
