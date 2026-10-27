@@ -243,3 +243,12 @@ body.gratitude-two-column .member-player-columns{
 .orientation .shortcuts>button:not(#header-encouragement),.orientation #player-search,.orientation #review-menu-trigger{background:#fff!important;color:#0b2a5b!important;border:4px solid #0b2a5b!important;box-sizing:border-box}
 .orientation #player-search input,.orientation #player-search button{background:transparent!important;color:#0b2a5b!important;border:0!important}
 .orientation #player-search input::placeholder{color:#0b2a5b;opacity:1}
+
+/* Header To Do and Goals: clip-art icons with labels (2026-10-27) */
+.header-icon-pair{display:flex;gap:10px;justify-content:space-between}
+.orientation .header-icon-pair button{flex:1 1 0;min-width:0;min-height:0!important;display:grid;justify-items:center;gap:4px;padding:6px 2px!important;border:0!important;border-radius:10px!important;background:transparent!important;color:#0b2a5b!important;cursor:pointer}
+.header-icon-pair svg{width:44px;height:44px;fill:none;stroke:#0b2a5b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.header-icon-pair span{font:700 13px/1.1 Arial,sans-serif;letter-spacing:.03em}
+.orientation .header-icon-pair button:hover{background:#eef2f8!important}
+.orientation .header-icon-pair button:focus-visible{outline:3px solid #0b2a5b;outline-offset:2px}
+@media(max-width:650px){.header-icon-pair{gap:4px}.header-icon-pair svg{width:36px;height:36px}.header-icon-pair span{font-size:11px}}
