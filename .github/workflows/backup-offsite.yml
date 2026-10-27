@@ -2,7 +2,7 @@ name: Encrypted off-site backup
 
 on:
   push:
-    branches: ['review/backup-credentials-20261019']
+    branches: ['review/backup-credentials-20261019', 'review/backup-recovery-20261027']
     paths: ['.github/workflows/backup-offsite.yml', 'scripts/backup-offsite.sh', 'scripts/backup-storage.py']
   schedule:
     - cron: '17 */6 * * *'
@@ -59,17 +59,32 @@ jobs:
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y -qq postgresql-client-17
       - name: Capture, encrypt and verify both offsite copies
+        id: capture
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE || secrets.BACK_PASSPHRASE }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          BACKUP_EXPORT_DIR: ${{ runner.temp }}/ci-encrypted-recovery
         run: bash scripts/backup-offsite.sh
+      - name: Preserve verified encrypted recovery copy even when a remote fails
+        if: ${{ always() && steps.capture.outputs.captured == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-encrypted-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ci-encrypted-recovery/*.tar.gz.gpg
+            ${{ runner.temp }}/ci-encrypted-recovery/*.tar.gz.gpg.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
       - name: Record outcome
         if: always()
         env:
           RESULT: ${{ job.status }}
+          CAPTURED: ${{ steps.capture.outputs.captured }}
         run: |
           printf '## Backup result: %s\n\n' "$RESULT" >> "$GITHUB_STEP_SUMMARY"
-          echo 'Success requires encrypted code/history, database and Storage uploads verified by downloading from BOTH configured remotes. No old backup is deleted. A backup is not a proven full recovery until an isolated restore is tested. Billing can prevent this job from starting; inspect Actions when no fresh success exists.' >> "$GITHUB_STEP_SUMMARY"
+          printf 'Encrypted capture completed: %s\n\n' "${CAPTURED:-false}" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Both configured off-site copies must pass upload and downloaded-content checks before full off-site success. A retained encrypted artifact is emergency recovery, not a substitute for independent copies or an isolated restore test. No plaintext database, credentials or encryption passphrase are uploaded. No old backups are deleted.' >> "$GITHUB_STEP_SUMMARY"
