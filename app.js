@@ -5995,7 +5995,8 @@ async function initCitadelNoteFrame(nextPage) {
       copy.textContent='';
       const edit = document.createElement('button');
       edit.type='button';
-      edit.textContent='e';
+      // Pen icon (Scott's line drawing) replaces the former 'e'; stroke follows button color.
+      edit.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="display:block;margin:auto" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><g transform="rotate(32 12 12)"><rect x="9.6" y="2" width="4.8" height="13.5" rx="2.2"/><path d="M9.6 15.5 10.4 19.2 12 22 13.6 19.2 14.4 15.5"/><path d="M13.4 2.8h2.6v7.6"/><path d="M10.2 15.5h3.6"/></g></svg>';
       edit.setAttribute('aria-label','Edit personal notes for ' + ADMIN_PAGE_BOXES[pageId]);
       edit.style.cssText='position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(61,146,223,.42);color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
       personal.append(heading,copy,edit);
