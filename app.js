@@ -4874,7 +4874,19 @@ function wireAdminPageBoxes() {
   if (pageId === 'cosmiclibrary' && window.self !== window.top && !active.querySelector(':scope > .ci-cosmic-atb2')) {
     const atb2 = _buildLiveAdminPageBox(pageId, label, 3);
     atb2.classList.add('ci-cosmic-atb2');
+    atb2.setAttribute('aria-label', label + ' administrator text box 2');
     active.prepend(atb2);
+    // Admin boxes look like ATB 1 (white, dark square border), never like the grey personal note box.
+    if (!document.getElementById('ci-cosmic-atb2-style')) {
+      const style = document.createElement('style'); style.id = 'ci-cosmic-atb2-style';
+      style.textContent = ':root .ci-admin-page-box.ci-cosmic-atb2[data-page-box]{background:#fff!important;border:2px solid #303030!important;border-radius:0!important;box-shadow:none!important;margin:0 0 16px}' +
+        ':root .ci-cosmic-atb2[data-page-box] .ci-admin-page-box-content{font:400 16px/1.55 Arial,sans-serif!important;color:#292929;padding:16px 52px 16px 16px!important;min-height:0}' +
+        ':root .ci-cosmic-atb2[data-page-box] .ci-admin-page-box-edit{border-radius:6px!important;background:#292929!important;color:#fff!important;width:30px;height:30px}' +
+        ':root .ci-cosmic-atb2[data-page-box] .ci-admin-page-box-edit::after{content:none!important}' +
+        ':root .ci-cosmic-atb2[data-page-box] .ci-admin-page-box-edit svg{display:block!important}' +
+        ':root .ci-cosmic-atb2[data-page-box] .ci-admin-page-box-edit:hover{background:#000!important}';
+      document.head.appendChild(style);
+    }
   }
 
   let topStack = active.querySelector(':scope .ci-admin-page-box-stack--top');
