@@ -254,6 +254,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   contentFade=contentCard.animate([{opacity:from},{opacity}],{duration,easing:'ease-in-out'});
   try{await contentFade.finished;}catch(_){/* A newer navigation owns the fade. */}
  }
+ document.querySelectorAll('#quick-nav [data-quick-nav]').forEach(button=>button.addEventListener('click',()=>openFeature(button.dataset.quickNav)));
  async function openFeature(action){
   if(!features[action])return;
   const version=++navigationVersion;
