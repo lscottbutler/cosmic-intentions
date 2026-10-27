@@ -440,6 +440,7 @@ html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]){grid-template-rows:57px auto}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:56px;height:56px;padding:14.7px;color:#747474!important;stroke:#747474!important;opacity:1!important;filter:none!important;background:#fff;box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
+@media(min-width:651px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(8,minmax(0,1fr))}html.ci-review-test .shell.home-mode #citadel-action-heading{grid-column:1/-1}html.ci-review-test .shell.home-mode .deck .nav span{white-space:nowrap;font-size:clamp(11px,1.25vw,15px)}}
 @media(max-width:650px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(2,minmax(0,1fr))}}
 `;
    doc.head.append(style);
