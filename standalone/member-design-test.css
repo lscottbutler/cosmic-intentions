@@ -221,6 +221,7 @@ body.gratitude-two-column .member-player-columns{
 @media(prefers-reduced-motion:reduce){.ci-tour-pointer{animation:none}.ci-tour-progress span{transition:none}}
 
 /* Quick nav: five core practices between the header card and the player (2026-10-27) */
+#quick-nav[hidden]{display:none}
 #quick-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:22px;margin:16px auto}
 #quick-nav button{display:grid;justify-items:center;gap:5px;border:0;background:transparent;padding:0;color:#292929;cursor:pointer}
 #quick-nav svg{width:44px;height:44px;padding:8px;box-sizing:border-box;border:5px solid var(--ring);border-radius:50%;background:#fff;fill:none;stroke:#6b6b6b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
