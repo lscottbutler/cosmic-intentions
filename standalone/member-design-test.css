@@ -238,3 +238,8 @@ body.gratitude-two-column .member-player-columns{
 .ci-tour-caption{box-sizing:border-box;width:100%;background:#f2ede7;border-top:3px solid #292929;padding:10px 16px 12px;text-align:center}
 .ci-tour-caption .ci-tour-heading{margin:4px 0 2px}
 .ci-tour-caption .ci-tour-description{margin:0 auto}
+
+/* Header buttons: white with a 4px dark blue border (2026-10-27) */
+.orientation .shortcuts>button:not(#header-encouragement),.orientation #player-search,.orientation #review-menu-trigger{background:#fff!important;color:#0b2a5b!important;border:4px solid #0b2a5b!important;box-sizing:border-box}
+.orientation #player-search input,.orientation #player-search button{background:transparent!important;color:#0b2a5b!important;border:0!important}
+.orientation #player-search input::placeholder{color:#0b2a5b;opacity:1}
