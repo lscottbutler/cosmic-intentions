@@ -1,15 +1,20 @@
-name: Prepare Personal Notes cloud title
+name: Personal Notes verification
 on:
   push:
     branches: ['review/personal-notes-cloud-title-20261027']
-    paths: ['.github/workflows/personal-notes-prepare.yml']
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'tests/personal-notes-cloud-title.spec.js'
+      - 'scripts/personal-notes-schema-test.mjs'
+      - 'supabase/migrations/*_player_personal_notes_title.sql'
+      - '.github/workflows/personal-notes-prepare.yml'
 permissions:
-  contents: write
+  contents: read
 jobs:
-  prepare-and-verify:
-    if: github.ref == 'refs/heads/review/personal-notes-cloud-title-20261027'
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 10
     services:
       postgres:
         image: postgres:17
@@ -18,26 +23,13 @@ jobs:
           POSTGRES_DB: ci_notes_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: review/personal-notes-cloud-title-20261027
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: Apply exact guarded integration
-        run: |
-          node scripts/prepare-personal-notes-title.mjs
-          sed -i '/set ON_ERROR_STOP on/d' scripts/personal-notes-schema-test.mjs
-      - name: Generate migration with Supabase CLI
-        run: |
-          npx --yes supabase --help > /dev/null
-          npx --yes supabase migration new --help > /dev/null
-          npx --yes supabase migration new player_personal_notes_title
-          MIGRATION=$(find supabase/migrations -name '*_player_personal_notes_title.sql' | sort | tail -1)
-          node scripts/personal-notes-schema-test.mjs --write "$MIGRATION"
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Verify isolated PostgreSQL migration and ownership policies
@@ -46,15 +38,6 @@ jobs:
         run: node scripts/personal-notes-schema-test.mjs
       - name: Build and exercise actual desktop and phone UI
         run: npm test -- tests/personal-notes-cloud-title.spec.js --workers=2
-      - name: Checkpoint only after all checks pass
-        run: |
-          git diff --check
-          git config user.name 'CI Review Checkpoint'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app.js CI-SESSION-CHECKPOINT.md scripts/personal-notes-schema-test.mjs supabase/migrations/*_player_personal_notes_title.sql
-          git commit -m 'Save private note titles with account data; verify editing and isolation'
-          git push origin HEAD:review/personal-notes-cloud-title-20261027
-          echo "VERIFIED_SOURCE=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
