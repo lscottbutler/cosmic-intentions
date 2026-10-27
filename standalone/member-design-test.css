@@ -228,3 +228,10 @@ body.gratitude-two-column .member-player-columns{
 #quick-nav span{font:700 11px/1.2 Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase}
 #quick-nav button:focus-visible{outline:2px solid #292929;outline-offset:3px;border-radius:6px}
 @media(max-width:650px){#quick-nav{gap:12px}#quick-nav svg{width:40px;height:40px}#quick-nav span{font-size:10px}}
+
+/* Meditation instructions: real recording of the player (2026-10-27) */
+#meditation-instructions-tour .ci-tour-stage{display:block;min-height:0;padding:0;overflow:hidden;background:#f2ede7}
+.ci-tour-video{display:block;width:100%;max-height:min(46vh,470px);object-fit:contain;background:#f2ede7}
+.ci-tour-caption{box-sizing:border-box;width:100%;background:#f2ede7;border-top:3px solid #292929;padding:10px 16px 12px;text-align:center}
+.ci-tour-caption .ci-tour-heading{margin:4px 0 2px}
+.ci-tour-caption .ci-tour-description{margin:0 auto}
