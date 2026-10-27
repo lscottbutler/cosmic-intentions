@@ -387,6 +387,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  });
  function watchDocument(doc){
   const homeDeck=doc.querySelector('.shell.home-mode .deck');
+  // The Citadel already shows the full icon grid, so hide the small row whenever that grid is on screen.
+  if(doc===frame.contentDocument){const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=!!homeDeck||current==='home';}
   if(homeDeck&&!doc.getElementById('citadel-action-heading')){
    const heading=doc.createElement('h2');heading.id='citadel-action-heading';heading.textContent='WHAT DO YOU WANT TO DO?';
    homeDeck.prepend(heading);
