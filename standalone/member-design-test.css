@@ -222,12 +222,15 @@ body.gratitude-two-column .member-player-columns{
 
 /* Quick nav: five core practices between the header card and the player (2026-10-27) */
 #quick-nav[hidden]{display:none}
-#quick-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:22px;margin:16px auto}
-#quick-nav button{display:grid;justify-items:center;gap:5px;border:0;background:transparent;padding:0;color:#292929;cursor:pointer}
-#quick-nav svg{width:44px;height:44px;padding:8px;box-sizing:border-box;border:5px solid var(--ring);border-radius:50%;background:#fff;fill:none;stroke:#6b6b6b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#quick-nav span{font:700 11px/1.2 Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase}
-#quick-nav button:focus-visible{outline:2px solid #292929;outline-offset:3px;border-radius:6px}
-@media(max-width:650px){#quick-nav{gap:12px}#quick-nav svg{width:40px;height:40px}#quick-nav span{font-size:10px}}
+#quick-nav{background:var(--surface);border-radius:10px;padding:26px 24px 28px;margin:24px 0;text-align:center}
+#quick-nav h2{margin:0 0 22px;font:700 clamp(20px,2.4vw,27px)/1.2 "Roboto Condensed",Arial Narrow,Arial,sans-serif;letter-spacing:.02em;color:#292929}
+#quick-nav .qn-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;justify-items:center}
+#quick-nav button{display:grid;justify-items:center;gap:8px;border:0;background:transparent;padding:0;color:#171717;cursor:pointer;min-width:0}
+#quick-nav svg{width:68px;height:68px;padding:17px;box-sizing:border-box;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 8px var(--ring);fill:none;stroke:#747474;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#quick-nav .qn-dark svg{background:#444;stroke:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+#quick-nav span{font:700 13px/1.2 Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+#quick-nav button:focus-visible{outline:2px solid #292929;outline-offset:3px;border-radius:8px}
+@media(max-width:650px){#quick-nav{padding:20px 12px}#quick-nav .qn-row{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:18px}#quick-nav svg{width:56px;height:56px;padding:14px}#quick-nav span{font-size:11px}}
 
 /* Meditation instructions: real recording of the player (2026-10-27) */
 #meditation-instructions-tour .ci-tour-stage{display:block;min-height:0;padding:0;overflow:hidden;background:#f2ede7}
