@@ -6013,7 +6013,7 @@ async function initCitadelNoteFrame(nextPage) {
       function displayPersonal(){
         personal.classList.toggle('ci-personal-e-collapsed',collapsed);
         personal.style.cssText=collapsed
-          ? 'position:relative;box-sizing:border-box;width:34px;height:34px;min-height:0;padding:0;margin:0 0 14px;border:0;border-radius:50%;background:transparent;overflow:visible'
+          ? 'position:relative;box-sizing:border-box;width:34px;height:34px;min-height:0;padding:0;margin:0 0 14px auto;border:0;border-radius:50%;background:transparent;overflow:visible'
           : 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
         heading.hidden=collapsed;copy.hidden=collapsed;
         edit.style.cssText=collapsed
