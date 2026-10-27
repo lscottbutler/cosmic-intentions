@@ -35,20 +35,84 @@ jobs:
             exit 1
           fi
           python3 scripts/backup-recovery-parts.py "$WORK"
-          echo 'Verified existing encrypted snapshot download, checksum and two-part reassembly. No database read/write or new capture performed.' >> "$GITHUB_STEP_SUMMARY"
-      - name: Preserve encrypted part 1 of 2
+          echo 'Verified existing encrypted snapshot download, checksum and ten-part reassembly. No database read/write or new capture performed.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve encrypted part 1 of 10
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ci-recovery-40442206185-part-00
+          name: ci-recovery-40442206185-90m-part-00
           path: ${{ runner.temp }}/ci-recovery-transfer/part-00/*
           compression-level: 0
           retention-days: 30
           if-no-files-found: error
-      - name: Preserve encrypted part 2 of 2
+      - name: Preserve encrypted part 2 of 10
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ci-recovery-40442206185-part-01
+          name: ci-recovery-40442206185-90m-part-01
           path: ${{ runner.temp }}/ci-recovery-transfer/part-01/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 3 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-02
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-02/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 4 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-03
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-03/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 5 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-04
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-04/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 6 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-05
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-05/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 7 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-06
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-06/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 8 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-07
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-07/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 9 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-08
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-08/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 10 of 10
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-90m-part-09
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-09/*
           compression-level: 0
           retention-days: 30
           if-no-files-found: error
