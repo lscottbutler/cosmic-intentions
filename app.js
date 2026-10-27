@@ -6010,7 +6010,10 @@ async function initCitadelNoteFrame(nextPage) {
       personal.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' personal notes');
       personal.style.cssText = 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const heading = document.createElement('div');
-      heading.textContent='MY PERSONAL NOTES';
+      const headingKey='ci-personal-e-title:' + memberId + ':' + pageId;
+      let customHeading='MY PERSONAL NOTES';
+      try { customHeading=localStorage.getItem(headingKey)?.trim().slice(0,80)||customHeading; } catch (_) {}
+      heading.textContent=customHeading;
       heading.style.cssText='font:700 13px/1.4 Arial,sans-serif;letter-spacing:.04em;margin-bottom:8px';
       const copy = document.createElement('div');
       copy.style.whiteSpace='pre-wrap';
@@ -6060,6 +6063,14 @@ async function initCitadelNoteFrame(nextPage) {
         displayPersonal();
         // While editing, show only the editable text area, not a duplicate saved copy.
         copy.hidden=true;
+        const titleLabel=document.createElement('label');
+        titleLabel.textContent='NOTE TITLE';
+        titleLabel.style.cssText='display:block;font:700 12px Arial,sans-serif;margin:8px 0';
+        const titleInput=document.createElement('input');
+        titleInput.type='text';titleInput.maxLength=80;titleInput.value=customHeading;
+        titleInput.setAttribute('aria-label','Personal note title');
+        titleInput.style.cssText='display:block;width:100%;padding:8px;box-sizing:border-box;margin-top:5px';
+        titleLabel.appendChild(titleInput);
         const input=document.createElement('textarea');
         input.value=savedBody;
         input.setAttribute('aria-label','Your private notes');
@@ -6072,9 +6083,9 @@ async function initCitadelNoteFrame(nextPage) {
         hide.setAttribute('aria-label','Hide private notes and show only the small blue E');
         const status=document.createElement('span');status.setAttribute('role','status');
         actions.append(save,cancel,hide,status);
-        personal.append(input,actions);
+        personal.append(titleLabel,input,actions);
         edit.hidden=true;edit.style.display='none';
-        function closeEditor(){input.remove();actions.remove();displayPersonal();}
+        function closeEditor(){titleLabel.remove();input.remove();actions.remove();displayPersonal();}
         cancel.addEventListener('click',()=>{try { collapsed=localStorage.getItem(visibilityKey)==='1'; } catch (_) {} closeEditor();});
         hide.addEventListener('click',()=>{
           // HIDE is not SAVE. Discard unsaved draft edits, keep the last saved note.
@@ -6091,6 +6102,9 @@ async function initCitadelNoteFrame(nextPage) {
           );
           if(result.error){status.textContent='Could not save';save.disabled=false;cancel.disabled=false;hide.disabled=false;return;}
           savedBody=value;copy.textContent=value;
+          customHeading=titleInput.value.trim().slice(0,80)||'MY PERSONAL NOTES';
+          heading.textContent=customHeading;
+          try { localStorage.setItem(headingKey,customHeading); } catch (_) {}
           // SAVE reveals the newly saved text; only HIDE collapses to the faint E.
           collapsed=false;
           try { localStorage.removeItem(visibilityKey); } catch (_) {}
