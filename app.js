@@ -4869,6 +4869,13 @@ function wireAdminPageBoxes() {
   const label = ADMIN_PAGE_BOXES[pageId];
   visitTroughPage(pageId,!!label);
   if (!label) return;
+  // Cosmic Library player page: ATB 2 (legacy Box 3 record) sits at the top of the
+  // library content, in place of the old "Search by topic" guidance line.
+  if (pageId === 'cosmiclibrary' && window.self !== window.top && !active.querySelector(':scope > .ci-cosmic-atb2')) {
+    const atb2 = _buildLiveAdminPageBox(pageId, label, 3);
+    atb2.classList.add('ci-cosmic-atb2');
+    active.prepend(atb2);
+  }
 
   let topStack = active.querySelector(':scope .ci-admin-page-box-stack--top');
   if (!topStack) {
