@@ -425,6 +425,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  function watchDocument(doc){
   const homeDeck=doc.querySelector('.shell.home-mode .deck');
   // The Citadel already shows the full icon grid, so hide the small row whenever that grid is on screen.
+  // The Menu heading's chevron was a picture only. Make it a real button that closes the menu
+  // and returns to the page the member came from. The locked Master Player file is unchanged.
+  const directoryHead=doc===frame.contentDocument?doc.querySelector('#directoryView .view-head'):null;
+  if(directoryHead&&!doc.getElementById('ci-menu-close')){
+   const style=doc.createElement('style');style.textContent='#directoryView .view-head::after{content:none!important}#ci-menu-close{flex:none;width:44px;height:44px;box-sizing:border-box;border:2px solid #fff;border-radius:50%;padding:0;background:#000 url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'white\' d=\'M5 8h4l3 4 3-4h4l-7 9z\'/%3E%3C/svg%3E") center/82% no-repeat;cursor:pointer}#ci-menu-close:focus-visible{outline:3px solid #0b2a5b;outline-offset:2px}';doc.head.append(style);
+   const close=doc.createElement('button');close.id='ci-menu-close';close.type='button';close.setAttribute('aria-label','Close menu');
+   close.addEventListener('click',()=>frame.contentWindow.postMessage({type:'ci-lfm-select',action:current&&current!=='admin'?current:'home'},location.origin));
+   directoryHead.append(close);
+  }
   if(doc===frame.contentDocument){const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=!!homeDeck||current==='home';}
   if(homeDeck&&!doc.getElementById('citadel-action-heading')){
    const heading=doc.createElement('h2');heading.id='citadel-action-heading';heading.textContent='WHAT DO YOU WANT TO DO?';
