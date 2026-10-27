@@ -428,7 +428,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    style.textContent=`html.ci-review-test .shell.home-mode{--frame-border:0px;--header:transparent;--deck:transparent;background:transparent}
     html.ci-review-test .shell.home-mode #citadelNote{padding-top:0}
     html.ci-review-test .shell.home-mode .stage{padding:40px;background:#fff}
-    html.ci-review-test .shell.home-mode .deck{background:transparent}
+    html.ci-review-test .shell.home-mode .deck{background:transparent;padding-bottom:28px!important;min-height:0!important}
     html.ci-review-test .shell.home-mode .deck::before{bottom:0;background:#fff}
     html.ci-review-test .shell.home-mode .nav{color:#171717}
     html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){color:#fff}
