@@ -72,9 +72,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    <button id="ci-tour-try" type="button">Go to the real Meditation player</button>
  </div>`;
  document.body.append(instructionTour);
- // Real screen recording of the actual Meditation player (standalone/media/meditation-walkthrough.webm).
- // Each step starts at the second where that action happens in the recording.
- const tourSteps=[
+ // Real screen recordings of the actual pages in use (standalone/media/*-walkthrough.webm).
+ // Each step starts at the second where that action happens in its recording.
+ const TOURS={
+  meditation:{name:'Meditation',heading:'How Meditation Works',video:'/standalone/media/meditation-walkthrough.webm?v=20261027',steps:[
   {at:0,title:'Open your settings',detail:'Click CURRENTLY PLAYING to open the session settings.'},
   {at:5.3,title:'Relaxation',detail:'Open Relaxation and choose how long to settle in before the meditation, or leave it Off.'},
   {at:14.3,title:'Meditation Guidance',detail:'Choose Unguided (bells only), Lightly Guided, or Guided.'},
@@ -82,7 +83,34 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   {at:36.5,title:'Press Play',detail:'Press Play. The opening invites you to close your eyes, then your session begins.'},
   {at:46.9,title:'Pause and resume',detail:'Press the center button to pause. Press it again to resume where you left off.'},
   {at:58.2,title:'Session complete',detail:'The session runs to its end (sped up here). A bell marks the finish and Session complete appears.'}
- ];
+ ]},
+  gratitude:{name:'Gratitude',heading:'How Gratitude Works',video:'/standalone/media/gratitude-walkthrough.webm?v=20261027',steps:[
+   {at:0,title:'Open your settings',detail:'Click CURRENTLY PLAYING to open the session settings.'},
+   {at:6.5,title:'Gratitude Module',detail:'Choose a module, or Random to let the player pick one for you.'},
+   {at:21.1,title:'Gratitude Time',detail:'Choose how long your quiet gratitude time lasts after the images. Click CURRENTLY PLAYING again to close the settings.'},
+   {at:38.2,title:'Press Play',detail:'Press Play. The session opens with things others in the Cosmic Community are grateful for.'},
+   {at:55.4,title:'Pause and resume',detail:'Press the center button to pause. Press it again to resume where you left off.'},
+   {at:67.8,title:'The images',detail:'Each image shows something to be grateful for (sped up here).'},
+   {at:86.5,title:'Your quiet time',detail:'Then comes your quiet time to reflect on what you are grateful for (sped up here).'},
+   {at:99.5,title:'Session complete',detail:'When your time is up, the player returns to its start, ready for your next session.'}
+  ]},
+  'daily-habits':{name:'Habits',heading:'How Habits Work',video:'/standalone/media/habits-walkthrough.webm?v=20261027',steps:[
+   {at:0,title:'Your day, in four parts',detail:'Your habits are grouped into Morning, Day, Evening and Before Sleep. Your checklist starts fresh each day.'},
+   {at:10.4,title:'Tick off a habit',detail:'Click the circle next to a habit when you complete it. The count on each section shows how many are done.'},
+   {at:19.9,title:'Choose a time of day',detail:'Click Morning, Day, Evening or Before Sleep to focus on that part of your day.'},
+   {at:26.8,title:'Edit habits',detail:'Click EDIT HABITS to add, rename, reorder or remove habits. Type a new habit, choose its time of day, then click + Add.'},
+   {at:48.6,title:'Back to your checklist',detail:'Click BACK TO DAILY CHECKLIST. Your new habit is ready to tick off. Changes save automatically.'}
+  ]},
+  goals:{name:'Goals',heading:'How Goals Work',video:'/standalone/media/goals-walkthrough.webm?v=20261027',steps:[
+   {at:0,title:'Your goals',detail:'Each goal is written as an I AM statement and has its own letter: A, B, C.'},
+   {at:9.6,title:'Open a goal',detail:'Click a goal to open it. VISUALIZATION rehearses it; ROADMAP turns it into next steps.'},
+   {at:18.9,title:'Add a goal',detail:'Click ADD A GOAL and write your goal as an I AM statement.'},
+   {at:29.2,title:'Dates and category',detail:'Optionally add a start date, a target date and a category.'},
+   {at:36.5,title:'Save',detail:'Click Save. Your new goal joins your list with its own letter.'}
+  ]}
+ };
+ TOURS['new-gratitude']=TOURS.gratitude;// both menu entries open the same Gratitude player
+ let tourKey='meditation',tourSteps=TOURS.meditation.steps;
  const tourVideo=instructionTour.querySelector('.ci-tour-video');
  let tourIndex=-1;
  const stepAt=time=>{let i=0;tourSteps.forEach((step,k)=>{if(time>=step.at-0.05)i=k;});return i;};
@@ -99,14 +127,23 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  tourVideo.addEventListener('timeupdate',()=>{showTourStep(stepAt(tourVideo.currentTime));if(tourVideo.duration)instructionTour.querySelector('.ci-tour-progress span').style.width=(tourVideo.currentTime/tourVideo.duration*100)+'%';});
  ['play','pause','ended'].forEach(type=>tourVideo.addEventListener(type,updateTourButton));
  const stopTour=()=>tourVideo.pause();
- instructionsTrigger.addEventListener('click',()=>{tourIndex=-1;instructionTour.showModal();seekTour(0);tourVideo.play().catch(updateTourButton);});
+ instructionsTrigger.addEventListener('click',()=>{
+  tourKey=TOURS[current]?current:'meditation';const tour=TOURS[tourKey];tourSteps=tour.steps;
+  instructionTour.querySelector('#meditation-tour-title').textContent=tour.heading;
+  instructionTour.querySelector('#ci-tour-try').textContent='Go to the real '+tour.name+' page';
+  tourVideo.setAttribute('aria-label','Recording of the real '+tour.name+' page being used');
+  if(tourVideo.getAttribute('src')!==tour.video)tourVideo.setAttribute('src',tour.video);
+  tourIndex=-1;instructionTour.showModal();
+  const begin=()=>{seekTour(0);tourVideo.play().catch(updateTourButton);};
+  if(tourVideo.readyState>=1)begin();else tourVideo.addEventListener('loadedmetadata',begin,{once:true});
+ });
  instructionTour.querySelector('#ci-tour-close').addEventListener('click',()=>instructionTour.close());
  instructionTour.addEventListener('close',stopTour);
  instructionTour.addEventListener('click',event=>{if(event.target===instructionTour)instructionTour.close();});
  instructionTour.querySelector('#ci-tour-play').addEventListener('click',()=>{if(tourVideo.ended)seekTour(0);tourVideo.paused?tourVideo.play().catch(updateTourButton):tourVideo.pause();});
  instructionTour.querySelector('#ci-tour-prev').addEventListener('click',()=>seekTour(Math.max(0,stepAt(tourVideo.currentTime)-1)));
  instructionTour.querySelector('#ci-tour-next').addEventListener('click',()=>seekTour(Math.min(tourSteps.length-1,stepAt(tourVideo.currentTime)+1)));
- instructionTour.querySelector('#ci-tour-try').addEventListener('click',()=>{instructionTour.close();openFeature('meditation');document.querySelector('.member-player-columns')?.scrollIntoView({behavior:'smooth',block:'start'});});
+ instructionTour.querySelector('#ci-tour-try').addEventListener('click',()=>{instructionTour.close();openFeature(tourKey);document.querySelector('.member-player-columns')?.scrollIntoView({behavior:'smooth',block:'start'});});
 
  function updateHeaderCalendar(){
   const now=new Date(),year=now.getFullYear(),month=now.getMonth(),day=now.getDate();
@@ -191,7 +228,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
-  current=action;instructionsTrigger.hidden=action!=='meditation';const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
+  current=action;instructionsTrigger.hidden=!TOURS[action];const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
   if(action==='gratitude'||action==='new-gratitude')
    updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
