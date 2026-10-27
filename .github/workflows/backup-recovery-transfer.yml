@@ -1,0 +1,54 @@
+name: Encrypted recovery transfer
+on:
+  push:
+    branches: ['review/backup-recovery-20261027']
+    paths: ['.github/workflows/backup-recovery-transfer.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install transfer tool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+      - name: Download only the existing encrypted recovery copy
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          WORK: ${{ runner.temp }}/ci-recovery-transfer
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$WORK/incoming"
+          CONF=$(mktemp)
+          LOG=$(mktemp)
+          trap 'rm -f "$CONF" "$LOG"' EXIT
+          printf '%s' "$RCLONE_CONF" > "$CONF"
+          if ! timeout 600 rclone --config "$CONF" copy 'onedrive:CI-Backups/' "$WORK/incoming" --include '*-40442206185-1.tar.gz.gpg*' --retries 1 --contimeout 20s --timeout 90s >"$LOG" 2>&1; then
+            echo '::error::Encrypted copy download failed; private diagnostic details withheld.'
+            exit 1
+          fi
+          python3 scripts/backup-recovery-parts.py "$WORK"
+          echo 'Verified existing encrypted snapshot download, checksum and two-part reassembly. No database read/write or new capture performed.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve encrypted part 1 of 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-part-00
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-00/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve encrypted part 2 of 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-recovery-40442206185-part-01
+          path: ${{ runner.temp }}/ci-recovery-transfer/part-01/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
