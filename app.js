@@ -5971,33 +5971,6 @@ async function initCitadelNoteFrame(nextPage) {
       const content = document.createElement('div');
       content.innerHTML = _expandBlockTokens(pageInstructions.data?.body || '');
       instructions.appendChild(content);
-      if (window.ciOwnerAccess) {
-        const edit = document.createElement('button');
-        edit.type='button';edit.textContent='EDIT ATB 1';
-        edit.setAttribute('aria-label','Edit ' + ADMIN_PAGE_BOXES[pageId] + ' administrator instructions');
-        edit.style.cssText='display:block;margin-top:12px;padding:10px 14px;background:#292929;color:#fff;border:0;cursor:pointer';
-        edit.addEventListener('click',()=>{
-          if (instructions.querySelector('textarea')) return;
-          const field=document.createElement('textarea');
-          field.value=content.textContent||'';
-          field.style.cssText='width:100%;min-height:110px;display:block;margin:10px 0;box-sizing:border-box';
-          const save=document.createElement('button');save.type='button';save.textContent='SAVE INSTRUCTIONS';
-          const status=document.createElement('span');status.setAttribute('role','status');
-          save.addEventListener('click',async()=>{
-            save.disabled=true;
-            const text=field.value.trim();
-            const escapeHtml=value=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            const body='<p>'+escapeHtml(text)+'</p>';
-            const {error}=await sb.from('content_blocks').upsert({slug:instructionSlug,body,updated_at:new Date().toISOString()},{onConflict:'slug'});
-            if(error){status.textContent=' Save failed';save.disabled=false;return;}
-            _blockCache[instructionSlug]=body;
-            content.innerHTML=body;
-            field.remove();save.remove();status.remove();report();
-          });
-          instructions.append(field,save,status);report();
-        });
-        instructions.appendChild(edit);
-      }
       mount.style.padding='20px';
       mount.appendChild(instructions);
     }
