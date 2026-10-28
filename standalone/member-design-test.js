@@ -266,7 +266,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
-  current=action;instructionsTrigger.hidden=!TOURS[action];habitStats.hidden=action!=='daily-habits';updateHabitStats();const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
+  current=action;document.body.classList.toggle('habits-header',action==='daily-habits');instructionsTrigger.hidden=!TOURS[action];habitStats.hidden=action!=='daily-habits';updateHabitStats();const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
   if(action==='gratitude'||action==='new-gratitude')
    updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
@@ -280,6 +280,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(action!=='admin'){
    if(adminBox.parentElement!==headerCopy)headerCopy.append(adminBox);
    if(menuButton.parentElement!==headerShortcuts)headerShortcuts.append(menuButton,headerSticker,headerCalendar);
+   // Habits: Instructions sits under the date card (right column); streak circle takes its old spot.
+   if(action==='daily-habits'){if(instructionsTrigger.parentElement!==headerShortcuts)headerShortcuts.append(instructionsTrigger);}
+   else if(instructionsTrigger.parentElement!==headerOrientation)headerOrientation.append(instructionsTrigger);
   }else{
    if(adminBox.parentElement!==headerOrientation)headerOrientation.append(adminBox,menuButton,headerSticker,headerCalendar);
   }
