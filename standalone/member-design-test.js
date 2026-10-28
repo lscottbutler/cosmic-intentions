@@ -63,7 +63,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  document.querySelector('.orientation').append(instructionsTrigger);
  // Habits usage stats (text placeholders; styling to be designed later).
  const habitStats=document.createElement('div');habitStats.id='habit-stats';habitStats.hidden=true;
- habitStats.innerHTML='<div class="hs-box" id="hs-habits"></div><div class="hs-box" id="hs-totals"></div><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
+ habitStats.innerHTML='<p class="hs-message" id="hs-message" aria-live="polite"></p><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
  document.querySelector('.orientation').append(habitStats);
  function updateHabitStats(){
   if(habitStats.hidden)return;
@@ -83,8 +83,18 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let last='none yet';const ts=Number(read('ci_habit_last_done'))||0;
   if(ts){const h=Math.floor((Date.now()-ts)/3600000);last=h<1?'under 1 hour ago':h+(h===1?' hour ago':' hours ago');}
   else{const days=Object.keys(counts).sort();const lastDay=days[days.length-1];if(lastDay){const [y,mo,da]=lastDay.split('-').map(Number);const ago=Math.round((today-new Date(y,mo-1,da))/86400000);last=ago<=0?'today':ago===1?'yesterday':ago+' days ago';}}
-  document.getElementById('hs-habits').innerHTML='<strong>'+total+' habits</strong><span>'+doneToday+' of '+total+' done today</span><span>Last check-off: '+last+'</span>';
-  document.getElementById('hs-totals').innerHTML='<strong>Check-offs</strong><span>This week: '+week+'</span><span>This month: '+month+'</span><span>This year: '+year+'</span>';
+  // Morning script. {name} = first word of YOUR NAME (My Thoughts page); {lastHabit} = last habit checked off yesterday.
+  const HABIT_SCRIPTS={morning:['Great effort today{name}.',"Let's knock out our first habit and get the day started on a positive note.","Let's build on {lastHabit} from yesterday."]};
+  const firstName=String((read('ci_pegboard')||{})['pb-name']||'').trim().split(/\s+/)[0];
+  const yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+  const yDone=read('ci_habits_'+key(yesterday))||{},habits=Array.isArray(list)?list:[];
+  let lastHabit=habits.find(h=>h.id===read('ci_habit_last_id_'+key(yesterday))&&yDone[h.id]);
+  if(!lastHabit)lastHabit=habits.filter(h=>yDone[h.id]).pop();
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  document.getElementById('hs-message').innerHTML=HABIT_SCRIPTS.morning
+   .filter(line=>!line.includes('{lastHabit}')||lastHabit)
+   .map(line=>esc(line).replace('{name}',firstName?', '+esc(firstName):'').replace('{lastHabit}','<strong>'+esc(lastHabit?.name||'')+'</strong>'))
+   .join(' ');
   document.getElementById('hs-streak').textContent=streak;
  }
  addEventListener('storage',e=>{if(!e.key||/^ci_habit/.test(e.key))updateHabitStats();});
