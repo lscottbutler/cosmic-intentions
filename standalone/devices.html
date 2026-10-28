@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Device Preview · Cosmic Intentions</title>
+<style>
+:root{--bg:#292929;--bar:#1c1c1c;--fg:#f2f2f2;--muted:#9a9a9a;--line:#3d3d3d;--on:#fef200;--pc:#0076a3;--tab:#f26420;--mob:#ec1c23}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;background:var(--bar);border-bottom:1px solid var(--line)}
+header h1{font-size:14px;letter-spacing:.08em;margin:0 8px 0 0;font-weight:700;white-space:nowrap}
+.group{display:flex;gap:4px;align-items:center}
+button,select,input{font:inherit;color:var(--fg);background:#333;border:1px solid #4a4a4a;border-radius:6px;padding:7px 11px;cursor:pointer}
+button:hover{background:#3d3d3d}
+button[aria-pressed="true"]{background:var(--on);color:#111;border-color:var(--on);font-weight:700}
+input{cursor:text;min-width:0;width:340px;max-width:40vw}
+.sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+main{flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-start;gap:24px;padding:14px;overflow:auto}
+.device{display:flex;flex-direction:column;gap:6px;flex:none}
+.device[hidden]{display:none}
+.label{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);white-space:nowrap}
+.label b{color:var(--fg);letter-spacing:.06em}
+.label a{color:var(--muted)}
+.screen{position:relative;overflow:hidden;background:#fff;border-radius:6px;outline:3px solid var(--c)}
+.screen iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;background:#fff}
+#pc{--c:var(--pc)}#tablet{--c:var(--tab)}#mobile{--c:var(--mob)}
+</style>
+</head>
+<body>
+<header>
+  <h1>DEVICE PREVIEW</h1>
+  <div class="group" role="group" aria-label="View">
+    <button type="button" data-view="all">All three</button>
+    <button type="button" data-view="pc">PC</button>
+    <button type="button" data-view="tablet">Tablet</button>
+    <button type="button" data-view="mobile">Mobile</button>
+  </div>
+  <span class="sep"></span>
+  <div class="group">
+    <select id="preset" aria-label="Page">
+      <option value="/">Citadel (home)</option>
+      <option value="/standalone/member-design-test.html?feature=meditation">Meditation</option>
+      <option value="/standalone/member-design-test.html?feature=new-gratitude">New Gratitude</option>
+      <option value="">Custom path…</option>
+    </select>
+    <input id="path" type="text" spellcheck="false" aria-label="Page path" placeholder="/path/to/page.html">
+    <button type="button" id="go">Go</button>
+    <button type="button" id="reload" title="Reload all screens">Reload</button>
+  </div>
+  <span class="sep"></span>
+  <button type="button" id="rotate" title="Turn the tablet sideways">Tablet: portrait</button>
+</header>
+<main id="stage">
+  <section class="device" id="pc"><div class="label"><b>PC</b><span class="dim"></span><a target="_blank" rel="noopener">open ↗</a></div><div class="screen"><iframe title="PC preview"></iframe></div></section>
+  <section class="device" id="tablet"><div class="label"><b>TABLET</b><span class="dim"></span><a target="_blank" rel="noopener">open ↗</a></div><div class="screen"><iframe title="Tablet preview"></iframe></div></section>
+  <section class="device" id="mobile"><div class="label"><b>MOBILE</b><span class="dim"></span><a target="_blank" rel="noopener">open ↗</a></div><div class="screen"><iframe title="Mobile preview"></iframe></div></section>
+</main>
+<script>
+(()=>{
+  // Real CSS widths, so each frame triggers the same layout a real device would.
+  const SIZES={pc:[1440,900],tablet:[820,1180],mobile:[390,844]};
+  const GAP=24,LABEL=24;
+  const params=new URLSearchParams(location.search);
+  let view=['all','pc','tablet','mobile'].includes(params.get('view'))?params.get('view'):'all';
+  let path=params.get('path')||'/';
+  let landscape=params.get('tablet')==='landscape';
+  const $=s=>document.querySelector(s),stage=$('#stage'),pathInput=$('#path'),preset=$('#preset');
+  const size=id=>id==='tablet'&&landscape?[SIZES.tablet[1],SIZES.tablet[0]]:SIZES[id];
+
+  function safePath(p){p=(p||'/').trim();if(!p.startsWith('/')||p.startsWith('//'))p='/'+p.replace(/^\/+/,'');return p;}
+  function saveState(){
+    const q=new URLSearchParams({view,path});if(landscape)q.set('tablet','landscape');
+    history.replaceState(null,'','?'+q.toString());
+  }
+  function load(){
+    path=safePath(path);pathInput.value=path;
+    preset.value=[...preset.options].some(o=>o.value===path)?path:'';
+    for(const id of Object.keys(SIZES)){
+      const el=document.getElementById(id),f=el.querySelector('iframe');
+      if(f.getAttribute('src')!==path)f.setAttribute('src',path);
+      el.querySelector('a').href=path;
+    }
+    saveState();
+  }
+  function layout(){
+    const ids=view==='all'?Object.keys(SIZES):[view];
+    for(const id of Object.keys(SIZES))document.getElementById(id).hidden=!ids.includes(id);
+    document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+    $('#rotate').textContent='Tablet: '+(landscape?'landscape':'portrait');
+    const cs=getComputedStyle(stage);
+    const availW=stage.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-GAP*(ids.length-1)-8;
+    const availH=stage.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-LABEL-8;
+    const totalW=ids.reduce((t,id)=>t+size(id)[0],0),maxH=Math.max(...ids.map(id=>size(id)[1]));
+    // One shared scale keeps the three screens at true relative size.
+    const s=Math.max(.2,Math.min(1,availW/totalW,availH/maxH));
+    for(const id of ids){
+      const [w,h]=size(id),el=document.getElementById(id),scr=el.querySelector('.screen'),f=el.querySelector('iframe');
+      f.style.width=w+'px';f.style.height=h+'px';f.style.transform='scale('+s+')';
+      scr.style.width=Math.round(w*s)+'px';scr.style.height=Math.round(h*s)+'px';
+      el.querySelector('.dim').textContent=w+' × '+h+' · '+Math.round(s*100)+'%';
+    }
+    saveState();
+  }
+  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;layout();}));
+  preset.addEventListener('change',()=>{if(preset.value){path=preset.value;load();}else{pathInput.focus();pathInput.select();}});
+  $('#go').addEventListener('click',()=>{path=pathInput.value;load();});
+  pathInput.addEventListener('keydown',e=>{if(e.key==='Enter'){path=pathInput.value;load();}});
+  $('#reload').addEventListener('click',()=>document.querySelectorAll('iframe').forEach(f=>{try{f.contentWindow.location.reload();}catch{f.src=f.src;}}));
+  $('#rotate').addEventListener('click',()=>{landscape=!landscape;layout();});
+  addEventListener('resize',layout);
+  load();layout();
+})();
+</script>
+</body>
+</html>
