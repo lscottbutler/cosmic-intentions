@@ -5992,7 +5992,7 @@ async function initCitadelNoteFrame(nextPage) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
       instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
-      instructions.style.cssText = 'background:#fff;color:#292929;border:2px solid #303030;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
+      instructions.style.cssText = 'background:#fff;color:#292929;border:0;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
       content.innerHTML = _expandBlockTokens(pageInstructions.data?.body || '');
       instructions.appendChild(content);
