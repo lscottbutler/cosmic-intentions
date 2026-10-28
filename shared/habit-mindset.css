@@ -111,3 +111,10 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
  #page-habits .habit-period-menu .habit-period-label{min-height:52px;font-size:clamp(12px,3vw,17px)}
 }
 @media(prefers-reduced-motion:reduce){#page-habits .habit-period-menu .habit-period-circle{transition:none}}
+/* Habits ATB (Box 4): same admin look as ATB 1/2 — white, dark square border, charcoal pen (owner only). */
+.ci-admin-page-box.ci-habits-atb[data-page-box]{display:block;position:relative;background:#fff!important;border:2px solid #303030!important;border-radius:0!important;box-shadow:none!important;margin:24px 20px 0}
+.ci-habits-atb[data-page-box] .ci-admin-page-box-content{font:400 16px/1.55 Arial,sans-serif!important;color:#292929;padding:16px 52px 16px 16px!important;min-height:56px}
+:root .ci-habits-atb[data-page-box] .ci-admin-page-box-edit{border-radius:6px!important;background:#292929!important;color:#fff!important;width:30px;height:30px}
+:root .ci-habits-atb[data-page-box] .ci-admin-page-box-edit::after{content:none!important}
+:root .ci-habits-atb[data-page-box] .ci-admin-page-box-edit svg{display:block!important}
+:root .ci-habits-atb[data-page-box] .ci-admin-page-box-edit:hover{background:#000!important}
