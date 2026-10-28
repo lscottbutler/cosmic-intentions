@@ -281,3 +281,8 @@ body.habits-header .orientation .shortcuts>#meditation-instructions-trigger{marg
 #habit-stats .hs-message{grid-column:1;justify-self:center;max-width:470px;text-align:center}
 #habit-stats .hs-circle{grid-column:2;justify-self:center}
 body.habits-header .orientation .shortcuts>#meditation-instructions-trigger{background:var(--page-accent,#747474)!important;color:var(--page-accent-text,#fff)!important;border:2px solid var(--page-accent,#747474)!important;border-radius:12px}
+/* Phones (Scott 2026-10-28): long titles get the full top row; To Do / Goals and the rest start below. */
+@media(max-width:650px){
+ .orientation{padding-top:calc(20px + var(--title-h,40px) + 14px)!important}
+ .orientation #feature-title{position:absolute;top:20px;left:20px;right:20px;margin:0;justify-content:center}
+}

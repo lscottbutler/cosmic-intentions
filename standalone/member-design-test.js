@@ -5,6 +5,8 @@
  const frame=document.getElementById('ci-review-frame');
  const status=document.getElementById('review-status');
  const title=document.getElementById('feature-title');
+ // Phones: title gets its own full-width row above To Do / Goals; reserve its height.
+ try{new ResizeObserver(()=>title.closest('.orientation')?.style.setProperty('--title-h',title.offsetHeight+'px')).observe(title);}catch{}
  const purpose=document.getElementById('feature-purpose');
  const next=document.getElementById('feature-next');
  purpose.remove();next.remove();title.parentElement.querySelector('.eyebrow')?.remove();
