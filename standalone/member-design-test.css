@@ -311,3 +311,9 @@ body.habits-header .orientation .shortcuts>#meditation-instructions-trigger{back
  .orientation>div:first-child{grid-row:1!important}
  .orientation .shortcuts{grid-row:2!important}
 }
+/* Phones (Scott 2026-10-28): burger menu in the top-right corner, level with the title. */
+@media(max-width:650px){
+ .orientation .shortcuts>#review-menu-trigger{position:absolute!important;top:20px!important;right:16px!important;left:auto!important;bottom:auto!important;transform:none!important;margin:0!important;z-index:2;transition:none!important;grid-area:auto!important}
+ .orientation #feature-title{right:68px!important}
+}
+@media(max-width:650px){.orientation .shortcuts{position:static!important}.orientation{position:relative!important}}
