@@ -93,7 +93,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   document.getElementById('hs-message').innerHTML=HABIT_SCRIPTS.morning
    .filter(line=>!line.includes('{lastHabit}')||lastHabit)
-   .map(line=>esc(line).replace('{name}',firstName?', '+esc(firstName):'').replace('{lastHabit}','<strong>'+esc(lastHabit?.name||'')+'</strong>'))
+   .map(line=>esc(line).replace('{name}',firstName?', <strong>'+esc(firstName)+'</strong>':'').replace('{lastHabit}','<strong>'+esc(lastHabit?.name||'')+'</strong>'))
    .join(' ');
   document.getElementById('hs-streak').textContent=streak;
  }

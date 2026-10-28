@@ -271,5 +271,5 @@ body.gratitude-two-column .member-player-columns{
 @media(max-width:650px){#habit-stats .hs-circle b{font-size:48px}}
 /* Habits header: morning message paragraph replaces the two stat boxes. */
 #habit-stats{grid-template-columns:minmax(0,1fr) auto}
-#habit-stats .hs-message{margin:0;font:16px/1.5 Arial,sans-serif;color:#292929}
-@media(max-width:650px){#habit-stats{grid-template-columns:minmax(0,1fr)}#habit-stats .hs-message{font-size:13px}#habit-stats .hs-circle{grid-column:auto}}
+#habit-stats .hs-message{margin:0;font:18px/1.5 Arial,sans-serif;color:#292929}
+@media(max-width:650px){#habit-stats{grid-template-columns:minmax(0,1fr)}#habit-stats .hs-message{font-size:15px}#habit-stats .hs-circle{grid-column:auto}}
