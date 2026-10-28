@@ -306,3 +306,8 @@ body.habits-header .orientation .shortcuts>#meditation-instructions-trigger{back
 @media(max-width:650px){
  body.master-control-panel .orientation .shortcuts>#header-calendar,body.habits-header .orientation .shortcuts>#meditation-instructions-trigger{flex:1 1 0!important;width:auto!important;min-width:0}
 }
+/* Phones (Scott 2026-10-28): text box (with notes + artwork) directly under the title, icon rows after. */
+@media(max-width:650px){
+ .orientation>div:first-child{grid-row:1!important}
+ .orientation .shortcuts{grid-row:2!important}
+}
