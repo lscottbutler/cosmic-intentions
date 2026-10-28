@@ -126,6 +126,7 @@ export function habitToggle(id) {
   const nowOn = !d[id];
   if (d[id]) delete d[id]; else d[id] = true;
   LS.set(_doneKey(), d);
+  if (nowOn) LS.set('ci_habit_last_done', Date.now());   // Habits header stats: "hours since last check-off"
   if (typeof syncHabitDoneToSupabase === 'function') syncHabitDoneToSupabase();  // fire-and-forget cloud sync (cross-device)
   // Completing a MORNING RUN THROUGH task lands it on the Wall of Wins
   // (add on check, remove on uncheck — idempotent via the habit's src key).

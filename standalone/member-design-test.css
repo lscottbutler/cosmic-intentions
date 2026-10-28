@@ -252,3 +252,12 @@ body.gratitude-two-column .member-player-columns{
 .orientation .header-icon-pair button:hover{background:#eef2f8!important}
 .orientation .header-icon-pair button:focus-visible{outline:3px solid #0b2a5b;outline-offset:2px}
 @media(max-width:650px){.header-icon-pair{gap:4px}.header-icon-pair svg{width:36px;height:36px}.header-icon-pair span{font-size:11px}}
+/* Habits usage stats: text placeholders under the header art, left of Instructions. */
+#habit-stats{grid-column:1;grid-row:5;display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:center;min-width:0}
+#habit-stats[hidden]{display:none!important}
+#habit-stats .hs-box{display:flex;flex-direction:column;gap:3px;border:2px solid #292929;border-radius:6px;padding:10px 12px;font:14px/1.35 Arial,sans-serif;color:#292929;min-width:0}
+#habit-stats .hs-box strong{font-size:15px}
+#habit-stats .hs-circle{width:96px;height:96px;border:2px solid #292929;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#292929;font-family:Arial,sans-serif}
+#habit-stats .hs-circle b{font-size:40px;line-height:1}
+#habit-stats .hs-circle span{font-size:10px;font-weight:700;letter-spacing:.5px}
+@media(max-width:650px){#habit-stats{grid-template-columns:1fr 1fr;gap:8px}#habit-stats .hs-box{font-size:11px;padding:6px 7px}#habit-stats .hs-box strong{font-size:12px}#habit-stats .hs-circle{grid-column:1/-1;justify-self:center;width:76px;height:76px}#habit-stats .hs-circle b{font-size:30px}#habit-stats .hs-circle span{font-size:8px;letter-spacing:0}}

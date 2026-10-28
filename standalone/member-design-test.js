@@ -61,6 +61,34 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  instructionsTrigger.setAttribute('aria-haspopup','dialog');
  instructionsTrigger.setAttribute('aria-controls','meditation-instructions-tour');
  document.querySelector('.orientation').append(instructionsTrigger);
+ // Habits usage stats (text placeholders; styling to be designed later).
+ const habitStats=document.createElement('div');habitStats.id='habit-stats';habitStats.hidden=true;
+ habitStats.innerHTML='<div class="hs-box" id="hs-habits"></div><div class="hs-box" id="hs-totals"></div><div class="hs-circle" title="Days in a row with at least one habit checked off"><b id="hs-streak">0</b><span>DAY STREAK</span></div>';
+ document.querySelector('.orientation').append(habitStats);
+ function updateHabitStats(){
+  if(habitStats.hidden)return;
+  const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'null');}catch{return null;}};
+  const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const counts={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const m=/^ci_habits_(\d{4}-\d{2}-\d{2})$/.exec(k||'');if(!m)continue;const v=read(k);const n=v?Object.values(v).filter(Boolean).length:0;if(n)counts[m[1]]=n;}
+  const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const list=read('ci_habit_list');const total=Array.isArray(list)?list.length:0;
+  const doneToday=Array.isArray(list)?list.filter(h=>(read('ci_habits_'+key(today))||{})[h.id]).length:0;
+  let streak=0;const d=new Date(today);if(!counts[key(d)])d.setDate(d.getDate()-1);
+  while(counts[key(d)]){streak++;d.setDate(d.getDate()-1);}
+  const weekStart=new Date(today);weekStart.setDate(today.getDate()-((today.getDay()+6)%7));
+  let week=0,month=0,year=0;
+  for(const [k,n] of Object.entries(counts)){const [y,mo,da]=k.split('-').map(Number);const day=new Date(y,mo-1,da);if(day>today)continue;
+   if(y===today.getFullYear()){year+=n;if(mo-1===today.getMonth())month+=n;}if(day>=weekStart)week+=n;}
+  let last='none yet';const ts=Number(read('ci_habit_last_done'))||0;
+  if(ts){const h=Math.floor((Date.now()-ts)/3600000);last=h<1?'under 1 hour ago':h+(h===1?' hour ago':' hours ago');}
+  else{const days=Object.keys(counts).sort();const lastDay=days[days.length-1];if(lastDay){const [y,mo,da]=lastDay.split('-').map(Number);const ago=Math.round((today-new Date(y,mo-1,da))/86400000);last=ago<=0?'today':ago===1?'yesterday':ago+' days ago';}}
+  document.getElementById('hs-habits').innerHTML='<strong>'+total+' habits</strong><span>'+doneToday+' of '+total+' done today</span><span>Last check-off: '+last+'</span>';
+  document.getElementById('hs-totals').innerHTML='<strong>Check-offs</strong><span>This week: '+week+'</span><span>This month: '+month+'</span><span>This year: '+year+'</span>';
+  document.getElementById('hs-streak').textContent=streak;
+ }
+ addEventListener('storage',e=>{if(!e.key||/^ci_habit/.test(e.key))updateHabitStats();});
+ setInterval(updateHabitStats,60000);addEventListener('focus',updateHabitStats);
  const instructionTour=document.createElement('dialog');
  instructionTour.id='meditation-instructions-tour';
  instructionTour.setAttribute('aria-labelledby','meditation-tour-title');
@@ -228,7 +256,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
-  current=action;instructionsTrigger.hidden=!TOURS[action];const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
+  current=action;instructionsTrigger.hidden=!TOURS[action];habitStats.hidden=action!=='daily-habits';updateHabitStats();const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
   if(action==='gratitude'||action==='new-gratitude')
    updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
