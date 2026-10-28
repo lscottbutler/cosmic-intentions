@@ -4936,7 +4936,7 @@ function wireAdminPageBoxes() {
   // Preserve saved closing text in the admin content library.
   active.querySelectorAll('.ci-admin-page-box-stack--bottom').forEach(group => group.remove());
 
-  [topStack, active.querySelector('.ci-goals-top-row')].filter(Boolean).forEach(group => {
+  [topStack, active.querySelector('.ci-goals-top-row'), active.querySelector(':scope > .ci-habits-atb')].filter(Boolean).forEach(group => {
     group.querySelectorAll('[data-block]').forEach(el => {
       const slug = el.getAttribute('data-block');
       _fillBlockEl(el, _blockCache[slug] || '');
@@ -5914,7 +5914,11 @@ function injectPlaceholderCards() {
       else { habitsRoot.prepend(periodCard); periodCard.append(periods); }
       const editHabits = page.querySelector('#habitsDailyView > .habits-view-button');
       if (editHabits) periodCard.append(editHabits);
-      page.append(card);
+      // Habits ATB (Box 4): owner-editable admin text between the checklist and the mindset card.
+      const habitsAtb = _buildLiveAdminPageBox('habits', 'HABITS', 4);
+      habitsAtb.classList.add('ci-habits-atb');
+      habitsAtb.setAttribute('aria-label', 'HABITS administrator text box');
+      page.append(habitsAtb, card);
     } else if (anchor) anchor.insertAdjacentElement('afterend', card);   // the info box, under the title
     else wrap.insertBefore(card, wrap.firstChild);
     // (bottom placeholder card removed — one admin-controlled info box per page)
