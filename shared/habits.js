@@ -22,7 +22,7 @@ const DEFAULT_HABITS = [
 ];
 
 // Banner categories, in display order. '' = Unsorted (shown last).
-export const HABIT_CATS = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
+export const HABIT_CATS = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', 'HEALTH'];
 
 // Second tag: life-DOMAIN (what a habit is ABOUT) — independent of the
 // time-of-day banner above. Grouped so the editor dropdown renders as scannable
@@ -40,7 +40,7 @@ const HABIT_DOMAIN_SET = new Set(HABIT_DOMAINS.flatMap(g => g.items));
 function _domain(h) { return HABIT_DOMAIN_SET.has(h && h.domain) ? h.domain : ''; }
 const CAT_COLORS = {
   MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4',
-  BEDTIME: '#3B4A6B', HEALTH: '#48B860', '': '#5E5E5E',
+  NIGHT: '#3d2f6b', BEDTIME: '#3B4A6B', HEALTH: '#48B860', '': '#5E5E5E',
 };
 const CAT_LABEL = (c) => c || 'UNSORTED';
 
@@ -48,8 +48,8 @@ let _open = true;   // dashboard dropdown expanded? (survives re-renders)
 export function habitsToggleSection(open) { _open = !!open; }
 
 // Time-of-day sections shown as their own collapsible dropdowns (display label + order).
-const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH', ''];
-const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', 'HEALTH', ''];
+const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', NIGHT: 'Night', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
 const HABIT_PERIODS = [['MORNING', 'MORNING'], ['DAY', 'DAY'], ['EVENING', 'EVENING'], ['BEDTIME', 'BEFORE SLEEP']];
 const HABIT_PERIOD_ICONS = {
   MORNING:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 46h48M17 40a15 15 0 0 1 30 0M32 7v7M12 21l5 5M52 21l-5 5M6 36h6M52 36h6"/></svg>',
@@ -286,7 +286,7 @@ export function renderHabits() {
   let html = '';
   SECTION_ORDER.forEach(cat => {
     const items = [...groups[cat]].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-    if (!items.length && !HABIT_PERIODS.some(([period]) => period === cat)) return;
+    if (!items.length && cat !== 'NIGHT' && !HABIT_PERIODS.some(([period]) => period === cat)) return;
     const doneN = items.filter(h => !!d[h.id]).length;
     const open = !_closedCats.has(cat);
     html += `<details class="habit-drop" id="habit-period-${cat}" data-habit-section="${cat}" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">

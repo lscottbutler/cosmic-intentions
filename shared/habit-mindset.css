@@ -125,3 +125,5 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 :root .ci-habits-atb[data-page-box] .ci-admin-page-box-inline{padding:12px 16px 14px}
 :root .ci-habits-atb[data-page-box] .ci-admin-page-box-inline-editor{background:#fff!important;border:2px solid #303030!important;border-radius:0!important;box-shadow:none!important;color:#292929!important;font:400 16px/1.55 Arial,sans-serif!important;min-height:84px;padding:12px}
 :root .ci-habits-atb[data-page-box] .ci-admin-page-box-inline-editor:focus{border-color:#000!important;box-shadow:none!important;outline:0}
+/* NIGHT section (between Evening and Before Sleep). */
+#habitsWidget [data-habit-card="NIGHT"]{--habit-tint:#e7e3f0;--period-color:#3d2f6b}

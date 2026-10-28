@@ -4183,9 +4183,9 @@ function renderDailyHabitsInline() {
   try { done = LS.get('ci_habits_' + dayKey()) || {}; } catch (e) {}
   try { list = getHabitList() || []; } catch (e) {}
   if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No habits yet — add them on My Habits.</div>'; return; }
-  const CATS  = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
-  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
-  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
+  const CATS  = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', 'HEALTH'];
+  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', NIGHT: 'Night', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', NIGHT: '#3d2f6b', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
   const catOf = h => (CATS.indexOf(h && h.cat) >= 0 ? h.cat : '');
   const row = h => {
     const on = !!done[h.id];
