@@ -1000,6 +1000,8 @@ function updateUI(user) {
     if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
   });
+  // Habits ATB is built before sign-in finishes; re-apply owner/member visibility now.
+  document.querySelectorAll('.ci-habits-atb [data-block]').forEach(el => _fillBlockEl(el, _blockCache[el.getAttribute('data-block')] || ''));
   const navAdmin = document.getElementById('nav-admin');
   const navNotes = document.getElementById('nav-notes');
   if (navAdmin) navAdmin.style.display = isOwner ? 'flex' : 'none';
