@@ -22,7 +22,7 @@ const DEFAULT_HABITS = [
 ];
 
 // Banner categories, in display order. '' = Unsorted (shown last).
-export const HABIT_CATS = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', 'HEALTH'];
+export const HABIT_CATS = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME'];   // HEALTH removed 2026-10-28 (Scott); old HEALTH habits show as Unsorted
 
 // Second tag: life-DOMAIN (what a habit is ABOUT) — independent of the
 // time-of-day banner above. Grouped so the editor dropdown renders as scannable
@@ -48,7 +48,7 @@ let _open = true;   // dashboard dropdown expanded? (survives re-renders)
 export function habitsToggleSection(open) { _open = !!open; }
 
 // Time-of-day sections shown as their own collapsible dropdowns (display label + order).
-const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', 'HEALTH', ''];
+const SECTION_ORDER = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME', ''];
 const SECTION_LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', NIGHT: 'Night', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
 const HABIT_PERIODS = [['MORNING', 'MORNING'], ['DAY', 'DAY'], ['EVENING', 'EVENING'], ['NIGHT', 'NIGHT'], ['BEDTIME', 'BEFORE SLEEP']];
 const HABIT_PERIOD_ICONS = {
