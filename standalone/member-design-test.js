@@ -63,7 +63,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  document.querySelector('.orientation').append(instructionsTrigger);
  // Habits usage stats (text placeholders; styling to be designed later).
  const habitStats=document.createElement('div');habitStats.id='habit-stats';habitStats.hidden=true;
- habitStats.innerHTML='<div class="hs-box" id="hs-habits"></div><div class="hs-box" id="hs-totals"></div><div class="hs-circle" title="Days in a row with at least one habit checked off"><b id="hs-streak">0</b><span>DAY STREAK</span></div>';
+ habitStats.innerHTML='<div class="hs-box" id="hs-habits"></div><div class="hs-box" id="hs-totals"></div><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
  document.querySelector('.orientation').append(habitStats);
  function updateHabitStats(){
   if(habitStats.hidden)return;
