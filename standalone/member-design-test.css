@@ -265,3 +265,7 @@ body.gratitude-two-column .member-player-columns{
 #meditation-instructions-trigger{background:var(--page-accent,#747474);border-color:var(--page-accent,#747474);color:var(--page-accent-text,#fff)}
 #meditation-instructions-trigger:hover,#meditation-instructions-trigger:focus-visible{background:var(--page-accent,#747474);filter:brightness(.9)}
 #habit-stats .hs-circle{background:var(--page-accent,#747474);border-color:var(--page-accent,#747474);color:var(--page-accent-text,#fff)}
+/* Streak circle: number only, 60% larger, yellow ring. */
+#habit-stats .hs-circle{border:4px solid #fef200}
+#habit-stats .hs-circle b{font-size:64px;line-height:1;text-align:center}
+@media(max-width:650px){#habit-stats .hs-circle b{font-size:48px}}
