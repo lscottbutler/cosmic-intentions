@@ -127,3 +127,10 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 :root .ci-habits-atb[data-page-box] .ci-admin-page-box-inline-editor:focus{border-color:#000!important;box-shadow:none!important;outline:0}
 /* NIGHT section (between Evening and Before Sleep). */
 #habitsWidget [data-habit-card="NIGHT"]{--habit-tint:#e7e3f0;--period-color:#3d2f6b}
+/* Habit period cards (Scott 2026-10-28): DAY card design for all — white card, black label,
+   painted icon; five cards incl. NIGHT. */
+#page-habits .habit-period-menu{grid-template-columns:repeat(5,minmax(0,1fr))}
+#page-habits .habit-period-menu button[data-habit-period] .habit-period-circle{background:#fff!important}
+#page-habits .habit-period-menu button[data-habit-period] .habit-period-label{color:#292929}
+#page-habits .habit-period-menu .habit-period-icon svg{width:64px;height:64px;stroke:none}
+@media(max-width:600px){#page-habits .habit-period-menu{grid-template-columns:repeat(2,minmax(0,1fr))}}
