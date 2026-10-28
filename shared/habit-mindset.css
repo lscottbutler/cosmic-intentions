@@ -95,7 +95,8 @@ html.master-inline-daily-habits,html.master-inline-daily-habits body,html.master
 #page-habits .habit-period-menu .habit-period-icon{display:grid;place-items:center;flex:1;min-height:105px;padding:20px;background:#fff;color:#3982a8;border-radius:18px 18px 14px 14px}
 #page-habits .habit-period-menu .habit-period-icon svg{display:block;width:60px;height:60px;max-width:100%;stroke:currentColor}
 #page-habits .habit-period-menu .habit-period-label{display:grid;place-items:center;min-height:59px;padding:10px 4px;font:900 clamp(11px,1.7vw,20px)/1.15 Arial,Helvetica,sans-serif;letter-spacing:.02em;text-transform:uppercase;text-align:center;color:#fff}
-#page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-circle{background:#f1ad1e}
+#page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-circle{background:#fff}
+#page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-label{color:#292929}
 #page-habits .habit-period-menu button[data-habit-period="DAY"] .habit-period-icon{color:#f1ad1e}
 #page-habits .habit-period-menu button[data-habit-period="EVENING"] .habit-period-circle{background:#bf521d}
 #page-habits .habit-period-menu button[data-habit-period="EVENING"] .habit-period-icon{color:#bf521d}
