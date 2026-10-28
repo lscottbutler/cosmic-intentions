@@ -288,6 +288,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      library:'#747474'
    };
    const accent=titleAccents[action]||'#747474';
+   // Page accent for the Instructions button and Habits streak circle (dark text on yellow for legibility).
+   document.documentElement.style.setProperty('--page-accent',accent);document.documentElement.style.setProperty('--page-accent-text',accent==='#fef200'?'#292929':'#fff');
    const neutral=accent==='#747474'?'#303030':'#202020';
    let letterIndex=0;
    for(const char of copy[0]){
