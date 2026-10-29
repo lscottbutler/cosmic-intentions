@@ -58,6 +58,15 @@ gpg --batch --pinentry-mode loopback --passphrase-file "$TASK_DIR/passphrase" --
 mkdir -p "${GITHUB_WORKSPACE:-.}/encrypted-artifact" && cp "$OUT"/* "${GITHUB_WORKSPACE:-.}/encrypted-artifact/"
 mkdir -p "$TASK_DIR/rclone"
 printf '%s' "$RCLONE_CONF" > "$TASK_DIR/rclone/config"
+# Fresh Google Drive sign-in (secret RCLONE_GDRIVE_TOKEN, from `rclone authorize "drive"`) overrides
+# the expired one inside RCLONE_CONF without touching the OneDrive section.
+if [ -n "${RCLONE_GDRIVE_TOKEN:-}" ]; then
+  if rclone --config "$TASK_DIR/rclone/config" listremotes | grep -qx 'gdrive:'; then
+    rclone --config "$TASK_DIR/rclone/config" config update gdrive client_id "" client_secret "" token "$RCLONE_GDRIVE_TOKEN" --non-interactive >/dev/null
+  else
+    rclone --config "$TASK_DIR/rclone/config" config create gdrive drive scope drive token "$RCLONE_GDRIVE_TOKEN" --non-interactive >/dev/null
+  fi
+fi
 FAILED=()
 for REMOTE in gdrive onedrive; do
   # copy and check only: NEVER sync, delete, prune or overwrite old checkpoints.
