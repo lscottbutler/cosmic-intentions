@@ -997,7 +997,7 @@ function updateUI(user) {
   document.querySelectorAll('.ci-home-media-card').forEach(card => card.classList.toggle('ci-home-owner', isOwner));
   if(isOwner)installOwnerLabels(window);
   document.querySelectorAll('[data-owner-only]').forEach(el => {
-    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
+    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot') || el.id === 'home-image-library') el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
   });
   // Habits ATB is built before sign-in finishes; re-apply owner/member visibility now.
