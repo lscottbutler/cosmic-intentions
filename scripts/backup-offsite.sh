@@ -53,8 +53,21 @@ printf '%s' "$BACKUP_PASSPHRASE" > "$TASK_DIR/passphrase"
 gpg --batch --pinentry-mode loopback --passphrase-file "$TASK_DIR/passphrase" --symmetric --cipher-algo AES256 -o "$OUT/$NAME" "$TASK_DIR/payload.tar.gz"
 gpg --batch --pinentry-mode loopback --passphrase-file "$TASK_DIR/passphrase" --decrypt "$OUT/$NAME" 2>/dev/null | cmp "$TASK_DIR/payload.tar.gz" -
 (cd "$OUT" && sha256sum "$NAME" > "$NAME.sha256")
+# Keep a copy for the GitHub Actions artifact step, so an encrypted backup survives even
+# when a cloud remote's sign-in has expired (2026-10-29: gdrive token expired since ~Oct 25).
+mkdir -p "${GITHUB_WORKSPACE:-.}/encrypted-artifact" && cp "$OUT"/* "${GITHUB_WORKSPACE:-.}/encrypted-artifact/"
 mkdir -p "$TASK_DIR/rclone"
 printf '%s' "$RCLONE_CONF" > "$TASK_DIR/rclone/config"
+# Fresh Google Drive sign-in (secret RCLONE_GDRIVE_TOKEN, from `rclone authorize "drive"`) overrides
+# the expired one inside RCLONE_CONF without touching the OneDrive section.
+if [ -n "${RCLONE_GDRIVE_TOKEN:-}" ]; then
+  if rclone --config "$TASK_DIR/rclone/config" listremotes | grep -qx 'gdrive:'; then
+    rclone --config "$TASK_DIR/rclone/config" config update gdrive client_id "" client_secret "" token "$RCLONE_GDRIVE_TOKEN" --non-interactive >/dev/null
+  else
+    rclone --config "$TASK_DIR/rclone/config" config create gdrive drive scope drive token "$RCLONE_GDRIVE_TOKEN" --non-interactive >/dev/null
+  fi
+fi
+FAILED=()
 for REMOTE in gdrive onedrive; do
   # copy and check only: NEVER sync, delete, prune or overwrite old checkpoints.
   EXTRA=()
@@ -63,7 +76,14 @@ for REMOTE in gdrive onedrive; do
     EXTRA=(--drive-root-folder-id 12OTW3LTrzHNFhKChvFooCUPxnFbP6HwD)
     DEST='gdrive:encrypted/'
   fi
-  rclone --config "$TASK_DIR/rclone/config" "${EXTRA[@]}" copy "$OUT" "$DEST" --immutable
-  rclone --config "$TASK_DIR/rclone/config" "${EXTRA[@]}" check "$OUT" "$DEST" --download --one-way
+  # Try every remote even if an earlier one fails; report all failures at the end.
+  if rclone --config "$TASK_DIR/rclone/config" "${EXTRA[@]}" copy "$OUT" "$DEST" --immutable \
+     && rclone --config "$TASK_DIR/rclone/config" "${EXTRA[@]}" check "$OUT" "$DEST" --download --one-way; then
+    printf 'Verified on %s: %s\n' "$REMOTE" "$NAME" >> "$GITHUB_STEP_SUMMARY"
+  else
+    printf 'FAILED on %s (sign-in expired? see docs/BACKUP-RECOVERY.md)\n' "$REMOTE" >> "$GITHUB_STEP_SUMMARY"
+    FAILED+=("$REMOTE")
+  fi
 done
+if [ ${#FAILED[@]} -gt 0 ]; then echo "::error::Upload failed for: ${FAILED[*]} (encrypted copy kept as GitHub artifact)"; exit 1; fi
 printf 'Verified encrypted backup: %s\n' "$NAME" >> "$GITHUB_STEP_SUMMARY"
