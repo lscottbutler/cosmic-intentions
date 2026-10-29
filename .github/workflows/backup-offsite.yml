@@ -65,7 +65,16 @@ jobs:
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE || secrets.BACK_PASSPHRASE }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          RCLONE_GDRIVE_TOKEN: ${{ secrets.RCLONE_GDRIVE_TOKEN }}
         run: bash scripts/backup-offsite.sh
+      - name: Keep encrypted copy on GitHub (90 days)
+        if: always() && hashFiles('encrypted-artifact/*') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-backup-${{ github.run_id }}
+          path: encrypted-artifact/
+          retention-days: 90
+          if-no-files-found: error
       - name: Record outcome
         if: always()
         env:
