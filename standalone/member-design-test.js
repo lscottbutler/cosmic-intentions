@@ -340,6 +340,26 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   try{await contentFade.finished;}catch(_){/* A newer navigation owns the fade. */}
  }
  document.querySelectorAll('#quick-nav [data-quick-nav]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.quickNav==='menu'){document.getElementById('review-menu-trigger').click();return;}openFeature(button.dataset.quickNav);}));
+ // Full screen (Scott 2026-10-29): header button where the browser allows it (not iPhone Safari,
+ // not the home-screen app, which is already full frame); a corner ✕ and Esc leave full screen.
+ (()=>{const root=document.documentElement,trigger=document.getElementById('review-menu-trigger');
+  const can=!!(root.requestFullscreen||root.webkitRequestFullscreen)&&(document.fullscreenEnabled||document.webkitFullscreenEnabled);
+  const standalone=matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches||navigator.standalone;
+  if(!can||standalone||!trigger)return;
+  const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+  const enter=()=>{(root.requestFullscreen||root.webkitRequestFullscreen).call(root).catch?.(()=>{});};
+  const leave=()=>{if(fsEl())(document.exitFullscreen||document.webkitExitFullscreen).call(document);};
+  const btn=document.createElement('button');btn.type='button';btn.id='fullscreen-trigger';btn.setAttribute('aria-label','Full screen');btn.title='Full screen';
+  btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  btn.addEventListener('click',()=>fsEl()?leave():enter());
+  const exitBtn=document.createElement('button');exitBtn.type='button';exitBtn.id='fullscreen-exit';exitBtn.setAttribute('aria-label','Exit full screen');exitBtn.title='Exit full screen';exitBtn.hidden=true;
+  exitBtn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  exitBtn.addEventListener('click',leave);document.body.append(exitBtn);
+  const sync=()=>{const on=!!fsEl();exitBtn.hidden=!on;btn.setAttribute('aria-pressed',String(on));document.body.classList.toggle('ci-fullscreen',on);};
+  document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);
+  const mount=()=>{const five=document.getElementById('big-five-trigger')||trigger;if(five.parentElement&&btn.nextElementSibling!==five)five.before(btn);};
+  mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
+ })();
  // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Super Viz, Action Plan.
  (()=>{const keys=['meditation','daily-habits','goals','super-viz','action-plan'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
   const btn=document.createElement('button');btn.type='button';btn.id='big-five-trigger';btn.setAttribute('aria-label','The Big Five');btn.title='The Big Five';btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');
