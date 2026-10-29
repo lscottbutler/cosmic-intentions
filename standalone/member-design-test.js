@@ -340,6 +340,22 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   try{await contentFade.finished;}catch(_){/* A newer navigation owns the fade. */}
  }
  document.querySelectorAll('#quick-nav [data-quick-nav]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.quickNav==='menu'){document.getElementById('review-menu-trigger').click();return;}openFeature(button.dataset.quickNav);}));
+ // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Super Viz, Action Plan.
+ (()=>{const keys=['meditation','daily-habits','goals','super-viz','action-plan'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
+  const btn=document.createElement('button');btn.type='button';btn.id='big-five-trigger';btn.setAttribute('aria-label','The Big Five');btn.title='The Big Five';btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');
+  btn.innerHTML='<img src="/images/icons/big-five.png" alt="" width="44" height="44" draggable="false">';
+  const pop=document.createElement('div');pop.id='big-five-menu';pop.setAttribute('role','menu');pop.hidden=true;
+  pop.innerHTML='<h2>THE BIG FIVE</h2><div class="bf-list">'+keys.map(k=>{const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');return q?'<button type="button" role="menuitem" data-big-five="'+k+'" style="'+(q.getAttribute('style')||'')+'">'+q.innerHTML+'</button>':'';}).join('')+'</div>';
+  document.body.append(pop);
+  const place=()=>{const r=btn.getBoundingClientRect(),w=Math.min(300,innerWidth-24);pop.style.width=w+'px';pop.style.top=(r.bottom+8+scrollY)+'px';pop.style.left=Math.max(12,Math.min(r.right-w,innerWidth-w-12))+scrollX+'px';};
+  const close=()=>{pop.hidden=true;btn.setAttribute('aria-expanded','false');};
+  btn.addEventListener('click',e=>{e.stopPropagation();if(pop.hidden){place();pop.hidden=false;btn.setAttribute('aria-expanded','true');pop.querySelector('button')?.focus();}else close();});
+  pop.addEventListener('click',e=>{const b=e.target.closest('[data-big-five]');if(!b)return;close();openFeature(b.dataset.bigFive);});
+  document.addEventListener('click',e=>{if(!pop.hidden&&!pop.contains(e.target)&&e.target!==btn)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pop.hidden){close();btn.focus();}});
+  addEventListener('resize',()=>{if(!pop.hidden)place();});
+  const mount=()=>{if(trigger.parentElement&&btn.nextElementSibling!==trigger)trigger.before(btn);};mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
+ })();
  async function openFeature(action){
   if(!features[action])return;
   const version=++navigationVersion;
