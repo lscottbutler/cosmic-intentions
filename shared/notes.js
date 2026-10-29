@@ -41,8 +41,53 @@ export function readNotes() {
   try { const a = JSON.parse(localStorage.getItem('ci_notes') || '[]'); return Array.isArray(a) ? a : []; }
   catch (e) { return []; }
 }
+function journalSnapshot(note, at, kind) {
+  return { at, kind, text:note.text || '', goal:note.goal || '', taskKey:note.taskKey || '', task:note.task || '' };
+}
+function journalDate(value) {
+  if (!value) return 'Not recorded';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Not recorded' : date.toLocaleString();
+}
+function journalHistoryHTML(note) {
+  const history = Array.isArray(note.history) ? note.history : [];
+  const rows = history.slice().reverse().map(revision => `<li style="margin:12px 0;">
+    <strong>${esc(revision.kind === 'baseline' ? 'Earlier version (before history tracking)' : revision.kind === 'created' ? 'Created' : 'Modified')}</strong> - ${esc(journalDate(revision.at))}
+    <div style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(revision.text || '')}</div>
+    <div>Linked goal: ${esc(intentions.find(g => String(g.id) === String(revision.goal))?.title || revision.goal || 'None')}</div>
+    ${revision.task || revision.taskKey ? `<div>Linked action: ${esc(revision.task || revision.taskKey)}</div>` : ''}
+  </li>`).join('');
+  return `<div style="font-size:12px;line-height:1.6;color:#4b5563;margin:8px 0;">
+    <div>Created: ${esc(journalDate(note.createdAt || note.ts))}</div>
+    <div>Last modified: ${esc(journalDate(note.updatedAt))}</div>
+    <details><summary style="cursor:pointer;">Edit history (${history.filter(r=>r.kind==='edited').length} changes)</summary>
+    ${rows ? `<ol style="padding-left:20px;">${rows}</ol>` : '<p>Earlier changes were not recorded. New changes will appear here.</p>'}</details>
+  </div>`;
+}
+function refreshJournalMetadata(notes) {
+  document.querySelectorAll('[data-journal-history]').forEach(el => {
+    const note = notes.find(n => String(n.id) === el.dataset.journalHistory);
+    if (note) { const open=!!el.querySelector('details[open]'); el.innerHTML=journalHistoryHTML(note); if(open)el.querySelector('details').open=true; }
+  });
+}
 export function _saveNotes(a) {
-  try { localStorage.setItem('ci_notes', JSON.stringify(a)); } catch (e) { return false; }
+  const previous = new Map(readNotes().map(note => [note.id, note]));
+  const now = new Date().toISOString();
+  a.forEach(note => {
+    if (note.cat !== 'note') return;
+    const old = previous.get(note.id);
+    if (!old) {
+      note.createdAt = note.createdAt || note.ts || now;
+      note.updatedAt = now;
+      note.history = [journalSnapshot(note, now, 'created')];
+    } else if (['text','goal','taskKey','task'].some(key => (old[key] || '') !== (note[key] || ''))) {
+      note.createdAt = old.createdAt || old.ts || null;
+      note.updatedAt = now;
+      note.history = [...(Array.isArray(old.history) && old.history.length ? old.history : [journalSnapshot(old, old.updatedAt || null, 'baseline')]), journalSnapshot(note, now, 'edited')];
+    }
+  });
+  try { localStorage.setItem('ci_notes', JSON.stringify(a)); } catch (e) { toast('Could not save this change. Your previous entry is preserved.', 'error'); return false; }
+  refreshJournalMetadata(a);
   try { syncNotesToSupabase && syncNotesToSupabase(); } catch (e) {}   // fire-and-forget cloud sync
   return true;
 }
@@ -284,6 +329,7 @@ export function renderNotesPage(cats, hostId, capId) {
         <button onclick="notesDelete('${n.id}')" title="Delete"
           style="position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         ${goalSel}
+        ${isNoteCat ? `<div data-journal-history="${esc(String(n.id))}">${journalHistoryHTML(n)}</div>` : ''}
       </div>`;
     }).join('');
 

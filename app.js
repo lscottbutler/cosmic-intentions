@@ -1,4 +1,4 @@
-import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
+import { backfillGoalImages, buildCardHTML, buildRoadmapPanel, generateMindset, hideAddForm, renderPBIntentionList, renderThoughtGoalEditors, runSurgicalVisualLoop, stopSurgicalVisualLoop } from './shared/card-builder.js';
 import { getDailyLine, injectPersonalContent } from './shared/content-bank.js';
 import { renderTodayStrip, renderTodayView } from './shared/today.js';
 import { _hasBbfw, _hasTheMap, _paintStrategyPanel, _parseJsonField, closeViz, hydrateIntent, seedGoalPractice } from './shared/the-map.js';
@@ -405,6 +405,15 @@ export function showPage(id) {
       frame?.contentWindow?.postMessage({ type: 'ci-lfm-select', action: 'favorites' }, location.origin);
     }, 220);
   }
+  // A sample session cannot administer content. Restart Admin with real auth.
+  if (id === 'admin' && currentUser?.id === 'preview') {
+    const adminUrl = new URL(location.href);
+    adminUrl.searchParams.delete('preview');
+    adminUrl.searchParams.set('page', 'admin');
+    if (window.self !== window.top) adminUrl.searchParams.set('masterInline', 'admin');
+    location.replace(adminUrl.href);
+    return;
+  }
   // The Admin workspace is owner-only. Keep an explicit access message visible
   // inside the player without exposing editor controls to other accounts.
   if (id === 'admin' && (!currentUser || currentUser.email !== 'lscottbutler@gmail.com')) {
@@ -418,7 +427,13 @@ export function showPage(id) {
     }
     notice.querySelector('#adminAccessMessage').innerHTML = '<h2>Admin</h2><p>' +
       (currentUser ? 'This account does not have administrator access.' : 'Sign in with the owner account to edit the site text boxes.') +
-      '</p>' + (currentUser ? '' : '<button type="button" onclick="openAuth(\'signin\')">Sign in</button>');
+      '</p><button type="button" onclick="openAuth(\'signin\')">' +
+      (currentUser ? 'Sign in with the owner account' : 'Sign in') + '</button>';
+    if (currentUser?.email) {
+      const account = document.createElement('p');
+      account.textContent = 'Current account: ' + currentUser.email;
+      notice.querySelector('#adminAccessMessage').append(account);
+    }
     id = 'admin-access';
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -465,6 +480,7 @@ export function showPage(id) {
     if (typeof window.renderFavorites === 'function') window.renderFavorites();
   }
   if (id === 'notes') {   // My Thoughts — its own page
+    renderThoughtGoalEditors();
     loadPegboard();             // personal foundation + legacy thought boxes now live here
     applyUserCitadelWelcome();   // sync the "My Citadel Welcome" textarea
     if (typeof window.renderNotesPage === 'function') window.renderNotesPage();
@@ -5610,6 +5626,8 @@ function _previewActive() {
   const netlifyReview = /^deploy-preview-\d+--gilded-profiterole-47a2eb\.netlify\.app$/.test(host);
   if (!local && !netlifyReview) return false;
   const params = new URLSearchParams(location.search);
+  // Admin must restore real authentication, even inside the sample review.
+  if (params.get('masterInline') === 'admin' || params.get('page') === 'admin') return false;
   if (params.has('preview')) return true;
   // The approved Master Player keeps its own URL separate from the content
   // frame. Carry its explicit sample-review choice into Entrepreneur content

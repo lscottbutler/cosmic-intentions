@@ -59,8 +59,11 @@ import { readFileSync } from 'node:fs';
 // Scott requested restoration of both admin boxes across player pages.
 // Chrome owner save/readback tests and 16-route placement checks pass at 1040/390px.
 // Existing saved slugs and owner editing retained; recovery 4ce3b48.
+// 2026-10-09: Authorized Citadel-only frame removal, dark circles, white controls,
+// and 40px artwork padding. Desktop/mobile rendered checks passed; Meditation unchanged.
+// Recovery: 2480dc5.
 const lockedFiles = {
-  "players/master-player.html": "1ac39de188ab096874e1e2e87c55fdd03ed078a3",
+  "players/master-player.html": "a4e053a0da81a4aec308714cbeb2e9085cc2ae4a",
   "players/meditation.html": "22b6f4eff6afdfc9c6eafd69ed06d916cc14c607"
 };
 const root = new URL('../', import.meta.url);

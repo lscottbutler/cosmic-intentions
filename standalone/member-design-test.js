@@ -131,10 +131,51 @@
  @media(prefers-reduced-motion:reduce){html.ci-review-test .page:not(#page-admin) .ci-review-guidance{animation:none}}
  `;
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;inspect();});}
+ const headerNote=document.getElementById('header-admin-note');
+ const headerNoteFrame=document.getElementById('header-admin-note-frame');
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow||event.data?.type!=='ci-citadel-note-height')return;
+  const height=Math.max(0,Math.ceil(Number(event.data.height)||0));
+  headerNoteFrame.style.height=height+'px';headerNote.hidden=!height||current==='admin';
+ });
  function watchDocument(doc){
   if(!doc?.documentElement)return;
+  const opening=doc===frame.contentDocument?doc.getElementById('citadelNoteFrame'):null;
+  if(opening){
+   if(!doc.getElementById('header-note-relocation')){
+    const style=doc.createElement('style');style.id='header-note-relocation';
+    style.textContent='#citadelNote{display:none!important}';doc.head.append(style);
+   }
+   const src=opening.getAttribute('src');
+   if(src&&headerNoteFrame.getAttribute('src')!==src){headerNote.hidden=false;headerNoteFrame.src=src;}
+   if(current==='admin')headerNote.hidden=true;
+   else if(src===headerNoteFrame.getAttribute('src')&&parseFloat(headerNoteFrame.style.height)>0)headerNote.hidden=false;
+  }
+
   if(doc.getElementById('siteMenuButton')&&!doc.getElementById('review-menu-relocation')){
    const style=doc.createElement('style');style.id='review-menu-relocation';style.textContent='html.ci-review-test #siteMenuButton{display:none!important}';doc.head.append(style);
+  }
+  if(doc.querySelector('.shell')&&!doc.getElementById('citadel-border-test')){
+   const style=doc.createElement('style');style.id='citadel-border-test';
+   style.textContent=`html.ci-review-test .shell.home-mode{--frame-border:0px;--header:transparent;--deck:transparent;background:transparent}
+    html.ci-review-test .shell.home-mode #citadelNote{padding-top:0}
+    html.ci-review-test .shell.home-mode .stage{padding:40px;background:#fff}
+    html.ci-review-test .shell.home-mode .deck{background:transparent}
+    html.ci-review-test .shell.home-mode .deck::before{bottom:0;background:#fff}
+    html.ci-review-test .shell.home-mode .nav{color:#171717}
+    html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){color:#fff}
+    html.ci-review-test .shell.home-mode .nav:focus-visible{outline-color:#171717}
+html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#080808}
+html.ci-review-test .shell.home-mode [data-action="daily-habits"]{--citadel-button:#121212}
+html.ci-review-test .shell.home-mode [data-action="goals"]{--citadel-button:#1c1c1c}
+html.ci-review-test .shell.home-mode [data-action="visualization"]{--citadel-button:#262626}
+html.ci-review-test .shell.home-mode [data-action="action-plan"]{--citadel-button:#303030}
+html.ci-review-test .shell.home-mode [data-action="cosmic-library"]{--citadel-button:#3a3a3a}
+html.ci-review-test .shell.home-mode [data-action="task-notes"]{--citadel-button:#444444}
+html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
+html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818)}
+html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}`;
+   doc.head.append(style);
   }
   if(newGratitude&&doc.getElementById('meditationControls')){
    if(!doc.getElementById('new-gratitude-choices')){
@@ -267,6 +308,7 @@
    doc.addEventListener('click',event=>{const control=event.target.closest('button[data-action],button[data-site-action]');const action=control?.dataset.action||control?.dataset.siteAction;if(features[action])renderFeature(action);schedule();});
   }
   const page=doc.querySelector('.page.active');
+  if(page?.id==='page-admin'||page?.id==='page-admin-access')renderFeature('admin');
   if(page&&page.id!=='page-admin'&&page.id!=='page-admin-access'){
    const action=inlinePages[page.id.replace('page-','')];
    if(features[action]){
@@ -457,8 +499,9 @@
    const linked=dashboardData.entries.filter(entry=>entry.taskKey===task.key);linked.forEach(entry=>row.append(safeNode('p',`${entry.cat==='note'?'Journal':'Note'} · ${entry.text}`,'dashboard-linked-entry')));
    groups.get(task.goalId).append(row);
   });
+  host.querySelectorAll('.dashboard-task').forEach((row,index)=>row.prepend(safeNode('div',`TO DO #${index+1}`,'dashboard-item-number')));
  }
- function entryRows(){const host=byId('dashboard-entry-list');host.replaceChildren();const entries=dashboardData.entries.filter(entry=>dashboardView==='journal'?entry.cat==='note':entry.cat!=='note').sort((a,b)=>(b.updatedAt||b.ts||0)-(a.updatedAt||a.ts||0));if(!entries.length)host.append(safeNode('p',dashboardView==='journal'?'No journal entries yet. Write your first reflection below.':'No notes yet. Capture your first idea below.','dashboard-empty'));entries.forEach(entry=>{const row=document.createElement('article');row.className='dashboard-entry';row.append(safeNode('p',entry.text),safeNode('p',dashboardData.goals.find(goal=>goal.id===String(entry.goal))?.title||'No goal linked','dashboard-goal'));const task=dashboardData.tasks.find(task=>task.key===entry.taskKey);if(task)row.append(safeNode('p',`Related action · ${task.text}`,'dashboard-goal'));host.append(row);});}
+ function entryRows(){const host=byId('dashboard-entry-list');host.replaceChildren();const entries=dashboardData.entries.filter(entry=>dashboardView==='journal'?entry.cat==='note':entry.cat!=='note').sort((a,b)=>(b.updatedAt||b.ts||0)-(a.updatedAt||a.ts||0));if(!entries.length)host.append(safeNode('p',dashboardView==='journal'?'No journal entries yet. Write your first reflection below.':'No notes yet. Capture your first idea below.','dashboard-empty'));entries.forEach((entry,index)=>{const row=document.createElement('article');row.className='dashboard-entry';row.append(safeNode('div',`${dashboardView==='journal'?'JOURNAL':'NOTE'} #${index+1}`,'dashboard-item-number'),safeNode('p',entry.text),safeNode('p',dashboardData.goals.find(goal=>goal.id===String(entry.goal))?.title||'No goal linked','dashboard-goal'));const task=dashboardData.tasks.find(task=>task.key===entry.taskKey);if(task)row.append(safeNode('p',`Related action · ${task.text}`,'dashboard-goal'));host.append(row);});}
  function setDashboardView(view){rememberDraft();dashboardView=view;if(view!=='tasks')byId('dashboard-entry-text').value=entryDrafts[view];byId('dashboard-title').textContent=view==='tasks'?'Your to-do list':view==='notes'?'Your notes':'Your journal';document.querySelectorAll('[data-dashboard-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.dashboardView===view)));byId('dashboard-tasks').hidden=view!=='tasks';byId('dashboard-entries').hidden=view==='tasks';byId('dashboard-add-entry').hidden=view==='tasks';byId('dashboard-entry-heading').textContent=view==='journal'?'Write a journal entry':'Add a note';byId('dashboard-save-entry').textContent=view==='journal'?'Save journal entry':'Save note';if(dashboardData){taskRows();entryRows();}}
  function loadDashboard(){clearTimeout(dashboardLoadTimer);dashboardLoadTimer=0;try{dashboardData=dashboardApi.snapshot();populateGoals(byId('dashboard-task-goal'));populateGoals(byId('dashboard-entry-goal'));actionChoices();byId('dashboard-ready').hidden=false;setDashboardView(dashboardView);say('Your existing actions and entries. Unfinished tasks are highlighted.');if(dashboardView!=='tasks')byId('dashboard-entry-text').focus();}catch(_){say('Your list could not be loaded. Close this dashboard and try again.');}}
  function openDashboard(view){dashboardReturn=current;dashboardTrigger=view==='tasks'?byId('to-do'):view==='journal'?byId('write-journal'):addNote;dashboardData=null;byId('dashboard-ready').hidden=true;byId('dashboard-task-text').value='';setDashboardView(view);say('Loading your existing list…');dashboard.showModal();pendingDashboard=true;clearTimeout(dashboardLoadTimer);dashboardLoadTimer=setTimeout(()=>{if(pendingDashboard&&dashboard.open){pendingDashboard=false;say('Your list could not connect. Close this window and try again.');}},20000);openFeature('action-plan');schedule();}
@@ -470,7 +513,6 @@
  byId('dashboard-add-task').addEventListener('submit',event=>{event.preventDefault();try{const result=dashboardApi.addTask(byId('dashboard-task-text').value,byId('dashboard-task-goal').value);if(result.error){say(result.error);return;}dashboardData=result;byId('dashboard-task-text').value='';taskRows();say('To-do added to your existing list.');}catch(_){say('Could not add this to-do. Your text is still here.');}});
  byId('dashboard-add-entry').addEventListener('submit',event=>{event.preventDefault();try{const result=dashboardApi.addEntry({text:byId('dashboard-entry-text').value,kind:dashboardView,goalId:byId('dashboard-entry-goal').value,taskKey:byId('dashboard-entry-task').value});if(result.error){say(result.error);return;}dashboardData=result;entryDrafts[dashboardView]='';byId('dashboard-entry-text').value='';taskRows();entryRows();say('Entry saved on this device using your existing notes store.');}catch(_){say('Could not save this entry. Your text is still here.');}});
  frame.addEventListener('load',()=>{const doc=frame.contentDocument;const shell=doc?.querySelector('.shell');if(shell){new ResizeObserver(schedule).observe(shell);watchDocument(doc);inspect();}});
- document.querySelectorAll('[name=appearance]').forEach(input=>input.addEventListener('change',()=>{enabled=input.value==='test';document.body.classList.toggle('original',!enabled);inspect();}));
  document.getElementById('begin').addEventListener('click',()=>openFeature('goals'));
  addNote.addEventListener('click',()=>openDashboard('notes'));
 
