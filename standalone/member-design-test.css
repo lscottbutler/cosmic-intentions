@@ -339,3 +339,6 @@ body .orientation .shortcuts>button#fullscreen-trigger{width:44px!important;heig
 #fullscreen-exit svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
 /* Home-screen app: keep content clear of the notch and home bar. */
 @media (display-mode: standalone){body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}}
+/* Scott 2026-10-30: full-screen button = white icon in a black circle. */
+body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important;color:#fff!important}
+#fullscreen-trigger svg{width:22px;height:22px}

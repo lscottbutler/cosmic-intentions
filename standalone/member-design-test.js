@@ -363,7 +363,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Super Viz, Action Plan.
  (()=>{const keys=['meditation','daily-habits','goals','super-viz','action-plan'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
   const btn=document.createElement('button');btn.type='button';btn.id='big-five-trigger';btn.setAttribute('aria-label','The Big Five');btn.title='The Big Five';btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');
-  btn.innerHTML='<img src="/images/icons/big-five.png" alt="" width="44" height="44" draggable="false">';
+  // Scott 2026-10-30: a different "5" each page visit (grey 5 -> dice -> orange shield, in turn).
+  const fives=['/images/icons/big-five.png','/images/icons/big-five-dice.png','/images/icons/big-five-shield.png'];
+  let fiveIdx=0;try{fiveIdx=(Number(localStorage.getItem('ci-big-five-look'))+1||0)%fives.length;localStorage.setItem('ci-big-five-look',String(fiveIdx));}catch(_){fiveIdx=Math.floor(Math.random()*fives.length);}
+  btn.innerHTML='<img src="'+fives[fiveIdx]+'" alt="" width="44" height="44" draggable="false" style="object-fit:contain">';
   const pop=document.createElement('div');pop.id='big-five-menu';pop.setAttribute('role','menu');pop.hidden=true;
   pop.innerHTML='<h2>THE BIG FIVE</h2><div class="bf-list">'+keys.map(k=>{const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');return q?'<button type="button" role="menuitem" data-big-five="'+k+'" style="'+(q.getAttribute('style')||'')+'">'+q.innerHTML+'</button>':'';}).join('')+'</div>';
   document.body.append(pop);
