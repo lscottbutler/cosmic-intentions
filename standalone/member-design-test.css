@@ -339,3 +339,13 @@ body .orientation .shortcuts>button#fullscreen-trigger{width:44px!important;heig
 #fullscreen-exit svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
 /* Home-screen app: keep content clear of the notch and home bar. */
 @media (display-mode: standalone){body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}}
+/* Scott 2026-10-30: full-screen button = white icon in a black circle. */
+body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important;color:#fff!important}
+#fullscreen-trigger svg{width:22px;height:22px}
+/* Scott 2026-10-30: narrow Big Five menu with a black title bar, white centred text. */
+#big-five-menu{overflow:hidden}
+#big-five-menu h2{margin:-14px -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
+#big-five-menu [data-big-five] svg{color:#747474}
+/* Scott 2026-10-30: long VISUALIZATION title stays on one line on phones. */
+@media(max-width:650px){#feature-title[data-lettermark="Visualization"]{flex-wrap:nowrap!important;gap:2px!important;font-size:16px!important}
+ #feature-title[data-lettermark="Visualization"]>span{padding-left:2px!important;padding-right:2px!important}}

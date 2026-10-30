@@ -22,7 +22,7 @@
   'daily-habits':['Habits','Work through your existing daily routine.',''],
   'action-plan':['My Roadmap','Bring your next actions and Roadmap together.','Switch My Actions / Roadmap, or use the plus tab for both. The pencil opens an action note.'],
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
-  'super-viz':['Super Viz','Rehearse the next step toward your goal.','Choose relaxation, Guided or Unguided, and your practice time. Visualization guidance is a temporary draft.'],
+  'super-viz':['Visualization','Rehearse the next step toward your goal.','Choose relaxation, Guided or Unguided, and your practice time. Visualization guidance is a temporary draft.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Choose Unguided, Lightly Guided or Guided, then select 1 to 60 minutes. Press Play to begin.'],
   'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Autoplay','Keep your saved practices together.','Review the saved sequence before starting Autoplay.'],
@@ -360,14 +360,17 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const mount=()=>{const five=document.getElementById('big-five-trigger')||trigger;if(five.parentElement&&btn.nextElementSibling!==five)five.before(btn);};
   mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
  })();
- // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Super Viz, Action Plan.
+ // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Visualization, Action Plan.
  (()=>{const keys=['meditation','daily-habits','goals','super-viz','action-plan'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
   const btn=document.createElement('button');btn.type='button';btn.id='big-five-trigger';btn.setAttribute('aria-label','The Big Five');btn.title='The Big Five';btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');
-  btn.innerHTML='<img src="/images/icons/big-five.png" alt="" width="44" height="44" draggable="false">';
+  // Scott 2026-10-30: a different "5" each page visit (grey 5 -> dice -> orange shield, in turn).
+  const fives=['/images/icons/big-five.png','/images/icons/big-five-dice.png','/images/icons/big-five-shield.png'];
+  let fiveIdx=0;try{fiveIdx=(Number(localStorage.getItem('ci-big-five-look'))+1||0)%fives.length;localStorage.setItem('ci-big-five-look',String(fiveIdx));}catch(_){fiveIdx=Math.floor(Math.random()*fives.length);}
+  btn.innerHTML='<img src="'+fives[fiveIdx]+'" alt="" width="44" height="44" draggable="false" style="object-fit:contain">';
   const pop=document.createElement('div');pop.id='big-five-menu';pop.setAttribute('role','menu');pop.hidden=true;
   pop.innerHTML='<h2>THE BIG FIVE</h2><div class="bf-list">'+keys.map(k=>{const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');return q?'<button type="button" role="menuitem" data-big-five="'+k+'" style="'+(q.getAttribute('style')||'')+'">'+q.innerHTML+'</button>':'';}).join('')+'</div>';
   document.body.append(pop);
-  const place=()=>{const r=btn.getBoundingClientRect(),w=Math.min(300,innerWidth-24);pop.style.width=w+'px';pop.style.top=(r.bottom+8+scrollY)+'px';pop.style.left=Math.max(12,Math.min(r.right-w,innerWidth-w-12))+scrollX+'px';};
+  const place=()=>{const r=btn.getBoundingClientRect(),w=Math.min(196,innerWidth-24);pop.style.width=w+'px';pop.style.top=(r.bottom+8+scrollY)+'px';pop.style.left=Math.max(12,Math.min(r.right-w,innerWidth-w-12))+scrollX+'px';};
   const close=()=>{pop.hidden=true;btn.setAttribute('aria-expanded','false');};
   btn.addEventListener('click',e=>{e.stopPropagation();if(pop.hidden){place();pop.hidden=false;btn.setAttribute('aria-expanded','true');pop.querySelector('button')?.focus();}else close();});
   pop.addEventListener('click',e=>{const b=e.target.closest('[data-big-five]');if(!b)return;close();openFeature(b.dataset.bigFive);});
@@ -430,7 +433,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Super Viz','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
+ const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Autoplay',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualization','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Skill Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';document.getElementById('review-menu-items').append(usageLink);
  delete menuLabels.gratitude;
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
@@ -529,8 +532,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(visualize){
    const superViz=visualize.cloneNode(true);
    superViz.dataset.action='super-viz';
-   superViz.setAttribute('aria-label','Super Viz');
-   superViz.querySelector('span').textContent='Super Viz';
+   superViz.setAttribute('aria-label','Visualization');
+   superViz.querySelector('span').textContent='Visualization';
    superViz.style.setProperty('--citadel-button','#0053a4');
    superViz.style.setProperty('--citadel-ring','#0076a3');
    superViz.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();openFeature('super-viz');});
@@ -574,6 +577,10 @@ html.ci-review-test .shell.home-mode [data-action="cosmic-library"]{--citadel-bu
 html.ci-review-test .shell.home-mode [data-action="task-notes"]{--citadel-button:#444444}
 html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
 html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818);box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
+/* Scott 2026-10-30: Library = black ring, white centre, black books; Menu = dark grey ring, white centre, black lines. */
+html.ci-review-test .shell.home-mode .nav[data-action="cosmic-library"] svg{width:56px!important;height:56px!important;padding:14.7px!important;box-sizing:border-box;background:#fff!important;box-shadow:inset 0 0 0 7px #000!important;color:#000!important}
+html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines i{height:3px!important}
+html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines{width:56px!important;height:56px!important;padding:0 17px!important;gap:4px!important;box-sizing:border-box;background:#fff!important;box-shadow:inset 0 0 0 7px #4e4e4e!important;color:#000!important}
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]){grid-template-rows:57px auto}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:56px;height:56px;padding:14.7px;color:#747474!important;stroke:#747474!important;opacity:1!important;filter:none!important;background:#fff;box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
