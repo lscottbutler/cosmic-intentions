@@ -88,13 +88,15 @@ import { readFileSync } from 'node:fs';
 // 2026-10-21: Scott requested a slow title-card fade before the opening routine.
 // Title fade rendered and inspected; frame geometry unchanged.
 // Scott locked the21October Meditation master, recoverable at23df2a2.
+// Scott requested the Action Plan icon become his solid foot artwork (foot-icon) on 2026-10-30.
+// Icon path only; frame, controls and geometry unchanged. Recovery: 0647b92.
 const lockedFiles = {
   "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
   "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
   "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
-  "players/master-player.html": "9a993ec559c3ee0bed8cb82ed4a407374548a5c5",
+  "players/master-player.html": "c119835ef571467ed32c2022776e37b9bf4ebbce",
   "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278"
 };
 const root = new URL('../', import.meta.url);
