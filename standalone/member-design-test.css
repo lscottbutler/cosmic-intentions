@@ -351,3 +351,10 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important
  #feature-title[data-lettermark="Visualization"]>span{padding-left:2px!important;padding-right:2px!important}}
 /* Scott 2026-10-30: player-page button bar matches the Citadel bar (grey icons on white, coloured rings). */
 #quick-nav svg{color:#747474}
+/* Scott 2026-10-30 (PC/tablet): title centred across the whole card; right column starts below it,
+   with Search on top, then To Do + Goals, then the rest. */
+@media(min-width:651px){
+ .orientation #feature-title{margin-right:-184px!important;max-width:none!important;justify-content:center}
+ .orientation>.shortcuts{margin-top:72px;display:flex;flex-direction:column;align-items:center}
+ .orientation>.shortcuts>#player-search{order:-1;align-self:stretch;margin-bottom:10px}
+}
