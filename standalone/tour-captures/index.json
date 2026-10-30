@@ -592,7 +592,7 @@
   },
   {
     "id": "favorites",
-    "label": "My Favorites Autoplay",
+    "label": "My Favorites Reel",
     "description": "Keep your saved practice together",
     "width": 1360,
     "height": 1000,
@@ -609,7 +609,7 @@
       },
       {
         "image": "1.jpg",
-        "caption": "Choose My Favorites Autoplay.",
+        "caption": "Choose My Favorites Reel.",
         "kind": "click",
         "cursor": {
           "x": 0.1829388786764706,
@@ -618,13 +618,13 @@
       },
       {
         "image": "2.jpg",
-        "caption": "You\u2019re now in My Favorites Autoplay. Keep your saved practice together.",
+        "caption": "You\u2019re now in My Favorites Reel. Keep your saved practice together.",
         "kind": "look",
         "cursor": null
       },
       {
         "image": "3.jpg",
-        "caption": "Click Automatically Play My Daily Runthrough to start your saved sequence.",
+        "caption": "Click Play My Reel to start your reel.",
         "kind": "click",
         "cursor": {
           "x": 0.5,
@@ -633,7 +633,7 @@
       },
       {
         "image": "4.jpg",
-        "caption": "See the result of that action in My Favorites Autoplay.",
+        "caption": "See the result of that action in My Favorites Reel.",
         "kind": "look",
         "cursor": null
       }

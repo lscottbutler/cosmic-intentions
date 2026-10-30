@@ -127,7 +127,7 @@ function removeFavorite(f) {
   const key = favKey(f);
   const next = readFavs().filter(x => favKey(x) !== key);
   try { localStorage.setItem('ci_favorites', JSON.stringify(next)); } catch (e) {}
-  if (typeof window !== 'undefined' && typeof window.toast === 'function') window.toast('Removed from My Favorites Autoplay', 'info');
+  if (typeof window !== 'undefined' && typeof window.toast === 'function') window.toast('Removed from My Favorites Reel', 'info');
   renderFavorites();
 }
 
@@ -148,7 +148,7 @@ export function favSession(player, minutes, ev) {
   renderFavorites();   // no-op if the Favorites page isn't mounted; updates it if it is
   if (typeof window !== 'undefined' && typeof window.toast === 'function') {
     const label = FAV_LABEL[player] || player;
-    window.toast(on ? `${minutes}-min ${label} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+    window.toast(on ? `${minutes}-min ${label} added to My Favorites Reel ♥` : 'Removed from My Favorites Reel', on ? 'success' : 'info');
   }
 }
 /* Play a gratitude EPISODE — its photos + spoken lines (slideshow). */
@@ -181,7 +181,7 @@ export function favGratTimer(ev) {
   paintGratTimerFav();
   renderFavorites();
   if (typeof window !== 'undefined' && typeof window.toast === 'function') {
-    window.toast(on ? `Silent timer · ${mins} min added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+    window.toast(on ? `Silent timer · ${mins} min added to My Favorites Reel ♥` : 'Removed from My Favorites Reel', on ? 'success' : 'info');
   }
 }
 
@@ -209,7 +209,7 @@ export function favGratEp(ep, ev) {
   renderFavorites();
   if (typeof window !== 'undefined' && typeof window.toast === 'function') {
     const title = GRAT_EP_TITLES[ep] || ('Episode ' + ep);
-    window.toast(on ? `Gratitude · ${title} added to My Favorites Autoplay ♥` : 'Removed from My Favorites Autoplay', on ? 'success' : 'info');
+    window.toast(on ? `Gratitude · ${title} added to My Favorites Reel ♥` : 'Removed from My Favorites Reel', on ? 'success' : 'info');
   }
 }
 
@@ -288,7 +288,7 @@ export function renderFavorites() {
   // listed here — this page is the play queue, not a bookmark list.
   const playable = favs.filter(favIsPlayable);
   if (!playable.length) {
-    list.innerHTML = '<div style="color:#777;font-size:13px;padding:8px 2px;">No sessions pinned yet — tap ♥ in any player.</div>';
+    list.innerHTML = '<div style="color:#777;font-size:13px;padding:8px 2px;">Nothing pinned yet — tap ♥ in any player.</div>';
     return;
   }
   list.innerHTML = '';
@@ -299,7 +299,7 @@ export function renderFavorites() {
     const n = list.querySelectorAll('.fav-row input:checked').length;
     play.disabled = n === 0;
     play.style.opacity = n ? '1' : '.5';
-    play.innerHTML = n ? `&#9654; Automatically Play My Daily Runthrough (${n})` : '&#9654; Automatically Play My Daily Runthrough';
+    play.innerHTML = n ? `&#9654; Play My Reel (${n})` : '&#9654; Play My Reel';
   }
   // Shared drag-to-reorder wiring for any row (favorites AND pause spacers).
   function attachDrag(row) {
@@ -388,7 +388,7 @@ export function renderFavorites() {
   const play = document.createElement('button');
   play.id = 'fav-play';
   play.style.cssText = 'display:block;width:100%;text-align:center;padding:15px;margin:0 0 14px;background:#e02020;border:none;color:#fff;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:8px;cursor:pointer;font-size:16px;';
-  play.innerHTML = '&#9654; Automatically Play My Daily Runthrough';
+  play.innerHTML = '&#9654; Play My Reel';
   play.addEventListener('click', playAllFavorites);
   list.insertBefore(play, list.firstChild);   // Play My Day sits at the very top
   syncPlay();
