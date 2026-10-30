@@ -128,13 +128,22 @@ const authStorage = (() => {
     r.onsuccess = () => res(r.result);
     r.onerror = () => rej(r.error);
   }));
+  // Scott 2026-10-30: on Android Chrome the browser database can stall and never answer.
+  // Sign-in then waited forever on "Please wait..." after the password was accepted.
+  // Every database call now gives up after 2.5s and uses localStorage instead.
+  const STALL = 2500;
+  const timed = (p) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('IndexedDB stalled')), STALL))])
+    .catch((e) => { _dbP = null; throw e; });
+  const ls = {
+    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
+    del: (k) => { try { localStorage.removeItem(k); } catch (e) {} },
+  };
   return {
-    getItem: (k) => tx('readonly', s => s.get(k)).then(v => (v == null ? null : v))
-      .catch(() => { try { return localStorage.getItem(k); } catch (e) { return null; } }),
-    setItem: (k, v) => tx('readwrite', s => s.put(v, k))
-      .catch(() => { try { localStorage.setItem(k, v); } catch (e) {} }),
-    removeItem: (k) => tx('readwrite', s => s.delete(k))
-      .catch(() => { try { localStorage.removeItem(k); } catch (e) {} }),
+    getItem: (k) => timed(tx('readonly', s => s.get(k))).then(v => (v == null ? ls.get(k) : v)).catch(() => ls.get(k)),
+    // A good database write clears any fallback copy so an old token can't linger.
+    setItem: (k, v) => timed(tx('readwrite', s => s.put(v, k))).then(() => ls.del(k)).catch(() => ls.set(k, v)),
+    removeItem: (k) => { ls.del(k); return timed(tx('readwrite', s => s.delete(k))).catch(() => {}); },
   };
 })();
 // persistSession + autoRefreshToken keep the login on this device across
@@ -156,7 +165,7 @@ function _reclaimStorage() {
 
     // 1. Stale auth tokens now living in IndexedDB instead (old sb-* key + the
     //    prior localStorage 'ci-auth'); remove so they can't crowd storage.
-    localStorage.removeItem('ci-auth');
+    // 'ci-auth' in localStorage is now the stalled-database fallback copy: keep it.
     Object.keys(localStorage).filter(k => /^sb-.*-auth-token$/.test(k)).forEach(k => localStorage.removeItem(k));
     // 2. Transient player hand-off blobs — rebuilt the next time a player opens.
     ['ci_ass_slides', 'ci_goal_image'].forEach(k => localStorage.removeItem(k));
