@@ -577,6 +577,10 @@ html.ci-review-test .shell.home-mode [data-action="cosmic-library"]{--citadel-bu
 html.ci-review-test .shell.home-mode [data-action="task-notes"]{--citadel-button:#444444}
 html.ci-review-test .shell.home-mode #lfmMenu{--citadel-button:#4e4e4e}
 html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){background:var(--citadel-button,#181818);box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
+/* Scott 2026-10-30: Library = black ring, white centre, black books; Menu = dark grey ring, white centre, black lines. */
+html.ci-review-test .shell.home-mode .nav[data-action="cosmic-library"] svg{width:56px!important;height:56px!important;padding:14.7px!important;box-sizing:border-box;background:#fff!important;box-shadow:inset 0 0 0 7px #000!important;color:#000!important}
+html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines i{height:3px!important}
+html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines{width:56px!important;height:56px!important;padding:0 17px!important;gap:4px!important;box-sizing:border-box;background:#fff!important;box-shadow:inset 0 0 0 7px #4e4e4e!important;color:#000!important}
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]){grid-template-rows:57px auto}
 html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:56px;height:56px;padding:14.7px;color:#747474!important;stroke:#747474!important;opacity:1!important;filter:none!important;background:#fff;box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
