@@ -411,7 +411,7 @@ export function showPage(id) {
     };
     if (inlineAction && inlinePages[inlineAction]) id = inlinePages[inlineAction];
   }
-  // Favorites Autoplay is an LFM interface, never a standalone top-level page.
+  // My Favorites Reel is an LFM interface, never a standalone top-level page.
   if (id === 'dailyfocus' && window.self === window.top) {
     id = 'dashboard';
     window.setTimeout(() => {
@@ -6722,7 +6722,7 @@ const _masterInlineLabels = {
   'daily-habits': 'Daily Habits',
   visualization: 'Visualization',
   'action-plan': 'Action Plan',
-  favorites: 'Favorites Autoplay',
+  favorites: 'My Favorites Reel',
   gratitude: 'Gratitude',
   journal: 'Journal',
   thoughts: 'My Thoughts',

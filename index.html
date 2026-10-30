@@ -149,7 +149,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <button class="tnav-btn" onclick="goMemberDashboard()">&#8962; Citadel</button>
   <button class="tnav-btn" onclick="navTo('setup')"><svg width="16" height="16" viewBox="0 0 64 64" fill="currentColor" style="vertical-align:-3px;margin-right:8px;"><path d="M57.3638,25.8994c0,0,3.9517-7.0232-1.0266-8.9007c-4.9778-1.8776-10.6816,9.374-10.6816,9.374s-4.5-0.8711-7.8044-0.6693c-2.6404,0.1616-7.4351,0.2857-6.8716,5.3135l-7.0715,1.5822c-0.241-1.0858,0.3589-2.043,1.4001-2.3601l3.1392-0.981c-0.6309-2.8903-2.2117-5.0723-4.1306-5.278c-2.6692-0.2861-4.9714,3.3087-4.939,8.0306c0.0327,4.7212,2.3835,8.2842,5.0491,7.9614c1.9829-0.2401,3.5745-2.5919,4.1157-5.6406l3.0879-0.4242c-0.4485,6.9872-3.4888,13.0157-7.6606,14.0447c-5.2856,1.3044-10.2678-5.7123-10.3379-15.902C13.5615,21.861,18.447,14.7759,23.75,16.0073c3.2314,0.7501,5.8296,4.4891,7.0969,9.3668c1.1057-0.9022,2.467-1.356,3.7678-1.5991c-1.707-7.6962-5.6868-14.0198-10.8982-15.7642c-8.6936-2.9095-17.3977,7.546-17.2839,24.0887s8.9609,26.8776,17.6135,23.8487c5.9927-2.0977,10.2561-10.2845,11.2556-19.594c1.6926,0.0295,3.5103-0.8217,4.7942-1.3865c3.0303-1.3336,6.6418-4.1288,6.6418-4.1288s10.2219,7.3921,13.7886,3.4439C64.0923,30.3339,57.3638,25.8994,57.3638,25.8994z"/></svg>Goals</button>
   <button class="tnav-btn" onclick="navTo('habits')">Habits</button>
-  <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
+  <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Reel</button>
   <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
   <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
   <button class="tnav-btn" onclick="openGoalWorkspace()">MY TO DO LIST</button>
@@ -484,7 +484,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     <div id="drawerLandings"></div>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" id="nav-dailyfocus" onclick="openFavoritesInLfm()">
-      <span class="nav-icon">&#9829;</span> My Favorites Autoplay
+      <span class="nav-icon">&#9829;</span> My Favorites Reel
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-nav-item" onclick="navTo('notes')">
@@ -997,12 +997,12 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
   <div class="page" id="page-dailyfocus">
     <div class="pg-frame pf-navy">
       <div class="pg-bezel">
-        <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="FAVORITES AUTOPLAY" data-ci-scale="0.6" data-ci-sizing-count="21" role="img" aria-label="FAVORITES AUTOPLAY"></div>
+        <div class="pg-hdr ci-page-lettermark" data-ci-lettermark="MY FAVORITES REEL" data-ci-scale="0.6" data-ci-sizing-count="21" role="img" aria-label="MY FAVORITES REEL"></div>
         <div class="pg-screen">
           <div class="lfm-legacy-page-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
             <button onclick="goMemberDashboard()" class="pg-back" style="margin-bottom:0;margin-left:auto;">&#10022; My Goals</button>
           </div>
-          <p style="font-size:14px;color:#1a1a1a;margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Automatically Play My Daily Runthrough</strong>.</p>
+          <p style="font-size:14px;color:#1a1a1a;margin:0 0 20px;line-height:1.5;">Everything you've pinned with ♥. Drag to set your order, then hit <strong>Play My Reel</strong>.</p>
       <div data-random-note="quote" data-home-thought data-note-key="favorites" data-side-column style="display:flex;align-items:flex-start;gap:10px;background:rgba(224,16,43,.06);border:1px solid rgba(224,16,43,.25);border-radius:10px;padding:12px 14px;margin-bottom:34px;"></div>
 
       <!-- AUTOPLAY RUNTHROUGH — moved to the top (was below the teacher / add sections) -->
@@ -1021,7 +1021,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <div class="ham-menu" onclick="if(event.target.closest('.tnav-btn'))this.classList.remove('open');">
             <button class="tnav-btn" onclick="goMemberDashboard()">&#8962; Citadel</button>
             <button class="tnav-btn" onclick="navTo('habits')">Habits</button>
-  <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Autoplay</button>
+  <button class="tnav-btn" onclick="openFavoritesInLfm()">My Favorites Reel</button>
             <button class="tnav-btn" onclick="navTo('notes')">My Thoughts</button>
       <button class="tnav-btn" onclick="navTo('mynotes')">My Journal</button>
   <button class="tnav-btn" onclick="openGoalWorkspace()">MY TO DO LIST</button>
@@ -1439,9 +1439,9 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
                 instructions: 'Choose guided or unguided, select a time, press Play, pause or seek when needed and use Next to continue.'
               },
               'favorites': {
-                how: 'Collect preferred CI tools and play them as one ordered personal sequence.',
+                how: 'Collect preferred CI tools and play them as one ordered personal reel.',
                 reason: 'A ready-made sequence reduces decision fatigue and makes a consistent practice faster to begin.',
-                instructions: 'Favorite useful items, arrange their order and start autoplay; return here whenever you want to revise the sequence.'
+                instructions: 'Favorite useful items, arrange their order and press Play My Reel; return here whenever you want to revise your reel.'
               },
               'gratitude': {
                 how: 'Record and revisit specific people, experiences and progress for which you feel grateful.',
@@ -2813,7 +2813,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
       </div>
 
       <div class="admin-block" id="adminBlock-intro-note-dailyfocus">
-        <div class="admin-block-hd">📝 FAVORITES AUTOPLAY · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dailyfocus</span></div>
+        <div class="admin-block-hd">📝 MY FAVORITES REEL · text box under the intro (hidden until you add text) <span class="admin-block-slug">intro-note-dailyfocus</span></div>
         <div class="admin-toolbar">
           <button class="admin-tb-btn" onclick="adminFmt('intro-note-dailyfocus','bold')"><b>B</b></button>
           <button class="admin-tb-btn" onclick="adminFmt('intro-note-dailyfocus','italic')"><i>I</i></button>

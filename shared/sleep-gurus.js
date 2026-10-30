@@ -1,4 +1,4 @@
-// SLEEP GURUS — "Teacher of the day" on the My Favorites Autoplay page.
+// SLEEP GURUS — "Teacher of the day" on the My Favorites Reel page.
 // One teacher's section is shown at a time and rotates every 24 hours (UTC day),
 // same daily-rotation trick as the player images. Format per teacher:
 // name + book (source) → their thought (paragraph) → their points (2-col bullets).

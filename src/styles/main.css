@@ -2676,7 +2676,7 @@ input, textarea, select {
 #todayWillWidget { padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
 /* Roadmap introduction aligns with the Your Steps section below. */
 #page-myroadmap .pg-screen > p:first-of-type { padding: 20px 16px; box-sizing: border-box; }
-/* My Favorites Autoplay: the autoplay button + cards are indented 20px (via
+/* My Favorites Reel: the autoplay button + cards are indented 20px (via
    .player-times-grid). Indent the intro line the same so the whole block is
    clearly inset, matching the other pages. */
 #page-dailyfocus .pg-body-main > p { padding-left: 20px; padding-right: 20px; box-sizing: border-box; }
@@ -2751,7 +2751,7 @@ input, textarea, select {
 .vault-act { width: 36px; height: 36px; border-radius: 50%; background: #000; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #fff; padding: 0; flex-shrink: 0; transition: filter .12s; }
 .vault-act:hover { filter: brightness(1.35); }
 .vault-act.is-fav svg { fill: #fff; }
-/* Favorites Autoplay list — 20px padding each side (play button + rows). */
+/* My Favorites Reel list — 20px padding each side (play button + rows). */
 #favorites-list { padding: 0 20px; box-sizing: border-box; }
 /* Mind Loop panel — 20px padding each side. */
 #sleepLoopWidget { padding: 0 20px; box-sizing: border-box; }
@@ -3649,7 +3649,7 @@ html.master-inline-daily-habits #page-habits {
   overflow: visible;
 }
 
-/* Favorites Autoplay: preserve a clean 20px visual inset from the left edge. */
+/* My Favorites Reel: preserve a clean 20px visual inset from the left edge. */
 #page-dailyfocus .ci-lettermark-row {
   margin-left: 20px;
 }
