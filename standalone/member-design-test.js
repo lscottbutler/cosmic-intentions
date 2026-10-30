@@ -361,7 +361,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
  })();
  // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Visualization, Action Plan.
- (()=>{const keys=['meditation','daily-habits','goals','super-viz','action-plan'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
+ (()=>{const keys=['action-plan','goals','daily-habits','meditation','super-viz'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
   const btn=document.createElement('button');btn.type='button';btn.id='big-five-trigger';btn.setAttribute('aria-label','The Big Five');btn.title='The Big Five';btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');
   // Scott 2026-10-30: a different "5" each page visit (grey 5 -> dice -> orange shield, in turn).
   const fives=['/images/icons/big-five.png','/images/icons/big-five-dice.png','/images/icons/big-five-shield.png'];
@@ -526,7 +526,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Scott 2026-10-29: Notes removed from the Citadel "What do you want to do?" row.
   if(homeDeck&&!doc.getElementById('citadel-hide-notes')){
    const style=doc.createElement('style');style.id='citadel-hide-notes';
-   style.textContent='.shell.home-mode .deck .nav[data-action="task-notes"]{display:none!important}.shell:not(.home-mode) .deck .nav[data-action="gratitude"]{display:none!important}';doc.head.append(style);
+   style.textContent='.shell.home-mode .deck .nav[data-action="task-notes"]{display:none!important}.shell:not(.home-mode) .deck .nav[data-action="gratitude"]{display:none!important}#citadel-action-heading{order:-1}.shell.home-mode .deck>.nav[data-action="action-plan"]{order:1}.shell.home-mode .deck>.nav[data-action="goals"]{order:2}.shell.home-mode .deck>.nav[data-action="gratitude"]{order:3}.shell.home-mode .deck>.nav[data-action="daily-habits"]{order:4}.shell.home-mode .deck>.nav[data-action="cosmic-library"]{order:5}.shell.home-mode .deck>.nav[data-action="meditation"]{order:6}.shell.home-mode .deck>.nav[data-action="super-viz"],.shell.home-mode .deck>.nav[data-action="visualization"]{order:7}.shell.home-mode .deck>.nav:not([data-action]){order:9}';doc.head.append(style);
   }
   const visualize=doc.querySelector('.nav[data-action="visualization"]');
   if(visualize){
