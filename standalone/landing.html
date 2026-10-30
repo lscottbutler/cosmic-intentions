@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosmic Intentions — Motivation fades. Identity doesn't.</title>
+<meta name="description" content="Write it, hear it, live it. A daily loop for turning one goal into who you are. $79/year with a 14-day free trial.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Landing page approved by the CI Council, 30 Oct 2026. Replaces /landing-v2 and /landing-v3.
+     Copy rules: no competitor names, no absolute claims, no monthly plan, "your own words" (not "your own voice"). -->
+<style>
+:root{--ink:#213c5a;--muted:#526477;--line:#dbe3ed;--soft:#f3f6fa;--accent:#5351c9;--accent-dark:#4140aa;--white:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--white);color:var(--ink);font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:14px 30px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:15px;letter-spacing:.06em;text-decoration:none;text-transform:uppercase;border:0;transition:background .18s,box-shadow .18s}
+.btn:hover{background:var(--accent-dark);box-shadow:0 8px 22px rgba(33,60,90,.16)}
+.btn-sm{min-height:42px;padding:9px 20px;font-size:13px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.note{font-size:14px;color:var(--muted);margin:14px 0 0}
+h2{font-size:clamp(28px,3.4vw,42px);line-height:1.2;letter-spacing:-.03em;font-weight:700;margin:0 0 14px}
+.sec{padding:88px 0}
+.sec-head{text-align:center;max-width:720px;margin:0 auto 48px}
+.sec-head p{color:var(--muted);font-size:18px;margin:0}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #e5eaf0}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+.logo{font-weight:800;letter-spacing:.08em;font-size:15px;text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600}
+.nav-links a:not(.btn){text-decoration:none;color:var(--muted)}
+.nav-links a:not(.btn):hover{color:var(--ink)}
+
+/* Hero */
+.hero{text-align:center;padding:0 0 88px;background:linear-gradient(180deg,#fff 0%,#fff 60%,var(--soft) 100%)}
+.landscape{height:300px;background:linear-gradient(180deg,transparent 55%,#fff 100%),url('/standalone/landing-calm-landscape.jpg') center/cover no-repeat}
+.hero h1{font-size:clamp(40px,6vw,76px);line-height:1.08;letter-spacing:-.045em;font-weight:700;margin:8px auto 22px;max-width:900px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{font-size:clamp(18px,2vw,21px);color:var(--muted);max-width:640px;margin:0 auto 32px}
+
+/* Daily loop */
+.loop{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;counter-reset:step;list-style:none;margin:0;padding:0}
+.loop li{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px 20px;position:relative}
+.loop li::before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:15px;margin-bottom:14px}
+.loop h3{margin:0 0 6px;font-size:19px}
+.loop p{margin:0;color:var(--muted);font-size:15px}
+
+/* Pillars */
+.pillars-sec{background:var(--soft)}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pillar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px 28px}
+.pillar .ico{width:52px;height:52px;border-radius:14px;background:#eeedfb;color:var(--accent);display:grid;place-items:center;margin-bottom:18px}
+.pillar .ico svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pillar h3{margin:0 0 8px;font-size:22px}
+.pillar p{margin:0;color:var(--muted)}
+
+/* Pricing */
+.plan{max-width:520px;margin:0 auto;background:#fff;border:2px solid var(--accent);border-radius:24px;padding:40px 36px;text-align:center;box-shadow:0 20px 50px rgba(33,60,90,.10)}
+.plan .name{font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:var(--accent);margin:0}
+.plan .price{font-size:64px;font-weight:800;letter-spacing:-.04em;margin:8px 0 0;line-height:1.1}
+.plan .price span{font-size:20px;font-weight:600;color:var(--muted);letter-spacing:0}
+.plan .trial{display:inline-block;margin:14px 0 24px;padding:6px 16px;border-radius:999px;background:#eeedfb;color:var(--accent);font-weight:700;font-size:14px}
+.terms{list-style:none;margin:0 0 28px;padding:0;text-align:left;border-top:1px solid var(--line)}
+.terms li{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);font-size:15px;color:var(--muted)}
+.terms li strong{color:var(--ink)}
+.terms svg{flex:none;width:20px;height:20px;margin-top:2px;fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* FAQ */
+.faq{max-width:760px;margin:0 auto}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 40px 22px 0;font-weight:700;font-size:18px;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:400;color:var(--accent)}
+.faq details[open] summary::after{content:'−'}
+.faq details p{margin:0 0 22px;color:var(--muted)}
+
+/* Final CTA + footer */
+.final{text-align:center;background:var(--ink);color:#fff;padding:80px 0}
+.final h2{color:#fff}
+.final p{color:#c9d5e3;margin:0 0 28px;font-size:18px}
+footer{padding:28px 0;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:900px){
+ .loop{grid-template-columns:1fr 1fr}
+ .pillars{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+ .sec{padding:64px 0}
+ .landscape{height:180px}
+ .loop{grid-template-columns:1fr}
+ .nav-links a:not(.btn){display:none}
+ .plan{padding:32px 22px}
+ .plan .price{font-size:52px}
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="Main">
+ <div class="wrap nav-in">
+  <a class="logo" href="/landing">COSMIC INTENTIONS</a>
+  <div class="nav-links">
+   <a href="#loop">How it works</a>
+   <a href="#pricing">Pricing</a>
+   <a href="#faq">FAQ</a>
+   <a href="/?auth=signin">Member sign in</a>
+   <a class="btn btn-sm" href="/?auth=signup">Map My Goal</a>
+  </div>
+ </div>
+</nav>
+
+<header class="hero">
+ <div class="landscape" role="presentation"></div>
+ <div class="wrap">
+  <h1>Motivation fades.<br><em>Identity doesn't.</em></h1>
+  <p class="sub">Write it, hear it, live it. A simple daily loop built to move one goal forward, not another library to scroll.</p>
+  <a class="btn" href="/?auth=signup">Map My Goal</a>
+  <p class="note">Start with one goal. It takes about a minute.</p>
+ </div>
+</header>
+
+<main>
+ <section class="sec" id="loop" aria-labelledby="loop-title">
+  <div class="wrap">
+   <div class="sec-head">
+    <p class="eyebrow">The daily loop</p>
+    <h2 id="loop-title">Five small steps, one goal at a time</h2>
+    <p>Not a content library. A loop you live each day.</p>
+   </div>
+   <ol class="loop">
+    <li><h3>Set</h3><p>Write your goal as an “I AM” intention, in your own words.</p></li>
+    <li><h3>Plan</h3><p>AI drafts a roadmap. Break any step into smaller ones when you need more detail.</p></li>
+    <li><h3>Rewire</h3><p>Hear your own words read back in a calm voice, and see your goal in visualization.</p></li>
+    <li><h3>Practice</h3><p>Close your daily rings: review, visualize, meditate.</p></li>
+    <li><h3>Reflect</h3><p>End the day with a short look back at what moved.</p></li>
+   </ol>
+  </div>
+ </section>
+
+ <section class="sec pillars-sec" aria-labelledby="pillars-title">
+  <div class="wrap">
+   <div class="sec-head">
+    <p class="eyebrow">What's inside</p>
+    <h2 id="pillars-title">Three pillars</h2>
+   </div>
+   <div class="pillars">
+    <article class="pillar">
+     <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></div>
+     <h3>AI roadmaps</h3>
+     <p>Every goal gets a ten-step plan. Stuck on a step? Break it down into smaller, clearer steps, as far as you need.</p>
+    </article>
+    <article class="pillar">
+     <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M18.5 2v4h-4M5.5 22v-4h4"/></svg></div>
+     <h3>Mind Loop</h3>
+     <p>Your own words, read in a calm voice and looped through the day and as you fall asleep.</p>
+    </article>
+    <article class="pillar">
+     <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></div>
+     <h3>Daily rings</h3>
+     <p>Review, Visualize, Meditate. Small daily reps that stack into a streak.</p>
+    </article>
+   </div>
+  </div>
+ </section>
+
+ <section class="sec" id="pricing" aria-labelledby="pricing-title">
+  <div class="wrap">
+   <div class="sec-head">
+    <p class="eyebrow">Pricing</p>
+    <h2 id="pricing-title">One plan. Everything included.</h2>
+   </div>
+   <div class="plan">
+    <p class="name">CI Personal · Annual</p>
+    <p class="price">$79<span> / year</span></p>
+    <span class="trial">14-day free trial</span>
+    <ul class="terms">
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><strong>Try it free for 14 days.</strong> Start today and your trial runs until <span data-trial-end>14 days from today</span>.</span></li>
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><strong>Renewal:</strong> if you keep it, $79 is charged on <span data-trial-end>day 14</span> and renews each year on <span data-renew-day>that date</span> until you cancel.</span></li>
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><strong>Cancel anytime.</strong> Cancel before your trial ends and you pay nothing. Cancel later and your membership stays active until the end of your paid year.</span></li>
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><strong>Refunds:</strong> changed your mind after a charge? Ask within 14 days of that charge for a full refund.</span></li>
+    </ul>
+    <a class="btn" href="/?auth=signup">Map My Goal</a>
+   </div>
+  </div>
+ </section>
+
+ <section class="sec pillars-sec" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+   <div class="sec-head">
+    <p class="eyebrow">FAQ</p>
+    <h2 id="faq-title">Questions, answered</h2>
+   </div>
+   <div class="faq">
+    <details>
+     <summary>What happens on day 14?</summary>
+     <p>Your free trial ends. If you haven't cancelled, your $79 annual membership starts and you're charged that day. Cancel before then and you won't be charged.</p>
+    </details>
+    <details>
+     <summary>Is my information private?</summary>
+     <p>Your goals, notes and reflections belong to your account and aren't shown to other members. To create your audio and roadmaps, only the text that feature needs is sent to the AI services that generate it. You can ask us to delete your account and data at any time.</p>
+    </details>
+    <details>
+     <summary>Is this therapy?</summary>
+     <p>No. Cosmic Intentions is a personal-development tool for goals and daily practice. It isn't therapy or medical care and doesn't replace a qualified professional. If you're struggling, please reach out to a licensed professional or a local support service.</p>
+    </details>
+    <details>
+     <summary>How do I cancel?</summary>
+     <p>Cancel anytime from your account. Cancel during the trial and you pay nothing. Cancel after you've been charged and your membership stays active until the end of your paid year, and you can still ask for a full refund within 14 days of the charge.</p>
+    </details>
+    <details>
+     <summary>Whose voice is it?</summary>
+     <p>The words are yours; the voice isn't. The Mind Loop reads your own words in a calm, natural-sounding AI narrator voice. It doesn't copy or clone anyone's voice, including yours. If the narrator isn't available, your device's built-in voice reads them instead.</p>
+    </details>
+   </div>
+  </div>
+ </section>
+
+ <section class="final" aria-labelledby="final-title">
+  <div class="wrap">
+   <h2 id="final-title">Start with one goal.</h2>
+   <p>Write it in your own words. We'll help you map it.</p>
+   <a class="btn" href="/?auth=signup">Map My Goal</a>
+  </div>
+ </section>
+</main>
+
+<footer>
+ <div class="wrap">© 2026 Cosmic Intentions · cosmicintentions.com</div>
+</footer>
+
+<script>
+// Show real dates: trial ends 14 days from today; renews each year on that day.
+(function(){
+ var end=new Date();end.setDate(end.getDate()+14);
+ var full=end.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+ var day=end.toLocaleDateString(undefined,{month:'long',day:'numeric'});
+ document.querySelectorAll('[data-trial-end]').forEach(function(el){el.textContent=full;});
+ document.querySelectorAll('[data-renew-day]').forEach(function(el){el.textContent=day;});
+})();
+</script>
+</body>
+</html>

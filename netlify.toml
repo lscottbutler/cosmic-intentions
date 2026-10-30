@@ -76,10 +76,10 @@
   to = "/standalone/about.html"
   status = 200
 
-# Landing page draft — preview at /landing
+# Landing page — CI Council approved 30 Oct 2026 (replaces the old draft and v2/v3)
 [[redirects]]
   from = "/landing"
-  to = "/standalone/landing-draft.html"
+  to = "/standalone/landing.html"
   status = 200
 
 # How-it-works — animated vignette hub at /how-it-works
@@ -94,15 +94,27 @@
   to = "/standalone/landing-dark.html"
   status = 200
 
-# Landing versions — three DIFFERENT designs (V1 = /landing white 6-pillar)
+# Retired 30 Oct 2026: v2/v3 now send visitors to the one landing page at /landing
 [[redirects]]
   from = "/landing-v2"
-  to = "/standalone/landing-v2.html"
-  status = 200
+  to = "/landing"
+  status = 301
+  force = true
 [[redirects]]
   from = "/landing-v3"
-  to = "/standalone/landing-v3.html"
-  status = 200
+  to = "/landing"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/standalone/landing-v2.html"
+  to = "/landing"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/standalone/landing-v3.html"
+  to = "/landing"
+  status = 301
+  force = true
 
 # App shell must always revalidate so menu/UI changes appear WITHOUT a hard
 # refresh. Vite's hashed /assets/* stay immutable & cached; only the HTML is no-cache.

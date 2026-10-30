@@ -815,7 +815,7 @@
           });
           standaloneSiteMenu.appendChild(button);
         });
-        [['/landing','Landing Page 1'],['/landing-v2','Landing Page 2'],['/landing-v3','Landing Page 3'],['/about','About Us']].forEach(([href,label])=>{
+        [['/landing','Landing Page'],['/about','About Us']].forEach(([href,label])=>{
           const link=document.createElement('a');
           link.href=href;link.textContent=label;link.target='_blank';link.rel='noopener';
           link.addEventListener('click',()=>standaloneSiteMenu.hidePopover());

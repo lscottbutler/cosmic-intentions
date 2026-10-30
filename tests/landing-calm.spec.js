@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 const baseline=JSON.parse(fs.readFileSync('tests/fixtures/landing-original-content.json','utf8'));
 for(const viewport of [{width:1440,height:1000},{width:390,height:844},{width:320,height:740}]){
- for(const file of ['landing-draft.html','landing-v2.html','landing-v3.html']){
+ for(const file of ['landing-draft.html']){
   test(`Calm landing ${file} ${viewport.width}: exact content, links and responsive rendering`,async({page},info)=>{
    await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
    const errors=[];page.on('pageerror',error=>errors.push(error.message));
