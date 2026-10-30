@@ -346,3 +346,6 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important
 #big-five-menu{overflow:hidden}
 #big-five-menu h2{margin:-14px -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
 #big-five-menu [data-big-five] svg{color:#747474}
+/* Scott 2026-10-30: long VISUALIZATION title stays on one line on phones. */
+@media(max-width:650px){#feature-title[data-lettermark="Visualization"]{flex-wrap:nowrap!important;gap:2px!important;font-size:16px!important}
+ #feature-title[data-lettermark="Visualization"]>span{padding-left:2px!important;padding-right:2px!important}}
