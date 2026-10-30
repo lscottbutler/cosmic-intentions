@@ -91,13 +91,15 @@ import { readFileSync } from 'node:fs';
 // Scott requested the Action Plan icon become his solid foot artwork (foot-icon) on 2026-10-30.
 // Icon path only; frame, controls and geometry unchanged. Recovery: 0647b92.
 // 2026-10-30: Scott requested the Library icon become his books artwork (small-library). Icon only. Recovery: 728133b.
+// 2026-10-30: Scott requested a Gratitude button (Citadel row only, before Action Plan). One nav button added. Recovery: 089e265.
+// 2026-10-30: Scott requested 'Entrepreneur Skill Cards' renamed 'Entrepreneur Cards'. Label text only.
 const lockedFiles = {
   "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
   "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
   "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
-  "players/master-player.html": "788ac58581dd4fd6f81754f595d65ef620823eb9",
+  "players/master-player.html": "09ed033fdfdbc258627ea261d36f5d4ca55236da",
   "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278"
 };
 const root = new URL('../', import.meta.url);

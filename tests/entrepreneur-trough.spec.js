@@ -30,7 +30,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 
     await expect(deck.getByRole('button')).toHaveCount(3);
     await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(116, 116, 116)');
     await page.getByRole('button', { name: 'Open site menu', exact: true }).click();
-    await page.getByRole('button', { name: 'Entrepreneur Skill Cards', exact: true }).click();
+    await page.getByRole('button', { name: 'Entrepreneur Cards', exact: true }).click();
     await expect(frame.locator('#entExperience')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('#lfmToolControls')).toBeHidden();
     await expect.poll(() => deck.evaluate(el => getComputedStyle(el, '::before').backgroundColor)).toBe('rgb(255, 255, 255)');
