@@ -52,6 +52,21 @@ find and close it, don't insist you're right. To see HIS actual live render: tel
 to append `?diag=1` to the URL — a green overlay prints the real rendered width/left/
 right of the key elements; he screenshots it and you finally see what HIS browser draws.
 
+## Publishing routine — COST CONTROL (Scott, 2026-10-28 — hard rule)
+Every Netlify production deploy costs 15 credits; Deploy Previews and branch deploys cost 0.
+~208 production deploys in Oct 2026 exhausted the team's credits and paused publishing.
+1. ALL work goes on the long-lived `staging` branch (commit + push there). Do NOT merge to `main` per change.
+2. Scott reviews at the fixed free preview: https://staging--gilded-profiterole-47a2eb.netlify.app
+   (deep-link the changed page, e.g. /standalone/member-design-test.html?feature=daily-habits).
+3. Merge `staging` → `main` (one PR) ONLY when Scott says "publish" (or an end-of-day batch he approves).
+   One publish = 15 credits. Never more than one production deploy per publish request.
+4. After a publish, reset `staging` to the new `main` and keep going.
+6. DAILY PUBLISH (Scott, 2026-10-30): at the START of each day's session, publish staging → main
+   (one deploy) before new work. Reason: under ChatGPT, work got stranded on side branches and was
+   lost. No work may live only on a side branch overnight — merge review branches into `staging`
+   the same day, and report anything found on a branch that isn't in `main`.
+5. Verify on the local build first (free), then on the staging preview in Scott's signed-in Chrome.
+
 ## Deploy reality (learned the hard way 2026-06-18)
 - Netlify auto-deploys `main`, BUT the team (CI26) hit its usage cap and EVERY deploy
   silently errored "Skipped due to account credit usage exceeded". Pushing did nothing

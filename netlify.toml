@@ -132,3 +132,9 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), geolocation=(), microphone=(), payment=(self)"
+
+# Home-screen web app settings file (Scott 2026-10-29).
+[[headers]]
+  for = "/standalone/ci.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

@@ -997,7 +997,7 @@ function updateUI(user) {
   document.querySelectorAll('.ci-home-media-card').forEach(card => card.classList.toggle('ci-home-owner', isOwner));
   if(isOwner)installOwnerLabels(window);
   document.querySelectorAll('[data-owner-only]').forEach(el => {
-    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot')) el.style.display = isOwner ? '' : 'none';
+    if (el.classList.contains('colb-links-hd') || el.classList.contains('ci-admin-page-box-edit-slot') || el.id === 'home-image-library') el.style.display = isOwner ? '' : 'none';
     else if (!isOwner) el.style.display = 'none';
   });
   // Habits ATB is built before sign-in finishes; re-apply owner/member visibility now.
@@ -4183,9 +4183,9 @@ function renderDailyHabitsInline() {
   try { done = LS.get('ci_habits_' + dayKey()) || {}; } catch (e) {}
   try { list = getHabitList() || []; } catch (e) {}
   if (!list.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:10px 2px;font-size:13px;">No habits yet — add them on My Habits.</div>'; return; }
-  const CATS  = ['MORNING', 'DAY', 'EVENING', 'BEDTIME', 'HEALTH'];
-  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
-  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
+  const CATS  = ['MORNING', 'DAY', 'EVENING', 'NIGHT', 'BEDTIME'];
+  const LABEL = { MORNING: 'Morning', DAY: 'Afternoon', EVENING: 'Evening', NIGHT: 'Night', BEDTIME: 'Before Sleep', HEALTH: 'After Waking', '': 'Unsorted' };
+  const COLOR = { MORNING: '#E8A828', DAY: '#4A9EAD', EVENING: '#7C5CC4', NIGHT: '#3d2f6b', BEDTIME: '#5C6BA0', HEALTH: '#4ADE80', '': '#888' };
   const catOf = h => (CATS.indexOf(h && h.cat) >= 0 ? h.cat : '');
   const row = h => {
     const on = !!done[h.id];
@@ -5992,7 +5992,7 @@ async function initCitadelNoteFrame(nextPage) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
       instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
-      instructions.style.cssText = 'background:#fff;color:#292929;border:2px solid #303030;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
+      instructions.style.cssText = 'background:#fff;color:#292929;border:0;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
       content.innerHTML = _expandBlockTokens(pageInstructions.data?.body || '');
       instructions.appendChild(content);

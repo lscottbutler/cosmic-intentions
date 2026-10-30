@@ -41,9 +41,15 @@ main{flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-st
   <span class="sep"></span>
   <div class="group">
     <select id="preset" aria-label="Page">
-      <option value="/">Citadel (home)</option>
+      <option value="/standalone/member-design-test.html?feature=home">Citadel</option>
+      <option value="/standalone/member-design-test.html?feature=daily-habits">Habits</option>
       <option value="/standalone/member-design-test.html?feature=meditation">Meditation</option>
       <option value="/standalone/member-design-test.html?feature=new-gratitude">New Gratitude</option>
+      <option value="/standalone/member-design-test.html?feature=goals">Goals</option>
+      <option value="/standalone/member-design-test.html?feature=super-viz">Super Viz</option>
+      <option value="/standalone/member-design-test.html?feature=action-plan">Action Plan</option>
+      <option value="/standalone/member-design-test.html?feature=cosmic-library">Cosmic Library</option>
+      <option value="/">Old app (/)</option>
       <option value="">Custom path…</option>
     </select>
     <input id="path" type="text" spellcheck="false" aria-label="Page path" placeholder="/path/to/page.html">
@@ -65,7 +71,7 @@ main{flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-st
   const GAP=24,LABEL=24;
   const params=new URLSearchParams(location.search);
   let view=['all','pc','tablet','mobile'].includes(params.get('view'))?params.get('view'):'all';
-  let path=params.get('path')||'/';
+  let path=params.get('path')||'/standalone/member-design-test.html?feature=home';
   let landscape=params.get('tablet')==='landscape';
   const $=s=>document.querySelector(s),stage=$('#stage'),pathInput=$('#path'),preset=$('#preset');
   const size=id=>id==='tablet'&&landscape?[SIZES.tablet[1],SIZES.tablet[0]]:SIZES[id];
