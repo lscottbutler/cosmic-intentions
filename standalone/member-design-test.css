@@ -342,3 +342,7 @@ body .orientation .shortcuts>button#fullscreen-trigger{width:44px!important;heig
 /* Scott 2026-10-30: full-screen button = white icon in a black circle. */
 body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important;color:#fff!important}
 #fullscreen-trigger svg{width:22px;height:22px}
+/* Scott 2026-10-30: narrow Big Five menu with a black title bar, white centred text. */
+#big-five-menu{overflow:hidden}
+#big-five-menu h2{margin:-14px -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
+#big-five-menu [data-big-five] svg{color:#747474}
