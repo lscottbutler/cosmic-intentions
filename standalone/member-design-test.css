@@ -349,3 +349,5 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important
 /* Scott 2026-10-30: long VISUALIZATION title stays on one line on phones. */
 @media(max-width:650px){#feature-title[data-lettermark="Visualization"]{flex-wrap:nowrap!important;gap:2px!important;font-size:16px!important}
  #feature-title[data-lettermark="Visualization"]>span{padding-left:2px!important;padding-right:2px!important}}
+/* Scott 2026-10-30: player-page button bar matches the Citadel bar (grey icons on white, coloured rings). */
+#quick-nav svg{color:#747474}
