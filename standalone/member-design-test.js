@@ -526,7 +526,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Scott 2026-10-29: Notes removed from the Citadel "What do you want to do?" row.
   if(homeDeck&&!doc.getElementById('citadel-hide-notes')){
    const style=doc.createElement('style');style.id='citadel-hide-notes';
-   style.textContent='.shell.home-mode .deck .nav[data-action="task-notes"]{display:none!important}@media(max-width:650px){.shell.home-mode .deck>.nav:not([data-action]){grid-column:1/-1}}';doc.head.append(style);
+   style.textContent='.shell.home-mode .deck .nav[data-action="task-notes"]{display:none!important}.shell:not(.home-mode) .deck .nav[data-action="gratitude"]{display:none!important}';doc.head.append(style);
   }
   const visualize=doc.querySelector('.nav[data-action="visualization"]');
   if(visualize){
@@ -568,7 +568,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     html.ci-review-test .shell.home-mode .nav{color:#171717}
     html.ci-review-test .shell.home-mode .nav :is(svg,.hamb-lines){color:#fff}
     html.ci-review-test .shell.home-mode .nav:focus-visible{outline-color:#171717}
-html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#9d0b0f;--citadel-ring:#ec1c23}
+html.ci-review-test .shell.home-mode [data-action="meditation"]{--citadel-button:#4a1a7a;--citadel-ring:#7b2cbf}
+html.ci-review-test .shell.home-mode [data-action="gratitude"]{--citadel-button:#4e2c12;--citadel-ring:#7b4a26}
 html.ci-review-test .shell.home-mode [data-action="daily-habits"]{--citadel-button:#a0400d;--citadel-ring:#f26420}
 html.ci-review-test .shell.home-mode [data-action="goals"]{--citadel-button:#aaa001;--citadel-ring:#fef200}
 html.ci-review-test .shell.home-mode [data-action="visualization"]{--citadel-button:#0053a4;--citadel-ring:#0076a3}
@@ -582,9 +583,9 @@ html.ci-review-test .shell.home-mode .nav[data-action="cosmic-library"] svg{widt
 html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines i{height:3px!important}
 html.ci-review-test .shell.home-mode #lfmMenu .hamb-lines{width:56px!important;height:56px!important;padding:0 17px!important;gap:4px!important;box-sizing:border-box;background:#fff!important;box-shadow:inset 0 0 0 7px #4e4e4e!important;color:#747474!important}
 html.ci-review-test .shell.home-mode .nav:focus-visible{outline:2px solid #171717;outline-offset:3px;border-radius:8px}
-html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]){grid-template-rows:57px auto}
-html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"]) svg{width:56px;height:56px;padding:14.7px;color:#747474!important;stroke:#747474!important;opacity:1!important;filter:none!important;background:#fff;box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
-@media(min-width:651px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(7,minmax(0,1fr))}html.ci-review-test .shell.home-mode #citadel-action-heading{grid-column:1/-1}html.ci-review-test .shell.home-mode .deck .nav span{white-space:nowrap;font-size:clamp(11px,1.25vw,15px)}}
+html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"],[data-action="gratitude"]){grid-template-rows:57px auto}
+html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-action="daily-habits"],[data-action="goals"],[data-action="super-viz"],[data-action="action-plan"],[data-action="gratitude"]) svg{width:56px;height:56px;padding:14.7px;color:#747474!important;stroke:#747474!important;opacity:1!important;filter:none!important;background:#fff;box-shadow:inset 0 0 0 7px var(--citadel-ring,transparent)}
+@media(min-width:651px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(8,minmax(0,1fr))}html.ci-review-test .shell.home-mode #citadel-action-heading{grid-column:1/-1}html.ci-review-test .shell.home-mode .deck .nav span{white-space:nowrap;font-size:clamp(11px,1.25vw,15px)}}
 @media(max-width:650px){html.ci-review-test .shell.home-mode .deck{grid-template-columns:repeat(2,minmax(0,1fr))}}
 `;
    doc.head.append(style);
