@@ -19,7 +19,7 @@ const tours = [
  ['goal-workspace','Goal Workspace','#page-goalworkspace','Bring a goal’s notes and journal together'],
  ['cosmic-library','Cosmic Library','#page-cosmiclibrary','Explore the CI resource collection'],
  ['entrepreneur-library','Entrepreneur Library','#entrepreneurLibraryGrid','Browse the 31 entrepreneur skills'],
- ['ent-card','Entrepreneur Skill Cards','#entExperience','Explore an individual skill'],
+ ['ent-card','Entrepreneur Cards','#entExperience','Explore an individual skill'],
 ];
 const root = 'test-results/tour-captures';
 for (const [id,label,ready,description] of tours) {
