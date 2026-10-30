@@ -346,10 +346,13 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#000!important
 #big-five-menu{overflow:hidden}
 #big-five-menu h2{margin:-14px -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
 #big-five-menu [data-big-five] svg{color:#747474}
-/* Scott 2026-10-30: long VISUALIZATION title stays on one line on phones. */
-@media(max-width:650px){#feature-title[data-lettermark="Visualization"]{flex-wrap:nowrap!important;gap:2px!important;font-size:16px!important}
- #feature-title[data-lettermark="Visualization"]>span{padding-left:2px!important;padding-right:2px!important}}
 /* Scott 2026-10-30: player-page button bar matches the Citadel bar (grey icons on white, coloured rings). */
 #quick-nav svg{color:#747474}
 /* Scott 2026-10-30: phones break "ENTREPRENEUR / CARDS" at the space, not mid-word. */
 @media(max-width:650px){#feature-title[data-lettermark="Entrepreneur Cards"]>span:nth-child(13){flex-basis:100%!important;width:100%!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}}
+/* Scott 2026-10-30 (PC/tablet): title stays centred in column A; right column starts below the
+   title line, with Search on top, then To Do + Goals, then the rest. */
+@media(min-width:651px){
+ .orientation>.shortcuts{margin-top:72px;display:flex;flex-direction:column;align-items:center}
+ .orientation>.shortcuts>#player-search{order:-1;align-self:stretch;margin-bottom:10px}
+}
