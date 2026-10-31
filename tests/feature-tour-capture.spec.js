@@ -10,7 +10,7 @@ const tours = [
  ['action-plan','Roadmap','#page-myroadmap','Turn your goal into next steps'],
  ['visualization','Visualization Library','#page-vizlibrary','Rehearse what you intend to do'],
  ['meditation','Meditation',null,'Choose a meditation session'],
- ['favorites','My Favorites Autoplay','#page-dailyfocus','Keep your saved practice together'],
+ ['favorites','My Favorites Reel','#page-dailyfocus','Keep your saved practice together'],
  ['thoughts','My Thoughts','#page-notes','Collect your words to live by'],
  ['journal','My Journal','#page-mynotes','Reflect and connect an entry to a goal'],
  ['gratitude','Gratitude','#page-gratitude','Make space for gratitude'],
@@ -98,7 +98,7 @@ for (const [id,label,ready,description] of tours) {
   if(id==='goal-workspace')actions=[['#goalWorkspaceSelect','Choose your goal to view its linked entries.','select','pv1']];
   if(id==='task-notes')actions=[['button.goal-workspace-link','Open Goal Workspace to see notes, to-dos and journal entries together.']];
   if(id==='entrepreneur-library')actions=[['#entrepreneurLibraryGrid .cl-card','Choose a skill card to open its individual experience.']];
-  if(id==='favorites')actions=[['#fav-play','Click Automatically Play My Daily Runthrough to start your saved sequence.']];
+  if(id==='favorites')actions=[['#fav-play','Click Play My Reel to start your reel.']];
   if(id==='visualization')actions=[['button[onclick="vizLibToggle(0)"]','Click a goal to open its visualization options.']];
   if(id==='action-plan')actions=[['#wtab-roadmap-0','Choose ROADMAP to see the steps for this goal.'],['#wtab-both-0','Click the plus tab to see My Actions and Roadmap together.'],['button[aria-label="Notes for A1"]:visible','Click the pencil to open the note for that action.'],['#page-myroadmap textarea:visible','Write a note for your next action.','fill','Focus on the opening scene first.']];
   if(id==='cosmic-library')actions=[['#cosmicConceptSearch','Search the library for a topic.','fill','habit'],['button[aria-label="Clear search and filters"]','Reset the filters to see the full library.']];

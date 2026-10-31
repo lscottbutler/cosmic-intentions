@@ -93,13 +93,17 @@ import { readFileSync } from 'node:fs';
 // 2026-10-30: Scott requested the Library icon become his books artwork (small-library). Icon only. Recovery: 728133b.
 // 2026-10-30: Scott requested a Gratitude button (Citadel row only, before Action Plan). One nav button added. Recovery: 089e265.
 // 2026-10-30: Scott requested 'Entrepreneur Skill Cards' renamed 'Entrepreneur Cards'. Label text only.
+// Scott requested renaming Favorites Autoplay to My Favorites Reel on 2026-10-30.
+// Copy-only: two menu label strings and one description changed; geometry and controls unchanged.
+// Recovery before this copy change: 48da27d1b93efaad8db50dea366f4967146a9e49.
+// 2026-10-30: Scott retired Landing Pages 2 and 3 (Council-approved single /landing). Menu link list only.
 const lockedFiles = {
   "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
   "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
   "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
-  "players/master-player.html": "09ed033fdfdbc258627ea261d36f5d4ca55236da",
+  "players/master-player.html": "cd959d461dc2312a920d27968d39928aec43b979",
   "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278"
 };
 const root = new URL('../', import.meta.url);

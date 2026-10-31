@@ -508,15 +508,15 @@ export function notesToggleFav(id) {
   const favs = _readFavs();
   const at = favs.findIndex(f => f && f.type === 'note' && f.id === id);
   let pinned;
-  if (at >= 0) { favs.splice(at, 1); pinned = false; if (typeof toast === 'function') toast('Removed from My Favorites Autoplay', 'info'); }
-  else { favs.push({ type: 'note', id, cat: note.cat, title: note.text, text: note.text }); pinned = true; if (typeof toast === 'function') toast('Pinned to My Favorites Autoplay ♥', 'success'); }
+  if (at >= 0) { favs.splice(at, 1); pinned = false; if (typeof toast === 'function') toast('Removed from My Favorites Reel', 'info'); }
+  else { favs.push({ type: 'note', id, cat: note.cat, title: note.text, text: note.text }); pinned = true; if (typeof toast === 'function') toast('Pinned to My Favorites Reel ♥', 'success'); }
   _saveFavs(favs);
   // Update JUST this heart in place — re-rendering would collapse the open section.
   const btn = document.getElementById(`notefav-${id}`);
   if (btn) {
     btn.textContent = pinned ? '♥' : '♡';
     btn.style.opacity = pinned ? '1' : '0.4';
-    btn.title = pinned ? 'Unpin from My Favorites Autoplay' : 'Pin to My Favorites Autoplay';
+    btn.title = pinned ? 'Unpin from My Favorites Reel' : 'Pin to My Favorites Reel';
   }
   if (typeof window !== 'undefined' && typeof window.renderFavorites === 'function') window.renderFavorites();
 }
