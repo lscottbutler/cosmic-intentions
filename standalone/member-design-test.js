@@ -311,7 +311,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      const tile=document.createElement('span');
      tile.textContent=char;tile.setAttribute('aria-hidden','true');
      const color=char===' '?neutral:(letterIndex++%2?neutral:accent);
-     tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:3px;line-height:1.2';
+     tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:1px 3px;line-height:1.2';
      title.append(tile);
    }
    title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
