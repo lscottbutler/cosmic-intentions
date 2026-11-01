@@ -5963,7 +5963,7 @@ function ciJournalRotationTest(instructions, pageId) {
     '<p style="margin:0;font-size:17px;line-height:1.65">It followed a setback. At the 2025 World Championships in Tokyo he strained his calf before the final. Afterwards he set two new goals: a world indoor title, then the record.</p>' +
     '<p style="margin:0;font-size:17px;line-height:1.65">Kerr has described a routine of daily meditation and journaling, built with a mindfulness coach. In races, he lets doubt in and answers it with the reasons he is ready.</p>' +
     '<blockquote style="margin:0;padding-left:14px;border-left:3px solid #dfe1e6;font-size:18px;font-style:italic">"Your setback is only going to be defined with your comeback."</blockquote>' +
-    '<p style="margin:0;font-size:17px;font-weight:700"><b style="color:#3d5a80">Try this today:</b> write one doubt about your goal, then three reasons you\'re ready.</p>' +
+    '<p class="ci-journal-try" style="margin:4px 0 0;padding:16px 18px;border-radius:10px;background:#1e90ff;color:#fff;font-size:19px;line-height:1.5;font-weight:700"><b>Try this today:</b> write one doubt about your goal, then three reasons you\'re ready.</p>' +
     '';
   instructions.after(story);
   // Scott 2026-11-01: refresh button (top right of the box) swaps to the other card without reloading.
