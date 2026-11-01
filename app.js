@@ -5936,6 +5936,44 @@ function injectPlaceholderCards() {
   });
 }
 
+// TEST ONLY (Scott, 1 Nov 2026): My Journal instruction box alternates, one per page load, between the
+// saved instruction paragraph and the Josh Kerr Practice Story card from the CI Council artifact
+// "My Journal Rotation Test". Card text and sources copied exactly from that artifact.
+// Runs ONLY on test addresses (staging, deploy previews, local) so it never reaches cosmicintentions.com
+// before legal review, even after a publish. The saved instruction text is not changed.
+const CI_JOURNAL_TEST_HOST = /^(staging--|deploy-preview-\d+--)/.test(location.hostname) || ['localhost','127.0.0.1'].includes(location.hostname);
+function ciJournalRotationTest(instructions, pageId) {
+  if (!CI_JOURNAL_TEST_HOST || pageId !== 'mynotes' || !instructions) return;
+  if (instructions.parentElement?.querySelector('.ci-journal-story')) return;
+  let turn = 0;
+  try { turn = (parseInt(localStorage.getItem('ci-journal-rot') || '-1', 10) + 1) % 2; localStorage.setItem('ci-journal-rot', String(turn)); }
+  catch (_) { turn = Math.random() < 0.5 ? 0 : 1; }
+  const tag = document.createElement('p');
+  tag.className = 'ci-journal-test-tag';
+  tag.style.cssText = 'margin:0 0 10px;padding:6px 10px;border:1px dashed #b8bcc4;border-radius:6px;font:500 12px Arial,sans-serif;color:#6b6f78';
+  tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · reload to rotate (test addresses only)';
+  instructions.before(tag);
+  if (!turn) return;
+  const story = document.createElement('div');
+  story.className = 'ci-journal-story';
+  story.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#2b2d31';
+  story.innerHTML =
+    '<div style="font:500 11px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#3d5a80">Practice Story</div>' +
+    '<h2 style="margin:0;font:700 22px/1.25 \'Roboto Condensed\',\'Arial Narrow\',Arial,sans-serif">Josh Kerr<small style="display:block;font:400 15px Arial,sans-serif;color:#6b6f78;margin-top:4px">Mile world record holder · 3:42.66</small></h2>' +
+    '<p style="margin:0;font-size:17px;line-height:1.65">In March 2026, Josh Kerr said publicly that he would go after the mile world record. On 18 July in London, he ran 3:42.66 and broke a record that had stood for 27 years.</p>' +
+    '<p style="margin:0;font-size:17px;line-height:1.65">It followed a setback. At the 2025 World Championships in Tokyo he strained his calf before the final. Afterwards he set two new goals: a world indoor title, then the record.</p>' +
+    '<p style="margin:0;font-size:17px;line-height:1.65">Kerr has described a routine of daily meditation and journaling, built with a mindfulness coach. In races, he lets doubt in and answers it with the reasons he is ready.</p>' +
+    '<blockquote style="margin:0;padding-left:14px;border-left:3px solid #dfe1e6;font-size:18px;font-style:italic">"Your setback is only going to be defined with your comeback."</blockquote>' +
+    '<p style="margin:0;font-size:17px;font-weight:700"><b style="color:#3d5a80">Try this today:</b> write one doubt about your goal, then three reasons you\'re ready.</p>' +
+    '<div style="font:400 12px/1.5 Arial,sans-serif;color:#6b6f78;border-top:1px solid #dfe1e6;padding-top:12px">Sources: ' +
+      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://support.runna.com/en/articles/16065587-josh-kerr-on-breaking-the-mile-world-record">Runna Podcast, Aug 2026</a> · ' +
+      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://www.olympics.com/en/news/josh-kerr-team-gb-star-forged-in-the-usa">Olympics.com</a> · ' +
+      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://worldathletics.org/news/report/london-athletics-meet-2026-josh-kerr-world-mile-record">World Athletics, Jul 2026</a>. ' +
+      'Not affiliated with or endorsed by Cosmic Intentions.</div>';
+  instructions.style.display = 'none';
+  instructions.after(story);
+}
+
 // The standalone Master Player renders Citadel outside the main app's dashboard.
 let citadelNoteRenderVersion = 0, citadelNoteResizeObserver, citadelPersonalAuthSubscription;
 async function initCitadelNoteFrame(nextPage) {
@@ -6007,6 +6045,7 @@ async function initCitadelNoteFrame(nextPage) {
       instructions.appendChild(content);
       mount.style.padding='20px';
       mount.appendChild(instructions);
+      try { ciJournalRotationTest(content, pageId); } catch (e) { console.error('[journal-test]', e); }
     }
     // ATB 1 is now painted as soon as its own content and authorization arrive.
     report();
