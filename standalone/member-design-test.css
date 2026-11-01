@@ -348,8 +348,6 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
 #big-five-menu [data-big-five] svg{color:#747474}
 /* Scott 2026-10-30: player-page button bar matches the Citadel bar (grey icons on white, coloured rings). */
 #quick-nav svg{color:#747474}
-/* Scott 2026-10-30: phones break "ENTREPRENEUR / CARDS" at the space, not mid-word. */
-@media(max-width:650px){#feature-title[data-lettermark="Entrepreneur Cards"]>span:nth-child(13){flex-basis:100%!important;width:100%!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}}
 /* Scott 2026-10-30 (PC/tablet): title stays centred in column A; right column starts below the
    title line, with Search on top, then To Do + Goals, then the rest. */
 @media(min-width:651px){

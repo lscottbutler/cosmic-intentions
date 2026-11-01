@@ -307,17 +307,32 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    document.documentElement.style.setProperty('--page-accent',accent);document.documentElement.style.setProperty('--page-accent-text',accent==='#fef200'?'#292929':'#fff');
    const neutral=accent==='#747474'?'#303030':'#202020';
    let letterIndex=0;
+   // Scott 2026-11-01: never split a word across lines. Each word's tiles sit in a no-wrap group;
+   // lines may only break at the spaces between words.
+   let word=null;
    for(const char of copy[0]){
      const tile=document.createElement('span');
      tile.textContent=char;tile.setAttribute('aria-hidden','true');
-     const color=char===' '?neutral:(letterIndex++%2?neutral:accent);
-     tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:1px 3px;line-height:1.2';
-     title.append(tile);
+     if(char===' '){
+      tile.style.cssText='width:.35em;flex:0 0 .35em';title.append(tile);word=null;continue;
+     }
+     const color=letterIndex++%2?neutral:accent;
+     tile.className='ci-title-tile';
+     tile.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:0 3px;line-height:1.2';
+     if(!word){word=document.createElement('span');word.className='ci-title-word';word.setAttribute('aria-hidden','true');word.style.cssText='display:inline-flex;flex-wrap:nowrap;gap:3px';title.append(word);}
+     word.append(tile);
    }
-   title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
-   title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
+   title.style.cssText="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
+   const titleRoom=title.clientWidth||title.parentElement.clientWidth;// the title's own box (on phones it stops short of the ☰ button)
+   const fitFor=n=>(titleRoom-(n-1)*3-n*6)/(n*.75);
+   const longestWord=Math.max(...copy[0].split(' ').map(w=>w.length));
+   const fitAll=fitFor(copy[0].length);
+   // One line when it fits at a readable size; otherwise wrap between words, sized so the longest word fits.
+   title.style.fontSize=Math.max(12,Math.min(36,fitAll>=16?fitAll:Math.min(24,fitFor(longestWord))))+'px';
+   // Safety net: shrink until no word is wider than the title area.
+   for(let size=parseFloat(title.style.fontSize),guard=0;guard<30&&size>10&&[...title.querySelectorAll('.ci-title-word')].some(w=>w.getBoundingClientRect().width>titleRoom);guard++){size-=1;title.style.fontSize=size+'px';}
    if(action==='goals'){
-    title.querySelectorAll('span').forEach(tile=>{
+    title.querySelectorAll('.ci-title-tile').forEach(tile=>{
      const glyph=document.createElement('span');glyph.textContent=tile.textContent;
      glyph.style.display='inline-block';tile.replaceChildren(glyph);
      const bounds=glyph.getBoundingClientRect();
