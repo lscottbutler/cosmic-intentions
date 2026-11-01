@@ -419,6 +419,21 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(Math.abs(shift)<2)return;
   q.animate([{transform:'translateY('+shift+'px)'},{transform:'none'}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
  }
+ // Scott 2026-11-01: page citations. Content frames send their sources here; they're listed at the
+ // very bottom of the page, and cleared whenever the page changes.
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin)return;
+  const type=event.data?.type;
+  if(type!=='ci-page-citations'&&type!=='ci-page-citations-jump')return;
+  let box=document.getElementById('ci-page-citations');
+  if(type==='ci-page-citations-jump'){box?.scrollIntoView({behavior:'smooth',block:'end'});return;}
+  const html=String(event.data.html||'');
+  if(!html){box?.remove();return;}
+  if(!box){box=document.createElement('aside');box.id='ci-page-citations';box.setAttribute('aria-label','Sources');
+   box.style.cssText='max-width:900px;margin:24px auto 40px;padding:14px 18px;border-top:1px solid #dfe1e6;font:400 13px/1.6 Arial,sans-serif;color:#6b6f78';
+   (document.querySelector('main')||document.body).append(box);}
+  box.innerHTML=html;box.querySelectorAll('a').forEach(a=>{a.style.color='#6b6f78';a.target='_blank';a.rel='noopener';});
+ });
  window.addEventListener('popstate',event=>{const a=event.state?.ciFeature||new URLSearchParams(location.search).get('feature')||'home';if(features[a])openFeature(a,{fromHistory:true});});
  async function openFeature(action,options={}){
   if(!features[action])return;
@@ -426,6 +441,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   pageNavigationPending=true;
   if(!options.fromHistory){try{const url=new URL(location.href);if(url.searchParams.get('feature')!==action){url.searchParams.set('feature',action);history.replaceState({ciFeature:action},'',url);}}catch(_){}}
   const startBarTop=barTop();
+  document.getElementById('ci-page-citations')?.remove();
   if(headerNoteFrame?.contentWindow)headerNoteFrame.contentWindow.ciHoldCarousel=true;
   contentCard.setAttribute('aria-busy','true');contentCard.inert=true;
   await Promise.all([fadeContent(0,180),fadeHeader(0,180)]);

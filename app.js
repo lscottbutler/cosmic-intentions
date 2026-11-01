@@ -5958,17 +5958,13 @@ function ciJournalRotationTest(instructions, pageId) {
   story.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#2b2d31';
   story.innerHTML =
     '<div style="font:500 11px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#3d5a80">Practice Story</div>' +
-    '<h2 style="margin:0;font:700 22px/1.25 \'Roboto Condensed\',\'Arial Narrow\',Arial,sans-serif">Josh Kerr<small style="display:block;font:400 15px Arial,sans-serif;color:#6b6f78;margin-top:4px">Mile world record holder · 3:42.66</small></h2>' +
+    '<h2 style="margin:0;font:700 22px/1.25 \'Roboto Condensed\',\'Arial Narrow\',Arial,sans-serif">Josh Kerr<a href="#" class="ci-journal-cite" aria-label="Sources at the bottom of the page" style="color:#3d5a80;text-decoration:none;margin-left:2px">*</a><small style="display:block;font:400 15px Arial,sans-serif;color:#6b6f78;margin-top:4px">Mile world record holder · 3:42.66</small></h2>' +
     '<p style="margin:0;font-size:17px;line-height:1.65">In March 2026, Josh Kerr said publicly that he would go after the mile world record. On 18 July in London, he ran 3:42.66 and broke a record that had stood for 27 years.</p>' +
     '<p style="margin:0;font-size:17px;line-height:1.65">It followed a setback. At the 2025 World Championships in Tokyo he strained his calf before the final. Afterwards he set two new goals: a world indoor title, then the record.</p>' +
     '<p style="margin:0;font-size:17px;line-height:1.65">Kerr has described a routine of daily meditation and journaling, built with a mindfulness coach. In races, he lets doubt in and answers it with the reasons he is ready.</p>' +
     '<blockquote style="margin:0;padding-left:14px;border-left:3px solid #dfe1e6;font-size:18px;font-style:italic">"Your setback is only going to be defined with your comeback."</blockquote>' +
     '<p style="margin:0;font-size:17px;font-weight:700"><b style="color:#3d5a80">Try this today:</b> write one doubt about your goal, then three reasons you\'re ready.</p>' +
-    '<div style="font:400 12px/1.5 Arial,sans-serif;color:#6b6f78;border-top:1px solid #dfe1e6;padding-top:12px">Sources: ' +
-      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://support.runna.com/en/articles/16065587-josh-kerr-on-breaking-the-mile-world-record">Runna Podcast, Aug 2026</a> · ' +
-      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://www.olympics.com/en/news/josh-kerr-team-gb-star-forged-in-the-usa">Olympics.com</a> · ' +
-      '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://worldathletics.org/news/report/london-athletics-meet-2026-josh-kerr-world-mile-record">World Athletics, Jul 2026</a>. ' +
-      'Not affiliated with or endorsed by Cosmic Intentions.</div>';
+    '';
   instructions.after(story);
   // Scott 2026-11-01: refresh button (top right of the box) swaps to the other card without reloading.
   section.style.position = 'relative';
@@ -5978,9 +5974,18 @@ function ciJournalRotationTest(instructions, pageId) {
   swap.style.cssText = 'position:absolute;right:16px;width:40px;height:40px;box-sizing:border-box;border:3px solid #0b2a5b;border-radius:50%;background:#fff;color:#0b2a5b;display:grid;place-items:center;padding:0;cursor:pointer';
   swap.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg>';
   section.appendChild(swap);
+  // Scott 2026-11-01: sources move to the bottom of the page, marked * on the card.
+  const CITATIONS = '* Sources: ' +
+    '<a target="_blank" rel="noopener" href="https://support.runna.com/en/articles/16065587-josh-kerr-on-breaking-the-mile-world-record">Runna Podcast, Aug 2026</a> · ' +
+    '<a target="_blank" rel="noopener" href="https://www.olympics.com/en/news/josh-kerr-team-gb-star-forged-in-the-usa">Olympics.com</a> · ' +
+    '<a target="_blank" rel="noopener" href="https://worldathletics.org/news/report/london-athletics-meet-2026-josh-kerr-world-mile-record">World Athletics, Jul 2026</a>. ' +
+    'Not affiliated with or endorsed by Cosmic Intentions.';
+  const postCitations = () => { try { window.top.postMessage({ type: 'ci-page-citations', html: turn ? CITATIONS : '' }, location.origin); } catch (_) {} };
+  story.querySelector('.ci-journal-cite')?.addEventListener('click', e => { e.preventDefault(); try { window.top.postMessage({ type: 'ci-page-citations-jump' }, location.origin); } catch (_) {} });
   const show = () => {
     instructions.style.display = turn ? 'none' : '';
     story.style.display = turn ? 'flex' : 'none';
+    postCitations();
     tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · tap ↻ or reload to rotate (test addresses only)';
     swap.setAttribute('aria-label', turn ? 'Show instructions' : 'Show Practice Story');
     swap.title = swap.getAttribute('aria-label');
