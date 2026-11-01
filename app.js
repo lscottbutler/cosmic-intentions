@@ -5944,16 +5944,15 @@ function injectPlaceholderCards() {
 const CI_JOURNAL_TEST_HOST = /^(staging--|deploy-preview-\d+--)/.test(location.hostname) || ['localhost','127.0.0.1'].includes(location.hostname);
 function ciJournalRotationTest(instructions, pageId) {
   if (!CI_JOURNAL_TEST_HOST || pageId !== 'mynotes' || !instructions) return;
-  if (instructions.parentElement?.querySelector('.ci-journal-story')) return;
+  const section = instructions.parentElement;
+  if (!section || section.querySelector('.ci-journal-story')) return;
   let turn = 0;
   try { turn = (parseInt(localStorage.getItem('ci-journal-rot') || '-1', 10) + 1) % 2; localStorage.setItem('ci-journal-rot', String(turn)); }
   catch (_) { turn = Math.random() < 0.5 ? 0 : 1; }
   const tag = document.createElement('p');
   tag.className = 'ci-journal-test-tag';
   tag.style.cssText = 'margin:0 0 10px;padding:6px 10px;border:1px dashed #b8bcc4;border-radius:6px;font:500 12px Arial,sans-serif;color:#6b6f78';
-  tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · reload to rotate (test addresses only)';
   instructions.before(tag);
-  if (!turn) return;
   const story = document.createElement('div');
   story.className = 'ci-journal-story';
   story.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#2b2d31';
@@ -5970,8 +5969,32 @@ function ciJournalRotationTest(instructions, pageId) {
       '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://www.olympics.com/en/news/josh-kerr-team-gb-star-forged-in-the-usa">Olympics.com</a> · ' +
       '<a style="color:#6b6f78" target="_blank" rel="noopener" href="https://worldathletics.org/news/report/london-athletics-meet-2026-josh-kerr-world-mile-record">World Athletics, Jul 2026</a>. ' +
       'Not affiliated with or endorsed by Cosmic Intentions.</div>';
-  instructions.style.display = 'none';
   instructions.after(story);
+  // Scott 2026-11-01: refresh button (top right of the box) swaps to the other card without reloading.
+  section.style.position = 'relative';
+  const swap = document.createElement('button');
+  swap.type = 'button';
+  swap.className = 'ci-journal-swap';
+  swap.style.cssText = 'position:absolute;right:16px;width:40px;height:40px;box-sizing:border-box;border:3px solid #0b2a5b;border-radius:50%;background:#fff;color:#0b2a5b;display:grid;place-items:center;padding:0;cursor:pointer';
+  swap.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg>';
+  section.appendChild(swap);
+  const show = () => {
+    instructions.style.display = turn ? 'none' : '';
+    story.style.display = turn ? 'flex' : 'none';
+    tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · tap ↻ or reload to rotate (test addresses only)';
+    swap.setAttribute('aria-label', turn ? 'Show instructions' : 'Show Practice Story');
+    swap.title = swap.getAttribute('aria-label');
+    // Sit level with the first line of the card, below the TEST note.
+    swap.style.top = (tag.offsetTop + tag.offsetHeight + 8) + 'px';
+    // The card text must not run under the button.
+    instructions.style.paddingRight = story.style.paddingRight = '52px';
+  };
+  swap.addEventListener('click', () => {
+    turn = turn ? 0 : 1;
+    try { localStorage.setItem('ci-journal-rot', String(turn)); } catch (_) {}
+    show();
+  });
+  show();
 }
 
 // The standalone Master Player renders Citadel outside the main app's dashboard.
