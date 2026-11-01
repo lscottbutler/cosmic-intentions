@@ -394,13 +394,41 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   addEventListener('resize',()=>{if(!pop.hidden)place();});
   const mount=()=>{if(trigger.parentElement&&btn.nextElementSibling!==trigger)trigger.before(btn);};mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
  })();
- async function openFeature(action){
+ // Scott 2026-11-01: picking from the bar, the 5 or the ☰ menu keeps the page in place. The top card
+ // and content fade out, the new page fades in, and the "What do you want to do?" bar glides to its
+ // new spot. The address tracks the current page so reload and bookmarks land there.
+ const orientationCard=document.querySelector('.orientation');
+ let headerFade;
+ function fadeHeader(opacity,duration){
+  if(!orientationCard)return Promise.resolve();
+  const from=getComputedStyle(orientationCard).opacity;headerFade?.cancel();orientationCard.style.opacity=opacity;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return Promise.resolve();
+  headerFade=orientationCard.animate([{opacity:from},{opacity}],{duration,easing:'ease-in-out'});
+  return headerFade.finished.catch(()=>{});
+ }
+ function barTop(){
+  const q=document.getElementById('quick-nav');
+  if(q&&!q.hidden&&q.offsetParent)return q.getBoundingClientRect().top;
+  try{const deck=frame.contentDocument.querySelector('.shell.home-mode .deck');if(deck&&deck.offsetParent)return frame.getBoundingClientRect().top+deck.getBoundingClientRect().top;}catch(_){}
+  return null;
+ }
+ function glideBar(fromTop){
+  const q=document.getElementById('quick-nav');
+  if(fromTop==null||!q||q.hidden||!q.offsetParent||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const shift=fromTop-q.getBoundingClientRect().top;
+  if(Math.abs(shift)<2)return;
+  q.animate([{transform:'translateY('+shift+'px)'},{transform:'none'}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
+ }
+ window.addEventListener('popstate',event=>{const a=event.state?.ciFeature||new URLSearchParams(location.search).get('feature')||'home';if(features[a])openFeature(a,{fromHistory:true});});
+ async function openFeature(action,options={}){
   if(!features[action])return;
   const version=++navigationVersion;
   pageNavigationPending=true;
+  if(!options.fromHistory){try{const url=new URL(location.href);if(url.searchParams.get('feature')!==action){url.searchParams.set('feature',action);history.replaceState({ciFeature:action},'',url);}}catch(_){}}
+  const startBarTop=barTop();
   if(headerNoteFrame?.contentWindow)headerNoteFrame.contentWindow.ciHoldCarousel=true;
   contentCard.setAttribute('aria-busy','true');contentCard.inert=true;
-  await fadeContent(0,180);
+  await Promise.all([fadeContent(0,180),fadeHeader(0,180)]);
   if(version!==navigationVersion)return;
   navigateFeature(action);
   // Wait for the selected page, including a newly loaded player iframe.
@@ -425,7 +453,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   pageNavigationPending=false;
   if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
   contentCard.inert=false;contentCard.removeAttribute('aria-busy');
-  await fadeContent(1,300);
+  glideBar(startBarTop);
+  await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);
  }
  function navigateFeature(action){
   if(action==='aks'){playerAction=action;gratitudeV2=false;newGratitude=false;frame.src='/standalone/aks.html';renderFeature(action);return;}
@@ -523,6 +552,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  });
  function watchDocument(doc){
   const homeDeck=doc.querySelector('.shell.home-mode .deck');
+  if(homeDeck&&!homeDeck.dataset.ciInPlace){
+   homeDeck.dataset.ciInPlace='1';
+   homeDeck.addEventListener('click',event=>{
+    const nav=event.target.closest('.nav[data-action]');if(!nav)return;
+    const target={gratitude:'new-gratitude',visualization:'super-viz'}[nav.dataset.action]||nav.dataset.action;
+    if(!features[target])return;
+    event.preventDefault();event.stopImmediatePropagation();openFeature(target);
+   },true);
+  }
   // The Citadel already shows the full icon grid, so hide the small row whenever that grid is on screen.
   // The Menu heading's chevron was a picture only. Make it a real button that closes the menu
   // and returns to the page the member came from. The locked Master Player file is unchanged.
