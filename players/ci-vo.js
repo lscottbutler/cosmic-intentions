@@ -155,7 +155,7 @@
 
  /* Rachel's pace (Scott, 2 Nov 2026: "a tad too fast"). Slows every Rachel clip — recorded, live goal lines,
     Gratitude cards — without changing pitch. One number to tune: 1 = as recorded. */
- const RATE = 0.92;
+ const RATE = 0.83;   // 0.92 → 0.83 (Scott: "slow it down another 10%")
  const isRachel = src => /\/vo-audio\/|goal-audio|^data:audio\/mpeg/.test(src || '');
  if (typeof HTMLMediaElement !== 'undefined') {
   const play0 = HTMLMediaElement.prototype.play;
