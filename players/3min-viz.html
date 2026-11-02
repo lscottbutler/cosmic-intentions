@@ -117,12 +117,12 @@
         s5_in:93, s5_vo:94, s5_out:103,                   // let it rise (brief, ~a few breaths)
         s6_in:104, s6_vo:105, s6_out:112,                 // close eyes (transition, no long hold)
         s7_in:113, s7_vo:114, s7_out:136, s7_count:137, s7_countSecs:35,  // visualize: VO then 35s silent hold
-        s8_in:175, s8_vo:176, s8_out:196,                 // release
-        s9_logoIn:198, end:204 },
-    vo:{ recall:"There's your memory. See it... hear it... and feel that warmth spreading softly through you.",
-         intensify:'Beautiful. Let that good feeling grow — warm, easy, gentle — just for a few breaths.',
-         closeEyes:'Now softly close your eyes... and keep that warmth close.',
-         maintain:"Still wrapped in that feeling, picture your goal as already real. Look around — what do you see? Who's smiling there beside you? Hear the sounds of this life you've created. Let yourself feel how wonderful it is to already be here. This is yours." }
+        s8_in:175, s8_vo:176, s8_out:208,   /* +12s for the MAN-10/11 action ending (2 Nov 2026) */                 // release
+        s9_logoIn:210, end:216 },
+    vo:{ recall:"Go back to your memory. See it. Hear it. Notice the warmth of it.",
+         intensify:'Let that good feeling grow a little. Stay with it for a few breaths.',
+         closeEyes:'Now close your eyes if that feels right. Keep that feeling close.',
+         maintain:"With that feeling still here, picture a day as the person you intend to be. Where are you? What are you doing? Who’s there with you? Notice how you think. Notice what you choose to do next." }
   };
 
   const P = new URLSearchParams(location.search);
@@ -168,12 +168,12 @@
   const userName = (new URLSearchParams(location.search)).get('name') || localStorage.getItem('ci_user_name') || 'Scott';
   const goalPhrase = goal.replace(/^i am\s+/i,'').replace(/[.,]\s*$/,'');                       // goal without "I am"/trailing punctuation
   // welcome shown in two beats: para 1 (greeting), then cross-fades to para 2 (the goal + memory)
-  const welAhtml = `<span class="wb">Welcome Back ${userName},</span><p>I'm so glad you're here. Just by showing up, you're doing what so few people do — choosing your future on purpose. And here's the beautiful part: when you picture something vividly, with real feeling, your body responds as if it's already happening. So these next few minutes aren't wishful thinking... they're gentle, joyful practice for a life that's on its way to you.</p>`;
-  const welBhtml = `<p>In a moment, we'll picture you becoming ${goalPhrase}. But first, let's fill your heart. Bring to mind a memory that makes you smile — a moment of pure joy, or deep gratitude. Something you'd happily live again. Let it drift back to you now.</p>`;
-  const welcomeA = `Welcome back ${userName}. I'm so glad you're here. Just by showing up, you're doing what so few people do — choosing your future on purpose. And here's the beautiful part: when you picture something vividly, with real feeling, your body responds as if it's already happening. So these next few minutes aren't wishful thinking... they're gentle, joyful practice for a life that's on its way to you.`;
-  const welcomeB = `In a moment, we'll picture you becoming ${goalPhrase}. But first, let's fill your heart. Bring to mind a memory that makes you smile — a moment of pure joy, or deep gratitude. Something you'd happily live again. Let it drift back to you now.`;
-  const goalSpoken = `And gently, lovingly, claim it as already yours. ${goal}`;
-  const releaseText = `Now, with a grateful heart, gently let it go — trusting it's already finding its way to you. Nothing to force, nothing to chase. Simply expect good things. Open your eyes when you're ready, ${userName}... and carry this feeling with you all day long.`;
+  const welAhtml = `<span class="wb">Welcome back, ${userName}.</span><p>I’m glad you’re here. For the next three minutes, you’ll rehearse being the person you intend to be. Not wishing. Practising.</p>`; // CI Council 2 Nov 2026: MAN-01
+  const welBhtml = `<p>In a moment, you’ll picture yourself living your intention. First, bring to mind a memory that makes you smile. A moment of real joy, or deep gratitude. Let it come back to you now.</p>`; // MAN-03
+  const welcomeA = `Welcome back, ${userName}. I’m glad you’re here. For the next three minutes, you’ll rehearse being the person you intend to be. Not wishing. Practising.`;
+  const welcomeB = `In a moment, you’ll picture yourself living your intention. First, bring to mind a memory that makes you smile. A moment of real joy, or deep gratitude. Let it come back to you now.`;
+  const goalSpoken = `Here is your intention, in your own words. ${goal}`; // MAN-04
+  const releaseText = `Let the picture fade. Nothing to force. You’ve just practised being who you intend to be. Before you open your eyes, choose one small action this person would take today. Say it to yourself once. Open your eyes when you’re ready, ${userName}. Then go and do it.`; // MAN-10 + MAN-11
 
   /* ── column B art: 79 pieces in images/50-50/, rotating one per day (day-of-year).
        override for testing: ?img=1060 picks the file whose name contains "1060" ── */

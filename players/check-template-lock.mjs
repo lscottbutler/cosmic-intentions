@@ -97,8 +97,9 @@ import { readFileSync } from 'node:fs';
 // Copy-only: two menu label strings and one description changed; geometry and controls unchanged.
 // Recovery before this copy change: 48da27d1b93efaad8db50dea366f4967146a9e49.
 // 2026-10-30: Scott retired Landing Pages 2 and 3 (Council-approved single /landing). Menu link list only.
+// 2026-11-02: Scott approved the CI Council VO scripts; meditation-sessions.js text polish only (contractions, Unguided cue, LG opening, intention closings). Timing/structure unchanged.
 const lockedFiles = {
-  "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5",
+  "players/meditation-sessions.js": "194c8bade49965e9b2c12d0a29d78cf4ddc2da8c",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
   "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
