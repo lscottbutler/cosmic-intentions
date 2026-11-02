@@ -4,7 +4,7 @@
  const durations=[1,2,3,5,10,15,30,45,60];
  const L={
   '01':['This is your time to rehearse. For the next few minutes, you’ll see yourself thinking and acting as the person you intend to be.',9],
-  '02':['Find a comfortable position. Close your eyes if that feels right, or rest your gaze softly.',7],
+  '02':['Find a comfortable position. Close your eyes if that feels right, or rest your gaze softly.',8],
   '03':['Take a slow breath in… and let it go. Once more… and let it go. Now let your breath find its own pace.',14],
   '04':['Bring your intention to mind, in your own words. Say it quietly to yourself.',8,5],
   '05':['Picture an ordinary moment in the day ahead. You’re there as the person you intend to be. Where are you? What are you doing? Notice how you stand. How you speak. The choice you make next. Watch yourself follow through.',25,20],

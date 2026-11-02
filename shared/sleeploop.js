@@ -238,7 +238,7 @@ function _finish() {
   if (_evening) { sleepLoopStop(); return; }
   if (_timer) { clearTimeout(_timer); _timer = null; }
   _playLine(ML_OUT_DAY);
-  setTimeout(() => { if (_playing) sleepLoopStop(); }, 9000);
+  setTimeout(() => { if (_playing) sleepLoopStop(); }, 11000);
 }
 
 /* Speak one goal line — premium voice if available, else browser. */
@@ -283,7 +283,7 @@ export function sleepLoopToggle() {
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
   _evening = _isEvening();
   _playLine(_evening ? ML_IN_SLEEP : ML_IN_DAY);   // ML-IN: once at the start
-  _timer = setTimeout(_tick, 12000);               // first goal right after the intro
+  _timer = setTimeout(_tick, 13000);               // first goal right after the intro (12 s at Rachel's pace)
   renderSleepLoop();
 }
 

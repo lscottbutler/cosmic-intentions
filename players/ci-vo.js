@@ -153,5 +153,17 @@
   } catch (e) {}
  }
 
- window.CIVO = { LINES, BASE, url, idFor, file, live, norm, token };
+ /* Rachel's pace (Scott, 2 Nov 2026: "a tad too fast"). Slows every Rachel clip — recorded, live goal lines,
+    Gratitude cards — without changing pitch. One number to tune: 1 = as recorded. */
+ const RATE = 0.92;
+ const isRachel = src => /\/vo-audio\/|goal-audio|^data:audio\/mpeg/.test(src || '');
+ if (typeof HTMLMediaElement !== 'undefined') {
+  const play0 = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function () {
+   try { if (isRachel(this.currentSrc || this.src)) { this.preservesPitch = true; this.playbackRate = RATE; } } catch (e) {}
+   return play0.apply(this, arguments);
+  };
+ }
+
+ window.CIVO = { LINES, BASE, url, idFor, file, live, norm, token, RATE };
 })();
