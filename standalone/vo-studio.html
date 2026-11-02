@@ -40,8 +40,11 @@
   const tok=await CIVO.token(); if(!tok){log('Sign in to the app first, then reload this page.');return false;}
   state[id]='busy';paint(id);log('Recording '+id+'…');
   try{
-   const r=await fetch('/.netlify/functions/tts-elevenlabs',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({text:CIVO.LINES[id]})});
-   const j=await r.json().catch(()=>({}));if(!r.ok||!j.audio)throw new Error('voice: '+(j.error||r.status));
+   const call=fn=>fetch('/.netlify/functions/'+fn,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({text:CIVO.LINES[id]})});
+   let r=await call('tts-elevenlabs'),j=await r.json().catch(()=>({}));
+   // Daily cap reached on the first route: the general route uses the same Rachel voice and model, on its own counter.
+   if(r.status===429){r=await call('tts');j=await r.json().catch(()=>({}));if(r.ok&&j.provider!=='elevenlabs')throw new Error('voice: not Rachel ('+j.provider+'), stopped');}
+   if(!r.ok||!j.audio)throw new Error('voice: '+(j.error||r.status));
    const bytes=Uint8Array.from(atob(j.audio),c=>c.charCodeAt(0));
    const u=await fetch(SUPA+'/storage/v1/object/vo-audio/rachel/'+CIVO.file(id),{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+tok,'Content-Type':'audio/mpeg','x-upsert':'true'},body:bytes});
    if(!u.ok)throw new Error('upload: '+u.status+' '+(await u.text()).slice(0,120));

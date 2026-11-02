@@ -51,6 +51,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
 00</span>
   </button>
 </main>
+<script src="/players/ci-vo.js"></script>
 <script src="/players/meditation-sessions.js"></script>
 <script src="/players/meditation-stage.js"></script>
 <script>
@@ -150,7 +151,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
   let completionBellPlayed=false;
   completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
-  const openingText='OK, close your eyes and begin';
+  const openingText='Close your eyes if that feels right, and begin.';   // MED-UNG-01 (Council 2 Nov 2026)
   let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingVoiceEnded=false,openingGeneration=0;
   function syncOpening(){
     if(openingPhase==='ready'||openingPhase==='done')return false;
