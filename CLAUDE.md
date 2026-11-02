@@ -1,7 +1,7 @@
 # CLAUDE.md — Cosmic Intentions Project
 
 ## MISSION — THE BACKBONE OF CI (Scott, 2 Nov 2026)
-**Help a person repeatedly think and act as the person they intend to be.**
+**Cosmic Intentions helps people repeatedly think and act as the person they intend to be.**
 Every feature, page, message and design choice must serve this. Test any request or idea against it:
 does it help someone think or act, again and again, as the person they intend to be? If a change
 works against it, flag that to Scott before building.
