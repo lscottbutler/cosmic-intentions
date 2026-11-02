@@ -99,6 +99,7 @@ import { readFileSync } from 'node:fs';
 // 2026-10-30: Scott retired Landing Pages 2 and 3 (Council-approved single /landing). Menu link list only.
 // 2026-11-02: Scott approved the CI Council VO scripts; meditation-sessions.js text polish only (contractions, Unguided cue, LG opening, intention closings). Timing/structure unchanged.
 // 2026-11-02: meditation.html — Rachel recordings (players/ci-vo.js) + approved opening cue MED-UNG-01 (Scott: "meditate go").
+// 2026-11-02: meditation.html — let a spoken line finish (sentence pauses) instead of cutting at the cue end (Scott: one-second sentence space).
 const lockedFiles = {
   "players/meditation-sessions.js": "194c8bade49965e9b2c12d0a29d78cf4ddc2da8c",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
@@ -106,7 +107,7 @@ const lockedFiles = {
   "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
   "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
   "players/master-player.html": "cd959d461dc2312a920d27968d39928aec43b979",
-  "players/meditation.html": "00fd5f876622098014afe38fc4774e896a17ea14"
+  "players/meditation.html": "c94355024e55b742f569fced4ce77b398f5b69ca"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

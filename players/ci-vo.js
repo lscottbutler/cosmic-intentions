@@ -120,7 +120,7 @@
   const t = await token(); if (!t) return null;
   try {
    const r = await fetch('/.netlify/functions/tts-elevenlabs', { method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + t }, body: JSON.stringify({ text }) });
-   if (!r.ok) return null; const { audio } = await r.json(); return audio || null;   // base64 mp3
+   if (!r.ok) return null; const { audio } = await r.json(); if (audio) textOf.set('data:audio/mpeg;base64,' + audio, text); return audio || null;   // base64 mp3
   } catch (e) { return null; }
  }
 
@@ -157,11 +157,59 @@
     Gratitude cards — without changing pitch. One number to tune: 1 = as recorded. */
  const RATE = 0.83;   // 0.92 → 0.83 (Scott: "slow it down another 10%")
  const isRachel = src => /\/vo-audio\/|goal-audio|^data:audio\/mpeg/.test(src || '');
+ /* Sentence pauses (Scott, 2 Nov 2026: "put a one second space at the end of sentences").
+    Each Rachel clip is decoded once, its sentence pauses are found (for a known line: the N-1 longest
+    silences, N = sentences; for live lines: silences of 0.3 s or more), and GAP seconds of silence
+    (as heard, after RATE) are added at each. Falls back to the original clip on any error. */
+ const GAP = 1.0;
+ const textOf = new Map();   // live data: URI -> its text
+ const sentenceBreaks = t => (String(t).match(/[.?!…]+["”’]?\s+(?=\S)/g) || []).length;
+ const gapped = new Map();   // original src -> Promise<blob URL | null>
+ function wav(buf) {
+  const ch = buf.getChannelData(0), n = ch.length, sr = buf.sampleRate, out = new DataView(new ArrayBuffer(44 + n * 2));
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) out.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); out.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true);
+  out.setUint32(24, sr, true); out.setUint32(28, sr * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true); w(36, 'data'); out.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) { const v = Math.max(-1, Math.min(1, ch[i])); out.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
+  return new Blob([out], { type: 'audio/wav' });
+ }
+ async function addPauses(src) {
+  const id = Object.keys(LINES).find(k => BASE + file(k) === src);
+  const text = id ? LINES[id] : textOf.get(src);
+  const bytes = await (await fetch(src)).arrayBuffer();
+  const ctx = new OfflineAudioContext(1, 1, 44100);
+  const buf = await ctx.decodeAudioData(bytes);
+  const x = buf.getChannelData(0), sr = buf.sampleRate, F = Math.round(sr * 0.01), frames = Math.floor(x.length / F);
+  let peak = 0; for (let i = 0; i < x.length; i++) { const a = Math.abs(x[i]); if (a > peak) peak = a; }
+  const quiet = []; for (let f = 0; f < frames; f++) { let s = 0; for (let i = f * F; i < (f + 1) * F; i++) s += x[i] * x[i]; quiet.push(Math.sqrt(s / F) < peak * 0.02); }
+  const first = quiet.indexOf(false), last = quiet.lastIndexOf(false);
+  const runs = []; let st = -1;
+  for (let f = first; f <= last; f++) { if (quiet[f]) { if (st < 0) st = f; } else if (st >= 0) { runs.push({ st, len: f - st }); st = -1; } }
+  let cuts;
+  if (text) { const k = sentenceBreaks(text); cuts = runs.filter(r => r.len >= 12).sort((a, b) => b.len - a.len).slice(0, k); }
+  else cuts = runs.filter(r => r.len >= 30);
+  if (!cuts.length) return null;
+  cuts.sort((a, b) => a.st - b.st);
+  const add = Math.round(GAP * RATE * sr), outLen = x.length + add * cuts.length;
+  const out = new AudioBuffer({ length: outLen, numberOfChannels: 1, sampleRate: sr }), y = out.getChannelData(0);
+  let from = 0, to = 0;
+  for (const c of cuts) { const at = (c.st + Math.floor(c.len / 2)) * F; y.set(x.subarray(from, at), to); to += at - from + add; from = at; }
+  y.set(x.subarray(from), to);
+  return URL.createObjectURL(wav(out));
+ }
  if (typeof HTMLMediaElement !== 'undefined') {
   const play0 = HTMLMediaElement.prototype.play;
   HTMLMediaElement.prototype.play = function () {
-   try { if (isRachel(this.currentSrc || this.src)) { this.preservesPitch = true; this.playbackRate = RATE; } } catch (e) {}
-   return play0.apply(this, arguments);
+   const el = this, src = el.currentSrc || el.src;
+   if (!isRachel(src) && !el.__ciPaced) return play0.apply(el, arguments);
+   const pace = () => { el.preservesPitch = true; el.defaultPlaybackRate = RATE; el.playbackRate = RATE; };
+   if (el.__ciPaced) { pace(); return play0.call(el); }
+   if (!gapped.has(src)) gapped.set(src, addPauses(src).catch(() => null));
+   return gapped.get(src).then(blob => {
+    el.__ciPaced = true;
+    if (blob && el.src === src) { const t = el.currentTime; el.src = blob; if (t) { try { el.currentTime = t; } catch (e) {} } }
+    pace(); return play0.call(el);
+   });
   };
  }
 

@@ -113,7 +113,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(state==='paused'){speechSynthesis.pause();return;}
     if(state!=='running'){stopSpeech();return;}
     const cue=cues.find(c=>elapsed>=c.start&&elapsed<c.end);
-    if(!cue){if(spokenCue!==null)stopSpeech();return;}
+    if(!cue){if(spokenCue!==null&&!speechSynthesis.speaking)spokenCue=null;return;}   // let a line finish its sentence pauses instead of cutting it at the window end
     if(spokenCue===cue.start){if(speechSynthesis.paused)speechSynthesis.resume();return;}
     stopSpeech();spokenCue=cue.start;
     const utterance=new SpeechSynthesisUtterance(cue.text);utterance.lang='en-US';utterance.rate=0.9;

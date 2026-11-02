@@ -24,7 +24,7 @@ globalThis.CIPlayerV2={upgrade(input){if(input?.moduleType==='gratitude-v2'&&inp
     card('GRA-03 Simple things','Here are a few simple things to be grateful for.',6));
   }
   const post=m.cards.find(c=>c.label==='Post-slideshow message');
-  if(post)Object.assign(post,{label:'GRA-09 Your turn',text:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',spoken:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',duration:12,fadeIn:1,fadeOut:1});
+  if(post)Object.assign(post,{label:'GRA-09 Your turn',text:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',spoken:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',duration:14,fadeIn:1,fadeOut:1});
   if(!m.cards.some(c=>c.label==='GRA-10 Carry one'))m.cards.push(card('GRA-10 Carry one','Pick one of them to carry with you today. If it involves someone, you might tell them.',9));
   m.councilScriptVersion=20261102;
   return rachel(m);
