@@ -307,17 +307,32 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    document.documentElement.style.setProperty('--page-accent',accent);document.documentElement.style.setProperty('--page-accent-text',accent==='#fef200'?'#292929':'#fff');
    const neutral=accent==='#747474'?'#303030':'#202020';
    let letterIndex=0;
+   // Scott 2026-11-01: never split a word across lines. Each word's tiles sit in a no-wrap group;
+   // lines may only break at the spaces between words.
+   let word=null;
    for(const char of copy[0]){
      const tile=document.createElement('span');
      tile.textContent=char;tile.setAttribute('aria-hidden','true');
-     const color=char===' '?neutral:(letterIndex++%2?neutral:accent);
-     tile.style.cssText=char===' '?'width:.35em;flex:0 0 .35em':'display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:1px 3px;line-height:1.2';
-     title.append(tile);
+     if(char===' '){
+      tile.style.cssText='width:.35em;flex:0 0 .35em';title.append(tile);word=null;continue;
+     }
+     const color=letterIndex++%2?neutral:accent;
+     tile.className='ci-title-tile';
+     tile.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:0 3px;line-height:1.2';
+     if(!word){word=document.createElement('span');word.className='ci-title-word';word.setAttribute('aria-hidden','true');word.style.cssText='display:inline-flex;flex-wrap:nowrap;gap:3px';title.append(word);}
+     word.append(tile);
    }
-   title.style.cssText="display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
-   title.style.fontSize=Math.max(12,Math.min(36,(title.parentElement.clientWidth-(copy[0].length-1)*3-copy[0].length*6)/(copy[0].length*.75)))+'px';
+   title.style.cssText="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:3px;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(22px,3vw,36px);font-weight:600;text-transform:uppercase;max-width:100%";
+   const titleRoom=title.clientWidth||title.parentElement.clientWidth;// the title's own box (on phones it stops short of the ☰ button)
+   const fitFor=n=>(titleRoom-(n-1)*3-n*6)/(n*.75);
+   const longestWord=Math.max(...copy[0].split(' ').map(w=>w.length));
+   const fitAll=fitFor(copy[0].length);
+   // One line when it fits at a readable size; otherwise wrap between words, sized so the longest word fits.
+   title.style.fontSize=Math.max(12,Math.min(36,fitAll>=16?fitAll:Math.min(24,fitFor(longestWord))))+'px';
+   // Safety net: shrink until no word is wider than the title area.
+   for(let size=parseFloat(title.style.fontSize),guard=0;guard<30&&size>10&&[...title.querySelectorAll('.ci-title-word')].some(w=>w.getBoundingClientRect().width>titleRoom);guard++){size-=1;title.style.fontSize=size+'px';}
    if(action==='goals'){
-    title.querySelectorAll('span').forEach(tile=>{
+    title.querySelectorAll('.ci-title-tile').forEach(tile=>{
      const glyph=document.createElement('span');glyph.textContent=tile.textContent;
      glyph.style.display='inline-block';tile.replaceChildren(glyph);
      const bounds=glyph.getBoundingClientRect();
@@ -379,13 +394,57 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   addEventListener('resize',()=>{if(!pop.hidden)place();});
   const mount=()=>{if(trigger.parentElement&&btn.nextElementSibling!==trigger)trigger.before(btn);};mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
  })();
- async function openFeature(action){
+ // Scott 2026-11-01: picking from the bar, the 5 or the ☰ menu keeps the page in place. The top card
+ // and content fade out, the new page fades in, and the "What do you want to do?" bar glides to its
+ // new spot. The address tracks the current page so reload and bookmarks land there.
+ const orientationCard=document.querySelector('.orientation');
+ let headerFade;
+ function fadeHeader(opacity,duration){
+  if(!orientationCard)return Promise.resolve();
+  const from=getComputedStyle(orientationCard).opacity;headerFade?.cancel();orientationCard.style.opacity=opacity;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return Promise.resolve();
+  headerFade=orientationCard.animate([{opacity:from},{opacity}],{duration,easing:'ease-in-out'});
+  return headerFade.finished.catch(()=>{});
+ }
+ function barTop(){
+  const q=document.getElementById('quick-nav');
+  if(q&&!q.hidden&&q.offsetParent)return q.getBoundingClientRect().top;
+  try{const deck=frame.contentDocument.querySelector('.shell.home-mode .deck');if(deck&&deck.offsetParent)return frame.getBoundingClientRect().top+deck.getBoundingClientRect().top;}catch(_){}
+  return null;
+ }
+ function glideBar(fromTop){
+  const q=document.getElementById('quick-nav');
+  if(fromTop==null||!q||q.hidden||!q.offsetParent||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const shift=fromTop-q.getBoundingClientRect().top;
+  if(Math.abs(shift)<2)return;
+  q.animate([{transform:'translateY('+shift+'px)'},{transform:'none'}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
+ }
+ // Scott 2026-11-01: page citations. Content frames send their sources here; they're listed at the
+ // very bottom of the page, and cleared whenever the page changes.
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin)return;
+  const type=event.data?.type;
+  if(type!=='ci-page-citations'&&type!=='ci-page-citations-jump')return;
+  let box=document.getElementById('ci-page-citations');
+  if(type==='ci-page-citations-jump'){box?.scrollIntoView({behavior:'smooth',block:'end'});return;}
+  const html=String(event.data.html||'');
+  if(!html){box?.remove();return;}
+  if(!box){box=document.createElement('aside');box.id='ci-page-citations';box.setAttribute('aria-label','Sources');
+   box.style.cssText='max-width:900px;margin:24px auto 40px;padding:14px 18px;border-top:1px solid #dfe1e6;font:400 13px/1.6 Arial,sans-serif;color:#6b6f78';
+   (document.querySelector('main')||document.body).append(box);}
+  box.innerHTML=html;box.querySelectorAll('a').forEach(a=>{a.style.color='#6b6f78';a.target='_blank';a.rel='noopener';});
+ });
+ window.addEventListener('popstate',event=>{const a=event.state?.ciFeature||new URLSearchParams(location.search).get('feature')||'home';if(features[a])openFeature(a,{fromHistory:true});});
+ async function openFeature(action,options={}){
   if(!features[action])return;
   const version=++navigationVersion;
   pageNavigationPending=true;
+  if(!options.fromHistory){try{const url=new URL(location.href);if(url.searchParams.get('feature')!==action){url.searchParams.set('feature',action);history.replaceState({ciFeature:action},'',url);}}catch(_){}}
+  const startBarTop=barTop();
+  document.getElementById('ci-page-citations')?.remove();
   if(headerNoteFrame?.contentWindow)headerNoteFrame.contentWindow.ciHoldCarousel=true;
   contentCard.setAttribute('aria-busy','true');contentCard.inert=true;
-  await fadeContent(0,180);
+  await Promise.all([fadeContent(0,180),fadeHeader(0,180)]);
   if(version!==navigationVersion)return;
   navigateFeature(action);
   // Wait for the selected page, including a newly loaded player iframe.
@@ -410,7 +469,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   pageNavigationPending=false;
   if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
   contentCard.inert=false;contentCard.removeAttribute('aria-busy');
-  await fadeContent(1,300);
+  glideBar(startBarTop);
+  await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);
  }
  function navigateFeature(action){
   if(action==='aks'){playerAction=action;gratitudeV2=false;newGratitude=false;frame.src='/standalone/aks.html';renderFeature(action);return;}
@@ -508,6 +568,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  });
  function watchDocument(doc){
   const homeDeck=doc.querySelector('.shell.home-mode .deck');
+  if(homeDeck&&!homeDeck.dataset.ciInPlace){
+   homeDeck.dataset.ciInPlace='1';
+   homeDeck.addEventListener('click',event=>{
+    const nav=event.target.closest('.nav[data-action]');if(!nav)return;
+    const target={gratitude:'new-gratitude',visualization:'super-viz'}[nav.dataset.action]||nav.dataset.action;
+    if(!features[target])return;
+    event.preventDefault();event.stopImmediatePropagation();openFeature(target);
+   },true);
+  }
   // The Citadel already shows the full icon grid, so hide the small row whenever that grid is on screen.
   // The Menu heading's chevron was a picture only. Make it a real button that closes the menu
   // and returns to the page the member came from. The locked Master Player file is unchanged.
