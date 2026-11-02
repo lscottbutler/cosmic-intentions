@@ -5949,10 +5949,7 @@ function ciJournalRotationTest(instructions, pageId) {
   let turn = 0;
   try { turn = (parseInt(localStorage.getItem('ci-journal-rot') || '-1', 10) + 1) % 2; localStorage.setItem('ci-journal-rot', String(turn)); }
   catch (_) { turn = Math.random() < 0.5 ? 0 : 1; }
-  const tag = document.createElement('p');
-  tag.className = 'ci-journal-test-tag';
-  tag.style.cssText = 'margin:0 0 10px;padding:6px 10px;border:1px dashed #b8bcc4;border-radius:6px;font:500 12px Arial,sans-serif;color:#6b6f78';
-  instructions.before(tag);
+  // Scott 2026-11-02: the TEST note above the box is removed; the button alone shows it can swap.
   const story = document.createElement('div');
   story.className = 'ci-journal-story';
   story.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#2b2d31';
@@ -5986,11 +5983,10 @@ function ciJournalRotationTest(instructions, pageId) {
     instructions.style.display = turn ? 'none' : '';
     story.style.display = turn ? 'flex' : 'none';
     postCitations();
-    tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · tap ↻ or reload to rotate (test addresses only)';
     swap.setAttribute('aria-label', turn ? 'Show instructions' : 'Show Practice Story');
     swap.title = swap.getAttribute('aria-label');
-    // Sit level with the first line of the card, below the TEST note.
-    swap.style.top = (tag.offsetTop + tag.offsetHeight + 8) + 'px';
+    // Sit level with the first line of the card.
+    swap.style.top = ((turn ? story : instructions).offsetTop) + 'px';
     // The card text must not run under the button.
     instructions.style.paddingRight = story.style.paddingRight = '52px';
   };
