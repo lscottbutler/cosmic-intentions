@@ -177,7 +177,7 @@ export function sleepLoopToggleGoal(id) {
 function _speak(text) {
   if (!('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.85; u.pitch = 1; u.volume = 1;   // calm, slow
+  u.rate = 0.85; u.pitch = 1; u.volume = _volume();   // calm, slow
   try { window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
 }
 
@@ -200,9 +200,35 @@ async function _playPremium(text) {
   try {
     if (_audio) { try { _audio.pause(); } catch (e) {} }
     _audio = new Audio(src);
+    _audio.volume = _volume();
     await _audio.play();
     return true;
   } catch (e) { return false; }
+}
+
+/* CI Council scripts, 2 Nov 2026 (CI-VO-Scripts-Approved, section 5). */
+const ML_IN_DAY = 'This is your Mind Loop. Your intentions, in your own words, will play from time to time. There’s no need to stop what you’re doing. Just let them land.';
+const ML_IN_SLEEP = 'This is your evening Mind Loop. Get comfortable. Your intentions will play quietly, in your own words. There’s nothing to do but listen.';
+const ML_OUT_DAY = 'That’s the end of today’s Mind Loop. Choose one thing you’ll do today as the person you intend to be.';
+let _evening = false;
+function _isEvening() { const h = new Date().getHours(); return h >= 18 || h < 5; }
+/* Evening loops start quieter; in the last 60 s they fade out so nothing wakes the member. */
+function _volume() {
+  if (!_evening) return 1;
+  const left = _endAt - Date.now();
+  return Math.max(0.05, 0.6 * Math.min(1, left / 60000));
+}
+/* A framing line (intro/outro): premium voice if available, else browser. Not counted as an impression. */
+async function _playLine(text) {
+  const ok = await _playPremium(text);
+  if (!ok && _playing) _speak(text);
+}
+/* Natural end of the session. Day: one spoken outro with an action. Evening: no voice (ML-OUT-SLEEP). */
+function _finish() {
+  if (_evening) { sleepLoopStop(); return; }
+  if (_timer) { clearTimeout(_timer); _timer = null; }
+  _playLine(ML_OUT_DAY);
+  setTimeout(() => { if (_playing) sleepLoopStop(); }, 9000);
 }
 
 /* Speak one goal line — premium voice if available, else browser. */
@@ -217,7 +243,7 @@ async function _playGoal(text) {
    cadence (one hour / perHour). Stops when the session hours are up. */
 function _tick() {
   if (!_playing) return;
-  if (Date.now() >= _endAt) { sleepLoopStop(); return; }
+  if (Date.now() >= _endAt) { _finish(); return; }
   if (_list.length) { _lastVoAt = Date.now(); _playGoal(_list[_idx % _list.length]); _idx++; renderSleepLoop(); }
   _timer = setTimeout(_tick, _intervalMs());
 }
@@ -245,7 +271,9 @@ export function sleepLoopToggle() {
   _mindPtTimer = setTimeout(() => { if (_playing) { try { awardMindLoopPoint(); } catch (e) {} } }, MIND_PT_MS);
   if (_uiTimer) clearInterval(_uiTimer);
   _uiTimer = setInterval(_renderTimer, 500);   // animate the rings
-  _tick();   // play one now, then rotate at the chosen cadence
+  _evening = _isEvening();
+  _playLine(_evening ? ML_IN_SLEEP : ML_IN_DAY);   // ML-IN: once at the start
+  _timer = setTimeout(_tick, 12000);               // first goal right after the intro
   renderSleepLoop();
 }
 
@@ -292,7 +320,7 @@ export function renderSleepLoop() {
     status = `<div style="margin-top:10px;font-size:12px;color:${DONE};line-height:1.5;">▸ “${esc(_lastLine)}”</div>
        <div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:3px;">${_perHour}/hr · ${left}</div>`;
   } else if (count) {
-    status = `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">ElevenLabs voice · falls back to your device</div>`;
+    status = `<div style="font-family:var(--vault-mono);font-size:8px;color:#666;letter-spacing:0.5px;margin-top:8px;">Set how long it plays, then let it run.</div>`;   // ML-SET
   } else {
     status = `<div style="font-size:12px;color:#505058;font-style:italic;margin-top:8px;">Add or switch on some goals to build your loop.</div>`;
   }
