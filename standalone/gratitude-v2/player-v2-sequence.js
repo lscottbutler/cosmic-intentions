@@ -10,7 +10,8 @@ globalThis.CIPlayerV2={upgrade(input){if(input?.moduleType==='gratitude-v2'&&inp
  const card=(label,text,duration,kind='content')=>({label,text,spoken:text,same:true,image:'',audio:'',audioText:'',mode:'fixed',duration,silence:0,fadeIn:text?1:0,fadeOut:text?1:0,kind,audioOffset:0});
  globalThis.CIPlayerV2.upgrade=function(input){
   const m0=base.call(this,input);
-  if(m0?.moduleType!=='gratitude-v2'||m0.councilScriptVersion===20261102||!Array.isArray(m0.cards))return m0;
+  if(m0?.moduleType!=='gratitude-v2'||!Array.isArray(m0.cards))return m0;
+  if(m0.councilScriptVersion===20261102)return rachel(structuredClone(m0));
   const m=structuredClone(m0);
   const intro=m.cards.find(c=>c.label==='Introducing the images');
   if(intro){
@@ -26,6 +27,18 @@ globalThis.CIPlayerV2={upgrade(input){if(input?.moduleType==='gratitude-v2'&&inp
   if(post)Object.assign(post,{label:'GRA-09 Your turn',text:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',spoken:'Now close your eyes if that feels right. Think of a few things in your own life you’re grateful for. When you hear the bell, open your eyes.',duration:12,fadeIn:1,fadeOut:1});
   if(!m.cards.some(c=>c.label==='GRA-10 Carry one'))m.cards.push(card('GRA-10 Carry one','Pick one of them to carry with you today. If it involves someone, you might tell them.',9));
   m.councilScriptVersion=20261102;
-  return m;
+  return rachel(m);
  };
+ // Rachel recordings (players/ci-vo.js): every card whose words match an approved line plays that file.
+ function rachel(m){
+  if(!globalThis.CIVO)return m;
+  for(const c of m.cards){
+   const words=(c.spoken||c.text||'').trim();if(!words)continue;
+   const id=CIVO.idFor(words)||CIVO.idFor(words.charAt(0)+words.slice(1).toLowerCase()+'.');
+   if(!id)continue;
+   Object.assign(c,{audio:CIVO.url(id),audioText:c.spoken,audioDuration:Math.max(1,c.duration-(c.audioOffset||0))});
+   delete c.audioPlayDuration;
+  }
+  return m;
+ }
 })();

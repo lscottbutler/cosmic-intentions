@@ -1,5 +1,6 @@
 import { intentions, esc, toast } from '../app.js';
 import { awardMindLoopPoint } from './rings.js';
+import '../players/ci-vo.js';   // window.CIVO — Rachel recordings of the fixed lines
 /* ── SLEEP LOOP ──────────────────────────────────────────
    Plays the user's FAVORITED goals on a gentle rotation as
    they fall asleep. Uses ElevenLabs premium audio (via the
@@ -220,6 +221,15 @@ function _volume() {
 }
 /* A framing line (intro/outro): premium voice if available, else browser. Not counted as an impression. */
 async function _playLine(text) {
+  const src = window.CIVO && window.CIVO.url(text);
+  if (src) {
+    try {
+      if (_audio) { try { _audio.pause(); } catch (e) {} }
+      _audio = new Audio(src); _audio.volume = _volume();
+      await _audio.play();
+      return;
+    } catch (e) { /* not recorded yet — fall through */ }
+  }
   const ok = await _playPremium(text);
   if (!ok && _playing) _speak(text);
 }

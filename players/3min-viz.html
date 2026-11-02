@@ -99,6 +99,7 @@
     </div>
   </div>
 
+  <script src="/players/ci-vo.js"></script>
   <script>
   /* ════════════════════════════════════════════════════════════════════
      CONFIG — every dial in one place. Live-test via URL params:
@@ -286,7 +287,13 @@
   const rc=()=>{try{return JSON.parse(localStorage.getItem(CACHE)||'{}');}catch(e){return{};}};
   const wc=(o)=>{try{localStorage.setItem(CACHE,JSON.stringify(o));}catch(e){}};
   const hash=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h.toString(36);};
-  async function tts(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
+  // Rachel: recorded file for fixed lines; live Rachel (signed-in) for lines with the member's name or goal.
+  function loadable(src){ return new Promise(res=>{ const a=new Audio(src); const t=setTimeout(()=>res(null),8000); a.oncanplaythrough=()=>{clearTimeout(t);res(a);}; a.onerror=()=>{clearTimeout(t);res(null);}; a.load(); }); }
+  async function tts(text){ const fixed=window.CIVO&&CIVO.url(text); if(fixed){ const a=await loadable(fixed); if(a)return a; }
+    const k=hash('rachel|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
+    if(window.CIVO){ const b64=await CIVO.live(text); if(b64){ c[k]=b64; wc(c); return new Audio('data:audio/mpeg;base64,'+b64); } }
+    return tts0(text); }
+  async function tts0(text){ const k=hash(VOICE+'|'+text), c=rc(); if(c[k])return new Audio('data:audio/mpeg;base64,'+c[k]);
     try{ const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,600),voice:VOICE})}); if(!r.ok)throw 0; const {audio}=await r.json(); c[k]=audio; wc(c); return new Audio('data:audio/mpeg;base64,'+audio);}catch(e){return null;} }
   const VO={};
   const VOTXT = Object.assign({goal:goalSpoken, welcomeA, welcomeB, release:releaseText}, VOTEXT);   // key -> text, for the offline browser-speech fallback
