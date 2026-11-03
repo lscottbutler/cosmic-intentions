@@ -30,7 +30,7 @@ export function visitTroughPage(pageId, eligible=true){
  if(eligible)selections.set(pageId,pick(pageId));
 }
 export function attachTrough(shell,pageId){
- try{const doc=shell.ownerDocument,mq=globalThis.top.matchMedia('(max-width:650px)');const set=()=>doc.documentElement.classList.toggle('ci-phone',mq.matches);set();if(!doc.ciPhoneWatch){doc.ciPhoneWatch=true;mq.addEventListener('change',set);}}catch{}
+ try{const doc=shell.ownerDocument,shellWin=(()=>{let w=globalThis;try{while(w.parent!==w&&!w.document.getElementById('review-menu'))w=w.parent;}catch{}return w;})(),mq=shellWin.matchMedia('(max-width:650px)');const set=()=>doc.documentElement.classList.toggle('ci-phone',mq.matches);set();if(!doc.ciPhoneWatch){doc.ciPhoneWatch=true;mq.addEventListener('change',set);}}catch{}
  if(shell.dataset.carouselPage!==pageId){
   shell.ciCarouselDispose?.();
   shell.dataset.carouselPage=pageId;
