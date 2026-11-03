@@ -356,3 +356,8 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
 }
 /* Scott 2026-11-02: Search box border 1px (menu button keeps its 4px ring). */
 .orientation #player-search{border-width:1px!important}
+/* 2026-11-03 Scott: on mobile, no light grey border, and the 16:9 player card runs the full screen width. */
+@media(max-width:650px){
+ .orientation{border:0!important}
+ .member-player-columns{border:0!important;border-radius:0!important;padding:0!important;margin-left:-12px!important;margin-right:-12px!important;width:auto!important;max-width:none!important}
+}
