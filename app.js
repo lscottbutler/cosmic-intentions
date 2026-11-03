@@ -5096,7 +5096,7 @@ function ensureAdminPageBoxStyles() {
     .ci-carousel-card{position:absolute;inset:0;background:#fff;display:grid;place-items:center}
     .ci-carousel-text{margin:0;padding:8%;font:400 clamp(20px,3vw,46px)/1.3 Inter,sans-serif;text-align:center;color:#171717}
     .ci-admin-trough-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}\n    .ci-carousel-caption{display:none}
-    html.ci-phone .ci-admin-page-box.ci-carousel{aspect-ratio:auto;container-type:inline-size}
+    html.ci-phone .ci-admin-page-box.ci-carousel{aspect-ratio:auto;container-type:inline-size;padding:0!important}
     html.ci-phone .ci-carousel-card{position:relative;display:block;background:transparent}
     html.ci-phone .ci-carousel-card~.ci-carousel-card{position:absolute;inset:0 0 auto 0}
     html.ci-phone .ci-carousel-card .ci-admin-trough-art{height:calc(56.25cqw * (1 - var(--ci-band,.1222)));aspect-ratio:auto;object-fit:cover;object-position:top}
