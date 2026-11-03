@@ -28,3 +28,6 @@ main{padding:0!important;max-width:none!important;margin:0!important}.editor-wor
 
 .preview-viewport>.gratitude-mute{top:auto;bottom:1cqw;right:2.1%;transform:none;z-index:4}.gratitude-master-controls.is-playing .gratitude-footer-row{display:none}
 .gratitude-master-controls.is-playing{border-bottom-width:calc(3500cqw / 1669)}
+
+/* 2026-11-03 Scott: on phones the bottom trough is three times taller and its text twice the size. */
+@media(max-width:650px){.gratitude-current{font-size:20px!important;min-height:135px!important;padding:12px!important}.gratitude-current span:last-child{font-size:18px!important}}

@@ -101,9 +101,10 @@ import { readFileSync } from 'node:fs';
 // 2026-11-02: meditation.html — Rachel recordings (players/ci-vo.js) + approved opening cue MED-UNG-01 (Scott: "meditate go").
 // 2026-11-02: meditation.html — let a spoken line finish (sentence pauses) instead of cutting at the cue end (Scott: one-second sentence space).
 // 2026-11-02: meditation-stage.js/.css — closed bottom frame, green band ends above it, duplicate grey start button hidden (Scott: bottom cut off).
+// 2026-11-03: meditation-design.css — phone trough x3 taller, text x2 (Scott).
 const lockedFiles = {
   "players/meditation-sessions.js": "194c8bade49965e9b2c12d0a29d78cf4ddc2da8c",
-  "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
+  "players/meditation-design.css": "21869f04122f3f275afaaab7829f8e601a0f0be5",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
   "players/meditation-stage.css": "be24a5cea23a0704de5c401e419d50bf0c2b2406",
   "players/meditation-stage.js": "cc089d23e2954f74b1b8f798489881c8ca0c8499",
