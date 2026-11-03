@@ -5095,7 +5095,12 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-box.ci-carousel{border:0;border-radius:0;box-shadow:none;background:transparent;aspect-ratio:16/9;position:relative;overflow:hidden}
     .ci-carousel-card{position:absolute;inset:0;background:#fff;display:grid;place-items:center}
     .ci-carousel-text{margin:0;padding:8%;font:400 clamp(20px,3vw,46px)/1.3 Inter,sans-serif;text-align:center;color:#171717}
-    .ci-admin-trough-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}\n    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
+    .ci-admin-trough-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}\n    .ci-carousel-caption{display:none}
+    html.ci-phone .ci-admin-page-box.ci-carousel{aspect-ratio:auto;container-type:inline-size}
+    html.ci-phone .ci-carousel-card{position:relative;display:block;background:transparent}
+    html.ci-phone .ci-carousel-card~.ci-carousel-card{position:absolute;inset:0 0 auto 0}
+    html.ci-phone .ci-carousel-card .ci-admin-trough-art{height:calc(56.25cqw * (1 - var(--ci-band,.1222)));aspect-ratio:auto;object-fit:cover;object-position:top}
+    html.ci-phone .ci-carousel-caption{display:flex;align-items:center;justify-content:center;height:calc(56.25cqw * var(--ci-band,.1222) * 3);margin-top:-1px;padding:0 3cqw;box-sizing:border-box;color:#fff;font:400 5.3cqw/1.2 'Roboto Condensed',Arial,sans-serif;letter-spacing:.14em;text-align:center}\n    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
     .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}

@@ -7,266 +7,342 @@
       "type": "trough",
       "image": "/images/troughs-web/2-cats-1280.webp",
       "smallImage": "/images/troughs-web/2-cats-640.webp",
-      "borderColor": "#464742"
+      "borderColor": "#464742",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "address-book",
       "type": "trough",
       "image": "/images/troughs-web/address-book-1280.webp",
       "smallImage": "/images/troughs-web/address-book-640.webp",
-      "borderColor": "#384a58"
+      "borderColor": "#384a58",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "affirmation-trough-master-copy-1-copy-1",
       "type": "trough",
       "image": "/images/troughs-web/affirmation-trough-master-copy-1-copy-1-1280.webp",
       "smallImage": "/images/troughs-web/affirmation-trough-master-copy-1-copy-1-640.webp",
-      "borderColor": "#627f8c"
+      "borderColor": "#627f8c",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 96
     },
     {
       "id": "blue-car",
       "type": "trough",
       "image": "/images/troughs-web/blue-car-1280.webp",
       "smallImage": "/images/troughs-web/blue-car-640.webp",
-      "borderColor": "#0a3f7f"
+      "borderColor": "#0a3f7f",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "buildings",
       "type": "trough",
       "image": "/images/troughs-web/buildings-1280.webp",
       "smallImage": "/images/troughs-web/buildings-640.webp",
-      "borderColor": "#8d9a9a"
+      "borderColor": "#8d9a9a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "city-scape",
       "type": "trough",
       "image": "/images/troughs-web/city-scape-1280.webp",
       "smallImage": "/images/troughs-web/city-scape-640.webp",
-      "borderColor": "#474437"
+      "borderColor": "#474437",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "city-skyline",
       "type": "trough",
       "image": "/images/troughs-web/city-skyline-1280.webp",
       "smallImage": "/images/troughs-web/city-skyline-640.webp",
-      "borderColor": "#464742"
+      "borderColor": "#464742",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "death-valley",
       "type": "trough",
       "image": "/images/troughs-web/death-valley-1280.webp",
       "smallImage": "/images/troughs-web/death-valley-640.webp",
-      "borderColor": "#4c2e02"
+      "borderColor": "#4c2e02",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "digital-highway",
       "type": "trough",
       "image": "/images/troughs-web/digital-highway-1280.webp",
       "smallImage": "/images/troughs-web/digital-highway-640.webp",
-      "borderColor": "#2b575d"
+      "borderColor": "#2b575d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "diver",
       "type": "trough",
       "image": "/images/troughs-web/diver-1280.webp",
       "smallImage": "/images/troughs-web/diver-640.webp",
-      "borderColor": "#555555"
+      "borderColor": "#555555",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "dog-star",
       "type": "trough",
       "image": "/images/troughs-web/dog-star-1280.webp",
       "smallImage": "/images/troughs-web/dog-star-640.webp",
-      "borderColor": "#464742"
+      "borderColor": "#464742",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "dots",
       "type": "trough",
       "image": "/images/troughs-web/dots-1280.webp",
       "smallImage": "/images/troughs-web/dots-640.webp",
-      "borderColor": "#003664"
+      "borderColor": "#003664",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "dragon-fly",
       "type": "trough",
       "image": "/images/troughs-web/dragon-fly-1280.webp",
       "smallImage": "/images/troughs-web/dragon-fly-640.webp",
-      "borderColor": "#a3b59a"
+      "borderColor": "#a3b59a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "dragon-flys",
       "type": "trough",
       "image": "/images/troughs-web/dragon-flys-1280.webp",
       "smallImage": "/images/troughs-web/dragon-flys-640.webp",
-      "borderColor": "#365f7f"
+      "borderColor": "#365f7f",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "elephant",
       "type": "trough",
       "image": "/images/troughs-web/elephant-1280.webp",
       "smallImage": "/images/troughs-web/elephant-640.webp",
-      "borderColor": "#0979be"
+      "borderColor": "#0979be",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "everest",
       "type": "trough",
       "image": "/images/troughs-web/everest-1280.webp",
       "smallImage": "/images/troughs-web/everest-640.webp",
-      "borderColor": "#334e6a"
+      "borderColor": "#334e6a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "fish-microphone",
       "type": "trough",
       "image": "/images/troughs-web/fish-microphone-1280.webp",
       "smallImage": "/images/troughs-web/fish-microphone-640.webp",
-      "borderColor": "#567c7d"
+      "borderColor": "#567c7d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "fish",
       "type": "trough",
       "image": "/images/troughs-web/fish-1280.webp",
       "smallImage": "/images/troughs-web/fish-640.webp",
-      "borderColor": "#544742"
+      "borderColor": "#544742",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 86
     },
     {
       "id": "fishes",
       "type": "trough",
       "image": "/images/troughs-web/fishes-1280.webp",
       "smallImage": "/images/troughs-web/fishes-640.webp",
-      "borderColor": "#7c8953"
+      "borderColor": "#7c8953",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "flowers",
       "type": "trough",
       "image": "/images/troughs-web/flowers-1280.webp",
       "smallImage": "/images/troughs-web/flowers-640.webp",
-      "borderColor": "#52295e"
+      "borderColor": "#52295e",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "green-fish",
       "type": "trough",
       "image": "/images/troughs-web/green-fish-1280.webp",
       "smallImage": "/images/troughs-web/green-fish-640.webp",
-      "borderColor": "#018893"
+      "borderColor": "#018893",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "hard-easy",
       "type": "trough",
       "image": "/images/troughs-web/hard-easy-1280.webp",
       "smallImage": "/images/troughs-web/hard-easy-640.webp",
-      "borderColor": "#555555"
+      "borderColor": "#555555",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "head-shoulders",
       "type": "trough",
       "image": "/images/troughs-web/head-shoulders-1280.webp",
       "smallImage": "/images/troughs-web/head-shoulders-640.webp",
-      "borderColor": "#857a75"
+      "borderColor": "#857a75",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "jumpers",
       "type": "trough",
       "image": "/images/troughs-web/jumpers-1280.webp",
       "smallImage": "/images/troughs-web/jumpers-640.webp",
-      "borderColor": "#555555"
+      "borderColor": "#555555",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "love-posters",
       "type": "trough",
       "image": "/images/troughs-web/love-posters-1280.webp",
       "smallImage": "/images/troughs-web/love-posters-640.webp",
-      "borderColor": "#555555"
+      "borderColor": "#555555",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "luers",
       "type": "trough",
       "image": "/images/troughs-web/luers-1280.webp",
       "smallImage": "/images/troughs-web/luers-640.webp",
-      "borderColor": "#006571"
+      "borderColor": "#006571",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "mountain-climber",
       "type": "trough",
       "image": "/images/troughs-web/mountain-climber-1280.webp",
       "smallImage": "/images/troughs-web/mountain-climber-640.webp",
-      "borderColor": "#567c7d"
+      "borderColor": "#567c7d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "planets",
       "type": "trough",
       "image": "/images/troughs-web/planets-1280.webp",
       "smallImage": "/images/troughs-web/planets-640.webp",
-      "borderColor": "#b11165"
+      "borderColor": "#b11165",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "purple-mountains",
       "type": "trough",
       "image": "/images/troughs-web/purple-mountains-1280.webp",
       "smallImage": "/images/troughs-web/purple-mountains-640.webp",
-      "borderColor": "#5245a5"
+      "borderColor": "#5245a5",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "robots",
       "type": "trough",
       "image": "/images/troughs-web/robots-1280.webp",
       "smallImage": "/images/troughs-web/robots-640.webp",
-      "borderColor": "#577d82"
+      "borderColor": "#577d82",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "rocket",
       "type": "trough",
       "image": "/images/troughs-web/rocket-1280.webp",
       "smallImage": "/images/troughs-web/rocket-640.webp",
-      "borderColor": "#0076a2"
+      "borderColor": "#0076a2",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "sky-line-sun-rise",
       "type": "trough",
       "image": "/images/troughs-web/sky-line-sun-rise-1280.webp",
       "smallImage": "/images/troughs-web/sky-line-sun-rise-640.webp",
-      "borderColor": "#2b575d"
+      "borderColor": "#2b575d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 86
     },
     {
       "id": "sky-scrappers",
       "type": "trough",
       "image": "/images/troughs-web/sky-scrappers-1280.webp",
       "smallImage": "/images/troughs-web/sky-scrappers-640.webp",
-      "borderColor": "#2a7a9f"
+      "borderColor": "#2a7a9f",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "superman",
       "type": "trough",
       "image": "/images/troughs-web/superman-1280.webp",
       "smallImage": "/images/troughs-web/superman-640.webp",
-      "borderColor": "#567c7d"
+      "borderColor": "#567c7d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "sushi-roll",
       "type": "trough",
       "image": "/images/troughs-web/sushi-roll-1280.webp",
       "smallImage": "/images/troughs-web/sushi-roll-640.webp",
-      "borderColor": "#506f77"
+      "borderColor": "#506f77",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "town",
       "type": "trough",
       "image": "/images/troughs-web/town-1280.webp",
       "smallImage": "/images/troughs-web/town-640.webp",
-      "borderColor": "#4e4239"
+      "borderColor": "#4e4239",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     },
     {
       "id": "tree-birds",
       "type": "trough",
       "image": "/images/troughs-web/tree-birds-1280.webp",
       "smallImage": "/images/troughs-web/tree-birds-640.webp",
-      "borderColor": "#0076a2"
+      "borderColor": "#0076a2",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     },
     {
       "id": "ufo",
       "type": "trough",
       "image": "/images/troughs-web/ufo-1280.webp",
       "smallImage": "/images/troughs-web/ufo-640.webp",
-      "borderColor": "#3d779a"
+      "borderColor": "#3d779a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 88
     }
   ]
 }
