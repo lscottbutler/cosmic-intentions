@@ -494,10 +494,13 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
  const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
- const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';document.getElementById('review-menu-items').append(usageLink);
+ const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
  delete menuLabels.gratitude;
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
+ // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
+ const sortMenu=()=>{const items=[...menuItems.children],sorted=[...items].sort((a,b)=>a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
+ sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
  const overlayCss=`
