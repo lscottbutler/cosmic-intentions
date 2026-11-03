@@ -4752,4 +4752,6 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
    The frame itself is widened in standalone/member-design-test.css; here the box drops its side inset. */
 @media(max-width:650px){
   html.ci-header-note .ci-admin-page-box{padding-left:0!important;padding-right:0!important}
+  html.ci-header-note div:has(> .ci-player-owner-instructions),
+  html.ci-header-note .ci-player-owner-instructions{padding-left:0!important;padding-right:0!important}
 }
