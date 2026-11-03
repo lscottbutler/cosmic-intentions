@@ -81,6 +81,7 @@
     <button class="cbtn play" id="play" aria-label="Play / Pause">&#9208;</button>
   </div>
 
+  <script src="/players/ci-vo.js"></script>
   <script type="module">
     const params = new URLSearchParams(location.search);
     const type   = params.get('type') || 'recite';
@@ -138,7 +139,7 @@
       idx = Math.floor(pct * items.length);
       paint();
     }
-    track.addEventListener('pointerdown', (e) => { e.stopPropagation(); scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+    track.addEventListener('pointerdown', (e) => { e.stopPropagation(); onCard = false; scrubbing = true; track.setPointerCapture(e.pointerId); seekTo(e.clientX); });
     track.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
     track.addEventListener('pointerup',   () => { scrubbing = false; });
     track.addEventListener('pointercancel', () => { scrubbing = false; });
@@ -183,18 +184,39 @@
 
     /* play / pause + loop */
     let timer = null, playing = false;
-    function advance() { idx = (idx + 1) % items.length; chime(); paint(); }
+    /* Council-approved lines (CI-VO-Scripts-Approved §5): RC-IN at the start, RC-OUT after one full pass */
+    const RC_IN  = 'Time to recite. As each line plays, say it out loud or quietly to yourself. Let each one land before the next.';
+    const RC_OUT = 'That’s your recitation. Pick one line to carry into your day. Then take one step that matches it.';
+    function say(text) {
+      try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {}
+    }
+    let onCard = false;   // true while the RC-IN / RC-OUT card is showing
+    function showCard(tag, text) {
+      onCard = true;
+      lineEl.classList.add('fade');
+      setTimeout(() => { tagEl.textContent = tag; lineEl.textContent = text; fitText(); lineEl.classList.remove('fade'); }, 200);
+    }
+    function advance() {
+      if (idx === items.length - 1) {   // one full pass done → RC-OUT and stop
+        setPlaying(false); idx = 0; chime();
+        showCard('RECITE', 'Pick one line for today.'); say(RC_OUT);
+        return;
+      }
+      idx++; chime(); paint();
+    }
     function setPlaying(p) {
       playing = p;
       playBtn.innerHTML = p ? '&#9208;' : '&#9654;';   // ⏸ / ▶
       if (p && !timer) timer = setInterval(advance, PERIOD);
       if (!p && timer) { clearInterval(timer); timer = null; }
     }
-    playBtn.onclick = () => setPlaying(!playing);
+    function startItems() { if (onCard) { onCard = false; try { speechSynthesis.cancel(); } catch (e) {} paint(); } setPlaying(true); }
+    playBtn.onclick = () => playing ? setPlaying(false) : startItems();
     window.addEventListener('resize', fitText);
 
-    paint();
-    setTimeout(() => setPlaying(true), 600);
+    showCard('RECITE', RC_IN);
+    setTimeout(() => say(RC_IN), 600);
+    setTimeout(() => { if (onCard && !playing) startItems(); }, 16000);   // RC-IN (Rachel) runs ~15 s at her pace with sentence pauses
   </script>
 </body>
 </html>

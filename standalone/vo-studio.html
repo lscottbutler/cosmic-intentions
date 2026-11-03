@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>VO Studio</title>
+<style>
+ body{margin:0;background:#111;color:#eee;font:14px/1.45 system-ui,Arial,sans-serif}
+ main{max-width:900px;margin:0 auto;padding:20px 16px}
+ h1{font-size:20px;margin:0 0 4px} p.sub{color:#999;margin:0 0 16px}
+ .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+ button{background:#2a6df4;color:#fff;border:0;border-radius:6px;padding:8px 14px;font-weight:700;cursor:pointer}
+ button.sec{background:#333} button:disabled{opacity:.45;cursor:default}
+ table{width:100%;border-collapse:collapse} td{border-top:1px solid #2a2a2a;padding:8px 6px;vertical-align:top}
+ td.id{font:12px monospace;white-space:nowrap;color:#9ad} td.st{white-space:nowrap;font-weight:700}
+ .ok{color:#5c5}.miss{color:#e95}.err{color:#f66}.busy{color:#fd5}
+ #log{color:#bbb;font:12px monospace}
+</style></head>
+<body><main>
+<h1>VO Studio — Rachel</h1>
+<p class="sub">Records every approved fixed line once and stores it for all members. Admin only. Each recording uses ElevenLabs credits.</p>
+<div class="bar"><button id="all">Record all missing</button><span id="count"></span><span id="log"></span></div>
+<table id="t"></table>
+</main>
+<script src="/players/ci-vo.js"></script>
+<script>
+(()=>{
+ const SUPA='https://wbqzwbubbeorcknevips.supabase.co', ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
+ const ids=Object.keys(CIVO.LINES), state={};
+ const t=document.getElementById('t'), log=m=>document.getElementById('log').textContent=m;
+ function row(id){
+  const tr=document.createElement('tr');tr.id='r-'+id;
+  tr.innerHTML='<td class="id">'+id+'</td><td>'+CIVO.LINES[id]+'</td><td class="st"></td><td><button class="sec play">Play</button> <button class="sec rec">Record</button></td>';
+  tr.querySelector('.play').onclick=()=>new Audio(CIVO.url(id)+'?t='+Date.now()).play().catch(()=>log(id+': not recorded yet'));
+  tr.querySelector('.rec').onclick=()=>record(id);
+  t.append(tr);
+ }
+ function paint(id){const s=state[id],el=document.querySelector('#r-'+id+' .st');el.className='st '+({ok:'ok',missing:'miss',error:'err',busy:'busy'}[s]||'');el.textContent=s;
+  const n=ids.filter(i=>state[i]==='ok').length;document.getElementById('count').textContent=n+' / '+ids.length+' recorded';}
+ async function check(id){state[id]='busy';paint(id);
+  try{const r=await fetch(CIVO.url(id)+'?t='+Date.now(),{method:'HEAD',cache:'no-store'});state[id]=r.ok?'ok':'missing';}catch(e){state[id]='missing';}paint(id);}
+ async function record(id){
+  const tok=await CIVO.token(); if(!tok){log('Sign in to the app first, then reload this page.');return false;}
+  state[id]='busy';paint(id);log('Recording '+id+'…');
+  try{
+   const call=fn=>fetch('/.netlify/functions/'+fn,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({text:CIVO.LINES[id]})});
+   let r=await call('tts-elevenlabs'),j=await r.json().catch(()=>({}));
+   // Daily cap reached on the first route: the general route uses the same Rachel voice and model, on its own counter.
+   if(r.status===429){r=await call('tts');j=await r.json().catch(()=>({}));if(r.ok&&j.provider!=='elevenlabs')throw new Error('voice: not Rachel ('+j.provider+'), stopped');}
+   if(!r.ok||!j.audio)throw new Error('voice: '+(j.error||r.status));
+   const bytes=Uint8Array.from(atob(j.audio),c=>c.charCodeAt(0));
+   const u=await fetch(SUPA+'/storage/v1/object/vo-audio/rachel/'+CIVO.file(id),{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+tok,'Content-Type':'audio/mpeg','x-upsert':'true'},body:bytes});
+   if(!u.ok)throw new Error('upload: '+u.status+' '+(await u.text()).slice(0,120));
+   state[id]='ok';paint(id);log(id+' saved');return true;
+  }catch(e){state[id]='error';paint(id);log(id+' — '+e.message);return false;}
+ }
+ document.getElementById('all').onclick=async e=>{e.target.disabled=true;
+  for(const id of ids){if(state[id]!=='ok'){const ok=await record(id);if(!ok&&/voice: 4|upload: 4/.test(document.getElementById('log').textContent))break;}}
+  e.target.disabled=false;};
+ ids.forEach(row);ids.forEach(check);
+ window.__studio={state,record};
+})();
+</script>
+</body></html>

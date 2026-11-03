@@ -63,3 +63,5 @@ body.meditation-stage-preface .session-card p{visibility:hidden}
 body.meditation-title-fading :is(.meditation-banner,.meditation-title){display:block!important;opacity:0}
 body.meditation-title-fading .meditation-title{fill:#000;stroke:none}
 @media(prefers-reduced-motion:reduce){.meditation-banner,.meditation-title{transition:none}}
+/* 2026-11-02 Scott: one start button only — the drawn one. The base timer stays for keyboard/screen readers. */
+body.meditation-stage-ready .timer{opacity:0}

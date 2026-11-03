@@ -51,6 +51,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
 00</span>
   </button>
 </main>
+<script src="/players/ci-vo.js"></script>
 <script src="/players/super-viz-sessions.js"></script>
 <script src="/players/super-viz-stage.js"></script>
 <script>
@@ -112,7 +113,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
     if(state==='paused'){speechSynthesis.pause();return;}
     if(state!=='running'){stopSpeech();return;}
     const cue=cues.find(c=>elapsed>=c.start&&elapsed<c.end);
-    if(!cue){if(spokenCue!==null)stopSpeech();return;}
+    if(!cue){if(spokenCue!==null&&!speechSynthesis.speaking)spokenCue=null;return;}   // let a line finish its sentence pauses instead of cutting it at the window end
     if(spokenCue===cue.start){if(speechSynthesis.paused)speechSynthesis.resume();return;}
     stopSpeech();spokenCue=cue.start;
     const utterance=new SpeechSynthesisUtterance(cue.text);utterance.lang='en-US';utterance.rate=0.9;
@@ -142,7 +143,7 @@ body.text-card-session .value{font-size:clamp(12px,2vw,30px)}
   const completionBell=new Audio('/players/audio/coming-back-to-yourself-10m.ogg');completionBell.preload='metadata';
   let completionBellPlayed=false;
   completionBell.addEventListener('timeupdate',()=>{if(completionBell.currentTime>=600)completionBell.pause();});
-  let openingText='OK, close your eyes and begin';
+  let openingText='Close your eyes if that feels right, and begin.';   // CUE-BEGIN (Council 2 Nov 2026)
   let openingPhase='ready',openingClosedElapsed=0,openingEndElapsed=0,openingSpoken=false,openingVoiceEnded=false,openingGeneration=0;
   function syncOpening(){
     if(openingPhase==='ready'||openingPhase==='done')return false;

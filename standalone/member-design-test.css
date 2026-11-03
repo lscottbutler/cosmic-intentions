@@ -354,3 +354,5 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
  .orientation>.shortcuts{margin-top:72px;display:flex;flex-direction:column;align-items:center}
  .orientation>.shortcuts>#player-search{order:-1;align-self:stretch;margin-bottom:10px}
 }
+/* Scott 2026-11-02: Search box border 1px (menu button keeps its 4px ring). */
+.orientation #player-search{border-width:1px!important}

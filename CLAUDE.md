@@ -1,5 +1,11 @@
 # CLAUDE.md — Cosmic Intentions Project
 
+## MISSION — THE BACKBONE OF CI (Scott, 2 Nov 2026)
+**Cosmic Intentions helps people repeatedly think and act as the person they intend to be.**
+Every feature, page, message and design choice must serve this. Test any request or idea against it:
+does it help someone think or act, again and again, as the person they intend to be? If a change
+works against it, flag that to Scott before building.
+
 ## Project Overview
 Cosmic Intentions is a personal goals and visualization web app.
 Stack: Netlify (hosting), Supabase (auth + postgres), Google Sheets (data source), vanilla HTML/CSS/JS.

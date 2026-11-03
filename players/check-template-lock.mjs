@@ -97,14 +97,18 @@ import { readFileSync } from 'node:fs';
 // Copy-only: two menu label strings and one description changed; geometry and controls unchanged.
 // Recovery before this copy change: 48da27d1b93efaad8db50dea366f4967146a9e49.
 // 2026-10-30: Scott retired Landing Pages 2 and 3 (Council-approved single /landing). Menu link list only.
+// 2026-11-02: Scott approved the CI Council VO scripts; meditation-sessions.js text polish only (contractions, Unguided cue, LG opening, intention closings). Timing/structure unchanged.
+// 2026-11-02: meditation.html — Rachel recordings (players/ci-vo.js) + approved opening cue MED-UNG-01 (Scott: "meditate go").
+// 2026-11-02: meditation.html — let a spoken line finish (sentence pauses) instead of cutting at the cue end (Scott: one-second sentence space).
+// 2026-11-02: meditation-stage.js/.css — closed bottom frame, green band ends above it, duplicate grey start button hidden (Scott: bottom cut off).
 const lockedFiles = {
-  "players/meditation-sessions.js": "4ec40c3ed6b18598f0c968bbcf0be7f2bf8a15d5",
+  "players/meditation-sessions.js": "194c8bade49965e9b2c12d0a29d78cf4ddc2da8c",
   "players/meditation-design.css": "076f9556a28f4d26c53e4d0e7583d0f08fc74d5e",
   "players/meditation-design.js": "3dcddbf5b09b46ae74150208537c9ab697a72fcd",
-  "players/meditation-stage.css": "741b504a86756065c141aa3dc0bc01238dbb894e",
-  "players/meditation-stage.js": "2fbd561d002ff24f1340691ac7d45365fea66afd",
+  "players/meditation-stage.css": "be24a5cea23a0704de5c401e419d50bf0c2b2406",
+  "players/meditation-stage.js": "cc089d23e2954f74b1b8f798489881c8ca0c8499",
   "players/master-player.html": "cd959d461dc2312a920d27968d39928aec43b979",
-  "players/meditation.html": "b995df66bc25b4d6ea97b6997b4843d7b571e278"
+  "players/meditation.html": "c94355024e55b742f569fced4ce77b398f5b69ca"
 };
 const root = new URL('../', import.meta.url);
 const changed = [];

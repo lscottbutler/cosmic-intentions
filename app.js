@@ -5949,10 +5949,7 @@ function ciJournalRotationTest(instructions, pageId) {
   let turn = 0;
   try { turn = (parseInt(localStorage.getItem('ci-journal-rot') || '-1', 10) + 1) % 2; localStorage.setItem('ci-journal-rot', String(turn)); }
   catch (_) { turn = Math.random() < 0.5 ? 0 : 1; }
-  const tag = document.createElement('p');
-  tag.className = 'ci-journal-test-tag';
-  tag.style.cssText = 'margin:0 0 10px;padding:6px 10px;border:1px dashed #b8bcc4;border-radius:6px;font:500 12px Arial,sans-serif;color:#6b6f78';
-  instructions.before(tag);
+  // Scott 2026-11-02: the TEST note above the box is removed; the button alone shows it can swap.
   const story = document.createElement('div');
   story.className = 'ci-journal-story';
   story.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#2b2d31';
@@ -5963,7 +5960,7 @@ function ciJournalRotationTest(instructions, pageId) {
     '<p style="margin:0;font-size:17px;line-height:1.65">It followed a setback. At the 2025 World Championships in Tokyo he strained his calf before the final. Afterwards he set two new goals: a world indoor title, then the record.</p>' +
     '<p style="margin:0;font-size:17px;line-height:1.65">Kerr has described a routine of daily meditation and journaling, built with a mindfulness coach. In races, he lets doubt in and answers it with the reasons he is ready.</p>' +
     '<blockquote style="margin:0;padding-left:14px;border-left:3px solid #dfe1e6;font-size:18px;font-style:italic">"Your setback is only going to be defined with your comeback."</blockquote>' +
-    '<p class="ci-journal-try" style="margin:4px 0 0;padding:16px 18px;border-radius:10px;background:#1e90ff;color:#fff;font-size:19px;line-height:1.5;font-weight:700"><b>Try this today:</b> write one doubt about your goal, then three reasons you\'re ready.</p>' +
+    '<div class="ci-journal-try" style="margin:4px 0 0;padding:16px 15px;border-radius:10px;background:#1e90ff;box-shadow:inset 0 0 0 3px #1e90ff,inset 0 0 0 6px #ffe135;color:#fff;font-size:19px;line-height:1.5;font-weight:400"><div style="text-align:center;color:#ffe135;letter-spacing:.06em;margin-bottom:6px;font-weight:700">TRY THIS TODAY</div><div>Write one doubt about your goal, then three reasons you\'re ready.</div></div>' +
     '';
   instructions.after(story);
   // Scott 2026-11-01: refresh button (top right of the box) swaps to the other card without reloading.
@@ -5986,11 +5983,10 @@ function ciJournalRotationTest(instructions, pageId) {
     instructions.style.display = turn ? 'none' : '';
     story.style.display = turn ? 'flex' : 'none';
     postCitations();
-    tag.textContent = 'TEST · showing ' + (turn ? 'Practice Story' : 'Instructions') + ' · tap ↻ or reload to rotate (test addresses only)';
     swap.setAttribute('aria-label', turn ? 'Show instructions' : 'Show Practice Story');
     swap.title = swap.getAttribute('aria-label');
-    // Sit level with the first line of the card, below the TEST note.
-    swap.style.top = (tag.offsetTop + tag.offsetHeight + 8) + 'px';
+    // Sit level with the first line of the card.
+    swap.style.top = ((turn ? story : instructions).offsetTop) + 'px';
     // The card text must not run under the button.
     instructions.style.paddingRight = story.style.paddingRight = '52px';
   };
