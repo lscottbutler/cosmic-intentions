@@ -4747,3 +4747,9 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 #hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n){background:#3878A8!important}
 #hamMenu.ham-menu--global > button.tnav-btn:is(:hover,:focus-visible){filter:brightness(1.12);outline:3px solid #292929;outline-offset:-3px}
 @media(max-width:450px){#hamMenu.ham-menu--global > button.tnav-btn{font-size:18px!important;min-height:52px}}
+
+/* Member page header note on phones: text spans the screen, 3px in from each edge (Scott, 3 Nov 2026).
+   The frame itself is widened in standalone/member-design-test.css; here the box drops its side inset. */
+@media(max-width:650px){
+  html.ci-header-note .ci-admin-page-box{padding-left:0!important;padding-right:0!important}
+}

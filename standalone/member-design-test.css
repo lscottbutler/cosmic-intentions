@@ -361,3 +361,6 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
  .orientation{border:0!important}
  .member-player-columns{border:0!important;border-radius:0!important;padding:0!important;margin-left:-12px!important;margin-right:-12px!important;width:auto!important;max-width:none!important}
 }
+/* 2026-11-03 Scott: header note text ("Meditation gives you…") edge to edge on phones, 3px each side.
+   Cancels main (12px) + orientation (20px) side insets, minus 3px. */
+@media(max-width:650px){#header-admin-note{margin-left:-29px;margin-right:-29px}}

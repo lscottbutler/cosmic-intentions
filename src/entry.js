@@ -6,6 +6,8 @@ import '../shared/writing-mode.js';
 // application startup path. The approved player itself is unchanged.
 const params = new URLSearchParams(location.search);
 const note = params.get('masterInline') === 'citadel-note';
+// The member page's header note (Scott, 3 Nov 2026: mobile text runs edge to edge, 3px in).
+try { if (note && window.frameElement?.id === 'header-admin-note-frame') document.documentElement.classList.add('ci-header-note'); } catch (_) {}
 let relocatedOpening = false;
 try {
   relocatedOpening = note && window.frameElement?.id === 'citadelNoteFrame'
