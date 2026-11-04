@@ -802,8 +802,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
    if(features[action]){
     renderFeature(action);
     if(pendingDashboard&&doc.defaultView.ciCitadelDashboardReview){pendingDashboard=false;dashboardApi=doc.defaultView.ciCitadelDashboardReview;loadDashboard();}
-    if(action==='journal'||action==='goals'||action==='goal-workspace'||action==='daily-habits'||action==='cosmic-library')page.querySelector(':scope > .ci-review-guidance')?.remove();
-    if(action!=='cosmic-library'&&features[action][2]&&!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
+    if(action==='journal'||action==='goals'||action==='goal-workspace'||action==='daily-habits'||action==='cosmic-library'||action==='action-plan')page.querySelector(':scope > .ci-review-guidance')?.remove();
+    if(action!=='cosmic-library'&&action!=='action-plan'&&features[action][2]&&!page.querySelector(':scope > .ci-review-guidance')){const guide=doc.createElement('p');guide.className='ci-review-guidance';guide.textContent=features[action][2];page.prepend(guide);}
     page.querySelectorAll('.ci-goals-add-toggle,.pb-goal-add-save,button[onclick="notesToggleQuickAdd()"],.goal-workspace-entry-save,[data-save-note]').forEach(button=>{if(!button.classList.contains('ci-review-key-action'))button.classList.add('ci-review-key-action');});
    }
   }

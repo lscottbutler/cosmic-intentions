@@ -975,7 +975,7 @@ export function renderWrapup() {
     todayEl.innerHTML = chk ? `
       <div style="padding:0;margin-bottom:8px;">
         <details class="rm-drop" open>
-          <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 14px;background:#1D3557;color:#fff;border-radius:10px;cursor:pointer;">
+          <summary style="display:none;">
             <span style="font-size:10pt;font-weight:800;line-height:1.15;">YOUR STEPS</span>
             <span style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
               <span style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,0.55);display:inline-flex;align-items:center;justify-content:center;font-family:var(--vault-mono);font-weight:800;font-size:11px;letter-spacing:.5px;color:${chk.total && chk.done === chk.total ? DONE : '#fff'};white-space:nowrap;">${chk.done}/${chk.total}</span>
@@ -991,6 +991,7 @@ export function renderWrapup() {
     if (chk) {
       const _rs = document.getElementById('rmStepCount'); if (_rs) _rs.textContent = chk.total;
       const _rd = document.getElementById('rmDoneCount'); if (_rd) _rd.textContent = chk.done;
+      const _rc = document.getElementById('rmStepsCircle'); if (_rc) _rc.textContent = chk.done + '/' + chk.total;
       const _rl = document.getElementById('rmLeftCount'); if (_rl) _rl.textContent = Math.max(0, chk.total - chk.done);
     }
     // Fill any [data-block] admin boxes just rendered into the goal cards.
