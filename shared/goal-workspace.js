@@ -229,7 +229,7 @@ function renderMasterPriorities() {
   }
   const rows = masterPriorityTaskMarkup();
   document.getElementById('otherTodoTasks').innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
-  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">PRIORITY TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the purple P to get started.</p>');
+  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">PRIORITY TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the grey P to get started.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil, #otherTodoTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(document.getElementById('otherTodoTasks'));
 }
