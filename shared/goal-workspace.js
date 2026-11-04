@@ -189,7 +189,7 @@ export function setupTodoDisclosure(host) {
     const cards = [...group.querySelectorAll('.wcard')];
     const title = group.querySelector(':scope > h3');
     if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
-    const key = group.dataset.workspaceGoal, many = cards.length > 5;
+    const key = (host.id || '') + ':' + group.dataset.workspaceGoal, many = cards.length > 5;
     group.style.position = 'relative';
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'todo-goal-chevron';
@@ -234,6 +234,7 @@ function renderMasterPriorities() {
   document.getElementById('otherTodoTasks').innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
   host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">PRIORITY TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the grey P to get started.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil, #otherTodoTasks .task-note-pencil').forEach(button => button.remove());
+  setupTodoDisclosure(host);
   setupTodoDisclosure(document.getElementById('otherTodoTasks'));
 }
 
