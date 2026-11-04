@@ -367,3 +367,11 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
 
 /* 2026-11-04 Scott: page titles sit on the left again, on every page and player (PC, tablet, phone). */
 body #feature-title,body.master-control-panel #feature-title,.orientation #feature-title{justify-content:flex-start!important;text-align:left!important}
+/* 2026-11-04 Scott: site menu colours match the "What do you want to do?" rings. Higher specificity so the grey striping can't override them. */
+#review-menu #review-menu-items>[data-ci-menu-action="action-plan"]{background:#187a2f!important;color:#fff!important}
+#review-menu #review-menu-items>[data-ci-menu-action="goals"]{background:#fef200!important;color:#171717!important}
+#review-menu #review-menu-items>[data-ci-menu-action="new-gratitude"]{background:#7b4a26!important;color:#fff!important}
+#review-menu #review-menu-items>[data-ci-menu-action="daily-habits"]{background:#f26420!important;color:#fff!important}
+#review-menu #review-menu-items>[data-ci-menu-action="cosmic-library"]{background:#000!important;color:#fff!important}
+#review-menu #review-menu-items>[data-ci-menu-action="meditation"]{background:#7b2cbf!important;color:#fff!important}
+#review-menu #review-menu-items>[data-ci-menu-action="super-viz"]{background:#0076a3!important;color:#fff!important}
