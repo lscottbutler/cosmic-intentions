@@ -4757,3 +4757,9 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
   /* Scott 3 Nov 2026: two sizes larger on phones (was 16px). */
   html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *{font-size:18px!important;line-height:1.5!important}
 }
+
+/* Scott 4 Nov 2026: MY ACTIONS / + / ROADMAP sit inside the TO DO header bar, on the right. */
+.roadmap-goal-todo{position:relative}
+.roadmap-goal-todo > h3{min-height:52px;box-sizing:border-box;padding-right:260px}
+.roadmap-goal-todo > .wtabs{position:absolute;top:0;right:14px;height:52px;margin:0!important;padding:0!important;align-items:center!important;flex-wrap:nowrap!important;z-index:2}
+.roadmap-goal-todo > .wtabs .wtab{flex:0 0 auto!important;max-width:none!important;min-width:max-content!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
