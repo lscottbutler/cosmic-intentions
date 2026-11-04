@@ -1,0 +1,10 @@
+{
+  "note": "Colour palettes Scott saved for CI (4 Nov 2026). Shown on /standalone/palettes.html. Add new palettes here.",
+  "palettes": [
+    {"name": "Warm Neutral Tones", "saved": "2026-11-04", "colors": ["#582f0e", "#7f4f24", "#936639", "#a68a64", "#b6ad90", "#c2c5aa", "#a4ac86", "#656d4a", "#414833", "#333d29"]},
+    {"name": "Meadow Green", "saved": "2026-11-04", "colors": ["#d9ed92", "#b5e48c", "#99d98c", "#76c893", "#52b69a", "#34a0a4", "#168aad", "#1a759f", "#1e6091", "#184e77"]},
+    {"name": "Greyscale", "saved": "2026-11-04", "colors": ["#b8b8b8", "#a3a3a3", "#8f8f8f", "#7a7a7a", "#666666", "#525252", "#3d3d3d", "#292929", "#141414", "#000000"]},
+    {"name": "Olive & Oxblood", "saved": "2026-11-04", "colors": ["#9d9162", "#744e3c", "#2a3527", "#5d654d", "#94825a", "#b3be9c", "#a4a375", "#481f10"]},
+    {"name": "Golden Harvest", "saved": "2026-11-04", "colors": ["#ffe169", "#fad643", "#edc531", "#dbb42c", "#c9a227", "#b69121", "#a47e1b", "#926c15", "#805b10", "#76520e"]}
+  ]
+}
