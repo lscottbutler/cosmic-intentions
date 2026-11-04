@@ -4767,3 +4767,5 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 /* Scott 4 Nov 2026: shorter goal headings that wrap (about the width of a short heading), leaving room for the triangle. */
 .goal-workspace-goal-title{max-width:min(55%,calc(100% - 120px))!important;white-space:normal!important;text-wrap:wrap!important;overflow-wrap:break-word!important}
 @media(max-width:650px){.goal-workspace-goal-title{max-width:calc(100% - 80px)!important}}
+/* Scott 4 Nov 2026: goal heading boxes hug the left edge, in line with the task cards. */
+.goal-workspace-goal-title{margin-left:0!important}
