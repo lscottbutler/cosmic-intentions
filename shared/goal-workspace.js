@@ -183,32 +183,35 @@ const expandedTodoGoals = new Set();
 
 export function setupTodoDisclosure(host) {
   if (!host) return;
+  // Scott 4 Nov 2026: every goal heading gets the black triangle, at the right end of the heading row,
+  // centred over the task code boxes. More than five tasks: it shows the rest. Five or fewer: it hides/shows them.
   host.querySelectorAll(':scope > section[data-workspace-goal]').forEach(group => {
     const cards = [...group.querySelectorAll('.wcard')];
     const title = group.querySelector(':scope > h3');
-    if (!title || cards.length <= 5) return;
-    const key = group.dataset.workspaceGoal;
-    const label = document.createElement('span');
-    while (title.firstChild) label.append(title.firstChild);
-    label.style.minWidth = '0';
+    if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
+    const key = group.dataset.workspaceGoal, many = cards.length > 5;
+    group.style.position = 'relative';
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'todo-goal-chevron';
-    button.style.cssText = 'display:inline-grid;place-items:center;flex-shrink:0;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:#000;color:#fff;font-size:26px;line-height:1;cursor:pointer';
-    title.style.display = 'flex'; title.style.alignItems = 'center'; title.style.gap = '14px';
-    title.append(label, button);
+    button.style.cssText = 'position:absolute;right:17px;z-index:2;display:inline-grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:#000;color:#fff;font-size:22px;line-height:1;cursor:pointer';
+    group.append(button);
+    const place = () => { button.style.top = Math.round(title.offsetTop + (title.offsetHeight - 48) / 2) + 'px'; };
     function paint() {
-      const expanded = expandedTodoGoals.has(key);
-      cards.forEach((card, index) => { card.hidden = !expanded && index >= 5; });
-      button.textContent = expanded ? '▲' : '▼';
-      button.setAttribute('aria-expanded', String(expanded));
-      button.setAttribute('aria-label', expanded ? 'Show first five tasks' : `Show all ${cards.length} tasks`);
-      button.title = button.getAttribute('aria-label');
+      const toggled = expandedTodoGoals.has(key);
+      cards.forEach((card, index) => { card.hidden = many ? (!toggled && index >= 5) : toggled; });
+      const open = many ? toggled : !toggled;
+      button.textContent = open ? '\u25B2' : '\u25BC';
+      button.setAttribute('aria-expanded', String(open));
+      const label = many ? (toggled ? 'Show first five tasks' : `Show all ${cards.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
+      button.setAttribute('aria-label', label); button.title = label;
+      place();
     }
     button.addEventListener('click', () => {
       if (expandedTodoGoals.has(key)) expandedTodoGoals.delete(key); else expandedTodoGoals.add(key);
       paint();
     });
     paint();
+    if ('ResizeObserver' in window) new ResizeObserver(place).observe(title);
   });
 }
 
