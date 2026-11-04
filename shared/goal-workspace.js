@@ -183,19 +183,38 @@ const expandedTodoGoals = new Set();
 
 export function setupTodoDisclosure(host) {
   if (!host) return;
-  // Scott 4 Nov 2026: every goal heading gets the black triangle, at the right end of the heading row,
-  // centred over the task code boxes. More than five tasks: it shows the rest. Five or fewer: it hides/shows them.
+  // Scott 4 Nov 2026: each goal is one bordered group in its own colour. The heading bar runs the full width;
+  // the goal letter sits straight above the task code boxes (A1, A2…), and the open/close triangle is to its right.
   host.querySelectorAll(':scope > section[data-workspace-goal]').forEach(group => {
     const cards = [...group.querySelectorAll('.wcard')];
     const title = group.querySelector(':scope > h3');
     if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
     const key = (host.id || '') + ':' + group.dataset.workspaceGoal, many = cards.length > 5;
-    group.style.position = 'relative';
+    const color = title.style.backgroundColor || title.style.background || '#292929';
+    const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
+    Object.assign(group.style, { position: 'relative', border: '3px solid ' + color, borderRadius: '12px', padding: '0 56px 10px 10px', margin: '0 0 18px', boxSizing: 'border-box' });
+    imp(title, 'margin', '0 -56px 10px -10px'); imp(title, 'max-width', 'none'); imp(title, 'width', 'auto');
+    imp(title, 'border-radius', '8px 8px 0 0'); imp(title, 'padding-right', '140px'); imp(title, 'min-height', '56px');
+    // Goal letter box, styled like the task code boxes.
+    const codeLeaf = [...cards[0].querySelectorAll('span,div')].find(e => !e.children.length && /^[A-Z]+\d/.test(e.textContent.trim()));
+    const codeBox = codeLeaf && codeLeaf.parentElement;
+    const letter = codeLeaf ? codeLeaf.textContent.trim().match(/^[A-Z]+/)[0] : '';
+    const goalBox = document.createElement('div');
+    goalBox.className = 'todo-goal-letter'; goalBox.textContent = letter; goalBox.setAttribute('aria-hidden', 'true');
+    goalBox.style.cssText = 'position:absolute;z-index:2;display:grid;place-items:center;height:40px;border-radius:6px;background:#f2f4f6;color:#15161a;font:800 18px/1 "Roboto Condensed",Arial,sans-serif';
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'todo-goal-chevron';
-    button.style.cssText = 'position:absolute;right:17px;z-index:2;display:inline-grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:#000;color:#fff;font-size:22px;line-height:1;cursor:pointer';
-    group.append(button);
-    const place = () => { button.style.top = Math.round(title.offsetTop + (title.offsetHeight - 48) / 2) + 'px'; };
+    button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
+    group.append(goalBox, button);
+    const place = () => {
+      const g = group.getBoundingClientRect(), tTop = title.offsetTop, tH = title.offsetHeight;
+      button.style.top = Math.round(tTop + (tH - 42) / 2) + 'px';
+      goalBox.style.top = Math.round(tTop + (tH - 40) / 2) + 'px';
+      if (codeBox && codeBox.getBoundingClientRect().width) {
+        const c = codeBox.getBoundingClientRect();
+        goalBox.style.left = Math.round(c.left - g.left - group.clientLeft) + 'px'; goalBox.style.width = Math.round(c.width) + 'px'; goalBox.hidden = !letter;
+      } else { goalBox.style.left = 'auto'; goalBox.style.right = '58px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
+    };
     function paint() {
       const toggled = expandedTodoGoals.has(key);
       cards.forEach((card, index) => { card.hidden = many ? (!toggled && index >= 5) : toggled; });
@@ -204,14 +223,15 @@ export function setupTodoDisclosure(host) {
       button.setAttribute('aria-expanded', String(open));
       const label = many ? (toggled ? 'Show first five tasks' : `Show all ${cards.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
       button.setAttribute('aria-label', label); button.title = label;
-      place();
+      imp(title, 'margin-bottom', cards.some(c => !c.hidden) ? '10px' : '0');
+      requestAnimationFrame(place);
     }
     button.addEventListener('click', () => {
       if (expandedTodoGoals.has(key)) expandedTodoGoals.delete(key); else expandedTodoGoals.add(key);
       paint();
     });
     paint();
-    if ('ResizeObserver' in window) new ResizeObserver(place).observe(title);
+    if ('ResizeObserver' in window) new ResizeObserver(place).observe(group);
   });
 }
 
