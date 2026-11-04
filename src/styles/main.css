@@ -4762,3 +4762,4 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 .roadmap-goal-todo{position:relative}
 .roadmap-goal-todo > h3{min-height:52px;box-sizing:border-box;padding-right:260px}
 .roadmap-goal-todo > .wtabs{position:absolute;top:0;right:14px;height:52px;margin:0!important;padding:0!important;align-items:center!important;flex-wrap:nowrap!important;z-index:2}
+.roadmap-goal-todo > .wtabs .wtab{flex:0 0 auto!important;max-width:none!important;min-width:max-content!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
