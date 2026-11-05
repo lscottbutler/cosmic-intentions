@@ -6088,7 +6088,7 @@ async function initCitadelNoteFrame(nextPage) {
       personal.style.cssText = 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const heading = document.createElement('div');
       const headingKey='ci-personal-e-title:' + memberId + ':' + pageId;
-      let customHeading='MY PERSONAL NOTES';
+      let customHeading='ADD A PERSONAL NOTE';
       try { customHeading=localStorage.getItem(headingKey)?.trim().slice(0,80)||customHeading; } catch (_) {}
       heading.textContent=customHeading;
       heading.style.cssText='font:700 13px/1.4 Arial,sans-serif;letter-spacing:.04em;margin-bottom:8px';
@@ -6145,7 +6145,7 @@ async function initCitadelNoteFrame(nextPage) {
         savedBody=note.data?.body||'';
         copy.textContent=savedBody;
         if (typeof note.data?.title === 'string') {
-          customHeading=note.data.title.trim().slice(0,80)||'MY PERSONAL NOTES';
+          customHeading=note.data.title.trim().slice(0,80)||'ADD A PERSONAL NOTE';
         }
         heading.textContent=customHeading;
       }
@@ -6189,7 +6189,7 @@ async function initCitadelNoteFrame(nextPage) {
         save.addEventListener('click',async()=>{
           if (save.disabled) return;
           const value=input.value;
-          const title=titleInput.value.trim().slice(0,80)||'MY PERSONAL NOTES';
+          const title=titleInput.value.trim().slice(0,80)||'ADD A PERSONAL NOTE';
           save.disabled=true;cancel.disabled=true;hide.disabled=true;
           input.disabled=true;titleInput.disabled=true;
           status.textContent='Saving…';
