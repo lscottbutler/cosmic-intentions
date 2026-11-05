@@ -2693,7 +2693,7 @@ export function renderVizLibrary() {
       <div class="vault-actions">
         <button class="vault-act${isFav ? ' is-fav' : ''}" onclick="toggleGoalFavorite(${idx}, event)" title="${isFav ? 'Remove from' : 'Add to'} favorites" aria-label="Favorite">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</button>
         <button class="vault-act" onclick="launchCountdown(${idx}, 180)" title="Visualize this goal" aria-label="Visualize">${VIZ_ICON}</button>
-        <button class="vault-act" onclick="navTo('setup')" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
+        <button class="vault-act" onclick="(function(){try{if(window.top!==window){window.top.postMessage({type:'ci-open-feature',action:'goals'},location.origin);return;}}catch(e){}navTo('setup');})()" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
       </div>
     </div>
     <div id="vizLibPanel-${idx}" class="viz-lib-panel" style="display:none;"></div>`;
@@ -3334,6 +3334,8 @@ export function toggleGoalFavorite(idx, ev) {
   renderVaultSidebar();
   const box = document.getElementById('favorites-list');
   if (box && !box.classList.contains('hidden') && typeof window.renderFavorites === 'function') window.renderFavorites();
+  // Repaint the heart on the Visualization Library rows (Scott, 5 Nov 2026: the heart looked dead).
+  if (document.getElementById('page-vizlibrary')?.classList.contains('active') && typeof window.renderVizLibrary === 'function') window.renderVizLibrary();
 }
 
 /* ☆ Favorite the CURRENT page → a jump-to shortcut in the Favorites panel
@@ -3587,7 +3589,7 @@ export function renderVaultSidebar() {
           <div class="vault-actions">
             <button class="vault-act${isFav ? ' is-fav' : ''}" onclick="toggleGoalFavorite(${i._idx}, event)" title="${isFav ? 'Remove from' : 'Add to'} favorites loop" aria-label="Favorite">${isFav ? FAV_REMOVE_SVG : FAV_ADD_SVG}</button>
             <button class="vault-act" onclick="launchCountdown(${i._idx}, 180)" title="Visualize this goal" aria-label="Visualize">${VIZ_ICON}</button>
-            <button class="vault-act" onclick="navTo('setup')" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
+            <button class="vault-act" onclick="(function(){try{if(window.top!==window){window.top.postMessage({type:'ci-open-feature',action:'goals'},location.origin);return;}}catch(e){}navTo('setup');})()" title="Edit this goal" aria-label="Edit">${EDIT_ICON}</button>
           </div>
         </div>${(inlineGoalPlayer && inlineGoalPlayer.idx === i._idx) ? `
         <div class="goal-inline-player" id="goalPlayer-${i._idx}" style="margin:2px 0 12px;">
@@ -6576,6 +6578,8 @@ const cdState = { timer: null, remaining: 0, total: 0, paused: false, title: '',
 
 export function launchCountdown(idx, seconds) {
   if (!intentions.length) return;
+  // The old countdown overlay is gone from the page: play this goal in the 3-Minute visualization player instead (Scott, 5 Nov 2026).
+  if (!document.getElementById('countdownOverlay')) { launchVisualization(idx, 3, window.event); return; }
   const intn = intentions[idx] || intentions[0];
   const text = (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');
   logActivity('countdown', { duration_s: seconds, intention: text }, 10);
