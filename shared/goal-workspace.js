@@ -223,7 +223,11 @@ export function setupTodoDisclosure(host) {
       button.setAttribute('aria-expanded', String(open));
       const label = many ? (toggled ? 'Show first five tasks' : `Show all ${cards.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
       button.setAttribute('aria-label', label); button.title = label;
-      imp(title, 'margin-bottom', cards.some(c => !c.hidden) ? '10px' : '0');
+      const anyOpen = cards.some(c => !c.hidden);
+      // Closed: no white strip under the heading — the box is just the coloured bar (Scott, 5 Nov 2026).
+      imp(title, 'margin-bottom', anyOpen ? '10px' : '0');
+      group.style.paddingBottom = anyOpen ? '10px' : '0';
+      imp(title, 'border-radius', anyOpen ? '8px 8px 0 0' : '8px');
       requestAnimationFrame(place);
     }
     button.addEventListener('click', () => {
