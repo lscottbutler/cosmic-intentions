@@ -538,8 +538,9 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
       _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
       depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
       _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
-      _mSep(),
-      _mItem(deleteCall, '✕', 'Delete', true),
+      // ⋯ Delete only where the card has no black × (Scott 5 Nov 2026: no duplicate delete on To Do)
+      showLinkedEntries ? '' : _mSep(),
+      showLinkedEntries ? '' : _mItem(deleteCall, '✕', 'Delete', true),
     ].join('');
     const noteContext = taskNoteContext(intentions[idx], 'my', u.id ?? code, code, u.text);
     return (priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext))) ? '' : _card({ shade, code, text: u.text, done: d, toggleCall, items, indent: depth, fade: !showLinkedEntries && depth > 0, noteContext, showLinkedEntries, deleteCall, railColor: depth > 0 ? '#292929' : goalRail }))
@@ -580,8 +581,8 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
         i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
         _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
-        _mSep(),
-        _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
+        showLinkedEntries ? '' : _mSep(),
+        showLinkedEntries ? '' : _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
       const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
       if(priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext)))) return '';
@@ -763,6 +764,24 @@ export function wrapTogglePriority(encodedKey) {
     else goal.roadmapAI.priorityTasks[key] = true;
   } else return;
   saveIntentions(); renderWrapup();
+}
+
+/* Goal trough button 6 (Scott, 5 Nov 2026): mark every task of a goal as priority, or clear them all. */
+export function wrapSetGoalPriority(idx) {
+  const goal = intentions[idx];
+  if (!goal) return false;
+  if (!goal.roadmapAI) goal.roadmapAI = { intention: goal.title || '', tasks: [], userTasks: [] };
+  const ctxs = goalWorkspaceTaskContexts(idx);
+  if (!ctxs.length) return false;
+  const turnOn = !ctxs.every(c => taskIsPriority(c));
+  for (const c of ctxs) {
+    if (!!taskIsPriority(c) === turnOn) continue;
+    const key = taskNoteKey(c), parts = JSON.parse(key);
+    if (parts[1] === 'my') { const node = findPriorityNode(goal.roadmapAI.userTasks, parts[2]); if (node) node.priority = turnOn; }
+    else if (parts[1] === 'roadmap') { goal.roadmapAI.priorityTasks ||= {}; if (turnOn) goal.roadmapAI.priorityTasks[key] = true; else delete goal.roadmapAI.priorityTasks[key]; }
+  }
+  saveIntentions(); renderWrapup();
+  return turnOn;
 }
 
 export function masterPriorityTaskMarkup(priority = true) {
