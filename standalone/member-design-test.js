@@ -296,7 +296,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      home:'#1e90ff',citadel:'#1e90ff',
      meditation:'#ec1c23',
      'daily-habits':'#f26420',
-     goals:'#fef200',
+     goals:'#f1c40f',   // Scott 5 Nov 2026: Goals title yellow matches the Add-a-Goal + ring
      visualization:'#0076a3','super-viz':'#0076a3',
      'action-plan':'#187a2f',
      'cosmic-library':'#747474','entrepreneur-library':'#747474',
@@ -304,7 +304,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    };
    const accent=titleAccents[action]||'#747474';
    // Page accent for the Instructions button and Habits streak circle (dark text on yellow for legibility).
-   document.documentElement.style.setProperty('--page-accent',accent);document.documentElement.style.setProperty('--page-accent-text',accent==='#fef200'?'#292929':'#fff');
+   document.documentElement.style.setProperty('--page-accent',accent);document.documentElement.style.setProperty('--page-accent-text',(accent==='#fef200'||accent==='#f1c40f')?'#292929':'#fff');
    const neutral=accent==='#747474'?'#303030':'#202020';
    let letterIndex=0;
    // Scott 2026-11-01: never split a word across lines. Each word's tiles sit in a no-wrap group;
