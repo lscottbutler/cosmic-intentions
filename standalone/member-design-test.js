@@ -422,7 +422,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 2026-11-01: page citations. Content frames send their sources here; they're listed at the
  // very bottom of the page, and cleared whenever the page changes.
  // Quick buttons inside pages (e.g. Roadmap: To Do / Notes / My Journal) open a feature here (Scott, 4 Nov 2026).
- window.addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='ci-open-feature'&&['goal-workspace','task-notes','journal','goals'].includes(event.data.action))openFeature(event.data.action);});
+ window.addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='ci-open-feature'&&['goal-workspace','task-notes','journal','goals','action-plan'].includes(event.data.action))openFeature(event.data.action);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin)return;
   const type=event.data?.type;
