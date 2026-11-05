@@ -6579,7 +6579,23 @@ const cdState = { timer: null, remaining: 0, total: 0, paused: false, title: '',
 export function launchCountdown(idx, seconds) {
   if (!intentions.length) return;
   // The old countdown overlay is gone from the page: play this goal in the 3-Minute visualization player instead (Scott, 5 Nov 2026).
-  if (!document.getElementById('countdownOverlay')) { playGoalInline(idx, '3min', window.event); return; }
+  if (!document.getElementById('countdownOverlay')) {
+    // Play the 3-minute visualization right under the goal row that was clicked; tap again to close.
+    const row = window.event?.target?.closest?.('.vault-row');
+    const title = (intentions[idx]?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
+    if (!row) { launchVisualization(idx, 3, window.event); return; }
+    const open = row.nextElementSibling?.classList.contains('ci-inline-viz') ? row.nextElementSibling : null;
+    document.querySelectorAll('.ci-inline-viz').forEach(el => el.remove());
+    if (open) return;
+    localStorage.setItem('ci_goal_title', title);
+    const box = document.createElement('div');
+    box.className = 'ci-inline-viz';
+    box.style.cssText = 'margin:8px 0 14px;';
+    box.innerHTML = `<iframe src="players/3min-viz.html?g=${encodeURIComponent(title)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:#000;border-radius:8px"></iframe>`;
+    row.after(box);
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
   const intn = intentions[idx] || intentions[0];
   const text = (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');
   logActivity('countdown', { duration_s: seconds, intention: text }, 10);
