@@ -6579,7 +6579,7 @@ const cdState = { timer: null, remaining: 0, total: 0, paused: false, title: '',
 export function launchCountdown(idx, seconds) {
   if (!intentions.length) return;
   // The old countdown overlay is gone from the page: play this goal in the 3-Minute visualization player instead (Scott, 5 Nov 2026).
-  if (!document.getElementById('countdownOverlay')) { launchVisualization(idx, 3, window.event); return; }
+  if (!document.getElementById('countdownOverlay')) { playGoalInline(idx, '3min', window.event); return; }
   const intn = intentions[idx] || intentions[0];
   const text = (intn?.title || 'My Intention').replace(/^(i am)\s+/i, 'I AM ');
   logActivity('countdown', { duration_s: seconds, intention: text }, 10);
