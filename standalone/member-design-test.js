@@ -1061,9 +1061,12 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
   const fr=frame.getBoundingClientRect(),rs=btns.map(b=>b.getBoundingClientRect());
   const left=Math.min(...rs.map(r=>r.left)),bottom=Math.max(...rs.map(r=>r.bottom));
   hosts.forEach(h=>{
-   const hr=h.getBoundingClientRect(),sec=h.parentElement.getBoundingClientRect();
-   if(fr.top+hr.top>=bottom||!hr.height&&!h.offsetParent){h.style.removeProperty('padding-right');return;}
-   h.style.setProperty('padding-right',Math.max(0,Math.ceil(fr.left+sec.right-left+10))+'px','important');h.style.boxSizing='border-box';
+   // AB1 is a coloured bubble: shrink the bubble itself (margin) instead of padding its text.
+   const bubble=h.closest('.ci-page-ab1'),el=bubble||h,prop=bubble?'margin-right':'padding-right';
+   const cur=bubble?(parseFloat(el.style.marginRight)||0):0;
+   const hr=el.getBoundingClientRect(),right=fr.left+(bubble?hr.right+cur:h.parentElement.getBoundingClientRect().right);
+   if(fr.top+hr.top>=bottom||!hr.height&&!el.offsetParent){el.style.removeProperty(prop);return;}
+   el.style.setProperty(prop,Math.max(0,Math.ceil(right-left+10))+'px','important');if(!bubble)h.style.boxSizing='border-box';
   });
  }
  frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
