@@ -378,3 +378,6 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 
 /* 2026-11-06 Scott: My To Do List on phones — every block 4px in from the left and right edges. */
 @media(max-width:650px){body.todo-page main{padding-left:4px;padding-right:4px}body.todo-page .member-player-columns{margin-left:0!important;margin-right:0!important}body.todo-page #header-admin-note{margin-left:-20px;margin-right:-20px}}
+
+/* 2026-11-06 Scott: no side scroll bar on phones — the page still scrolls up and down by swipe/wheel. */
+@media(max-width:650px){html,body{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}}
