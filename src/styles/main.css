@@ -4787,3 +4787,8 @@ html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player
 
 /* 2026-11-06 Scott: page instructions stay hidden until the blue "i" is tapped. */
 html.ci-hide-instructions .ci-player-owner-instructions{display:none!important}
+
+/* 2026-11-06 Scott: AB1 — admin text box just under the page title (TO DO first). Plain, left-justified. */
+html.ci-header-note .ci-page-ab1{background:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0 0 14px!important;padding:0!important}
+html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content{font:400 18px/1.5 Arial,sans-serif!important;color:#26364b;text-align:left!important;padding:0 10px!important;min-height:0}
+html.ci-header-note .ci-page-ab1.is-owner .ci-admin-page-box-content{padding-right:52px!important;min-height:40px}

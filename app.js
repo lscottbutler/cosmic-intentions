@@ -4858,8 +4858,10 @@ function wireGoalsAddControl(active, topStack) {
 // remain in ATB 3 and are displayed from that existing record instead.
 const CI_INSTRUCTION_PAGES = new Set(['myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','wins','entcard','proof','runthroughs','habits','goalworkspace','gratitude','cosmiclibrary']);
 const CI_CUSTOM_BOX1 = new Set(['habits','goalworkspace','gratitude','cosmiclibrary']);
+const CI_PAGE_AB1 = new Set(['goalworkspace']);
 function _makeInstructionPanel(pageId,label) {
-  const slug = (CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId);
+  // Scott 6 Nov 2026: one source for PLAYER INSTRUCTION everywhere (was intro-note-* on some pages, out of sync).
+  const slug = 'page-instructions-' + pageId;
   const box = document.createElement('section');
   box.className='ci-admin-page-box ci-atb1-instructions';
   box.dataset.pageBox='1';
@@ -4937,7 +4939,7 @@ function wireAdminPageBoxes() {
   // Do not show the same admin instruction a second time inside legacy ATB 3.
   // Its stored value remains unchanged and can be restored by the owner.
   if (CI_INSTRUCTION_PAGES.has(pageId)) {
-    const instructionSlug = CI_CUSTOM_BOX1.has(pageId) ? 'page-instructions-' + pageId : 'intro-note-' + pageId;
+    const instructionSlug = 'page-instructions-' + pageId;
     const duplicate = _blockCache[instructionSlug]?.trim() && _blockCache[instructionSlug]?.trim() === _blockCache['page-note-' + pageId + '-3']?.trim();
     const legacy = topStack.querySelector('.ci-admin-page-box[data-page-box="3"]');
     if (legacy) { legacy.hidden = !!duplicate; legacy.style.display = duplicate ? 'none' : ''; }
@@ -5032,7 +5034,7 @@ function ensureAdminPageBoxEditors() {
     // Display numbers follow visible purpose, while legacy storage slugs remain unchanged.
     // ATB 1 is the owner-controlled instruction record displayed on every player.
     const boxes = [
-      {slug:'page-instructions-' + pageId, number:1, caption:'ATB 1 — Player instructions'},
+      {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
       {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
       ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
       {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
@@ -6066,10 +6068,29 @@ async function initCitadelNoteFrame(nextPage) {
     if(window.ciOwnerAccess)installOwnerLabels(window);
     // A genuinely separate owner-controlled instruction card lives above the
     // existing blue-E/member note. Do not reuse or mutate the member's data.
+    // Scott 6 Nov 2026: AB1 — an always-visible admin text box just under the page title (owner pen edits it in place).
+    // Separate from PLAYER INSTRUCTION, which only shows when the blue i is pressed.
+    if (CI_PAGE_AB1.has(pageId)) {
+      const ab1Slug = 'page-ab1-' + pageId;
+      const ab1 = document.createElement('section');
+      ab1.className = 'ci-admin-page-box ci-page-ab1';
+      ab1.dataset.pageBox = 'AB1';
+      ab1.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' admin box 1');
+      ab1.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + ab1Slug + '"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit AB1" title="Edit AB1">' + _adminPenIcon() + '</button></span>';
+      ab1.querySelector('button').addEventListener('click', e => { e.stopPropagation(); adminEditBlock(ab1Slug); });
+      mount.style.padding = '20px';
+      mount.appendChild(ab1);
+      const ab1Row = await sb.from('content_blocks').select('body').eq('slug', ab1Slug).maybeSingle();
+      if (renderVersion !== citadelNoteRenderVersion) return;
+      _blockCache[ab1Slug] = ab1Row.data?.body || '';
+      _fillBlockEl(ab1.querySelector('[data-block]'), _blockCache[ab1Slug]);
+      _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
+    }
     if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
-      instructions.setAttribute('aria-label','Administrator instructions for ' + ADMIN_PAGE_BOXES[pageId]);
+      instructions.setAttribute('aria-label','Player instruction for ' + ADMIN_PAGE_BOXES[pageId]);
+      instructions.dataset.ciPart = 'PLAYER INSTRUCTION';
       instructions.style.cssText = 'background:#fff;color:#292929;border:0;padding:16px;margin:0 0 14px;box-sizing:border-box;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
       const content = document.createElement('div');
       content.innerHTML = _expandBlockTokens(pageInstructions.data?.body || '');

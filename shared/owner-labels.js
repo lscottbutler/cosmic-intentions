@@ -86,6 +86,8 @@ export function installOwnerLabels(ownerWindow) {
     label(doc,'.wcard', 'To Do card');
     label(doc,'.home-col-left>h2,.home-info-block>div:first-child', 'Section heading');
     label(doc,'.ci-admin-page-box',el=>'Admin text box '+el.dataset.pageBox);
+    label(doc,'.ci-player-owner-instructions',()=> 'PLAYER INSTRUCTION (blue i)');
+    label(doc,'.ci-page-ab1',()=> 'AB1');
     label(doc,'[data-block]',el=>{
       const slug=el.getAttribute('data-block');
       const shell=el.closest('.ci-admin-page-box');
