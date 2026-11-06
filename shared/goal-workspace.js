@@ -190,8 +190,10 @@ export function setupTodoDisclosure(host) {
     const title = group.querySelector(':scope > h3');
     if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
     const key = (host.id || '') + ':' + group.dataset.workspaceGoal, many = cards.length > 5;
-    const color = title.style.backgroundColor || title.style.background || '#292929';
+    // Scott 6 Nov 2026: on TO DO every goal is dark grey with white text (no per-goal colours).
+    const color = '#4e4e4e';
     const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
+    imp(title, 'background', color); imp(title, 'border-color', color); imp(title, 'color', '#fff');
     Object.assign(group.style, { position: 'relative', border: '3px solid ' + color, borderRadius: '12px', padding: '0 56px 10px 10px', margin: '0 0 18px', boxSizing: 'border-box' });
     imp(title, 'margin', '0 -56px 10px -10px'); imp(title, 'max-width', 'none'); imp(title, 'width', 'auto');
     imp(title, 'border-radius', '8px 8px 0 0'); imp(title, 'padding-right', '140px'); imp(title, 'min-height', '56px');
