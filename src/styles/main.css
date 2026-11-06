@@ -4826,14 +4826,16 @@ html.ci-header-note body > div:first-child{display:flow-root}
 .ci-carousel-quote .ci-q-text{font-family:Georgia,'Times New Roman',serif!important;font-style:italic!important;font-weight:400!important}
 .ci-carousel-quote .ci-q-author{font-family:Arial,Helvetica,sans-serif!important;font-weight:400!important}
 
-/* 2026-11-06 Scott — PROTOTYPE: "title page with details" goal header on TO DO (one goal for review). */
-.todo-goal-titlepage{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;margin:0 -56px 10px -10px;padding:12px 56px 12px 12px;background:#f4f4f4;border-radius:8px 8px 0 0}
-.todo-goal-titlepage .tp-pic{position:relative;min-height:150px;border-radius:6px;background:#2f6680 center/cover no-repeat;overflow:hidden;display:flex;align-items:flex-end}
-.todo-goal-titlepage .tp-pic span{display:block;width:100%;padding:28px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font:600 15px/1.35 Arial,sans-serif;letter-spacing:.02em}
-.todo-goal-titlepage .tp-bars{display:flex;flex-direction:column;justify-content:space-between;gap:8px}
-.todo-goal-titlepage .tp-bars>div{flex:1;display:flex;align-items:center;min-height:32px;padding:6px 10px;border-radius:4px;color:#fff;font:400 13px/1.3 Arial,sans-serif;letter-spacing:.02em;overflow:hidden}
-.todo-goal-titlepage .tp-bars b{font-weight:700;margin-right:4px}
-@media(max-width:520px){.todo-goal-titlepage{grid-template-columns:1fr}.todo-goal-titlepage .tp-pic{min-height:170px}}
+/* 2026-11-06 Scott — Title page: goal image left (40fr), colour-coded text lines right (13fr). */
+.todo-goal-titlepage{aspect-ratio:16/9;display:grid;grid-template-columns:40fr 4px 13fr;gap:0;margin:0 -56px 10px -10px;padding:8px;padding-right:calc(56px + 8px);background:#666;border-radius:8px 8px 0 0;overflow:hidden}
+.todo-goal-titlepage .tp-pic{position:relative;background:#2f6680 center/cover no-repeat;display:flex;align-items:flex-end;border-radius:4px 0 0 4px;overflow:hidden}
+.todo-goal-titlepage .tp-pic span{display:block;width:100%;padding:32px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font:600 16px/1.35 Arial,sans-serif;letter-spacing:.02em}
+.todo-goal-titlepage .tp-post{background:#555}
+.todo-goal-titlepage .tp-lines{display:flex;flex-direction:column;gap:0;border-radius:0 4px 4px 0;overflow:hidden}
+.todo-goal-titlepage .tp-line{display:flex;align-items:center;padding:5px 8px;color:#fff;font:400 12px/1.3 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:0;flex:1}
+.todo-goal-titlepage .tp-line b{font-weight:700;margin-right:3px}
+.tp-green{background:#2e6b35}.tp-orange{background:#c8652e}.tp-red{background:#c42b2b}.tp-yellow{background:#e0a032;color:#1b1b1b!important}
+@media(max-width:520px){.todo-goal-titlepage{aspect-ratio:auto;grid-template-columns:1fr;padding-right:calc(56px + 8px)}.todo-goal-titlepage .tp-pic{min-height:170px;border-radius:4px 4px 0 0}.todo-goal-titlepage .tp-post{display:none}.todo-goal-titlepage .tp-lines{border-radius:0 0 4px 4px}}
 
 /* 2026-11-06 Scott usability pass #4: reading text in a normal-width font (condensed stays for headings/labels). */
 html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *,

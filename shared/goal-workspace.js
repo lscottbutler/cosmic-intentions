@@ -208,24 +208,36 @@ export function setupTodoDisclosure(host) {
     button.type = 'button'; button.className = 'todo-goal-chevron';
     button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
     group.append(goalBox, button);
-    // Scott 6 Nov 2026 — PROTOTYPE on one goal (Xiaomi SU 7): "title page with details" header.
-    // Goal picture block on the left, four coloured detail bars on the right.
+    // Scott 6 Nov 2026 — Title page: goal image left (40), colour-coded text lines right (13).
     const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
-    const proto = goalObj && /XIAOMI/i.test(goalObj.title || '') ? document.createElement('div') : null;
+    const proto = goalObj ? document.createElement('div') : null;
     if (proto) {
       const fmt = d => { const t = d ? new Date(d + 'T00:00:00') : null; return t && !isNaN(t) ? t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; };
       const target = fmt(goalObj.targetDate), start = fmt(goalObj.startDate || goalObj.dateStart);
       const daysLeft = goalObj.targetDate ? Math.ceil((new Date(goalObj.targetDate + 'T00:00:00') - new Date()) / 864e5) : null;
-      const firstTask = [...cards[0].querySelectorAll('span,div,label,p')].filter(e => !e.children.length).map(e => e.textContent.trim()).find(t => t.length > 6 && !/^[A-Z]+\d/.test(t) && !/^(NOTE|JOURNAL)$/.test(t)) || '';
+      // Extract task texts from all cards
+      const taskTexts = cards.map(c => {
+        const spans = [...c.querySelectorAll('span,div,label,p')].filter(e => !e.children.length);
+        return spans.map(e => e.textContent.trim()).find(t => t.length > 3 && !/^[A-Z]+\d/.test(t) && !/^(NOTE|JOURNAL)$/.test(t)) || '';
+      }).filter(Boolean);
       const img = goalObj.imageUrl || '';
+      // Build right-panel lines: green=tasks, orange=next, red=deadline, yellow=start
+      let lines = '';
+      // Green: header + individual tasks (cap at 8 so total ≤ 13)
+      lines += '<div class="tp-line tp-green"><b>' + esc(letter || '') + '</b> · ' + cards.length + (cards.length === 1 ? ' task' : ' tasks') + '</div>';
+      const maxTasks = Math.min(taskTexts.length, 8);
+      for (let i = 0; i < maxTasks; i++) lines += '<div class="tp-line tp-green">' + esc(taskTexts[i]) + '</div>';
+      if (taskTexts.length > 8) lines += '<div class="tp-line tp-green">+' + (taskTexts.length - 8) + ' more</div>';
+      // Orange: next task
+      if (taskTexts[0]) lines += '<div class="tp-line tp-orange">Next: ' + esc(taskTexts[0]) + '</div>';
+      // Red: target date + days
+      lines += '<div class="tp-line tp-red">' + (target ? 'Target ' + esc(target) + (daysLeft != null ? ' · ' + daysLeft + ' days' : '') : 'No target date') + '</div>';
+      // Yellow: start date
+      lines += '<div class="tp-line tp-yellow">' + (start ? 'Started ' + esc(start) : 'Start date not set') + '</div>';
       proto.className = 'todo-goal-titlepage';
       proto.innerHTML = '<div class="tp-pic"' + (img ? ' style="background-image:url(\'' + esc(img).replace(/'/g, '%27') + '\')"' : '') + '><span>' + esc(goalObj.title || '') + '</span></div>' +
-        '<div class="tp-bars">' +
-        '<div style="background:#2e6b35"><b>' + esc(letter || '') + '</b> · ' + cards.length + (cards.length === 1 ? ' task' : ' tasks') + '</div>' +
-        '<div style="background:#c8652e">Next: ' + esc(firstTask) + '</div>' +
-        '<div style="background:#c42b2b">' + (target ? 'Target ' + esc(target) + (daysLeft != null ? ' · ' + daysLeft + ' days' : '') : 'No target date') + '</div>' +
-        '<div style="background:#e0a032;color:#1b1b1b">' + (start ? 'Started ' + esc(start) : 'Start date not set') + '</div>' +
-        '</div>';
+        '<div class="tp-post"></div>' +
+        '<div class="tp-lines">' + lines + '</div>';
       title.style.setProperty('display', 'none', 'important');
       title.after(proto);
     }
