@@ -4817,3 +4817,5 @@ html.ci-header-note .ci-page-ab1{display:none!important}
 .ci-carousel-card~.ci-carousel-card.ci-has-quote{position:absolute!important;inset:0 0 auto 0!important}
 .ci-carousel-card.ci-has-quote .ci-admin-trough-art{height:calc(56.25cqw * (1 - var(--ci-band,.1222)))!important;aspect-ratio:auto!important;object-fit:cover!important;object-position:top!important}
 .ci-carousel-caption.ci-carousel-quote{display:flex!important;width:100%!important;max-width:none!important;align-items:center;justify-content:center;min-height:calc(56.25cqw * var(--ci-band,.1222) * 2);height:auto!important;margin-top:-1px;padding:12px 5cqw!important;box-sizing:border-box;color:#fff;font:italic 600 clamp(16px,3.4cqw,24px)/1.35 'Roboto Condensed',Arial,sans-serif!important;letter-spacing:.01em!important;text-transform:none!important;text-align:center}
+/* Keep children's top margins inside the header box so its measured height is complete (phones: the quote image was cut off). */
+html.ci-header-note body > div:first-child{display:flow-root}
