@@ -4858,7 +4858,8 @@ function wireGoalsAddControl(active, topStack) {
 // remain in ATB 3 and are displayed from that existing record instead.
 const CI_INSTRUCTION_PAGES = new Set(['myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','wins','entcard','proof','runthroughs','habits','goalworkspace','gratitude','cosmiclibrary']);
 const CI_CUSTOM_BOX1 = new Set(['habits','goalworkspace','gratitude','cosmiclibrary']);
-const CI_PAGE_AB1 = new Set(['goalworkspace']);
+// Scott 6 Nov 2026: AB1 (a quote for the page) on every player page.
+const CI_PAGE_AB1 = new Set(Object.keys(ADMIN_PAGE_BOXES));
 function _makeInstructionPanel(pageId,label) {
   // Scott 6 Nov 2026: one source for PLAYER INSTRUCTION everywhere (was intro-note-* on some pages, out of sync).
   const slug = 'page-instructions-' + pageId;
