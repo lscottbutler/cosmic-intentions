@@ -4819,3 +4819,7 @@ html.ci-header-note .ci-page-ab1{display:none!important}
 .ci-carousel-caption.ci-carousel-quote{display:flex!important;width:100%!important;max-width:none!important;align-items:center;justify-content:center;min-height:calc(56.25cqw * var(--ci-band,.1222) * 2);height:auto!important;margin-top:-1px;padding:12px 5cqw!important;box-sizing:border-box;color:#fff;font:italic 600 clamp(16px,3.4cqw,24px)/1.35 'Roboto Condensed',Arial,sans-serif!important;letter-spacing:.01em!important;text-transform:none!important;text-align:center}
 /* Keep children's top margins inside the header box so its measured height is complete (phones: the quote image was cut off). */
 html.ci-header-note body > div:first-child{display:flow-root}
+/* 2026-11-06 Scott: quote typography — regular weight, open letter and line spacing, author on its own line. */
+.ci-carousel-caption.ci-carousel-quote{flex-direction:column;gap:10px;padding:20px 7cqw 22px!important;font:italic 400 clamp(17px,3.3cqw,23px)/1.65 Georgia,'Times New Roman',serif!important;letter-spacing:.03em!important;word-spacing:.08em}
+.ci-carousel-quote .ci-q-text{display:block;max-width:34em}
+.ci-carousel-quote .ci-q-author{display:block;font:400 clamp(12px,2.2cqw,15px)/1.4 Arial,Helvetica,sans-serif;font-style:normal;letter-spacing:.18em;text-transform:uppercase;opacity:.9}
