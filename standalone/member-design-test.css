@@ -375,3 +375,6 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 #review-menu #review-menu-items>[data-ci-menu-action="cosmic-library"]{background:#000!important;color:#fff!important}
 #review-menu #review-menu-items>[data-ci-menu-action="meditation"]{background:#7b2cbf!important;color:#fff!important}
 #review-menu #review-menu-items>[data-ci-menu-action="super-viz"]{background:#0076a3!important;color:#fff!important}
+
+/* 2026-11-06 Scott: My To Do List on phones — every block 4px in from the left and right edges. */
+@media(max-width:650px){body.todo-page main{padding-left:4px;padding-right:4px}body.todo-page .member-player-columns{margin-left:0!important;margin-right:0!important}body.todo-page #header-admin-note{margin-left:-20px;margin-right:-20px}}
