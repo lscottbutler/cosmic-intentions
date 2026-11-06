@@ -4756,8 +4756,6 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
   html.ci-header-note .ci-player-owner-instructions{padding-left:0!important;padding-right:0!important}
   /* Scott 3 Nov 2026: two sizes larger on phones (was 16px). */
   html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *{font-size:18px!important;line-height:1.5!important}
-  /* Scott 6 Nov 2026: header note text centred on phones. */
-  html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *{text-align:center!important}
 }
 
 /* Scott 4 Nov 2026: MY ACTIONS / + / ROADMAP sit inside the TO DO header bar, on the right. */
@@ -4777,3 +4775,6 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 
 /* 2026-11-06 Scott: My To Do List header note text — 5px space left and right on phones. */
 @media(max-width:650px){html.ci-header-note-todo .ci-player-owner-instructions{padding-left:5px!important;padding-right:5px!important}}
+
+/* 2026-11-06 Scott: page instruction text is LEFT-justified on every page, every screen size (lines line up on the left). */
+html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *{text-align:left!important}
