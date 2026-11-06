@@ -396,3 +396,9 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 
 /* 2026-11-06 Scott: no search bar on any page (phone, tablet, PC). */
 #player-search{display:none!important}
+
+/* 2026-11-06 Scott (phones): icon block in two rows — full screen · To Do · Goals · sticker, then the date card. */
+@media(max-width:650px){
+ .orientation .shortcuts.ci-in-slot{align-self:start!important}
+ .orientation .shortcuts.ci-in-slot>#header-calendar{flex:1 1 100%!important;order:9}
+}

@@ -1050,3 +1050,29 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
  addEventListener('resize',queue);setInterval(queue,1500);
 })();
+// Scott 6 Nov 2026 (phones, every page): the icon block (full screen · To Do · Goals · sticker / date card)
+// sits in two rows between the personal note and the carousel card. A slot is opened inside the text-box
+// frame and the icon block is pulled up into it (negative top margin), so nothing overlaps.
+(()=>{
+ const frame=document.getElementById('header-admin-note-frame'),sc=document.querySelector('.orientation .shortcuts');if(!frame||!sc)return;
+ let raf=0;const queue=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);};
+ const clear=doc=>{doc?.getElementById('ci-shortcut-slot')?.remove();sc.style.removeProperty('margin-top');sc.classList.remove('ci-in-slot');};
+ function fit(){
+  let doc;try{doc=frame.contentDocument;}catch(_){return;}
+  const note=document.getElementById('header-admin-note');
+  if(!(innerWidth<=650&&doc&&note&&!note.hidden&&frame.offsetHeight>20)){clear(doc);return;}
+  const anchor=doc.querySelector('.ci-player-personal-e-box')||doc.querySelector('.ci-player-owner-instructions');
+  if(!anchor){clear(doc);return;}
+  let slot=doc.getElementById('ci-shortcut-slot');
+  if(!slot){slot=doc.createElement('div');slot.id='ci-shortcut-slot';slot.setAttribute('aria-hidden','true');}
+  if(anchor.nextElementSibling!==slot)anchor.after(slot);
+  sc.classList.add('ci-in-slot');
+  const h=sc.offsetHeight;slot.style.cssText='height:'+(h+8)+'px;margin:0 0 14px';
+  const cur=parseFloat(getComputedStyle(sc).marginTop)||0;
+  const natural=sc.getBoundingClientRect().top-cur;
+  const target=frame.getBoundingClientRect().top+slot.getBoundingClientRect().top;
+  sc.style.setProperty('margin-top',Math.round(target-natural)+'px','important');
+ }
+ frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
+ addEventListener('resize',queue);setInterval(queue,1500);
+})();
