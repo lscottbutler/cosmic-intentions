@@ -1128,3 +1128,14 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  }
  addEventListener('resize',queue);setInterval(queue,1500);apply();
 })();
+// Scott 6 Nov 2026: phones get a fixed bottom tab bar with the Big Five (industry-standard primary navigation).
+(()=>{
+ const keys=['action-plan','goals','daily-habits','meditation','super-viz'];
+ const bar=document.createElement('nav');bar.id='ci-tabbar';bar.setAttribute('aria-label','Main');
+ for(const k of keys){const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');if(!q)continue;
+  const b=document.createElement('button');b.type='button';b.dataset.tab=k;b.setAttribute('style',q.getAttribute('style')||'');b.innerHTML=q.innerHTML;b.setAttribute('aria-label',q.getAttribute('aria-label')||k);
+  if(!b.querySelector('span')){const s=document.createElement('span');s.textContent=q.getAttribute('aria-label')||k;b.append(s);}
+  b.addEventListener('click',()=>{const t=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');if(t)t.click();});bar.append(b);}
+ if(!bar.children.length)return;
+ document.body.append(bar);document.body.classList.add('has-tabbar');
+})();

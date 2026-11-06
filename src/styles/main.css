@@ -4834,3 +4834,8 @@ html.ci-header-note body > div:first-child{display:flow-root}
 .todo-goal-titlepage .tp-bars>div{flex:1;display:flex;align-items:center;min-height:32px;padding:6px 10px;border-radius:4px;color:#fff;font:400 13px/1.3 Arial,sans-serif;letter-spacing:.02em;overflow:hidden}
 .todo-goal-titlepage .tp-bars b{font-weight:700;margin-right:4px}
 @media(max-width:520px){.todo-goal-titlepage{grid-template-columns:1fr}.todo-goal-titlepage .tp-pic{min-height:170px}}
+
+/* 2026-11-06 Scott usability pass #4: reading text in a normal-width font (condensed stays for headings/labels). */
+html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *,
+html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-personal-e-box div,
+#page-goalworkspace .wcard{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif!important}
