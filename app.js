@@ -6119,7 +6119,9 @@ async function initCitadelNoteFrame(nextPage) {
         personal.style.cssText=collapsed
           ? 'position:relative;box-sizing:border-box;width:34px;height:34px;min-height:0;padding:0;margin:0 0 14px auto;border:0;border-radius:50%;background:transparent;overflow:visible'
           : 'position:relative;box-sizing:border-box;min-height:108px;padding:16px 52px 16px 16px;margin:0 0 14px;border-radius:12px;background:#f2f2f2;color:#292929;overflow-wrap:anywhere;font:400 16px/1.55 Arial,sans-serif';
-        heading.hidden=collapsed;copy.hidden=collapsed;
+        // Scott 6 Nov 2026: the default 'ADD A PERSONAL NOTE' shows only while the note is empty;
+        // once the member writes, only their own title (if any) and text show.
+        heading.hidden=collapsed||(!!savedBody.trim()&&customHeading==='ADD A PERSONAL NOTE');copy.hidden=collapsed;
         edit.style.cssText=collapsed
           ? 'position:relative;display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(41,119,190,.22);border-radius:50%;padding:0;background:rgba(61,146,223,.15);color:rgba(34,103,168,.48);font:700 21px/1 Arial,sans-serif;cursor:pointer'
           : 'position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(61,146,223,.42);color:#fff;font:700 25px/1 Arial,sans-serif;cursor:pointer';
@@ -6162,7 +6164,7 @@ async function initCitadelNoteFrame(nextPage) {
         titleLabel.textContent='NOTE TITLE';
         titleLabel.style.cssText='display:block;font:700 12px Arial,sans-serif;margin:8px 0';
         const titleInput=document.createElement('input');
-        titleInput.type='text';titleInput.maxLength=80;titleInput.value=customHeading;
+        titleInput.type='text';titleInput.maxLength=80;titleInput.value=customHeading==='ADD A PERSONAL NOTE'?'':customHeading;titleInput.placeholder='ADD A PERSONAL NOTE';
         titleInput.setAttribute('aria-label','Personal note title');
         titleInput.style.cssText='display:block;width:100%;padding:8px;box-sizing:border-box;margin-top:5px';
         titleLabel.appendChild(titleInput);
