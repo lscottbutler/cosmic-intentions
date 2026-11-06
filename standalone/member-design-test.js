@@ -1054,13 +1054,17 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  let raf=0;const queue=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);};
  function fit(){
   let doc;try{doc=frame.contentDocument;}catch(_){return;}if(!doc)return;
-  const host=doc.querySelector('.ci-player-owner-instructions > div');if(!host)return;
-  const menu=document.getElementById('review-menu-trigger'),five=document.getElementById('big-five-trigger');
-  if(!(innerWidth<=650&&menu&&menu.offsetWidth)){host.style.removeProperty('padding-right');return;}
-  const fr=frame.getBoundingClientRect(),m=menu.getBoundingClientRect(),f=five&&five.offsetWidth?five.getBoundingClientRect():m;
-  const sec=host.parentElement.getBoundingClientRect();
-  const w=Math.max(0,Math.ceil(fr.left+sec.right-Math.min(m.left,f.left)+10));
-  host.style.setProperty('padding-right',w+'px','important');host.style.boxSizing='border-box';
+  // Text blocks that start beside the corner buttons (☰, 5, i) keep a right margin clear of them.
+  const hosts=[...doc.querySelectorAll('.ci-page-ab1 .ci-admin-page-box-content, .ci-player-owner-instructions > div')];if(!hosts.length)return;
+  const btns=['review-menu-trigger','big-five-trigger','ci-info-trigger'].map(id=>document.getElementById(id)).filter(b=>b&&b.offsetWidth);
+  if(!(innerWidth<=650&&btns.length)){hosts.forEach(h=>h.style.removeProperty('padding-right'));return;}
+  const fr=frame.getBoundingClientRect(),rs=btns.map(b=>b.getBoundingClientRect());
+  const left=Math.min(...rs.map(r=>r.left)),bottom=Math.max(...rs.map(r=>r.bottom));
+  hosts.forEach(h=>{
+   const hr=h.getBoundingClientRect(),sec=h.parentElement.getBoundingClientRect();
+   if(fr.top+hr.top>=bottom||!hr.height&&!h.offsetParent){h.style.removeProperty('padding-right');return;}
+   h.style.setProperty('padding-right',Math.max(0,Math.ceil(fr.left+sec.right-left+10))+'px','important');h.style.boxSizing='border-box';
+  });
  }
  frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
  addEventListener('resize',queue);setInterval(queue,1500);
