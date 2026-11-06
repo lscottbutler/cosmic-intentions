@@ -501,6 +501,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Color Palettes';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  delete menuLabels.gratitude;
+ // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
+ for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
