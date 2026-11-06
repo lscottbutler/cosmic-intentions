@@ -388,9 +388,8 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 /* 2026-11-06 Scott: CI astronaut logo at the top of the Big Five menu, 100x100. */
 #big-five-menu .bf-logo{display:block;width:100px;height:100px;margin:0 auto 8px;border-radius:8px}
 
-/* 2026-11-06 Scott (phones, every page): the 5 sits directly under the ☰ menu in the top-right corner;
-   the page text starts below both. */
+/* 2026-11-06 Scott (phones, every page): the 5 sits under the ☰ menu (20px gap) in the top-right corner;
+   the page text wraps around both (spacer set in member-design-test.js). */
 @media(max-width:650px){
- .orientation .shortcuts>#big-five-trigger{position:absolute!important;top:72px!important;right:16px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:2;order:0}
- .orientation{padding-top:max(calc(20px + var(--title-h,40px) + 14px),128px)!important}
+ .orientation .shortcuts>#big-five-trigger{position:absolute!important;top:84px!important;right:16px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:2;order:0}
 }
