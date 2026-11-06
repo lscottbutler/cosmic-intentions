@@ -1032,28 +1032,21 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  }
 })();
 
-// Scott 6 Nov 2026 (phones, every page): the page text starts right under the title and wraps around
-// the ☰ menu and the 5 in the top-right corner (a float inside the text box keeps that corner clear).
+// Scott 6 Nov 2026 (phones, every page): the page text starts right under the title and stays in a
+// column to the LEFT of the ☰ menu and the 5 for its whole height (no text under the 5).
 (()=>{
  const frame=document.getElementById('header-admin-note-frame');if(!frame)return;
  let raf=0;const queue=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);};
  function fit(){
   let doc;try{doc=frame.contentDocument;}catch(_){return;}if(!doc)return;
-  const host=doc.querySelector('.ci-player-owner-instructions > div');
-  let spacer=doc.getElementById('ci-corner-spacer');
+  const host=doc.querySelector('.ci-player-owner-instructions > div');if(!host)return;
   const menu=document.getElementById('review-menu-trigger'),five=document.getElementById('big-five-trigger');
-  const phone=innerWidth<=650&&host&&menu&&menu.offsetWidth;
-  if(!phone){if(spacer)spacer.remove();return;}
-  if(!spacer){spacer=doc.createElement('div');spacer.id='ci-corner-spacer';spacer.setAttribute('aria-hidden','true');}
-  if(host.firstChild!==spacer)host.prepend(spacer);
-  const fr=frame.getBoundingClientRect(),hr=host.getBoundingClientRect();
-  const m=menu.getBoundingClientRect(),f=five&&five.offsetWidth?five.getBoundingClientRect():m;
-  const top=fr.top+hr.top,right=fr.left+hr.right;
-  const h=Math.ceil(Math.max(m.bottom,f.bottom)-top+6),w=Math.ceil(right-Math.min(m.left,f.left)+8);
-  if(h<=0||w<=0){spacer.remove();return;}
-  spacer.style.cssText='float:right;width:'+w+'px;height:'+h+'px;margin:0;padding:0';
+  if(!(innerWidth<=650&&menu&&menu.offsetWidth)){host.style.removeProperty('padding-right');return;}
+  const fr=frame.getBoundingClientRect(),m=menu.getBoundingClientRect(),f=five&&five.offsetWidth?five.getBoundingClientRect():m;
+  const sec=host.parentElement.getBoundingClientRect();
+  const w=Math.max(0,Math.ceil(fr.left+sec.right-Math.min(m.left,f.left)+10));
+  host.style.setProperty('padding-right',w+'px','important');host.style.boxSizing='border-box';
  }
  frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
- addEventListener('resize',queue);new ResizeObserver(queue).observe(document.querySelector('.orientation')||document.body);
- setInterval(queue,1500);
+ addEventListener('resize',queue);setInterval(queue,1500);
 })();
