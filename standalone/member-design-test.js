@@ -499,7 +499,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
- const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Color Palettes';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
+ const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Design Library';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
  // Android and PC browsers offer their own Install option, so this item is hidden there; also hidden once opened as the app.
  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
