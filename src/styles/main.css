@@ -4795,3 +4795,10 @@ html.ci-header-note .ci-page-ab1.is-owner .ci-admin-page-box-content{padding-rig
 /* AB1 quote: author line slightly smaller. */
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content p{margin:0}
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content em{font-style:italic}
+
+/* 2026-11-06 Scott: AB1 quote sits in an orange speech bubble (tail at bottom-left) just under the page title. */
+html.ci-header-note .ci-page-ab1{position:relative;background:#f47a2c!important;border-radius:16px!important;margin:0 0 30px!important;overflow:visible!important}
+html.ci-header-note .ci-page-ab1::after{content:"";position:absolute;left:30px;bottom:-18px;width:26px;height:19px;background:#f47a2c;clip-path:polygon(0 0,100% 0,0 100%)}
+html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content{color:#1b1b1b!important;padding:16px 18px!important;font:400 18px/1.45 Arial,sans-serif!important}
+html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content em{font-style:italic;font-weight:700}
+html.ci-header-note .ci-page-ab1.is-owner .ci-admin-page-box-content{padding-right:56px!important}
