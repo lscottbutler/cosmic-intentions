@@ -4774,3 +4774,6 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 
 /* 2026-11-06 Scott: My To Do List on phones — goal groups run to the frame edge (the shell adds the 4px). */
 @media(max-width:650px){#page-goalworkspace .goal-workspace-page{padding-left:0;padding-right:0}}
+
+/* 2026-11-06 Scott: My To Do List header note text — 5px space left and right on phones. */
+@media(max-width:650px){html.ci-header-note-todo .ci-player-owner-instructions{padding-left:5px!important;padding-right:5px!important}}
