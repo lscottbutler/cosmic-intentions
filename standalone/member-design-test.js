@@ -385,7 +385,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let fiveIdx=0;try{fiveIdx=(Number(localStorage.getItem('ci-big-five-look'))+1||0)%fives.length;localStorage.setItem('ci-big-five-look',String(fiveIdx));}catch(_){fiveIdx=Math.floor(Math.random()*fives.length);}
   btn.innerHTML='<img src="'+fives[fiveIdx]+'" alt="" width="44" height="44" draggable="false" style="object-fit:contain">';
   const pop=document.createElement('div');pop.id='big-five-menu';pop.setAttribute('role','menu');pop.hidden=true;
-  pop.innerHTML='<h2>THE BIG FIVE</h2><div class="bf-list">'+keys.map(k=>{const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');return q?'<button type="button" role="menuitem" data-big-five="'+k+'" style="'+(q.getAttribute('style')||'')+'">'+q.innerHTML+'</button>':'';}).join('')+'</div>';
+  pop.innerHTML='<img class="bf-logo" src="/images/logo/ci-logo-astronaut-200.jpg" alt="Cosmic Intentions" width="100" height="100"><h2>THE BIG FIVE</h2><div class="bf-list">'+keys.map(k=>{const q=document.querySelector('#quick-nav [data-quick-nav="'+k+'"]');return q?'<button type="button" role="menuitem" data-big-five="'+k+'" style="'+(q.getAttribute('style')||'')+'">'+q.innerHTML+'</button>':'';}).join('')+'</div>';
   document.body.append(pop);
   const place=()=>{const r=btn.getBoundingClientRect(),w=Math.min(196,innerWidth-24);pop.style.width=w+'px';pop.style.top=(r.bottom+8+scrollY)+'px';pop.style.left=Math.max(12,Math.min(r.right-w,innerWidth-w-12))+scrollX+'px';};
   const close=()=>{pop.hidden=true;btn.setAttribute('aria-expanded','false');};
