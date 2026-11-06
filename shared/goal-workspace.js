@@ -1,7 +1,7 @@
 import { esc, intentions, goalLetter, openMasterDestination } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
-import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction, wrapSetGoalPriority } from './wrapup.js';
+import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
 
 let selectedGoalId = null;
 let initialSelectionRead = false;
@@ -206,53 +206,12 @@ export function setupTodoDisclosure(host) {
     button.type = 'button'; button.className = 'todo-goal-chevron';
     button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
     group.append(goalBox, button);
-    // Goal trough (Scott, 5 Nov 2026): a strip in the goal's colour with eight goal actions.
-    const idx = intentions.findIndex(g => String(g.id) === String(group.dataset.workspaceGoal));
+    // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.
+    // The eight action buttons were removed at Scott's request (6 Nov 2026).
     const trough = document.createElement('div');
     trough.className = 'todo-goal-trough';
-    trough.style.cssText = 'display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin:10px -56px 0 -10px;padding:10px 12px;background:' + color + ';border-radius:0 0 8px 8px';
-    const shell = action => { try { if (window.top !== window) { window.top.postMessage({ type: 'ci-open-feature', action }, location.origin); return true; } } catch (_) {} return false; };
-    const actions = [
-      ['ADD', 'Add a task to this goal', () => {
-        const text = (window.prompt('New task for this goal:') || '').trim();
-        if (!text || idx < 0) return;
-        wrapGoalAddAction(idx, { value: text, id: '', focus() {} });
-        renderMasterPriorities();
-      }],
-      ['VISUALIZE', 'Play the 3-minute visualization of this goal', () => {
-        const open = group.querySelector(':scope > .ci-inline-viz');
-        if (open) { open.remove(); return; }
-        const t = (intentions[idx]?.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
-        try { localStorage.setItem('ci_goal_title', t); } catch (_) {}
-        const box = document.createElement('div'); box.className = 'ci-inline-viz'; box.style.cssText = 'margin:0 0 10px';
-        box.innerHTML = `<iframe src="players/3min-viz.html?g=${encodeURIComponent(t)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;background:#000;border-radius:8px"></iframe>`;
-        title.after(box); box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }],
-      ['ROADMAP', 'Open the Roadmap', () => { shell('action-plan'); }],
-      ['NOTES', 'Open Notes', () => { shell('task-notes'); }],
-      ['JOURNAL', 'Open My Journal', () => { shell('journal'); }],
-      ['PRIORITY', 'Mark all of this goal\u2019s tasks as priority, or clear them', () => {
-        if (idx < 0) return; wrapSetGoalPriority(idx); renderMasterPriorities();
-      }],
-      ['FAVORITE', 'Add this goal to My Favorites Reel', () => {
-        if (idx >= 0 && typeof window.toggleGoalFavorite === 'function') window.toggleGoalFavorite(idx);
-      }],
-      ['EDIT', 'Edit this goal', () => { if (!shell('goals') && typeof window.navTo === 'function') window.navTo('setup'); }],
-    ];
-    actions.forEach(([label, hint, run], i) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'todo-goal-trough-btn'; b.textContent = label; b.title = hint; b.setAttribute('aria-label', `${i + 1}. ${hint}`);
-      b.style.cssText = 'min-width:0;min-height:36px;padding:6px 4px;border:0;border-radius:6px;background:#fff;color:#171717;font:800 12px/1.1 "Roboto Condensed",Arial,sans-serif;letter-spacing:.03em;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-      b.addEventListener('click', e => { e.stopPropagation(); run(); });
-      trough.append(b);
-    });
+    trough.style.cssText = 'height:16px;margin:10px -56px 0 -10px;background:' + color + ';border-radius:0 0 8px 8px';
     group.append(trough);
-    if (!document.getElementById('todo-goal-trough-css')) {
-      const css = document.createElement('style'); css.id = 'todo-goal-trough-css';
-      css.textContent = '.todo-goal-trough-btn:hover,.todo-goal-trough-btn:focus-visible{background:#292929!important;color:#fff!important;outline:none}' +
-        '@media(max-width:650px){.todo-goal-trough{grid-template-columns:repeat(4,minmax(0,1fr))!important}}';
-      document.head.append(css);
-    }
     const place = () => {
       const g = group.getBoundingClientRect(), tTop = title.offsetTop, tH = title.offsetHeight;
       button.style.top = Math.round(tTop + (tH - 42) / 2) + 'px';
