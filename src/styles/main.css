@@ -4771,3 +4771,6 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 @media(max-width:650px){.goal-workspace-goal-title{max-width:calc(100% - 80px)!important}}
 /* Scott 4 Nov 2026: goal heading boxes hug the left edge, in line with the task cards. */
 .goal-workspace-goal-title{margin-left:0!important}
+
+/* 2026-11-06 Scott: My To Do List on phones — goal groups run to the frame edge (the shell adds the 4px). */
+@media(max-width:650px){#page-goalworkspace .goal-workspace-page{padding-left:0;padding-right:0}}

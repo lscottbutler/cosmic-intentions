@@ -268,7 +268,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('gratitude-two-column',action==='gratitude'||action==='new-gratitude');
   document.body.classList.toggle('meditation-two-column',['meditation','super-viz'].includes(action));
   const sideColumn=document.querySelector('.member-player-side-column');if(sideColumn)sideColumn.hidden=!(action==='gratitude'||action==='new-gratitude'||['meditation','super-viz'].includes(action));
-  current=action;document.body.classList.toggle('habits-header',action==='daily-habits');instructionsTrigger.hidden=!TOURS[action];habitStats.hidden=action!=='daily-habits';updateHabitStats();const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
+  current=action;document.body.classList.toggle('habits-header',action==='daily-habits');document.body.classList.toggle('todo-page',action==='goal-workspace');instructionsTrigger.hidden=!TOURS[action];habitStats.hidden=action!=='daily-habits';updateHabitStats();const quickNav=document.getElementById('quick-nav');if(quickNav)quickNav.hidden=action==='home';const copy=features[action];
   if(action==='gratitude'||action==='new-gratitude')
    updateHeaderNote('/?masterInline=citadel-note&notePage=gratitude&preview=1');
   headerSticker.hidden=action==='admin';
