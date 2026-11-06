@@ -30,8 +30,8 @@
   journal:['My Journal','Reflect in your own words.',''],
   gratitude:['Gratitude','Choose from your existing gratitude practices.','Use the current page choices to select a practice.'],
   wins:['My Wins','Record the progress you notice.','Add a win using the existing form; your entries remain yours.'],
-  'task-notes':['Notes','Find your goal and action notes in one place.','Open MY TO DO LIST to see the connected notes and journal entries.'],
-  'goal-workspace':['MY TO DO LIST','Keep a goal’s notes, actions and journal entries together.',''],
+  'task-notes':['Notes','Find your goal and action notes in one place.','Open TO DO to see the connected notes and journal entries.'],
+  'goal-workspace':['TO DO','Keep a goal’s notes, actions and journal entries together.',''],
   'cosmic-library':['Cosmic Library','Explore your existing collection of ideas and lessons.','Search by topic, or clear your filters to return to the full collection.'],
   'entrepreneur-library':['Entrepreneur Library','Explore your existing entrepreneur skills.','Choose a skill card to open its individual experience.'],
   'ent-card':['Entrepreneur Cards','Work with the selected skill.','Use the existing tabs for Mindset, Go Deeper and My Notes.'],
@@ -495,7 +495,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'MY TO DO LIST',admin:'Admin'};
+ const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Color Palettes';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  delete menuLabels.gratitude;
