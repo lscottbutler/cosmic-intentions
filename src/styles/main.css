@@ -4802,3 +4802,4 @@ html.ci-header-note .ci-page-ab1::after{content:"";position:absolute;left:30px;b
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content{color:#1b1b1b!important;padding:16px 18px!important;font:400 18px/1.45 Arial,sans-serif!important}
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content em{font-style:italic;font-weight:700}
 html.ci-header-note .ci-page-ab1.is-owner .ci-admin-page-box-content{padding-right:56px!important}
+html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content *{font-size:inherit!important;line-height:inherit!important}
