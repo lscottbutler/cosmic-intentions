@@ -1056,7 +1056,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
 (()=>{
  const frame=document.getElementById('header-admin-note-frame'),sc=document.querySelector('.orientation .shortcuts');if(!frame||!sc)return;
  let raf=0;const queue=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);};
- const clear=doc=>{doc?.getElementById('ci-shortcut-slot')?.remove();sc.style.removeProperty('margin-top');sc.classList.remove('ci-in-slot');};
+ const clear=doc=>{const had=doc?.getElementById('ci-shortcut-slot');if(had){had.remove();const mount=doc.body.firstElementChild;if(mount)frame.style.height=Math.ceil(mount.getBoundingClientRect().height)+'px';}sc.style.removeProperty('margin-top');sc.classList.remove('ci-in-slot');};
  function fit(){
   let doc;try{doc=frame.contentDocument;}catch(_){return;}
   const note=document.getElementById('header-admin-note');
@@ -1068,6 +1068,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
   if(anchor.nextElementSibling!==slot)anchor.after(slot);
   sc.classList.add('ci-in-slot');
   const h=sc.offsetHeight;slot.style.cssText='height:'+(h+8)+'px;margin:0 0 14px';
+  // Grow the text-box frame to its new content height so nothing below the slot is cut off.
+  const mount=doc.body.firstElementChild;if(mount){const need=Math.ceil(mount.getBoundingClientRect().height);if(Math.abs(frame.offsetHeight-need)>1)frame.style.height=need+'px';}
   const cur=parseFloat(getComputedStyle(sc).marginTop)||0;
   const natural=sc.getBoundingClientRect().top-cur;
   const target=frame.getBoundingClientRect().top+slot.getBoundingClientRect().top;
