@@ -331,6 +331,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    title.style.fontSize=Math.max(12,Math.min(36,fitAll>=16?fitAll:Math.min(24,fitFor(longestWord))))+'px';
    // Safety net: shrink until no word is wider than the title area.
    for(let size=parseFloat(title.style.fontSize),guard=0;guard<30&&size>10&&[...title.querySelectorAll('.ci-title-word')].some(w=>w.getBoundingClientRect().width>titleRoom);guard++){size-=1;title.style.fontSize=size+'px';}
+   // Scott 6 Nov 2026: the TO DO title is 40% smaller.
+   if(action==='goal-workspace')title.style.fontSize=Math.round(parseFloat(title.style.fontSize)*0.6)+'px';
    if(action==='goals'){
     title.querySelectorAll('.ci-title-tile').forEach(tile=>{
      const glyph=document.createElement('span');glyph.textContent=tile.textContent;
