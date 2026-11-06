@@ -500,6 +500,21 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  const menuLabels={aks:'AKS','welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Color Palettes';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
+ // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
+ // Android and PC browsers offer their own Install option, so this item is hidden there; also hidden once opened as the app.
+ const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const asApp=navigator.standalone||matchMedia('(display-mode: standalone)').matches;
+ if(isIOS&&!asApp){
+  const appBtn=document.createElement('button');appBtn.type='button';appBtn.textContent='Get the App';appBtn.dataset.ciMenuAction='get-app';
+  const dlg=document.createElement('dialog');dlg.id='ci-get-app';dlg.setAttribute('aria-labelledby','ci-get-app-title');
+  const share='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="vertical-align:-5px" fill="none" stroke="#0a84ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1"/></svg>';
+  dlg.innerHTML='<h2 id="ci-get-app-title">Get the Cosmic Intentions app</h2><p>Add CI to your Home Screen. It opens full screen, like an app.</p><ol><li>Tap the <b>Share</b> button '+share+' (Safari: bottom bar. Chrome or Firefox: tap <b>⋯</b> or the menu first, then <b>Share</b>).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. Open CI from the new icon on your Home Screen.</li></ol><button type="button" class="ci-get-app-close">Got it</button>';
+  dlg.querySelector('.ci-get-app-close').addEventListener('click',()=>dlg.close());
+  dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+  document.body.append(dlg);
+  appBtn.addEventListener('click',()=>{menu.close();dlg.showModal();});
+  menuItems.append(appBtn);
+ }
  delete menuLabels.gratitude;
  // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
  for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
