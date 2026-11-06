@@ -4784,3 +4784,6 @@ html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player
   html.ci-header-note div:has(> .ci-player-owner-instructions),
   html.ci-header-note .ci-player-owner-instructions{padding-top:0!important}
 }
+
+/* 2026-11-06 Scott: page instructions stay hidden until the blue "i" is tapped. */
+html.ci-hide-instructions .ci-player-owner-instructions{display:none!important}

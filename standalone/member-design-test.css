@@ -412,3 +412,9 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 
 /* 2026-11-06 Scott: no date box on any page. */
 #header-calendar{display:none!important}
+
+/* 2026-11-06 Scott: blue "i" (instructions) under the 5. */
+.orientation .shortcuts>button#ci-info-trigger{width:44px;height:44px;min-height:0;padding:0;border:0!important;border-radius:50%;background:#2f80ed!important;color:#fff!important;font:italic 700 26px/44px Georgia,'Times New Roman',serif;text-align:center;cursor:pointer;flex:none}
+.orientation .shortcuts>button#ci-info-trigger[aria-pressed="true"]{box-shadow:0 0 0 3px #fff,0 0 0 5px #2f80ed}
+@media(min-width:651px){.orientation>.shortcuts>#ci-info-trigger{order:-1;margin-bottom:10px}}
+@media(max-width:650px){.orientation .shortcuts>#ci-info-trigger{position:absolute!important;top:148px!important;right:16px!important;left:auto!important;margin:0!important;z-index:2}}

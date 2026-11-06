@@ -1093,3 +1093,25 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  frame.addEventListener('load',()=>{queue();try{new MutationObserver(queue).observe(frame.contentDocument.body,{childList:true,subtree:true});}catch(_){}});
  addEventListener('resize',queue);setInterval(queue,1500);
 })();
+// Scott 6 Nov 2026: blue "i" under the 5 shows / hides the page instructions (admin text box 1). Hidden until tapped.
+(()=>{
+ const sc=document.querySelector('.orientation .shortcuts'),frame=document.getElementById('header-admin-note-frame'),note=document.getElementById('header-admin-note');
+ if(!sc||!frame)return;
+ const btn=document.createElement('button');btn.type='button';btn.id='ci-info-trigger';btn.textContent='i';btn.title='Instructions';
+ let open=false;
+ const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
+  btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide instructions':'Show instructions');queue();};
+ btn.addEventListener('click',()=>{open=!open;apply();});
+ frame.addEventListener('load',apply);
+ const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
+ mount();new MutationObserver(mount).observe(sc,{childList:true});
+ // Phones: with the instructions hidden, the boxes below start under the i so nothing sits beside the corner buttons.
+ let raf=0;function queue(){cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);}
+ function fit(){
+  if(!note)return;
+  if(innerWidth>650||open||!btn.offsetWidth){note.style.removeProperty('padding-top');return;}
+  const cur=parseFloat(note.style.paddingTop)||0,natural=note.getBoundingClientRect().top-cur,need=btn.getBoundingClientRect().bottom+10;
+  note.style.setProperty('padding-top',Math.max(0,Math.round(need-natural))+'px','important');
+ }
+ addEventListener('resize',queue);setInterval(queue,1500);apply();
+})();
