@@ -402,3 +402,10 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
  .orientation .shortcuts.ci-in-slot{align-self:start!important}
  body .orientation .shortcuts.ci-in-slot>#header-calendar{flex:1 1 100%!important;width:100%!important;order:9}
 }
+
+/* 2026-11-06 Scott: iPhone "Get the App" guide. */
+#ci-get-app{width:min(380px,calc(100vw - 32px));border:1px solid #c9c4be;border-radius:12px;padding:20px;background:#fff;color:#292929;font:16px/1.5 Arial,sans-serif}
+#ci-get-app::backdrop{background:#0006}
+#ci-get-app h2{margin:0 0 8px;font:700 18px/1.3 Arial,sans-serif}
+#ci-get-app ol{margin:12px 0 16px;padding-left:22px;display:grid;gap:10px}
+#ci-get-app .ci-get-app-close{width:100%;min-height:44px;border:0;border-radius:8px;background:#292929;color:#fff;font:700 16px Arial,sans-serif}
