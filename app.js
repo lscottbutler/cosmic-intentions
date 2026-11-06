@@ -4728,7 +4728,7 @@ const ADMIN_PAGE_BOXES = {
   notes:         'THOUGHTS',
   mynotes:       'JOURNAL',
   tasknotes:     'NOTES',
-  goalworkspace: 'MY TO DO LIST',
+  goalworkspace: 'TO DO',
   gratitude:     'GRATITUDE',
   wins:          'WINS',
   cosmiclibrary: 'COSMIC LIBRARY',

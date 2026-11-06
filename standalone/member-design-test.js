@@ -1109,14 +1109,19 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  frame.addEventListener('load',apply);
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
- // Phones: with the instructions hidden, the boxes below start under the i so nothing sits beside the corner buttons.
+ // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
+ // below them (personal note, icons, carousel) starts under the i, so nothing wide sits beside the buttons.
  let raf=0;function queue(){cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);}
  function fit(){
-  if(!note)return;
-  if(innerWidth>650||open||!btn.offsetWidth){note.style.removeProperty('padding-top');return;}
-  // padding sits inside the box, so the box's own top is already its natural top.
-  const natural=note.getBoundingClientRect().top,need=btn.getBoundingClientRect().bottom+10;
-  note.style.setProperty('padding-top',Math.max(0,Math.round(need-natural))+'px','important');
+  let doc;try{doc=frame.contentDocument;}catch(_){return;}const mount=doc&&doc.body&&doc.body.firstElementChild;if(!mount)return;
+  const wide=[...mount.children].find(el=>!el.matches('.ci-page-ab1,.ci-player-owner-instructions')&&el.getClientRects().length);
+  mount.querySelectorAll('[data-ci-corner-gap]').forEach(el=>{if(el!==wide){el.style.removeProperty('margin-top');delete el.dataset.ciCornerGap;}});
+  if(!wide)return;
+  if(innerWidth>650||!btn.offsetWidth){if(wide.dataset.ciCornerGap){wide.style.removeProperty('margin-top');delete wide.dataset.ciCornerGap;}return;}
+  const cur=parseFloat(wide.style.marginTop)||0,natural=frame.getBoundingClientRect().top+wide.getBoundingClientRect().top-cur,need=btn.getBoundingClientRect().bottom+10;
+  const extra=Math.max(0,Math.round(need-natural));
+  if(extra){wide.style.setProperty('margin-top',extra+'px','important');wide.dataset.ciCornerGap='1';}
+  else if(wide.dataset.ciCornerGap){wide.style.removeProperty('margin-top');delete wide.dataset.ciCornerGap;}
  }
  addEventListener('resize',queue);setInterval(queue,1500);apply();
 })();
