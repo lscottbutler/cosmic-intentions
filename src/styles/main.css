@@ -4803,3 +4803,8 @@ html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content{color:#1b1b1b!import
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content em{font-style:italic;font-weight:700}
 html.ci-header-note .ci-page-ab1.is-owner .ci-admin-page-box-content{padding-right:56px!important}
 html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content *{font-size:inherit!important;line-height:inherit!important}
+
+/* 2026-11-06 Scott: AB1 bubble — white with a 4px black border, 30px narrower, centred. */
+html.ci-header-note .ci-page-ab1{background:#fff!important;border:4px solid #000!important;margin:0 15px 34px!important}
+html.ci-header-note .ci-page-ab1::before{content:"";position:absolute;left:24px;top:100%;width:38px;height:29px;background:#000;clip-path:polygon(0 0,100% 0,0 100%)}
+html.ci-header-note .ci-page-ab1::after{left:28px;top:100%;bottom:auto;width:26px;height:20px;background:#fff}
