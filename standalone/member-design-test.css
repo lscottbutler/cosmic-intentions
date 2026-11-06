@@ -393,3 +393,6 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 @media(max-width:650px){
  .orientation .shortcuts>#big-five-trigger{position:absolute!important;top:84px!important;right:16px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:2;order:0}
 }
+
+/* 2026-11-06 Scott: no search bar on any page (phone, tablet, PC). */
+#player-search{display:none!important}

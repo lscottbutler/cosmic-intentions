@@ -4778,3 +4778,9 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 
 /* 2026-11-06 Scott: page instruction text is LEFT-justified on every page, every screen size (lines line up on the left). */
 html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *{text-align:left!important}
+
+/* 2026-11-06 Scott (phones): page text starts right under the title — no extra top padding in the text box. */
+@media(max-width:650px){
+  html.ci-header-note div:has(> .ci-player-owner-instructions),
+  html.ci-header-note .ci-player-owner-instructions{padding-top:0!important}
+}
