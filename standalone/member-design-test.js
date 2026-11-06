@@ -1110,7 +1110,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  function fit(){
   if(!note)return;
   if(innerWidth>650||open||!btn.offsetWidth){note.style.removeProperty('padding-top');return;}
-  const cur=parseFloat(note.style.paddingTop)||0,natural=note.getBoundingClientRect().top-cur,need=btn.getBoundingClientRect().bottom+10;
+  // padding sits inside the box, so the box's own top is already its natural top.
+  const natural=note.getBoundingClientRect().top,need=btn.getBoundingClientRect().bottom+10;
   note.style.setProperty('padding-top',Math.max(0,Math.round(need-natural))+'px','important');
  }
  addEventListener('resize',queue);setInterval(queue,1500);apply();
