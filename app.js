@@ -5036,6 +5036,7 @@ function ensureAdminPageBoxEditors() {
     // ATB 1 is the owner-controlled instruction record displayed on every player.
     const boxes = [
       {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
+      {slug:'page-ab1-' + pageId, number:1, caption:'PAGE QUOTE (shown on the 16:9 image)'},
       {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
       ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
       {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
@@ -5045,7 +5046,7 @@ function ensureAdminPageBoxEditors() {
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
-        holder.innerHTML = slug === 'page-instructions-' + pageId
+        holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
           : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
         entry = holder.firstElementChild;
@@ -6084,6 +6085,8 @@ async function initCitadelNoteFrame(nextPage) {
       const ab1Row = await sb.from('content_blocks').select('body').eq('slug', ab1Slug).maybeSingle();
       if (renderVersion !== citadelNoteRenderVersion) return;
       _blockCache[ab1Slug] = ab1Row.data?.body || '';
+      // Scott 6 Nov 2026: the page quote replaces the caption on the 16:9 image; the bubble itself is hidden.
+      { const tmp = document.createElement('div'); tmp.innerHTML = (_blockCache[ab1Slug] || '').replace(/<br\s*\/?>/gi, ' '); globalThis.ciPageQuote = { pageId, text: tmp.textContent.replace(/\s+/g, ' ').trim() }; }
       _fillBlockEl(ab1.querySelector('[data-block]'), _blockCache[ab1Slug]);
       _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
     }

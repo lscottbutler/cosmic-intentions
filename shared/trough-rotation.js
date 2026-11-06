@@ -53,7 +53,7 @@ export function attachTrough(shell,pageId){
    if(item.smallImage){image.srcset=`${item.smallImage} 640w, ${item.image} 1280w`;image.sizes='(max-width: 700px) 100vw, 960px';}
    card.appendChild(image);
    // Phones: the caption baked into the art is cropped off and redrawn below it, 3x taller, text 2x (Scott, 3 Nov 2026).
-   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';cap.textContent=item.caption;card.appendChild(cap);}
+   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const q=globalThis.ciPageQuote;if(q&&q.pageId===pageId&&q.text){cap.textContent=q.text;cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');}else cap.textContent=item.caption;card.appendChild(cap);}
   }else{
    const text=document.createElement('p');text.className='ci-carousel-text';text.textContent=item.text||'';card.appendChild(text);
   }
