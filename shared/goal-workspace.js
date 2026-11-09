@@ -208,16 +208,11 @@ export function setupTodoDisclosure(host) {
     button.type = 'button'; button.className = 'todo-goal-chevron';
     button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
     group.append(goalBox, button);
-    // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar + coloured status bars below.
+    // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar (no coloured bars).
     const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
-    const proto = goalObj ? document.createElement('div') : null;
-    if (proto) {
-      const fmt = d => { const t = d ? new Date(d + 'T00:00:00') : null; return t && !isNaN(t) ? t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; };
-      const target = fmt(goalObj.targetDate), start = fmt(goalObj.startDate || goalObj.dateStart);
-      const daysLeft = goalObj.targetDate ? Math.ceil((new Date(goalObj.targetDate + 'T00:00:00') - new Date()) / 864e5) : null;
-      const firstTask = [...cards[0].querySelectorAll('span,div,label,p')].filter(e => !e.children.length).map(e => e.textContent.trim()).find(t => t.length > 6 && !/^[A-Z]+\d/.test(t) && !/^(NOTE|JOURNAL)$/.test(t)) || '';
+    const proto = null;
+    if (goalObj) {
       const img = goalObj.imageUrl || '';
-      // Insert thumbnail into the title bar
       if (img) {
         const thumb = document.createElement('img');
         thumb.className = 'tp-thumb';
@@ -228,14 +223,6 @@ export function setupTodoDisclosure(host) {
         title.style.setProperty('align-items', 'center', 'important');
         title.insertBefore(thumb, title.firstChild);
       }
-      // Coloured status bars below the title
-      proto.className = 'todo-goal-titlepage';
-      proto.innerHTML =
-        '<div class="tp-bar" style="background:#2e6b35"><b>' + esc(letter || '') + '</b> · ' + cards.length + (cards.length === 1 ? ' task' : ' tasks') + '</div>' +
-        '<div class="tp-bar" style="background:#c8652e">Next: ' + esc(firstTask) + '</div>' +
-        '<div class="tp-bar" style="background:#c42b2b">' + (target ? 'Target ' + esc(target) + (daysLeft != null ? ' · ' + daysLeft + ' days' : '') : 'No target date') + '</div>' +
-        '<div class="tp-bar" style="background:#e0a032;color:#1b1b1b">' + (start ? 'Started ' + esc(start) : 'Start date not set') + '</div>';
-      title.after(proto);
     }
     // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.
     // The eight action buttons were removed at Scott's request (6 Nov 2026).
@@ -263,11 +250,10 @@ export function setupTodoDisclosure(host) {
       button.setAttribute('aria-label', label); button.title = label;
       const anyOpen = cards.some(c => !c.hidden);
       // Closed: no white strip under the heading — the box is just the coloured bar (Scott, 5 Nov 2026).
-      imp(title, 'margin-bottom', proto ? '4px' : anyOpen ? '10px' : '0');
-      if (proto) proto.style.marginBottom = anyOpen ? '10px' : '0';
+      imp(title, 'margin-bottom', anyOpen ? '10px' : '0');
       group.style.paddingBottom = '0';
       trough.hidden = !anyOpen;
-      imp(title, 'border-radius', anyOpen || proto ? '8px 8px 0 0' : '8px');
+      imp(title, 'border-radius', anyOpen ? '8px 8px 0 0' : '8px');
       requestAnimationFrame(place);
     }
     button.addEventListener('click', () => {
