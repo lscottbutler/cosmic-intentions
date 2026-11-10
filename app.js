@@ -6103,8 +6103,7 @@ async function initCitadelNoteFrame(nextPage) {
       welcome.className = 'ci-admin-page-box ci-page-welcome';
       welcome.dataset.pageBox = 'Welcome';
       welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
-      welcome.style.cssText = 'margin-top:28px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);overflow:hidden';
-      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '" style="padding:18px;font:400 16px/1.55 Arial,sans-serif;color:#171717;min-height:0"></div>';
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
       mount.style.padding = '20px';
       mount.appendChild(welcome);
       const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
