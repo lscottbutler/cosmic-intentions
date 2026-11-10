@@ -6095,13 +6095,16 @@ async function initCitadelNoteFrame(nextPage) {
     // Shows a greeting like "WELCOME BACK SCOTT…" that every member sees; admin edits it ONLY from
     // the admin page (no inline pen on the player page). Stored in content_blocks under
     // slug page-welcome-<pageId>; members never see an edit affordance here.
+    // Scott 10 Nov 2026 pm: visibly separate card — large top gap and distinct card chrome
+    // so this reads as its OWN card, not visually joined to the carousel above.
     {
       const welcomeSlug = 'page-welcome-' + pageId;
       const welcome = document.createElement('section');
       welcome.className = 'ci-admin-page-box ci-page-welcome';
       welcome.dataset.pageBox = 'Welcome';
       welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
-      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
+      welcome.style.cssText = 'margin-top:28px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);overflow:hidden';
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '" style="padding:18px;font:400 16px/1.55 Arial,sans-serif;color:#171717;min-height:0"></div>';
       mount.style.padding = '20px';
       mount.appendChild(welcome);
       const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
