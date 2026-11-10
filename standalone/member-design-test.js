@@ -576,6 +576,32 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    queueHeaderChange(src);
   }
  });
+ // Scott 10 Nov 2026: Personal E sidebar container — holds the per-member note
+ // moved out of the header iframe so it sits next to the ship icon, not below the
+ // welcome message. Created once; reused across page navigations.
+ function ensurePersonalESidebar(){
+  let host=document.getElementById('personal-e-sidebar');
+  if(host)return host;
+  host=document.createElement('aside');
+  host.id='personal-e-sidebar';
+  host.setAttribute('aria-label','Your personal note');
+  host.style.cssText='position:absolute;top:220px;right:12px;width:220px;z-index:3;display:block';
+  document.querySelector('.orientation')?.appendChild(host);
+  return host;
+ }
+ function movePersonalEToSidebar(){
+  let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return;}
+  if(!doc)return;
+  const el=doc.querySelector('.ci-player-personal-e-box');
+  if(!el)return;
+  const host=ensurePersonalESidebar();
+  // The iframe just finished re-rendering a new Personal E — remove any stale one from
+  // the previous page before adopting the new one.
+  if(el.parentElement!==host){
+   while(host.firstChild)host.removeChild(host.firstChild);
+   host.appendChild(document.adoptNode(el));
+  }
+ }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-carousel-border-color'){
@@ -584,6 +610,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     headerCalendar.style.transition='border-color '+(event.data.duration===5000?5000:0)+'ms ease-in-out';
     headerCalendar.style.borderColor=color;
    }
+   return;
+  }
+  if(event.data?.type==='ci-personal-e-ready'){
+   // Give the iframe a tick to finish its own appends, then relocate.
+   setTimeout(movePersonalEToSidebar,0);
    return;
   }
   if(event.data?.type!=='ci-citadel-note-height')return;
