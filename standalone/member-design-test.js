@@ -587,7 +587,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   host.setAttribute('aria-label','Your personal note');
   // Scott 10 Nov 2026: full-height right sidebar column with the Personal E vertically
   // and horizontally centered inside it (below the ship icon, above the fold).
-  host.style.cssText='position:absolute;top:180px;bottom:20px;right:12px;width:220px;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none';
+  host.style.cssText='position:absolute;top:180px;bottom:20px;right:0;width:140px;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none';
   document.querySelector('.orientation')?.appendChild(host);
   return host;
  }
@@ -603,9 +603,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    while(host.firstChild)host.removeChild(host.firstChild);
    host.appendChild(document.adoptNode(el));
    // Sidebar aside uses pointer-events:none so the icons behind stay clickable;
-   // the Personal E itself must receive clicks.
+   // the Personal E itself must receive clicks. In the narrow sidebar the padding
+   // gets cut down so the text has room to breathe.
    el.style.setProperty('pointer-events','auto');
    el.style.setProperty('width','100%','important');
+   el.style.setProperty('padding','12px 44px 12px 12px','important');
+   el.style.setProperty('font-size','13px','important');
   }
  }
  window.addEventListener('message',event=>{
