@@ -344,7 +344,7 @@ body .orientation .shortcuts>button#fullscreen-trigger{background:#fff!important
 #fullscreen-trigger svg{width:20px;height:20px}
 /* Scott 2026-10-30: narrow Big Five menu with a black title bar, white centred text. */
 #big-five-menu{overflow:hidden}
-#big-five-menu h2{margin:-14px -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
+#big-five-menu h2{margin:0 -12px 10px;padding:11px 8px;background:#000;color:#fff;text-align:center}
 #big-five-menu [data-big-five] svg{color:#747474}
 /* Scott 2026-10-30: player-page button bar matches the Citadel bar (grey icons on white, coloured rings). */
 #quick-nav svg{color:#747474}
@@ -385,8 +385,9 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
 /* 2026-11-06 Scott (PC/tablet): right column starts with the ☰ menu, then the 5, then Search, To Do + Goals, the rest. */
 @media(min-width:651px){.orientation>.shortcuts>#review-menu-trigger{order:-3}.orientation>.shortcuts>#big-five-trigger{order:-2;margin-bottom:10px}}
 
-/* 2026-11-06 Scott: CI astronaut logo at the top of the Big Five menu, 100x100. */
-#big-five-menu .bf-logo{display:block;width:100px;height:100px;margin:0 auto 8px;border-radius:8px}
+/* 2026-11-06 Scott: CI astronaut logo at the top of the Big Five menu, 100x100.
+   2026-11-10: negative margin pulls logo flush to top; sits above the black h2 bar. */
+#big-five-menu .bf-logo{display:block;width:100px;height:100px;margin:-14px auto 8px;border-radius:8px;position:relative;z-index:1}
 
 /* 2026-11-06 Scott (phones, every page): the 5 sits under the ☰ menu (20px gap) in the top-right corner;
    the page text wraps around both (spacer set in member-design-test.js). */

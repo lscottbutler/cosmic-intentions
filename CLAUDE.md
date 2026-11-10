@@ -67,9 +67,19 @@ Every Netlify production deploy costs 15 credits; Deploy Previews and branch dep
 3. Merge `staging` → `main` (one PR) ONLY when Scott says "publish" (or an end-of-day batch he approves).
    One publish = 15 credits. Never more than one production deploy per publish request.
 4. After a publish, reset `staging` to the new `main` and keep going.
-6. DAILY PUBLISH (Scott, 2026-10-30): at the START of each day's session, publish staging → main
-   (one deploy) before new work. Reason: under ChatGPT, work got stranded on side branches and was
-   lost. No work may live only on a side branch overnight — merge review branches into `staging`
+6. **DAILY PUBLISH — FIRST ACTION, NO EXCEPTIONS (Scott, 2026-10-30, reinforced 2026-11-10):**
+   At the START of each session (including context resets / continuations), run:
+   ```
+   bash scripts/preflight.sh
+   ```
+   If staging is ahead of main, immediately run:
+   ```
+   bash scripts/daily-publish.sh
+   ```
+   Do this BEFORE any other work. No excuses. No "I'll get to it." FIRST.
+   Reason: under ChatGPT, work got stranded on side branches and was lost. On 2026-11-10
+   a context reset caused the daily publish to be skipped, stranding a week of fixes.
+   No work may live only on a side branch overnight — merge review branches into `staging`
    the same day, and report anything found on a branch that isn't in `main`.
 5. Verify on the local build first (free), then on the staging preview in Scott's signed-in Chrome.
 
