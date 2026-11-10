@@ -89,10 +89,15 @@ export function installOwnerLabels(ownerWindow) {
     label(doc,'.goal-workspace-goal-title,.pb-goal-title,.card-goal-statement', 'Goal header');
     label(doc,'.wcard', 'To Do card');
     label(doc,'.home-col-left>h2,.home-info-block>div:first-child', 'Section heading');
-    label(doc,'.ci-admin-page-box',el=>'Admin text box '+el.dataset.pageBox);
-    label(doc,'.ci-player-owner-instructions',()=> 'PLAYER INSTRUCTION (blue i)');
-    label(doc,'.ci-page-ab1',()=> 'AB1');
-    label(doc,'.ci-page-welcome',()=> 'Admin welcome message (admin-only)');
+    // Scott 10 Nov 2026: labels on the player page match the captions on the admin page,
+    // so Scott knows which admin-page box edits which player-page element.
+    label(doc,'.ci-admin-page-box',el=>{
+      const pb=el.dataset.pageBox;
+      return pb==='1' ? 'BOX 1 — 16:9 ARTWORK + CAPTION' : 'Admin text box '+pb;
+    });
+    label(doc,'.ci-player-owner-instructions',()=> 'PLAYER INSTRUCTION');
+    label(doc,'.ci-page-ab1',()=> 'PAGE QUOTE');
+    label(doc,'.ci-page-welcome',()=> 'WELCOME MESSAGE');
     label(doc,'[data-block]',el=>{
       const slug=el.getAttribute('data-block');
       const shell=el.closest('.ci-admin-page-box');

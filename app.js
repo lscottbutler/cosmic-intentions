@@ -5037,6 +5037,7 @@ function ensureAdminPageBoxEditors() {
     const boxes = [
       {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
       {slug:'page-ab1-' + pageId, number:1, caption:'PAGE QUOTE (shown on the 16:9 image)'},
+      {slug:'page-welcome-' + pageId, number:1, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
       {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
       ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
       {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
@@ -5046,7 +5047,7 @@ function ensureAdminPageBoxEditors() {
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
-        holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId)
+        holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId || slug === 'page-welcome-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
           : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
         entry = holder.firstElementChild;
