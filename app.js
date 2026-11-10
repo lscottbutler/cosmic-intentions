@@ -6092,16 +6092,16 @@ async function initCitadelNoteFrame(nextPage) {
       _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
     }
     // Scott 10 Nov 2026: Admin "welcome" message box — admin-editable only, appears above Personal E.
-    // Shows a greeting like "WELCOME BACK SCOTT…" that every member sees; admin edits it with the pen.
-    // Stored in content_blocks under slug page-welcome-<pageId>; never written by members.
+    // Shows a greeting like "WELCOME BACK SCOTT…" that every member sees; admin edits it ONLY from
+    // the admin page (no inline pen on the player page). Stored in content_blocks under
+    // slug page-welcome-<pageId>; members never see an edit affordance here.
     {
       const welcomeSlug = 'page-welcome-' + pageId;
       const welcome = document.createElement('section');
       welcome.className = 'ci-admin-page-box ci-page-welcome';
       welcome.dataset.pageBox = 'Welcome';
       welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
-      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit welcome message" title="Edit welcome message">' + _adminPenIcon() + '</button></span>';
-      welcome.querySelector('button').addEventListener('click', e => { e.stopPropagation(); adminEditBlock(welcomeSlug); });
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
       mount.style.padding = '20px';
       mount.appendChild(welcome);
       const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
