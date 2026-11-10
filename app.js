@@ -6275,7 +6275,9 @@ async function initCitadelNoteFrame(nextPage) {
     if (box.style.display !== 'none') {
       // Inset the entire pink-bordered box; empty member boxes stay collapsed.
       mount.style.padding = '20px';
-      mount.appendChild(box);
+      // Scott 10 Nov 2026: Admin Box 1 sits directly under the page-title letter tiles on every
+      // player page — above the Personal E and any other content inside the header mount.
+      mount.insertBefore(box, mount.firstChild);
     }
     citadelNoteResizeObserver?.disconnect();
     document.body.replaceChildren(mount, toastWrap);
