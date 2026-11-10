@@ -208,26 +208,21 @@ export function setupTodoDisclosure(host) {
     button.type = 'button'; button.className = 'todo-goal-chevron';
     button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
     group.append(goalBox, button);
-    // Scott 6 Nov 2026 — PROTOTYPE on one goal (Xiaomi SU 7): "title page with details" header.
-    // Goal picture block on the left, four coloured detail bars on the right.
+    // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar (no coloured bars).
     const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
-    const proto = goalObj && /XIAOMI/i.test(goalObj.title || '') ? document.createElement('div') : null;
-    if (proto) {
-      const fmt = d => { const t = d ? new Date(d + 'T00:00:00') : null; return t && !isNaN(t) ? t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; };
-      const target = fmt(goalObj.targetDate), start = fmt(goalObj.startDate || goalObj.dateStart);
-      const daysLeft = goalObj.targetDate ? Math.ceil((new Date(goalObj.targetDate + 'T00:00:00') - new Date()) / 864e5) : null;
-      const firstTask = [...cards[0].querySelectorAll('span,div,label,p')].filter(e => !e.children.length).map(e => e.textContent.trim()).find(t => t.length > 6 && !/^[A-Z]+\d/.test(t) && !/^(NOTE|JOURNAL)$/.test(t)) || '';
+    const proto = null;
+    if (goalObj) {
       const img = goalObj.imageUrl || '';
-      proto.className = 'todo-goal-titlepage';
-      proto.innerHTML = '<div class="tp-pic"' + (img ? ' style="background-image:url(\'' + esc(img).replace(/'/g, '%27') + '\')"' : '') + '><span>' + esc(goalObj.title || '') + '</span></div>' +
-        '<div class="tp-bars">' +
-        '<div style="background:#2e6b35"><b>' + esc(letter || '') + '</b> · ' + cards.length + (cards.length === 1 ? ' task' : ' tasks') + '</div>' +
-        '<div style="background:#c8652e">Next: ' + esc(firstTask) + '</div>' +
-        '<div style="background:#c42b2b">' + (target ? 'Target ' + esc(target) + (daysLeft != null ? ' · ' + daysLeft + ' days' : '') : 'No target date') + '</div>' +
-        '<div style="background:#e0a032;color:#1b1b1b">' + (start ? 'Started ' + esc(start) : 'Start date not set') + '</div>' +
-        '</div>';
-      title.style.setProperty('display', 'none', 'important');
-      title.after(proto);
+      if (img) {
+        const thumb = document.createElement('img');
+        thumb.className = 'tp-thumb';
+        thumb.src = img;
+        thumb.alt = '';
+        thumb.style.cssText = 'width:80px;height:56px;object-fit:cover;border-radius:4px;margin-right:10px;flex-shrink:0;float:left';
+        title.style.setProperty('display', 'flex', 'important');
+        title.style.setProperty('align-items', 'center', 'important');
+        title.insertBefore(thumb, title.firstChild);
+      }
     }
     // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.
     // The eight action buttons were removed at Scott's request (6 Nov 2026).
@@ -236,7 +231,7 @@ export function setupTodoDisclosure(host) {
     trough.style.cssText = 'height:16px;margin:10px -56px 0 -10px;background:' + color + ';border-radius:0 0 8px 8px';
     group.append(trough);
     const place = () => {
-      const head = proto || title;
+      const head = title;
       const g = group.getBoundingClientRect(), tTop = head.offsetTop, tH = head.offsetHeight;
       button.style.top = Math.round(tTop + (tH - 42) / 2) + 'px';
       goalBox.style.top = Math.round(tTop + (tH - 40) / 2) + 'px';
@@ -244,7 +239,6 @@ export function setupTodoDisclosure(host) {
         const c = codeBox.getBoundingClientRect();
         goalBox.style.left = Math.round(c.left - g.left - group.clientLeft) + 'px'; goalBox.style.width = Math.round(c.width) + 'px'; goalBox.hidden = !letter;
       } else { goalBox.style.left = 'auto'; goalBox.style.right = '58px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
-      if (proto) goalBox.hidden = true;
     };
     function paint() {
       const toggled = expandedTodoGoals.has(key);
