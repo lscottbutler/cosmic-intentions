@@ -180,6 +180,10 @@ export function renderGoalWorkspace() {
 }
 
 const expandedTodoGoals = new Set();
+// Scott 10 Nov 2026: per-goal Priority/Standard filter for the consolidated TO DO list.
+// Values: 'P' (show only priority tasks) or 'S' (show only standard/non-priority tasks).
+// Default is 'P' when a goal is first seen. State lives in memory for this session.
+const todoGoalPriorityMode = new Map();
 
 export function setupTodoDisclosure(host) {
   if (!host) return;
@@ -207,7 +211,15 @@ export function setupTodoDisclosure(host) {
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'todo-goal-chevron';
     button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
-    group.append(goalBox, button);
+    // Scott 10 Nov 2026: P (priority) and S (standard) filter buttons for this goal.
+    // The pair sits to the LEFT of the open/close chevron and visually mirrors it.
+    const pBtn = document.createElement('button');
+    pBtn.type = 'button'; pBtn.className = 'todo-goal-p'; pBtn.textContent = 'P';
+    pBtn.style.cssText = 'position:absolute;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font:800 16px/1 Arial,sans-serif;cursor:pointer';
+    const sBtn = document.createElement('button');
+    sBtn.type = 'button'; sBtn.className = 'todo-goal-s'; sBtn.textContent = 'S';
+    sBtn.style.cssText = 'position:absolute;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font:800 16px/1 Arial,sans-serif;cursor:pointer';
+    group.append(goalBox, pBtn, sBtn, button);
     // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar (no coloured bars).
     const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
     const proto = null;
@@ -233,33 +245,61 @@ export function setupTodoDisclosure(host) {
     const place = () => {
       const head = title;
       const g = group.getBoundingClientRect(), tTop = head.offsetTop, tH = head.offsetHeight;
-      button.style.top = Math.round(tTop + (tH - 42) / 2) + 'px';
+      const cy = Math.round(tTop + (tH - 42) / 2);
+      button.style.top = cy + 'px';
+      // P/S buttons sit to the LEFT of the chevron.
+      sBtn.style.top = cy + 'px'; sBtn.style.right = '58px';
+      pBtn.style.top = cy + 'px'; pBtn.style.right = '108px';
       goalBox.style.top = Math.round(tTop + (tH - 40) / 2) + 'px';
       if (codeBox && codeBox.getBoundingClientRect().width) {
         const c = codeBox.getBoundingClientRect();
         goalBox.style.left = Math.round(c.left - g.left - group.clientLeft) + 'px'; goalBox.style.width = Math.round(c.width) + 'px'; goalBox.hidden = !letter;
-      } else { goalBox.style.left = 'auto'; goalBox.style.right = '58px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
+      } else { goalBox.style.left = 'auto'; goalBox.style.right = '158px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
     };
+    // Scott 10 Nov 2026: default to Priority mode on first render for every goal.
+    if (!todoGoalPriorityMode.has(key)) todoGoalPriorityMode.set(key, 'P');
+    function paintPriorityButtons() {
+      const mode = todoGoalPriorityMode.get(key);
+      const on = mode === 'P' ? pBtn : sBtn;
+      const off = mode === 'P' ? sBtn : pBtn;
+      on.style.background = '#fff'; on.style.color = '#000';
+      off.style.background = '#000'; off.style.color = '#fff';
+      pBtn.setAttribute('aria-pressed', String(mode === 'P'));
+      sBtn.setAttribute('aria-pressed', String(mode === 'S'));
+      pBtn.setAttribute('aria-label', 'Show priority tasks' + (mode === 'P' ? ' (currently showing)' : ''));
+      sBtn.setAttribute('aria-label', 'Show standard tasks' + (mode === 'S' ? ' (currently showing)' : ''));
+    }
+    function visibleForMode() {
+      const want = todoGoalPriorityMode.get(key) === 'P' ? '1' : '0';
+      return cards.filter(c => c.dataset.taskPriority === want);
+    }
     function paint() {
       const toggled = expandedTodoGoals.has(key);
-      cards.forEach((card, index) => { card.hidden = many ? (!toggled && index >= 5) : toggled; });
-      const open = many ? toggled : !toggled;
+      const vis = visibleForMode();
+      const visMany = vis.length > 5;
+      // Hide every card outside the current P/S filter; apply the collapse rule to the visible set.
+      cards.forEach(card => { card.hidden = true; });
+      vis.forEach((card, index) => { card.hidden = visMany ? (!toggled && index >= 5) : toggled; });
+      const open = visMany ? toggled : !toggled;
       button.textContent = open ? '\u25B2' : '\u25BC';
       button.setAttribute('aria-expanded', String(open));
-      const label = many ? (toggled ? 'Show first five tasks' : `Show all ${cards.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
+      const label = visMany ? (toggled ? 'Show first five tasks' : `Show all ${vis.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
       button.setAttribute('aria-label', label); button.title = label;
-      const anyOpen = cards.some(c => !c.hidden);
+      const anyOpen = vis.some(c => !c.hidden);
       // Closed: no white strip under the heading — the box is just the coloured bar (Scott, 5 Nov 2026).
       imp(title, 'margin-bottom', anyOpen ? '10px' : '0');
       group.style.paddingBottom = '0';
       trough.hidden = !anyOpen;
       imp(title, 'border-radius', anyOpen ? '8px 8px 0 0' : '8px');
+      paintPriorityButtons();
       requestAnimationFrame(place);
     }
     button.addEventListener('click', () => {
       if (expandedTodoGoals.has(key)) expandedTodoGoals.delete(key); else expandedTodoGoals.add(key);
       paint();
     });
+    pBtn.addEventListener('click', () => { todoGoalPriorityMode.set(key, 'P'); paint(); });
+    sBtn.addEventListener('click', () => { todoGoalPriorityMode.set(key, 'S'); paint(); });
     paint();
     if ('ResizeObserver' in window) new ResizeObserver(place).observe(group);
   });
@@ -273,19 +313,18 @@ function renderMasterPriorities() {
     host.className = 'goal-workspace-section';
     const selector = document.querySelector('.goal-workspace-selector');
     selector.before(host);
-    const other = document.createElement('section');
-    other.id = 'otherTodoTasks'; other.className = 'goal-workspace-section';
-    host.after(other);
     selector.hidden = true;
     document.getElementById('goalWorkspaceEmpty').style.display = 'none';
     document.getElementById('goalWorkspaceContent').style.display = 'none';
   }
-  const rows = masterPriorityTaskMarkup();
-  document.getElementById('otherTodoTasks').innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (masterPriorityTaskMarkup(false) || '<p class="goal-workspace-empty">No other unfinished tasks.</p>');
-  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">PRIORITY TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No priority tasks yet. Mark a task with the grey P to get started.</p>');
-  document.querySelectorAll('#masterPriorityTasks .task-note-pencil, #otherTodoTasks .task-note-pencil').forEach(button => button.remove());
+  // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks (priority AND standard)
+  // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
+  // goal header. The old separate "TO DO LIST" section below was removed.
+  const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
+  const rows = masterPriorityTaskMarkup(null);
+  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+  document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(host);
-  setupTodoDisclosure(document.getElementById('otherTodoTasks'));
 }
 
 export function renderGoalWorkspaceTasks() {

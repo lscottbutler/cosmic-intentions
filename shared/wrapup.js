@@ -82,7 +82,10 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
   // To-do lists retain provenance colors; Roadmap cards match their green tab.
   // The code chip retains the goal's shade.
   const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : '#000');
-  return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
+  // Scott 10 Nov 2026: tag each task card with its priority so the TO DO P/S
+  // buttons can filter without re-rendering.
+  const isPri = noteContext ? (taskIsPriority(noteContext) ? '1' : '0') : '';
+  return `<div class="wcard" data-task-priority="${isPri}" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;${showLinkedEntries ? 'flex-wrap:wrap;' : ''}">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
@@ -782,8 +785,11 @@ export function wrapSetGoalPriority(idx) {
   return turnOn;
 }
 
+// Scott 10 Nov 2026: `priority` is kept for callers that still need it, but the TO DO
+// player now passes `null` to render ALL unfinished tasks per goal with a data-task-priority
+// attribute. The P/S buttons in setupTodoDisclosure filter visibility without re-rendering.
 export function masterPriorityTaskMarkup(priority = true) {
-  const filter = priority ? true : 'nonpriority';
+  const filter = priority === null ? false : (priority ? true : 'nonpriority');
   return intentions.map((goal, idx) => {
     _ensureGoalLetters();
     if (_ensureCodes(goal)) saveIntentions();
