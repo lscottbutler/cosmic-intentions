@@ -22,7 +22,9 @@ export function installOwnerLabels(ownerWindow) {
       // Scott 10 Nov 2026: separate cards — the personal note (green) and the admin carousel (purple)
       // sit side-by-side as independent cards rather than inside one outer purple container.
       style.textContent += 'html.ci-admin-owner-view.ci-labels-on #header-calendar,html.ci-admin-owner-view.ci-labels-on #header-encouragement{outline:2.5px dotted #159447!important;outline-offset:2px}';
-      style.textContent += 'html.ci-admin-owner-view.ci-labels-on .ci-player-personal-e-box{outline:2.5px dashed #159447!important;outline-offset:2px;position:relative}html.ci-admin-owner-view.ci-labels-on .ci-player-personal-e-box::before{content:"Member personal note";position:absolute;left:-2px;top:-24px;z-index:9;padding:3px 6px;background:#159447;color:#fff;font:700 10px/1.4 Arial,sans-serif;pointer-events:none;border-radius:2px}';
+      // Personal E box: green dashed outline. The label itself uses the generic data-ci-part
+      // block rendering (inside the element at the top), so it never overlaps the text below.
+      style.textContent += 'html.ci-admin-owner-view.ci-labels-on .ci-player-personal-e-box{outline:2.5px dashed #159447!important;outline-offset:2px}html.ci-admin-owner-view.ci-labels-on .ci-player-personal-e-box[data-ci-part]::before{background:#159447!important}';
       style.textContent += 'html.ci-admin-owner-view.ci-labels-on [data-ci-component-number]{position:relative;margin-top:54px!important}html.ci-admin-owner-view.ci-labels-on .ci-component-number-dot{position:absolute!important;top:-49px;left:4px;z-index:150;display:grid;place-items:center;width:42px;height:42px;border:2px solid #171717;border-radius:50%;box-shadow:0 1px 5px #0005;color:#000!important;font:900 21px/1 Arial,sans-serif!important;letter-spacing:0!important;text-shadow:none!important;pointer-events:none;box-sizing:border-box}html.ci-admin-owner-view.ci-labels-on .ci-carousel[data-ci-component-number],html.ci-admin-owner-view.ci-labels-on .ent-slideshow[data-ci-component-number]{overflow:visible!important}html.ci-admin-owner-view.ci-labels-on .ci-carousel-card{overflow:hidden}html:not(.ci-labels-on) .ci-component-number-dot{display:none!important}';
       // Separate accessible owner markers from the media: both occupy a dedicated top rail.
       style.textContent += 'html.ci-admin-owner-view.ci-labels-on [data-ci-rotation-label][data-ci-component-number]:not([data-ci-admin-number]){margin-top:88px!important}html.ci-admin-owner-view.ci-labels-on [data-ci-rotation-label][data-ci-component-number]:not([data-ci-admin-number]) > .ci-component-number-dot{top:-77px!important;left:4px!important}html.ci-admin-owner-view.ci-labels-on [data-ci-rotation-label][data-ci-component-number]:not([data-ci-admin-number])::after{top:-77px!important;left:58px!important;right:4px!important;max-width:calc(100% - 62px)!important;box-sizing:border-box;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.3!important}';
@@ -90,6 +92,7 @@ export function installOwnerLabels(ownerWindow) {
     label(doc,'.ci-admin-page-box',el=>'Admin text box '+el.dataset.pageBox);
     label(doc,'.ci-player-owner-instructions',()=> 'PLAYER INSTRUCTION (blue i)');
     label(doc,'.ci-page-ab1',()=> 'AB1');
+    label(doc,'.ci-page-welcome',()=> 'Admin welcome message (admin-only)');
     label(doc,'[data-block]',el=>{
       const slug=el.getAttribute('data-block');
       const shell=el.closest('.ci-admin-page-box');
