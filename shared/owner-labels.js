@@ -54,24 +54,13 @@ export function installOwnerLabels(ownerWindow) {
     rotatingAreas.forEach(([selector,name])=>doc.querySelectorAll(selector).forEach(el=>{
       if(el.dataset.ciRotationLabel!==name)el.dataset.ciRotationLabel=name;
     }));
-    // Same eleven hues as GOAL_COLORS in app.js, with black numerals for fast scanning.
-    const goalBadgeColors=['#E84040','#E86030','#E88020','#E8A828','#E8C830','#A8C830','#48B860','#38A888','#2898A8','#7888A8','#3878A8'];
-    const componentSelector=['.ci-player-personal-e-box','#header-calendar','#header-encouragement','.ci-admin-page-box','.ci-carousel','.ent-slideshow','.welcome-vo-encouragement','.encourage-band','.home-info-block','.home-vid-block','.orientation','.habit-checklist-card','.habit-orientation-card','.ci-habit-mindset','.pb-goal-card','.goal-workspace-goal-title','.wcard','.member-player-columns','.ci-ph-card','.cl-section-drop'].join(',');
-    const components=[...doc.querySelectorAll(componentSelector)].filter(el=>el.getClientRects().length && !el.closest('.ci-component-number-dot'));
-    const active=new Set(components);
+    // Scott 11 Nov 2026: removed the arbitrary colored enumeration circles (1,2,3,4…).
+    // They read like meaningful numbers but were just sequential component indices, which
+    // confused the picture. The per-box TEXT labels below (data-ci-part) still identify
+    // every box clearly by name.
     doc.querySelectorAll('[data-ci-component-number]').forEach(el=>{
-      if(active.has(el))return;
       delete el.dataset.ciComponentNumber;
       el.querySelector(':scope > .ci-component-number-dot')?.remove();
-    });
-    components.forEach((el,index)=>{
-      const number=String(index+1);
-      el.dataset.ciComponentNumber=number;
-      let dot=el.querySelector(':scope > .ci-component-number-dot');
-      if(!dot){dot=doc.createElement('span');dot.className='ci-component-number-dot';dot.setAttribute('aria-hidden','true');el.append(dot);}
-      if(dot.textContent!==number)dot.textContent=number;
-      const color=goalBadgeColors[index%goalBadgeColors.length];
-      if(dot.style.backgroundColor!==color)dot.style.backgroundColor=color;
     });
     label(doc,'p', 'Text paragraph');
     label(doc,'h1,h2,h3,h4', 'Heading');
