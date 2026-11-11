@@ -5000,12 +5000,12 @@ function ensureAdminPageBoxEditors() {
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Jump to a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
     adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
+    // Scott 11 Nov 2026: dropdown navigates to the chosen player page (same as summary click).
     section.querySelector('#adminPageFinder').addEventListener('change', event => {
-      const group = document.getElementById('adminPageGroup-' + event.target.value);
-      if (!group) return;
-      group.open = true;
-      group.scrollIntoView({ behavior: 'instant', block: 'start' });
-      group.querySelector('.ci-admin-page-heading')?.focus({ preventScroll: true });
+      const pageId = event.target.value;
+      if (!pageId) return;
+      const group = document.getElementById('adminPageGroup-' + pageId);
+      group?.querySelector('summary')?.click();
     });
   }
 
@@ -5033,8 +5033,22 @@ function ensureAdminPageBoxEditors() {
       group.className = 'ci-admin-page-group';
       group.dataset.color = String(pageIndex % 6);
       group.setAttribute('aria-labelledby', 'adminPageHeading-' + pageId);
-      group.innerHTML = '<summary class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="0">' + label + ' <span class="ci-admin-page-subcount"></span></summary><div class="ci-admin-page-pair"></div>';
+      group.innerHTML = '<summary class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="0">' + label + ' <span class="ci-admin-page-subcount"></span> <span class="ci-admin-page-gohint">→ open to edit</span></summary><div class="ci-admin-page-pair"></div>';
       grid.appendChild(group);
+      // Scott 11 Nov 2026: clicking a page card navigates STRAIGHT to that player page
+      // (member-design-test) with owner labels on. Scott edits inline there via the pen icons.
+      const pageToFeature = {dashboard:'home',setup:'goals',habits:'daily-habits',myroadmap:'action-plan',vizlibrary:'visualization',vizgoal:'visualization',meditation:'meditation','super-viz':'super-viz',dailyfocus:'favorites',notes:'thoughts',mynotes:'journal',tasknotes:'task-notes',goalworkspace:'goal-workspace',gratitude:'gratitude',wins:'wins',cosmiclibrary:'cosmic-library',entcard:'entrepreneur-library',proof:'proof',runthroughs:'home'};
+      group.querySelector('summary').addEventListener('click', (e) => {
+        e.preventDefault();
+        const feature = pageToFeature[pageId] || pageId;
+        try {
+          const top = globalThis.top || window;
+          const base = (top.location.pathname.includes('member-design-test') ? top.location.pathname : '/standalone/member-design-test.html');
+          top.location.href = base + '?feature=' + encodeURIComponent(feature);
+        } catch (_) {
+          window.location.href = '/standalone/member-design-test.html?feature=' + encodeURIComponent(feature);
+        }
+      });
       const option = document.createElement('option');
       option.value = pageId;
       option.textContent = label;
@@ -5155,6 +5169,9 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-group[open] > summary.ci-admin-page-heading::before{transform:rotate(90deg)}
     .ci-admin-page-group .ci-admin-page-pair{padding:14px 16px 16px}
     .ci-admin-page-subcount{margin-left:auto;font-size:12px;font-weight:500;color:var(--box-ink);opacity:.75}
+    .ci-admin-page-gohint{font-size:12px;font-weight:600;color:var(--box-ink);opacity:.8;padding-left:12px;border-left:1px solid var(--box-edge);margin-left:12px}
+    .ci-admin-page-group > summary.ci-admin-page-heading:hover{background:rgba(255,255,255,.55)}
+    .ci-admin-page-group > summary.ci-admin-page-heading:hover .ci-admin-page-gohint{opacity:1;text-decoration:underline}
     .ci-admin-page-group[data-color="1"]{--box-tint:#edf8f0;--box-edge:#b6d9c2;--box-ink:#326447}
     .ci-admin-page-group[data-color="2"]{--box-tint:#fff7e6;--box-edge:#ead39f;--box-ink:#795715}
     .ci-admin-page-group[data-color="3"]{--box-tint:#f3effc;--box-edge:#cfc0e7;--box-ink:#65508a}
@@ -6115,18 +6132,17 @@ async function initCitadelNoteFrame(nextPage) {
       _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
     }
     // Scott 10 Nov 2026: Admin "welcome" message box — admin-editable only, appears above Personal E.
-    // Shows a greeting like "WELCOME BACK SCOTT…" that every member sees; admin edits it ONLY from
-    // the admin page (no inline pen on the player page). Stored in content_blocks under
-    // slug page-welcome-<pageId>; members never see an edit affordance here.
-    // Scott 10 Nov 2026 pm: visibly separate card — large top gap and distinct card chrome
-    // so this reads as its OWN card, not visually joined to the carousel above.
+    // Scott 11 Nov 2026: restored the inline pen so Scott can edit this box directly on the player
+    // page (with the "open to edit" admin-page flow). Members still never see the pen — _syncAdminPageBox
+    // + CSS gate it behind the is-owner class (window.ciOwnerAccess === true).
     {
       const welcomeSlug = 'page-welcome-' + pageId;
       const welcome = document.createElement('section');
       welcome.className = 'ci-admin-page-box ci-page-welcome';
       welcome.dataset.pageBox = 'Welcome';
       welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
-      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit welcome message" title="Edit welcome message">' + _adminPenIcon() + '</button></span>';
+      welcome.querySelector('button').addEventListener('click', e => { e.stopPropagation(); adminEditBlock(welcomeSlug); });
       mount.style.padding = '20px';
       mount.appendChild(welcome);
       const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
@@ -6176,6 +6192,9 @@ async function initCitadelNoteFrame(nextPage) {
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
+      // Scott 11 Nov 2026: let the parent (member-design-test) relocate Personal E
+      // on specific pages (e.g. the TO DO page it goes into the TO DO list area).
+      try { globalThis.parent?.postMessage({ type: 'ci-personal-e-ready', pageId }, globalThis.location?.origin); } catch (_) {}
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
       // Title and body belong to the same RLS-protected account/page record.
