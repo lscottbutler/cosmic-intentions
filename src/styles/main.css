@@ -4806,6 +4806,13 @@ html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content *{font-size:inherit!
 
 /* 2026-11-06 Scott: AB1 bubble — white with a 4px black border, 30px narrower, centred. */
 html.ci-header-note .ci-page-ab1{background:#fff!important;border:4px solid #000!important;margin:0 15px 34px!important}
+
+/* 2026-11-10 Scott: WELCOME MESSAGE admin box — standalone card, 30px gap from Admin Box 1. */
+html.ci-header-note .ci-page-welcome{display:block!important;margin:30px 0 14px!important;border:3px solid #303030!important;border-radius:12px!important;background:#fff!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;overflow:hidden!important;clear:both!important}
+html.ci-header-note .ci-page-welcome .ci-admin-page-box-content{padding:20px 22px!important;font:400 16px/1.55 Arial,sans-serif!important;color:#171717!important;min-height:0!important;text-align:left!important}
+html.ci-header-note .ci-page-welcome .ci-admin-page-box-content *{font-family:inherit!important;color:inherit!important}
+html.ci-header-note .ci-page-welcome .ci-admin-page-box-content p{margin:0 0 .6em}
+html.ci-header-note .ci-page-welcome .ci-admin-page-box-content ul,html.ci-header-note .ci-page-welcome .ci-admin-page-box-content ol{margin:.4em 0 .6em;padding-left:1.4em}
 html.ci-header-note .ci-page-ab1::before{content:"";position:absolute;left:24px;top:100%;width:38px;height:29px;background:#000;clip-path:polygon(0 0,100% 0,0 100%)}
 html.ci-header-note .ci-page-ab1::after{left:28px;top:100%;bottom:auto;width:26px;height:20px;background:#fff}
 

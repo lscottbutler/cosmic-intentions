@@ -5037,6 +5037,7 @@ function ensureAdminPageBoxEditors() {
     const boxes = [
       {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
       {slug:'page-ab1-' + pageId, number:1, caption:'PAGE QUOTE (shown on the 16:9 image)'},
+      {slug:'page-welcome-' + pageId, number:1, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
       {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
       ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
       {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
@@ -5046,7 +5047,7 @@ function ensureAdminPageBoxEditors() {
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
-        holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId)
+        holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId || slug === 'page-welcome-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
           : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
         entry = holder.firstElementChild;
@@ -6090,6 +6091,27 @@ async function initCitadelNoteFrame(nextPage) {
       _fillBlockEl(ab1.querySelector('[data-block]'), _blockCache[ab1Slug]);
       _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
     }
+    // Scott 10 Nov 2026: Admin "welcome" message box — admin-editable only, appears above Personal E.
+    // Shows a greeting like "WELCOME BACK SCOTT…" that every member sees; admin edits it ONLY from
+    // the admin page (no inline pen on the player page). Stored in content_blocks under
+    // slug page-welcome-<pageId>; members never see an edit affordance here.
+    // Scott 10 Nov 2026 pm: visibly separate card — large top gap and distinct card chrome
+    // so this reads as its OWN card, not visually joined to the carousel above.
+    {
+      const welcomeSlug = 'page-welcome-' + pageId;
+      const welcome = document.createElement('section');
+      welcome.className = 'ci-admin-page-box ci-page-welcome';
+      welcome.dataset.pageBox = 'Welcome';
+      welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
+      mount.style.padding = '20px';
+      mount.appendChild(welcome);
+      const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
+      if (renderVersion !== citadelNoteRenderVersion) return;
+      _blockCache[welcomeSlug] = welcomeRow.data?.body || '';
+      _fillBlockEl(welcome.querySelector('[data-block]'), _blockCache[welcomeSlug]);
+      _syncAdminPageBox(welcome.querySelector('[data-block]'), !!_blockCache[welcomeSlug].trim());
+    }
     if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
       const instructions = document.createElement('section');
       instructions.className = 'ci-player-owner-instructions';
@@ -6131,6 +6153,9 @@ async function initCitadelNoteFrame(nextPage) {
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
+      // Scott 10 Nov 2026: tell the parent the Personal E element is in the DOM, so the
+      // parent page can relocate it into the orientation sidebar (next to the ship icon).
+      try { globalThis.parent?.postMessage({ type: 'ci-personal-e-ready', pageId }, globalThis.location?.origin); } catch (_) {}
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
       // Title and body belong to the same RLS-protected account/page record.
@@ -6275,7 +6300,9 @@ async function initCitadelNoteFrame(nextPage) {
     if (box.style.display !== 'none') {
       // Inset the entire pink-bordered box; empty member boxes stay collapsed.
       mount.style.padding = '20px';
-      mount.appendChild(box);
+      // Scott 10 Nov 2026: Admin Box 1 sits directly under the page-title letter tiles on every
+      // player page — above the Personal E and any other content inside the header mount.
+      mount.insertBefore(box, mount.firstChild);
     }
     citadelNoteResizeObserver?.disconnect();
     document.body.replaceChildren(mount, toastWrap);

@@ -82,22 +82,23 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
   // To-do lists retain provenance colors; Roadmap cards match their green tab.
   // The code chip retains the goal's shade.
   const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : '#000');
-  return `<div class="wcard" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
+  // Scott 10 Nov 2026: tag each task card with its priority so the TO DO P/S
+  // buttons can filter without re-rendering.
+  const isPri = noteContext ? (taskIsPriority(noteContext) ? '1' : '0') : '';
+  return `<div class="wcard" data-task-priority="${isPri}" style="position:relative;background:#fff;border:1px solid #e6e6e9;border-radius:13px;margin:0 0 9px 0;padding:12px 10px 12px 26px;box-shadow:0 1px 2px rgba(0,0,0,.12);overflow:hidden;">
     <span style="position:absolute;left:0;top:0;bottom:0;width:15px;background:${rail};${fade ? 'opacity:.5;' : ''}"></span>
     <div style="display:flex;align-items:center;gap:11px;${showLinkedEntries ? 'flex-wrap:wrap;' : ''}">
       <button onclick="${toggleCall}" title="${done ? 'Completed — tap to undo' : 'Mark done'}" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid ${done ? '#111' : '#c9ccd1'};background:${done ? '#111' : '#fff'};color:#fff;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;">${done ? '✓' : ''}</button>
       <span style="flex:${showLinkedEntries ? '1 1 150px' : '1'};min-width:0;font-size:15px;line-height:1.45;color:${done ? '#a2a5ac' : '#15161a'};${done ? 'text-decoration:line-through;text-decoration-color:#c4c6cb;' : ''}">${esc(text)}</span>
       ${showLinkedEntries && noteContext ? `<div class="goal-task-entry-buttons" style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${[['note','#000'],['journal','#4e4e4e']].map(([kind,color]) => `<button type="button" aria-expanded="false" aria-label="Show ${kind} for task ${esc(code)}" onclick="const panel=this.closest('.wcard').querySelector('[data-linked-kind=${kind}]');panel.hidden=!panel.hidden;this.setAttribute('aria-expanded',String(!panel.hidden));" style="background:${color};color:#fff;border:0;border-radius:5px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer">${kind.toUpperCase()}</button>`).join('')}</div>` : ''}
-      <!-- Goal-code box: code on top, ⋯ overflow menu in the lower half. -->
-      ${showLinkedEntries && noteContext ? '<div class="goal-task-priority-controls" style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;align-items:center">' : ''}
-      ${noteContext ? `<button type="button" class="task-priority" aria-label="Priority task ${esc(code)}" aria-pressed="${!!taskIsPriority(noteContext)}" onclick="wrapTogglePriority('${encodeURIComponent(taskNoteKey(noteContext)).replace(/'/g,'%27')}')" title="Toggle priority" style="flex-shrink:0;width:32px;height:32px;border:2px solid #4e4e4e;border-radius:50%;background:${taskIsPriority(noteContext) ? '#4e4e4e' : '#fff'};color:${taskIsPriority(noteContext) ? '#fff' : '#4e4e4e'};font-weight:700;cursor:pointer;">P</button>` : ''}
-      ${showLinkedEntries && deleteCall ? `<button type="button" class="goal-task-quick-delete" onclick="event.stopPropagation();${deleteCall}" title="Delete this task" aria-label="Delete task ${esc(code)}" style="flex-shrink:0;width:32px;height:32px;border:1px solid #000;border-radius:50%;background:#000;color:#fff;font-size:20px;line-height:1;cursor:pointer;">×</button>` : ''}
-      ${showLinkedEntries && noteContext ? '</div>' : ''}
+      <!-- Goal-code box + ⋯ menu, Priority P, × delete: shown on roadmap/other views,
+           HIDDEN on the TO DO page (showLinkedEntries) for a simpler card. -->
+      ${!showLinkedEntries && noteContext ? `<button type="button" class="task-priority" aria-label="Priority task ${esc(code)}" aria-pressed="${!!taskIsPriority(noteContext)}" onclick="wrapTogglePriority('${encodeURIComponent(taskNoteKey(noteContext)).replace(/'/g,'%27')}')" title="Toggle priority" style="flex-shrink:0;width:32px;height:32px;border:2px solid #4e4e4e;border-radius:50%;background:${taskIsPriority(noteContext) ? '#4e4e4e' : '#fff'};color:${taskIsPriority(noteContext) ? '#fff' : '#4e4e4e'};font-weight:700;cursor:pointer;">P</button>` : ''}
       ${taskNoteButton(noteContext)}
-      <div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
+      ${!showLinkedEntries ? `<div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
         <span style="display:flex;align-items:center;justify-content:center;padding:7px 4px 5px;color:${shade.text};font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:.4px;line-height:1;">${esc(code)}</span>
         <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;border-top:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:16px;line-height:1;padding:3px 0 5px;">⋯</button>
-      </div>
+      </div>` : ''}
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
     ${taskNotePanel(noteContext)}
@@ -784,8 +785,11 @@ export function wrapSetGoalPriority(idx) {
   return turnOn;
 }
 
+// Scott 10 Nov 2026: `priority` is kept for callers that still need it, but the TO DO
+// player now passes `null` to render ALL unfinished tasks per goal with a data-task-priority
+// attribute. The P/S buttons in setupTodoDisclosure filter visibility without re-rendering.
 export function masterPriorityTaskMarkup(priority = true) {
-  const filter = priority ? true : 'nonpriority';
+  const filter = priority === null ? false : (priority ? true : 'nonpriority');
   return intentions.map((goal, idx) => {
     _ensureGoalLetters();
     if (_ensureCodes(goal)) saveIntentions();
