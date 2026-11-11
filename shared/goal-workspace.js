@@ -193,7 +193,7 @@ export function setupTodoDisclosure(host) {
     const cards = [...group.querySelectorAll('.wcard')];
     const title = group.querySelector(':scope > h3');
     if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
-    const key = (host.id || '') + ':' + group.dataset.workspaceGoal, many = cards.length > 5;
+    const key = (host.id || '') + ':' + group.dataset.workspaceGoal;
     // Scott 6 Nov 2026: on TO DO every goal is dark grey with white text (no per-goal colours).
     const color = '#4e4e4e';
     const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
@@ -273,6 +273,15 @@ export function setupTodoDisclosure(host) {
       const want = todoGoalPriorityMode.get(key) === 'P' ? '1' : '0';
       return cards.filter(c => c.dataset.taskPriority === want);
     }
+    // Scott 11 Nov 2026: empty-state placeholder when the current P/S filter has no tasks.
+    // Lets the user know the goal has tasks in the OTHER mode rather than looking broken.
+    let emptyNote = group.querySelector(':scope > .todo-goal-empty-mode');
+    if (!emptyNote) {
+      emptyNote = document.createElement('p');
+      emptyNote.className = 'todo-goal-empty-mode';
+      emptyNote.style.cssText = 'margin:8px 0 10px;padding:8px 12px;font:400 13px/1.4 Arial,sans-serif;color:#4e4e4e;background:#f6f6f6;border-radius:6px';
+      group.appendChild(emptyNote);
+    }
     function paint() {
       const toggled = expandedTodoGoals.has(key);
       const vis = visibleForMode();
@@ -280,6 +289,12 @@ export function setupTodoDisclosure(host) {
       // Hide every card outside the current P/S filter; apply the collapse rule to the visible set.
       cards.forEach(card => { card.hidden = true; });
       vis.forEach((card, index) => { card.hidden = visMany ? (!toggled && index >= 5) : toggled; });
+      const other = cards.filter(c => c.dataset.taskPriority === (todoGoalPriorityMode.get(key) === 'P' ? '0' : '1'));
+      const otherLabel = todoGoalPriorityMode.get(key) === 'P' ? 'Standard' : 'Priority';
+      emptyNote.textContent = vis.length === 0 && other.length > 0
+        ? 'No ' + (todoGoalPriorityMode.get(key) === 'P' ? 'priority' : 'standard') + ' tasks for this goal — tap ' + (todoGoalPriorityMode.get(key) === 'P' ? 'S' : 'P') + ' to see ' + other.length + ' ' + otherLabel.toLowerCase() + ' task' + (other.length === 1 ? '' : 's') + '.'
+        : '';
+      emptyNote.hidden = !emptyNote.textContent;
       const open = visMany ? toggled : !toggled;
       button.textContent = open ? '\u25B2' : '\u25BC';
       button.setAttribute('aria-expanded', String(open));

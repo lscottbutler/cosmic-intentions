@@ -4807,8 +4807,9 @@ html.ci-header-note .ci-page-ab1 .ci-admin-page-box-content *{font-size:inherit!
 /* 2026-11-06 Scott: AB1 bubble — white with a 4px black border, 30px narrower, centred. */
 html.ci-header-note .ci-page-ab1{background:#fff!important;border:4px solid #000!important;margin:0 15px 34px!important}
 
-/* 2026-11-10 Scott: WELCOME MESSAGE admin box — standalone card, 30px gap from Admin Box 1. */
-html.ci-header-note .ci-page-welcome{display:block!important;margin:30px 0 14px!important;border:3px solid #303030!important;border-radius:12px!important;background:#fff!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;overflow:hidden!important;clear:both!important}
+/* 2026-11-10 Scott: WELCOME MESSAGE admin box — standalone card, 30px gap from Admin Box 1.
+   Do NOT set display here — _syncAdminPageBox hides empty boxes for members via inline display:none. */
+html.ci-header-note .ci-page-welcome{margin:30px 0 14px!important;border:3px solid #303030!important;border-radius:12px!important;background:#fff!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;overflow:hidden!important;clear:both!important}
 
 /* 2026-11-11 Scott: Personal E — its own distinct card, 30px gap from WELCOME MESSAGE above. */
 html.ci-header-note .ci-player-personal-e-box:not(.ci-personal-e-collapsed){margin-top:30px!important;border:3px solid #303030!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;clear:both!important}
@@ -4835,12 +4836,6 @@ html.ci-header-note body > div:first-child{display:flow-root}
 .ci-carousel-quote .ci-q-author{display:block;font:400 clamp(12px,2.2cqw,15px)/1.4 Arial,Helvetica,sans-serif;font-style:normal;letter-spacing:.18em;text-transform:uppercase;opacity:.9}
 .ci-carousel-quote .ci-q-text{font-family:Georgia,'Times New Roman',serif!important;font-style:italic!important;font-weight:400!important}
 .ci-carousel-quote .ci-q-author{font-family:Arial,Helvetica,sans-serif!important;font-weight:400!important}
-
-/* 2026-11-09 Scott — Goal image thumbnail in grey title bar; coloured status bars below. */
-.todo-goal-titlepage{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:0 -56px 10px -10px;padding:0 56px 0 0}
-.todo-goal-titlepage .tp-bar{display:flex;align-items:center;padding:5px 8px;border-radius:3px;color:#fff;font:400 12px/1.3 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.todo-goal-titlepage .tp-bar b{font-weight:700;margin-right:3px}
-@media(max-width:520px){.todo-goal-titlepage{grid-template-columns:repeat(2,1fr)}}
 
 /* 2026-11-06 Scott usability pass #4: reading text in a normal-width font (condensed stays for headings/labels). */
 html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *,
