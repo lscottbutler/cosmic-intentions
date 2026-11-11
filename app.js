@@ -5166,7 +5166,9 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-pair{display:flex;flex-direction:column;gap:12px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
     #page-admin .ci-page-box-admin-entry{border-color:var(--box-edge);background:#fff}
-    #page-admin .ci-page-box-admin-entry .admin-block-hd{background:var(--box-tint);color:var(--box-ink);border-color:var(--box-edge);justify-content:flex-start;gap:8px;letter-spacing:0;text-transform:none;flex-wrap:wrap}
+    #page-admin .ci-page-box-admin-entry .admin-block-hd{background:var(--box-tint);color:var(--box-ink);border-color:var(--box-edge);justify-content:flex-start;gap:8px;letter-spacing:0;text-transform:none;flex-wrap:wrap;font-size:14px;padding:12px 16px}
+    #page-admin .ci-page-box-admin-entry .ci-admin-box-position{font-size:14px;font-weight:700}
+    #page-admin .ci-page-box-admin-entry .admin-block-num{font-size:14px;padding:4px 8px}
     #page-admin .ci-page-box-admin-entry .admin-block-num{margin:0;background:#fff;color:var(--box-ink)}
     #page-admin .ci-page-box-admin-entry .admin-save-btn{background:var(--box-tint);color:var(--box-ink);border:1px solid var(--box-edge)}
     .ci-page-box-admin-grid .admin-editor{min-height:132px;background:#fff!important;color:#253347!important;caret-color:#253347!important}
