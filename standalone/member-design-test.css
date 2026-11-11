@@ -460,3 +460,15 @@ body.ci-admin-feature .orientation #fullscreen-trigger,
 body.ci-admin-feature .orientation #fullscreen-exit,
 body.ci-admin-feature .orientation #big-five-trigger,
 body.ci-admin-feature .orientation #player-search{display:none!important}
+
+/* Scott 11 Nov 2026: belt-and-suspenders — on admin, also hide the iframe container,
+   the search input bar, the add-note button and any ci-info trigger that may be
+   mounted into the orientation. The hamburger menu (#review-menu-trigger) stays. */
+body.ci-admin-feature .orientation #header-admin-note,
+body.ci-admin-feature .orientation #header-admin-note-frame,
+body.ci-admin-feature .orientation #player-search-input,
+body.ci-admin-feature .orientation form#player-search,
+body.ci-admin-feature .orientation #add-note,
+body.ci-admin-feature .orientation #ci-info-trigger,
+body.ci-admin-feature .orientation .shortcuts,
+body.ci-admin-feature .orientation #review-menu-items{display:none!important}
