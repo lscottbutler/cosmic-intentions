@@ -4990,18 +4990,22 @@ function ensureAdminPageBoxEditors() {
     section = document.createElement('section');
     section.id = 'adminPageBoxEditors';
     section.className = 'ci-page-box-admin-section';
+    // Scott 11 Nov 2026: cleaner hierarchy — each player page is a collapsible <details>
+    // card, boxes stacked vertically inside with purpose-first labels. Jump-to-page from
+    // the finder opens that card and scrolls to it.
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
-      '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above The Carousel, then Save. The Carousel is read-only; its rotating feed is managed separately. Box 2 is archived for recovery and hidden on player pages.</p>' +
-      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN NOTES (visible only here, not on any player page)</h3></div>' +
-      '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
+      '<p class="ci-page-box-admin-help">One card per player page below. Tap a page to open it, then edit any box and press <strong>Save</strong>. Each box title says exactly where its text appears on that player page.</p>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label">ADMIN NOTES (visible only here, not on any player page)</h3></div>' +
+      '<div class="ci-admin-page-finder"><label for="adminPageFinder">Jump to a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
     adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
     section.querySelector('#adminPageFinder').addEventListener('change', event => {
       const group = document.getElementById('adminPageGroup-' + event.target.value);
       if (!group) return;
+      group.open = true;
       group.scrollIntoView({ behavior: 'instant', block: 'start' });
-      group.querySelector('.ci-admin-page-heading').focus({ preventScroll: true });
+      group.querySelector('.ci-admin-page-heading')?.focus({ preventScroll: true });
     });
   }
 
@@ -5022,58 +5026,58 @@ function ensureAdminPageBoxEditors() {
     const pageNumber = String(pageIndex + 1).padStart(2, '0');
     let group = document.getElementById('adminPageGroup-' + pageId);
     if (!group) {
-      group = document.createElement('section');
+      // Scott 11 Nov 2026: each player page becomes a native <details> collapsible card.
+      // Opens one at a time by default; the finder jumps straight into the chosen page.
+      group = document.createElement('details');
       group.id = 'adminPageGroup-' + pageId;
       group.className = 'ci-admin-page-group';
       group.dataset.color = String(pageIndex % 6);
       group.setAttribute('aria-labelledby', 'adminPageHeading-' + pageId);
-      group.innerHTML = '<h3 class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="-1"><span class="ci-admin-page-number">' + pageNumber + '</span>' + label + '</h3><div class="ci-admin-page-pair"></div>';
+      group.innerHTML = '<summary class="ci-admin-page-heading" id="adminPageHeading-' + pageId + '" tabindex="0">' + label + ' <span class="ci-admin-page-subcount"></span></summary><div class="ci-admin-page-pair"></div>';
       grid.appendChild(group);
       const option = document.createElement('option');
       option.value = pageId;
-      option.textContent = pageNumber + ' · ' + label;
+      option.textContent = label;
       section.querySelector('#adminPageFinder').appendChild(option);
     }
-    // Display numbers follow visible purpose, while legacy storage slugs remain unchanged.
-    // ATB 1 is the owner-controlled instruction record displayed on every player.
-    // Scott 11 Nov 2026: sequential box numbers so each row on the admin page carries a
-    // unique "<page>.<n>" label (13.1, 13.2, 13.3…) — easier to point to than three "13.1"s.
+    // Scott 11 Nov 2026: captions name the PURPOSE and LOCATION — no "Box 3 — Above artwork"
+    // double-numbering. Order follows the top-to-bottom appearance on the player page.
     const boxes = [
-      {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
-      {slug:'page-ab1-' + pageId, number:2, caption:'PAGE QUOTE (shown on the 16:9 image)'},
-      {slug:'page-welcome-' + pageId, number:3, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
-      {slug:_adminPageBoxSlug(pageId, 3), number:4, caption:'Above artwork (legacy Box 3)'},
-      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:5, caption:'Beside Add a Goal'}] : []),
-      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 6 : 5, caption:'Archived — hidden on player pages'}
+      {slug:'page-welcome-' + pageId, caption:'Welcome message (admin-only, shown above the member’s personal note)'},
+      {slug:'page-ab1-' + pageId, caption:'Quote on the 16:9 artwork'},
+      {slug:'page-instructions-' + pageId, caption:'Instruction behind the blue “i” button'},
+      {slug:_adminPageBoxSlug(pageId, 3), caption:'Text block above the artwork (legacy slot)'},
+      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), caption:'Beside the Add a Goal button (setup page only)'}] : []),
+      {slug:_adminPageBoxSlug(pageId, 2), caption:'Archived — hidden on player pages'}
     ];
-    for (const {slug,number,caption} of boxes) {
-      const boxNumber=number;
+    boxes.forEach(({slug,caption}, boxIdx) => {
+      const displayNumber = boxIdx + 1;
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
-        // Scott 11 Nov 2026: derive the editor's internal boxIndex from the slug directly
-        // (page-note-<pageId>-<n>), not from the display `number`. That way the admin page
-        // renumbering doesn't break which editor each row maps to.
+        // Internal boxIndex is derived from the slug (page-note-<pageId>-<n>) so the
+        // editor targets the correct storage slot independent of display order.
         const legacyIdx = (slug.match(/-(\d+)$/) || [])[1];
         holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId || slug === 'page-welcome-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
           : _adminEditorMarkup(pageId, label, legacyIdx ? parseInt(legacyIdx,10) : 2);
         entry = holder.firstElementChild;
-      } else {
-        const header = entry.querySelector('.admin-block-hd');
-        if (header) header.innerHTML = '<span class="ci-admin-box-position">Box ' + number + ' — ' + caption + '</span>';
       }
       const position = entry.querySelector('.ci-admin-box-position');
-      if (position) position.textContent='Box ' + number + ' — ' + caption;
+      if (position) position.textContent = caption;
       entry.classList.add('ci-page-box-admin-entry');
-      entry.dataset.adminNumber = pageNumber + '.' + boxNumber;
+      entry.dataset.adminNumber = pageNumber + '.' + displayNumber;
       group.querySelector('.ci-admin-page-pair').appendChild(entry);
       const editor = document.getElementById('admin-editor-' + slug);
       editor.setAttribute('role', 'textbox');
-      editor.setAttribute('aria-label', label + ' Box ' + boxNumber);
+      editor.setAttribute('aria-label', label + ' — ' + caption);
       editor.setAttribute('aria-multiline', 'true');
       if (editor && !editor.dataset.dirty) editor.innerHTML = _blockCache[slug] || '';
-    }
+    });
+    // Update summary count: how many boxes have content, helps Scott see which pages are full.
+    const filled = boxes.filter(b => (_blockCache[b.slug] || '').trim()).length;
+    const sub = group.querySelector('.ci-admin-page-subcount');
+    if (sub) sub.textContent = '(' + filled + ' of ' + boxes.length + ' filled)';
   });
 
   if (typeof numberContentBlocks === 'function') numberContentBlocks();
@@ -5142,7 +5146,15 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-finder label{font-size:14px;font-weight:800;color:#253347}
     .ci-admin-page-finder select{flex:1;min-width:0;max-width:100%;min-height:44px;padding:10px;border:1px solid #bccbdc;border-radius:8px;background:#fff;color:#253347;font-family:inherit;font-size:14px;font-weight:600;line-height:1.3}
     .ci-page-box-admin-grid{display:grid;grid-template-columns:1fr;gap:24px}
-    .ci-admin-page-group{--box-tint:#edf5ff;--box-edge:#b6cfe9;--box-ink:#355b80;padding:16px;border:1px solid var(--box-edge);border-radius:14px;background:var(--box-tint);min-width:0;scroll-margin-top:18px}
+    /* Scott 11 Nov 2026: group is a <details> card; closed by default, click/tap summary to expand. */
+    .ci-admin-page-group{--box-tint:#edf5ff;--box-edge:#b6cfe9;--box-ink:#355b80;padding:0;border:1px solid var(--box-edge);border-radius:14px;background:var(--box-tint);min-width:0;scroll-margin-top:18px;overflow:hidden}
+    .ci-admin-page-group[open] > summary.ci-admin-page-heading{border-bottom:1px solid var(--box-edge);background:rgba(255,255,255,.3)}
+    .ci-admin-page-group > summary.ci-admin-page-heading{cursor:pointer;padding:16px;list-style:none;user-select:none}
+    .ci-admin-page-group > summary.ci-admin-page-heading::-webkit-details-marker{display:none}
+    .ci-admin-page-group > summary.ci-admin-page-heading::before{content:"▶";display:inline-block;margin-right:10px;transition:transform .15s;color:var(--box-ink);font-size:11px;vertical-align:middle}
+    .ci-admin-page-group[open] > summary.ci-admin-page-heading::before{transform:rotate(90deg)}
+    .ci-admin-page-group .ci-admin-page-pair{padding:14px 16px 16px}
+    .ci-admin-page-subcount{margin-left:auto;font-size:12px;font-weight:500;color:var(--box-ink);opacity:.75}
     .ci-admin-page-group[data-color="1"]{--box-tint:#edf8f0;--box-edge:#b6d9c2;--box-ink:#326447}
     .ci-admin-page-group[data-color="2"]{--box-tint:#fff7e6;--box-edge:#ead39f;--box-ink:#795715}
     .ci-admin-page-group[data-color="3"]{--box-tint:#f3effc;--box-edge:#cfc0e7;--box-ink:#65508a}
@@ -5150,7 +5162,8 @@ function ensureAdminPageBoxStyles() {
     .ci-admin-page-group[data-color="5"]{--box-tint:#eaf7f7;--box-edge:#b3d8d8;--box-ink:#346a6b}
     .ci-admin-page-heading{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:16px;font-weight:800;line-height:1.4;color:var(--box-ink)}
     .ci-admin-page-number{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-width:36px;height:32px;padding:0 6px;background:#fff;border:1px solid var(--box-edge,#ecc3d3);border-radius:8px;font-size:14px;font-weight:800}
-    .ci-admin-page-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    /* Scott 11 Nov 2026: single-column stacked list inside each page card (was 2-col grid). */
+    .ci-admin-page-pair{display:flex;flex-direction:column;gap:12px}
     .ci-page-box-admin-grid .admin-block{margin:0;min-width:0}
     #page-admin .ci-page-box-admin-entry{border-color:var(--box-edge);background:#fff}
     #page-admin .ci-page-box-admin-entry .admin-block-hd{background:var(--box-tint);color:var(--box-ink);border-color:var(--box-edge);justify-content:flex-start;gap:8px;letter-spacing:0;text-transform:none;flex-wrap:wrap}
