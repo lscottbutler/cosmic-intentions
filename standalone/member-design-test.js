@@ -276,6 +276,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('master-control-panel',action!=='admin');
   // Scott 11 Nov 2026: admin page keeps only the hamburger menu — hide the other icons.
   document.body.classList.toggle('ci-admin-feature',action==='admin');
+  // Scott 11 Nov 2026: when switching TO the TO DO page, try to relocate Personal E
+  // into the TO DO slot (retry until the slot renders).
+  if (action === 'goal-workspace') {
+    let tries = 0;
+    const t = setInterval(() => { movePersonalEToTodo(); if (++tries > 30) clearInterval(t); }, 200);
+  }
   const headerSearch=document.getElementById('player-search');
   const searchParent=action!=='admin'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
   if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
@@ -578,6 +584,24 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    queueHeaderChange(src);
   }
  });
+ // Scott 11 Nov 2026: on the TO DO page, move the Personal E box into the TO DO list area
+ // (replacing the removed "TO DO LIST" heading). On every other page it stays where the iframe
+ // put it (below the WELCOME MESSAGE card).
+ function movePersonalEToTodo(){
+  if(current!=='goal-workspace')return;
+  let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return;}
+  const el=doc?.querySelector('.ci-player-personal-e-box');
+  if(!el)return;
+  // The TO DO slot lives in the main player iframe (ci-review-frame).
+  const reviewFrame=document.getElementById('ci-review-frame');
+  let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return;}
+  const slot=reviewDoc?.querySelector('[data-todo-personal-e-slot]');
+  if(!slot)return;
+  if(el.parentElement===slot)return;
+  while(slot.firstChild)slot.removeChild(slot.firstChild);
+  // Adopt into the target document before appending so cross-iframe ownership is clean.
+  slot.appendChild(reviewDoc.adoptNode(el));
+ }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-carousel-border-color'){
@@ -586,6 +610,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     headerCalendar.style.transition='border-color '+(event.data.duration===5000?5000:0)+'ms ease-in-out';
     headerCalendar.style.borderColor=color;
    }
+   return;
+  }
+  if(event.data?.type==='ci-personal-e-ready'){
+   // Try now; retry briefly in case the TO DO slot hasn't been rendered yet.
+   let tries=0;const t=setInterval(()=>{movePersonalEToTodo();if(++tries>20)clearInterval(t);},150);
    return;
   }
   if(event.data?.type!=='ci-citadel-note-height')return;

@@ -6192,6 +6192,9 @@ async function initCitadelNoteFrame(nextPage) {
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
+      // Scott 11 Nov 2026: let the parent (member-design-test) relocate Personal E
+      // on specific pages (e.g. the TO DO page it goes into the TO DO list area).
+      try { globalThis.parent?.postMessage({ type: 'ci-personal-e-ready', pageId }, globalThis.location?.origin); } catch (_) {}
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
       // Title and body belong to the same RLS-protected account/page record.

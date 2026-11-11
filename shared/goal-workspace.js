@@ -335,9 +335,11 @@ function renderMasterPriorities() {
   // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks (priority AND standard)
   // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
   // goal header. The old separate "TO DO LIST" section below was removed.
+  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant. Added a slot where
+  // the parent (member-design-test) can relocate the Personal E box into.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  host.innerHTML = '<h2 style="background:#000;color:white;justify-content:center;text-align:center;width:min(100%,max(33.333%,280px));max-width:100%;margin-inline:auto;padding-inline:20px;box-sizing:border-box">TO DO LIST</h2>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+  host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(host);
 }
