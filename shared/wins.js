@@ -65,6 +65,20 @@ export function winDelete(ts) {
   _refresh();
 }
 
+/* Scott 11 Nov 2026: Archive a TO DO task to the Wins Wall.
+   Pushed at the END of the list (Scott wanted it at the BOTTOM of the wins page,
+   unlike the usual `unshift` that puts newest on top). Deduplicated by srcKey,
+   so re-archiving the same task does not duplicate it. */
+export function archiveTaskToWins(srcKeyEncoded, textEncoded, meta = {}) {
+  const srcKey = decodeURIComponent(String(srcKeyEncoded || ''));
+  const text = decodeURIComponent(String(textEncoded || '')).trim();
+  if (!text) return;
+  const wins = getWins().filter(w => w.src !== srcKey);
+  wins.push({ text: text.slice(0, 240), date: _todayKey(), ts: Date.now(), src: srcKey, goal: meta.goal || '', category: meta.category || '', archived: true });
+  _save(wins); _refresh();
+  toast('✦ Archived to Wins', 'success');
+}
+
 /* Auto-win tied to a source (e.g. a checked Today-I-Will task).
    Idempotent: `on` adds it once; `!on` removes it. Lets a task check
    log a win and an uncheck remove it without duplicates. */

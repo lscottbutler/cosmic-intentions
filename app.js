@@ -13,7 +13,9 @@ import { mountDissolve, stopDissolve } from './shared/dissolve.js';
 import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs, getHabitList, createHabitPeriodMenu } from './shared/habits.js';
 import { createHabitMindsetCard } from './shared/habit-mindset.js';
-import { renderWins } from './shared/wins.js';
+import { renderWins, archiveTaskToWins } from './shared/wins.js';
+// Scott 11 Nov 2026: inline onclick on the TO DO ARCHIVE button calls this.
+globalThis.winArchiveTask = archiveTaskToWins;
 import { renderSleepLoop } from './shared/sleeploop.js';
 /* ─────────────────────────────────────────────────────────
    DEV MODE
