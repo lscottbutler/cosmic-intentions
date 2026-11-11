@@ -98,11 +98,9 @@ export function installOwnerLabels(ownerWindow) {
     label(doc,'.ci-player-owner-instructions',()=> 'PLAYER INSTRUCTION');
     label(doc,'.ci-page-ab1',()=> 'PAGE QUOTE');
     label(doc,'.ci-page-welcome',()=> 'WELCOME MESSAGE');
-    label(doc,'[data-block]',el=>{
-      const slug=el.getAttribute('data-block');
-      const shell=el.closest('.ci-admin-page-box');
-      return 'Admin text box '+(shell?.dataset.pageBox || doc.defaultView.BLOCK_NUM?.[slug] || slug)+' · '+slug;
-    });
+    // Scott 11 Nov 2026: removed the generic [data-block] inner label. It was duplicating
+    // the shell titles (and polluting them with the raw slug), making the cards look like
+    // they had two overlapping captions. Shell labels alone identify every admin box.
     // Form fields retain their own accessible labels; expose their name in owner tooltips.
     doc.querySelectorAll('input,textarea,[contenteditable=true]').forEach(el=>{
       if(!el.title)el.title='Text field · '+(el.getAttribute('aria-label')||el.name||el.id||'Editor');

@@ -5034,13 +5034,15 @@ function ensureAdminPageBoxEditors() {
     }
     // Display numbers follow visible purpose, while legacy storage slugs remain unchanged.
     // ATB 1 is the owner-controlled instruction record displayed on every player.
+    // Scott 11 Nov 2026: sequential box numbers so each row on the admin page carries a
+    // unique "<page>.<n>" label (13.1, 13.2, 13.3…) — easier to point to than three "13.1"s.
     const boxes = [
       {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
-      {slug:'page-ab1-' + pageId, number:1, caption:'PAGE QUOTE (shown on the 16:9 image)'},
-      {slug:'page-welcome-' + pageId, number:1, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
-      {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
-      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
-      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
+      {slug:'page-ab1-' + pageId, number:2, caption:'PAGE QUOTE (shown on the 16:9 image)'},
+      {slug:'page-welcome-' + pageId, number:3, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
+      {slug:_adminPageBoxSlug(pageId, 3), number:4, caption:'Above artwork (legacy Box 3)'},
+      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:5, caption:'Beside Add a Goal'}] : []),
+      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 6 : 5, caption:'Archived — hidden on player pages'}
     ];
     for (const {slug,number,caption} of boxes) {
       const boxNumber=number;
