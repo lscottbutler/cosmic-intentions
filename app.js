@@ -4991,7 +4991,7 @@ function ensureAdminPageBoxEditors() {
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
       '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above The Carousel, then Save. The Carousel is read-only; its rotating feed is managed separately. Box 2 is archived for recovery and hidden on player pages.</p>' +
-      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN NOTES (visible only here, not on any player page)</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
     adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
@@ -5049,9 +5049,13 @@ function ensureAdminPageBoxEditors() {
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
+        // Scott 11 Nov 2026: derive the editor's internal boxIndex from the slug directly
+        // (page-note-<pageId>-<n>), not from the display `number`. That way the admin page
+        // renumbering doesn't break which editor each row maps to.
+        const legacyIdx = (slug.match(/-(\d+)$/) || [])[1];
         holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId || slug === 'page-welcome-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
-          : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
+          : _adminEditorMarkup(pageId, label, legacyIdx ? parseInt(legacyIdx,10) : 2);
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
