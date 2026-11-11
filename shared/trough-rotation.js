@@ -63,7 +63,13 @@ export function attachTrough(shell,pageId){
    if(previous && previous.dataset.carouselId===item.id)return;
    shell.appendChild(card);
    globalThis.parent?.postMessage({type:'ci-carousel-border-color',color:item.borderColor,duration:previous?5000:0},globalThis.location?.origin);
-   if(previous){card.animate([{opacity:0},{opacity:1}],{duration:5000,easing:'ease-in-out'});setTimeout(()=>previous.remove(),5000);}
+   if(previous){
+    // Scott 11 Nov 2026: during the 5s cross-fade, pull the previous card OUT of flow so
+    // its caption (with the old borderColor) does not stack below the new one as a sliver.
+    previous.style.position='absolute';previous.style.inset='0';previous.style.pointerEvents='none';
+    card.animate([{opacity:0},{opacity:1}],{duration:5000,easing:'ease-in-out'});
+    setTimeout(()=>previous.remove(),5000);
+   }
   };
   const image=card.querySelector('img');
   if(image&&!image.complete){image.addEventListener('load',reveal,{once:true});image.addEventListener('error',()=>{}, {once:true});}else reveal();
