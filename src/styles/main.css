@@ -4809,6 +4809,9 @@ html.ci-header-note .ci-page-ab1{background:#fff!important;border:4px solid #000
 
 /* 2026-11-10 Scott: WELCOME MESSAGE admin box — standalone card, 30px gap from Admin Box 1. */
 html.ci-header-note .ci-page-welcome{display:block!important;margin:30px 0 14px!important;border:3px solid #303030!important;border-radius:12px!important;background:#fff!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;overflow:hidden!important;clear:both!important}
+
+/* 2026-11-11 Scott: Personal E — its own distinct card, 30px gap from WELCOME MESSAGE above. */
+html.ci-header-note .ci-player-personal-e-box:not(.ci-personal-e-collapsed){margin-top:30px!important;border:3px solid #303030!important;box-shadow:0 6px 20px rgba(18,32,55,.08)!important;clear:both!important}
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content{padding:20px 22px!important;font:400 16px/1.55 Arial,sans-serif!important;color:#171717!important;min-height:0!important;text-align:left!important}
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content *{font-family:inherit!important;color:inherit!important}
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content p{margin:0 0 .6em}
