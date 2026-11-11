@@ -447,3 +447,16 @@ body #feature-title,body.master-control-panel #feature-title,.orientation #featu
  #ci-tabbar button[aria-current="page"] span{text-decoration:underline;text-underline-offset:3px}
 }
 .orientation .shortcuts>#big-five-trigger{min-width:48px!important;min-height:48px!important;padding:0!important;flex:none!important}
+
+/* Scott 11 Nov 2026: ADMIN feature — keep only the hamburger menu in the orientation.
+   Hide the fullscreen button, To Do, Goals, i button, date, ship, big-five and search. */
+body.ci-admin-feature .orientation #to-do,
+body.ci-admin-feature .orientation #begin,
+body.ci-admin-feature .orientation .header-icon-pair,
+body.ci-admin-feature .orientation #header-calendar,
+body.ci-admin-feature .orientation #header-encouragement,
+body.ci-admin-feature .orientation #meditation-instructions-trigger,
+body.ci-admin-feature .orientation #fullscreen-trigger,
+body.ci-admin-feature .orientation #fullscreen-exit,
+body.ci-admin-feature .orientation #big-five-trigger,
+body.ci-admin-feature .orientation #player-search{display:none!important}

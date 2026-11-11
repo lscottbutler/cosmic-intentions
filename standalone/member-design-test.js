@@ -274,6 +274,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   headerSticker.hidden=action==='admin';
   headerStickerImage.src='/images/home-row/home-'+headerStickerFiles[Object.keys(features).indexOf(action)%headerStickerFiles.length]+'.webp';
   document.body.classList.toggle('master-control-panel',action!=='admin');
+  // Scott 11 Nov 2026: admin page keeps only the hamburger menu — hide the other icons.
+  document.body.classList.toggle('ci-admin-feature',action==='admin');
   const headerSearch=document.getElementById('player-search');
   const searchParent=action!=='admin'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
   if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
