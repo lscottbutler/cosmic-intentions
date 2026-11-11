@@ -4991,7 +4991,7 @@ function ensureAdminPageBoxEditors() {
     section.innerHTML =
       '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
       '<p class="ci-page-box-admin-help">Choose a page and edit Box 3 above The Carousel, then Save. The Carousel is read-only; its rotating feed is managed separately. Box 2 is archived for recovery and hidden on player pages.</p>' +
-      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN TEXT BOX</h3></div>' +
+      '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label"><span class="ci-admin-page-number">00</span> ADMIN NOTES (visible only here, not on any player page)</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Find a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
       '<div class="ci-page-box-admin-grid"></div>';
     adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
@@ -5034,22 +5034,28 @@ function ensureAdminPageBoxEditors() {
     }
     // Display numbers follow visible purpose, while legacy storage slugs remain unchanged.
     // ATB 1 is the owner-controlled instruction record displayed on every player.
+    // Scott 11 Nov 2026: sequential box numbers so each row on the admin page carries a
+    // unique "<page>.<n>" label (13.1, 13.2, 13.3…) — easier to point to than three "13.1"s.
     const boxes = [
       {slug:'page-instructions-' + pageId, number:1, caption:'PLAYER INSTRUCTION (shown when the blue i is pressed)'},
-      {slug:'page-ab1-' + pageId, number:1, caption:'PAGE QUOTE (shown on the 16:9 image)'},
-      {slug:'page-welcome-' + pageId, number:1, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
-      {slug:_adminPageBoxSlug(pageId, 3), number:2, caption:'Above artwork (legacy Box 3)'},
-      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:3, caption:'Beside Add a Goal'}] : []),
-      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 4 : 3, caption:'Archived — hidden on player pages'}
+      {slug:'page-ab1-' + pageId, number:2, caption:'PAGE QUOTE (shown on the 16:9 image)'},
+      {slug:'page-welcome-' + pageId, number:3, caption:'WELCOME MESSAGE (admin-only, shown above Personal E)'},
+      {slug:_adminPageBoxSlug(pageId, 3), number:4, caption:'Above artwork (legacy Box 3)'},
+      ...(pageId === 'setup' ? [{slug:_adminPageBoxSlug(pageId, 4), number:5, caption:'Beside Add a Goal'}] : []),
+      {slug:_adminPageBoxSlug(pageId, 2), number:pageId === 'setup' ? 6 : 5, caption:'Archived — hidden on player pages'}
     ];
     for (const {slug,number,caption} of boxes) {
       const boxNumber=number;
       let entry = document.getElementById('adminBlock-' + slug);
       if (!entry) {
         const holder = document.createElement('div');
+        // Scott 11 Nov 2026: derive the editor's internal boxIndex from the slug directly
+        // (page-note-<pageId>-<n>), not from the display `number`. That way the admin page
+        // renumbering doesn't break which editor each row maps to.
+        const legacyIdx = (slug.match(/-(\d+)$/) || [])[1];
         holder.innerHTML = (slug === 'page-instructions-' + pageId || slug === 'page-ab1-' + pageId || slug === 'page-welcome-' + pageId)
           ? _adminEditorMarkup(pageId, label, 1).replaceAll('intro-note-' + pageId, slug)
-          : _adminEditorMarkup(pageId, label, pageId === 'setup' && number===3 ? 4 : number===2 ? 3 : 2);
+          : _adminEditorMarkup(pageId, label, legacyIdx ? parseInt(legacyIdx,10) : 2);
         entry = holder.firstElementChild;
       } else {
         const header = entry.querySelector('.admin-block-hd');
@@ -6153,9 +6159,6 @@ async function initCitadelNoteFrame(nextPage) {
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
-      // Scott 10 Nov 2026: tell the parent the Personal E element is in the DOM, so the
-      // parent page can relocate it into the orientation sidebar (next to the ship icon).
-      try { globalThis.parent?.postMessage({ type: 'ci-personal-e-ready', pageId }, globalThis.location?.origin); } catch (_) {}
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
       // Title and body belong to the same RLS-protected account/page record.
