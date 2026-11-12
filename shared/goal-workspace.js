@@ -335,11 +335,21 @@ function renderMasterPriorities() {
   // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks (priority AND standard)
   // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
   // goal header. The old separate "TO DO LIST" section below was removed.
-  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant. Added a slot where
-  // the parent (member-design-test) can relocate the Personal E box into.
+  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant.
+  // Scott 12 Nov 2026: persistent Personal E slot — if the parent already relocated the
+  // Personal E into our slot, preserve that subtree across re-renders instead of blowing
+  // it away with host.innerHTML = '...'. This was why Personal E kept disappearing.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+  let slot = host.querySelector('[data-todo-personal-e-slot]');
+  if (slot && slot.firstElementChild) {
+    // Slot already has the Personal E inside. Rebuild everything AROUND it without touching it.
+    const detached = slot;
+    host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+    host.querySelector('[data-todo-personal-e-slot]').replaceWith(detached);
+  } else {
+    host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+  }
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(host);
 }
