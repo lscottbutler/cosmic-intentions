@@ -6133,17 +6133,16 @@ async function initCitadelNoteFrame(nextPage) {
       _syncAdminPageBox(ab1.querySelector('[data-block]'), !!_blockCache[ab1Slug].trim());
     }
     // Scott 10 Nov 2026: Admin "welcome" message box — admin-editable only, appears above Personal E.
-    // Scott 11 Nov 2026: restored the inline pen so Scott can edit this box directly on the player
-    // page (with the "open to edit" admin-page flow). Members still never see the pen — _syncAdminPageBox
-    // + CSS gate it behind the is-owner class (window.ciOwnerAccess === true).
+    // Scott 12 Nov 2026 (hard rule, CLAUDE.md): NO pen on admin boxes on player
+    // pages — edits happen on the admin page only. Scott 13 Nov 2026: this box
+    // also hosts the per-page "where you stand" recap, rendered read-only below.
     {
       const welcomeSlug = 'page-welcome-' + pageId;
       const welcome = document.createElement('section');
       welcome.className = 'ci-admin-page-box ci-page-welcome';
       welcome.dataset.pageBox = 'Welcome';
       welcome.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' welcome message');
-      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit welcome message" title="Edit welcome message">' + _adminPenIcon() + '</button></span>';
-      welcome.querySelector('button').addEventListener('click', e => { e.stopPropagation(); adminEditBlock(welcomeSlug); });
+      welcome.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + welcomeSlug + '"></div>';
       mount.style.padding = '20px';
       mount.appendChild(welcome);
       const welcomeRow = await sb.from('content_blocks').select('body').eq('slug', welcomeSlug).maybeSingle();
@@ -6151,6 +6150,7 @@ async function initCitadelNoteFrame(nextPage) {
       _blockCache[welcomeSlug] = welcomeRow.data?.body || '';
       _fillBlockEl(welcome.querySelector('[data-block]'), _blockCache[welcomeSlug]);
       _syncAdminPageBox(welcome.querySelector('[data-block]'), !!_blockCache[welcomeSlug].trim());
+      renderPageRecap(welcome, pageId);
     }
     if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
       const instructions = document.createElement('section');
