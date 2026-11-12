@@ -5136,8 +5136,9 @@ function ensureAdminPageBoxStyles() {
     html.ci-phone .ci-carousel-caption{display:flex;align-items:center;justify-content:center;height:calc(56.25cqw * var(--ci-band,.1222) * 3);margin-top:-1px;padding:0 3cqw;box-sizing:border-box;color:#fff;font:400 5.3cqw/1.2 'Roboto Condensed',Arial,sans-serif;letter-spacing:.14em;text-align:center}\n    .ci-admin-page-box-edit{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #111;border-radius:8px;background:#fff;color:#111;cursor:pointer;padding:0}
     .ci-admin-page-box-edit:hover,.ci-admin-page-box-edit:focus-visible{background:#f1c40f;outline:2px solid #111;outline-offset:2px}
     .ci-admin-page-box-content{min-height:48px;padding:15px 52px 52px 18px;font-family:'Dancing Script',cursive;font-size:14pt;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
-    .ci-admin-page-box-edit-slot{display:none;position:absolute;right:12px;bottom:12px;z-index:2}
-    .ci-admin-page-box.is-owner .ci-admin-page-box-edit-slot{display:block}
+    /* Scott 12 Nov 2026 (hard rule): no inline admin pens on player pages. ALL admin box
+       edits happen on the admin page. The edit slot stays display:none even for owner. */
+    .ci-admin-page-box-edit-slot{display:none!important;position:absolute;right:12px;bottom:12px;z-index:2}
     .ci-admin-page-box-placeholder{color:#727272;font-style:italic}
     .ci-admin-page-box.is-editing .ci-admin-page-box-edit-slot{display:none}
     .ci-admin-page-box-inline{padding:14px;border-top:1px solid #d9dee5;background:#fff}

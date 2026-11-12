@@ -28,6 +28,11 @@ header iframe via adoptNode into `[data-todo-personal-e-slot]`. KEEP the blue pe
 it's the user's own message. The admin WELCOME MESSAGE is a DIFFERENT box that
 lives above it in the header, not in the TO DO slot.
 
+**All admin box edits happen on the admin page — no inline pens on player pages.**
+`.ci-admin-page-box-edit-slot` is `display:none!important` always. Do not try to
+restore the owner pen on any admin box on any player page, ever. If you need to
+change admin box text, use the admin page.
+
 ## MISSION — THE BACKBONE OF CI (Scott, 2 Nov 2026)
 **Cosmic Intentions helps people repeatedly think and act as the person they intend to be.**
 Every feature, page, message and design choice must serve this. Test any request or idea against it:
