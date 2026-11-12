@@ -4825,6 +4825,11 @@ html.ci-header-note .ci-page-welcome .ci-admin-page-box-content{padding:20px 22p
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content *{font-family:inherit!important;color:inherit!important}
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content p{margin:0 0 .6em}
 html.ci-header-note .ci-page-welcome .ci-admin-page-box-content ul,html.ci-header-note .ci-page-welcome .ci-admin-page-box-content ol{margin:.4em 0 .6em;padding-left:1.4em}
+/* 2026-11-13 Scott (hard rule, CLAUDE.md 12 Nov): NO inline pen on any admin box
+   on any player/member page — admin edits happen on the Admin page only. This
+   rule was documented but missing from the stylesheet. */
+.ci-admin-page-box-edit-slot{display:none!important}
+
 /* 2026-11-13 Scott: per-page "where you stand" recap inside the admin welcome box. */
 html.ci-header-note .ci-page-recap{margin:16px 0 2px;border-top:1px solid #e7e7e7;padding-top:14px}
 html.ci-header-note .ci-page-recap-title{font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:2px;color:#8a97a6;margin:0 0 10px}
