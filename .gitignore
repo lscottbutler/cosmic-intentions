@@ -80,3 +80,10 @@ images/home-row/*.png
 images/home-row/*.jpg
 images/home-row/*.jpeg
 .claude/ALLOW_PUSH
+
+# Local preview checkout and full recovery copy (never publish)
+/_local-backups/
+/_local-preview/
+
+# exceeds GitHub 100MB limit - local backup only
+images/troughs.zip

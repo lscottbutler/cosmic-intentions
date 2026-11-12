@@ -1,0 +1,26 @@
+﻿import {test,expect} from '@playwright/test';
+for(const width of [1040,390]) test(`Goal editing lives in My Thoughts ${width}`,async({page},testInfo)=>{
+ await page.setViewportSize({width,height:1000});
+ const writes=[];
+ await page.route('**/*.supabase.co/**',r=>{if(r.request().method()==='POST'&&r.request().url().includes('/intentions'))writes.push(r.request().postDataJSON());return r.fulfill({contentType:'application/json',body:'[]'});});
+ await page.goto('/standalone/member-design-test.html?feature=thoughts');
+ const f=page.frameLocator('#ci-review-frame').frameLocator('#experienceFrame');
+ await expect(f.locator('#thoughtGoalEditors textarea')).toHaveCount(3);
+ const placement=await f.locator('#thoughtGoalSection').evaluate(e=>({before:!!e.previousElementSibling.querySelector('#pb-lifegoal'),after:!!e.nextElementSibling.querySelector('#pb-words')}));
+ expect(placement).toEqual({before:true,after:true});
+ const title='I AM BUILDING A TEST GOAL';
+ await f.locator('#thought-goal-0').fill(title);
+ await f.locator('#pb-goal-edit-0').getByRole('button',{name:'SAVE',exact:true}).click();
+ await expect.poll(()=>writes.some(rows=>(Array.isArray(rows)?rows:[rows]).some(row=>row.title===title))).toBe(true);
+ await f.locator('#thought-goal-0').fill('Unsaved change');
+ await f.locator('#pb-goal-edit-0').getByRole('button',{name:'CANCEL',exact:true}).click();
+ await expect(f.locator('#thought-goal-0')).toHaveValue(title);
+ await f.locator('#thoughtGoalSection').screenshot({path:testInfo.outputPath('thought-goals.png')});
+ await page.goto('/standalone/member-design-test.html?feature=goals');
+ await expect(f.locator('#pbIntentionList details')).toHaveCount(3);
+ await expect(f.locator('#page-setup').getByRole('button',{name:/Edit Goal/})).toHaveCount(0);
+ await expect(f.locator('#page-setup #pbIntentionList textarea')).toHaveCount(0);
+ await f.locator('#pbIntentionList summary').first().click();
+ await expect(f.getByRole('button',{name:'VISUALIZATION',exact:true}).first()).toBeVisible();
+ await expect(f.getByRole('button',{name:'ROADMAP',exact:true}).first()).toBeVisible();
+});

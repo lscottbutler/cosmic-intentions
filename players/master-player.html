@@ -204,6 +204,7 @@
     .shell .site-menu-button{top:20px;transform:none;background:#292929}
     #standaloneSiteMenu{inset:76px auto auto max(12px,8vw);max-height:calc(100dvh - 88px)}
   </style>
+  <link rel="stylesheet" href="/players/citadel-appearance.css">
 </head>
 <body>
   <main class="shell home-mode" data-template-name="MASTER PLAYER TEMPLATE" data-template-status="locked" aria-label="MASTER PLAYER TEMPLATE">
@@ -573,6 +574,12 @@
         deck.classList.toggle('meditation-mode',active);
         deck.classList.toggle('meditation-session-active',active&&meditationSessionActive);
         shell.classList.toggle('meditation-player-mode',active);
+        const closingNote=document.getElementById('citadelBottomNote');
+        const controls=shell.querySelector('.deck');
+        if(closingNote && controls){
+          if(active) controls.after(closingNote);
+          else controls.before(closingNote);
+        }
         meditationControls.hidden=!active||!meditationSessionActive;
         setMeditationMenuOpen(active);
       }
