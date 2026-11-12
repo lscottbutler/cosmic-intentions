@@ -276,11 +276,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('master-control-panel',action!=='admin');
   // Scott 11 Nov 2026: admin page keeps only the hamburger menu — hide the other icons.
   document.body.classList.toggle('ci-admin-feature',action==='admin');
-  // Scott 11 Nov 2026: when switching TO the TO DO page, try to relocate Personal E
-  // into the TO DO slot (retry until the slot renders).
+  // Scott 12 Nov 2026: longer + more frequent retry window for Personal E relocation.
+  // The TO DO slot lives inside ci-review-frame which can take seconds to finish loading.
   if (action === 'goal-workspace') {
     let tries = 0;
-    const t = setInterval(() => { movePersonalEToTodo(); if (++tries > 30) clearInterval(t); }, 200);
+    const t = setInterval(() => {
+      const moved = movePersonalEToTodo();
+      if (moved || ++tries > 80) clearInterval(t);
+    }, 150);
   }
   const headerSearch=document.getElementById('player-search');
   const searchParent=action!=='admin'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
@@ -588,19 +591,29 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // (replacing the removed "TO DO LIST" heading). On every other page it stays where the iframe
  // put it (below the WELCOME MESSAGE card).
  function movePersonalEToTodo(){
-  if(current!=='goal-workspace')return;
-  let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return;}
+  if(current!=='goal-workspace')return false;
+  let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
   const el=doc?.querySelector('.ci-player-personal-e-box');
-  if(!el)return;
-  // The TO DO slot lives in the main player iframe (ci-review-frame).
+  if(!el)return false;
+  // The TO DO slot lives in the experienceFrame nested inside ci-review-frame, where
+  // goal-workspace.js actually runs. Search both levels to locate it.
   const reviewFrame=document.getElementById('ci-review-frame');
-  let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return;}
-  const slot=reviewDoc?.querySelector('[data-todo-personal-e-slot]');
-  if(!slot)return;
-  if(el.parentElement===slot)return;
+  let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
+  if(!reviewDoc)return false;
+  let slot=reviewDoc.querySelector('[data-todo-personal-e-slot]');
+  let targetDoc=reviewDoc;
+  if(!slot){
+   for(const inner of reviewDoc.querySelectorAll('iframe')){
+    let innerDoc;try{innerDoc=inner.contentDocument;}catch(_){continue;}
+    const found=innerDoc?.querySelector('[data-todo-personal-e-slot]');
+    if(found){slot=found;targetDoc=innerDoc;break;}
+   }
+  }
+  if(!slot)return false;
+  if(el.parentElement===slot)return true; // already moved
   while(slot.firstChild)slot.removeChild(slot.firstChild);
-  // Adopt into the target document before appending so cross-iframe ownership is clean.
-  slot.appendChild(reviewDoc.adoptNode(el));
+  slot.appendChild(targetDoc.adoptNode(el));
+  return true;
  }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
