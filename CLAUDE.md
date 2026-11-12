@@ -1,5 +1,27 @@
 # CLAUDE.md — Cosmic Intentions Project
 
+## PERSONAL E vs ADMIN BOX — NEVER CONFUSE THESE (Scott, 12 Nov 2026 — hard rule)
+Two completely different text boxes. Every time you forget this, Scott re-explains it.
+
+- **Personal E (member note)**: `.ci-player-personal-e-box`. Stored in
+  `player_personal_notes` table, keyed per-user via RLS. **The MEMBER edits it**
+  via the blue pen icon on the player page. Each user sees ONLY THEIR OWN. Scott,
+  as admin, does NOT edit this from the admin page — it's not his to change, it's
+  the member's private note.
+
+- **Admin box**: `.ci-admin-page-box` + friends. Stored in `content_blocks` table,
+  shared across all members. **ONLY Scott (admin) edits these**, and ONLY from the
+  admin page. Members see them read-only — **NO PEN ICON on the player page**.
+  Slugs: `page-welcome-<pageId>`, `page-ab1-<pageId>`, `page-instructions-<pageId>`,
+  `page-note-<pageId>-<n>`.
+
+When Scott asks for "an admin welcome", "admin message", "admin-only text", "not a
+personal e", "no pen" — he means ADMIN BOX. Use the content_blocks row, render it
+read-only, no pen, no edit affordance for members. He edits it from the admin page.
+
+Never stuff a Personal E into a spot that should be an admin box, and never put a
+pen on an admin box on the player page.
+
 ## MISSION — THE BACKBONE OF CI (Scott, 2 Nov 2026)
 **Cosmic Intentions helps people repeatedly think and act as the person they intend to be.**
 Every feature, page, message and design choice must serve this. Test any request or idea against it:
