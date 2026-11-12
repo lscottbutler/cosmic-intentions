@@ -336,27 +336,21 @@ function renderMasterPriorities() {
   }
   // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks.
   // Scott 11 Nov 2026: removed the "TO DO LIST" heading.
-  // Scott 12 Nov 2026: slot at the top for the ADMIN WELCOME MESSAGE
-  // (content_blocks row, slug page-welcome-goalworkspace). This is an ADMIN BOX — not
-  // a Personal E. NO blue pen. Members see it read-only. Scott edits it from the
-  // admin page. See the "PERSONAL E vs ADMIN BOX" rule at the top of CLAUDE.md.
+  // Scott 12 Nov 2026: slot at the top for the PERSONAL E box (member-editable, blue pen).
+  // The parent (member-design-test) relocates the Personal E DOM into this slot via
+  // adoptNode. The slot is preserved across re-renders — if it already holds Personal E,
+  // we splice the detached node back in instead of wiping it with innerHTML.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  host.innerHTML = '<div class="todo-admin-welcome" data-todo-admin-welcome hidden></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
-  document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
-  const welcome = host.querySelector('[data-todo-admin-welcome]');
-  if (welcome) {
-    welcome.style.cssText = 'margin:0 0 16px;padding:18px 22px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);font:400 16px/1.55 Arial,sans-serif;color:#171717;overflow-wrap:anywhere';
-    (async () => {
-      try {
-        const slug = 'page-welcome-goalworkspace';
-        const row = await sb.from('content_blocks').select('body').eq('slug', slug).maybeSingle();
-        const body = row?.data?.body?.trim() || '';
-        if (body) { welcome.innerHTML = body; welcome.hidden = false; }
-        else { welcome.hidden = true; }
-      } catch (_) { welcome.hidden = true; }
-    })();
+  const existingSlot = host.querySelector('[data-todo-personal-e-slot]');
+  if (existingSlot && existingSlot.firstElementChild) {
+    const detached = existingSlot;
+    host.innerHTML = '<div data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+    host.querySelector('[data-todo-personal-e-slot]').replaceWith(detached);
+  } else {
+    host.innerHTML = '<div data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
   }
+  document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(host);
 }
 

@@ -22,6 +22,12 @@ read-only, no pen, no edit affordance for members. He edits it from the admin pa
 Never stuff a Personal E into a spot that should be an admin box, and never put a
 pen on an admin box on the player page.
 
+**TO DO page specifically:** the box at the top of the TO DO list IS the Personal E
+(member's own message). It gets DOM-moved there by member-design-test.js from the
+header iframe via adoptNode into `[data-todo-personal-e-slot]`. KEEP the blue pen —
+it's the user's own message. The admin WELCOME MESSAGE is a DIFFERENT box that
+lives above it in the header, not in the TO DO slot.
+
 ## MISSION — THE BACKBONE OF CI (Scott, 2 Nov 2026)
 **Cosmic Intentions helps people repeatedly think and act as the person they intend to be.**
 Every feature, page, message and design choice must serve this. Test any request or idea against it:
