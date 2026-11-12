@@ -603,9 +603,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    }
   }
   if(!slot)return false;
-  if(el.parentElement===slot)return true;
+  if(el.parentElement===slot){
+   // Already moved — just make sure the pen is still hidden across re-renders.
+   el.querySelectorAll('button').forEach(b=>b.style.setProperty('display','none','important'));
+   return true;
+  }
   while(slot.firstChild)slot.removeChild(slot.firstChild);
   slot.appendChild(targetDoc.adoptNode(el));
+  // Scott 12 Nov 2026: no blue pen on the TO DO Personal E box — admin edits elsewhere.
+  el.querySelectorAll('button').forEach(b=>b.style.setProperty('display','none','important'));
   return true;
  }
  window.addEventListener('message',event=>{
