@@ -6192,6 +6192,7 @@ async function initCitadelNoteFrame(nextPage) {
       personal.append(heading,copy,edit);
       mount.style.padding='20px';
       mount.appendChild(personal);
+      try { globalThis.parent?.postMessage({ type: 'ci-personal-e-ready', pageId }, globalThis.location?.origin); } catch (_) {}
       let savedBody='';
       // Visibility belongs to this signed-in member and page, not the admin ATB 1.
       // Title and body belong to the same RLS-protected account/page record.

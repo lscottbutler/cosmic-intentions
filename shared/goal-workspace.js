@@ -334,32 +334,23 @@ function renderMasterPriorities() {
     document.getElementById('goalWorkspaceEmpty').style.display = 'none';
     document.getElementById('goalWorkspaceContent').style.display = 'none';
   }
-  // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks (priority AND standard)
-  // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
-  // goal header. The old separate "TO DO LIST" section below was removed.
-  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant.
-  // Scott 12 Nov 2026: slot at the top for the ADMIN WELCOME MESSAGE (content_blocks row
-  // page-welcome-goalworkspace). Admin-only — NO blue pen, members see it read-only. Scott
-  // edits the text from the admin page, not inline here.
+  // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks.
+  // Scott 11 Nov 2026: removed the "TO DO LIST" heading.
+  // Scott 12 Nov 2026: slot at the top for the Personal E box. The parent
+  // (member-design-test) relocates the Personal E DOM into this slot via adoptNode
+  // when the TO DO page loads. When the slot already holds the Personal E we preserve
+  // it across re-renders instead of blowing it away with host.innerHTML.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  host.innerHTML = '<div class="todo-admin-welcome" data-todo-admin-welcome hidden></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
-  document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
-  // Fetch and populate the admin welcome text. No pen icon anywhere.
-  const welcome = host.querySelector('[data-todo-admin-welcome]');
-  if (welcome) {
-    welcome.style.cssText = 'margin:0 0 16px;padding:18px 22px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);font:400 16px/1.55 Arial,sans-serif;color:#171717;overflow-wrap:anywhere';
-    // Scott 12 Nov 2026 (confirmed): WELCOME MESSAGE admin box — slug page-welcome-goalworkspace.
-    (async () => {
-      try {
-        const slug = 'page-welcome-goalworkspace';
-        const row = await sb.from('content_blocks').select('body').eq('slug', slug).maybeSingle();
-        const body = row?.data?.body?.trim() || '';
-        if (body) { welcome.innerHTML = body; welcome.hidden = false; }
-        else { welcome.hidden = true; }
-      } catch (_) { welcome.hidden = true; }
-    })();
+  const existingSlot = host.querySelector('[data-todo-personal-e-slot]');
+  if (existingSlot && existingSlot.firstElementChild) {
+    const detached = existingSlot;
+    host.innerHTML = '<div data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+    host.querySelector('[data-todo-personal-e-slot]').replaceWith(detached);
+  } else {
+    host.innerHTML = '<div data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
   }
+  document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
   setupTodoDisclosure(host);
 }
 
