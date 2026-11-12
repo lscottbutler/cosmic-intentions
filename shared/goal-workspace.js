@@ -1,4 +1,4 @@
-import { esc, intentions, goalLetter, openMasterDestination } from '../app.js';
+import { esc, intentions, goalLetter, openMasterDestination, sb } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
 import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
@@ -336,21 +336,27 @@ function renderMasterPriorities() {
   // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
   // goal header. The old separate "TO DO LIST" section below was removed.
   // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant.
-  // Scott 12 Nov 2026: persistent Personal E slot — if the parent already relocated the
-  // Personal E into our slot, preserve that subtree across re-renders instead of blowing
-  // it away with host.innerHTML = '...'. This was why Personal E kept disappearing.
+  // Scott 12 Nov 2026: slot at the top for the ADMIN WELCOME MESSAGE (content_blocks row
+  // page-welcome-goalworkspace). Admin-only — NO blue pen, members see it read-only. Scott
+  // edits the text from the admin page, not inline here.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  let slot = host.querySelector('[data-todo-personal-e-slot]');
-  if (slot && slot.firstElementChild) {
-    // Slot already has the Personal E inside. Rebuild everything AROUND it without touching it.
-    const detached = slot;
-    host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
-    host.querySelector('[data-todo-personal-e-slot]').replaceWith(detached);
-  } else {
-    host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
-  }
+  host.innerHTML = '<div class="todo-admin-welcome" data-todo-admin-welcome hidden></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
+  // Fetch and populate the admin welcome text. No pen icon anywhere.
+  const welcome = host.querySelector('[data-todo-admin-welcome]');
+  if (welcome) {
+    welcome.style.cssText = 'margin:0 0 16px;padding:18px 22px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);font:400 16px/1.55 Arial,sans-serif;color:#171717;overflow-wrap:anywhere';
+    (async () => {
+      try {
+        const slug = 'page-welcome-goalworkspace';
+        const row = await sb.from('content_blocks').select('body').eq('slug', slug).maybeSingle();
+        const body = row?.data?.body?.trim() || '';
+        if (body) { welcome.innerHTML = body; welcome.hidden = false; }
+        else { welcome.hidden = true; }
+      } catch (_) { welcome.hidden = true; }
+    })();
+  }
   setupTodoDisclosure(host);
 }
 
