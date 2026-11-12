@@ -1,4 +1,4 @@
-import { esc, intentions, goalLetter, openMasterDestination } from '../app.js';
+import { esc, intentions, goalLetter, openMasterDestination, sb } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
 import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
@@ -198,6 +198,8 @@ export function setupTodoDisclosure(host) {
     const color = '#4e4e4e';
     const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
     imp(title, 'background', color); imp(title, 'border-color', color); imp(title, 'color', '#fff');
+    // Scott 11-12 Nov 2026: unbold. h3 default is 700; we want medium weight.
+    imp(title, 'font-weight', '400');
     Object.assign(group.style, { position: 'relative', border: '3px solid ' + color, borderRadius: '12px', padding: '0 56px 10px 10px', margin: '0 0 18px', boxSizing: 'border-box' });
     imp(title, 'margin', '0 -56px 10px -10px'); imp(title, 'max-width', 'none'); imp(title, 'width', 'auto');
     imp(title, 'border-radius', '8px 8px 0 0'); imp(title, 'padding-right', '140px'); imp(title, 'min-height', '56px');
@@ -335,12 +337,29 @@ function renderMasterPriorities() {
   // Scott 10 Nov 2026: consolidated TO DO list — all unfinished tasks (priority AND standard)
   // in one section, filtered per goal by the P (priority) / S (standard) buttons in the
   // goal header. The old separate "TO DO LIST" section below was removed.
-  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant. Added a slot where
-  // the parent (member-design-test) can relocate the Personal E box into.
+  // Scott 11 Nov 2026: removed the "TO DO LIST" heading — redundant.
+  // Scott 12 Nov 2026: slot at the top for the ADMIN WELCOME MESSAGE (content_blocks row
+  // page-welcome-goalworkspace). Admin-only — NO blue pen, members see it read-only. Scott
+  // edits the text from the admin page, not inline here.
   const otherNode = document.getElementById('otherTodoTasks'); if (otherNode) otherNode.remove();
   const rows = masterPriorityTaskMarkup(null);
-  host.innerHTML = '<div id="todoPersonalESlot" data-todo-personal-e-slot></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
+  host.innerHTML = '<div class="todo-admin-welcome" data-todo-admin-welcome hidden></div>' + (rows || '<p class="goal-workspace-empty">No unfinished tasks yet. Add your first action in a goal workspace.</p>');
   document.querySelectorAll('#masterPriorityTasks .task-note-pencil').forEach(button => button.remove());
+  // Fetch and populate the admin welcome text. No pen icon anywhere.
+  const welcome = host.querySelector('[data-todo-admin-welcome]');
+  if (welcome) {
+    welcome.style.cssText = 'margin:0 0 16px;padding:18px 22px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);font:400 16px/1.55 Arial,sans-serif;color:#171717;overflow-wrap:anywhere';
+    // Scott 12 Nov 2026 (confirmed): WELCOME MESSAGE admin box — slug page-welcome-goalworkspace.
+    (async () => {
+      try {
+        const slug = 'page-welcome-goalworkspace';
+        const row = await sb.from('content_blocks').select('body').eq('slug', slug).maybeSingle();
+        const body = row?.data?.body?.trim() || '';
+        if (body) { welcome.innerHTML = body; welcome.hidden = false; }
+        else { welcome.hidden = true; }
+      } catch (_) { welcome.hidden = true; }
+    })();
+  }
   setupTodoDisclosure(host);
 }
 
