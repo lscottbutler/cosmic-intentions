@@ -14,6 +14,8 @@ import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs, getHabitList, createHabitPeriodMenu } from './shared/habits.js';
 import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins, archiveTaskToWins } from './shared/wins.js';
+// Scott 13 Nov 2026: per-page "where you stand" recap inside the admin welcome box.
+import { renderPageRecap } from './shared/recap.js';
 // Scott 11 Nov 2026: inline onclick on the TO DO ARCHIVE button calls this.
 globalThis.winArchiveTask = archiveTaskToWins;
 import { renderSleepLoop } from './shared/sleeploop.js';
@@ -6120,8 +6122,8 @@ async function initCitadelNoteFrame(nextPage) {
       ab1.className = 'ci-admin-page-box ci-page-ab1';
       ab1.dataset.pageBox = 'AB1';
       ab1.setAttribute('aria-label', ADMIN_PAGE_BOXES[pageId] + ' admin box 1');
-      ab1.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + ab1Slug + '"></div><span class="ci-admin-page-box-edit-slot" data-owner-only><button type="button" class="ci-admin-page-box-edit" aria-label="Edit AB1" title="Edit AB1">' + _adminPenIcon() + '</button></span>';
-      ab1.querySelector('button').addEventListener('click', e => { e.stopPropagation(); adminEditBlock(ab1Slug); });
+      // Hard rule (CLAUDE.md, 12 Nov 2026): no pen on admin boxes on player pages.
+      ab1.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + ab1Slug + '"></div>';
       mount.style.padding = '20px';
       mount.appendChild(ab1);
       const ab1Row = await sb.from('content_blocks').select('body').eq('slug', ab1Slug).maybeSingle();
@@ -6351,7 +6353,7 @@ async function initCitadelNoteFrame(nextPage) {
     report();
   } catch (error) {
     if (renderVersion !== citadelNoteRenderVersion) return;
-    console.error('[citadel-note] Could not load box:', boxNumber);
+    console.error('[citadel-note] Could not load box:', boxNumber, error);
     mount.innerHTML = '<p role="alert" style="margin:0;padding:12px;color:#171717;background:#fff">Administrator text could not load. Reload to try again.</p>';
     document.body.replaceChildren(mount, toastWrap);
     report();
