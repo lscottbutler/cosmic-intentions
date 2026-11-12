@@ -349,11 +349,10 @@ function renderMasterPriorities() {
   const welcome = host.querySelector('[data-todo-admin-welcome]');
   if (welcome) {
     welcome.style.cssText = 'margin:0 0 16px;padding:18px 22px;border:3px solid #303030;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(18,32,55,.08);font:400 16px/1.55 Arial,sans-serif;color:#171717;overflow-wrap:anywhere';
-    // Scott 12 Nov 2026: use the Box 3 (Above artwork, legacy) slug — that's where the TO DO
-    // intro text already lives (e.g. "My To Do List brings your goal-related actions…").
+    // Scott 12 Nov 2026 (confirmed): WELCOME MESSAGE admin box — slug page-welcome-goalworkspace.
     (async () => {
       try {
-        const slug = 'page-note-goalworkspace-3';
+        const slug = 'page-welcome-goalworkspace';
         const row = await sb.from('content_blocks').select('body').eq('slug', slug).maybeSingle();
         const body = row?.data?.body?.trim() || '';
         if (body) { welcome.innerHTML = body; welcome.hidden = false; }
