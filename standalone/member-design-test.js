@@ -276,6 +276,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.body.classList.toggle('master-control-panel',action!=='admin');
   // Scott 11 Nov 2026: admin page keeps only the hamburger menu — hide the other icons.
   document.body.classList.toggle('ci-admin-feature',action==='admin');
+  // Scott 12 Nov 2026: Personal E move retry on TO DO navigation.
+  if (action === 'goal-workspace') {
+    let tries = 0;
+    const t = setInterval(() => { const moved = movePersonalEToTodo(); if (moved || ++tries > 80) clearInterval(t); }, 150);
+  }
   const headerSearch=document.getElementById('player-search');
   const searchParent=action!=='admin'?document.querySelector('.shortcuts'):document.querySelector('.orientation');
   if(headerSearch.parentElement!==searchParent)searchParent.append(headerSearch);
@@ -578,8 +583,37 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    queueHeaderChange(src);
   }
  });
+ // Scott 12 Nov 2026: Personal E (user's own message) moves into the TO DO slot
+ // which lives inside the nested experienceFrame inside ci-review-frame.
+ function movePersonalEToTodo(){
+  if(current!=='goal-workspace')return false;
+  let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
+  const el=doc?.querySelector('.ci-player-personal-e-box');
+  if(!el)return false;
+  const reviewFrame=document.getElementById('ci-review-frame');
+  let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
+  if(!reviewDoc)return false;
+  let slot=reviewDoc.querySelector('[data-todo-personal-e-slot]');
+  let targetDoc=reviewDoc;
+  if(!slot){
+   for(const inner of reviewDoc.querySelectorAll('iframe')){
+    let innerDoc;try{innerDoc=inner.contentDocument;}catch(_){continue;}
+    const found=innerDoc?.querySelector('[data-todo-personal-e-slot]');
+    if(found){slot=found;targetDoc=innerDoc;break;}
+   }
+  }
+  if(!slot)return false;
+  if(el.parentElement===slot)return true;
+  while(slot.firstChild)slot.removeChild(slot.firstChild);
+  slot.appendChild(targetDoc.adoptNode(el));
+  return true;
+ }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
+  if(event.data?.type==='ci-personal-e-ready'){
+   let tries=0;const t=setInterval(()=>{const moved=movePersonalEToTodo();if(moved||++tries>80)clearInterval(t);},150);
+   return;
+  }
   if(event.data?.type==='ci-carousel-border-color'){
    const color=event.data.color;
    if(/^#[0-9a-f]{6}$/i.test(color)){
