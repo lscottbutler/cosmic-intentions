@@ -660,16 +660,19 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   return parts.join(' ');
  }
  function ensureReview(){
-  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
-  if(!rd?.body)return;
-  const old=rd.querySelector('[data-ci-review-box]');
+  // Scott 13 Nov 2026: REVIEW sits in the top card, between the page title and the quote image.
+  let hd;try{hd=headerNoteFrame.contentDocument;}catch(_){return;}
+  try{document.getElementById('ci-review-frame')?.contentDocument?.querySelector('[data-ci-review-box]')?.remove();}catch(_){}
+  if(!hd?.body)return;
+  const old=hd.querySelector('[data-ci-review-box]');
   if(current!=='daily-habits'){old?.remove();return;}
-  const slot=rd.querySelector('[data-ci-welcome-slot]');if(!slot)return;
+  const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
+  if(!anchor)return;
   let box=old;
-  if(!box||box.parentElement!==slot){old?.remove();box=rd.createElement('section');box.setAttribute('data-ci-review-box','');
-   box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 14px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
+  if(!box||box.nextElementSibling!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
+   box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 16px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
    box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
-   slot.prepend(box);}
+   anchor.before(box);}
   const t=habitsReviewText(),p=box.querySelector('[data-ci-review-text]');if(p.innerHTML!==t)p.innerHTML=t;
  }
  setInterval(ensureReview,1000);
