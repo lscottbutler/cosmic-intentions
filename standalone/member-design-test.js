@@ -666,8 +666,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   try{document.getElementById('ci-review-frame')?.contentDocument?.querySelector('[data-ci-review-box]')?.remove();}catch(_){}
   if(!hd?.body)return;
   const old=hd.querySelector('[data-ci-review-box]');
-  const REVIEW_PAGES={'daily-habits':'habits','goal-workspace':'goalworkspace',goals:'setup',meditation:'meditation','super-viz':'super-viz',visualization:'vizlibrary',gratitude:'gratitude','new-gratitude':'gratitude'};
-  const reviewPage=REVIEW_PAGES[current];
+  // Which page the header is showing (sent by the header with ci-personal-e-ready).
+  const REVIEW_PAGES={habits:'habits',goalworkspace:'goalworkspace',setup:'setup',meditation:'meditation','super-viz':'super-viz',vizlibrary:'vizlibrary',vizgoal:'vizgoal',gratitude:'gratitude'};
+  const reviewPage=current==='admin'?null:REVIEW_PAGES[window.__ciHeaderPage];
   if(!reviewPage){old?.remove();return;}
   const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
   if(!anchor)return;
@@ -705,6 +706,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
+   window.__ciHeaderPage=event.data.pageId;
    window.__ciWelcome=null;
    // Keep re-checking: the TO DO frame can reload after the move and lose the box.
    clearInterval(window.__ciWelcomeTimer);window.__ciWelcomeTimer=setInterval(movePersonalEToTodo,700);
