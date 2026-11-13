@@ -324,7 +324,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      if(char===' '){
       tile.style.cssText='width:.35em;flex:0 0 .35em';title.append(tile);word=null;continue;
      }
-     const color=letterIndex++%2?neutral:accent;
+     // Scott 13 Nov 2026: all titles alternate dark grey / black per letter.
+     const color=letterIndex++%2?'#171717':'#4a4a4a';
      tile.className='ci-title-tile';
      tile.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:0 3px;line-height:1.2';
      if(!word){word=document.createElement('span');word.className='ci-title-word';word.setAttribute('aria-hidden','true');word.style.cssText='display:inline-flex;flex-wrap:nowrap;gap:3px';title.append(word);}

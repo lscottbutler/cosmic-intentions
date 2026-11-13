@@ -3095,7 +3095,8 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
    repeat across each requested page header; card dimensions are recalculated from
    the real host width so short and long labels remain single-line at every zoom. */
 (function () {
-  var colors = ['#ed1c24','#f47a39','#ffc515','#9ac62c','#10a851','#2298d0','#1269a7'];
+  // Scott 13 Nov 2026: every title alternates dark grey / black per letter, site-wide.
+  var colors = ['#4a4a4a','#171717'];
   var tilts = [
     'rotate(-2deg) translateY(-1px)',
     'rotate(1.8deg) translateY(5px)',
@@ -3150,7 +3151,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
     row.className = 'ci-lettermark-row';
     var visibleLetterIndex = 0;
     var letterPalette = host.classList.contains('citadel-section-lettermark')
-      ? ['#363636', '#777777']
+      ? ['#4a4a4a', '#171717']
       : colors;
     Array.from(label).forEach(function (character, index) {
       var card = document.createElement('span');
