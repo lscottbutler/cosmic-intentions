@@ -642,10 +642,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const today=new Date();today.setHours(0,0,0,0);
   let streak=0;const d=new Date(today);if(!done(d))d.setDate(d.getDate()-1);
   while(done(d)&&streak<730){streak++;d.setDate(d.getDate()-1);}
-  // Average over the last 7 full days, counting only days since the member started ticking.
   let sum=0,days=0;
-  for(let i=1;i<=7;i++){const x=new Date(today);x.setDate(today.getDate()-i);const n=done(x);if(n||days)days++;sum+=n;}
-  if(!days){days=1;sum=done(today);}
+  // Today plus the previous 6 days, starting from the first day with a check-off.
+  for(let i=6;i>=0;i--){const x=new Date(today);x.setDate(today.getDate()-i);const n=done(x);if(n||days)days++;sum+=n;}
+  if(!days){days=1;sum=0;}
   const pct=total?Math.round(100*sum/(days*total)):0;
   const name=String((read('ci_pegboard')||{})['pb-name']||'').trim().split(/\s+/)[0];
   const lead=name?'<strong>'+esc(name)+'</strong>, y':'Y';
