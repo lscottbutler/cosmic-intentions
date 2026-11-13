@@ -65,7 +65,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  document.querySelector('.orientation').append(instructionsTrigger);
  // Habits usage stats (text placeholders; styling to be designed later).
  const habitStats=document.createElement('div');habitStats.id='habit-stats';habitStats.hidden=true;
- habitStats.innerHTML='<p class="hs-message" id="hs-message" aria-live="polite"></p><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
+ // Scott 13 Nov 2026: the "Great effort today…" message is removed (REVIEW box replaces it).
+ habitStats.innerHTML='<p class="hs-message" id="hs-message" aria-live="polite" hidden></p><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
  document.querySelector('.orientation').append(habitStats);
  function updateHabitStats(){
   if(habitStats.hidden)return;
