@@ -592,7 +592,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
   const live=doc?.querySelector('.ci-page-welcome');
-  if(live){
+  // Only capture after the header has finished filling the welcome (Personal E renders after it).
+  if(live&&doc.querySelector('.ci-player-personal-e-box')){
    const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
    window.__ciWelcome={page:current,html:empty?'':live.outerHTML};live.remove();
   }
