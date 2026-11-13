@@ -603,13 +603,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
   if(!reviewDoc?.body)return false;
   const docs=[reviewDoc];
-  for(const inner of reviewDoc.querySelectorAll('iframe')){try{if(inner.contentDocument?.body)docs.push(inner.contentDocument);}catch(_){}}
+  let main=reviewDoc,mainH=0;
+  for(const inner of reviewDoc.querySelectorAll('iframe')){try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;main=d;}}catch(_){}}
   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
   if(!w.html)return true;
   let slot=null,targetDoc=null;
   for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
   if(!slot){
-   targetDoc=docs[docs.length-1];
+   targetDoc=main; // the visible page content (tallest frame), not hidden helper frames
    slot=targetDoc.querySelector('[data-ci-welcome-slot]');
    if(!slot){slot=targetDoc.createElement('div');slot.setAttribute('data-ci-welcome-slot','');slot.style.cssText='padding:16px 16px 0;box-sizing:border-box';targetDoc.body.prepend(slot);}
   }
