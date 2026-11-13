@@ -590,8 +590,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
   // Scott 13 Nov 2026: SWAPPED — the admin WELCOME box now goes into the TO DO slot;
   // Personal E stays in the top header card.
-  const el=doc?.querySelector('.ci-page-welcome');
-  if(!el)return false;
+  const live=doc?.querySelector('.ci-page-welcome');
+  if(live){window.__ciWelcomeHTML=live.outerHTML;live.remove();}
+  if(!window.__ciWelcomeHTML)return false;
   const reviewFrame=document.getElementById('ci-review-frame');
   let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
   if(!reviewDoc)return false;
@@ -605,7 +606,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    }
   }
   if(!slot)return false;
-  if(el.parentElement===slot)return true;
+  if(slot.querySelector('.ci-page-welcome'))return true;
   while(slot.firstChild)slot.removeChild(slot.firstChild);
   if(!targetDoc.getElementById('ci-moved-welcome-style')){
    const css=[];
@@ -614,13 +615,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important}';
    targetDoc.head.appendChild(st);
   }
-  slot.appendChild(targetDoc.adoptNode(el));
+  const tmp=targetDoc.createElement('div');tmp.innerHTML=window.__ciWelcomeHTML;slot.appendChild(tmp.firstElementChild);
   return true;
  }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
-   let tries=0;const t=setInterval(()=>{const moved=movePersonalEToTodo();if(moved||++tries>80)clearInterval(t);},150);
+   window.__ciWelcomeHTML=null;
+   // Keep re-checking: the TO DO frame can reload after the move and lose the box.
+   clearInterval(window.__ciWelcomeTimer);window.__ciWelcomeTimer=setInterval(movePersonalEToTodo,700);
    return;
   }
   if(event.data?.type==='ci-carousel-border-color'){
