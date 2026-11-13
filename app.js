@@ -5481,9 +5481,51 @@ if (typeof window !== 'undefined') {
   });
 }
 
+/* ── QUOTE LIBRARY (Scott 13 Nov 2026) ─────────────────────────────
+   100 admin quote + author rows, stored as JSON in content_blocks slug
+   'quote-library'. They rotate in the 16:9 quote band (shared/trough-rotation.js). */
+const QUOTE_LIBRARY_SLUG = 'quote-library', QUOTE_LIBRARY_ROWS = 100;
+function _parseQuoteLibrary(body) { try { const a = JSON.parse(body || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function renderQuoteLibraryAdmin() {
+  const host = document.getElementById('ci-quote-library');
+  if (!host || host.dataset.ready) return;
+  host.dataset.ready = '1';
+  const saved = _parseQuoteLibrary(_blockCache[QUOTE_LIBRARY_SLUG]);
+  const inp = 'box-sizing:border-box;width:100%;border:1px solid #bccbdc;border-radius:6px;padding:8px 10px;font:400 14px/1.4 Arial,sans-serif;color:#171717;background:#fff';
+  let html = '';
+  for (let i = 0; i < QUOTE_LIBRARY_ROWS; i++) {
+    const q = saved[i] || {};
+    html += `<div style="display:grid;grid-template-columns:34px minmax(0,1fr) minmax(120px,220px);gap:8px;align-items:start">
+      <span style="font:700 12px/34px Arial,sans-serif;color:#8a97a6;text-align:right">${i + 1}</span>
+      <textarea data-ql-quote="${i}" rows="2" placeholder="Quote ${i + 1}" style="${inp};resize:vertical">${esc(q.quote || '')}</textarea>
+      <input data-ql-author="${i}" type="text" placeholder="Author" value="${esc(q.author || '')}" style="${inp}">
+    </div>`;
+  }
+  host.innerHTML = html;
+}
+window.saveQuoteLibrary = async function () {
+  if (!window.ciOwnerAccess) return;
+  const rows = [];
+  for (let i = 0; i < QUOTE_LIBRARY_ROWS; i++) {
+    const q = (document.querySelector(`[data-ql-quote="${i}"]`)?.value || '').trim();
+    const a = (document.querySelector(`[data-ql-author="${i}"]`)?.value || '').trim();
+    rows.push(q ? { quote: q, author: a } : {});
+  }
+  while (rows.length && !rows[rows.length - 1].quote) rows.pop();
+  const body = JSON.stringify(rows);
+  const status = document.querySelectorAll('.ci-ql-status');
+  status.forEach(s => { s.textContent = 'Saving…'; });
+  const { error } = await sb.from('content_blocks').upsert({ slug: QUOTE_LIBRARY_SLUG, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+  _blockCache[QUOTE_LIBRARY_SLUG] = body;
+  globalThis.ciQuoteLibrary = rows.filter(r => r.quote);
+  status.forEach(s => { s.textContent = error ? '✗ Error — ' + error.message : `✓ Saved ${globalThis.ciQuoteLibrary.length} quotes`; });
+  if (!error) setTimeout(() => status.forEach(s => { s.textContent = ''; }), 4000);
+};
+
 async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
+  try { setTimeout(renderQuoteLibraryAdmin, 0); } catch (e) {}
   data.forEach(({ slug, body }) => {
     _blockCache[slug] = body || '';
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
@@ -6110,6 +6152,7 @@ async function initCitadelNoteFrame(nextPage) {
       ab1.innerHTML = '<div class="ci-admin-page-box-content" data-block="' + ab1Slug + '"></div>';
       mount.style.padding = '20px';
       mount.appendChild(ab1);
+      if (!globalThis.ciQuoteLibrary) sb.from('content_blocks').select('body').eq('slug', QUOTE_LIBRARY_SLUG).maybeSingle().then(r => { globalThis.ciQuoteLibrary = _parseQuoteLibrary(r.data?.body).filter(q => q && q.quote); }).catch(() => {});
       const ab1Row = await sb.from('content_blocks').select('body').eq('slug', ab1Slug).maybeSingle();
       if (renderVersion !== citadelNoteRenderVersion) return;
       _blockCache[ab1Slug] = ab1Row.data?.body || '';

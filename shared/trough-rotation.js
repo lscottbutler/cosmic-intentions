@@ -22,9 +22,12 @@ function nextQuote(pageId){
  const k=(_rot.get(pageId)||0);_rot.set(pageId,k+1);
  const q=globalThis.ciPageQuote,page=q&&q.pageId===pageId&&q.text?q.text:'';
  const mine=myLines(),lib=libraryLines();
- const slot=k%3;
+ // Order: page quote → member's own line → Admin QUOTE LIBRARY → Entrepreneur Library.
+ const admin=(globalThis.ciQuoteLibrary||[]).filter(q=>q&&q.quote);
+ const slot=k%4;
  if(slot===0&&page)return page;
  if(slot===1&&mine.length){const m=any(mine);return m.text+' — '+m.author;}
+ if(slot===2&&admin.length){const a=any(admin);return a.author?a.quote+' — '+a.author:a.quote;}
  if(lib.length){const l=any(lib);return l.text+' — '+l.author;}
  return page;
 }
