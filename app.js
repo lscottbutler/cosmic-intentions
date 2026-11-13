@@ -6136,7 +6136,7 @@ async function initCitadelNoteFrame(nextPage) {
       _blockCache[welcomeSlug] = welcomeRow.data?.body || '';
       _fillBlockEl(welcome.querySelector('[data-block]'), _blockCache[welcomeSlug]);
       _syncAdminPageBox(welcome.querySelector('[data-block]'), !!_blockCache[welcomeSlug].trim());
-      renderPageRecap(welcome, pageId);
+      // Scott 13 Nov 2026: "where you stand" recap removed from the welcome box.
     }
     if (pageInstructions.data?.body?.trim() || window.ciOwnerAccess) {
       const instructions = document.createElement('section');
