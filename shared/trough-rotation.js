@@ -19,17 +19,14 @@ function myLines(){
 const _rot=new Map();
 const any=a=>a[Math.floor(Math.random()*a.length)];
 function nextQuote(pageId){
- const k=(_rot.get(pageId)||0);_rot.set(pageId,k+1);
- const q=globalThis.ciPageQuote,page=q&&q.pageId===pageId&&q.text?q.text:'';
- const mine=myLines(),lib=libraryLines();
- // Order: page quote → member's own line → Admin QUOTE LIBRARY → Entrepreneur Library.
+ // Scott 13 Nov 2026: the 16:9 quote band shows ONLY the Admin QUOTE LIBRARY (100 quotes),
+ // shuffled so the same quote doesn't repeat until all have shown.
  const admin=(globalThis.ciQuoteLibrary||[]).filter(q=>q&&q.quote);
- const slot=k%4;
- if(slot===0&&page)return page;
- if(slot===1&&mine.length){const m=any(mine);return m.text+' — '+m.author;}
- if(slot===2&&admin.length){const a=any(admin);return a.author?a.quote+' — '+a.author:a.quote;}
- if(lib.length){const l=any(lib);return l.text+' — '+l.author;}
- return page;
+ if(!admin.length)return '';
+ let bag=_rot.get('bag');
+ if(!bag||!bag.length){bag=admin.map((_,i)=>i).sort(()=>Math.random()-.5);_rot.set('bag',bag);}
+ const a=admin[bag.pop()]||admin[0];
+ return a.author?a.quote+' — '+a.author:a.quote;
 }
 
 // Static, user-supplied artwork. Only artwork IDs are stored; no member content.
@@ -86,7 +83,7 @@ export function attachTrough(shell,pageId){
    if(item.smallImage){image.srcset=`${item.smallImage} 640w, ${item.image} 1280w`;image.sizes='(max-width: 700px) 100vw, 960px';}
    card.appendChild(image);
    // Phones: the caption baked into the art is cropped off and redrawn below it, 3x taller, text 2x (Scott, 3 Nov 2026).
-   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const qtext=nextQuote(pageId);if(qtext){const q={text:qtext};const i=q.text.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?q.text.slice(0,i):q.text;au.textContent=i>0?q.text.slice(i+3):'';cap.append(qt);if(au.textContent)cap.append(au);cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');}else cap.textContent=item.caption;card.appendChild(cap);}
+   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const fill=qtext=>{const i=qtext.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?qtext.slice(0,i):qtext;au.textContent=i>0?qtext.slice(i+3):'';cap.replaceChildren(qt);if(au.textContent)cap.append(au);};cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');const qtext=nextQuote(pageId);if(qtext)fill(qtext);else{let n=0;const w=setInterval(()=>{const t=nextQuote(pageId);if(t){fill(t);clearInterval(w);}else if(++n>40)clearInterval(w);},300);}card.appendChild(cap);}
   }else{
    const text=document.createElement('p');text.className='ci-carousel-text';text.textContent=item.text||'';card.appendChild(text);
   }
