@@ -585,43 +585,49 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  });
  // Scott 12 Nov 2026: Personal E (user's own message) moves into the TO DO slot
  // which lives inside the nested experienceFrame inside ci-review-frame.
+ // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
+ // quote image; the admin WELCOME box moves out of the header to the top of the page
+ // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
  function movePersonalEToTodo(){
-  if(current!=='goal-workspace')return false;
+  if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
-  // Scott 13 Nov 2026: SWAPPED — the admin WELCOME box now goes into the TO DO slot;
-  // Personal E stays in the top header card.
   const live=doc?.querySelector('.ci-page-welcome');
-  if(live){window.__ciWelcomeHTML=live.outerHTML;live.remove();}
-  if(!window.__ciWelcomeHTML)return false;
+  if(live){
+   const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
+   window.__ciWelcome={page:current,html:empty?'':live.outerHTML};live.remove();
+  }
+  const w=window.__ciWelcome;
+  if(!w||w.page!==current)return false;
   const reviewFrame=document.getElementById('ci-review-frame');
   let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
-  if(!reviewDoc)return false;
-  let slot=reviewDoc.querySelector('[data-todo-personal-e-slot]');
-  let targetDoc=reviewDoc;
+  if(!reviewDoc?.body)return false;
+  const docs=[reviewDoc];
+  for(const inner of reviewDoc.querySelectorAll('iframe')){try{if(inner.contentDocument?.body)docs.push(inner.contentDocument);}catch(_){}}
+  docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
+  if(!w.html)return true;
+  let slot=null,targetDoc=null;
+  for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
   if(!slot){
-   for(const inner of reviewDoc.querySelectorAll('iframe')){
-    let innerDoc;try{innerDoc=inner.contentDocument;}catch(_){continue;}
-    const found=innerDoc?.querySelector('[data-todo-personal-e-slot]');
-    if(found){slot=found;targetDoc=innerDoc;break;}
-   }
+   targetDoc=docs[docs.length-1];
+   slot=targetDoc.querySelector('[data-ci-welcome-slot]');
+   if(!slot){slot=targetDoc.createElement('div');slot.setAttribute('data-ci-welcome-slot','');slot.style.cssText='padding:16px 16px 0;box-sizing:border-box';targetDoc.body.prepend(slot);}
   }
-  if(!slot)return false;
   if(slot.querySelector('.ci-page-welcome'))return true;
   while(slot.firstChild)slot.removeChild(slot.firstChild);
   if(!targetDoc.getElementById('ci-moved-welcome-style')){
    const css=[];
    for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
-    for(const r of rules){if(r.selectorText&&/ci-page-welcome|ci-page-recap/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
+    for(const r of rules){if(r.selectorText&&/ci-page-welcome/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
    const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important}';
    targetDoc.head.appendChild(st);
   }
-  const tmp=targetDoc.createElement('div');tmp.innerHTML=window.__ciWelcomeHTML;slot.appendChild(tmp.firstElementChild);
+  const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
   return true;
  }
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
-   window.__ciWelcomeHTML=null;
+   window.__ciWelcome=null;
    // Keep re-checking: the TO DO frame can reload after the move and lose the box.
    clearInterval(window.__ciWelcomeTimer);window.__ciWelcomeTimer=setInterval(movePersonalEToTodo,700);
    return;
