@@ -676,7 +676,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    anchor.before(box);}
   const t=habitsReviewText(),p=box.querySelector('[data-ci-review-text]');if(p.innerHTML!==t)p.innerHTML=t;
  }
- setInterval(ensureReview,1000);
+ // Scott 13 Nov 2026: the page's "how it works" text (player instruction) sits at the very top
+ // of the top card, directly under the page title — above REVIEW and the quote image. All pages.
+ function ensureInstructionsTop(){
+  let hd;try{hd=headerNoteFrame.contentDocument;}catch(_){return;}
+  const ins=hd?.querySelector('.ci-player-owner-instructions');if(!ins)return;
+  const target=hd.querySelector('[data-ci-review-box]')||hd.querySelector('.ci-carousel');if(!target||target===ins)return;
+  if(ins.nextElementSibling!==target)target.before(ins);
+ }
+ setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
