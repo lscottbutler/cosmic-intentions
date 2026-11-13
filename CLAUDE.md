@@ -22,11 +22,16 @@ read-only, no pen, no edit affordance for members. He edits it from the admin pa
 Never stuff a Personal E into a spot that should be an admin box, and never put a
 pen on an admin box on the player page.
 
-**TO DO page specifically:** the box at the top of the TO DO list IS the Personal E
-(member's own message). It gets DOM-moved there by member-design-test.js from the
-header iframe via adoptNode into `[data-todo-personal-e-slot]`. KEEP the blue pen —
-it's the user's own message. The admin WELCOME MESSAGE is a DIFFERENT box that
-lives above it in the header, not in the TO DO slot.
+**TO DO page specifically (Scott, 13 Nov 2026 — SWAPPED, supersedes 12 Nov):**
+- Personal E (blue pen) stays in the TOP header card, directly under the quote image.
+- The admin WELCOME MESSAGE box (`page-welcome-goalworkspace`, no pen, with the
+  "Where you stand" stats) is DOM-moved by standalone/member-design-test.js into
+  `[data-todo-personal-e-slot]` at the top of the TO DO list.
+- Do NOT swap these back.
+
+**VERIFY BEFORE REPORTING (Scott, 13 Nov 2026):** load the page in Scott's Chrome,
+screenshot it, confirm no error text and correct box positions BEFORE replying.
+Never send a screenshot that shows an error as "done".
 
 **All admin box edits happen on the admin page — no inline pens on player pages.**
 `.ci-admin-page-box-edit-slot` is `display:none!important` always. Do not try to
