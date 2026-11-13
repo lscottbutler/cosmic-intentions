@@ -688,7 +688,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const row=hd.createElement('div');row.style.cssText='text-align:right!important;margin:12px 0 0';
    const b=hd.createElement('button');b.type='button';b.setAttribute('data-ci-hide-overview','');b.textContent='HIDE OVERVIEW';
    b.style.cssText='background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 14px/1 Arial,sans-serif!important;letter-spacing:.08em;text-transform:uppercase;cursor:pointer';
-   b.addEventListener('click',()=>document.getElementById('ci-info-trigger')?.click());
+   b.addEventListener('click',()=>window.ciHideOverview?.());
    row.append(b);ins.append(row);
   }
  }
@@ -1228,11 +1228,16 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  const sc=document.querySelector('.orientation .shortcuts'),frame=document.getElementById('header-admin-note-frame'),note=document.getElementById('header-admin-note');
  if(!sc||!frame)return;
  const btn=document.createElement('button');btn.type='button';btn.id='ci-info-trigger';btn.textContent='i';btn.title='Instructions';
- let open=false;
+ // Scott 13 Nov 2026: overview shows by default on each page until the member presses
+ // HIDE OVERVIEW; after that it stays hidden on that page (blue i still opens it).
+ const pageKey=()=>'ci_overview_hidden_'+(new URLSearchParams(location.search).get('feature')||'home');
+ const hiddenSaved=()=>{try{return localStorage.getItem(pageKey())==='1';}catch(_){return false;}};
+ window.ciHideOverview=()=>{try{localStorage.setItem(pageKey(),'1');}catch(_){}open=false;apply();};
+ let open=!hiddenSaved();
  const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
   btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide instructions':'Show instructions');queue();};
  btn.addEventListener('click',()=>{open=!open;apply();});
- frame.addEventListener('load',apply);
+ frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
