@@ -30,11 +30,24 @@ function _habitDayStreak() {
   return streak;
 }
 
-/* Goal to-do progress across every intention's map. */
+/* Goal action progress — the same actions the TO DO page lists:
+   your own actions (incl. sub-steps) plus the goal's roadmap tasks,
+   and any legacy map to-dos. */
+function _countTree(nodes) {
+  let total = 0, done = 0;
+  (nodes || []).forEach(n => { total++; if (n.done) done++; const c = _countTree(n.children); total += c.total; done += c.done; });
+  return { total, done };
+}
 function _todoTotals() {
   let total = 0, done = 0;
-  (intentions || []).forEach(i => (i.theMap?.components || []).forEach(c =>
-    (c.todos || []).forEach(t => { total++; if (t.done) done++; })));
+  (intentions || []).forEach(i => {
+    const rai = i.roadmapAI || {};
+    const u = _countTree(rai.userTasks); total += u.total; done += u.done;
+    if (!rai.intention || String(rai.intention).trim() === String(i.title || '').trim()) {
+      (rai.tasks || []).forEach((_, k) => { total++; if ((rai.done || {})[k]) done++; });
+    }
+    (i.theMap?.components || []).forEach(c => (c.todos || []).forEach(t => { total++; if (t.done) done++; }));
+  });
   return { total, done, remaining: Math.max(0, total - done) };
 }
 

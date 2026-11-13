@@ -681,7 +681,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Other pages: text comes from the app (shared/recap.js); refresh every 10s.
   const now=Date.now();if(box.dataset.page===reviewPage&&now-(+box.dataset.at||0)<10000)return;
   box.dataset.page=reviewPage;box.dataset.at=now;
-  Promise.resolve(hd.defaultView.ciPageReview?.(reviewPage)).then(t=>{if(!t){box.hidden=true;return;}box.hidden=false;if(p.innerHTML!==t)p.innerHTML=t;}).catch(()=>{});
+  // Use the page's own app frame (it has the member's goals loaded); fall back to the header frame.
+  let src=hd.defaultView;try{const ef=document.getElementById('ci-review-frame')?.contentDocument?.getElementById('experienceFrame')?.contentWindow;if(ef?.ciPageReview)src=ef;}catch(_){}
+  Promise.resolve(src.ciPageReview?.(reviewPage)).then(t=>{if(!t){box.hidden=true;return;}box.hidden=false;if(p.innerHTML!==t)p.innerHTML=t;}).catch(()=>{});
  }
  // Scott 13 Nov 2026: the page's "how it works" text (player instruction) sits at the very top
  // of the top card, directly under the page title — above REVIEW and the quote image. All pages.
