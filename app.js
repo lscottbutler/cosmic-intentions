@@ -6222,9 +6222,9 @@ async function initCitadelNoteFrame(nextPage) {
       } else {
         savedBody=note.data?.body||'';
         copy.textContent=savedBody;
-        if (typeof note.data?.title === 'string') {
-          customHeading=note.data.title.trim().slice(0,80)||'ADD A PERSONAL NOTE';
-        }
+        // Database is the only source for the title; drop stale browser copies.
+        customHeading=(typeof note.data?.title === 'string' && note.data.title.trim().slice(0,80))||'ADD A PERSONAL NOTE';
+        try { localStorage.removeItem(headingKey); } catch (_) {}
         heading.textContent=customHeading;
       }
       displayPersonal();
