@@ -683,6 +683,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const ins=hd?.querySelector('.ci-player-owner-instructions');if(!ins)return;
   const target=hd.querySelector('[data-ci-review-box]')||hd.querySelector('.ci-carousel');if(!target||target===ins)return;
   if(ins.nextElementSibling!==target)target.before(ins);
+  // Scott 13 Nov 2026: black HIDE OVERVIEW button at the bottom-right of the overview text.
+  if(!ins.querySelector('[data-ci-hide-overview]')){
+   const row=hd.createElement('div');row.style.cssText='text-align:right!important;margin:12px 0 0';
+   const b=hd.createElement('button');b.type='button';b.setAttribute('data-ci-hide-overview','');b.textContent='HIDE OVERVIEW';
+   b.style.cssText='background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 14px/1 Arial,sans-serif!important;letter-spacing:.08em;text-transform:uppercase;cursor:pointer';
+   b.addEventListener('click',()=>document.getElementById('ci-info-trigger')?.click());
+   row.append(b);ins.append(row);
+  }
  }
  setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
  window.addEventListener('message',event=>{
