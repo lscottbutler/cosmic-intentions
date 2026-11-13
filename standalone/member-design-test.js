@@ -595,7 +595,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Only capture after the header has finished filling the welcome (Personal E renders after it).
   if(live&&doc.querySelector('.ci-player-personal-e-box')){
    const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
-   window.__ciWelcome={page:current,html:empty?'':live.outerHTML};live.remove();
+   // Owner (Scott) always sees the admin box on every page so he knows where it is; members only when it has text.
+   let html=empty?'':live.outerHTML;
+   if(empty&&doc.defaultView?.ciOwnerAccess){const c=live.cloneNode(true);c.style.display='';c.classList.remove('is-empty');const b=c.querySelector('.ci-admin-page-box-content');if(b){b.style.display='';b.innerHTML='<p style="color:#8a8a8a;font-style:italic;margin:0">ADMIN BOX — empty. Add text on the Admin page (WELCOME MESSAGE for this page). Members do not see this until it has text.</p>';}html=c.outerHTML;}
+   window.__ciWelcome={page:current,html};live.remove();
   }
   const w=window.__ciWelcome;
   if(!w||w.page!==current)return false;
