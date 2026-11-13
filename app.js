@@ -4633,13 +4633,8 @@ const _blockCache = {};
    route through this so no path can clobber the user's override. */
 /* Black "C" edit badge for the Citadel Welcome box → jumps to the My Citadel
    Welcome editor. Kept identical to editBadge('welcome') in shared/notes.js. */
-const _WELCOME_EDIT_BADGE = `<button onclick="ciEditThought('welcome');event.stopPropagation();return false;" title="Edit this on My Thoughts" aria-label="Edit your Citadel welcome" class="ci-edit-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>`;
 function _blockContentFor(slug, body) {
-  if (slug === 'dashboard-note-2') {
-    const u = _citadelWelcome().trim();
-    const base = u ? u.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : (body || '');
-    return base && base.trim() ? base + _WELCOME_EDIT_BADGE : base;
-  }
+  /* Admin boxes are admin-only: no member override, no member edit pen. */
   return body;
 }
 /* Admin content blocks that render inside the framed photo-card template with a
@@ -5522,19 +5517,8 @@ async function loadContentBlocks() {
    it overrides the admin home-video-1 block; blank = fall back to admin copy. */
 function _citadelWelcome() { try { return localStorage.getItem('ci_citadel_welcome') || ''; } catch (e) { return ''; } }
 function applyUserCitadelWelcome() {
-  const v = _citadelWelcome().trim();
-  // The visible first paragraph in Column A is the dashboard-note-2 box.
-  document.querySelectorAll('[data-block="dashboard-note-2"]').forEach(el => {
-    if (v) {
-      el.innerHTML = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + _WELCOME_EDIT_BADGE;
-      el.style.display = '';
-    } else {
-      const admin = _blockCache['dashboard-note-2'] || '';
-      const showAdmin = admin.trim() && !_isJunkBlock(admin);
-      el.innerHTML = showAdmin ? admin + _WELCOME_EDIT_BADGE : '';
-      el.style.display = showAdmin ? '' : 'none';
-    }
-  });
+  // dashboard-note-2 is an ADMIN box: never overridden by members, never gets the member edit pen.
+  document.querySelectorAll('[data-block="dashboard-note-2"] .ci-edit-badge').forEach(b => b.remove());
   const inp = document.getElementById('citadelWelcomeInput');
   if (inp && document.activeElement !== inp) inp.value = _citadelWelcome();
 }
