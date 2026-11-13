@@ -631,6 +631,45 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
   return true;
  }
+ // Scott 13 Nov 2026: REVIEW box — a stand-alone progress paragraph above the admin box.
+ // Habits first; other trackable pages (goals, to do, viz, meditate, gratitude) to follow.
+ function habitsReviewText(){
+  const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'null');}catch{return null;}};
+  const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const list=Array.isArray(read('ci_habit_list'))?read('ci_habit_list'):[];const total=list.length;
+  const done=d=>{const v=read('ci_habits_'+key(d))||{};return list.filter(h=>v[h.id]).length;};
+  const today=new Date();today.setHours(0,0,0,0);
+  let streak=0;const d=new Date(today);if(!done(d))d.setDate(d.getDate()-1);
+  while(done(d)&&streak<730){streak++;d.setDate(d.getDate()-1);}
+  // Average over the last 7 full days, counting only days since the member started ticking.
+  let sum=0,days=0;
+  for(let i=1;i<=7;i++){const x=new Date(today);x.setDate(today.getDate()-i);const n=done(x);if(n||days)days++;sum+=n;}
+  if(!days){days=1;sum=done(today);}
+  const pct=total?Math.round(100*sum/(days*total)):0;
+  const name=String((read('ci_pegboard')||{})['pb-name']||'').trim().split(/\s+/)[0];
+  const who=name?', <strong>'+esc(name)+'</strong>':'';
+  if(!total)return 'Welcome'+who+'. Add your first daily habit below and your progress will show here.';
+  const parts=[];
+  parts.push(streak>0?`Awesome effort today${who}, you've checked off a habit <strong>${streak} day${streak===1?'':'s'} in a row</strong>.`:`Welcome back${who}. Check off a habit today to start a new streak.`);
+  parts.push(`You've currently got <strong>${total} ongoing daily habit${total===1?'':'s'}</strong> and on average you're completing <strong>${pct}%</strong> of them each day.`);
+  parts.push(pct>=70?'Great job.':pct>=40?'Solid work — keep building.':'Every check-off counts. Keep going.');
+  return parts.join(' ');
+ }
+ function ensureReview(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  const old=rd.querySelector('[data-ci-review-box]');
+  if(current!=='daily-habits'){old?.remove();return;}
+  const slot=rd.querySelector('[data-ci-welcome-slot]');if(!slot)return;
+  let box=old;
+  if(!box||box.parentElement!==slot){old?.remove();box=rd.createElement('section');box.setAttribute('data-ci-review-box','');
+   box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 14px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
+   box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
+   slot.prepend(box);}
+  const t=habitsReviewText(),p=box.querySelector('[data-ci-review-text]');if(p.innerHTML!==t)p.innerHTML=t;
+ }
+ setInterval(ensureReview,1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
