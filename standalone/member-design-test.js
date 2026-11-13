@@ -1238,6 +1238,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
   btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide instructions':'Show instructions');queue();};
  btn.addEventListener('click',()=>{open=!open;apply();});
  frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
+ let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
