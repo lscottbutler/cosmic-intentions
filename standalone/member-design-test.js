@@ -648,12 +648,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!days){days=1;sum=done(today);}
   const pct=total?Math.round(100*sum/(days*total)):0;
   const name=String((read('ci_pegboard')||{})['pb-name']||'').trim().split(/\s+/)[0];
-  const who=name?', <strong>'+esc(name)+'</strong>':'';
-  if(!total)return 'Welcome'+who+'. Add your first daily habit below and your progress will show here.';
-  const parts=[];
-  parts.push(streak>0?`Awesome effort today${who}, you've checked off a habit <strong>${streak} day${streak===1?'':'s'} in a row</strong>.`:`Welcome back${who}. Check off a habit today to start a new streak.`);
-  parts.push(`You've currently got <strong>${total} ongoing daily habit${total===1?'':'s'}</strong> and on average you're completing <strong>${pct}%</strong> of them each day.`);
-  parts.push(pct>=70?'Great job.':pct>=40?'Solid work — keep building.':'Every check-off counts. Keep going.');
+  const lead=name?'<strong>'+esc(name)+'</strong>, y':'Y';
+  if(!total)return (name?'<strong>'+esc(name)+'</strong>, add':'Add')+' your first daily habit below and your progress will show here.';
+  const doneToday=done(today);
+  const parts=[`${lead}ou've successfully completed <strong>${doneToday} of your ${total}</strong> daily habits so far today.`];
+  if(streak>1)parts.push(`Today marks <strong>${streak} days in a row</strong> that you've shown up and taken care of business.`);
+  else if(streak===1)parts.push(`You showed up and took care of business today — that's day one of a new streak.`);
+  else parts.push(`Check off a habit today to start a new streak.`);
+  parts.push(`On average, you're completing <strong>${pct}%</strong> of your habits each day.`);
+  parts.push('Remember, every check-off moves you one step closer to becoming who you want to be.');
   return parts.join(' ');
  }
  function ensureReview(){
