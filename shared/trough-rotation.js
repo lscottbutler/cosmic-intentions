@@ -18,14 +18,25 @@ function myLines(){
 }
 const _rot=new Map();
 const any=a=>a[Math.floor(Math.random()*a.length)];
+// Scott 13 Nov 2026: each page shows ONE quote from the Admin QUOTE LIBRARY that changes
+// every hour, and no two pages show the same quote in the same hour.
+const QUOTE_PAGES=['dashboard','setup','habits','myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','goalworkspace','gratitude','wins','cosmiclibrary','entcard','proof','runthroughs'];
+function _pageOffset(pageId){
+ const k=QUOTE_PAGES.indexOf(pageId);if(k>=0)return k*5;
+ let h=0;for(const ch of String(pageId))h=(h*31+ch.charCodeAt(0))>>>0;return QUOTE_PAGES.length*5+(h%997);
+}
+let _perm=null,_permN=0;
+function _permutation(n){ // fixed shuffle so the order isn't the list order
+ if(_perm&&_permN===n)return _perm;
+ const a=[...Array(n).keys()];let seed=20261113;
+ for(let i=n-1;i>0;i--){seed=(seed*1103515245+12345)>>>0;const j=seed%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+ _perm=a;_permN=n;return a;
+}
 function nextQuote(pageId){
- // Scott 13 Nov 2026: the 16:9 quote band shows ONLY the Admin QUOTE LIBRARY (100 quotes),
- // shuffled so the same quote doesn't repeat until all have shown.
  const admin=(globalThis.ciQuoteLibrary||[]).filter(q=>q&&q.quote);
  if(!admin.length)return '';
- let bag=_rot.get('bag');
- if(!bag||!bag.length){bag=admin.map((_,i)=>i).sort(()=>Math.random()-.5);_rot.set('bag',bag);}
- const a=admin[bag.pop()]||admin[0];
+ const hour=Math.floor(Date.now()/3600000);
+ const a=admin[_permutation(admin.length)[(hour+_pageOffset(pageId))%admin.length]];
  return a.author?a.quote+' — '+a.author:a.quote;
 }
 
