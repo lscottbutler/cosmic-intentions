@@ -693,14 +693,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const ins=hd?.querySelector('.ci-player-owner-instructions');if(!ins)return;
   const target=hd.querySelector('[data-ci-review-box]')||hd.querySelector('.ci-carousel');if(!target||target===ins)return;
   if(ins.nextElementSibling!==target)target.before(ins);
-  // Scott 13 Nov 2026: black HIDE OVERVIEW button at the bottom-right of the overview text.
-  if(!ins.querySelector('[data-ci-hide-overview]')){
-   const row=hd.createElement('div');row.style.cssText='text-align:right!important;margin:12px 0 0';
-   const b=hd.createElement('button');b.type='button';b.setAttribute('data-ci-hide-overview','');b.textContent='HIDE OVERVIEW';
-   b.style.cssText='background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 14px/1 Arial,sans-serif!important;letter-spacing:.08em;text-transform:uppercase;cursor:pointer';
-   b.addEventListener('click',()=>window.ciHideOverview?.());
-   row.append(b);ins.append(row);
-  }
+  // Scott 13 Nov 2026: the black HIDE OVERVIEW button now lives in the right-hand button column (#ci-info-trigger).
+  ins.querySelector('[data-ci-hide-overview]')?.parentElement?.remove();
  }
  setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
  window.addEventListener('message',event=>{
@@ -1248,8 +1242,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
   btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide overview':'Show overview');
   // Scott 13 Nov 2026: the blue i circle now reads HIDE / OVERVIEW (SHOW / OVERVIEW when closed).
-  btn.innerHTML=(open?'HIDE':'SHOW')+'<br>OVERVIEW';btn.title=open?'Hide overview':'Show overview';queue();};
- btn.addEventListener('click',()=>{open=!open;apply();});
+  btn.textContent=(open?'HIDE':'SHOW')+' OVERVIEW';btn.title=open?'Hide overview':'Show overview';queue();};
+ btn.addEventListener('click',()=>{if(open)window.ciHideOverview();else{open=true;apply();}});
  frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
  let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
