@@ -24,8 +24,8 @@ pen on an admin box on the player page.
 
 **TO DO page specifically (Scott, 13 Nov 2026 — SWAPPED, supersedes 12 Nov):**
 - Personal E (blue pen) stays in the TOP header card, directly under the quote image.
-- The admin WELCOME MESSAGE box (`page-welcome-goalworkspace`, no pen, with the
-  "Where you stand" stats) is DOM-moved by standalone/member-design-test.js into
+- The admin WELCOME MESSAGE box (`page-welcome-goalworkspace`, no pen; "Where you stand" stats REMOVED 13 Nov) is
+  DOM-moved by standalone/member-design-test.js into
   `[data-todo-personal-e-slot]` at the top of the TO DO list.
 - Do NOT swap these back.
 
