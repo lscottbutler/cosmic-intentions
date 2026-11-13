@@ -1235,7 +1235,9 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  window.ciHideOverview=()=>{try{localStorage.setItem(pageKey(),'1');}catch(_){}open=false;apply();};
  let open=!hiddenSaved();
  const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
-  btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide instructions':'Show instructions');queue();};
+  btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide overview':'Show overview');
+  // Scott 13 Nov 2026: the blue i circle now reads HIDE / OVERVIEW (SHOW / OVERVIEW when closed).
+  btn.innerHTML=(open?'HIDE':'SHOW')+'<br>OVERVIEW';btn.title=open?'Hide overview':'Show overview';queue();};
  btn.addEventListener('click',()=>{open=!open;apply();});
  frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
  let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
