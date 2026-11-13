@@ -19,7 +19,7 @@ function myLines(){
 const _rot=new Map();
 const any=a=>a[Math.floor(Math.random()*a.length)];
 // Scott 13 Nov 2026: each page shows ONE quote from the Admin QUOTE LIBRARY that changes
-// every hour, and no two pages show the same quote in the same hour.
+// every 15 minutes, and no two pages show the same quote in the same hour.
 const QUOTE_PAGES=['dashboard','setup','habits','myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','goalworkspace','gratitude','wins','cosmiclibrary','entcard','proof','runthroughs'];
 function _pageOffset(pageId){
  const k=QUOTE_PAGES.indexOf(pageId);if(k>=0)return k*5;
@@ -58,8 +58,7 @@ function _ensureQuoteFonts(doc){
 function nextQuote(pageId){
  const admin=(globalThis.ciQuoteLibrary||[]).filter(q=>q&&q.quote);
  if(!admin.length)return '';
- const hour=Math.floor(Date.now()/3600000);
- const a=admin[_permutation(admin.length)[(hour+_pageOffset(pageId))%admin.length]];
+ const a=admin[_permutation(admin.length)[(_slot()+_pageOffset(pageId))%admin.length]];
  return a.author?a.quote+' — '+a.author:a.quote;
 }
 
@@ -88,10 +87,18 @@ export const CAROUSEL_ITEMS=feed.items;
 const items=new Map(CAROUSEL_ITEMS.map(item=>[item.id,item]));
 const pick=createTroughPicker(CAROUSEL_ITEMS.map(item=>item.id),storage);
 const selections=new Map();let lastPage=null;
+// Scott 13 Nov 2026: image and quote change TOGETHER every 15 minutes, different per page.
+const SLOT_MS=15*60*1000;
+const _slot=()=>Math.floor(Date.now()/SLOT_MS);
+function slotPick(pageId){
+ const ids=CAROUSEL_ITEMS.map(i=>i.id);if(!ids.length)return pick(pageId);
+ const perm=_permutation(ids.length);
+ return ids[perm[(_slot()*7+_pageOffset(pageId)*3)%ids.length]];
+}
 export function visitTroughPage(pageId, eligible=true){
  if(lastPage===pageId)return;
  lastPage=pageId;
- if(eligible)selections.set(pageId,pick(pageId));
+ if(eligible)selections.set(pageId,slotPick(pageId));
 }
 export function attachTrough(shell,pageId){
  try{const doc=shell.ownerDocument,shellWin=(()=>{let w=globalThis;try{while(w.parent!==w&&!w.document.getElementById('review-menu'))w=w.parent;}catch{}return w;})(),mq=shellWin.matchMedia('(max-width:650px)');const set=()=>doc.documentElement.classList.toggle('ci-phone',mq.matches);set();if(!doc.ciPhoneWatch){doc.ciPhoneWatch=true;mq.addEventListener('change',set);}}catch{}
@@ -100,7 +107,7 @@ export function attachTrough(shell,pageId){
   shell.dataset.carouselPage=pageId;
   delete shell.dataset.carouselReady;
  }
- if(!selections.has(pageId))selections.set(pageId,pick(pageId));
+ selections.set(pageId,slotPick(pageId));
  shell.classList.add('ci-carousel');
  shell.setAttribute('aria-label','The Carousel');
  shell.setAttribute('role','region');
@@ -144,7 +151,8 @@ export function attachTrough(shell,pageId){
   if(!shell.isConnected){clearInterval(timer);return;}
   const page=shell.closest('.page');
   if(globalThis.ciHoldCarousel||document.hidden||(page&&!page.classList.contains('active')))return;
-  selections.set(pageId,pick(pageId));render();
- },Math.max(6000,feed.intervalMs||12000));
+  const next=slotPick(pageId);if(next===selections.get(pageId))return;
+  selections.set(pageId,next);render();
+ },15000);
  shell.ciCarouselDispose=()=>clearInterval(timer);
 }
