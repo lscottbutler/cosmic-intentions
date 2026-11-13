@@ -666,7 +666,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   try{document.getElementById('ci-review-frame')?.contentDocument?.querySelector('[data-ci-review-box]')?.remove();}catch(_){}
   if(!hd?.body)return;
   const old=hd.querySelector('[data-ci-review-box]');
-  if(current!=='daily-habits'){old?.remove();return;}
+  const REVIEW_PAGES={'daily-habits':'habits','goal-workspace':'goalworkspace',goals:'setup',meditation:'meditation','super-viz':'super-viz',visualization:'vizlibrary',gratitude:'gratitude','new-gratitude':'gratitude'};
+  const reviewPage=REVIEW_PAGES[current];
+  if(!reviewPage){old?.remove();return;}
   const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
   if(!anchor)return;
   let box=old;
@@ -674,7 +676,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 16px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
    box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
    anchor.before(box);}
-  const t=habitsReviewText(),p=box.querySelector('[data-ci-review-text]');if(p.innerHTML!==t)p.innerHTML=t;
+  const p=box.querySelector('[data-ci-review-text]');
+  if(reviewPage==='habits'){const t=habitsReviewText();if(p.innerHTML!==t)p.innerHTML=t;return;}
+  // Other pages: text comes from the app (shared/recap.js); refresh every 10s.
+  const now=Date.now();if(box.dataset.page===reviewPage&&now-(+box.dataset.at||0)<10000)return;
+  box.dataset.page=reviewPage;box.dataset.at=now;
+  Promise.resolve(hd.defaultView.ciPageReview?.(reviewPage)).then(t=>{if(!t){box.hidden=true;return;}box.hidden=false;if(p.innerHTML!==t)p.innerHTML=t;}).catch(()=>{});
  }
  // Scott 13 Nov 2026: the page's "how it works" text (player instruction) sits at the very top
  // of the top card, directly under the page title — above REVIEW and the quote image. All pages.
