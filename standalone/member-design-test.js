@@ -618,7 +618,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    targetDoc=reviewDoc;
    slot=reviewDoc.querySelector('[data-ci-welcome-slot]');
    if(!slot){slot=reviewDoc.createElement('div');slot.setAttribute('data-ci-welcome-slot','');slot.style.cssText='padding:16px 16px 0;box-sizing:border-box';
-    if(mainFrame)mainFrame.before(slot);else reviewDoc.body.prepend(slot);}
+    if(mainFrame)mainFrame.before(slot);else (reviewDoc.querySelector(".shell")||reviewDoc.body).prepend(slot);} /* inside .shell so the frame height counts it */
   }
   if(slot.querySelector('.ci-page-welcome'))return true;
   while(slot.firstChild)slot.removeChild(slot.firstChild);
