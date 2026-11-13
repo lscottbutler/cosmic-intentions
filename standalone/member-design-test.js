@@ -588,7 +588,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  function movePersonalEToTodo(){
   if(current!=='goal-workspace')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
-  const el=doc?.querySelector('.ci-player-personal-e-box');
+  // Scott 13 Nov 2026: SWAPPED — the admin WELCOME box now goes into the TO DO slot;
+  // Personal E stays in the top header card.
+  const el=doc?.querySelector('.ci-page-welcome');
   if(!el)return false;
   const reviewFrame=document.getElementById('ci-review-frame');
   let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
@@ -605,6 +607,13 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!slot)return false;
   if(el.parentElement===slot)return true;
   while(slot.firstChild)slot.removeChild(slot.firstChild);
+  if(!targetDoc.getElementById('ci-moved-welcome-style')){
+   const css=[];
+   for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
+    for(const r of rules){if(r.selectorText&&/ci-page-welcome|ci-page-recap/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
+   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important}';
+   targetDoc.head.appendChild(st);
+  }
   slot.appendChild(targetDoc.adoptNode(el));
   return true;
  }
