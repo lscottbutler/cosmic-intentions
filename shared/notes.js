@@ -12,6 +12,7 @@ export const NOTES_CAP = 50;
 export const NOTE_CATS = [
   { key: 'affirmation', label: 'Affirmations', icon: '✦', ph: 'I am…' },
   { key: 'belief',      label: 'Beliefs',      icon: '◈', ph: 'I believe…' },
+  { key: 'attitude',    label: 'Attitudes',    icon: '⚑', ph: 'I am… (e.g. RELENTLESS — I show up every day)' },
   { key: 'reminder',    label: 'Reminders',    icon: '⏰', ph: 'Remember to…' },
   { key: 'inspiration', label: 'Inspirations', icon: '✧', ph: 'What inspires me…' },
   { key: 'quote',       label: 'Quotes',       icon: '❝', ph: 'A quote I love…' },
@@ -168,7 +169,7 @@ function _flashEditing(el) {
 /* Owned image set the thought cards rotate through (images/50-50/). Swap this
    folder/list to point at the full ~300-image library when it's in the repo. */
 const CARD_IMG_DIR = 'images/50-50/';
-const CAT_LABELS = { affirmation: 'AFFIRMATION', belief: 'BELIEF', reminder: 'REMINDER', inspiration: 'INSPIRATION', quote: 'QUOTE', note: 'NOTE' };
+const CAT_LABELS = { affirmation: 'AFFIRMATION', belief: 'BELIEF', attitude: 'ATTITUDE', reminder: 'REMINDER', inspiration: 'INSPIRATION', quote: 'QUOTE', note: 'NOTE' };
 function _thoughtImg(seed) {
   return CARD_IMG_DIR + encodeURIComponent(AFF_IMAGES[Math.abs(seed) % AFF_IMAGES.length]);
 }

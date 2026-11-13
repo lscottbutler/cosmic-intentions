@@ -1,4 +1,34 @@
 import feed from './carousel-feed.json' with { type: 'json' };
+import { ENT_CARDS, ENT_MINDSET } from './ent-library-content.js';
+/* Scott 13 Nov 2026: the quote band rotates — the page quote (Admin → PAGE QUOTE),
+   the member's own Affirmations / Beliefs / Attitudes / Quotes (My Thoughts),
+   and lines from the Entrepreneur Library cards. */
+const MY_LABEL={affirmation:'MY AFFIRMATION',belief:'MY BELIEF',attitude:'MY ATTITUDE',quote:'MY QUOTE'};
+let _lib=null;
+function libraryLines(){
+ if(_lib)return _lib;_lib=[];
+ const name=t=>String(t||'').replace(/^I AM (A |AN )?|^I /,'');
+ (ENT_CARDS||[]).forEach(c=>{const m=(ENT_MINDSET||{})[c.key]||{};const tag='ENTREPRENEUR LIBRARY · '+name(c.title);
+  [...(c.affirmations||[]),...(c.beliefs||[]),...(m.stoic||[]),...(m.attitudes||[])].forEach(t=>t&&_lib.push({text:t,author:tag}));});
+ return _lib;
+}
+function myLines(){
+ try{const a=JSON.parse(globalThis.localStorage?.getItem('ci_notes')||'[]');
+  return (Array.isArray(a)?a:[]).filter(n=>MY_LABEL[n?.cat]&&String(n.text||'').trim()).map(n=>({text:String(n.text).trim(),author:MY_LABEL[n.cat]}));}catch{return [];}
+}
+const _rot=new Map();
+const any=a=>a[Math.floor(Math.random()*a.length)];
+function nextQuote(pageId){
+ const k=(_rot.get(pageId)||0);_rot.set(pageId,k+1);
+ const q=globalThis.ciPageQuote,page=q&&q.pageId===pageId&&q.text?q.text:'';
+ const mine=myLines(),lib=libraryLines();
+ const slot=k%3;
+ if(slot===0&&page)return page;
+ if(slot===1&&mine.length){const m=any(mine);return m.text+' — '+m.author;}
+ if(lib.length){const l=any(lib);return l.text+' — '+l.author;}
+ return page;
+}
+
 // Static, user-supplied artwork. Only artwork IDs are stored; no member content.
 export function createTroughPicker(ids, storage, random = Math.random) {
   const key = 'ci-trough-assignments-v1';
@@ -53,7 +83,7 @@ export function attachTrough(shell,pageId){
    if(item.smallImage){image.srcset=`${item.smallImage} 640w, ${item.image} 1280w`;image.sizes='(max-width: 700px) 100vw, 960px';}
    card.appendChild(image);
    // Phones: the caption baked into the art is cropped off and redrawn below it, 3x taller, text 2x (Scott, 3 Nov 2026).
-   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const q=globalThis.ciPageQuote;if(q&&q.pageId===pageId&&q.text){const i=q.text.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?q.text.slice(0,i):q.text;au.textContent=i>0?q.text.slice(i+3):'';cap.append(qt);if(au.textContent)cap.append(au);cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');}else cap.textContent=item.caption;card.appendChild(cap);}
+   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const qtext=nextQuote(pageId);if(qtext){const q={text:qtext};const i=q.text.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?q.text.slice(0,i):q.text;au.textContent=i>0?q.text.slice(i+3):'';cap.append(qt);if(au.textContent)cap.append(au);cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');}else cap.textContent=item.caption;card.appendChild(cap);}
   }else{
    const text=document.createElement('p');text.className='ci-carousel-text';text.textContent=item.text||'';card.appendChild(text);
   }
