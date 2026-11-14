@@ -3222,14 +3222,6 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
  document.head.append(st);
  const sec=document.createElement('section');sec.id='admin-vo-encouragements';sec.append(tpl.content.cloneNode(true));host.append(sec);
 })();
-if(new URLSearchParams(location.search).get('aksHolding')==='1'){
- document.documentElement.classList.add('aks-holding-view');
- const style=document.createElement('style');
- style.textContent='html.aks-holding-view body>*:not(#aks-vo-root):not(.encourage-pop){display:none!important}html.aks-holding-view body{background:#fff!important;margin:0!important;padding:16px!important}#aks-vo-root{color:#292929;font:16px/1.5 Arial,sans-serif}#aks-vo-root h2{font-size:20px}.aks-vo-grid{display:flex;flex-wrap:wrap;gap:20px;align-items:center}.aks-vo-grid button{border:0;background:transparent;padding:10px;cursor:pointer}.aks-vo-grid img{height:80px;width:auto;max-width:160px;object-fit:contain}.aks-vo-grid button:focus-visible{outline:3px solid #292929;outline-offset:3px}';
- document.head.append(style);
- const root=document.createElement('main');root.id='aks-vo-root';
- root.append(document.getElementById('aks-vo-encouragements').content.cloneNode(true));document.body.append(root);
-}
 </script>
 
 </body>
