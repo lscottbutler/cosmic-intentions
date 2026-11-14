@@ -2576,12 +2576,24 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- Scott 13 Nov 2026: QUOTE LIBRARY — 100 quotes that rotate in the 16:9 quote band on every page. -->
       <div id="ci-quote-library-admin" style="background:#fff;border:2px solid #303030;border-radius:12px;padding:18px 20px;margin:0 0 28px;">
-        <div style="font-weight:800;font-size:16px;color:#171717;letter-spacing:.06em;margin-bottom:4px;">QUOTE LIBRARY — 16:9 CARDS</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;"><div style="font-weight:800;font-size:16px;color:#171717;letter-spacing:.06em;">QUOTE LIBRARY — 16:9 CARDS</div><button type="button" id="ci-ql-toggle" aria-expanded="false" aria-label="Show quotes" onclick="ciToggleQuoteLibrary()" style="width:40px;height:40px;border:0;border-radius:50%;background:#000;color:#fff;font:700 18px/1 Arial,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s">&#9662;</button></div>
         <div style="color:#58677a;font-size:12px;line-height:1.5;margin-bottom:12px;">Up to 100 quotes. Each one rotates into the quote band under the artwork on every page. Leave a row empty to skip it. Press SAVE QUOTES when done.</div>
         <div style="display:flex;gap:10px;align-items:center;margin:0 0 12px;"><button type="button" onclick="saveQuoteLibrary()" style="background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 13px Arial,sans-serif;letter-spacing:.08em;cursor:pointer">SAVE QUOTES</button><span class="ci-ql-status" style="font-size:12px;color:#49697a"></span></div>
+        <div id="ci-quote-library-body" style="display:none">
         <div id="ci-quote-library" style="display:grid;gap:8px;"></div>
         <div style="display:flex;gap:10px;align-items:center;margin:12px 0 0;"><button type="button" onclick="saveQuoteLibrary()" style="background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 13px Arial,sans-serif;letter-spacing:.08em;cursor:pointer">SAVE QUOTES</button><span class="ci-ql-status" style="font-size:12px;color:#49697a"></span></div>
+        </div>
       </div>
+      <script>
+      // Scott 14 Nov 2026: chevron hides/shows the 100 quote rows (remembers your choice).
+      function ciToggleQuoteLibrary(force){
+        var b=document.getElementById('ci-quote-library-body'),t=document.getElementById('ci-ql-toggle');if(!b||!t)return;
+        var open=typeof force==='boolean'?force:b.style.display==='none';
+        b.style.display=open?'block':'none';t.setAttribute('aria-expanded',String(open));t.setAttribute('aria-label',open?'Hide quotes':'Show quotes');t.style.transform=open?'rotate(180deg)':'none';
+        try{localStorage.setItem('ci_ql_open',open?'1':'0');}catch(e){}
+      }
+      try{if(localStorage.getItem('ci_ql_open')==='1')ciToggleQuoteLibrary(true);}catch(e){}
+      </script>
 
       <h2>Other content boxes</h2>
       <p class="admin-page-sub">Write a paragraph for each block. Changes go live immediately on save. Leave empty to hide the block.</p>
