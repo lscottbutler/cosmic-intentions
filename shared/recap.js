@@ -30,11 +30,24 @@ function _habitDayStreak() {
   return streak;
 }
 
-/* Goal to-do progress across every intention's map. */
+/* Goal action progress — the same actions the TO DO page lists:
+   your own actions (incl. sub-steps) plus the goal's roadmap tasks,
+   and any legacy map to-dos. */
+function _countTree(nodes) {
+  let total = 0, done = 0;
+  (nodes || []).forEach(n => { total++; if (n.done) done++; const c = _countTree(n.children); total += c.total; done += c.done; });
+  return { total, done };
+}
 function _todoTotals() {
   let total = 0, done = 0;
-  (intentions || []).forEach(i => (i.theMap?.components || []).forEach(c =>
-    (c.todos || []).forEach(t => { total++; if (t.done) done++; })));
+  (intentions || []).forEach(i => {
+    const rai = i.roadmapAI || {};
+    const u = _countTree(rai.userTasks); total += u.total; done += u.done;
+    if (!rai.intention || String(rai.intention).trim() === String(i.title || '').trim()) {
+      (rai.tasks || []).forEach((_, k) => { total++; if ((rai.done || {})[k]) done++; });
+    }
+    (i.theMap?.components || []).forEach(c => (c.todos || []).forEach(t => { total++; if (t.done) done++; }));
+  });
   return { total, done, remaining: Math.max(0, total - done) };
 }
 
@@ -152,3 +165,48 @@ export function renderPageRecap(boxEl, pageId) {
     boxEl.style.display = '';
   }).catch(() => host.remove());
 }
+
+/* ── REVIEW paragraph (Scott 13 Nov 2026) ─────────────────────────────
+   One stand-alone progress paragraph per trackable page, shown in the top
+   card under the page title. Habits builds its own in member-design-test.js. */
+const _MISSION = 'Remember, every step moves you one step closer to becoming who you want to be.';
+function _who() {
+  const n = String((LS.get('ci_pegboard') || {})['pb-name'] || '').trim().split(/\s+/)[0];
+  return n ? '<strong>' + esc(n) + '</strong>, y' : 'Y';
+}
+const _b = v => '<strong>' + esc(String(v)) + '</strong>';
+const _s = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+export async function getPageReview(pageId) {
+  const who = _who();
+  if (pageId === 'goalworkspace') {
+    const t = _todoTotals();
+    if (!t.total) return `${who}ou haven't added any to-dos yet. Open a goal and add your first next step. ${_MISSION}`;
+    return `${who}ou've completed ${_b(t.done + ' of your ' + t.total)} to-dos across your goals, with ${_b(t.remaining)} still to go. Pick the next one and take care of business. ${_MISSION}`;
+  }
+  if (pageId === 'setup') {
+    const g = (intentions || []).length, t = _todoTotals();
+    if (!g) return `${who}ou haven't set a goal yet. Write your first one in your own words. ${_MISSION}`;
+    return `${who}ou've currently got ${_b(_s(g, 'goal'))} in motion and you've completed ${_b(t.done + ' of ' + t.total)} of the actions behind them. ${_MISSION}`;
+  }
+  if (pageId === 'meditation') {
+    const a = await _activity();
+    const total = Math.max(a.filter(r => r.event_type === 'meditation').length, LS.get('ci_med_plays') || 0);
+    const week = a.filter(r => r.event_type === 'meditation' && r.created_at >= _weekStartISO()).length;
+    const streak = _eventStreak(a, 'meditation');
+    if (!total) return `${who}our first meditation is waiting. Choose a length and press Play. ${_MISSION}`;
+    const run = streak > 1 ? ` Today marks ${_b(streak + ' days in a row')} that you've shown up.` : streak === 1 ? ' You showed up today.' : ' Meditate today to start a new streak.';
+    return `${who}ou've completed ${_b(_s(total, 'meditation session'))} so far, ${_b(week)} of them this week.${run} ${_MISSION}`;
+  }
+  if (pageId === 'super-viz' || pageId === 'vizlibrary' || pageId === 'vizgoal') {
+    const total = LS.get('ci_viz_plays') || 0;
+    if (!total) return `${who}our first visualization is waiting. Choose a goal and rehearse the next step. ${_MISSION}`;
+    return `${who}ou've completed ${_b(_s(total, 'visualization session'))} so far. Every rehearsal makes the next step feel more familiar. ${_MISSION}`;
+  }
+  if (pageId === 'gratitude') {
+    const total = LS.get('ci_gratitude_plays') || 0;
+    if (!total) return `${who}our first gratitude practice is waiting. Press Play to begin. ${_MISSION}`;
+    return `${who}ou've completed ${_b(_s(total, 'gratitude session'))} so far. Noticing what's good keeps you moving forward. ${_MISSION}`;
+  }
+  return '';
+}
+if (typeof window !== 'undefined') window.ciPageReview = getPageReview;

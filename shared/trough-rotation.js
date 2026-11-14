@@ -1,4 +1,67 @@
 import feed from './carousel-feed.json' with { type: 'json' };
+import { ENT_CARDS, ENT_MINDSET } from './ent-library-content.js';
+/* Scott 13 Nov 2026: the quote band rotates — the page quote (Admin → PAGE QUOTE),
+   the member's own Affirmations / Beliefs / Attitudes / Quotes (My Thoughts),
+   and lines from the Entrepreneur Library cards. */
+const MY_LABEL={affirmation:'MY AFFIRMATION',belief:'MY BELIEF',attitude:'MY ATTITUDE',quote:'MY QUOTE'};
+let _lib=null;
+function libraryLines(){
+ if(_lib)return _lib;_lib=[];
+ const name=t=>String(t||'').replace(/^I AM (A |AN )?|^I /,'');
+ (ENT_CARDS||[]).forEach(c=>{const m=(ENT_MINDSET||{})[c.key]||{};const tag='ENTREPRENEUR LIBRARY · '+name(c.title);
+  [...(c.affirmations||[]),...(c.beliefs||[]),...(m.stoic||[]),...(m.attitudes||[])].forEach(t=>t&&_lib.push({text:t,author:tag}));});
+ return _lib;
+}
+function myLines(){
+ try{const a=JSON.parse(globalThis.localStorage?.getItem('ci_notes')||'[]');
+  return (Array.isArray(a)?a:[]).filter(n=>MY_LABEL[n?.cat]&&String(n.text||'').trim()).map(n=>({text:String(n.text).trim(),author:MY_LABEL[n.cat]}));}catch{return [];}
+}
+const _rot=new Map();
+const any=a=>a[Math.floor(Math.random()*a.length)];
+// Scott 13 Nov 2026: each page shows ONE quote from the Admin QUOTE LIBRARY that changes
+// every 15 minutes, and no two pages show the same quote in the same hour.
+const QUOTE_PAGES=['dashboard','setup','habits','myroadmap','vizlibrary','vizgoal','meditation','super-viz','dailyfocus','notes','mynotes','tasknotes','goalworkspace','gratitude','wins','cosmiclibrary','entcard','proof','runthroughs'];
+function _pageOffset(pageId){
+ const k=QUOTE_PAGES.indexOf(pageId);if(k>=0)return k*5;
+ let h=0;for(const ch of String(pageId))h=(h*31+ch.charCodeAt(0))>>>0;return QUOTE_PAGES.length*5+(h%997);
+}
+let _perm=null,_permN=0;
+function _permutation(n){ // fixed shuffle so the order isn't the list order
+ if(_perm&&_permN===n)return _perm;
+ const a=[...Array(n).keys()];let seed=20261113;
+ for(let i=n-1;i>0;i--){seed=(seed*1103515245+12345)>>>0;const j=seed%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+ _perm=a;_permN=n;return a;
+}
+// Scott 13 Nov 2026: each quote gets its own popular-font look (font, case, italic),
+// fixed per quote so it doesn't flicker as the artwork changes.
+const QUOTE_STYLES=[
+ {f:"'Playfair Display',serif",w:700,i:'italic',t:'none',ls:'0',s:1},
+ {f:"'Bebas Neue',sans-serif",w:400,i:'normal',t:'uppercase',ls:'.06em',s:1.45},
+ {f:"'Montserrat',sans-serif",w:700,i:'normal',t:'uppercase',ls:'.04em',s:.88},
+ {f:"'Lora',serif",w:500,i:'italic',t:'none',ls:'0',s:1.02},
+ {f:"'Oswald',sans-serif",w:500,i:'normal',t:'uppercase',ls:'.03em',s:1.08},
+ {f:"'Poppins',sans-serif",w:600,i:'normal',t:'capitalize',ls:'0',s:.95},
+ {f:"'Merriweather',serif",w:400,i:'italic',t:'none',ls:'0',s:.95},
+ {f:"'DM Serif Display',serif",w:400,i:'normal',t:'capitalize',ls:'0',s:1.12},
+ {f:"'Raleway',sans-serif",w:800,i:'normal',t:'uppercase',ls:'.08em',s:.86},
+ {f:"'Cormorant Garamond',serif",w:600,i:'italic',t:'none',ls:'0',s:1.2},
+ {f:"'Abril Fatface',serif",w:400,i:'normal',t:'none',ls:'.01em',s:1.08},
+ {f:"'Roboto Slab',serif",w:500,i:'normal',t:'capitalize',ls:'0',s:.96},
+];
+function _quoteStyle(text){let h=7;for(const ch of String(text))h=(h*33+ch.charCodeAt(0))>>>0;return QUOTE_STYLES[h%QUOTE_STYLES.length];}
+function _ensureQuoteFonts(doc){
+ if(!doc||doc.getElementById('ci-quote-fonts'))return;
+ const l=doc.createElement('link');l.id='ci-quote-fonts';l.rel='stylesheet';
+ l.href='https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@1,600&family=DM+Serif+Display&family=Lora:ital,wght@1,500&family=Merriweather:ital@1&family=Montserrat:wght@700&family=Oswald:wght@500&family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@600&family=Raleway:wght@800&family=Roboto+Slab:wght@500&display=swap';
+ doc.head.appendChild(l);
+}
+function nextQuote(pageId){
+ const admin=(globalThis.ciQuoteLibrary||[]).filter(q=>q&&q.quote);
+ if(!admin.length)return '';
+ const a=admin[_permutation(admin.length)[(_slot()+_pageOffset(pageId))%admin.length]];
+ return a.author?a.quote+' — '+a.author:a.quote;
+}
+
 // Static, user-supplied artwork. Only artwork IDs are stored; no member content.
 export function createTroughPicker(ids, storage, random = Math.random) {
   const key = 'ci-trough-assignments-v1';
@@ -24,10 +87,18 @@ export const CAROUSEL_ITEMS=feed.items;
 const items=new Map(CAROUSEL_ITEMS.map(item=>[item.id,item]));
 const pick=createTroughPicker(CAROUSEL_ITEMS.map(item=>item.id),storage);
 const selections=new Map();let lastPage=null;
+// Scott 13 Nov 2026: image and quote change TOGETHER every 15 minutes, different per page.
+const SLOT_MS=15*60*1000;
+const _slot=()=>Math.floor(Date.now()/SLOT_MS);
+function slotPick(pageId){
+ const ids=CAROUSEL_ITEMS.map(i=>i.id);if(!ids.length)return pick(pageId);
+ const perm=_permutation(ids.length);
+ return ids[perm[(_slot()*7+_pageOffset(pageId)*3)%ids.length]];
+}
 export function visitTroughPage(pageId, eligible=true){
  if(lastPage===pageId)return;
  lastPage=pageId;
- if(eligible)selections.set(pageId,pick(pageId));
+ if(eligible)selections.set(pageId,slotPick(pageId));
 }
 export function attachTrough(shell,pageId){
  try{const doc=shell.ownerDocument,shellWin=(()=>{let w=globalThis;try{while(w.parent!==w&&!w.document.getElementById('review-menu'))w=w.parent;}catch{}return w;})(),mq=shellWin.matchMedia('(max-width:650px)');const set=()=>doc.documentElement.classList.toggle('ci-phone',mq.matches);set();if(!doc.ciPhoneWatch){doc.ciPhoneWatch=true;mq.addEventListener('change',set);}}catch{}
@@ -36,7 +107,7 @@ export function attachTrough(shell,pageId){
   shell.dataset.carouselPage=pageId;
   delete shell.dataset.carouselReady;
  }
- if(!selections.has(pageId))selections.set(pageId,pick(pageId));
+ selections.set(pageId,slotPick(pageId));
  shell.classList.add('ci-carousel');
  shell.setAttribute('aria-label','The Carousel');
  shell.setAttribute('role','region');
@@ -53,7 +124,7 @@ export function attachTrough(shell,pageId){
    if(item.smallImage){image.srcset=`${item.smallImage} 640w, ${item.image} 1280w`;image.sizes='(max-width: 700px) 100vw, 960px';}
    card.appendChild(image);
    // Phones: the caption baked into the art is cropped off and redrawn below it, 3x taller, text 2x (Scott, 3 Nov 2026).
-   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const q=globalThis.ciPageQuote;if(q&&q.pageId===pageId&&q.text){const i=q.text.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?q.text.slice(0,i):q.text;au.textContent=i>0?q.text.slice(i+3):'';cap.append(qt);if(au.textContent)cap.append(au);cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');}else cap.textContent=item.caption;card.appendChild(cap);}
+   if(item.caption){card.style.setProperty('--ci-band',String((item.bandPx||88)/720));const cap=document.createElement('div');cap.className='ci-carousel-caption';cap.style.background=item.borderColor||'#0476a2';const fill=qtext=>{const i=qtext.lastIndexOf(' — '),qt=document.createElement('span'),au=document.createElement('span');qt.className='ci-q-text';au.className='ci-q-author';qt.textContent=i>0?qtext.slice(0,i):qtext;_ensureQuoteFonts(document);const st=_quoteStyle(qt.textContent);qt.style.cssText=`font-family:${st.f}!important;font-weight:${st.w}!important;font-style:${st.i}!important;text-transform:${st.t}!important;letter-spacing:${st.ls}!important;font-size:calc(1em * ${st.s})!important`;{let sc=st.s,n=0;const set=()=>{qt.style.setProperty('font-size',`calc(1em * ${sc})`,'important');};const fitQ=()=>{if(!qt.isConnected){if(++n<40)setTimeout(fitQ,150);return;}let k=0;while(qt.scrollHeight>qt.clientHeight+1&&sc>.6&&k++<12){sc=+(sc-.06).toFixed(2);set();}if(++n<20)setTimeout(fitQ,250);};setTimeout(fitQ,50);document.fonts?.ready?.then(()=>setTimeout(fitQ,50));}au.textContent=i>0?qtext.slice(i+3):'';cap.replaceChildren(qt);if(au.textContent)cap.append(au);};cap.classList.add('ci-carousel-quote');card.classList.add('ci-has-quote');const qtext=nextQuote(pageId);if(qtext)fill(qtext);else{let n=0;const w=setInterval(()=>{const t=nextQuote(pageId);if(t){fill(t);clearInterval(w);}else if(++n>40)clearInterval(w);},300);}card.appendChild(cap);}
   }else{
    const text=document.createElement('p');text.className='ci-carousel-text';text.textContent=item.text||'';card.appendChild(text);
   }
@@ -80,7 +151,8 @@ export function attachTrough(shell,pageId){
   if(!shell.isConnected){clearInterval(timer);return;}
   const page=shell.closest('.page');
   if(globalThis.ciHoldCarousel||document.hidden||(page&&!page.classList.contains('active')))return;
-  selections.set(pageId,pick(pageId));render();
- },Math.max(6000,feed.intervalMs||12000));
+  const next=slotPick(pageId);if(next===selections.get(pageId))return;
+  selections.set(pageId,next);render();
+ },15000);
  shell.ciCarouselDispose=()=>clearInterval(timer);
 }

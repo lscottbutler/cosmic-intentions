@@ -4862,3 +4862,13 @@ html.ci-header-note body > div:first-child{display:flow-root}
 html.ci-header-note .ci-player-owner-instructions,html.ci-header-note .ci-player-owner-instructions *,
 html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-personal-e-box div,
 #page-goalworkspace .wcard{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif!important}
+
+/* Scott 13 Nov 2026: every 16:9 card keeps the SAME total height while quotes rotate —
+   the quote band is a fixed height (room for 3 lines + source), so a longer or shorter
+   line no longer makes the card jump when the next one fades in. */
+.ci-carousel-caption.ci-carousel-quote{height:27cqw!important;min-height:0!important;max-height:27cqw!important;overflow:hidden!important;box-sizing:border-box!important;justify-content:center!important}
+.ci-carousel-quote .ci-q-text{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+
+/* Scott 13 Nov 2026: CITADEL title alternates dark grey / black per letter, like every other title. */
+#page-dashboard .citadel-letter-card:nth-child(odd){background:#4a4a4a!important}
+#page-dashboard .citadel-letter-card:nth-child(even){background:#171717!important}

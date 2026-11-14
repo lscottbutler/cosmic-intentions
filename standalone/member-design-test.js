@@ -65,7 +65,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  document.querySelector('.orientation').append(instructionsTrigger);
  // Habits usage stats (text placeholders; styling to be designed later).
  const habitStats=document.createElement('div');habitStats.id='habit-stats';habitStats.hidden=true;
- habitStats.innerHTML='<p class="hs-message" id="hs-message" aria-live="polite"></p><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
+ // Scott 13 Nov 2026: the "Great effort today…" message is removed (REVIEW box replaces it).
+ habitStats.innerHTML='<p class="hs-message" id="hs-message" aria-live="polite" hidden></p><div class="hs-circle" role="img" aria-label="Day streak" title="Day streak: days in a row with at least one habit checked off"><b id="hs-streak">0</b></div>';
  document.querySelector('.orientation').append(habitStats);
  function updateHabitStats(){
   if(habitStats.hidden)return;
@@ -323,7 +324,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      if(char===' '){
       tile.style.cssText='width:.35em;flex:0 0 .35em';title.append(tile);word=null;continue;
      }
-     const color=letterIndex++%2?neutral:accent;
+     // Scott 13 Nov 2026: all titles alternate dark grey / black per letter.
+     const color=letterIndex++%2?'#171717':'#4a4a4a';
      tile.className='ci-title-tile';
      tile.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+color+';color:#fff;border-radius:2px;padding:0 3px;line-height:1.2';
      if(!word){word=document.createElement('span');word.className='ci-title-word';word.setAttribute('aria-hidden','true');word.style.cssText='display:inline-flex;flex-wrap:nowrap;gap:3px';title.append(word);}
@@ -585,43 +587,122 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  });
  // Scott 12 Nov 2026: Personal E (user's own message) moves into the TO DO slot
  // which lives inside the nested experienceFrame inside ci-review-frame.
+ // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
+ // quote image; the admin WELCOME box moves out of the header to the top of the page
+ // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
  function movePersonalEToTodo(){
-  if(current!=='goal-workspace')return false;
+  if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
-  // Scott 13 Nov 2026: SWAPPED — the admin WELCOME box now goes into the TO DO slot;
-  // Personal E stays in the top header card.
   const live=doc?.querySelector('.ci-page-welcome');
-  if(live){window.__ciWelcomeHTML=live.outerHTML;live.remove();}
-  if(!window.__ciWelcomeHTML)return false;
+  // Only capture after the header has finished filling the welcome (Personal E renders after it).
+  if(live&&doc.querySelector('.ci-player-personal-e-box')){
+   const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
+   // Owner (Scott) always sees the admin box on every page so he knows where it is; members only when it has text.
+   let html=empty?'':live.outerHTML;
+   if(empty&&doc.defaultView?.ciOwnerAccess){const c=live.cloneNode(true);c.style.display='';c.classList.remove('is-empty');const b=c.querySelector('.ci-admin-page-box-content');if(b){b.style.display='';b.innerHTML='<p style="color:#8a8a8a;font-style:italic;margin:0">ADMIN BOX — empty. Add text on the Admin page (WELCOME MESSAGE for this page). Members do not see this until it has text.</p>';}html=c.outerHTML;}
+   window.__ciWelcome={page:current,html};live.remove();
+  }
+  const w=window.__ciWelcome;
+  if(!w||w.page!==current)return false;
   const reviewFrame=document.getElementById('ci-review-frame');
   let reviewDoc;try{reviewDoc=reviewFrame?.contentDocument;}catch(_){return false;}
-  if(!reviewDoc)return false;
-  let slot=reviewDoc.querySelector('[data-todo-personal-e-slot]');
-  let targetDoc=reviewDoc;
+  if(!reviewDoc?.body)return false;
+  const docs=[reviewDoc];
+  let mainFrame=null,mainH=0;
+  for(const inner of reviewDoc.querySelectorAll('iframe')){try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
+  docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
+  if(!w.html)return true;
+  let slot=null,targetDoc=null;
+  for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
   if(!slot){
-   for(const inner of reviewDoc.querySelectorAll('iframe')){
-    let innerDoc;try{innerDoc=inner.contentDocument;}catch(_){continue;}
-    const found=innerDoc?.querySelector('[data-todo-personal-e-slot]');
-    if(found){slot=found;targetDoc=innerDoc;break;}
-   }
+   // Place the slot ABOVE the page's content frame, never inside it (locked players stay untouched).
+   targetDoc=reviewDoc;
+   slot=reviewDoc.querySelector('[data-ci-welcome-slot]');
+   if(!slot){slot=reviewDoc.createElement('div');slot.setAttribute('data-ci-welcome-slot','');slot.style.cssText='padding:16px 16px 0;box-sizing:border-box';
+    if(mainFrame)mainFrame.before(slot);else (reviewDoc.querySelector(".shell")||reviewDoc.body).prepend(slot);} /* inside .shell so the frame height counts it */
   }
-  if(!slot)return false;
   if(slot.querySelector('.ci-page-welcome'))return true;
   while(slot.firstChild)slot.removeChild(slot.firstChild);
   if(!targetDoc.getElementById('ci-moved-welcome-style')){
    const css=[];
    for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
-    for(const r of rules){if(r.selectorText&&/ci-page-welcome|ci-page-recap/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
+    for(const r of rules){if(r.selectorText&&/ci-page-welcome/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
    const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important}';
    targetDoc.head.appendChild(st);
   }
-  const tmp=targetDoc.createElement('div');tmp.innerHTML=window.__ciWelcomeHTML;slot.appendChild(tmp.firstElementChild);
+  const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
   return true;
  }
+ // Scott 13 Nov 2026: REVIEW box — a stand-alone progress paragraph above the admin box.
+ // Habits first; other trackable pages (goals, to do, viz, meditate, gratitude) to follow.
+ function habitsReviewText(){
+  const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'null');}catch{return null;}};
+  const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const list=Array.isArray(read('ci_habit_list'))?read('ci_habit_list'):[];const total=list.length;
+  const done=d=>{const v=read('ci_habits_'+key(d))||{};return list.filter(h=>v[h.id]).length;};
+  const today=new Date();today.setHours(0,0,0,0);
+  let streak=0;const d=new Date(today);if(!done(d))d.setDate(d.getDate()-1);
+  while(done(d)&&streak<730){streak++;d.setDate(d.getDate()-1);}
+  let sum=0,days=0;
+  // Today plus the previous 6 days, starting from the first day with a check-off.
+  for(let i=6;i>=0;i--){const x=new Date(today);x.setDate(today.getDate()-i);const n=done(x);if(n||days)days++;sum+=n;}
+  if(!days){days=1;sum=0;}
+  const pct=total?Math.round(100*sum/(days*total)):0;
+  const name=String((read('ci_pegboard')||{})['pb-name']||'').trim().split(/\s+/)[0];
+  const lead=name?'<strong>'+esc(name)+'</strong>, y':'Y';
+  if(!total)return (name?'<strong>'+esc(name)+'</strong>, add':'Add')+' your first daily habit below and your progress will show here.';
+  const doneToday=done(today);
+  const parts=[`${lead}ou've successfully completed <strong>${doneToday} of your ${total}</strong> daily habits so far today.`];
+  if(streak>1)parts.push(`Today marks <strong>${streak} days in a row</strong> that you've shown up and taken care of business.`);
+  else if(streak===1)parts.push(`You showed up and took care of business today — that's day one of a new streak.`);
+  else parts.push(`Check off a habit today to start a new streak.`);
+  parts.push(`On average, you're completing <strong>${pct}%</strong> of your habits each day.`);
+  parts.push('Remember, every check-off moves you one step closer to becoming who you want to be.');
+  return parts.join(' ');
+ }
+ function ensureReview(){
+  // Scott 13 Nov 2026: REVIEW sits in the top card, between the page title and the quote image.
+  let hd;try{hd=headerNoteFrame.contentDocument;}catch(_){return;}
+  try{document.getElementById('ci-review-frame')?.contentDocument?.querySelector('[data-ci-review-box]')?.remove();}catch(_){}
+  if(!hd?.body)return;
+  const old=hd.querySelector('[data-ci-review-box]');
+  // Which page the header is showing (sent by the header with ci-personal-e-ready).
+  const REVIEW_PAGES={habits:'habits',goalworkspace:'goalworkspace',setup:'setup',meditation:'meditation','super-viz':'super-viz',vizlibrary:'vizlibrary',vizgoal:'vizgoal',gratitude:'gratitude'};
+  const reviewPage=current==='admin'?null:REVIEW_PAGES[window.__ciHeaderPage];
+  if(!reviewPage){old?.remove();return;}
+  const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
+  if(!anchor)return;
+  let box=old;
+  if(!box||box.nextElementSibling!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
+   box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 16px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
+   box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
+   anchor.before(box);}
+  const p=box.querySelector('[data-ci-review-text]');
+  if(reviewPage==='habits'){const t=habitsReviewText();if(p.innerHTML!==t)p.innerHTML=t;return;}
+  // Other pages: text comes from the app (shared/recap.js); refresh every 10s.
+  const now=Date.now();if(box.dataset.page===reviewPage&&now-(+box.dataset.at||0)<10000)return;
+  box.dataset.page=reviewPage;box.dataset.at=now;
+  // Use the page's own app frame (it has the member's goals loaded); fall back to the header frame.
+  let src=hd.defaultView;try{const ef=document.getElementById('ci-review-frame')?.contentDocument?.getElementById('experienceFrame')?.contentWindow;if(ef?.ciPageReview)src=ef;}catch(_){}
+  Promise.resolve(src.ciPageReview?.(reviewPage)).then(t=>{if(!t){box.hidden=true;return;}box.hidden=false;if(p.innerHTML!==t)p.innerHTML=t;}).catch(()=>{});
+ }
+ // Scott 13 Nov 2026: the page's "how it works" text (player instruction) sits at the very top
+ // of the top card, directly under the page title — above REVIEW and the quote image. All pages.
+ function ensureInstructionsTop(){
+  let hd;try{hd=headerNoteFrame.contentDocument;}catch(_){return;}
+  const ins=hd?.querySelector('.ci-player-owner-instructions');if(!ins)return;
+  const target=hd.querySelector('[data-ci-review-box]')||hd.querySelector('.ci-carousel');if(!target||target===ins)return;
+  if(ins.nextElementSibling!==target)target.before(ins);
+  // Scott 13 Nov 2026: the black HIDE OVERVIEW button now lives in the right-hand button column (#ci-info-trigger).
+  ins.querySelector('[data-ci-hide-overview]')?.parentElement?.remove();
+ }
+ setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
-   window.__ciWelcomeHTML=null;
+   window.__ciHeaderPage=event.data.pageId;
+   window.__ciWelcome=null;
    // Keep re-checking: the TO DO frame can reload after the move and lose the box.
    clearInterval(window.__ciWelcomeTimer);window.__ciWelcomeTimer=setInterval(movePersonalEToTodo,700);
    return;
@@ -1153,11 +1234,19 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  const sc=document.querySelector('.orientation .shortcuts'),frame=document.getElementById('header-admin-note-frame'),note=document.getElementById('header-admin-note');
  if(!sc||!frame)return;
  const btn=document.createElement('button');btn.type='button';btn.id='ci-info-trigger';btn.textContent='i';btn.title='Instructions';
- let open=false;
+ // Scott 13 Nov 2026: overview shows by default on each page until the member presses
+ // HIDE OVERVIEW; after that it stays hidden on that page (blue i still opens it).
+ const pageKey=()=>'ci_overview_hidden_'+(new URLSearchParams(location.search).get('feature')||'home');
+ const hiddenSaved=()=>{try{return localStorage.getItem(pageKey())==='1';}catch(_){return false;}};
+ window.ciHideOverview=()=>{try{localStorage.setItem(pageKey(),'1');}catch(_){}open=false;apply();};
+ let open=!hiddenSaved();
  const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
-  btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide instructions':'Show instructions');queue();};
- btn.addEventListener('click',()=>{open=!open;apply();});
- frame.addEventListener('load',apply);
+  btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide overview':'Show overview');
+  // Scott 13 Nov 2026: the blue i circle now reads HIDE / OVERVIEW (SHOW / OVERVIEW when closed).
+  btn.textContent=(open?'HIDE':'SHOW')+' OVERVIEW';btn.title=open?'Hide overview':'Show overview';queue();};
+ btn.addEventListener('click',()=>{if(open)window.ciHideOverview();else{open=true;apply();}});
+ frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
+ let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box

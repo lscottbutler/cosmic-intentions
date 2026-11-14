@@ -473,3 +473,10 @@ body.ci-admin-feature .orientation #ci-info-trigger,
 body.ci-admin-feature .orientation .shortcuts,
 body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 
+
+/* Scott 13 Nov 2026: blue circle reads HIDE/SHOW on one line, OVERVIEW underneath. */
+.orientation .shortcuts>button#ci-info-trigger{font:800 8px/1.2 Arial,Helvetica,sans-serif!important;font-style:normal!important;letter-spacing:.02em!important;line-height:1.2!important;display:flex!important;align-items:center;justify-content:center;text-align:center;padding:0!important}
+
+/* Scott 13 Nov 2026: blue circle replaced by the black HIDE / SHOW OVERVIEW button in the button column. */
+.orientation .shortcuts>button#ci-info-trigger{width:auto!important;height:auto!important;min-height:0!important;border-radius:6px!important;background:#000!important;color:#fff!important;padding:10px 14px!important;font:700 13px/1 Arial,Helvetica,sans-serif!important;font-style:normal!important;letter-spacing:.08em!important;white-space:nowrap!important;box-shadow:none!important;display:inline-block!important}
+.orientation .shortcuts>button#ci-info-trigger[aria-pressed="true"]{box-shadow:none!important}

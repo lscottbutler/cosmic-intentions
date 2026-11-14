@@ -343,6 +343,240 @@
       "borderColor": "#3d779a",
       "caption": "I AM SMASHING TROUGH OBSTACLES",
       "bandPx": 88
+    },
+    {
+      "id": "raw-trough002",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough002-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough002-640.webp",
+      "borderColor": "#63605e",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough003",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough003-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough003-640.webp",
+      "borderColor": "#1e3d52",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough004",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough004-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough004-640.webp",
+      "borderColor": "#64635d",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough007",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough007-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough007-640.webp",
+      "borderColor": "#6a6057",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough008",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough008-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough008-640.webp",
+      "borderColor": "#7d6b44",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough009",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough009-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough009-640.webp",
+      "borderColor": "#7b4823",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough011",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough011-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough011-640.webp",
+      "borderColor": "#284941",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough013",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough013-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough013-640.webp",
+      "borderColor": "#34534a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough015",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough015-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough015-640.webp",
+      "borderColor": "#736a4e",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough016",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough016-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough016-640.webp",
+      "borderColor": "#466055",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough017",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough017-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough017-640.webp",
+      "borderColor": "#8c6d35",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough018",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough018-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough018-640.webp",
+      "borderColor": "#536e66",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough019",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough019-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough019-640.webp",
+      "borderColor": "#5a6667",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough020",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough020-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough020-640.webp",
+      "borderColor": "#6b565a",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough021",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough021-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough021-640.webp",
+      "borderColor": "#5a4934",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough022",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough022-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough022-640.webp",
+      "borderColor": "#736d44",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough023",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough023-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough023-640.webp",
+      "borderColor": "#4f6071",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough024",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough024-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough024-640.webp",
+      "borderColor": "#5a5f67",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough025",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough025-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough025-640.webp",
+      "borderColor": "#2b9680",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough026",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough026-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough026-640.webp",
+      "borderColor": "#512b96",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough027",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough027-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough027-640.webp",
+      "borderColor": "#2c7694",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough028",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough028-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough028-640.webp",
+      "borderColor": "#586967",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough029",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough029-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough029-640.webp",
+      "borderColor": "#424547",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough031",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough031-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough031-640.webp",
+      "borderColor": "#6e6a53",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough032",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough032-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough032-640.webp",
+      "borderColor": "#716450",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
+    },
+    {
+      "id": "raw-trough033",
+      "type": "trough",
+      "image": "/images/troughs-web/raw-trough033-1280.webp",
+      "smallImage": "/images/troughs-web/raw-trough033-640.webp",
+      "borderColor": "#6c6955",
+      "caption": "I AM SMASHING TROUGH OBSTACLES",
+      "bandPx": 89
     }
   ]
 }
