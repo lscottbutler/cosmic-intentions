@@ -4991,12 +4991,21 @@ function ensureAdminPageBoxEditors() {
     // card, boxes stacked vertically inside with purpose-first labels. Jump-to-page from
     // the finder opens that card and scrolls to it.
     section.innerHTML =
-      '<h2 class="ci-page-box-admin-title">ADMIN BOXES</h2>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h2 class="ci-page-box-admin-title">ADMIN BOXES</h2><button type="button" id="ci-ab-toggle" aria-expanded="false" aria-label="Show admin boxes" style="flex:0 0 40px;width:40px;height:40px;border:0;border-radius:50%;background:#000;color:#fff;font:700 18px/1 Arial,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s">&#9662;</button></div>' +
       '<p class="ci-page-box-admin-help">One card per player page below. Tap a page to open it, then edit any box and press <strong>Save</strong>. Each box title says exactly where its text appears on that player page.</p>' +
+      '<div id="ci-ab-body" style="display:none">' +
       '<div class="ci-admin-section-note" id="adminSectionTextBox" role="region" aria-label="Admin text box"><h3 class="ci-admin-section-note-label">ADMIN NOTES (visible only here, not on any player page)</h3></div>' +
       '<div class="ci-admin-page-finder"><label for="adminPageFinder">Jump to a page</label><select id="adminPageFinder"><option value="">Choose a page…</option></select></div>' +
-      '<div class="ci-page-box-admin-grid"></div>';
+      '<div class="ci-page-box-admin-grid"></div>' +
+      '</div>';
     adminPage.querySelector('.ci-admin-lettermark').insertAdjacentElement('afterend', section);
+    // Scott 14 Nov 2026: chevron hides/shows the whole ADMIN BOXES area (remembers your choice).
+    {
+      const t = section.querySelector('#ci-ab-toggle'), body = section.querySelector('#ci-ab-body');
+      const setOpen = open => { body.style.display = open ? 'block' : 'none'; t.setAttribute('aria-expanded', String(open)); t.setAttribute('aria-label', open ? 'Hide admin boxes' : 'Show admin boxes'); t.style.transform = open ? 'rotate(180deg)' : 'none'; try { localStorage.setItem('ci_ab_open', open ? '1' : '0'); } catch (e) {} };
+      t.addEventListener('click', () => setOpen(body.style.display === 'none'));
+      try { if (localStorage.getItem('ci_ab_open') === '1') setOpen(true); } catch (e) {}
+    }
     // Scott 11 Nov 2026: dropdown navigates to the chosen player page (same as summary click).
     section.querySelector('#adminPageFinder').addEventListener('change', event => {
       const pageId = event.target.value;
