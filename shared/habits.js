@@ -158,7 +158,7 @@ function ciHabitShowAdd(cat) {
   _closedCats.delete(cat);
   const sec = document.getElementById('habit-period-' + cat); if (sec) sec.open = true;
   const f = document.querySelector(`[data-add-form="${cat}"]`); if (!f) return;
-  f.hidden = false; f.querySelector('input')?.focus();
+  f.style.display = 'flex'; f.querySelector('input')?.focus();
 }
 function ciHabitAddRoutine(cat, name) {
   name = String(name || '').trim(); if (!name) return;
@@ -312,7 +312,7 @@ export function renderHabits() {
         <span style="display:flex;align-items:center;gap:9px;"><button type="button" class="habit-add-routine-btn" onclick="event.preventDefault();event.stopPropagation();ciHabitShowAdd('${cat}')" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">+ ADD ROUTINE</button><span class="habit-completion-count">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div class="habit-period-body" style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
-        <form class="habit-add-routine-form" data-add-form="${cat}" hidden onsubmit="event.preventDefault();ciHabitAddRoutine('${cat}',this.querySelector('input').value)" style="display:flex;gap:8px;margin:4px 0 10px">
+        <form class="habit-add-routine-form" data-add-form="${cat}" onsubmit="event.preventDefault();ciHabitAddRoutine('${cat}',this.querySelector('input').value)" style="display:none;gap:8px;margin:4px 0 10px">
           <input type="text" maxlength="160" placeholder="New ${SECTION_LABEL[cat].toLowerCase()} routine…" style="flex:1;min-width:0;border:1px solid #bccbdc;border-radius:6px;padding:9px 10px;font:400 14px Arial,sans-serif">
           <button type="submit" style="background:#000;color:#fff;border:0;border-radius:6px;padding:9px 14px;font:700 12px Arial,sans-serif;letter-spacing:.06em;cursor:pointer">ADD</button>
         </form>
