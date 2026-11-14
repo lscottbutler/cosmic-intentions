@@ -153,6 +153,22 @@ export function pbAddHabit() {
   if (inp) inp.value = '';
   _refresh();
 }
+/* Scott 14 Nov 2026: "+ ADD ROUTINE" on every time-of-day bar adds a habit straight into that section. */
+function ciHabitShowAdd(cat) {
+  _closedCats.delete(cat);
+  const sec = document.getElementById('habit-period-' + cat); if (sec) sec.open = true;
+  const f = document.querySelector(`[data-add-form="${cat}"]`); if (!f) return;
+  f.hidden = false; f.querySelector('input')?.focus();
+}
+function ciHabitAddRoutine(cat, name) {
+  name = String(name || '').trim(); if (!name) return;
+  const list = getHabitList();
+  list.push({ id: _newId(), name: name.slice(0, 160), cat });
+  _saveList(list);
+  _closedCats.delete(cat);
+  _refresh();
+}
+if (typeof window !== 'undefined') { window.ciHabitShowAdd = ciHabitShowAdd; window.ciHabitAddRoutine = ciHabitAddRoutine; }
 export function pbSaveHabitName(id, val) {
   const list = getHabitList();
   const h = list.find(x => x.id === id);
@@ -293,9 +309,13 @@ export function renderHabits() {
     html += `<details class="habit-drop" id="habit-period-${cat}" data-habit-section="${cat}" ${open ? 'open' : ''} ontoggle="habitsSectionToggle('${cat}',this.open)" style="margin-bottom:8px;">
       <summary style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:${CAT_COLORS[cat]};color:#fff;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:11px 14px;border-radius:8px;cursor:pointer;">
         <span>${SECTION_LABEL[cat]}</span>
-        <span style="display:flex;align-items:center;gap:9px;"><span class="habit-completion-count">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
+        <span style="display:flex;align-items:center;gap:9px;"><button type="button" class="habit-add-routine-btn" onclick="event.preventDefault();event.stopPropagation();ciHabitShowAdd('${cat}')" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">+ ADD ROUTINE</button><span class="habit-completion-count">${doneN}/${items.length}</span><span class="habit-caret">&#9656;</span></span>
       </summary>
       <div class="habit-period-body" style="background:#fff;border-radius:8px;padding:8px 12px 10px;margin-top:6px;">
+        <form class="habit-add-routine-form" data-add-form="${cat}" hidden onsubmit="event.preventDefault();ciHabitAddRoutine('${cat}',this.querySelector('input').value)" style="display:flex;gap:8px;margin:4px 0 10px">
+          <input type="text" maxlength="160" placeholder="New ${SECTION_LABEL[cat].toLowerCase()} routine…" style="flex:1;min-width:0;border:1px solid #bccbdc;border-radius:6px;padding:9px 10px;font:400 14px Arial,sans-serif">
+          <button type="submit" style="background:#000;color:#fff;border:0;border-radius:6px;padding:9px 14px;font:700 12px Arial,sans-serif;letter-spacing:.06em;cursor:pointer">ADD</button>
+        </form>
         <div class="habit-daily-grid">${items.map(h => _habitRow(h, !!d[h.id], false)).join('')}</div>
         ${items.length ? '' : '<p class="habit-period-empty">No habits in this section yet. Use Edit habits to add one.</p>'}
       </div>
