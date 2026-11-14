@@ -4,6 +4,7 @@ name: Morning publish (staging -> live)
 on:
   schedule:
     - cron: '0 22 * * *'
+    - cron: '17 23 * * *'   # backup run 6:17 AM Bangkok in case GitHub skips the 5 AM one (does nothing if already published)
   workflow_dispatch: {}
 permissions:
   contents: write
