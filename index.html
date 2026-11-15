@@ -2576,12 +2576,24 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
       <!-- Scott 13 Nov 2026: QUOTE LIBRARY — 100 quotes that rotate in the 16:9 quote band on every page. -->
       <div id="ci-quote-library-admin" style="background:#fff;border:2px solid #303030;border-radius:12px;padding:18px 20px;margin:0 0 28px;">
-        <div style="font-weight:800;font-size:16px;color:#171717;letter-spacing:.06em;margin-bottom:4px;">QUOTE LIBRARY — 16:9 CARDS</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;"><div style="font-weight:800;font-size:16px;color:#171717;letter-spacing:.06em;">QUOTE LIBRARY — 16:9 CARDS</div><button type="button" id="ci-ql-toggle" aria-expanded="false" aria-label="Show quotes" onclick="ciToggleQuoteLibrary()" style="width:40px;height:40px;border:0;border-radius:50%;background:#000;color:#fff;font:700 18px/1 Arial,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s">&#9662;</button></div>
         <div style="color:#58677a;font-size:12px;line-height:1.5;margin-bottom:12px;">Up to 100 quotes. Each one rotates into the quote band under the artwork on every page. Leave a row empty to skip it. Press SAVE QUOTES when done.</div>
         <div style="display:flex;gap:10px;align-items:center;margin:0 0 12px;"><button type="button" onclick="saveQuoteLibrary()" style="background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 13px Arial,sans-serif;letter-spacing:.08em;cursor:pointer">SAVE QUOTES</button><span class="ci-ql-status" style="font-size:12px;color:#49697a"></span></div>
+        <div id="ci-quote-library-body" style="display:none">
         <div id="ci-quote-library" style="display:grid;gap:8px;"></div>
         <div style="display:flex;gap:10px;align-items:center;margin:12px 0 0;"><button type="button" onclick="saveQuoteLibrary()" style="background:#000;color:#fff;border:0;border-radius:6px;padding:10px 18px;font:700 13px Arial,sans-serif;letter-spacing:.08em;cursor:pointer">SAVE QUOTES</button><span class="ci-ql-status" style="font-size:12px;color:#49697a"></span></div>
+        </div>
       </div>
+      <script>
+      // Scott 14 Nov 2026: chevron hides/shows the 100 quote rows (remembers your choice).
+      function ciToggleQuoteLibrary(force){
+        var b=document.getElementById('ci-quote-library-body'),t=document.getElementById('ci-ql-toggle');if(!b||!t)return;
+        var open=typeof force==='boolean'?force:b.style.display==='none';
+        b.style.display=open?'block':'none';t.setAttribute('aria-expanded',String(open));t.setAttribute('aria-label',open?'Hide quotes':'Show quotes');t.style.transform=open?'rotate(180deg)':'none';
+        try{localStorage.setItem('ci_ql_open',open?'1':'0');}catch(e){}
+      }
+      try{if(localStorage.getItem('ci_ql_open')==='1')ciToggleQuoteLibrary(true);}catch(e){}
+      </script>
 
       <h2>Other content boxes</h2>
       <p class="admin-page-sub">Write a paragraph for each block. Changes go live immediately on save. Leave empty to hide the block.</p>
@@ -3201,14 +3213,31 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 <template id="aks-vo-encouragements"><h2>VO encouragements</h2><div class="aks-vo-grid"><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-tiger.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-panda.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dino.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dog.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-flowers.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-ship.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-baloon.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-record-player.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-paint-brush.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-bullhorn.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-lungs.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-bug.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-messenger.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-doll.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-dunk.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-batter.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-hand-bird.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-hand-puppet.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-pidgeon.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-pink-skull.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-poster.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-respect.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-splat.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-travel.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-box.webp" alt="" loading="lazy" decoding="async"></button><button type="button" onclick="playEncouragement()" aria-label="Play VO encouragement"><img src="images/home-row/home-clocks-trash.webp" alt="" loading="lazy" decoding="async"></button></div></template>
 <script>
-if(new URLSearchParams(location.search).get('aksHolding')==='1'){
- document.documentElement.classList.add('aks-holding-view');
- const style=document.createElement('style');
- style.textContent='html.aks-holding-view body>*:not(#aks-vo-root):not(.encourage-pop){display:none!important}html.aks-holding-view body{background:#fff!important;margin:0!important;padding:16px!important}#aks-vo-root{color:#292929;font:16px/1.5 Arial,sans-serif}#aks-vo-root h2{font-size:20px}.aks-vo-grid{display:flex;flex-wrap:wrap;gap:20px;align-items:center}.aks-vo-grid button{border:0;background:transparent;padding:10px;cursor:pointer}.aks-vo-grid img{height:80px;width:auto;max-width:160px;object-fit:contain}.aks-vo-grid button:focus-visible{outline:3px solid #292929;outline-offset:3px}';
- document.head.append(style);
- const root=document.createElement('main');root.id='aks-vo-root';
- root.append(document.getElementById('aks-vo-encouragements').content.cloneNode(true));document.body.append(root);
-}
+// Scott 14 Nov 2026: chevron hides/shows the OTHER CONTENT BOXES section (remembers your choice).
+(function(){
+ const page=document.querySelector('#page-admin .admin-page');if(!page)return;
+ const h=[...page.querySelectorAll(':scope > h2')].find(x=>/other content boxes/i.test(x.textContent));if(!h||document.getElementById('ci-ocb-body'))return;
+ const body=document.createElement('div');body.id='ci-ocb-body';body.style.display='none';
+ let n=h.nextElementSibling;
+ while(n&&n.tagName!=='H2'&&n.id!=='admin-vo-encouragements'&&n.tagName!=='SCRIPT'){const next=n.nextElementSibling;body.append(n);n=next;}
+ const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:12px';
+ h.replaceWith(row);row.append(h);h.style.margin='0';
+ const t=document.createElement('button');t.type='button';t.id='ci-ocb-toggle';t.innerHTML='&#9662;';
+ t.style.cssText='flex:0 0 40px;width:40px;height:40px;border:0;border-radius:50%;background:#000;color:#fff;font:700 18px/1 Arial,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s';
+ row.append(t);row.after(body);
+ const setOpen=o=>{body.style.display=o?'block':'none';t.setAttribute('aria-expanded',String(o));t.setAttribute('aria-label',o?'Hide other content boxes':'Show other content boxes');t.style.transform=o?'rotate(180deg)':'none';try{localStorage.setItem('ci_ocb_open',o?'1':'0');}catch(e){}};
+ t.addEventListener('click',()=>setOpen(body.style.display==='none'));
+ try{setOpen(localStorage.getItem('ci_ocb_open')==='1');}catch(e){setOpen(false);}
+})();
+// Scott 14 Nov 2026: VO encouragements moved from AKS to the bottom of the Admin page.
+(function(){
+ const host=document.querySelector('#page-admin .admin-page');const tpl=document.getElementById('aks-vo-encouragements');
+ if(!host||!tpl||document.getElementById('admin-vo-encouragements'))return;
+ const st=document.createElement('style');
+ st.textContent='#admin-vo-encouragements{margin:36px 0 28px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#292929;font:16px/1.5 Arial,sans-serif}#admin-vo-encouragements h2{margin:0 0 12px;font-size:16px;letter-spacing:.06em;text-transform:uppercase}#admin-vo-encouragements .aks-vo-grid{display:flex;flex-wrap:wrap;gap:20px;align-items:center}#admin-vo-encouragements .aks-vo-grid button{border:0;background:transparent;padding:10px;cursor:pointer}#admin-vo-encouragements .aks-vo-grid img{height:80px;width:auto;max-width:160px;object-fit:contain}';
+ document.head.append(st);
+ const sec=document.createElement('section');sec.id='admin-vo-encouragements';sec.append(tpl.content.cloneNode(true));host.append(sec);
+})();
 </script>
 
 </body>
