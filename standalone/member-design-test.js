@@ -717,7 +717,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!hd?.ciFocusToday)return;
   _focusBusy=true;
   hd.ciFocusToday().then(f=>{
-   _focusAt=Date.now();
+   // Data not loaded yet (no actions, no meditation) -> try again in 3s instead of 30s.
+   _focusAt=(f.actionsOpen||f.practice?.lastMeditation)?Date.now():Date.now()-27000;
    const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
    const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
    const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0"><div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>${body}</div>${b}</div>`;
