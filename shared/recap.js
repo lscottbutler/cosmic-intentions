@@ -246,3 +246,29 @@ export async function getFocusToday() {
   };
 }
 if (typeof window !== 'undefined') window.ciFocusToday = getFocusToday;
+
+/* PIN TO FOCUS (Scott 16 Nov 2026): member's own pinned goals (max 3), skills (max 3)
+   and words (max 5). Saved to the member's account: player_personal_notes page 'focus-pins'. */
+export async function getFocusPins() {
+  const empty = { goals: [], skills: [], words: [] };
+  let pins = empty;
+  if (currentUser) {
+    const { data } = await sb.from('player_personal_notes').select('body').eq('user_id', currentUser.id).eq('page_id', 'focus-pins').maybeSingle();
+    pins = { ...empty, ...(_pj(data?.body) || {}) };
+  }
+  let goals = (intentions || []).map(i => i.title).filter(Boolean);
+  if (!goals.length && currentUser) {
+    const { data } = await sb.from('intentions').select('title,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+    goals = (data || []).map(r => r.title).filter(Boolean);
+  }
+  const { ENT_CARDS } = await import('./ent-library-content.js');
+  return { pins, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
+}
+export async function saveFocusPins(p) {
+  if (!currentUser) throw new Error('Not signed in');
+  const clean = { goals: (p.goals || []).slice(0, 3), skills: (p.skills || []).slice(0, 3), words: (p.words || []).map(w => String(w).trim()).filter(Boolean).slice(0, 5) };
+  const { error } = await sb.from('player_personal_notes').upsert({ user_id: currentUser.id, page_id: 'focus-pins', title: 'MY FOCUS PINS', body: JSON.stringify(clean), updated_at: new Date().toISOString() }, { onConflict: 'user_id,page_id' });
+  if (error) throw error;
+  return clean;
+}
+if (typeof window !== 'undefined') { window.ciFocusPins = getFocusPins; window.ciSaveFocusPins = saveFocusPins; }
