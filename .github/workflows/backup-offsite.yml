@@ -19,7 +19,7 @@ concurrency:
 jobs:
   offsite:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 120   # was 45: slow Google Drive uploads were being cut off
     steps:
       - name: Require backup credentials
         env:
