@@ -210,3 +210,38 @@ export async function getPageReview(pageId) {
   return '';
 }
 if (typeof window !== 'undefined') window.ciPageReview = getPageReview;
+
+/* ── MY FOCUS TODAY (Scott 16 Nov 2026) ─────────────────────────────
+   One place that shows what the member is working on right now. Phase 1 is
+   automatic (no setup): today's habits, next 3 actions from their goals,
+   and their practice (meditation / visualization / gratitude). */
+function _pj(v) { if (!v) return null; if (typeof v === 'object') return v; try { return JSON.parse(v); } catch (e) { return null; } }
+function _openTasks(rai, goal) {
+  const out = [];
+  const walk = nodes => (nodes || []).forEach(n => { if (!n.done && n.text) out.push({ text: n.text, goal }); walk(n.children); });
+  walk(rai.userTasks);
+  (rai.tasks || []).forEach((t, k) => { const txt = typeof t === 'string' ? t : (t && (t.text || t.title || t.task)); if (txt && !(rai.done || {})[k]) out.push({ text: txt, goal }); });
+  return out;
+}
+export async function getFocusToday() {
+  let rows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
+  if (!rows.length && currentUser) {
+    const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+    rows = (data || []).map(r => ({ title: r.title, rai: _pj(r.roadmap_ai) || {} }));
+  }
+  const actions = [];
+  rows.forEach(r => _openTasks(r.rai, r.title).forEach(t => actions.push(t)));
+  const list = LS.get('ci_habit_list') || [];
+  const done = LS.get('ci_habits_' + dayKey()) || {};
+  const habitsDone = list.filter(h => done[h.id]).length;
+  const a = await _activity();
+  const lastMed = a.filter(r => r.event_type === 'meditation').map(r => r.created_at).sort().pop() || null;
+  const name = String((LS.get('ci_pegboard') || {})['pb-name'] || '').trim().split(/\s+/)[0];
+  return {
+    name, goals: rows.length,
+    habits: { total: list.length, done: habitsDone, left: Math.max(0, list.length - habitsDone) },
+    actions: actions.slice(0, 3), actionsOpen: actions.length,
+    practice: { lastMeditation: lastMed, meditations: Math.max(a.filter(r => r.event_type === 'meditation').length, LS.get('ci_med_plays') || 0), viz: LS.get('ci_viz_plays') || 0, gratitude: LS.get('ci_gratitude_plays') || 0 },
+  };
+}
+if (typeof window !== 'undefined') window.ciFocusToday = getFocusToday;

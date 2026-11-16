@@ -696,7 +696,42 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Scott 13 Nov 2026: the black HIDE OVERVIEW button now lives in the right-hand button column (#ci-info-trigger).
   ins.querySelector('[data-ci-hide-overview]')?.parentElement?.remove();
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
+ // Scott 16 Nov 2026: MY FOCUS TODAY — on Citadel, one box showing what the member is
+ // working on right now: today's habits, next 3 actions from their goals, their practice.
+ let _focusAt=0,_focusBusy=false;
+ function ensureFocus(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  const old=rd.getElementById('ci-my-focus');
+  if(current!=='home'){old?.remove();return;}
+  const shell=rd.querySelector('.shell');if(!shell)return;
+  let box=old;
+  if(!box){box=rd.createElement('section');box.id='ci-my-focus';
+   box.style.cssText='margin:16px 16px 0;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
+   box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">MY FOCUS TODAY</div><div data-focus-body style="color:#777">Loading…</div>';
+   shell.prepend(box);
+   box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
+  }
+  if(_focusBusy||Date.now()-_focusAt<30000)return;
+  let hd;try{hd=headerNoteFrame.contentWindow;}catch(_){return;}
+  if(!hd?.ciFocusToday)return;
+  _focusBusy=true;
+  hd.ciFocusToday().then(f=>{
+   _focusAt=Date.now();
+   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+   const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
+   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0"><div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>${body}</div>${b}</div>`;
+   const h=f.habits;
+   const habits=h.total?(h.left?`<strong>${h.left}</strong> of your ${h.total} habits still to do today.`:`All <strong>${h.total}</strong> habits done today. Well done.`):'No daily habits yet.';
+   const acts=f.actions.length?`<ol style="margin:0;padding-left:20px">${f.actions.map(a=>`<li>${esc(a.text)}<span style="color:#888"> — ${esc(a.goal)}</span></li>`).join('')}</ol>${f.actionsOpen>3?`<div style="color:#777;font-size:13px;margin-top:4px">${f.actionsOpen-3} more open actions across your goals.</div>`:''}`:'No open actions. Add the next step to a goal.';
+   const last=f.practice.lastMeditation?new Date(f.practice.lastMeditation):null;
+   const days=last?Math.floor((Date.now()-last.getTime())/86400000):null;
+   const med=last?(days===0?'Meditated today.':days===1?'Last meditated yesterday.':`Last meditated ${days} days ago.`):'No meditation yet.';
+   const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+  }).catch(()=>{}).finally(()=>{_focusBusy=false;});
+ }
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
