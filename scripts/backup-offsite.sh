@@ -73,7 +73,9 @@ for REMOTE in gdrive onedrive; do
   EXTRA=()
   DEST="$REMOTE:CI-Backups/"
   if [ "$REMOTE" = gdrive ]; then
-    EXTRA=(--drive-root-folder-id 12OTW3LTrzHNFhKChvFooCUPxnFbP6HwD)
+    # 16 Nov 2026: the shared rclone Google app hits "Quota exceeded: requests per minute".
+    # Big upload chunks (1 GB file = 4 requests instead of 128) and a slow request rate fix that.
+    EXTRA=(--drive-root-folder-id 12OTW3LTrzHNFhKChvFooCUPxnFbP6HwD --drive-chunk-size 256M --tpslimit 1 --tpslimit-burst 1 --low-level-retries 30 --retries 5 --retries-sleep 60s)
     DEST='gdrive:encrypted/'
   fi
   # Try every remote even if an earlier one fails; report all failures at the end.
