@@ -728,7 +728,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      const vals=n=>[...ed.querySelectorAll(`input[name="${n}"]:checked`)].map(i=>i.value);
      const words=[...ed.querySelectorAll('input[name="w"]')].map(i=>i.value);
      const st=ed.querySelector('[data-focus-status]');st.textContent='Saving…';
-     headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(()=>{st.textContent='Save failed. Try again.';});
+     headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(err=>{st.textContent=/permission|signed/i.test(err?.message||'')?'You are signed out. Sign in, then save again.':'Save failed. Try again.';});
     }
    });
    box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);if(all.length>3){i.checked=false;alert('Pick up to 3.');}});
