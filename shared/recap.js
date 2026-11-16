@@ -220,7 +220,8 @@ function _openTasks(rai, goal) {
   const out = [];
   const walk = nodes => (nodes || []).forEach(n => { if (!n.done && n.text) out.push({ text: n.text, goal }); walk(n.children); });
   walk(rai.userTasks);
-  (rai.tasks || []).forEach((t, k) => { const txt = typeof t === 'string' ? t : (t && (t.text || t.title || t.task)); if (txt && !(rai.done || {})[k]) out.push({ text: txt, goal }); });
+  // Same rule as the TO DO page: roadmap tasks only count when they belong to this goal.
+  if (!rai.intention || String(rai.intention).trim() === String(goal || '').trim()) (rai.tasks || []).forEach((t, k) => { const txt = typeof t === 'string' ? t : (t && (t.text || t.title || t.task)); if (txt && !(rai.done || {})[k]) out.push({ text: txt, goal }); });
   return out;
 }
 export async function getFocusToday() {
