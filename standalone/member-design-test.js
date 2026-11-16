@@ -524,6 +524,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  delete menuLabels.gratitude;
  // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
  for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
+ // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
+ delete menuLabels['ent-card'];
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
