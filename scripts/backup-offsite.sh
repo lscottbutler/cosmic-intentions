@@ -33,22 +33,31 @@ pg_dumpall "${ROLE_ARGS[@]}" --roles-only --no-role-passwords > "$PAYLOAD/roles.
 python3 scripts/backup-storage.py "$PAYLOAD/storage-inventory.json" "$PAYLOAD/storage"
 psql "${DB_ARGS[@]}" -XAtqc "$INVENTORY_SQL" > "$TASK_DIR/storage-after.json"
 cmp "$PAYLOAD/storage-inventory.json" "$TASK_DIR/storage-after.json"
-git archive --format=zip --output="$PAYLOAD/source.zip" HEAD
-git bundle create "$PAYLOAD/repository.bundle" --all
-git bundle verify "$PAYLOAD/repository.bundle" >/dev/null 2>&1
+# 16 Nov 2026 (Scott): don't re-upload ~1 GB of unchanged code every 6 hours.
+# Every run = database + storage (small). Code + full history = once a day (the ~1:17 AM
+# Bangkok run), on manual runs, or when FULL_BACKUP=1. The code also lives on GitHub itself.
+KIND=db
+if [ "${FULL_BACKUP:-}" = 1 ] || [ "${GITHUB_EVENT_NAME:-}" != schedule ] || [ "$((10#$(date -u +%H)))" -ge 18 ]; then
+  KIND=full
+  git archive --format=zip --output="$PAYLOAD/source.zip" HEAD
+  git bundle create "$PAYLOAD/repository.bundle" --all
+  git bundle verify "$PAYLOAD/repository.bundle" >/dev/null 2>&1
+fi
+echo "$KIND" > "$PAYLOAD/BACKUP-KIND.txt"
 git rev-parse HEAD > "$PAYLOAD/SOURCE-COMMIT.txt"
 cp docs/BACKUP-RECOVERY.md "$PAYLOAD/READ-ME-FIRST.md"
 python3 - "$PAYLOAD" <<'PY'
 import hashlib,json,pathlib,sys,zipfile
 p=pathlib.Path(sys.argv[1])
-with zipfile.ZipFile(p/'source.zip') as z:
-    assert z.testzip() is None
+if (p/'source.zip').exists():
+    with zipfile.ZipFile(p/'source.zip') as z:
+        assert z.testzip() is None
 manifest={str(f.relative_to(p)):hashlib.sha256(f.read_bytes()).hexdigest() for f in p.rglob('*') if f.is_file()}
 (p/'SHA256-MANIFEST.json').write_text(json.dumps(manifest,indent=2))
 PY
 tar -czf "$TASK_DIR/payload.tar.gz" -C "$PAYLOAD" .
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
-NAME="CI-backup-${STAMP}-${GITHUB_RUN_ID:-manual}-${GITHUB_RUN_ATTEMPT:-1}.tar.gz.gpg"
+NAME="CI-backup-${KIND}-${STAMP}-${GITHUB_RUN_ID:-manual}-${GITHUB_RUN_ATTEMPT:-1}.tar.gz.gpg"
 printf '%s' "$BACKUP_PASSPHRASE" > "$TASK_DIR/passphrase"
 gpg --batch --pinentry-mode loopback --passphrase-file "$TASK_DIR/passphrase" --symmetric --cipher-algo AES256 -o "$OUT/$NAME" "$TASK_DIR/payload.tar.gz"
 gpg --batch --pinentry-mode loopback --passphrase-file "$TASK_DIR/passphrase" --decrypt "$OUT/$NAME" 2>/dev/null | cmp "$TASK_DIR/payload.tar.gz" -
