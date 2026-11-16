@@ -524,6 +524,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  delete menuLabels.gratitude;
  // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
  for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
+ // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
+ delete menuLabels['ent-card'];
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
@@ -694,7 +696,70 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // Scott 13 Nov 2026: the black HIDE OVERVIEW button now lives in the right-hand button column (#ci-info-trigger).
   ins.querySelector('[data-ci-hide-overview]')?.parentElement?.remove();
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();},1000);
+ // Scott 16 Nov 2026: MY FOCUS TODAY — on Citadel, one box showing what the member is
+ // working on right now: today's habits, next 3 actions from their goals, their practice.
+ let _focusAt=0,_focusBusy=false;
+ function focusEditor(box){
+  const pf=box.__pf;if(!pf)return;box.dataset.editing='1';
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const p=pf.pins,ck=(n,v,l,on)=>`<label style="display:block;font-size:14px;margin:3px 0"><input type="checkbox" name="${n}" value="${esc(v)}"${on?' checked':''}> ${esc(l)}</label>`;
+  const h=t=>`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:12px 0 4px">${t}</div>`;
+  const words=[0,1,2,3,4].map(i=>`<input name="w" maxlength="160" value="${esc(p.words[i]||'')}" placeholder="Word or phrase ${i+1}" style="display:block;width:100%;box-sizing:border-box;margin:4px 0;padding:7px;border:1px solid #bbb;border-radius:6px;font:14px Arial,sans-serif">`).join('');
+  const b=(a,l)=>`<button type="button" ${a} style="background:#000;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;margin-right:8px">${l}</button>`;
+  box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body><div data-focus-editor style="color:#171717">${h('GOALS (UP TO 3)')}${pf.options.goals.map(g=>ck('g',g,g,p.goals.includes(g))).join('')||'No goals yet.'}${h('SKILLS (UP TO 3)')}<div style="max-height:220px;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;padding:4px 8px">${pf.options.skills.map(x=>ck('s',x.key,x.title,p.skills.includes(x.key))).join('')}</div>${h('MY WORDS (UP TO 5)')}${words}<div style="margin-top:12px">${b('data-focus-save','SAVE')}${b('data-focus-cancel','CANCEL')}<span data-focus-status style="color:#777;font-size:13px"></span></div></div></div>`;
+ }
+ function ensureFocus(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  const old=rd.getElementById('ci-my-focus');
+  if(current!=='home'){old?.remove();return;}
+  const shell=rd.querySelector('.shell');if(!shell)return;
+  let box=old;
+  if(!box){box=rd.createElement('section');box.id='ci-my-focus';
+   box.style.cssText='margin:16px 16px 0;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
+   box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">MY FOCUS TODAY</div><div data-focus-body style="color:#777">Loading…</div>';
+   shell.prepend(box);
+   box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
+   box.addEventListener('click',e=>{
+    if(e.target.closest('[data-focus-edit]'))return focusEditor(box);
+    if(e.target.closest('[data-focus-cancel]')){delete box.dataset.editing;_focusAt=0;return;}
+    if(e.target.closest('[data-focus-save]')){
+     const ed=box.querySelector('[data-focus-editor]');
+     const vals=n=>[...ed.querySelectorAll(`input[name="${n}"]:checked`)].map(i=>i.value);
+     const words=[...ed.querySelectorAll('input[name="w"]')].map(i=>i.value);
+     const st=ed.querySelector('[data-focus-status]');st.textContent='Saving…';
+     headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(()=>{st.textContent='Save failed. Try again.';});
+    }
+   });
+   box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);if(all.length>3){i.checked=false;alert('Pick up to 3.');}});
+  }
+  if(box.dataset.editing)return;
+  if(_focusBusy||Date.now()-_focusAt<30000)return;
+  let hd;try{hd=headerNoteFrame.contentWindow;}catch(_){return;}
+  if(!hd?.ciFocusToday||!hd.ciFocusPins)return;
+  _focusBusy=true;
+  Promise.all([hd.ciFocusToday(),hd.ciFocusPins()]).then(([f,pf])=>{
+   // Data not loaded yet (no actions, no meditation) -> try again in 3s instead of 30s.
+   _focusAt=(f.actionsOpen||f.practice?.lastMeditation)?Date.now():Date.now()-27000;
+   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+   const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
+   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0"><div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>${body}</div>${b}</div>`;
+   const h=f.habits;
+   const habits=h.total?(h.left?`<strong>${h.left}</strong> of your ${h.total} habits still to do today.`:`All <strong>${h.total}</strong> habits done today. Well done.`):'No daily habits yet.';
+   const acts=f.actions.length?`<ol style="margin:0;padding-left:20px">${f.actions.map(a=>`<li>${esc(a.text)}<span style="color:#888"> — ${esc(a.goal)}</span></li>`).join('')}</ol>${f.actionsOpen>3?`<div style="color:#777;font-size:13px;margin-top:4px">${f.actionsOpen-3} more open actions across your goals.</div>`:''}`:'No open actions. Add the next step to a goal.';
+   const last=f.practice.lastMeditation?new Date(f.practice.lastMeditation):null;
+   const days=last?Math.floor((Date.now()-last.getTime())/86400000):null;
+   const med=last?(days===0?'Meditated today.':days===1?'Last meditated yesterday.':`Last meditated ${days} days ago.`):'No meditation yet.';
+   const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
+   box.__pf=pf;
+   const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
+   const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 9px;border:1px solid #303030;border-radius:999px;font-size:13px">${esc(t)}</span>`;
+   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?`<div><b style="font-size:12px;color:#555">GOALS</b> ${pn.goals.map(chip).join('')}</div>`:''}${pn.skills.length?`<div><b style="font-size:12px;color:#555">SKILLS</b> ${pn.skills.map(k=>chip(sk(k))).join('')}</div>`:''}${pn.words.length?`<div><b style="font-size:12px;color:#555">MY WORDS</b> ${pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')}</div>`:''}`:'Nothing pinned yet. Pin up to 3 goals, 3 skills and 5 words.';
+   const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN TO FOCUS</button>`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+  }).catch(()=>{}).finally(()=>{_focusBusy=false;});
+ }
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
