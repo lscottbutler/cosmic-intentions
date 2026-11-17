@@ -6681,8 +6681,16 @@ document.getElementById('daylifeModal').addEventListener('click', function(e) {
 });
 
 // Close auth modal on background tap
+// Scott 17 Nov 2026: the sign-in box kept vanishing mid-password. A press that
+// starts in a field and ends on the dark background (or a password-manager popup
+// click) counted as a background tap. Now it only closes when the press both
+// starts AND ends on the background, and never once anything has been typed.
+let _authDownOnBg = false;
+document.getElementById('authModal').addEventListener('pointerdown', function(e) { _authDownOnBg = e.target === this; });
 document.getElementById('authModal').addEventListener('click', function(e) {
-  if (e.target === this) closeAuth();
+  const typed = [...this.querySelectorAll('input')].some(i => i.value);
+  if (e.target === this && _authDownOnBg && !typed) closeAuth();
+  _authDownOnBg = false;
 });
 
 
