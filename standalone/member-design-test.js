@@ -708,6 +708,20 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const b=(a,l)=>`<button type="button" ${a} style="background:#000;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;margin-right:8px">${l}</button>`;
   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body><div data-focus-editor style="color:#171717">${h('GOALS (UP TO 3)')}${pf.options.goals.map(g=>ck('g',g,g,p.goals.includes(g))).join('')||'No goals yet.'}${h('SKILLS (UP TO 3)')}<div style="max-height:220px;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;padding:4px 8px">${pf.options.skills.map(x=>ck('s',x.key,x.title,p.skills.includes(x.key))).join('')}</div>${h('MY WORDS (UP TO 5)')}${words}<div style="margin-top:12px">${b('data-focus-save','SAVE')}${b('data-focus-cancel','CANCEL')}<span data-focus-status style="color:#777;font-size:13px"></span></div></div></div>`;
  }
+ // MY USAGE at the bottom of Citadel (Scott 17 Nov 2026): the usage board, embedded.
+ function ensureUsage(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  let box=rd.getElementById('ci-my-usage');
+  if(current!=='home'){box?.remove();return;}
+  const shell=rd.querySelector('.shell');if(!shell)return;
+  if(!box){box=rd.createElement('section');box.id='ci-my-usage';
+   box.style.cssText='margin:16px;background:#fff;border:2px solid #303030;border-radius:12px;overflow:hidden;box-sizing:border-box';
+   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">MY USAGE</div><iframe src="/usage-board.html?embed=1" title="My Usage" style="display:block;width:100%;height:900px;border:0"></iframe>';
+   shell.append(box);}
+  else if(box!==shell.lastElementChild)shell.append(box);
+  try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -759,7 +773,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
