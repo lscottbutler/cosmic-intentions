@@ -532,7 +532,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 17 Nov 2026: admin-only items (Admin, Design Library) go at the BOTTOM, dodger blue, owner only.
  const isAdminItem=el=>el===paletteLink||el.dataset?.ciMenuAction==='admin';
  const ownerNow=()=>{for(const f of [document.getElementById('header-admin-note-frame'),frame]){try{if(f?.contentWindow?.ciOwnerAccess)return true;}catch(_){}}return false;};
- const styleAdmin=()=>{const own=ownerNow();[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('color','#1e90ff','important');el.style.display=own?'':'none';});};
+ const styleAdmin=()=>{const own=ownerNow();[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display=own?'':'none';});};
  setInterval(styleAdmin,1000);
  const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
