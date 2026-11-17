@@ -529,7 +529,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
- const sortMenu=()=>{const items=[...menuItems.children],sorted=[...items].sort((a,b)=>a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
+ // Scott 17 Nov 2026: admin-only items (Admin, Design Library) go at the BOTTOM, dodger blue, owner only.
+ const isAdminItem=el=>el===paletteLink||el.dataset?.ciMenuAction==='admin';
+ const ownerNow=()=>{for(const f of [document.getElementById('header-admin-note-frame'),frame]){try{if(f?.contentWindow?.ciOwnerAccess)return true;}catch(_){}}return false;};
+ const styleAdmin=()=>{const own=ownerNow();[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('color','#1e90ff','important');el.style.display=own?'':'none';});};
+ setInterval(styleAdmin,1000);
+ const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
