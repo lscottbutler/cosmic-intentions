@@ -503,8 +503,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={'welcome-images':'Welcome & Talking Images','site-home':'Home Page',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
- const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');menuItems.append(usageLink);
+ const menuLabels={'welcome-images':'Home',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
+ const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');// My Usage now lives at the bottom of Citadel (Scott 17 Nov 2026) — not in the menu.
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Design Library';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
  // Android and PC browsers offer their own Install option, so this item is hidden there; also hidden once opened as the app.
@@ -529,7 +529,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
- const sortMenu=()=>{const items=[...menuItems.children],sorted=[...items].sort((a,b)=>a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
+ // Scott 17 Nov 2026: admin-only items (Admin, Design Library) go at the BOTTOM, dodger blue, owner only.
+ const isAdminItem=el=>el===paletteLink||el.dataset?.ciMenuAction==='admin';
+ const ownerNow=()=>{for(const f of [document.getElementById('header-admin-note-frame'),frame]){try{if(f?.contentWindow?.ciOwnerAccess)return true;}catch(_){}}return false;};
+ const styleAdmin=()=>{const own=ownerNow();[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display=own?'':'none';});};
+ setInterval(styleAdmin,1000);
+ const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
@@ -708,6 +713,20 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const b=(a,l)=>`<button type="button" ${a} style="background:#000;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;margin-right:8px">${l}</button>`;
   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body><div data-focus-editor style="color:#171717">${h('GOALS (UP TO 3)')}${pf.options.goals.map(g=>ck('g',g,g,p.goals.includes(g))).join('')||'No goals yet.'}${h('SKILLS (UP TO 3)')}<div style="max-height:220px;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;padding:4px 8px">${pf.options.skills.map(x=>ck('s',x.key,x.title,p.skills.includes(x.key))).join('')}</div>${h('MY WORDS (UP TO 5)')}${words}<div style="margin-top:12px">${b('data-focus-save','SAVE')}${b('data-focus-cancel','CANCEL')}<span data-focus-status style="color:#777;font-size:13px"></span></div></div></div>`;
  }
+ // MY USAGE at the bottom of Citadel (Scott 17 Nov 2026): the usage board, embedded.
+ function ensureUsage(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  let box=rd.getElementById('ci-my-usage');
+  if(current!=='home'){box?.remove();return;}
+  const shell=rd.querySelector('.shell');if(!shell)return;
+  if(!box){box=rd.createElement('section');box.id='ci-my-usage';
+   box.style.cssText='margin:16px;background:#fff;border:2px solid #303030;border-radius:12px;overflow:hidden;box-sizing:border-box';
+   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">MY USAGE</div><iframe src="/usage-board.html?embed=1" title="My Usage" style="display:block;width:100%;height:900px;border:0"></iframe>';
+   shell.append(box);}
+  else if(box!==shell.lastElementChild)shell.append(box);
+  try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -728,7 +747,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      const vals=n=>[...ed.querySelectorAll(`input[name="${n}"]:checked`)].map(i=>i.value);
      const words=[...ed.querySelectorAll('input[name="w"]')].map(i=>i.value);
      const st=ed.querySelector('[data-focus-status]');st.textContent='Saving…';
-     headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(()=>{st.textContent='Save failed. Try again.';});
+     headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(err=>{st.textContent=/permission|signed/i.test(err?.message||'')?'You are signed out. Sign in, then save again.':'Save failed. Try again.';});
     }
    });
    box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);if(all.length>3){i.checked=false;alert('Pick up to 3.');}});
@@ -759,7 +778,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){

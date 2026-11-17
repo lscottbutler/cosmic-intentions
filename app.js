@@ -5531,10 +5531,102 @@ window.saveQuoteLibrary = async function () {
   if (!error) setTimeout(() => status.forEach(s => { s.textContent = ''; }), 4000);
 };
 
+/* ── HOME PAGE SECTIONS (Scott 17 Nov 2026) ───────────────────────────────────
+   Every admin-owned section on the Home page is a content_blocks row. Scott edits
+   them in the HOME PAGE SECTIONS panel at the bottom of the Admin page; every member
+   sees the change. Text = data-block="hp-*"; images/videos = data-hp-src="hp-*". */
+const HP_SECTIONS = [
+  ['home-media-title-1', 'text', '1 · Mission headline (top left)'],
+  ['home-welcome', 'text', '2 · Framed card under the headline ("Big Things…")'],
+  ['hp-intro', 'text', '3 · Intro line ("There are lots of new…")'],
+  ['hp-img-welcome', 'img', '4 · WELCOME languages image'],
+  ['hp-new', 'text', "5 · HERE'S WHAT'S NEW (heading, paragraph, bullets)"],
+  ['hp-video-a', 'video', '6 · Video A (full width)'],
+  ['hp-belief', 'text', '7 · BUILD THE BELIEF'],
+  ['hp-video-b', 'video', '8 · Video B (left of pair)'],
+  ['hp-video-c', 'video', '9 · Video C (right of pair)'],
+  ['hp-action', 'text', '10 · TURN INTENTION INTO ACTION'],
+  ['hp-video-d', 'video', '11 · Video D (left of pair)'],
+  ['hp-video-e', 'video', '12 · Video E (right of pair)'],
+  ['hp-evidence', 'text', '13 · COLLECT THE EVIDENCE'],
+  ['hp-welcome-back', 'text', '14 · RIGHT: Welcome back'],
+  ['hp-citadel', 'text', '15 · RIGHT: "Open the Citadel…" line'],
+  ['hp-img-rocket', 'img', '16 · RIGHT: Rocket image (plays VO encouragement)'],
+  ['hp-direction', 'text', '17 · RIGHT: START WITH DIRECTION'],
+  ['hp-practice', 'text', '18 · RIGHT: PRACTICE THE PERSON'],
+  ['hp-record', 'text', '19 · RIGHT: RECORD WHAT CHANGES'],
+  ['hp-return', 'text', '20 · RIGHT: RETURN TO WHAT MATTERS'],
+];
+function _hpVideoUrl(v) {
+  v = String(v || '').trim(); if (!v) return '';
+  const yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/);
+  if (yt) return 'https://www.youtube.com/embed/' + yt[1];
+  if (!/^https?:\/\//.test(v)) return 'https://iframe.cloudflarestream.com/' + v.replace(/^\/+/, '');
+  return v;
+}
+function _applyHomeMedia() {
+  document.querySelectorAll('[data-hp-src]').forEach(el => {
+    const v = (_blockCache[el.getAttribute('data-hp-src')] || '').trim();
+    if (!v) return;
+    if (el.tagName === 'IFRAME') {
+      const url = _hpVideoUrl(v);
+      el.dataset.ciPlayerSrc = url;
+      if (el.getAttribute('src') && el.getAttribute('src') !== url) el.src = url;
+    } else if (el.getAttribute('src') !== v) el.src = v;
+  });
+}
+function renderHomeSectionsAdmin() {
+  const host = document.querySelector('#page-admin .admin-page');
+  if (!host || !window.ciOwnerAccess) return;
+  let sec = document.getElementById('ci-hp-admin');
+  if (!sec) {
+    sec = document.createElement('section'); sec.id = 'ci-hp-admin';
+    sec.style.cssText = 'margin:36px 0 28px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#292929;font:16px/1.5 Arial,sans-serif';
+    sec.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h2 style="margin:0;font-size:16px;letter-spacing:.06em">HOME PAGE SECTIONS</h2><button type="button" id="ci-hp-toggle" aria-label="Show home page sections" style="flex:0 0 40px;width:40px;height:40px;border:0;border-radius:50%;background:#000;color:#fff;font:700 18px/1 Arial,sans-serif;cursor:pointer;transition:transform .2s">&#9662;</button></div><div id="ci-hp-body" style="display:none"><p style="margin:12px 0;color:#555;font-size:14px">Change any box on the Home page. SAVE updates it for every member. Leave a text box empty and save to hide that section. Videos: paste a Cloudflare Stream or YouTube link.</p><a href="/images/admin/home-sections-map.webp" target="_blank" rel="noopener" title="Open full size"><img src="/images/admin/home-sections-map.webp" alt="Map of the Home page: blue numbers match the boxes below" style="display:block;width:100%;max-width:none;height:auto;margin:0 0 6px;border:1px solid #ccc;border-radius:8px"></a><p style="margin:0 0 12px;color:#555;font-size:13px">Blue numbers = the boxes below. Grey A and B are the rotating skill cards (they change on their own). Click the map to open it full size.</p><div id="ci-hp-list"></div></div>';
+    host.append(sec);
+    const body = sec.querySelector('#ci-hp-body'), t = sec.querySelector('#ci-hp-toggle');
+    const setOpen = o => { body.style.display = o ? 'block' : 'none'; t.style.transform = o ? 'rotate(180deg)' : 'none'; t.setAttribute('aria-label', (o ? 'Hide' : 'Show') + ' home page sections'); try { localStorage.setItem('ci_hp_open', o ? '1' : '0'); } catch (e) {} };
+    t.addEventListener('click', () => setOpen(body.style.display === 'none'));
+    try { setOpen(localStorage.getItem('ci_hp_open') === '1'); } catch (e) { setOpen(false); }
+  } else if (sec !== host.lastElementChild) host.append(sec);
+  const list = sec.querySelector('#ci-hp-list');
+  if (list.dataset.built) return;
+  list.dataset.built = '1';
+  const btnCss = 'background:#000;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer';
+  HP_SECTIONS.forEach(([slug, kind, label]) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'border-top:1px solid #e3e3e3;padding:14px 0';
+    const live = kind === 'text' ? document.querySelector(`#homeLoggedIn [data-block="${slug}"]`) : document.querySelector(`#homeLoggedIn [data-hp-src="${slug}"]`);
+    const cur = _blockCache[slug] != null && _blockCache[slug] !== '' ? _blockCache[slug]
+      : kind === 'text' ? (live?.innerHTML || '').trim()
+      : kind === 'img' ? (live?.getAttribute('src') || '') : (live?.dataset.ciPlayerSrc || '');
+    row.innerHTML = `<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.06em;margin:0 0 6px">${label}</div>` +
+      (kind === 'text'
+        ? '<div data-hp-ed contenteditable="true" style="min-height:44px;padding:10px;border:1px solid #bbb;border-radius:6px;background:#fafafa;font:14px/1.6 Arial,sans-serif"></div>'
+        : `<input data-hp-ed type="text" placeholder="${kind === 'img' ? 'Image link, e.g. images/… or https://…' : 'Video link or Cloudflare video ID'}" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:6px;font:14px Arial,sans-serif">`) +
+      `<div style="margin-top:8px;display:flex;align-items:center;gap:10px"><button type="button" data-hp-save style="${btnCss}">SAVE</button><span data-hp-status style="font-size:13px;color:#777"></span></div>`;
+    const ed = row.querySelector('[data-hp-ed]');
+    if (kind === 'text') ed.innerHTML = cur; else ed.value = cur;
+    row.querySelector('[data-hp-save]').addEventListener('click', async () => {
+      const st = row.querySelector('[data-hp-status]');
+      const body = kind === 'text' ? ed.innerHTML.trim() : ed.value.trim();
+      st.textContent = 'Saving…';
+      const { error } = await sb.from('content_blocks').upsert({ slug, body, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
+      if (error) { st.textContent = 'Save failed: ' + error.message; return; }
+      _blockCache[slug] = body;
+      if (kind === 'text') document.querySelectorAll(`[data-block="${slug}"]`).forEach(el => _fillBlockEl(el, _blockContentFor(slug, body)));
+      else _applyHomeMedia();
+      st.textContent = 'Saved ✓ — live for every member.';
+    });
+    list.append(row);
+  });
+}
+if (typeof window !== 'undefined') window.renderHomeSectionsAdmin = renderHomeSectionsAdmin;
 async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
   try { setTimeout(renderQuoteLibraryAdmin, 0); } catch (e) {}
+  try { setTimeout(() => { _applyHomeMedia(); renderHomeSectionsAdmin(); }, 0); if (!window.__hpTimer) window.__hpTimer = setInterval(renderHomeSectionsAdmin, 2000); } catch (e) {}
   data.forEach(({ slug, body }) => {
     _blockCache[slug] = body || '';
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
@@ -6589,8 +6681,16 @@ document.getElementById('daylifeModal').addEventListener('click', function(e) {
 });
 
 // Close auth modal on background tap
+// Scott 17 Nov 2026: the sign-in box kept vanishing mid-password. A press that
+// starts in a field and ends on the dark background (or a password-manager popup
+// click) counted as a background tap. Now it only closes when the press both
+// starts AND ends on the background, and never once anything has been typed.
+let _authDownOnBg = false;
+document.getElementById('authModal').addEventListener('pointerdown', function(e) { _authDownOnBg = e.target === this; });
 document.getElementById('authModal').addEventListener('click', function(e) {
-  if (e.target === this) closeAuth();
+  const typed = [...this.querySelectorAll('input')].some(i => i.value);
+  if (e.target === this && _authDownOnBg && !typed) closeAuth();
+  _authDownOnBg = false;
 });
 
 
