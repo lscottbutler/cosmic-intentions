@@ -4872,3 +4872,4 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 /* Scott 13 Nov 2026: CITADEL title alternates dark grey / black per letter, like every other title. */
 #page-dashboard .citadel-letter-card:nth-child(odd){background:#4a4a4a!important}
 #page-dashboard .citadel-letter-card:nth-child(even){background:#171717!important}
+.hp-wrap{display:flex;flex-direction:column;gap:inherit}
