@@ -272,3 +272,36 @@ export async function saveFocusPins(p) {
   return clean;
 }
 if (typeof window !== 'undefined') { window.ciFocusPins = getFocusPins; window.ciSaveFocusPins = saveFocusPins; }
+
+
+/* ── DAY CARD (Scott 18 Nov 2026) ─────────────────────────────────────────────
+   Big Five snapshot stamped on each journal entry when it's saved. Score = X of 5.
+   Meditate: ≥1 completed session today · Habits: ≥ half ticked · Goals: Goals page opened today
+   Visualize: ≥1 completed session today · Action Plan: ≥1 to-do finished today (vs. today's first count). */
+function _todoBaseline() {
+  const key = 'ci_todo_base_' + dayKey();
+  if (!(intentions || []).length) return null;
+  let base = LS.get(key);
+  if (base == null) { base = _todoTotals().done; LS.set(key, base); }
+  return base;
+}
+if (typeof window !== 'undefined') { setInterval(_todoBaseline, 60000); setTimeout(_todoBaseline, 8000); }
+export async function getDayCard() {
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const today = (await _activity()).filter(r => new Date(r.created_at) >= start);
+  const list = LS.get('ci_habit_list') || [];
+  const ticks = LS.get('ci_habits_' + dayKey()) || {};
+  const hDone = list.filter(h => ticks[h.id]).length;
+  const base = _todoBaseline();
+  const todos = base == null ? 0 : Math.max(0, _todoTotals().done - base);
+  const card = {
+    m: today.some(r => r.event_type === 'meditation'),
+    h: [hDone, list.length],
+    g: !!LS.get('ci_goal_touch_' + dayKey()),
+    v: today.some(r => r.event_type === 'visualize'),
+    a: todos,
+  };
+  card.score = [card.m, list.length && hDone * 2 >= list.length, card.g, card.v, card.a >= 1].filter(Boolean).length;
+  return card;
+}
+if (typeof window !== 'undefined') window.ciDayCard = getDayCard;

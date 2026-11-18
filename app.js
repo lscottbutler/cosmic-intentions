@@ -390,6 +390,7 @@ export function renderMeditationStats() {
 }
 
 export function showPage(id) {
+  if (id === 'setup') { try { LS.set('ci_goal_touch_' + dayKey(), 1); } catch (e) {} }  // Day Card: Goals touched today
   // An LFM destination is authoritative inside its embedded iframe. App startup,
   // auth restoration, and stale history must never switch the frame back home.
   if (window.self !== window.top) {

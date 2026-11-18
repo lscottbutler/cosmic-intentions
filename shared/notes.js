@@ -37,6 +37,45 @@ function _affCard(n, i, ph) {
   </div>`;
 }
 
+/* ── JOURNAL ENTRY TYPES + DAY CARD (Scott 18 Nov 2026) ─────────────────────── */
+const ETYPES = [
+  { key: 'win',        label: 'WIN',        color: '#2e8b57' },
+  { key: 'lesson',     label: 'LESSON',     color: '#1e90ff' },
+  { key: 'intention',  label: 'INTENTION',  color: '#8e44ad' },
+  { key: 'reflection', label: 'REFLECTION', color: '#555555' },
+];
+let _newEType = 'reflection';
+function _etype(k) { return ETYPES.find(t => t.key === k) || ETYPES[3]; }
+function _entryDate(n) {
+  const d = new Date(n.createdAt || n.ts || Date.now());
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+function _dayCardHTML(c) {
+  if (!c) return '';
+  const dot = (on, label, extra) => `<span title="${label}" style="display:inline-flex;align-items:center;gap:4px;margin-right:10px"><span style="width:11px;height:11px;border-radius:50%;border:2px solid #292929;background:${on ? '#292929' : 'transparent'}"></span>${label}${extra ? ' ' + extra : ''}</span>`;
+  const hOk = c.h && c.h[1] && c.h[0] * 2 >= c.h[1];
+  return `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:6px 0 0;font:600 12px/1.6 Arial,sans-serif;color:#444">
+    <b style="margin-right:10px;color:#171717">DAY ${c.score}/5</b>
+    ${dot(c.m, 'Meditate')}${dot(hOk, 'Habits', c.h ? c.h[0] + '/' + c.h[1] : '')}${dot(c.g, 'Goals')}${dot(c.v, 'Visualize')}${dot(c.a >= 1, 'Action Plan', c.a ? c.a + ' done' : '')}</div>`;
+}
+function _typePicker() {
+  return `<div data-etype-picker style="display:none;gap:6px;flex-wrap:wrap;margin:0 0 8px">${ETYPES.map(t => `<button type="button" onclick="notesPickType('${t.key}',this)" data-etype="${t.key}" style="border:2px solid ${t.color};border-radius:999px;padding:6px 12px;font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;background:${t.key === _newEType ? t.color : '#fff'};color:${t.key === _newEType ? '#fff' : t.color}">${t.label}</button>`).join('')}</div>`;
+}
+export function notesPickType(k, btn) {
+  _newEType = k;
+  btn.parentElement.querySelectorAll('[data-etype]').forEach(b => { const t = _etype(b.dataset.etype), on = b.dataset.etype === k; b.style.background = on ? t.color : '#fff'; b.style.color = on ? '#fff' : t.color; });
+}
+export function notesCycleType(id) {
+  const notes = readNotes(), n = notes.find(x => x.id === id); if (!n) return;
+  const i = ETYPES.findIndex(t => t.key === (n.etype || 'reflection'));
+  n.etype = ETYPES[(i + 1) % ETYPES.length].key;
+  _saveNotes(notes);
+  const chip = document.querySelectorAll(`[data-etype-chip="${id}"]`);
+  chip.forEach(c => { const t = _etype(n.etype); c.textContent = t.label; c.style.background = t.color; });
+}
+if (typeof window !== 'undefined') { window.notesPickType = notesPickType; window.notesCycleType = notesCycleType; }
+
 /* ── storage ─────────────────────────────────────────────────── */
 export function readNotes() {
   try { const a = JSON.parse(localStorage.getItem('ci_notes') || '[]'); return Array.isArray(a) ? a : []; }
@@ -308,7 +347,9 @@ export function renderNotesPage(cats, hostId, capId) {
 
   host.innerHTML = `<div style="display:grid;grid-template-columns:1fr;gap:14px;">` + catList.map(c => {
     const mine = notes.filter(n => n.cat === c.key)
-      .sort((a, b) => (a.text || '').localeCompare(b.text || '', undefined, { sensitivity: 'base' }));
+      .sort(c.key === 'note'
+        ? (a, b) => new Date(b.createdAt || b.ts || 0) - new Date(a.createdAt || a.ts || 0)   // Journal: newest first
+        : (a, b) => (a.text || '').localeCompare(b.text || '', undefined, { sensitivity: 'base' }));
     const singular = esc(c.label.replace(/s$/, ''));   // "Reminders" → "Reminder"
     // NOTES entries can be linked to one of the user's goals; that note then
     // surfaces on the goal's Visualize page. Other thought types are unchanged.
@@ -323,19 +364,26 @@ export function renderNotesPage(cats, hostId, capId) {
           <option value="">— Link to a goal —</option>
           ${intentions.map((g, i) => `<option value="${g.id}"${n.goal === g.id ? ' selected' : ''}>${esc(goalLetter(g, i) + ' · ' + (g.title || '').replace(/^i am\s+/i, ''))}</option>`).join('')}
         </select>` : '';
+      const t = _etype(n.etype);
+      const head = isNoteCat ? `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px">
+          <span style="font:700 13px/1.3 Arial,sans-serif;color:#171717">${esc(_entryDate(n))}</span>
+          <button type="button" data-etype-chip="${n.id}" onclick="notesCycleType('${n.id}')" title="Tap to change type" style="border:0;border-radius:999px;padding:4px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;color:#fff;background:${t.color};cursor:pointer">${t.label}</button>
+        </div>` : '';
       return `
-      <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;position:relative;">
+      <div style="margin-bottom:${isNoteCat ? '14' : '10'}px;position:relative;${isNoteCat ? `border-left:6px solid ${t.color};padding-left:10px;` : ''}">
+        ${head}
         <textarea data-id="${n.id}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph)}"
           style="width:100%;box-sizing:border-box;padding:13px 48px 13px 15px;border:1px solid #e3e7ec;border-radius:10px;font-size:14px;line-height:1.55;color:#26364b;background:#f4f6f8;min-height:44px;overflow:hidden;resize:none;">${esc(n.text || '')}</textarea>
         <button onclick="notesDelete('${n.id}')" title="Delete"
           style="position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0;color:#fff;">✕</button>
         ${goalSel}
+        ${isNoteCat ? _dayCardHTML(n.day) : ''}
         ${isNoteCat ? `<div data-journal-history="${esc(String(n.id))}">${journalHistoryHTML(n)}</div>` : ''}
       </div>`;
     }).join('');
 
     // Hidden until the user taps "＋ Add …" in the banner.
-    const addBox = total < NOTES_CAP ? `
+    const addBox = total < NOTES_CAP ? (c.key === 'note' ? _typePicker() : '') + `
       <textarea id="notesadd-${c.key}" data-add="${c.key}" onchange="notesSaveField(this)" oninput="notesAutoGrow(this)" placeholder="${esc(c.ph || '＋')}"
         style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;border:4px solid #000;border-radius:10px;font-size:18px;font-weight:800;line-height:1.4;color:#1a1a1a;background:#fff;min-height:46px;overflow:hidden;resize:none;"></textarea>` : '';
 
@@ -386,6 +434,7 @@ export function notesShowAdd(cat) {
   }
   const add = root.querySelector(`[id="notesadd-${cat}"]`);
   if (add) { add.style.display = ''; notesAutoGrow(add); add.focus(); }
+  const pick = add && add.previousElementSibling; if (pick && pick.hasAttribute('data-etype-picker')) pick.style.display = 'flex';
 }
 
 /* Auto-size a textarea to its content height (no scrollbar, no clipping). */
@@ -427,8 +476,16 @@ export function notesSaveField(el) {
   if (addCat) {
     if (!v) return;
     if (notes.filter(n => n && !['task', 'goal-note'].includes(n.cat)).length >= NOTES_CAP) { if (typeof toast === 'function') toast(`You've hit the ${NOTES_CAP}-note limit.`, 'info'); return; }
-    notes.push({ id: _id(), cat: addCat, text: v, ts: Date.now() });
+    const newId = _id();
+    notes.push(addCat === 'note' ? { id: newId, cat: addCat, text: v, ts: Date.now(), etype: _newEType } : { id: newId, cat: addCat, text: v, ts: Date.now() });
     _saveNotes(notes);
+    if (addCat === 'note' && typeof window !== 'undefined' && window.ciDayCard) {
+      window.ciDayCard().then(card => {
+        const all = readNotes(), n = all.find(x => x.id === newId); if (!n) return;
+        n.day = card; _saveNotes(all);
+        if (document.getElementById('page-mynotes')?.classList.contains('active')) renderMyNotesPage(); else renderNotesPage();
+      }).catch(() => {});
+    }
     // Preserve the visible editor's section and refresh that same page.
     // Journal and Thoughts contain separate copies of these section IDs.
     const root = el.closest('.page') || document;

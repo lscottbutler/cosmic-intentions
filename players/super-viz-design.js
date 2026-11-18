@@ -86,6 +86,8 @@
   if(playback==='running'&&lastTick)activeSeconds+=Math.max(0,(now-lastTick)/1000);
   if((playback==='complete'||playback==='ready')&&data.state==='running'){activeSeconds=0;recorded=false;session=sessionID();}
   lastTick=now;playback=data.state;play.disabled=false;
+  // Day Card (Scott 18 Nov 2026): a finished Visualize session is saved to the member's account.
+  if(playback==='complete'&&!recorded&&activeSeconds>=(data.totalSeconds||data.minutes*60)*.95){recorded=true;import('/standalone/usage-client.js').then(m=>m.recordMeditation(activeSeconds,session,'visualize')).catch(()=>{});}
 
 
   const running=playback==='running',quiet=running&&!data.hasGuidance;
