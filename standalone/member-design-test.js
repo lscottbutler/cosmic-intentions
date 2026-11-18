@@ -526,6 +526,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
  // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
  delete menuLabels['ent-card'];
+ // Scott 18 Nov 2026: Entrepreneur Library lives inside the Cosmic Library (button at its top), not the menu.
+ delete menuLabels['entrepreneur-library'];
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
@@ -727,6 +729,16 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   else if(box!==shell.lastElementChild)shell.append(box);
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
  }
+ // Entrepreneur Library button at the top of the Cosmic Library page (Scott 18 Nov 2026).
+ function ensureEntLink(){
+  if(current!=='cosmic-library')return;
+  document.querySelectorAll('iframe').forEach(f=>{let d;try{d=f.contentDocument;}catch(_){return;}
+   const page=d?.getElementById('page-cosmiclibrary');if(!page||d.getElementById('ci-ent-lib-link'))return;
+   const b=d.createElement('button');b.type='button';b.id='ci-ent-lib-link';b.textContent='ENTREPRENEUR LIBRARY →';
+   b.style.cssText='display:block;margin:12px auto 16px;background:#000;color:#fff;border:0;border-radius:8px;padding:12px 20px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
+   b.addEventListener('click',()=>openFeature('entrepreneur-library'));
+   page.prepend(b);});
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -778,7 +790,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureEntLink();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
