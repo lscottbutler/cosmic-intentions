@@ -537,7 +537,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  const isAdminItem=el=>el===paletteLink||el.dataset?.ciMenuAction==='admin';
  const ownerNow=()=>{for(const f of [document.getElementById('header-admin-note-frame'),frame]){try{if(f?.contentWindow?.ciOwnerAccess)return true;}catch(_){}}return false;};
  // Frames reload on every page change and briefly report 'not owner' — once owner is seen, keep it for this visit.
- const styleAdmin=()=>{let own=ownerNow();try{if(own)sessionStorage.setItem('ci_owner_seen','1');else own=sessionStorage.getItem('ci_owner_seen')==='1';}catch(_){}[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display=own?'':'none';});};
+ const styleAdmin=()=>{let own=ownerNow();try{if(own)sessionStorage.setItem('ci_owner_seen','1');else own=sessionStorage.getItem('ci_owner_seen')==='1';}catch(_){}[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display='';/* Scott 18 Nov 2026: site is private (Netlify-locked) — always show, no owner check. */});};
  setInterval(styleAdmin,1000);
  const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
