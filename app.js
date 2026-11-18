@@ -5557,6 +5557,7 @@ const HP_SECTIONS = [
   ['hp-record', 'text', '19 · RIGHT: RECORD WHAT CHANGES'],
   ['hp-return', 'text', '20 · RIGHT: RETURN TO WHAT MATTERS'],
 ];
+const HP_COLORS = ["#e6194b", "#3cb44b", "#f58231", "#4363d8", "#911eb4", "#008080", "#f032e6", "#9a6324", "#800000", "#000075", "#e6a100", "#1e90ff", "#2e8b57", "#c71585", "#556b2f", "#ff4500", "#6a5acd", "#008b8b", "#b8860b", "#4b0082"];
 function _hpVideoUrl(v) {
   v = String(v || '').trim(); if (!v) return '';
   const yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/);
@@ -5600,7 +5601,9 @@ function renderHomeSectionsAdmin() {
     const cur = _blockCache[slug] != null && _blockCache[slug] !== '' ? _blockCache[slug]
       : kind === 'text' ? (live?.innerHTML || '').trim()
       : kind === 'img' ? (live?.getAttribute('src') || '') : (live?.dataset.ciPlayerSrc || '');
-    row.innerHTML = `<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.06em;margin:0 0 6px">${label}</div>` +
+    const _n = parseInt(label, 10), _c = HP_COLORS[_n - 1] || '#777';
+    row.style.borderLeft = '8px solid ' + _c; row.style.paddingLeft = '12px';
+    row.innerHTML = `<div style="display:flex;align-items:center;gap:10px;font:700 14px/1.4 Arial,sans-serif;letter-spacing:.06em;margin:0 0 8px"><span style="flex:0 0 auto;min-width:40px;height:40px;padding:0 8px;box-sizing:border-box;border-radius:8px;background:${_c};color:#fff;font:800 22px/40px Arial,sans-serif;text-align:center">${_n}</span>${label.replace(/^\d+\s*·\s*/, '')}</div>` +
       (kind === 'text'
         ? '<div data-hp-ed contenteditable="true" style="min-height:44px;padding:10px;border:1px solid #bbb;border-radius:6px;background:#fafafa;font:14px/1.6 Arial,sans-serif"></div>'
         : `<input data-hp-ed type="text" placeholder="${kind === 'img' ? 'Image link, e.g. images/… or https://…' : 'Video link or Cloudflare video ID'}" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:6px;font:14px Arial,sans-serif">`) +
@@ -6293,7 +6296,7 @@ async function initCitadelNoteFrame(nextPage) {
       instructions.appendChild(content);
       mount.style.padding='20px';
       mount.appendChild(instructions);
-      try { ciJournalRotationTest(content, pageId); } catch (e) { console.error('[journal-test]', e); }
+      // Scott 18 Nov 2026: Josh Kerr Practice Story moved to Home page box 3 (hp-intro); journal rotation off.
     }
     // ATB 1 is now painted as soon as its own content and authorization arrive.
     report();

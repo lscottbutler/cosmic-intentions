@@ -23,7 +23,7 @@
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
   'super-viz':['Visualize','Rehearse the next step toward your goal.','Choose relaxation, Guided or Unguided, and your practice time. Visualization guidance is a temporary draft.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Choose Unguided, Lightly Guided or Guided, then select 1 to 60 minutes. Press Play to begin.'],
-  'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
+  'new-gratitude':['GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Reel','Keep your saved practices together.','Review your reel, then press Play My Reel.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
   journal:['My Journal','Reflect in your own words.',''],
@@ -503,7 +503,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(newGratitude){newGratitude=false;frame.src='/players/master-player.html?preview=1&start='+encodeURIComponent(action);renderFeature(action);return;}
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
- const menuLabels={'welcome-images':'Home',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'NEW GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
+ const menuLabels={'welcome-images':'Home',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');// My Usage now lives at the bottom of Citadel (Scott 17 Nov 2026) — not in the menu.
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Design Library';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
@@ -526,13 +526,18 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
  // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
  delete menuLabels['ent-card'];
- features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
+ // Scott 18 Nov 2026: Entrepreneur Library is already a section inside the Cosmic Library, so it leaves the menu.
+ delete menuLabels['entrepreneur-library'];
+ // Scott 18 Nov 2026: MY JOURNAL = one page with 3 tabs (JOURNAL | TO DO | NOTES); TO DO and Notes leave the menu.
+ delete menuLabels['goal-workspace'];delete menuLabels['task-notes'];
+ features.gratitude=['GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
  // Scott 17 Nov 2026: admin-only items (Admin, Design Library) go at the BOTTOM, dodger blue, owner only.
  const isAdminItem=el=>el===paletteLink||el.dataset?.ciMenuAction==='admin';
  const ownerNow=()=>{for(const f of [document.getElementById('header-admin-note-frame'),frame]){try{if(f?.contentWindow?.ciOwnerAccess)return true;}catch(_){}}return false;};
- const styleAdmin=()=>{const own=ownerNow();[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display=own?'':'none';});};
+ // Frames reload on every page change and briefly report 'not owner' — once owner is seen, keep it for this visit.
+ const styleAdmin=()=>{let own=ownerNow();try{if(own)sessionStorage.setItem('ci_owner_seen','1');else own=sessionStorage.getItem('ci_owner_seen')==='1';}catch(_){}[...menuItems.children].filter(isAdminItem).forEach(el=>{el.style.setProperty('background','#1e90ff','important');el.style.setProperty('color','#fff','important');el.style.display='';/* Scott 18 Nov 2026: site is private (Netlify-locked) — always show, no owner check. */});};
  setInterval(styleAdmin,1000);
  const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
@@ -727,6 +732,22 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   else if(box!==shell.lastElementChild)shell.append(box);
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
  }
+ // MY JOURNAL tabs (Scott 18 Nov 2026): Journal, TO DO and Notes share one page via tabs.
+ const JOURNAL_TABS=[['journal','JOURNAL'],['goal-workspace','TO DO'],['task-notes','NOTES']];
+ function ensureJournalTabs(){
+  let bar=document.getElementById('ci-journal-tabs');
+  const on=JOURNAL_TABS.some(t=>t[0]===current);
+  if(!on){bar?.remove();return;}
+  if(!bar){
+   bar=document.createElement('nav');bar.id='ci-journal-tabs';bar.setAttribute('aria-label','My Journal sections');
+   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px auto 12px;max-width:1100px';
+   JOURNAL_TABS.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
+    b.style.cssText='border:2px solid #000;border-radius:8px;padding:10px 22px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
+    b.addEventListener('click',()=>{if(current!==k)openFeature(k);});bar.append(b);});
+   document.getElementById('ci-review-frame').before(bar);
+  }
+  bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -778,7 +799,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
@@ -957,8 +978,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
      const ready=event.data.state==='ready';start.disabled=false;start.dataset.started=String(!ready);start.tabIndex=ready?0:-1;start.setAttribute('aria-hidden',String(!ready));
     });
    }
-   if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
-   const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
+   if(doc.title!=='GRATITUDE | Cosmic Intentions')doc.title='GRATITUDE | Cosmic Intentions';
+   const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='GRATITUDE')titleText.textContent='GRATITUDE';
    const controls=doc.getElementById('meditationControls');controls.setAttribute('aria-label','New Gratitude controls');
    if(!doc.getElementById('gratitude-slide-counter')){
     const counter=doc.createElement('button');counter.id='gratitude-slide-counter';counter.type='button';counter.hidden=true;
@@ -988,7 +1009,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
    const button=controls.querySelector('[data-med-command="menu"]');
    button.setAttribute('aria-label','GRATITUDE MENU');if(button.querySelector('span:last-child').textContent!=='GRATITUDE MENU')button.querySelector('span:last-child').textContent='GRATITUDE MENU';
    doc.getElementById('meditationMenu').setAttribute('aria-label','New Gratitude choices');
-   const session=doc.getElementById('experienceFrame');session.title='NEW GRATITUDE';
+   const session=doc.getElementById('experienceFrame');session.title='GRATITUDE';
    if(!doc.getElementById('gratitude-back')){
     const panel=doc.getElementById('meditationMenu');
     const back=doc.createElement('button');back.id='gratitude-back';back.type='button';back.className='med-control';back.hidden=true;
