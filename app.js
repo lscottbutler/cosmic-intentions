@@ -6296,7 +6296,7 @@ async function initCitadelNoteFrame(nextPage) {
       instructions.appendChild(content);
       mount.style.padding='20px';
       mount.appendChild(instructions);
-      try { ciJournalRotationTest(content, pageId); } catch (e) { console.error('[journal-test]', e); }
+      // Scott 18 Nov 2026: Josh Kerr Practice Story moved to Home page box 3 (hp-intro); journal rotation off.
     }
     // ATB 1 is now painted as soon as its own content and authorization arrive.
     report();
