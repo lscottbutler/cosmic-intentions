@@ -528,6 +528,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  delete menuLabels['ent-card'];
  // Scott 18 Nov 2026: Entrepreneur Library is already a section inside the Cosmic Library, so it leaves the menu.
  delete menuLabels['entrepreneur-library'];
+ // Scott 18 Nov 2026: MY JOURNAL = one page with 3 tabs (JOURNAL | TO DO | NOTES); TO DO and Notes leave the menu.
+ delete menuLabels['goal-workspace'];delete menuLabels['task-notes'];
  features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
@@ -729,6 +731,22 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   else if(box!==shell.lastElementChild)shell.append(box);
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
  }
+ // MY JOURNAL tabs (Scott 18 Nov 2026): Journal, TO DO and Notes share one page via tabs.
+ const JOURNAL_TABS=[['journal','JOURNAL'],['goal-workspace','TO DO'],['task-notes','NOTES']];
+ function ensureJournalTabs(){
+  let bar=document.getElementById('ci-journal-tabs');
+  const on=JOURNAL_TABS.some(t=>t[0]===current);
+  if(!on){bar?.remove();return;}
+  if(!bar){
+   bar=document.createElement('nav');bar.id='ci-journal-tabs';bar.setAttribute('aria-label','My Journal sections');
+   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px auto 12px;max-width:1100px';
+   JOURNAL_TABS.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
+    b.style.cssText='border:2px solid #000;border-radius:8px;padding:10px 22px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
+    b.addEventListener('click',()=>{if(current!==k)openFeature(k);});bar.append(b);});
+   document.getElementById('ci-review-frame').before(bar);
+  }
+  bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -780,7 +798,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
