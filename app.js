@@ -5576,6 +5576,23 @@ function _applyHomeMedia() {
     } else if (el.getAttribute('src') !== v) el.src = v;
   });
 }
+// Scott 18 Nov 2026: on STAGING only, every Home page box shows its number + title line on top
+// (same colour as the Admin editor) so it's obvious which box is which. Never on the live site.
+function _labelHomeSectionsStaging() {
+  if (!/^(staging--|deploy-preview-\d+--)/.test(location.hostname) && !['localhost', '127.0.0.1'].includes(location.hostname)) return;
+  HP_SECTIONS.forEach(([slug, kind, label]) => {
+    const el = document.querySelector(kind === 'text' ? `#homeLoggedIn [data-block="${slug}"]` : `#homeLoggedIn [data-hp-src="${slug}"]`);
+    if (!el) return;
+    const prev = el.previousElementSibling;
+    if (prev && prev.dataset && prev.dataset.hpLabel === slug) return;
+    const n = parseInt(label, 10), c = HP_COLORS[n - 1] || '#777';
+    const tag = document.createElement('div');
+    tag.dataset.hpLabel = slug;
+    tag.style.cssText = `display:flex;align-items:center;gap:8px;margin:0 0 6px;padding:4px 8px;border-radius:6px;background:${c};color:#fff;font:700 12px/1.3 Arial,sans-serif;letter-spacing:.04em;width:max-content;max-width:100%`;
+    tag.innerHTML = `<span style="font-size:15px">${n}</span><span>${label.replace(/^\d+\s*·\s*/, '')}</span>`;
+    el.before(tag);
+  });
+}
 function renderHomeSectionsAdmin() {
   const host = document.querySelector('#page-admin .admin-page');
   if (!host || !window.ciOwnerAccess) return;
@@ -5629,7 +5646,7 @@ async function loadContentBlocks() {
   const { data, error } = await sb.from('content_blocks').select('slug, body');
   if (error || !data) return;
   try { setTimeout(renderQuoteLibraryAdmin, 0); } catch (e) {}
-  try { setTimeout(() => { _applyHomeMedia(); renderHomeSectionsAdmin(); }, 0); if (!window.__hpTimer) window.__hpTimer = setInterval(renderHomeSectionsAdmin, 2000); } catch (e) {}
+  try { setTimeout(() => { _applyHomeMedia(); renderHomeSectionsAdmin(); _labelHomeSectionsStaging(); }, 0); if (!window.__hpTimer) window.__hpTimer = setInterval(renderHomeSectionsAdmin, 2000); } catch (e) {}
   data.forEach(({ slug, body }) => {
     _blockCache[slug] = body || '';
     if (slug && slug.startsWith('lib_')) _libCache[slug] = body || '';   // recitation libraries
