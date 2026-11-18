@@ -147,6 +147,7 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
 
 <!-- GLOBAL NAV MENU — one instance, opened by the ≡ button in every Column B nav cluster. -->
 <div class="ham-menu ham-menu--global" id="hamMenu">
+  <div class="ham-menu-head"><h2>Site menu</h2><button type="button" onclick="document.getElementById('hamMenu').classList.remove('open')">Close</button></div>
   <!-- Scott 18 Nov 2026: same items as the member menu; Admin + Design Library blue at the bottom. -->
   <button class="tnav-btn" onclick="goMemberDashboard()">&#8962; Citadel</button>
   <button class="tnav-btn" onclick="navTo('cosmiclibrary')">Cosmic Library</button>

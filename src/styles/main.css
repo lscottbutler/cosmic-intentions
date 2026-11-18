@@ -4734,17 +4734,24 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
   white-space:normal;
   overflow-wrap:anywhere;
 }
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 1){background:#E84040!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 2){background:#E86030!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 3){background:#E88020!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 4){background:#E8A828!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 5){background:#E8C830!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 6){background:#A8C830!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 7){background:#48B860!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 8){background:#38A888!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 9){background:#2898A8!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 10){background:#7888A8!important}
-#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n){background:#3878A8!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(1){background:#151515!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(2){background:#000!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(3){background:#7b4a26!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(4){background:#292929!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(5){background:#151515!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(6){background:#404040!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(7){background:#666!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(8){background:#292929!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(9){background:#151515!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(10){background:#1e90ff!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11){background:#1e90ff!important}
+#hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(12){background:#292929!important}
+/* Scott 18 Nov 2026: Home menu matches the member Site menu (white panel, dark buttons, Gratitude brown, Admin/Design blue). */
+#hamMenu.ham-menu--global{border-radius:10px;padding:18px!important}
+#hamMenu.ham-menu--global > button.tnav-btn{text-transform:uppercase;font:400 20px/1.25 Arial,sans-serif!important;border-radius:5px}
+#hamMenu .ham-menu-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;color:#292929}
+#hamMenu .ham-menu-head h2{margin:0;font:700 20px/1.2 Arial,sans-serif}
+#hamMenu .ham-menu-head button{background:none;border:0;font:16px Arial,sans-serif;color:#292929;cursor:pointer}
 #hamMenu.ham-menu--global > button.tnav-btn.tnav-admin-blue{display:block!important;background:#1e90ff!important;color:#fff!important}
 #hamMenu.ham-menu--global > button.tnav-btn:is(:hover,:focus-visible){filter:brightness(1.12);outline:3px solid #292929;outline-offset:-3px}
 @media(max-width:450px){#hamMenu.ham-menu--global > button.tnav-btn{font-size:18px!important;min-height:52px}}
