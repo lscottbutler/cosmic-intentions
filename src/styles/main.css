@@ -4745,6 +4745,7 @@ html:not(.ci-labels-on) #page-home #ci-home-media-cards:not(:has(.ci-home-media-
 #hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 9){background:#2898A8!important}
 #hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n + 10){background:#7888A8!important}
 #hamMenu.ham-menu--global > button.tnav-btn:nth-of-type(11n){background:#3878A8!important}
+#hamMenu.ham-menu--global > button.tnav-btn.tnav-admin-blue{display:block!important;background:#1e90ff!important;color:#fff!important}
 #hamMenu.ham-menu--global > button.tnav-btn:is(:hover,:focus-visible){filter:brightness(1.12);outline:3px solid #292929;outline-offset:-3px}
 @media(max-width:450px){#hamMenu.ham-menu--global > button.tnav-btn{font-size:18px!important;min-height:52px}}
 
