@@ -23,7 +23,7 @@
   visualization:['Visualization','Choose the goal you want to rehearse.','Open a goal for its existing visualization choices. Playback uses your Master Player.'],
   'super-viz':['Visualize','Rehearse the next step toward your goal.','Choose relaxation, Guided or Unguided, and your practice time. Visualization guidance is a temporary draft.'],
   meditation:['Meditation','Make space for your chosen meditation practice.','Choose Unguided, Lightly Guided or Guided, then select 1 to 60 minutes. Press Play to begin.'],
-  'new-gratitude':['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
+  'new-gratitude':['GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Open GRATITUDE MENU to choose your session.'],
   favorites:['My Favorites Reel','Keep your saved practices together.','Review your reel, then press Play My Reel.'],
   thoughts:['My Thoughts','Keep the words and ideas that matter to you.','ADD A THOUGHT opens your existing entry categories.'],
   journal:['My Journal','Reflect in your own words.',''],
@@ -530,7 +530,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  delete menuLabels['entrepreneur-library'];
  // Scott 18 Nov 2026: MY JOURNAL = one page with 3 tabs (JOURNAL | TO DO | NOTES); TO DO and Notes leave the menu.
  delete menuLabels['goal-workspace'];delete menuLabels['task-notes'];
- features.gratitude=['NEW GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
+ features.gratitude=['GRATITUDE','Make space for your chosen gratitude practice.','Press Play to begin. Choose your module and quiet practice time.'];
  for(const [action,label] of Object.entries(menuLabels).sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}))){const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.ciMenuAction=action;button.addEventListener('click',()=>{menu.close();if(action==='welcome-images'){location.assign('/?home=1#homeLoggedIn');return;}if(action==='site-home'){location.assign('/');return;}openFeature(action);});document.getElementById('review-menu-items').append(button);}
  // Site menu stays A–Z, including My Usage and any item added later (Scott, 3 Nov 2026).
  // Scott 17 Nov 2026: admin-only items (Admin, Design Library) go at the BOTTOM, dodger blue, owner only.
@@ -978,8 +978,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
      const ready=event.data.state==='ready';start.disabled=false;start.dataset.started=String(!ready);start.tabIndex=ready?0:-1;start.setAttribute('aria-hidden',String(!ready));
     });
    }
-   if(doc.title!=='NEW GRATITUDE | Cosmic Intentions')doc.title='NEW GRATITUDE | Cosmic Intentions';
-   const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='NEW GRATITUDE')titleText.textContent='NEW GRATITUDE';
+   if(doc.title!=='GRATITUDE | Cosmic Intentions')doc.title='GRATITUDE | Cosmic Intentions';
+   const titleText=doc.getElementById('capTitleText');if(titleText&&titleText.textContent!=='GRATITUDE')titleText.textContent='GRATITUDE';
    const controls=doc.getElementById('meditationControls');controls.setAttribute('aria-label','New Gratitude controls');
    if(!doc.getElementById('gratitude-slide-counter')){
     const counter=doc.createElement('button');counter.id='gratitude-slide-counter';counter.type='button';counter.hidden=true;
@@ -1009,7 +1009,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
    const button=controls.querySelector('[data-med-command="menu"]');
    button.setAttribute('aria-label','GRATITUDE MENU');if(button.querySelector('span:last-child').textContent!=='GRATITUDE MENU')button.querySelector('span:last-child').textContent='GRATITUDE MENU';
    doc.getElementById('meditationMenu').setAttribute('aria-label','New Gratitude choices');
-   const session=doc.getElementById('experienceFrame');session.title='NEW GRATITUDE';
+   const session=doc.getElementById('experienceFrame');session.title='GRATITUDE';
    if(!doc.getElementById('gratitude-back')){
     const panel=doc.getElementById('meditationMenu');
     const back=doc.createElement('button');back.id='gratitude-back';back.type='button';back.className='med-control';back.hidden=true;
