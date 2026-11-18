@@ -732,8 +732,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Entrepreneur Library button at the top of the Cosmic Library page (Scott 18 Nov 2026).
  function ensureEntLink(){
   if(current!=='cosmic-library')return;
-  document.querySelectorAll('iframe').forEach(f=>{let d;try{d=f.contentDocument;}catch(_){return;}
-   const page=d?.getElementById('page-cosmiclibrary');if(!page||d.getElementById('ci-ent-lib-link'))return;
+  const docs=[];const walk=(doc,n)=>{if(n>2)return;doc.querySelectorAll('iframe').forEach(f=>{let d;try{d=f.contentDocument;}catch(_){}if(d){docs.push(d);walk(d,n+1);}});};walk(document,0);
+  docs.forEach(d=>{
+   const page=d.getElementById('page-cosmiclibrary');if(!page||d.getElementById('ci-ent-lib-link'))return;
    const b=d.createElement('button');b.type='button';b.id='ci-ent-lib-link';b.textContent='ENTREPRENEUR LIBRARY →';
    b.style.cssText='display:block;margin:12px auto 16px;background:#000;color:#fff;border:0;border-radius:8px;padding:12px 20px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
    b.addEventListener('click',()=>openFeature('entrepreneur-library'));
