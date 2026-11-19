@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Instructions · Cosmic Intentions</title>
+<style>
+ :root{--ink:#292929;--muted:#666;--paper:#f2ede7;--card:#fff}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 Arial,Helvetica,sans-serif}
+ main{max-width:860px;margin:0 auto;padding:28px 20px 60px}
+ header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+ h1{margin:0;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+ header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+ a.back{background:#000;color:#fff;font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-decoration:none;border-radius:8px;padding:10px 14px;white-space:nowrap}
+ details{background:var(--card);border:2px solid #303030;border-radius:12px;margin:0 0 12px;overflow:hidden}
+ summary{cursor:pointer;list-style:none;padding:14px 18px;font:700 15px/1.3 Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+ summary::-webkit-details-marker{display:none}
+ summary::after{content:"▾";font-size:18px;transition:transform .2s}
+ details[open] summary::after{transform:rotate(180deg)}
+ .body{padding:0 18px 16px}
+ .body p{margin:0 0 10px}
+ #status{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+ <header>
+  <div><h1>Instructions</h1><p>How each page works. Tap a page to read its overview.</p></div>
+  <a class="back" href="/standalone/member-design-test.html">← CITADEL</a>
+ </header>
+ <p id="status">Loading…</p>
+ <div id="list"></div>
+</main>
+<script>
+// Scott 19 Nov 2026: every page's overview text lives here now (content_blocks page-instructions-*; edit on the Admin page).
+const URL_='https://wbqzwbubbeorcknevips.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicXp3YnViYmVvcmNrbmV2aXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM3NzMsImV4cCI6MjA5MTAyOTc3M30.mF_YGj1E2ib0mEx07lkZyjgBzdGDT7saK8wofEjcqNc';
+const NAMES=[['dashboard','Citadel'],['setup','Goals'],['goalworkspace','To Do'],['habits','Habits'],['meditation','Meditation'],['super-viz','Visualize'],['vizlibrary','Visualization Library'],['vizgoal','Goal Visualization'],['gratitude','Gratitude'],['mynotes','My Journal'],['tasknotes','Notes'],['notes','My Thoughts'],['wins','My Wins'],['myroadmap','Roadmap'],['dailyfocus','My Favorites Reel'],['cosmiclibrary','Cosmic Library'],['entcard','Entrepreneur Skill Cards'],['proof','Proof'],['runthroughs','Daily Run-Throughs']];
+const strip=h=>{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('script,style,iframe,object,embed').forEach(e=>e.remove());d.querySelectorAll('*').forEach(e=>[...e.attributes].forEach(a=>{if(/^on/i.test(a.name)||/javascript:/i.test(a.value))e.removeAttribute(a.name);}));return d.innerHTML;};
+fetch(URL_+'/rest/v1/content_blocks?select=slug,body&slug=like.page-instructions-*',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+ .then(r=>r.json()).then(rows=>{
+  const by=Object.fromEntries((rows||[]).map(r=>[r.slug.replace('page-instructions-',''),r.body||'']));
+  const list=document.getElementById('list');
+  NAMES.forEach(([id,name])=>{const b=(by[id]||'').trim();if(!b)return;
+   const d=document.createElement('details');d.innerHTML='<summary></summary><div class="body"></div>';
+   d.querySelector('summary').textContent=name;d.querySelector('.body').innerHTML=strip(b);list.append(d);});
+  document.getElementById('status').remove();
+ }).catch(()=>{document.getElementById('status').textContent='Could not load the instructions. Please refresh.';});
+</script>
+</body>
+</html>

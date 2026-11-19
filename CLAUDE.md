@@ -33,6 +33,11 @@ pen on an admin box on the player page.
 screenshot it, confirm no error text and correct box positions BEFORE replying.
 Never send a screenshot that shows an error as "done".
 
+**ADMIN MESSAGE + OVERVIEW (Scott, 19 Nov 2026 evening — supersedes the 13 Nov TO DO placement):**
+- On EVERY page the admin WELCOME message (`page-welcome-<pageId>`) sits right under the page title (first thing in the top card).
+- Page overview texts (`page-instructions-<pageId>`) are NOT shown on pages any more; they live on the INSTRUCTIONS page
+  (`/standalone/instructions.html`, burger menu → Instructions). The HIDE/SHOW OVERVIEW button is gone.
+
 **All admin box edits happen on the admin page — no inline pens on player pages.**
 `.ci-admin-page-box-edit-slot` is `display:none!important` always. Do not try to
 restore the owner pen on any admin box on any player page, ever. If you need to

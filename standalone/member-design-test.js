@@ -504,7 +504,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   frame.contentWindow?.postMessage({type:'ci-lfm-select',action},location.origin);renderFeature(action);
  }
  const menuLabels={'welcome-images':'Home',home:'Citadel',goals:'Goals','daily-habits':'Habits',favorites:'My Favorites Reel',thoughts:'My Thoughts',journal:'My Journal','action-plan':'Roadmap',visualization:'Visualization Library',meditation:'Meditation','super-viz':'Visualize','new-gratitude':'GRATITUDE',gratitude:'Gratitude','cosmic-library':'Cosmic Library','entrepreneur-library':'Entrepreneur Library','ent-card':'Entrepreneur Cards',wins:'My Wins','task-notes':'Notes','goal-workspace':'TO DO',admin:'Admin'};
- const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');// My Usage now lives at the bottom of Citadel (Scott 17 Nov 2026) — not in the menu.
+ const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');
+ const instrLink=document.createElement('button');instrLink.type='button';instrLink.className='review-menu-item';instrLink.textContent='Instructions';instrLink.style.cssText=usageLink.style.cssText;instrLink.addEventListener('click',()=>location.assign('/standalone/instructions.html'));menuItems.append(instrLink);// My Usage now lives at the bottom of Citadel (Scott 17 Nov 2026) — not in the menu.
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Design Library';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
  // Android and PC browsers offer their own Install option, so this item is hidden there; also hidden once opened as the app.
@@ -599,7 +600,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
  // quote image; the admin WELCOME box moves out of the header to the top of the page
  // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
- const HEADER_WELCOME=new Set();   // Scott 19 Nov 2026: none — admin message sits at the top of each page's content card
+ // Scott 19 Nov 2026 (evening): on EVERY page the admin message sits right under the page title (top of the top card).
+ const HEADER_WELCOME={has:p=>p!=='admin'};
  function movePersonalEToTodo(){
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
@@ -625,15 +627,13 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!w.html)return true;
   // Scott 19 Nov 2026: on these pages the admin message sits in the top card, right under REVIEW.
   if(HEADER_WELCOME.has(current)){
-   // Order in the top card: overview text → REVIEW → admin message → quote image.
-   const ov=doc.querySelector('.ci-player-owner-instructions');
+   const mount=doc.body?.firstElementChild;if(!mount)return false;
    const ex=doc.querySelector('[data-ci-welcome-hd]');
-   if(ex){if(ov&&ex.nextElementSibling===ov&&!doc.querySelector('[data-ci-review-box]'))ov.after(ex);return true;}
-   const anchor=doc.querySelector('[data-ci-review-box]')||(ov&&ov.offsetParent!==null?ov:null)||doc.querySelector('.ci-carousel');if(!anchor)return false;
-   const slot=doc.createElement('div');slot.setAttribute('data-ci-welcome-hd','');slot.dataset.ciPage=current;slot.style.cssText='margin:0 0 14px';
-   slot.innerHTML=w.html;const box=slot.firstElementChild;if(box)box.dataset.ciPage=current;
-   if(anchor.matches('.ci-carousel'))anchor.before(slot);else anchor.after(slot);
-   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));
+   if(ex){if(mount.firstElementChild!==ex)mount.prepend(ex);}
+   else{const slot=doc.createElement('div');slot.setAttribute('data-ci-welcome-hd','');slot.dataset.ciPage=current;slot.style.cssText='margin:0 0 14px';
+    slot.innerHTML=w.html;const box=slot.firstElementChild;if(box)box.dataset.ciPage=current;mount.prepend(slot);}
+   // never twice: drop any copy in the page content
+   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot],[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>el.remove()));
    return true;
   }
   // Scott 19 Nov 2026: on every page the admin message is the first thing inside the page's content card.
@@ -1448,14 +1448,15 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  const pageKey=()=>'ci_overview_hidden_'+(new URLSearchParams(location.search).get('feature')||'home');
  const hiddenSaved=()=>{try{return localStorage.getItem(pageKey())==='1';}catch(_){return false;}};
  window.ciHideOverview=()=>{try{localStorage.setItem(pageKey(),'1');}catch(_){}open=false;apply();};
- let open=!hiddenSaved();
+ let open=false;   // Scott 19 Nov 2026: overview texts moved to the INSTRUCTIONS page — never shown on the pages
+ btn.style.setProperty('display','none','important');
  const apply=()=>{try{frame.contentDocument.documentElement.classList.toggle('ci-hide-instructions',!open);}catch(_){}
   btn.setAttribute('aria-pressed',String(open));btn.setAttribute('aria-label',open?'Hide overview':'Show overview');
   // Scott 13 Nov 2026: the blue i circle now reads HIDE / OVERVIEW (SHOW / OVERVIEW when closed).
   btn.textContent=(open?'HIDE':'SHOW')+' OVERVIEW';btn.title=open?'Hide overview':'Show overview';queue();};
  btn.addEventListener('click',()=>{if(open)window.ciHideOverview();else{open=true;apply();}});
- frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
- let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
+ frame.addEventListener('load',()=>{open=false;apply();});
+ let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=false;apply();}},400);
  const mount=()=>{const menu=document.getElementById('review-menu-trigger');const anchor=document.getElementById('ci-back-citadel')||menu;if(anchor&&anchor.parentElement&&anchor.nextElementSibling!==btn)anchor.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
