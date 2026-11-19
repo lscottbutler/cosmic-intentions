@@ -766,6 +766,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);outerScrollTwice(p.previousElementSibling||p);return;}
     if(act==='todo'&&pg==='page-goalworkspace'){const key=title.slice(0,40).toLowerCase();const g=[...w.document.querySelectorAll('#page-goalworkspace section[data-workspace-goal]')].find(d=>(d.querySelector(':scope > h3')?.textContent||'').toLowerCase().includes(key));if(g){await new Promise(r=>setTimeout(r,400));const ch=g.querySelector('.todo-goal-chevron');if(ch&&ch.getAttribute('aria-expanded')!=='true')ch.click();outerScrollTwice(g);return;}}
    }catch(_){}
+   // TO DO only lists goals that already have to-dos: say so instead of doing nothing.
+   if(act==='todo'&&pg==='page-goalworkspace'&&i>=12){const n=document.createElement('div');n.setAttribute('role','status');n.textContent='This goal has no to-dos yet. Add the first one with its + button on the Roadmap, or open the goal and ask AI for steps.';n.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:9999;max-width:520px;background:#171717;color:#fff;padding:14px 18px;border-radius:10px;font:600 15px/1.4 Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3)';document.body.append(n);setTimeout(()=>n.remove(),6000);return;}
    await new Promise(r=>setTimeout(r,250));
   }
  }
