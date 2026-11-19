@@ -755,10 +755,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   await openFeature(feature);
   const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
   for(let i=0;i<60;i++){
-   const w=exp();
+   const w=exp();const pg=w?.document?.querySelector('.page.active')?.id;
    try{
-    if(act==='edit'&&typeof w?.editGoalDirect==='function'){w.editGoalDirect(idx);return;}
-    if(act==='viz'&&typeof w?.openVizGoal==='function'){w.openVizGoal(idx);return;}
+    if(act==='edit'&&pg==='page-setup'&&typeof w.editGoalDirect==='function'){await new Promise(r=>setTimeout(r,400));w.editGoalDirect(idx);return;}
+    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);(p.previousElementSibling||p).scrollIntoView({behavior:'smooth',block:'center'});return;}
     if(act==='todo'&&w?.document){const g=[...w.document.querySelectorAll('.dashboard-task-group')].find(d=>(d.querySelector('summary')?.textContent||'').includes(title.slice(0,40)));if(g){g.open=true;g.scrollIntoView({behavior:'smooth',block:'start'});return;}}
    }catch(_){}
    await new Promise(r=>setTimeout(r,250));
