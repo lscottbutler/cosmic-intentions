@@ -777,9 +777,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(current==='home'){b?.remove();return;}
   if(b)return;
   b=document.createElement('button');b.type='button';b.id='ci-back-citadel';b.textContent='← CITADEL';
-  b.style.cssText='display:block;margin:12px 0 8px 12px;background:#000;color:#fff;border:0;border-radius:8px;padding:10px 16px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
+  b.style.cssText='display:block;margin:6px auto;background:#000;color:#fff;border:0;border-radius:8px;padding:9px 12px;font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
   b.addEventListener('click',()=>openFeature('home'));
-  document.querySelector('main')?.prepend(b);
+  // Scott 19 Nov 2026: sits in the right column where the Big Five "5" was (the 5 is retired).
+  const five=document.getElementById('big-five-trigger'),menu=document.getElementById('review-menu-trigger');
+  if(five)five.style.display='none';
+  if(menu)menu.after(b);else document.querySelector('main')?.prepend(b);
  }
  // Goals page (Scott 19 Nov 2026): every goal card in MY GOALS gets EDIT / VISUALIZE / TO DO.
  function ensureGoalButtons(){
