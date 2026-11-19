@@ -247,7 +247,7 @@ export async function getFocusToday() {
 }
 if (typeof window !== 'undefined') window.ciFocusToday = getFocusToday;
 
-/* PIN TO FOCUS (Scott 16 Nov 2026): member's own pinned goals (max 3), skills (max 3)
+/* PIN TO FOCUS (Scott 16 Nov 2026): member's own pinned goals (max 5), skills (max 3)
    and words (max 5). Saved to the member's account: player_personal_notes page 'focus-pins'. */
 export async function getFocusPins() {
   const empty = { goals: [], skills: [], words: [] };
@@ -266,7 +266,7 @@ export async function getFocusPins() {
 }
 export async function saveFocusPins(p) {
   if (!currentUser) throw new Error('Not signed in');
-  const clean = { goals: (p.goals || []).slice(0, 3), skills: (p.skills || []).slice(0, 3), words: (p.words || []).map(w => String(w).trim()).filter(Boolean).slice(0, 5) };
+  const clean = { goals: (p.goals || []).slice(0, 5), skills: (p.skills || []).slice(0, 3), words: (p.words || []).map(w => String(w).trim()).filter(Boolean).slice(0, 5) };
   const { error } = await sb.from('player_personal_notes').upsert({ user_id: currentUser.id, page_id: 'focus-pins', title: 'MY FOCUS PINS', body: JSON.stringify(clean), updated_at: new Date().toISOString() }, { onConflict: 'user_id,page_id' });
   if (error) throw error;
   return clean;
