@@ -751,15 +751,18 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Open a page, then run fn(win) inside the page's app frame once it's ready (goal links from MY FOCUS).
  async function goalAction(act,title,goals){
   const idx=Math.max(0,goals.indexOf(title));
-  const feature={edit:'goals',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
+  // EDIT: the goal-wording editors live on My Thoughts (#thoughtGoalEditors).
+  const feature={edit:'thoughts',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
+  // Scroll the outer page to an element that sits inside nested frames.
+  const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'smooth'});}catch(_){}};
   await openFeature(feature);
   const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
   for(let i=0;i<60;i++){
    const w=exp();const pg=w?.document?.querySelector('.page.active')?.id;
    try{
-    if(act==='edit'&&pg==='page-setup'&&typeof w.editGoalDirect==='function'){await new Promise(r=>setTimeout(r,400));w.editGoalDirect(idx);return;}
-    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);(p.previousElementSibling||p).scrollIntoView({behavior:'smooth',block:'center'});return;}
-    if(act==='todo'&&w?.document){const g=[...w.document.querySelectorAll('.dashboard-task-group')].find(d=>(d.querySelector('summary')?.textContent||'').includes(title.slice(0,40)));if(g){g.open=true;g.scrollIntoView({behavior:'smooth',block:'start'});return;}}
+    if(act==='edit'&&pg==='page-notes'){const ta=w.document.getElementById('thought-goal-'+idx);if(ta){await new Promise(r=>setTimeout(r,400));outerScroll(ta);ta.focus({preventScroll:true});const box=ta.parentElement;box.style.outline='4px solid #1e90ff';setTimeout(()=>box.style.outline='',3000);return;}}
+    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);outerScroll(p.previousElementSibling||p);return;}
+    if(act==='todo'&&w?.document){const g=[...w.document.querySelectorAll('.dashboard-task-group')].find(d=>(d.querySelector('summary')?.textContent||'').includes(title.slice(0,40)));if(g){g.open=true;outerScroll(g);return;}}
    }catch(_){}
    await new Promise(r=>setTimeout(r,250));
   }
