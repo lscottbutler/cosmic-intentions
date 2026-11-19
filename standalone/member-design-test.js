@@ -599,10 +599,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
  // quote image; the admin WELCOME box moves out of the header to the top of the page
  // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
+ const HEADER_WELCOME=new Set(['goals']);
  function movePersonalEToTodo(){
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
-  const live=doc?.querySelector('.ci-page-welcome');
+  const live=doc?.querySelector('.ci-page-welcome:not([data-ci-page])');
   // Only capture after the header has finished filling the welcome (Personal E renders after it).
   if(live&&doc.querySelector('.ci-player-personal-e-box')){
    const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
@@ -620,7 +621,18 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let mainFrame=null,mainH=0;
   for(const inner of reviewDoc.querySelectorAll('iframe')){if(inner.closest('#ci-my-usage'))continue;try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
+  doc.querySelectorAll('[data-ci-welcome-hd]').forEach(el=>{if(el.dataset.ciPage!==current||!HEADER_WELCOME.has(current))el.remove();});
   if(!w.html)return true;
+  // Scott 19 Nov 2026: on these pages the admin message sits in the top card, right under REVIEW.
+  if(HEADER_WELCOME.has(current)){
+   if(doc.querySelector('[data-ci-welcome-hd]'))return true;
+   const anchor=doc.querySelector('[data-ci-review-box]')||doc.querySelector('.ci-carousel');if(!anchor)return false;
+   const slot=doc.createElement('div');slot.setAttribute('data-ci-welcome-hd','');slot.dataset.ciPage=current;slot.style.cssText='margin:0 0 14px';
+   slot.innerHTML=w.html;const box=slot.firstElementChild;if(box)box.dataset.ciPage=current;
+   if(anchor.matches('[data-ci-review-box]'))anchor.after(slot);else anchor.before(slot);
+   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));
+   return true;
+  }
   let slot=null,targetDoc=null;
   for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
   if(!slot){
@@ -683,7 +695,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
   if(!anchor)return;
   let box=old;
-  if(!box||box.nextElementSibling!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
+  if(!box||(box.nextElementSibling?.matches?.('[data-ci-welcome-hd]')?box.nextElementSibling.nextElementSibling:box.nextElementSibling)!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
    box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 16px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
    box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
    anchor.before(box);}
@@ -809,7 +821,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const col=w?.document?.querySelector('#page-setup .ci-goals-entry-column');
   if(current!=='goals'){side?.remove();return;}
   if(!col)return;
-  col.style.setProperty('display','none','important');
+  // Scott 19 Nov 2026: the whole row goes — the TESTING ONE TWO THREE admin box is removed, ADD A GOAL lives up top.
+  (col.closest('.ci-goals-top-row')||col).style.setProperty('display','none','important');
   const anchor=document.getElementById('header-encouragement')||document.getElementById('ci-info-trigger');if(!anchor)return;
   if(!side){side=document.createElement('div');side.id='ci-goals-side';
    side.style.cssText='display:grid;justify-items:center;gap:8px;margin:10px auto;width:100%;max-width:170px';
