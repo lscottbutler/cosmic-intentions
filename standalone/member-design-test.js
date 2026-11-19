@@ -599,7 +599,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
  // quote image; the admin WELCOME box moves out of the header to the top of the page
  // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
- const HEADER_WELCOME=new Set(['goals']);
+ const HEADER_WELCOME=new Set();   // Scott 19 Nov 2026: none — admin message sits at the top of each page's content card
  function movePersonalEToTodo(){
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
@@ -636,8 +636,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));
    return true;
   }
+  // Scott 19 Nov 2026: on every page the admin message is the first thing inside the page's content card.
+  if(current!=='home'){try{const ed=reviewDoc.getElementById('experienceFrame')?.contentDocument;const pg=ed?.querySelector('.page.active');
+   if(pg&&!pg.querySelector('[data-todo-personal-e-slot]')){const sl=ed.createElement('div');sl.setAttribute('data-todo-personal-e-slot','');sl.style.cssText='padding:0 0 4px';pg.prepend(sl);}}catch(_){}}
   let slot=null,targetDoc=null;
-  for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
+  for(const d of docs){const f=d.querySelector('.page.active [data-todo-personal-e-slot]')||d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
   if(slot)docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));   // never show it twice
   if(!slot){
    // Place the slot ABOVE the page's content frame, never inside it (locked players stay untouched).
