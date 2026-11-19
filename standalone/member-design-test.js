@@ -625,11 +625,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!w.html)return true;
   // Scott 19 Nov 2026: on these pages the admin message sits in the top card, right under REVIEW.
   if(HEADER_WELCOME.has(current)){
-   if(doc.querySelector('[data-ci-welcome-hd]'))return true;
-   const anchor=doc.querySelector('[data-ci-review-box]')||doc.querySelector('.ci-carousel');if(!anchor)return false;
+   // Order in the top card: overview text → REVIEW → admin message → quote image.
+   const ov=doc.querySelector('.ci-player-owner-instructions');
+   const ex=doc.querySelector('[data-ci-welcome-hd]');
+   if(ex){if(ov&&ex.nextElementSibling===ov&&!doc.querySelector('[data-ci-review-box]'))ov.after(ex);return true;}
+   const anchor=doc.querySelector('[data-ci-review-box]')||(ov&&ov.offsetParent!==null?ov:null)||doc.querySelector('.ci-carousel');if(!anchor)return false;
    const slot=doc.createElement('div');slot.setAttribute('data-ci-welcome-hd','');slot.dataset.ciPage=current;slot.style.cssText='margin:0 0 14px';
    slot.innerHTML=w.html;const box=slot.firstElementChild;if(box)box.dataset.ciPage=current;
-   if(anchor.matches('[data-ci-review-box]'))anchor.after(slot);else anchor.before(slot);
+   if(anchor.matches('.ci-carousel'))anchor.before(slot);else anchor.after(slot);
    docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));
    return true;
   }
