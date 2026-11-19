@@ -727,7 +727,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const shell=rd.querySelector('.shell');if(!shell)return;
   if(!box){box=rd.createElement('section');box.id='ci-my-usage';
    box.style.cssText='margin:16px;background:#fff;border:2px solid #303030;border-radius:12px;overflow:hidden;box-sizing:border-box';
-   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">MY USAGE</div><iframe src="/usage-board.html?embed=1" title="My Usage" style="display:block;width:100%;height:900px;border:0"></iframe>';
+   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">PROGRESS REPORT</div><iframe src="/usage-board.html?embed=1" title="Progress Report" style="display:block;width:100%;height:900px;border:0"></iframe>';
    shell.append(box);}
   else if(box!==shell.lastElementChild)shell.append(box);
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
