@@ -599,10 +599,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
  // quote image; the admin WELCOME box moves out of the header to the top of the page
  // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
+ const HEADER_WELCOME=new Set();   // Scott 19 Nov 2026: none — admin message sits at the top of each page's content card
  function movePersonalEToTodo(){
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
-  const live=doc?.querySelector('.ci-page-welcome');
+  const live=doc?.querySelector('.ci-page-welcome:not([data-ci-page])');
   // Only capture after the header has finished filling the welcome (Personal E renders after it).
   if(live&&doc.querySelector('.ci-player-personal-e-box')){
    const empty=live.classList.contains('is-empty')||!live.querySelector('.ci-admin-page-box-content')?.textContent.trim()||live.style.display==='none';
@@ -618,11 +619,29 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!reviewDoc?.body)return false;
   const docs=[reviewDoc];
   let mainFrame=null,mainH=0;
-  for(const inner of reviewDoc.querySelectorAll('iframe')){try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
+  for(const inner of reviewDoc.querySelectorAll('iframe')){if(inner.closest('#ci-my-usage'))continue;try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
+  doc.querySelectorAll('[data-ci-welcome-hd]').forEach(el=>{if(el.dataset.ciPage!==current||!HEADER_WELCOME.has(current))el.remove();});
   if(!w.html)return true;
+  // Scott 19 Nov 2026: on these pages the admin message sits in the top card, right under REVIEW.
+  if(HEADER_WELCOME.has(current)){
+   // Order in the top card: overview text → REVIEW → admin message → quote image.
+   const ov=doc.querySelector('.ci-player-owner-instructions');
+   const ex=doc.querySelector('[data-ci-welcome-hd]');
+   if(ex){if(ov&&ex.nextElementSibling===ov&&!doc.querySelector('[data-ci-review-box]'))ov.after(ex);return true;}
+   const anchor=doc.querySelector('[data-ci-review-box]')||(ov&&ov.offsetParent!==null?ov:null)||doc.querySelector('.ci-carousel');if(!anchor)return false;
+   const slot=doc.createElement('div');slot.setAttribute('data-ci-welcome-hd','');slot.dataset.ciPage=current;slot.style.cssText='margin:0 0 14px';
+   slot.innerHTML=w.html;const box=slot.firstElementChild;if(box)box.dataset.ciPage=current;
+   if(anchor.matches('.ci-carousel'))anchor.before(slot);else anchor.after(slot);
+   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));
+   return true;
+  }
+  // Scott 19 Nov 2026: on every page the admin message is the first thing inside the page's content card.
+  if(current!=='home'){try{const ed=reviewDoc.getElementById('experienceFrame')?.contentDocument;const pg=ed?.querySelector('.page.active');
+   if(pg&&!pg.querySelector('[data-todo-personal-e-slot]')){const sl=ed.createElement('div');sl.setAttribute('data-todo-personal-e-slot','');sl.style.cssText='padding:0 0 4px';pg.prepend(sl);}}catch(_){}}
   let slot=null,targetDoc=null;
-  for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
+  for(const d of docs){const f=d.querySelector('.page.active [data-todo-personal-e-slot]')||d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
+  if(slot)docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));   // never show it twice
   if(!slot){
    // Place the slot ABOVE the page's content frame, never inside it (locked players stay untouched).
    targetDoc=reviewDoc;
@@ -636,7 +655,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const css=[];
    for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
     for(const r of rules){if(r.selectorText&&/ci-page-welcome/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
-   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important}';
+   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\nhtml body .ci-admin-page-box.ci-page-welcome.ci-page-welcome{margin:0 0 14px!important;border:2px solid #303030!important;border-radius:12px!important;padding:18px 22px!important;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.08)!important;box-sizing:border-box!important}';
    targetDoc.head.appendChild(st);
   }
   const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
@@ -683,7 +702,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const anchor=hd.querySelector('.ci-carousel')||hd.querySelector('.ci-player-personal-e-box');
   if(!anchor)return;
   let box=old;
-  if(!box||box.nextElementSibling!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
+  if(!box||(box.nextElementSibling?.matches?.('[data-ci-welcome-hd]')?box.nextElementSibling.nextElementSibling:box.nextElementSibling)!==anchor){old?.remove();box=hd.createElement('section');box.setAttribute('data-ci-review-box','');
    box.style.cssText='background:#fff;border:2px solid #303030;border-radius:12px;padding:16px 20px;margin:0 0 16px;font:400 16px/1.55 Arial,sans-serif;color:#171717;box-sizing:border-box';
    box.innerHTML='<div style="font:700 13px/1.4 Arial,sans-serif;letter-spacing:.12em;margin:0 0 8px">REVIEW</div><p data-ci-review-text style="margin:0"></p>';
    anchor.before(box);}
@@ -716,7 +735,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const h=t=>`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:12px 0 4px">${t}</div>`;
   const words=[0,1,2,3,4].map(i=>`<input name="w" maxlength="160" value="${esc(p.words[i]||'')}" placeholder="Word or phrase ${i+1}" style="display:block;width:100%;box-sizing:border-box;margin:4px 0;padding:7px;border:1px solid #bbb;border-radius:6px;font:14px Arial,sans-serif">`).join('');
   const b=(a,l)=>`<button type="button" ${a} style="background:#000;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;margin-right:8px">${l}</button>`;
-  box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body><div data-focus-editor style="color:#171717">${h('GOALS (UP TO 3)')}${pf.options.goals.map(g=>ck('g',g,g,p.goals.includes(g))).join('')||'No goals yet.'}${h('SKILLS (UP TO 3)')}<div style="max-height:220px;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;padding:4px 8px">${pf.options.skills.map(x=>ck('s',x.key,x.title,p.skills.includes(x.key))).join('')}</div>${h('MY WORDS (UP TO 5)')}${words}<div style="margin-top:12px">${b('data-focus-save','SAVE')}${b('data-focus-cancel','CANCEL')}<span data-focus-status style="color:#777;font-size:13px"></span></div></div></div>`;
+  box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body><div data-focus-editor style="color:#171717">${h('GOALS (UP TO 5)')}${pf.options.goals.map(g=>ck('g',g,g,p.goals.includes(g))).join('')||'No goals yet.'}${h('SKILLS (UP TO 3)')}<div style="max-height:220px;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;padding:4px 8px">${pf.options.skills.map(x=>ck('s',x.key,x.title,p.skills.includes(x.key))).join('')}</div>${h('MY WORDS (UP TO 5)')}${words}<div style="margin-top:12px">${b('data-focus-save','SAVE')}${b('data-focus-cancel','CANCEL')}<span data-focus-status style="color:#777;font-size:13px"></span></div></div></div>`;
  }
  // MY USAGE at the bottom of Citadel (Scott 17 Nov 2026): the usage board, embedded.
  function ensureUsage(){
@@ -727,26 +746,106 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const shell=rd.querySelector('.shell');if(!shell)return;
   if(!box){box=rd.createElement('section');box.id='ci-my-usage';
    box.style.cssText='margin:16px;background:#fff;border:2px solid #303030;border-radius:12px;overflow:hidden;box-sizing:border-box';
-   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">MY USAGE</div><iframe src="/usage-board.html?embed=1" title="My Usage" style="display:block;width:100%;height:900px;border:0"></iframe>';
+   box.innerHTML='<div style="padding:18px 20px 0;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;color:#171717">PROGRESS REPORT</div><iframe src="/usage-board.html?embed=1" title="Progress Report" style="display:block;width:100%;height:900px;border:0"></iframe>';
    shell.append(box);}
   else if(box!==shell.lastElementChild)shell.append(box);
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
  }
  // MY JOURNAL tabs (Scott 18 Nov 2026): Journal, TO DO and Notes share one page via tabs.
  const JOURNAL_TABS=[['journal','JOURNAL'],['goal-workspace','TO DO'],['task-notes','NOTES']];
+ // Scott 19 Nov 2026: inside the journal/notes/to-do card the order is admin message → 3 tabs → content.
+ const JOURNAL_PAGES={journal:'page-mynotes','task-notes':'page-tasknotes','goal-workspace':'page-goalworkspace'};
  function ensureJournalTabs(){
-  let bar=document.getElementById('ci-journal-tabs');
-  const on=JOURNAL_TABS.some(t=>t[0]===current);
-  if(!on){bar?.remove();return;}
+  document.getElementById('ci-journal-tabs')?.remove();   // old bar above the card
+  if(!JOURNAL_TABS.some(t=>t[0]===current))return;
+  let d;try{d=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentDocument;}catch(_){return;}
+  const page=d?.getElementById(JOURNAL_PAGES[current]);if(!page||!page.classList.contains('active'))return;
+  // Admin message slot at the top of the card (TO DO already has its own slot in its list).
+  let slot=page.querySelector('[data-todo-personal-e-slot]');
+  if(!slot&&current!=='goal-workspace'){slot=d.createElement('div');slot.setAttribute('data-todo-personal-e-slot','');slot.style.cssText='padding:0 0 4px';page.prepend(slot);}
+  let bar=page.querySelector('[data-ci-journal-tabs]');
   if(!bar){
-   bar=document.createElement('nav');bar.id='ci-journal-tabs';bar.setAttribute('aria-label','My Journal sections');
-   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px auto 12px;max-width:1100px';
-   JOURNAL_TABS.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
+   bar=d.createElement('nav');bar.setAttribute('data-ci-journal-tabs','');bar.setAttribute('aria-label','My Journal sections');
+   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px auto 16px';
+   JOURNAL_TABS.forEach(([k,l])=>{const b=d.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
     b.style.cssText='border:2px solid #000;border-radius:8px;padding:10px 22px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
     b.addEventListener('click',()=>{if(current!==k)openFeature(k);});bar.append(b);});
-   document.getElementById('ci-review-frame').before(bar);
   }
+  if(slot){if(slot.nextElementSibling!==bar)slot.after(bar);}else if(page.firstElementChild!==bar)page.prepend(bar);
   bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
+ }
+ // Open a page, then run fn(win) inside the page's app frame once it's ready (goal links from MY FOCUS).
+ async function goalAction(act,title,goals){
+  const idx=Math.max(0,goals.indexOf(title));
+  // EDIT: the goal-wording editors live on My Thoughts (#thoughtGoalEditors).
+  const feature={edit:'thoughts',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
+  // Scroll the outer page to an element that sits inside nested frames.
+  const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'auto'});}catch(_){}};
+  // The shell resets scroll while a page settles, so repeat the jump a few times.
+  const outerScrollTwice=el=>{outerScroll(el);[700,1500,2600].forEach(t=>setTimeout(()=>outerScroll(el),t));};
+  await openFeature(feature);
+  const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
+  for(let i=0;i<60;i++){
+   const w=exp();const pg=w?.document?.querySelector('.page.active')?.id;
+   try{
+    if(act==='edit'&&pg==='page-notes'){const ta=w.document.getElementById('thought-goal-'+idx);if(ta){await new Promise(r=>setTimeout(r,400));outerScrollTwice(ta);ta.focus({preventScroll:true});const box=ta.parentElement;box.style.outline='4px solid #1e90ff';setTimeout(()=>box.style.outline='',3000);return;}}
+    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);outerScrollTwice(p.previousElementSibling||p);return;}
+    if(act==='todo'&&pg==='page-goalworkspace'){const key=title.slice(0,40).toLowerCase();const g=[...w.document.querySelectorAll('#page-goalworkspace section[data-workspace-goal]')].find(d=>(d.querySelector(':scope > h3')?.textContent||'').toLowerCase().includes(key));if(g){await new Promise(r=>setTimeout(r,400));const ch=g.querySelector('.todo-goal-chevron');if(ch&&ch.getAttribute('aria-expanded')!=='true')ch.click();outerScrollTwice(g);return;}}
+   }catch(_){}
+   // TO DO only lists goals that already have to-dos: say so instead of doing nothing.
+   if(act==='todo'&&pg==='page-goalworkspace'&&i>=12){const n=document.createElement('div');n.setAttribute('role','status');n.textContent='This goal has no to-dos yet.';n.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:9999;max-width:520px;background:#171717;color:#fff;padding:14px 18px;border-radius:10px;font:600 15px/1.4 Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3)';document.body.append(n);setTimeout(()=>n.remove(),6000);return;}
+   await new Promise(r=>setTimeout(r,250));
+  }
+ }
+ // ← CITADEL on every page (Scott 19 Nov 2026): one click home from anywhere.
+ function ensureCitadelBack(){
+  const f5=document.getElementById('big-five-trigger');if(f5&&f5.style.display!=='none')f5.style.display='none';
+  let b=document.getElementById('ci-back-citadel');
+  if(current==='home'){b?.remove();return;}
+  if(b){const m=document.getElementById('review-menu-trigger');if(m&&m.nextElementSibling!==b)m.after(b);return;}
+  b=document.createElement('button');b.type='button';b.id='ci-back-citadel';b.textContent='← CITADEL';
+  [['display','block'],['margin','6px auto'],['background','#000'],['color','#fff'],['border','0'],['border-radius','8px'],['padding','9px 12px'],['font','700 12px/1 Arial,sans-serif'],['letter-spacing','.08em'],['cursor','pointer'],['white-space','nowrap'],['min-height','0'],['width','auto'],['order','-2']].forEach(([k,v])=>b.style.setProperty(k,v,'important'));
+  b.addEventListener('click',()=>openFeature('home'));
+  // Scott 19 Nov 2026: sits in the right column where the Big Five "5" was (the 5 is retired).
+  const five=document.getElementById('big-five-trigger'),menu=document.getElementById('review-menu-trigger');
+  if(five)five.style.display='none';
+  if(menu)menu.after(b);else document.querySelector('main')?.prepend(b);
+ }
+ // Goals page (Scott 19 Nov 2026): every goal card in MY GOALS gets EDIT / VISUALIZE / TO DO.
+ function ensureGoalButtons(){
+  if(current!=='goals')return;
+  let w;try{w=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return;}
+  const d=w?.document;if(!d)return;
+  const cards=[...d.querySelectorAll('#page-setup details[id^="pb-goal-"]')];if(!cards.length)return;
+  const goals=[];cards.forEach(c=>{const n=+c.id.replace('pb-goal-','');goals[n]=(c.querySelector('.pb-goal-title')?.textContent||'').trim();});
+  cards.forEach(c=>{
+   const sum=c.querySelector('summary');if(!sum||sum.querySelector('[data-goal-btns]'))return;
+   const n=+c.id.replace('pb-goal-',''),title=goals[n];
+   const wrap=d.createElement('span');wrap.setAttribute('data-goal-btns','');wrap.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0';
+   [['edit','✎ EDIT'],['viz','👁 VISUALIZE'],['todo','✓ TO DO']].forEach(([a,l])=>{const b=d.createElement('button');b.type='button';b.textContent=l;
+    b.style.cssText='background:#000;color:#fff;border:0;border-radius:5px;padding:6px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();goalAction(a,title,goals);});wrap.append(b);});
+   (sum.querySelector('.pb-goal-title')?.parentElement||sum).append(wrap);
+  });
+ }
+ // Goals page (Scott 19 Nov 2026): ADD A GOAL + quick stats move up into the top card's right column.
+ function ensureGoalsSide(){
+  let side=document.getElementById('ci-goals-side');
+  let w;try{w=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){}
+  const col=w?.document?.querySelector('#page-setup .ci-goals-entry-column');
+  if(current!=='goals'){side?.remove();return;}
+  if(!col)return;
+  // Scott 19 Nov 2026: the whole row goes — the TESTING ONE TWO THREE admin box is removed, ADD A GOAL lives up top.
+  (col.closest('.ci-goals-top-row')||col).style.setProperty('display','none','important');
+  const anchor=document.getElementById('header-encouragement')||document.getElementById('ci-info-trigger');if(!anchor)return;
+  if(!side){side=document.createElement('div');side.id='ci-goals-side';
+   side.style.cssText='display:grid;justify-items:center;gap:8px;margin:10px auto;width:100%;max-width:170px';
+   side.innerHTML='<button type="button" data-add-goal style="display:grid;justify-items:center;gap:6px;background:none;border:0;cursor:pointer;padding:0;color:#171717;font:700 13px/1.2 Arial,sans-serif;letter-spacing:.06em"><span style="width:48px;height:48px;border-radius:50%;border:4px solid #f2c200;display:grid;place-items:center;font:400 30px/1 Arial,sans-serif">+</span>ADD A GOAL</button><div data-goal-stats style="width:100%;background:#f3f3f3;border-radius:10px;padding:10px;text-align:center;font:13px/1.35 Arial,sans-serif;color:#555"></div>';
+   side.querySelector('[data-add-goal]').addEventListener('click',()=>{try{const t=w.document.querySelector('#page-setup .ci-goals-add-toggle');t?.click();const row=w.document.getElementById('pbAddIntentionRow');if(row){let y=row.getBoundingClientRect().top,win=w;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-140});row.querySelector('input,textarea')?.focus({preventScroll:true});}}catch(_){}});
+  }
+  if(side.previousElementSibling!==anchor)anchor.after(side);
+  const dl=col.querySelector('.ci-goals-quick-stats');
+  if(dl){const html=[...dl.querySelectorAll('dt')].map(dt=>`<div>${dt.textContent}</div><div style="font:700 15px/1.3 Arial,sans-serif;color:#171717;margin:0 0 6px">${dt.nextElementSibling?.textContent||''}</div>`).join('');const box=side.querySelector('[data-goal-stats]');if(box.innerHTML!==html)box.innerHTML=html;}
  }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
@@ -756,8 +855,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const shell=rd.querySelector('.shell');if(!shell)return;
   let box=old;
   if(!box){box=rd.createElement('section');box.id='ci-my-focus';
-   box.style.cssText='margin:16px 16px 0;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
-   box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">MY FOCUS TODAY</div><div data-focus-body style="color:#777">Loading…</div>';
+   box.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
+   box.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px"><span>MY FOCUS TODAY</span><button type="button" data-focus-edit title="Pin to focus" aria-label="Pin to focus" style="width:34px;height:34px;border-radius:50%;background:#000;border:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16 3l5 5-2 1-3 3 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 3-3z"/></svg></button></div><div data-focus-body style="color:#777">Loading…</div>';
    shell.prepend(box);
    box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
    box.addEventListener('click',e=>{
@@ -771,7 +870,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(err=>{st.textContent=/permission|signed/i.test(err?.message||'')?'You are signed out. Sign in, then save again.':'Save failed. Try again.';});
     }
    });
-   box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);if(all.length>3){i.checked=false;alert('Pick up to 3.');}});
+   box.addEventListener('click',e=>{const b=e.target.closest('[data-goal-act]');if(!b)return;goalAction(b.dataset.goalAct,b.dataset.goal,box.__pf?.options?.goals||[]);});
+   box.addEventListener('change',e=>{const g=e.target.dataset?.focusGoal;if(g==null)return;const k='ci_focus_goal_done_'+new Date().toLocaleDateString('en-CA');let d=[];try{d=JSON.parse(localStorage.getItem(k)||'[]');}catch(_){}d=d.filter(x=>x!==g);if(e.target.checked)d.push(g);try{localStorage.setItem(k,JSON.stringify(d));}catch(_){}});
+   box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);const lim=i.name==='g'?5:3;if(all.length>lim){i.checked=false;alert('Pick up to '+lim+'.');}});
   }
   if(box.dataset.editing)return;
   if(_focusBusy||Date.now()-_focusAt<30000)return;
@@ -783,7 +884,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    _focusAt=(f.actionsOpen||f.practice?.lastMeditation)?Date.now():Date.now()-27000;
    const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
    const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
-   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0"><div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>${body}</div>${b}</div>`;
+   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0">${title?`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>`:''}${body}</div>${b}</div>`;
    const h=f.habits;
    const habits=h.total?(h.left?`<strong>${h.left}</strong> of your ${h.total} habits still to do today.`:`All <strong>${h.total}</strong> habits done today. Well done.`):'No daily habits yet.';
    const acts=f.actions.length?`<ol style="margin:0;padding-left:20px">${f.actions.map(a=>`<li>${esc(a.text)}<span style="color:#888"> — ${esc(a.goal)}</span></li>`).join('')}</ol>${f.actionsOpen>3?`<div style="color:#777;font-size:13px;margin-top:4px">${f.actionsOpen-3} more open actions across your goals.</div>`:''}`:'No open actions. Add the next step to a goal.';
@@ -793,13 +894,19 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
    box.__pf=pf;
    const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
-   const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 9px;border:1px solid #303030;border-radius:999px;font-size:13px">${esc(t)}</span>`;
-   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?`<div><b style="font-size:12px;color:#555">GOALS</b> ${pn.goals.map(chip).join('')}</div>`:''}${pn.skills.length?`<div><b style="font-size:12px;color:#555">SKILLS</b> ${pn.skills.map(k=>chip(sk(k))).join('')}</div>`:''}${pn.words.length?`<div><b style="font-size:12px;color:#555">MY WORDS</b> ${pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')}</div>`:''}`:'Nothing pinned yet. Pin up to 3 goals, 3 skills and 5 words.';
+   const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
+   // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
+   const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
+   const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
+   // Scott 19 Nov 2026: every pinned goal links straight to EDIT / VISUALIZE / TO DO.
+   const gBtn=(act,g,l,t)=>`<button type="button" data-goal-act="${act}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:5px 9px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
+   const goalRow=g=>`<div style="display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1 1 260px;min-width:0"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label><span style="display:flex;gap:6px">${gBtn('edit',g,'✎ EDIT','Edit this goal')}${gBtn('viz',g,'👁 VISUALIZE','Visualize this goal')}${gBtn('todo',g,'✓ TO DO','Open this goal’s to-dos')}</span></div>`;
+   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 5 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN TO FOCUS</button>`;
-   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
@@ -1349,7 +1456,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  btn.addEventListener('click',()=>{if(open)window.ciHideOverview();else{open=true;apply();}});
  frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
  let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
- const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
+ const mount=()=>{const menu=document.getElementById('review-menu-trigger');const anchor=document.getElementById('ci-back-citadel')||menu;if(anchor&&anchor.parentElement&&anchor.nextElementSibling!==btn)anchor.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
  // below them (personal note, icons, carousel) starts under the i, so nothing wide sits beside the buttons.
