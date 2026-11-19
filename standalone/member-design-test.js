@@ -802,6 +802,24 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    (sum.querySelector('.pb-goal-title')?.parentElement||sum).append(wrap);
   });
  }
+ // Goals page (Scott 19 Nov 2026): ADD A GOAL + quick stats move up into the top card's right column.
+ function ensureGoalsSide(){
+  let side=document.getElementById('ci-goals-side');
+  let w;try{w=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){}
+  const col=w?.document?.querySelector('#page-setup .ci-goals-entry-column');
+  if(current!=='goals'){side?.remove();return;}
+  if(!col)return;
+  col.style.setProperty('display','none','important');
+  const anchor=document.getElementById('header-encouragement')||document.getElementById('ci-info-trigger');if(!anchor)return;
+  if(!side){side=document.createElement('div');side.id='ci-goals-side';
+   side.style.cssText='display:grid;justify-items:center;gap:8px;margin:10px auto;width:100%;max-width:170px';
+   side.innerHTML='<button type="button" data-add-goal style="display:grid;justify-items:center;gap:6px;background:none;border:0;cursor:pointer;padding:0;color:#171717;font:700 13px/1.2 Arial,sans-serif;letter-spacing:.06em"><span style="width:48px;height:48px;border-radius:50%;border:4px solid #f2c200;display:grid;place-items:center;font:400 30px/1 Arial,sans-serif">+</span>ADD A GOAL</button><div data-goal-stats style="width:100%;background:#f3f3f3;border-radius:10px;padding:10px;text-align:center;font:13px/1.35 Arial,sans-serif;color:#555"></div>';
+   side.querySelector('[data-add-goal]').addEventListener('click',()=>{try{const t=w.document.querySelector('#page-setup .ci-goals-add-toggle');t?.click();const row=w.document.getElementById('pbAddIntentionRow');if(row){let y=row.getBoundingClientRect().top,win=w;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-140});row.querySelector('input,textarea')?.focus({preventScroll:true});}}catch(_){}});
+  }
+  if(side.previousElementSibling!==anchor)anchor.after(side);
+  const dl=col.querySelector('.ci-goals-quick-stats');
+  if(dl){const html=[...dl.querySelectorAll('dt')].map(dt=>`<div>${dt.textContent}</div><div style="font:700 15px/1.3 Arial,sans-serif;color:#171717;margin:0 0 6px">${dt.nextElementSibling?.textContent||''}</div>`).join('');const box=side.querySelector('[data-goal-stats]');if(box.innerHTML!==html)box.innerHTML=html;}
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -861,7 +879,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
