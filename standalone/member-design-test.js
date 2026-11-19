@@ -638,6 +638,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   }
   let slot=null,targetDoc=null;
   for(const d of docs){const f=d.querySelector('[data-todo-personal-e-slot]');if(f){slot=f;targetDoc=d;break;}}
+  if(slot)docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot]').forEach(el=>el.remove()));   // never show it twice
   if(!slot){
    // Place the slot ABOVE the page's content frame, never inside it (locked players stay untouched).
    targetDoc=reviewDoc;
