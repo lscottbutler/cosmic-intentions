@@ -778,7 +778,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(current==='home'){b?.remove();return;}
   if(b){const m=document.getElementById('review-menu-trigger');if(m&&m.nextElementSibling!==b)m.after(b);return;}
   b=document.createElement('button');b.type='button';b.id='ci-back-citadel';b.textContent='← CITADEL';
-  [['display','block'],['margin','6px auto'],['background','#000'],['color','#fff'],['border','0'],['border-radius','8px'],['padding','9px 12px'],['font','700 12px/1 Arial,sans-serif'],['letter-spacing','.08em'],['cursor','pointer'],['white-space','nowrap'],['min-height','0'],['width','auto']].forEach(([k,v])=>b.style.setProperty(k,v,'important'));
+  [['display','block'],['margin','6px auto'],['background','#000'],['color','#fff'],['border','0'],['border-radius','8px'],['padding','9px 12px'],['font','700 12px/1 Arial,sans-serif'],['letter-spacing','.08em'],['cursor','pointer'],['white-space','nowrap'],['min-height','0'],['width','auto'],['order','-2']].forEach(([k,v])=>b.style.setProperty(k,v,'important'));
   b.addEventListener('click',()=>openFeature('home'));
   // Scott 19 Nov 2026: sits in the right column where the Big Five "5" was (the 5 is retired).
   const five=document.getElementById('big-five-trigger'),menu=document.getElementById('review-menu-trigger');
