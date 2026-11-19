@@ -618,7 +618,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(!reviewDoc?.body)return false;
   const docs=[reviewDoc];
   let mainFrame=null,mainH=0;
-  for(const inner of reviewDoc.querySelectorAll('iframe')){try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
+  for(const inner of reviewDoc.querySelectorAll('iframe')){if(inner.closest('#ci-my-usage'))continue;try{const d=inner.contentDocument;if(!d?.body)continue;docs.push(d);const h=inner.getBoundingClientRect().height;if(h>mainH){mainH=h;mainFrame=inner;}}catch(_){}}
   docs.forEach(d=>d.querySelectorAll('[data-ci-welcome-slot] .ci-page-welcome,[data-todo-personal-e-slot] .ci-page-welcome').forEach(el=>{if(el.dataset.ciPage!==current)el.remove();}));
   if(!w.html)return true;
   let slot=null,targetDoc=null;
