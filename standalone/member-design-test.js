@@ -771,6 +771,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(err=>{st.textContent=/permission|signed/i.test(err?.message||'')?'You are signed out. Sign in, then save again.':'Save failed. Try again.';});
     }
    });
+   box.addEventListener('change',e=>{const g=e.target.dataset?.focusGoal;if(g==null)return;const k='ci_focus_goal_done_'+new Date().toLocaleDateString('en-CA');let d=[];try{d=JSON.parse(localStorage.getItem(k)||'[]');}catch(_){}d=d.filter(x=>x!==g);if(e.target.checked)d.push(g);try{localStorage.setItem(k,JSON.stringify(d));}catch(_){}});
    box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);if(all.length>3){i.checked=false;alert('Pick up to 3.');}});
   }
   if(box.dataset.editing)return;
@@ -794,7 +795,11 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.__pf=pf;
    const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
    const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 9px;border:1px solid #303030;border-radius:999px;font-size:13px">${esc(t)}</span>`;
-   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?`<div><b style="font-size:12px;color:#555">GOALS</b> ${pn.goals.map(chip).join('')}</div>`:''}${pn.skills.length?`<div><b style="font-size:12px;color:#555">SKILLS</b> ${pn.skills.map(k=>chip(sk(k))).join('')}</div>`:''}${pn.words.length?`<div><b style="font-size:12px;color:#555">MY WORDS</b> ${pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')}</div>`:''}`:'Nothing pinned yet. Pin up to 3 goals, 3 skills and 5 words.';
+   // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
+   const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
+   const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
+   const goalRow=g=>`<label style="display:flex;align-items:center;gap:10px;margin:4px 0;cursor:pointer"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label>`;
+   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 3 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN TO FOCUS</button>`;
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
