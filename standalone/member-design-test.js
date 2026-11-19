@@ -773,6 +773,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  // ← CITADEL on every page (Scott 19 Nov 2026): one click home from anywhere.
  function ensureCitadelBack(){
+  const f5=document.getElementById('big-five-trigger');if(f5&&f5.style.display!=='none')f5.style.display='none';
   let b=document.getElementById('ci-back-citadel');
   if(current==='home'){b?.remove();return;}
   if(b)return;
