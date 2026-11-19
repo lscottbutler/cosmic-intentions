@@ -757,7 +757,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   let box=old;
   if(!box){box=rd.createElement('section');box.id='ci-my-focus';
    box.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
-   box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">MY FOCUS TODAY</div><div data-focus-body style="color:#777">Loading…</div>';
+   box.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px"><span>MY FOCUS TODAY</span><button type="button" data-focus-edit title="Pin to focus" aria-label="Pin to focus" style="width:34px;height:34px;border-radius:50%;background:#000;border:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16 3l5 5-2 1-3 3 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 3-3z"/></svg></button></div><div data-focus-body style="color:#777">Loading…</div>';
    shell.prepend(box);
    box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
    box.addEventListener('click',e=>{
@@ -784,7 +784,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    _focusAt=(f.actionsOpen||f.practice?.lastMeditation)?Date.now():Date.now()-27000;
    const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
    const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
-   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0"><div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>${body}</div>${b}</div>`;
+   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0">${title?`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>`:''}${body}</div>${b}</div>`;
    const h=f.habits;
    const habits=h.total?(h.left?`<strong>${h.left}</strong> of your ${h.total} habits still to do today.`:`All <strong>${h.total}</strong> habits done today. Well done.`):'No daily habits yet.';
    const acts=f.actions.length?`<ol style="margin:0;padding-left:20px">${f.actions.map(a=>`<li>${esc(a.text)}<span style="color:#888"> — ${esc(a.goal)}</span></li>`).join('')}</ol>${f.actionsOpen>3?`<div style="color:#777;font-size:13px;margin-top:4px">${f.actionsOpen-3} more open actions across your goals.</div>`:''}`:'No open actions. Add the next step to a goal.';
@@ -794,14 +794,14 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
    box.__pf=pf;
    const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
-   const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 9px;border:1px solid #303030;border-radius:999px;font-size:13px">${esc(t)}</span>`;
+   const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
    const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
    const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
    const goalRow=g=>`<label style="display:flex;align-items:center;gap:10px;margin:4px 0;cursor:pointer"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label>`;
    const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 3 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN TO FOCUS</button>`;
-   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('PINNED',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
  setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();},1000);
