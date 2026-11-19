@@ -652,7 +652,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const css=[];
    for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
     for(const r of rules){if(r.selectorText&&/ci-page-welcome/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
-   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\n.ci-page-welcome{margin:0 0 14px!important;border:2px solid #303030!important;border-radius:12px!important;padding:18px 22px!important;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.08)!important;box-sizing:border-box!important}';
+   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\nhtml body .ci-admin-page-box.ci-page-welcome.ci-page-welcome{margin:0 0 14px!important;border:2px solid #303030!important;border-radius:12px!important;padding:18px 22px!important;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.08)!important;box-sizing:border-box!important}';
    targetDoc.head.appendChild(st);
   }
   const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
