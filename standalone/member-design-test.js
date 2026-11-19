@@ -755,14 +755,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const feature={edit:'thoughts',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
   // Scroll the outer page to an element that sits inside nested frames.
   const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'smooth'});}catch(_){}};
+  const outerScrollTwice=el=>{outerScroll(el);setTimeout(()=>outerScroll(el),900);};
   await openFeature(feature);
   const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
   for(let i=0;i<60;i++){
    const w=exp();const pg=w?.document?.querySelector('.page.active')?.id;
    try{
-    if(act==='edit'&&pg==='page-notes'){const ta=w.document.getElementById('thought-goal-'+idx);if(ta){await new Promise(r=>setTimeout(r,400));outerScroll(ta);ta.focus({preventScroll:true});const box=ta.parentElement;box.style.outline='4px solid #1e90ff';setTimeout(()=>box.style.outline='',3000);return;}}
-    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);outerScroll(p.previousElementSibling||p);return;}
-    if(act==='todo'&&pg==='page-goalworkspace'){const key=title.slice(0,40).toLowerCase();const g=[...w.document.querySelectorAll('#page-goalworkspace section[data-workspace-goal]')].find(d=>(d.querySelector(':scope > h3')?.textContent||'').toLowerCase().includes(key));if(g){await new Promise(r=>setTimeout(r,400));const ch=g.querySelector('.todo-goal-chevron');if(ch&&ch.getAttribute('aria-expanded')!=='true')ch.click();outerScroll(g);return;}}
+    if(act==='edit'&&pg==='page-notes'){const ta=w.document.getElementById('thought-goal-'+idx);if(ta){await new Promise(r=>setTimeout(r,400));outerScrollTwice(ta);ta.focus({preventScroll:true});const box=ta.parentElement;box.style.outline='4px solid #1e90ff';setTimeout(()=>box.style.outline='',3000);return;}}
+    if(act==='viz'&&pg==='page-vizlibrary'&&typeof w.vizLibToggle==='function'&&w.document.getElementById('vizLibPanel-'+idx)){await new Promise(r=>setTimeout(r,400));const p=w.document.getElementById('vizLibPanel-'+idx);if(p.style.display==='none')w.vizLibToggle(idx);outerScrollTwice(p.previousElementSibling||p);return;}
+    if(act==='todo'&&pg==='page-goalworkspace'){const key=title.slice(0,40).toLowerCase();const g=[...w.document.querySelectorAll('#page-goalworkspace section[data-workspace-goal]')].find(d=>(d.querySelector(':scope > h3')?.textContent||'').toLowerCase().includes(key));if(g){await new Promise(r=>setTimeout(r,400));const ch=g.querySelector('.todo-goal-chevron');if(ch&&ch.getAttribute('aria-expanded')!=='true')ch.click();outerScrollTwice(g);return;}}
    }catch(_){}
    await new Promise(r=>setTimeout(r,250));
   }
