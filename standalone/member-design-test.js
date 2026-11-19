@@ -754,8 +754,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   // EDIT: the goal-wording editors live on My Thoughts (#thoughtGoalEditors).
   const feature={edit:'thoughts',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
   // Scroll the outer page to an element that sits inside nested frames.
-  const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'smooth'});}catch(_){}};
-  const outerScrollTwice=el=>{outerScroll(el);setTimeout(()=>outerScroll(el),900);};
+  const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'auto'});}catch(_){}};
+  // The shell resets scroll while a page settles, so repeat the jump a few times.
+  const outerScrollTwice=el=>{outerScroll(el);[700,1500,2600].forEach(t=>setTimeout(()=>outerScroll(el),t));};
   await openFeature(feature);
   const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
   for(let i=0;i<60;i++){
