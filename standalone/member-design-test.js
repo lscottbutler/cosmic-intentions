@@ -776,9 +776,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const f5=document.getElementById('big-five-trigger');if(f5&&f5.style.display!=='none')f5.style.display='none';
   let b=document.getElementById('ci-back-citadel');
   if(current==='home'){b?.remove();return;}
-  if(b)return;
+  if(b){const m=document.getElementById('review-menu-trigger');if(m&&m.nextElementSibling!==b)m.after(b);return;}
   b=document.createElement('button');b.type='button';b.id='ci-back-citadel';b.textContent='← CITADEL';
-  b.style.cssText='display:block;margin:6px auto;background:#000;color:#fff;border:0;border-radius:8px;padding:9px 12px;font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
+  [['display','block'],['margin','6px auto'],['background','#000'],['color','#fff'],['border','0'],['border-radius','8px'],['padding','9px 12px'],['font','700 12px/1 Arial,sans-serif'],['letter-spacing','.08em'],['cursor','pointer'],['white-space','nowrap'],['min-height','0'],['width','auto']].forEach(([k,v])=>b.style.setProperty(k,v,'important'));
   b.addEventListener('click',()=>openFeature('home'));
   // Scott 19 Nov 2026: sits in the right column where the Big Five "5" was (the 5 is retired).
   const five=document.getElementById('big-five-trigger'),menu=document.getElementById('review-menu-trigger');
@@ -1411,7 +1411,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  btn.addEventListener('click',()=>{if(open)window.ciHideOverview();else{open=true;apply();}});
  frame.addEventListener('load',()=>{open=!hiddenSaved();apply();});
  let lastKey=pageKey();setInterval(()=>{const k=pageKey();if(k!==lastKey){lastKey=k;open=!hiddenSaved();apply();}},400);
- const mount=()=>{const menu=document.getElementById('review-menu-trigger');if(menu&&menu.parentElement&&menu.nextElementSibling!==btn)menu.after(btn);};
+ const mount=()=>{const menu=document.getElementById('review-menu-trigger');const anchor=document.getElementById('ci-back-citadel')||menu;if(anchor&&anchor.parentElement&&anchor.nextElementSibling!==btn)anchor.after(btn);};
  mount();new MutationObserver(mount).observe(sc,{childList:true});
  // Phones: text blocks (AB1, PLAYER INSTRUCTION) may sit beside the corner buttons; the first full-width box
  // below them (personal note, icons, carousel) starts under the i, so nothing wide sits beside the buttons.
