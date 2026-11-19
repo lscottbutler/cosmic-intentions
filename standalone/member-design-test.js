@@ -756,7 +756,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const shell=rd.querySelector('.shell');if(!shell)return;
   let box=old;
   if(!box){box=rd.createElement('section');box.id='ci-my-focus';
-   box.style.cssText='margin:16px 16px 0;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
+   box.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
    box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">MY FOCUS TODAY</div><div data-focus-body style="color:#777">Loading…</div>';
    shell.prepend(box);
    box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
