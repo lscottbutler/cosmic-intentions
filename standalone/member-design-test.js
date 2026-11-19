@@ -599,7 +599,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // Scott 13 Nov 2026 (all pages): Personal E stays in the top header card under the
  // quote image; the admin WELCOME box moves out of the header to the top of the page
  // content below (TO DO uses its own slot). Empty welcome boxes are not shown.
- const HEADER_WELCOME=new Set(['goals','journal','task-notes']);
+ const HEADER_WELCOME=new Set(['goals']);
  function movePersonalEToTodo(){
   if(current==='admin')return false;
   let doc;try{doc=headerNoteFrame.contentDocument;}catch(_){return false;}
@@ -749,18 +749,25 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  // MY JOURNAL tabs (Scott 18 Nov 2026): Journal, TO DO and Notes share one page via tabs.
  const JOURNAL_TABS=[['journal','JOURNAL'],['goal-workspace','TO DO'],['task-notes','NOTES']];
+ // Scott 19 Nov 2026: inside the journal/notes/to-do card the order is admin message → 3 tabs → content.
+ const JOURNAL_PAGES={journal:'page-mynotes','task-notes':'page-tasknotes','goal-workspace':'page-goalworkspace'};
  function ensureJournalTabs(){
-  let bar=document.getElementById('ci-journal-tabs');
-  const on=JOURNAL_TABS.some(t=>t[0]===current);
-  if(!on){bar?.remove();return;}
+  document.getElementById('ci-journal-tabs')?.remove();   // old bar above the card
+  if(!JOURNAL_TABS.some(t=>t[0]===current))return;
+  let d;try{d=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentDocument;}catch(_){return;}
+  const page=d?.getElementById(JOURNAL_PAGES[current]);if(!page||!page.classList.contains('active'))return;
+  // Admin message slot at the top of the card (TO DO already has its own slot in its list).
+  let slot=page.querySelector('[data-todo-personal-e-slot]');
+  if(!slot&&current!=='goal-workspace'){slot=d.createElement('div');slot.setAttribute('data-todo-personal-e-slot','');slot.style.cssText='padding:0 0 4px';page.prepend(slot);}
+  let bar=page.querySelector('[data-ci-journal-tabs]');
   if(!bar){
-   bar=document.createElement('nav');bar.id='ci-journal-tabs';bar.setAttribute('aria-label','My Journal sections');
-   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px auto 12px;max-width:1100px';
-   JOURNAL_TABS.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
+   bar=d.createElement('nav');bar.setAttribute('data-ci-journal-tabs','');bar.setAttribute('aria-label','My Journal sections');
+   bar.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px auto 16px';
+   JOURNAL_TABS.forEach(([k,l])=>{const b=d.createElement('button');b.type='button';b.dataset.tab=k;b.textContent=l;
     b.style.cssText='border:2px solid #000;border-radius:8px;padding:10px 22px;font:700 13px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer';
     b.addEventListener('click',()=>{if(current!==k)openFeature(k);});bar.append(b);});
-   document.getElementById('ci-review-frame').before(bar);
   }
+  if(slot){if(slot.nextElementSibling!==bar)slot.after(bar);}else if(page.firstElementChild!==bar)page.prepend(bar);
   bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
  }
  // Open a page, then run fn(win) inside the page's app frame once it's ready (goal links from MY FOCUS).
