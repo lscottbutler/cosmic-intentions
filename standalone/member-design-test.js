@@ -781,27 +781,22 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   b.addEventListener('click',()=>openFeature('home'));
   document.querySelector('main')?.prepend(b);
  }
- // ALL GOALS hub on the Goals page (Scott 19 Nov 2026): every goal in one list, each with EDIT / VISUALIZE / TO DO.
- let _hubAt=0,_hubBusy=false;
- function ensureGoalsHub(){
-  let box=document.getElementById('ci-goals-hub');
-  if(current!=='goals'){box?.remove();_hubAt=0;return;}
-  const frame=document.getElementById('ci-review-frame');if(!frame)return;
-  if(!box){box=document.createElement('section');box.id='ci-goals-hub';
-   box.style.cssText='max-width:1100px;margin:10px auto 16px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
-   box.innerHTML='<div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 12px">ALL GOALS</div><div data-hub-body style="color:#777">Loading…</div>';
-   box.addEventListener('click',e=>{const b=e.target.closest('[data-goal-act]');if(b)goalAction(b.dataset.goalAct,b.dataset.goal,box.__goals||[]);});
-   frame.before(box);}
-  const hd=headerNoteFrame?.contentWindow;
-  if(_hubBusy||Date.now()-_hubAt<30000||!hd?.ciFocusPins)return;
-  _hubBusy=true;
-  hd.ciFocusPins().then(pf=>{
-   const goals=pf.options.goals||[];box.__goals=goals;
-   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-   const btn=(a,g,l,t)=>`<button type="button" data-goal-act="${a}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:6px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
-   box.querySelector('[data-hub-body]').outerHTML=`<div data-hub-body style="color:#171717">${goals.length?goals.map((g,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid #e3e3e3"><div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 280px"><span style="flex:0 0 30px;height:30px;border-radius:6px;background:#171717;color:#fff;font:800 15px/30px Arial,sans-serif;text-align:center">${String.fromCharCode(65+i)}</span><span>${esc(g)}</span></div><span style="display:flex;gap:6px">${btn('edit',g,'✎ EDIT','Edit this goal')}${btn('viz',g,'👁 VISUALIZE','Visualize this goal')}${btn('todo',g,'✓ TO DO','Open this goal’s to-dos')}</span></div>`).join(''):'No goals yet.'}</div>`;
-   _hubAt=Date.now();
-  }).catch(()=>{}).finally(()=>{_hubBusy=false;});
+ // Goals page (Scott 19 Nov 2026): every goal card in MY GOALS gets EDIT / VISUALIZE / TO DO.
+ function ensureGoalButtons(){
+  if(current!=='goals')return;
+  let w;try{w=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return;}
+  const d=w?.document;if(!d)return;
+  const cards=[...d.querySelectorAll('#page-setup details[id^="pb-goal-"]')];if(!cards.length)return;
+  const goals=[];cards.forEach(c=>{const n=+c.id.replace('pb-goal-','');goals[n]=(c.querySelector('.pb-goal-title')?.textContent||'').trim();});
+  cards.forEach(c=>{
+   const sum=c.querySelector('summary');if(!sum||sum.querySelector('[data-goal-btns]'))return;
+   const n=+c.id.replace('pb-goal-',''),title=goals[n];
+   const wrap=d.createElement('span');wrap.setAttribute('data-goal-btns','');wrap.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0';
+   [['edit','✎ EDIT'],['viz','👁 VISUALIZE'],['todo','✓ TO DO']].forEach(([a,l])=>{const b=d.createElement('button');b.type='button';b.textContent=l;
+    b.style.cssText='background:#000;color:#fff;border:0;border-radius:5px;padding:6px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();goalAction(a,title,goals);});wrap.append(b);});
+   (sum.querySelector('.pb-goal-title')?.parentElement||sum).append(wrap);
+  });
  }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
@@ -862,7 +857,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalsHub();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
