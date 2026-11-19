@@ -748,6 +748,22 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   }
   bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
  }
+ // Open a page, then run fn(win) inside the page's app frame once it's ready (goal links from MY FOCUS).
+ async function goalAction(act,title,goals){
+  const idx=Math.max(0,goals.indexOf(title));
+  const feature={edit:'goals',viz:'visualization',todo:'goal-workspace'}[act];if(!feature)return;
+  await openFeature(feature);
+  const exp=()=>{try{return document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return null;}};
+  for(let i=0;i<60;i++){
+   const w=exp();
+   try{
+    if(act==='edit'&&typeof w?.editGoalDirect==='function'){w.editGoalDirect(idx);return;}
+    if(act==='viz'&&typeof w?.openVizGoal==='function'){w.openVizGoal(idx);return;}
+    if(act==='todo'&&w?.document){const g=[...w.document.querySelectorAll('.dashboard-task-group')].find(d=>(d.querySelector('summary')?.textContent||'').includes(title.slice(0,40)));if(g){g.open=true;g.scrollIntoView({behavior:'smooth',block:'start'});return;}}
+   }catch(_){}
+   await new Promise(r=>setTimeout(r,250));
+  }
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -771,6 +787,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      headerNoteFrame.contentWindow.ciSaveFocusPins({goals:vals('g'),skills:vals('s'),words}).then(()=>{delete box.dataset.editing;_focusAt=0;}).catch(err=>{st.textContent=/permission|signed/i.test(err?.message||'')?'You are signed out. Sign in, then save again.':'Save failed. Try again.';});
     }
    });
+   box.addEventListener('click',e=>{const b=e.target.closest('[data-goal-act]');if(!b)return;goalAction(b.dataset.goalAct,b.dataset.goal,box.__pf?.options?.goals||[]);});
    box.addEventListener('change',e=>{const g=e.target.dataset?.focusGoal;if(g==null)return;const k='ci_focus_goal_done_'+new Date().toLocaleDateString('en-CA');let d=[];try{d=JSON.parse(localStorage.getItem(k)||'[]');}catch(_){}d=d.filter(x=>x!==g);if(e.target.checked)d.push(g);try{localStorage.setItem(k,JSON.stringify(d));}catch(_){}});
    box.addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox'||!i.checked)return;const all=box.querySelectorAll(`input[name="${i.name}"]:checked`);const lim=i.name==='g'?5:3;if(all.length>lim){i.checked=false;alert('Pick up to '+lim+'.');}});
   }
@@ -798,7 +815,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
    const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
    const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
-   const goalRow=g=>`<label style="display:flex;align-items:center;gap:10px;margin:4px 0;cursor:pointer"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label>`;
+   // Scott 19 Nov 2026: every pinned goal links straight to EDIT / VISUALIZE / TO DO.
+   const gBtn=(act,g,l,t)=>`<button type="button" data-goal-act="${act}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:5px 9px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
+   const goalRow=g=>`<div style="display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1 1 260px;min-width:0"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label><span style="display:flex;gap:6px">${gBtn('edit',g,'✎ EDIT','Edit this goal')}${gBtn('viz',g,'👁 VISUALIZE','Visualize this goal')}${gBtn('todo',g,'✓ TO DO','Open this goal’s to-dos')}</span></div>`;
    const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 5 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN TO FOCUS</button>`;
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
