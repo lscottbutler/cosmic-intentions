@@ -850,6 +850,8 @@ export async function doSignIn() {
     if (data?.user) {
       currentUser = data.user;
       updateUI(data.user);
+      // Came from a SIGN IN link (/?signin=1): go straight back to the Citadel.
+      if (/[?&]signin=1\b/.test(location.search)) setTimeout(() => goMemberDashboard(), 300);
       (async () => {
         try {
           await syncFromSupabase();
