@@ -7207,3 +7207,14 @@ if (typeof window !== 'undefined') {
   window.closeMasterInlineDestination = closeMasterInlineDestination;
 }
 
+
+// Scott 20 Nov 2026: "SIGN IN" links elsewhere point to /?signin=1 — pop the sign-in box straight away
+// (or go straight to the Citadel if already signed in), instead of making members find MEMBER PORTAL.
+if (typeof window !== 'undefined' && window.top === window && /[?&]signin=1\b/.test(location.search)) {
+  setTimeout(async () => {
+    try {
+      const { data } = await sb.auth.getSession();
+      if (data?.session?.user) goMemberDashboard(); else openAuth('signin');
+    } catch (e) { openAuth('signin'); }
+  }, 400);
+}
