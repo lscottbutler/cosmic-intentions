@@ -894,7 +894,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
    box.__pf=pf;
    // Scott 20 Nov 2026: signed out = nothing to show; say so plainly instead of an empty picker.
-   if(pf&&pf.signedIn===false){box.querySelector('[data-focus-body]').outerHTML='<div data-focus-body style="color:#171717">You are signed out, so your goals can\'t load. <a href="/" style="display:inline-block;margin-left:8px;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-decoration:none">SIGN IN</a></div>';_focusAt=Date.now()-25000;return;}
+   if(pf&&pf.signedIn===false){box.querySelector('[data-focus-body]').outerHTML='<div data-focus-body style="color:#171717">You are signed out, so your goals can\'t load. <a href="/" target="_top" style="display:inline-block;margin-left:8px;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-decoration:none">SIGN IN</a></div>';_focusAt=Date.now()-25000;return;}
    const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
    const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
