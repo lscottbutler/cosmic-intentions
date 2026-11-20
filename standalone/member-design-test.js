@@ -729,7 +729,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  // working on right now: today's habits, next 3 actions from their goals, their practice.
  let _focusAt=0,_focusBusy=false;
  function focusEditor(box){
-  const pf=box.__pf;if(!pf)return;box.dataset.editing='1';
+  const pf=box.__pf;if(!pf||pf.signedIn===false)return;box.dataset.editing='1';
   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const p=pf.pins,ck=(n,v,l,on)=>`<label style="display:block;font-size:14px;margin:3px 0"><input type="checkbox" name="${n}" value="${esc(v)}"${on?' checked':''}> ${esc(l)}</label>`;
   const h=t=>`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:12px 0 4px">${t}</div>`;
@@ -893,6 +893,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const med=last?(days===0?'Meditated today.':days===1?'Last meditated yesterday.':`Last meditated ${days} days ago.`):'No meditation yet.';
    const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
    box.__pf=pf;
+   // Scott 20 Nov 2026: signed out = nothing to show; say so plainly instead of an empty picker.
+   if(pf&&pf.signedIn===false){box.querySelector('[data-focus-body]').outerHTML='<div data-focus-body style="color:#171717">You are signed out, so your goals can\'t load. <a href="/" style="display:inline-block;margin-left:8px;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-decoration:none">SIGN IN</a></div>';_focusAt=Date.now()-25000;return;}
    const pn=pf.pins,sk=k=>(pf.options.skills.find(x=>x.key===k)||{}).title||k;
    const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
