@@ -796,7 +796,8 @@ export function renderThoughtGoalEditors() {
     <div id="pb-goal-edit-${idx}" data-goal-id="${esc(String(goal.id ?? idx))}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
         <label for="thought-goal-${idx}" style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;">${goalBadge(letter, color.bg, color.text, 36)}<span>GOAL ${esc(letter)}</span></label>
-        <button type="button" onclick="ciArchiveGoal(${idx})" title="Move this goal to your Archive" style="background:#fff;color:#171717;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">ARCHIVE</button>
+        <span style="display:flex;gap:8px"><button type="button" onclick="ciOpenGoalFromAnywhere(${idx})" title="Open this goal's page" style="background:#1e90ff;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">OPEN GOAL PAGE</button>
+        <button type="button" onclick="ciArchiveGoal(${idx})" title="Move this goal to your Archive" style="background:#fff;color:#171717;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">ARCHIVE</button></span>
       </div>
       <textarea id="thought-goal-${idx}" maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:0;border-radius:7px;font-family:inherit;font-size:15px;line-height:1.5;background:#fff;color:#171717;resize:vertical;">${esc(goal.title || '')}</textarea>
       <div class="pb-goal-edit-actions">
@@ -1206,3 +1207,12 @@ function openRoadmapForSelected() {
   }
   openVaultBuildSheet(selectedVaultIdx);
 }
+
+/* Scott 21 Nov 2026: open a goal's Goal Page from any page (via the Citadel shell when present). */
+export function ciOpenGoalFromAnywhere(idx) {
+  const g = intentions[idx]; if (!g) return;
+  try { if (window.top && window.top !== window && typeof window.top.ciGoalAction === 'function') { window.top.ciGoalAction('open', g.title || '', intentions.map(x => x.title || '')); return; } } catch (_) {}
+  if (typeof window.navTo === 'function') window.navTo('myroadmap');
+  setTimeout(() => window.ciOpenGoalPage?.(idx), 400);
+}
+if (typeof window !== 'undefined') window.ciOpenGoalFromAnywhere = ciOpenGoalFromAnywhere;

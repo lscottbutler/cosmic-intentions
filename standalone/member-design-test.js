@@ -776,6 +776,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.tab===current;b.style.background=a?'#000':'#fff';b.style.color=a?'#fff':'#000';b.setAttribute('aria-current',a?'page':'false');});
  }
  // Open a page, then run fn(win) inside the page's app frame once it's ready (goal links from MY FOCUS).
+ window.ciGoalAction=(...a)=>goalAction(...a);   // frames (My Thoughts) open the Goal Page through this
  async function goalAction(act,title,goals){
   const idx=Math.max(0,goals.indexOf(title));
   // EDIT: the goal-wording editors live on My Thoughts (#thoughtGoalEditors).
@@ -841,6 +842,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     b.style.cssText='background:#000;color:#fff;border:0;border-radius:5px;padding:6px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
     b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();goalAction(a,title,goals);});wrap.append(b);});
    (sum.querySelector('.pb-goal-title')?.parentElement||sum).append(wrap);
+   const tt=sum.querySelector('.pb-goal-title');if(tt&&!tt.dataset.gpLink){tt.dataset.gpLink='1';tt.style.cursor='pointer';tt.style.textDecoration='underline';tt.style.textUnderlineOffset='3px';tt.title='Open this goal\'s page';tt.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();goalAction('open',title,goals);});}
   });
  }
  // Goals page (Scott 19 Nov 2026): ADD A GOAL + quick stats move up into the top card's right column.
@@ -917,7 +919,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
    // Scott 19 Nov 2026: every pinned goal links straight to EDIT / VISUALIZE / TO DO.
    const gBtn=(act,g,l,t)=>`<button type="button" data-goal-act="${act}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:5px 9px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
-   const goalRow=g=>`<div style="display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1 1 260px;min-width:0"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today">${chip(g)}</label><span style="display:flex;gap:6px">${gBtn('edit',g,'✎ EDIT','Edit this goal')}${gBtn('viz',g,'👁 VISUALIZE','Visualize this goal')}${gBtn('todo',g,'✓ TO DO','Open this goal’s to-dos')}</span></div>`;
+   const goalRow=g=>`<div style="display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap"><span style="display:flex;align-items:center;gap:10px;flex:1 1 260px;min-width:0"><input type="checkbox" data-focus-goal="${esc(g)}"${doneG.includes(g)?' checked':''} style="width:22px;height:22px;flex:0 0 22px;accent-color:#171717;cursor:pointer" title="Worked on this goal today"><button type="button" data-goal-act="open" data-goal="${esc(g)}" title="Open this goal's page" style="background:none;border:0;padding:0;text-align:left;cursor:pointer;color:#171717;font:inherit;text-decoration:underline;text-underline-offset:3px">${esc(g)}</button></span><span style="display:flex;gap:6px">${gBtn('edit',g,'✎ EDIT','Edit this goal')}${gBtn('viz',g,'👁 VISUALIZE','Visualize this goal')}${gBtn('todo',g,'✓ TO DO','Open this goal’s to-dos')}</span></div>`;
    const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 5 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN A GOAL TO FOCUS LIST</button>`;
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
