@@ -817,6 +817,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(current!=='goals')return;
   let w;try{w=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentWindow;}catch(_){return;}
   const d=w?.document;if(!d)return;
+  // Scott 21 Nov 2026: + ADD A GOAL at the far right of the MY GOALS heading.
+  const head=d.getElementById('pbIntentionList')?.parentElement?.previousElementSibling;
+  if(head&&head.tagName==='BUTTON'&&!head.querySelector('[data-add-goal-plus]')){
+   head.style.position='relative';
+   const plus=d.createElement('span');plus.setAttribute('data-add-goal-plus','');plus.setAttribute('role','button');plus.setAttribute('aria-label','Add a goal');plus.title='Add a goal';plus.textContent='+';
+   plus.style.cssText='position:absolute;right:14px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:4px solid #f2c200;background:#fff;color:#171717;display:grid;place-items:center;font:400 30px/1 Arial,sans-serif;cursor:pointer;box-sizing:border-box';
+   plus.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();d.querySelector('#page-setup .ci-goals-add-toggle')?.click();const row=d.getElementById('pbAddIntentionRow');if(row){let y=row.getBoundingClientRect().top,win=w;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-140});row.querySelector('input,textarea')?.focus({preventScroll:true});}});
+   head.append(plus);
+  }
   const cards=[...d.querySelectorAll('#page-setup details[id^="pb-goal-"]')];if(!cards.length)return;
   const goals=[];cards.forEach(c=>{const n=+c.id.replace('pb-goal-','');goals[n]=(c.querySelector('.pb-goal-title')?.textContent||'').trim();});
   cards.forEach(c=>{
