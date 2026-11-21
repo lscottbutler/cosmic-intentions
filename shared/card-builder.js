@@ -804,6 +804,7 @@ export function renderThoughtGoalEditors() {
         <button type="button" onclick="pbCancelGoalEdit(${idx})">CANCEL</button>
       </div>
     </div>`; }).join('') || '<p style="color:#fff;">No goals yet. Add a goal in My Goals to get started.</p>';
+  try { window.renderArchivePage?.(); } catch (_) {}   // ARCHIVE list sits right under these editors
 }
 
 export function renderPBIntentionList(resetOpen = false) {

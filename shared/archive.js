@@ -29,10 +29,9 @@ async function writeArchive(arc) {
 }
 
 function refreshGoalViews() {
-  try { renderThoughtGoalEditors(); } catch (_) {}
+  try { renderThoughtGoalEditors(); } catch (_) {}   // also refreshes the archive list
   try { renderPBIntentionList(); } catch (_) {}
   try { renderDashboard(); } catch (_) {}
-  try { renderArchivePage(); } catch (_) {}
 }
 
 export async function archiveGoal(idx) {
