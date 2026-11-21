@@ -685,7 +685,7 @@ function _todayChecklist() {
     </div>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
-    rows += `<div class="wgoal">
+    rows += `<div class="wgoal" data-goal-idx="${idx}">
 
       <details class="rm-drop" ${_openGoals.has(idx) ? 'open' : ''} ontoggle="wrapupGoalToggle(${idx},this.open)" style="margin:0;">
       <summary style="position:relative;z-index:2;background:${shade.bg};color:${shade.text};border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-family:var(--vault-mono);font-size:11pt;font-weight:400;letter-spacing:0.5px;">
