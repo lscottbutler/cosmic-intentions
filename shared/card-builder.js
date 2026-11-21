@@ -794,7 +794,10 @@ export function renderThoughtGoalEditors() {
     const color = GOAL_COLORS[((colorIndex % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
     return `
     <div id="pb-goal-edit-${idx}" data-goal-id="${esc(String(goal.id ?? idx))}">
-      <label for="thought-goal-${idx}" style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;margin-bottom:8px;">${goalBadge(letter, color.bg, color.text, 36)}<span>GOAL ${esc(letter)}</span></label>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+        <label for="thought-goal-${idx}" style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;">${goalBadge(letter, color.bg, color.text, 36)}<span>GOAL ${esc(letter)}</span></label>
+        <button type="button" onclick="ciArchiveGoal(${idx})" title="Move this goal to your Archive" style="background:#fff;color:#171717;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">ARCHIVE</button>
+      </div>
       <textarea id="thought-goal-${idx}" maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:0;border-radius:7px;font-family:inherit;font-size:15px;line-height:1.5;background:#fff;color:#171717;resize:vertical;">${esc(goal.title || '')}</textarea>
       <div class="pb-goal-edit-actions">
         <button type="button" onclick="pbSaveGoalEdit(${idx})">SAVE</button>

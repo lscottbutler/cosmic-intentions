@@ -1138,6 +1138,11 @@ window.setTheme=function(n){try{localStorage.setItem('ci_theme',n);}catch(e){}do
           <h2 id="thoughtGoalsTitle" style="color:#fff;font-size:15px;margin:0 0 8px;">MY GOALS</h2>
           <p style="color:#cfcfcf;font-size:12px;margin:0 0 14px;">Edit your goals here. Save each goal when you finish.</p>
           <div id="thoughtGoalEditors" style="display:grid;gap:18px;"></div>
+      <!-- Scott 21 Nov 2026: ARCHIVE — archived goals; restore or delete forever. -->
+      <div id="ciArchive" style="margin:22px 0 0;padding:18px 20px;background:#fff;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif">
+        <div style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em;margin:0 0 8px">ARCHIVE</div>
+        <div id="archiveList"></div>
+      </div>
         </section>
         <div style="background:#2E2E2E;padding:18px 20px;border-radius:14px;margin-bottom:14px;">
           <label for="pb-words" style="display:block;color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;margin-bottom:4px;">WORDS I LIVE BY</label>

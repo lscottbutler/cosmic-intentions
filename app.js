@@ -14,6 +14,7 @@ import { renderWrapup } from './shared/wrapup.js';
 import { renderHabits, renderRunThroughs, getHabitList, createHabitPeriodMenu } from './shared/habits.js';
 import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins, archiveTaskToWins } from './shared/wins.js';
+import { renderArchivePage } from './shared/archive.js';
 // Scott 13 Nov 2026: per-page "where you stand" recap inside the admin welcome box.
 import { renderPageRecap } from './shared/recap.js';
 // Scott 11 Nov 2026: inline onclick on the TO DO ARCHIVE button calls this.
@@ -514,6 +515,7 @@ export function showPage(id) {
     loadAIPrompts();
   }
   if (id === 'wins' && typeof window.renderWinsPage === 'function') window.renderWinsPage();
+  if (id === 'notes') renderArchivePage();   // Archive lives at the bottom of My Thoughts
   if (id === 'entcard' && typeof window.renderEntLibrary === 'function') window.renderEntLibrary();
   if (id === 'entrepreneurlibrary' && typeof window.renderEntrepreneurLibrary === 'function') window.renderEntrepreneurLibrary();
   if (id === 'cosmiclibrary' && typeof window.renderCosmicLibrary === 'function') window.renderCosmicLibrary();
