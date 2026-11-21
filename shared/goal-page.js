@@ -15,18 +15,26 @@ function page() { return document.getElementById('page-myroadmap'); }
 function applyFocus() {
   const idx = window.__ciGoalFocus;
   const pg = page(); if (!pg) return;
+  pg.querySelectorAll('[data-gp-hide]').forEach(el => el.removeAttribute('data-gp-hide'));
   let st = document.getElementById('ci-goal-focus-style');
   if (idx == null) { st?.remove(); pg.classList.remove('ci-goal-focus'); document.getElementById('ciGoalPageBar')?.remove(); return; }
-  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; document.head.appendChild(st); }
-  // Only this goal's Roadmap section shows; page intro, tabs and other goals are hidden.
-  st.textContent = `
-    #page-myroadmap.ci-goal-focus > *:not(#ciGoalPageBar):not(:has(#wrapupWidget)):not([data-todo-personal-e-slot]){display:none!important}
-    #page-myroadmap.ci-goal-focus #wrapupWidget > *:not(:has(.wgoal)){display:none!important}
-    #page-myroadmap.ci-goal-focus .wgoal:not([data-goal-idx="${idx}"]){display:none!important}
-    #page-myroadmap.ci-goal-focus .wgoal[data-goal-idx="${idx}"] > details > summary{display:none!important}`;
+  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}'; document.head.appendChild(st); }
   pg.classList.add('ci-goal-focus');
   renderBar(idx);
+  // Hide everything on the page except the bar, the admin message slot and this goal's own section.
+  const goal = pg.querySelector(`.wgoal[data-goal-idx="${idx}"]`);
+  if (!goal) return;
+  for (let node = goal; node && node !== pg; node = node.parentElement) {
+    if (node.tagName === 'DETAILS') node.open = true;
+    for (const sib of node.parentElement.children) {
+      if (sib === node || sib.id === 'ciGoalPageBar' || sib.matches('[data-todo-personal-e-slot],style,script')) continue;
+      sib.setAttribute('data-gp-hide', '');
+    }
+  }
+  const sum = goal.querySelector(':scope > details > summary'); if (sum) sum.setAttribute('data-gp-hide', '');
 }
+// The Roadmap re-renders itself after every add / tick; keep the focus applied.
+if (typeof window !== 'undefined') setInterval(() => { if (window.__ciGoalFocus != null) applyFocus(); }, 600);
 
 function renderBar(idx, editing = false) {
   const pg = page(); const it = intentions[idx]; if (!pg || !it) return;
