@@ -797,7 +797,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    if(act==='todo'&&pg==='page-goalworkspace'&&i>=16){const key2=title.slice(0,30).toLowerCase();let opened=false;
     const go=()=>{try{const x=exp();const id=x?.document?.querySelector('.page.active')?.id;
      if(id==='page-goalworkspace'&&typeof x.pbOpenGoalBranch==='function')x.pbOpenGoalBranch(idx,'action-plan');
-     else if(id==='page-myroadmap'&&!opened){const sm=[...x.document.querySelectorAll('#page-myroadmap details > summary')].find(z=>z.textContent.toLowerCase().includes(key2));if(sm){opened=true;sm.parentElement.open=true;outerScrollTwice(sm);}}}catch(_){}};
+     else if(id==='page-myroadmap'&&!opened){const sm=[...x.document.querySelectorAll('#page-myroadmap details > summary')].find(z=>z.textContent.toLowerCase().includes(key2));if(sm){opened=true;sm.parentElement.open=true;[0,700,1500,2600,4000,6000].forEach(t=>setTimeout(()=>outerScroll(sm),t));}}}catch(_){}};
     [0,1500,3500,5500,7500].forEach(t=>setTimeout(go,t));const n=document.createElement('div');n.setAttribute('role','status');n.textContent='No to-dos yet for this goal, so here is its Roadmap. Add the first step there and it will show on TO DO.';n.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:9999;max-width:520px;background:#171717;color:#fff;padding:14px 18px;border-radius:10px;font:600 15px/1.4 Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3)';document.body.append(n);setTimeout(()=>n.remove(),6000);return;}
    await new Promise(r=>setTimeout(r,250));
   }
