@@ -20,7 +20,9 @@ function applyFocus() {
   if (idx == null) { st?.remove(); pg.classList.remove('ci-goal-focus'); document.getElementById('ciGoalPageBar')?.remove(); return; }
   if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}'; document.head.appendChild(st); }
   pg.classList.add('ci-goal-focus');
-  renderBar(idx);
+  const bar0 = document.getElementById('ciGoalPageBar');
+  if (!bar0 || bar0.dataset.idx !== String(idx)) renderBar(idx);
+  else { const slot = pg.querySelector(':scope > [data-todo-personal-e-slot]'); if (slot ? slot.nextElementSibling !== bar0 : pg.firstElementChild !== bar0) { if (slot) slot.after(bar0); else pg.prepend(bar0); } }
   // Hide everything on the page except the bar, the admin message slot and this goal's own section.
   const goal = pg.querySelector(`.wgoal[data-goal-idx="${idx}"]`);
   if (!goal) return;
@@ -40,6 +42,7 @@ function renderBar(idx, editing = false) {
   const pg = page(); const it = intentions[idx]; if (!pg || !it) return;
   let bar = document.getElementById('ciGoalPageBar');
   if (!bar) { bar = document.createElement('section'); bar.id = 'ciGoalPageBar'; }
+  bar.dataset.idx = String(idx);
   const slot = pg.querySelector(':scope > [data-todo-personal-e-slot]');
   if (slot) { if (slot.nextElementSibling !== bar) slot.after(bar); } else if (pg.firstElementChild !== bar) pg.prepend(bar);
   const letter = goalLetter(it, idx);
