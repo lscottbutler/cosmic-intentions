@@ -1,4 +1,4 @@
-import { esc, intentions, goalLetter, openMasterDestination, sb } from '../app.js';
+import { esc, intentions, goalLetter, openMasterDestination, sb, saveIntentions } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
 import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
@@ -222,6 +222,34 @@ export function setupTodoDisclosure(host) {
     sBtn.type = 'button'; sBtn.className = 'todo-goal-s'; sBtn.textContent = 'S';
     sBtn.style.cssText = 'position:absolute;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font:800 16px/1 Arial,sans-serif;cursor:pointer';
     group.append(goalBox, pBtn, sBtn, button);
+    // Scott 22 Nov 2026: drag handle (left of the goal image) — press and drag to move the goal up/down.
+    const grip = document.createElement('button');
+    grip.type = 'button'; grip.className = 'todo-goal-grip'; grip.title = 'Drag to move this goal'; grip.setAttribute('aria-label', 'Drag to move this goal');
+    grip.innerHTML = '<svg width="16" height="22" viewBox="0 0 16 22" fill="#fff" aria-hidden="true"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="4" cy="11" r="2"/><circle cx="12" cy="11" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="12" cy="18" r="2"/></svg>';
+    grip.style.cssText = 'flex:0 0 28px;width:28px;height:44px;margin-right:8px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;display:inline-grid;place-items:center';
+    title.style.setProperty('display', 'flex', 'important'); title.style.setProperty('align-items', 'center', 'important');
+    title.insertBefore(grip, title.firstChild);
+    grip.addEventListener('pointerdown', ev => {
+      ev.preventDefault(); grip.setPointerCapture(ev.pointerId); grip.style.cursor = 'grabbing';
+      const startY = ev.clientY; group.style.zIndex = '5'; group.style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; group.style.transition = 'none';
+      const move = e => { group.style.transform = `translateY(${e.clientY - startY}px)`; };
+      const up = e => {
+        grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up);
+        group.style.transform = ''; group.style.zIndex = ''; group.style.boxShadow = ''; grip.style.cursor = 'grab';
+        const groups = [...host.querySelectorAll(':scope > section[data-workspace-goal]')];
+        const others = groups.filter(g => g !== group);
+        let at = others.findIndex(g => { const r = g.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
+        if (at < 0) at = others.length;
+        const order = others.map(g => g.dataset.workspaceGoal); order.splice(at, 0, group.dataset.workspaceGoal);
+        if (order.join() === groups.map(g => g.dataset.workspaceGoal).join()) return;
+        // Reorder the shown goals among themselves; goals not on this list keep their slots.
+        const shownIdx = intentions.map((g, i) => order.includes(String(g.id)) ? i : -1).filter(i => i >= 0);
+        const byId = Object.fromEntries(intentions.map(g => [String(g.id), g]));
+        shownIdx.forEach((slot, k) => { intentions[slot] = byId[order[k]]; });
+        saveIntentions(); renderGoalWorkspace();
+      };
+      grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up);
+    });
     // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar (no coloured bars).
     const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
     const proto = null;
@@ -236,6 +264,7 @@ export function setupTodoDisclosure(host) {
         title.style.setProperty('display', 'flex', 'important');
         title.style.setProperty('align-items', 'center', 'important');
         title.insertBefore(thumb, title.firstChild);
+        title.insertBefore(grip, title.firstChild);
       }
     }
     // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.

@@ -1584,10 +1584,11 @@ async function syncFromSupabase() {
 ───────────────────────────────────────────────────────── */
 export async function syncIntentionsToSupabase() {
   if (!currentUser || !intentions.length) return;
-  const rows = intentions.map(intention => {
+  const rows = intentions.map((intention, i) => {
     const storedImage = intention.imageStorageRef || intention.imageUrl;
     return ({
     id:          intention.id,
+    position:    i,
     user_id:     currentUser.id,
     title:       intention.title       || '',
     words:       intention.words       || {},
@@ -1663,7 +1664,8 @@ async function syncIntentionsFromSupabase() {
     const { data, error } = await sb
       .from('intentions')
       .select('*')
-      .eq('user_id', currentUser.id);
+      .eq('user_id', currentUser.id)
+      .order('position', { ascending: true });
     if (error || !data) return;
     if (Array.isArray(data)) {
       // Preserve client-only vision-board fields not stored in Supabase
