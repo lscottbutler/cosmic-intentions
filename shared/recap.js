@@ -262,7 +262,8 @@ export async function getFocusPins() {
     goals = (data || []).map(r => r.title).filter(Boolean);
   }
   const { ENT_CARDS } = await import('./ent-library-content.js');
-  return { signedIn: !!currentUser, pins, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
+  const goalIds = Object.fromEntries((intentions || []).map(i => [i.title, String(i.id)]));
+  return { signedIn: !!currentUser, pins, goalIds, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
 }
 export async function saveFocusPins(p) {
   if (!currentUser) throw new Error('Not signed in');

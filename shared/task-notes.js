@@ -25,7 +25,7 @@ export function taskLinkedEntriesHTML(context, records = readNotes()) {
   const linked = taskLinkedRecords(context, records);
   return [{ label: 'NOTE', color: '#2e7d32', entries: linked.filter(n => n.cat !== 'note'), empty: 'No note yet.' },
     { label: 'JOURNAL', color: '#1e90ff', entries: linked.filter(n => n.cat === 'note'), empty: 'No journal entry yet.' }]
-    .map(group => `<section class="goal-action-entry" data-linked-kind="${group.label.toLowerCase()}" hidden>
+    .map(group => `<section class="goal-action-entry" data-linked-kind="${group.label.toLowerCase()}"${group.entries.length ? '' : ' hidden'}>
       <h4 style="display:inline-block;padding:6px 12px;border:1px solid ${group.color};border-radius:5px;background:${group.color};color:#fff">${group.label}</h4>
       ${group.entries.length ? group.entries.map(n => `<p>${esc(n.text)}</p>`).join('') : `<p>${group.empty}</p>`}
     </section>`).join('');
@@ -63,16 +63,16 @@ export function taskNoteButton(context) {
 }
 
 export function editorHTML(context, note) {
-  return `<div class="task-note-editor" data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
+  return `<div class="task-note-editor"${note?.id ? ` data-note-id="${esc(note.id)}"` : ''} data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
     <label class="task-note-label">Your note<textarea rows="3" maxlength="10000" placeholder="Write a note about this task…" oninput="taskNoteChanged(this)" onchange="taskNoteSave(this)">${esc(note?.text || '')}</textarea></label>
-    <label class="task-note-goal-label">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
+    <label class="task-note-goal-label" style="display:none">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
     <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="button" onclick="taskNoteSave(this)">Save note</button></div>
   </div>`;
 }
 
 export function taskNotePanel(context) {
   if (!context) return '';
-  return `<div class="task-note-panel" aria-hidden="true" inert><div class="task-note-panel-inner">${editorHTML(context, savedTaskNote(context))}</div></div>`;
+  return `<div class="task-note-panel" aria-hidden="true" inert><div class="task-note-panel-inner">${editorHTML(context, null)}</div></div>`;
 }
 
 export function taskNoteToggle(button) {
@@ -81,12 +81,9 @@ export function taskNoteToggle(button) {
   const editor = panel.querySelector('.task-note-editor');
   const open = !panel.classList.contains('is-open');
   if (!open && editor.dataset.dirty === 'true' && !taskNoteSave(editor)) return;
-  if (open && editor.dataset.dirty !== 'true') {
-    const context = JSON.parse(editor.dataset.taskContext);
-    const note = savedTaskNote(context);
-    editor.querySelector('textarea').value = note?.text || '';
-    editor.querySelector('.task-note-goal').innerHTML = goalOptions(context, note);
-    editor.querySelector('.task-note-status').textContent = note ? 'Saved' : '';
+  if (open && editor.dataset.dirty !== 'true' && !editor.dataset.noteId) {
+    editor.querySelector('textarea').value = '';
+    editor.querySelector('.task-note-status').textContent = '';
   }
   panel.classList.toggle('is-open', open);
   panel.inert = !open;
@@ -110,28 +107,33 @@ export function taskNoteSave(source) {
   const goal = editor.querySelector('.task-note-goal').value;
   const key = taskNoteKey(context);
   const notes = readNotes();
-  const existing = notes.find(n => n && n.cat === 'task' && n.taskKey === key);
+  // Scott 22 Nov 2026: NOTE on a to-do always adds a NEW note; only an editor bound to a note id edits it.
+  const existing = editor.dataset.noteId ? notes.find(n => n && n.id === editor.dataset.noteId) : null;
   if (!text) {
-    status.textContent = existing ? 'Enter a note before saving.' : '';
-    if (!existing) delete editor.dataset.dirty;
-    return !existing;
+    if (!existing) { delete editor.dataset.dirty; return true; }
+    status.textContent = 'Enter a note before saving.';
+    return false;
   }
   const now = Date.now();
+  const isJournal = editor.dataset.kind === 'journal' && !existing;
   const goalTitle = linkedGoalTitle(context, { goal,
     goalTitle: existing && linkedGoalId(context, existing) === goal ? existing.goalTitle : '' });
   if (existing) Object.assign(existing, { text, task: context, goal, goalTitle, updatedAt: now });
-  else notes.push({ id: 'task-' + crypto.randomUUID(), cat: 'task', taskKey: key,
-    task: context, text, goal, goalTitle, ts: now, updatedAt: now });
+  else notes.push({ id: (isJournal ? 'note-' : 'task-') + crypto.randomUUID(), cat: isJournal ? 'note' : 'task', taskKey: key,
+    task: context, text, goal: goal || context.goalId, goalTitle, ts: now, updatedAt: now, ...(isJournal ? { day: new Date().toLocaleDateString('en-CA') } : {}) });
   if (!_saveNotes(notes)) {
     status.textContent = 'Could not save. Keep this box open and try again.';
     return false;
   }
   delete editor.dataset.dirty;
   status.textContent = 'Saved';
+  // Scott 22 Nov 2026: show saved notes/journal on the to-do card right away.
+  document.querySelectorAll('.goal-action-records').forEach(h => { try { const c = JSON.parse(h.dataset.taskContext); if (taskNoteKey(c) === key) h.innerHTML = taskLinkedEntriesHTML(c); } catch (_) {} });
   // The same task appears in My Actions, Both, and the all-tasks list. Refresh
   // its other editors without overwriting a note that is still being typed.
-  document.querySelectorAll('.task-note-editor').forEach(other => {
-    if (other === editor || other.dataset.taskKey !== key || other.dataset.dirty === 'true') return;
+  if (!existing) editor.querySelector('textarea').value = '';
+  document.querySelectorAll('.task-note-editor[data-note-id]').forEach(other => {
+    if (other === editor || other.dataset.noteId !== editor.dataset.noteId || other.dataset.taskKey !== key || other.dataset.dirty === 'true') return;
     other.querySelector('textarea').value = text;
     other.querySelector('.task-note-goal').innerHTML = goalOptions(context, { goal, goalTitle });
     other.querySelector('.task-note-status').textContent = 'Saved';
@@ -170,3 +172,15 @@ if (typeof window !== 'undefined') {
     if (event.key === 'ci_notes' && !document.querySelector('#taskNotesList [data-dirty="true"]')) renderTaskNotesList();
   });
 }
+
+// Scott 22 Nov 2026: + NOTE / + JOURNAL on a to-do card open the writing box in that mode.
+if (typeof window !== 'undefined') window.taskEntryOpen = (btn, kind) => {
+  const card = btn.closest('.wcard'); const panel = card?.querySelector('.task-note-panel'); if (!panel) return;
+  const editor = panel.querySelector('.task-note-editor');
+  editor.dataset.kind = kind;
+  const lbl = editor.querySelector('.task-note-label'); if (lbl?.firstChild) lbl.firstChild.textContent = kind === 'journal' ? 'Journal entry' : 'Your note';
+  const ta = editor.querySelector('textarea'); ta.placeholder = kind === 'journal' ? 'Write a journal entry about this task…' : 'Write a note about this task…';
+  const save = editor.querySelector('.task-note-footer button'); if (save) save.textContent = kind === 'journal' ? 'Save journal entry' : 'Save note';
+  if (!panel.classList.contains('is-open')) { panel.classList.add('is-open'); panel.inert = false; panel.setAttribute('aria-hidden', 'false'); }
+  ta.value = ''; ta.focus({ preventScroll: true });
+};
