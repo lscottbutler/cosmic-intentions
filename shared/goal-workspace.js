@@ -259,7 +259,8 @@ export function setupTodoDisclosure(host) {
       } else { goalBox.style.left = 'auto'; goalBox.style.right = '158px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
     };
     // Scott 10 Nov 2026: default to Priority mode on first render for every goal.
-    if (!todoGoalPriorityMode.has(key)) todoGoalPriorityMode.set(key, 'P');
+    // Scott 22 Nov 2026: if a goal has no priority tasks, open on S so its to-dos show without tapping.
+    if (!todoGoalPriorityMode.has(key)) todoGoalPriorityMode.set(key, cards.some(c => c.dataset.taskPriority === '1') ? 'P' : 'S');
     function paintPriorityButtons() {
       const mode = todoGoalPriorityMode.get(key);
       const on = mode === 'P' ? pBtn : sBtn;
