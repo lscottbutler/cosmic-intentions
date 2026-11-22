@@ -25,7 +25,7 @@ export function taskLinkedEntriesHTML(context, records = readNotes()) {
   const linked = taskLinkedRecords(context, records);
   return [{ label: 'NOTE', color: '#2e7d32', entries: linked.filter(n => n.cat !== 'note'), empty: 'No note yet.' },
     { label: 'JOURNAL', color: '#1e90ff', entries: linked.filter(n => n.cat === 'note'), empty: 'No journal entry yet.' }]
-    .map(group => `<section class="goal-action-entry" data-linked-kind="${group.label.toLowerCase()}" hidden>
+    .map(group => `<section class="goal-action-entry" data-linked-kind="${group.label.toLowerCase()}"${group.entries.length ? '' : ' hidden'}>
       <h4 style="display:inline-block;padding:6px 12px;border:1px solid ${group.color};border-radius:5px;background:${group.color};color:#fff">${group.label}</h4>
       ${group.entries.length ? group.entries.map(n => `<p>${esc(n.text)}</p>`).join('') : `<p>${group.empty}</p>`}
     </section>`).join('');
@@ -128,6 +128,8 @@ export function taskNoteSave(source) {
   }
   delete editor.dataset.dirty;
   status.textContent = 'Saved';
+  // Scott 22 Nov 2026: show saved notes/journal on the to-do card right away.
+  document.querySelectorAll('.goal-action-records').forEach(h => { try { const c = JSON.parse(h.dataset.taskContext); if (taskNoteKey(c) === key) h.innerHTML = taskLinkedEntriesHTML(c); } catch (_) {} });
   // The same task appears in My Actions, Both, and the all-tasks list. Refresh
   // its other editors without overwriting a note that is still being typed.
   document.querySelectorAll('.task-note-editor').forEach(other => {
