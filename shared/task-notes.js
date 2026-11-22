@@ -63,7 +63,7 @@ export function taskNoteButton(context) {
 }
 
 export function editorHTML(context, note) {
-  return `<div class="task-note-editor" data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
+  return `<div class="task-note-editor"${note?.id ? ` data-note-id="${esc(note.id)}"` : ''} data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
     <label class="task-note-label">Your note<textarea rows="3" maxlength="10000" placeholder="Write a note about this task…" oninput="taskNoteChanged(this)" onchange="taskNoteSave(this)">${esc(note?.text || '')}</textarea></label>
     <label class="task-note-goal-label" style="display:none">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
     <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="button" onclick="taskNoteSave(this)">Save note</button></div>
@@ -72,7 +72,7 @@ export function editorHTML(context, note) {
 
 export function taskNotePanel(context) {
   if (!context) return '';
-  return `<div class="task-note-panel" aria-hidden="true" inert><div class="task-note-panel-inner">${editorHTML(context, savedTaskNote(context))}</div></div>`;
+  return `<div class="task-note-panel" aria-hidden="true" inert><div class="task-note-panel-inner">${editorHTML(context, null)}</div></div>`;
 }
 
 export function taskNoteToggle(button) {
@@ -81,12 +81,9 @@ export function taskNoteToggle(button) {
   const editor = panel.querySelector('.task-note-editor');
   const open = !panel.classList.contains('is-open');
   if (!open && editor.dataset.dirty === 'true' && !taskNoteSave(editor)) return;
-  if (open && editor.dataset.dirty !== 'true') {
-    const context = JSON.parse(editor.dataset.taskContext);
-    const note = savedTaskNote(context);
-    editor.querySelector('textarea').value = note?.text || '';
-    editor.querySelector('.task-note-goal').innerHTML = goalOptions(context, note);
-    editor.querySelector('.task-note-status').textContent = note ? 'Saved' : '';
+  if (open && editor.dataset.dirty !== 'true' && !editor.dataset.noteId) {
+    editor.querySelector('textarea').value = '';
+    editor.querySelector('.task-note-status').textContent = '';
   }
   panel.classList.toggle('is-open', open);
   panel.inert = !open;
@@ -110,11 +107,12 @@ export function taskNoteSave(source) {
   const goal = editor.querySelector('.task-note-goal').value;
   const key = taskNoteKey(context);
   const notes = readNotes();
-  const existing = notes.find(n => n && n.cat === 'task' && n.taskKey === key);
+  // Scott 22 Nov 2026: NOTE on a to-do always adds a NEW note; only an editor bound to a note id edits it.
+  const existing = editor.dataset.noteId ? notes.find(n => n && n.id === editor.dataset.noteId) : null;
   if (!text) {
-    status.textContent = existing ? 'Enter a note before saving.' : '';
-    if (!existing) delete editor.dataset.dirty;
-    return !existing;
+    if (!existing) { delete editor.dataset.dirty; return true; }
+    status.textContent = 'Enter a note before saving.';
+    return false;
   }
   const now = Date.now();
   const goalTitle = linkedGoalTitle(context, { goal,
@@ -132,8 +130,9 @@ export function taskNoteSave(source) {
   document.querySelectorAll('.goal-action-records').forEach(h => { try { const c = JSON.parse(h.dataset.taskContext); if (taskNoteKey(c) === key) h.innerHTML = taskLinkedEntriesHTML(c); } catch (_) {} });
   // The same task appears in My Actions, Both, and the all-tasks list. Refresh
   // its other editors without overwriting a note that is still being typed.
-  document.querySelectorAll('.task-note-editor').forEach(other => {
-    if (other === editor || other.dataset.taskKey !== key || other.dataset.dirty === 'true') return;
+  if (!existing) editor.querySelector('textarea').value = '';
+  document.querySelectorAll('.task-note-editor[data-note-id]').forEach(other => {
+    if (other === editor || other.dataset.noteId !== editor.dataset.noteId || other.dataset.taskKey !== key || other.dataset.dirty === 'true') return;
     other.querySelector('textarea').value = text;
     other.querySelector('.task-note-goal').innerHTML = goalOptions(context, { goal, goalTitle });
     other.querySelector('.task-note-status').textContent = 'Saved';
