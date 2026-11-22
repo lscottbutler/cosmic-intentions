@@ -793,8 +793,9 @@ export function masterPriorityTaskMarkup(priority = true) {
   return intentions.map((goal, idx) => {
     _ensureGoalLetters();
     if (_ensureCodes(goal)) saveIntentions();
-    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, true, filter)
-      + _roadmapCards(goal, idx, true, filter).join('');
+    // Scott 22 Nov 2026: TO DO page uses the same card format as the Goal Page (P, pen, code box); notes/journal show under each card.
+    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, false, filter)
+      + _roadmapCards(goal, idx, false, filter).join('');
     const shade = GREY_SHADES[idx % GREY_SHADES.length];
     const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
     const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];
