@@ -65,7 +65,7 @@ export function taskNoteButton(context) {
 export function editorHTML(context, note) {
   return `<div class="task-note-editor" data-task-context="${esc(JSON.stringify(context))}" data-task-key="${esc(taskNoteKey(context))}">
     <label class="task-note-label">Your note<textarea rows="3" maxlength="10000" placeholder="Write a note about this task…" oninput="taskNoteChanged(this)" onchange="taskNoteSave(this)">${esc(note?.text || '')}</textarea></label>
-    <label class="task-note-goal-label">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
+    <label class="task-note-goal-label" style="display:none">Linked goal<select class="task-note-goal" title="Associate this note with a goal" onchange="taskNoteChanged(this);taskNoteSave(this)">${goalOptions(context, note)}</select></label>
     <div class="task-note-footer"><span class="task-note-status" role="status">${note ? 'Saved' : ''}</span><button type="button" onclick="taskNoteSave(this)">Save note</button></div>
   </div>`;
 }
