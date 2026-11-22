@@ -102,7 +102,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
     ${taskNotePanel(noteContext)}
-    ${showLinkedEntries && noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
+    ${noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
   </div>`;
 }
 

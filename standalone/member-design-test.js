@@ -780,6 +780,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  async function goalAction(act,title,goals){
   const idx=Math.max(0,goals.indexOf(title));
   // EDIT: the goal-wording editors live on My Thoughts (#thoughtGoalEditors).
+  // Scott 22 Nov 2026: a goal's TO DO opens its Goal Page (to-dos with notes + journal shown).
+  if(act==='todo')act='open';
   const feature={edit:'thoughts',viz:'visualization',todo:'goal-workspace',open:'action-plan'}[act];if(!feature)return;
   // Scroll the outer page to an element that sits inside nested frames.
   const outerScroll=el=>{try{let y=el.getBoundingClientRect().top,win=el.ownerDocument.defaultView;while(win&&win!==window){const fe=win.frameElement;if(!fe)break;y+=fe.getBoundingClientRect().top;win=fe.ownerDocument.defaultView;}window.scrollBy({top:y-120,behavior:'auto'});}catch(_){}};
