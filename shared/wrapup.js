@@ -102,6 +102,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
     ${taskNotePanel(noteContext)}
+    ${noteContext ? `<div class="task-add-entry" style="display:flex;justify-content:flex-end;gap:6px;margin:8px 0 0">${[['note','+ NOTE','#000'],['journal','+ JOURNAL','#4e4e4e']].map(([k,l,c]) => `<button type="button" onclick="taskEntryOpen(this,'${k}')" style="background:${c};color:#fff;border:0;border-radius:5px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer">${l}</button>`).join('')}</div>` : ''}
     ${noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
   </div>`;
 }

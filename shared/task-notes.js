@@ -115,11 +115,12 @@ export function taskNoteSave(source) {
     return false;
   }
   const now = Date.now();
+  const isJournal = editor.dataset.kind === 'journal' && !existing;
   const goalTitle = linkedGoalTitle(context, { goal,
     goalTitle: existing && linkedGoalId(context, existing) === goal ? existing.goalTitle : '' });
   if (existing) Object.assign(existing, { text, task: context, goal, goalTitle, updatedAt: now });
-  else notes.push({ id: 'task-' + crypto.randomUUID(), cat: 'task', taskKey: key,
-    task: context, text, goal, goalTitle, ts: now, updatedAt: now });
+  else notes.push({ id: (isJournal ? 'note-' : 'task-') + crypto.randomUUID(), cat: isJournal ? 'note' : 'task', taskKey: key,
+    task: context, text, goal: goal || context.goalId, goalTitle, ts: now, updatedAt: now, ...(isJournal ? { day: new Date().toLocaleDateString('en-CA') } : {}) });
   if (!_saveNotes(notes)) {
     status.textContent = 'Could not save. Keep this box open and try again.';
     return false;
@@ -171,3 +172,15 @@ if (typeof window !== 'undefined') {
     if (event.key === 'ci_notes' && !document.querySelector('#taskNotesList [data-dirty="true"]')) renderTaskNotesList();
   });
 }
+
+// Scott 22 Nov 2026: + NOTE / + JOURNAL on a to-do card open the writing box in that mode.
+if (typeof window !== 'undefined') window.taskEntryOpen = (btn, kind) => {
+  const card = btn.closest('.wcard'); const panel = card?.querySelector('.task-note-panel'); if (!panel) return;
+  const editor = panel.querySelector('.task-note-editor');
+  editor.dataset.kind = kind;
+  const lbl = editor.querySelector('.task-note-label'); if (lbl?.firstChild) lbl.firstChild.textContent = kind === 'journal' ? 'Journal entry' : 'Your note';
+  const ta = editor.querySelector('textarea'); ta.placeholder = kind === 'journal' ? 'Write a journal entry about this task…' : 'Write a note about this task…';
+  const save = editor.querySelector('.task-note-footer button'); if (save) save.textContent = kind === 'journal' ? 'Save journal entry' : 'Save note';
+  if (!panel.classList.contains('is-open')) { panel.classList.add('is-open'); panel.inert = false; panel.setAttribute('aria-hidden', 'false'); }
+  ta.value = ''; ta.focus({ preventScroll: true });
+};
