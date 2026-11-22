@@ -8,6 +8,33 @@
    (per member, protected by the same row-level security as personal notes). */
 import { sb, currentUser, intentions, saveIntentions, toast, esc, renderDashboard } from '../app.js';
 import { renderThoughtGoalEditors, renderPBIntentionList } from './card-builder.js';
+import { readNotes, _saveNotes } from './notes.js';
+
+/* Scott 22 Nov 2026: a goal's notes and journal entries travel with it — archived together,
+   restored together, deleted together. (Its to-dos live inside the goal itself.) */
+function noteGoalId(n) {
+  if (!n) return '';
+  if (Object.hasOwn(n, 'goal')) return String(n.goal || '');
+  if (n.task && n.task.goalId != null) return String(n.task.goalId);
+  try { const k = JSON.parse(n.taskKey || '[]'); return k[0] != null ? String(k[0]) : ''; } catch (_) { return ''; }
+}
+function takeNotesFor(goalId) {
+  if (!goalId) return [];
+  const all = readNotes(), keep = [], take = [];
+  all.forEach(n => (noteGoalId(n) === String(goalId) ? take : keep).push(n));
+  if (take.length) _saveNotes(keep);
+  return take;
+}
+// Goals archived before this change: pull their leftover notes into the archive too.
+let _swept = false;
+async function sweepArchivedGoalNotes() {
+  if (_swept || !currentUser) return; _swept = true;
+  try {
+    const arc = await readArchive(); let moved = 0;
+    arc.goals.forEach(g => { const id = g.row?.id || g.local?.id; const t = takeNotesFor(id); if (t.length) { g.notes = (g.notes || []).concat(t); moved += t.length; } });
+    if (moved) await writeArchive(arc);
+  } catch (e) { _swept = false; console.error('[archive sweep]', e); }
+}
 
 const PAGE = 'archive';
 
@@ -47,7 +74,8 @@ export async function archiveGoal(idx) {
       row = data;
     }
     const arc = await readArchive();
-    arc.goals.unshift({ archivedAt: new Date().toISOString(), title: goal.title || '', row, local: row ? null : goal });
+    const notes = takeNotesFor(goal.id);
+    arc.goals.unshift({ archivedAt: new Date().toISOString(), title: goal.title || '', row, local: row ? null : goal, notes });
     await writeArchive(arc);
     // 2. Only now take it off the live list.
     intentions.splice(idx, 1);
@@ -69,6 +97,7 @@ export async function renderArchivePage() {
   if (!el) return;
   if (!currentUser) { el.innerHTML = '<p>Sign in to see your archive.</p>'; return; }
   el.innerHTML = '<p style="color:#777">Loading…</p>';
+  await sweepArchivedGoalNotes();
   let arc;
   try { arc = await readArchive(); } catch (_) { el.innerHTML = '<p>Could not load your archive. Please refresh.</p>'; return; }
   if (!arc.goals.length) { el.innerHTML = '<p style="color:#555">Nothing archived yet. Tap ARCHIVE on a goal above to move it here.</p>'; return; }
@@ -76,7 +105,7 @@ export async function renderArchivePage() {
   el.innerHTML = '<h3 style="margin:0 0 10px;font:800 14px/1.3 Arial,sans-serif;letter-spacing:.1em">ARCHIVED GOALS</h3>' + arc.goals.map((g, i) => `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid #e3e3e3">
       <div style="flex:1 1 280px;min-width:0"><div style="font-weight:700">${esc(g.title || '(untitled goal)')}</div>
-        <div style="font-size:12px;color:#777">Archived ${esc(new Date(g.archivedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }))}</div></div>
+        <div style="font-size:12px;color:#777">${g.notes?.length ? g.notes.length + ' note' + (g.notes.length === 1 ? '' : 's') + '/journal entr' + (g.notes.length === 1 ? 'y' : 'ies') + ' archived with it · ' : ''}Archived ${esc(new Date(g.archivedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }))}</div></div>
       <span style="display:flex;gap:8px">
         <button type="button" onclick="ciRestoreArchivedGoal(${i})" style="${btn};background:#000;color:#fff">RESTORE</button>
         <button type="button" data-del="${i}" onclick="ciDeleteArchivedGoal(${i}, this)" style="${btn};background:#8b1a1a;color:#fff">DELETE FOREVER</button>
@@ -96,6 +125,7 @@ export async function restoreArchivedGoal(i) {
       intentions.push(g.local);
       await saveIntentions();
     }
+    if (Array.isArray(g.notes) && g.notes.length) { const ids = new Set(readNotes().map(n => n.id)); _saveNotes(readNotes().concat(g.notes.filter(n => !ids.has(n.id)))); }
     arc.goals.splice(i, 1);
     await writeArchive(arc);
     toast('Goal restored.', 'success');
@@ -131,4 +161,6 @@ if (typeof window !== 'undefined') {
   window.ciRestoreArchivedGoal = restoreArchivedGoal;
   window.ciDeleteArchivedGoal = deleteArchivedGoal;
   window.renderArchivePage = renderArchivePage;
+  // Run the leftover-notes sweep once per visit, on any page, after sign-in has had a moment.
+  let tries = 0; const t = setInterval(() => { tries++; if (_swept || tries > 40) return clearInterval(t); sweepArchivedGoalNotes(); }, 3000);
 }
