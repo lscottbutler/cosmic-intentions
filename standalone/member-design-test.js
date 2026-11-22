@@ -866,6 +866,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const dl=col.querySelector('.ci-goals-quick-stats');
   if(dl){const html=[...dl.querySelectorAll('dt')].map(dt=>`<div>${dt.textContent}</div><div style="font:700 15px/1.3 Arial,sans-serif;color:#171717;margin:0 0 6px">${dt.nextElementSibling?.textContent||''}</div>`).join('');const box=side.querySelector('[data-goal-stats]');if(box.innerHTML!==html)box.innerHTML=html;}
  }
+ // Scott 22 Nov 2026: personal note (Personal E) boxes are hidden on every page. Notes stay saved in the
+ // member's account (player_personal_notes); delete this function to bring the boxes back.
+ function hidePersonalE(){
+  const docs=[document];const walk=(d,n)=>{if(n>3)return;d.querySelectorAll('iframe').forEach(f=>{try{const x=f.contentDocument;if(x){docs.push(x);walk(x,n+1);}}catch(_){}});};walk(document,0);
+  docs.forEach(d=>{if(d.getElementById('ci-hide-personal-e'))return;const st=d.createElement('style');st.id='ci-hide-personal-e';st.textContent='.ci-player-personal-e-box{display:none!important}';(d.head||d.documentElement).appendChild(st);});
+ }
  function ensureFocus(){
   let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
   if(!rd?.body)return;
@@ -927,7 +933,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div>${pinBody}</div>`,pinBtn)}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('NEXT ACTIONS',acts,btn('goal-workspace','OPEN TO DO'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();},1000);
+ setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
