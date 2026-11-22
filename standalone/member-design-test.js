@@ -945,7 +945,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    // Scott 22 Nov 2026: each pinned goal shows its notes and journal entries underneath.
    let allN=[];try{allN=JSON.parse(localStorage.getItem('ci_notes')||'[]');}catch(_){}
    const nk=t=>String(t||'').trim().toLowerCase();
-   const entriesFor=g=>{const id=(pf.goalIds||{})[g];const m=allN.filter(n=>n&&typeof n.text==='string'&&n.text.trim()&&((id&&(String(n.goal)===id||String(n.task?.goalId)===id))||nk(n.goalTitle||n.task?.goalTitle)===nk(g))).sort((a,b)=>(b.updatedAt||b.ts||0)-(a.updatedAt||a.ts||0));
+   const entriesFor=g=>{const id=(pf.goalIds||{})[g];const m=allN.filter(n=>n&&typeof n.text==='string'&&n.text.trim()&&((id&&(String(n.goal)===id||String(n.task?.goalId)===id))||nk(n.goalTitle||n.task?.goalTitle)===nk(g))).sort((a,b)=>((a.cat==='note')-(b.cat==='note'))||((b.updatedAt||b.ts||0)-(a.updatedAt||a.ts||0)));
     if(!m.length)return '';
     const tag=n=>n.cat==='note'?['JOURNAL','#1e90ff']:['NOTE','#2e7d32'];
     return `<div style="margin:8px 0 0;display:flex;flex-direction:column;gap:6px">${m.slice(0,6).map(n=>{const[l,c]=tag(n);return `<div style="font-size:14px;line-height:1.45;color:#333"><span style="display:inline-block;background:${c};color:#fff;border-radius:4px;padding:2px 6px;font:700 10px/1.3 Arial,sans-serif;letter-spacing:.06em;margin-right:6px;vertical-align:1px">${l}</span>${n.task?.taskText?`<span style="color:#888">${esc(n.task.taskText)}: </span>`:''}${esc(n.text.length>220?n.text.slice(0,220)+'…':n.text)}</div>`;}).join('')}${m.length>6?`<div style="color:#777;font-size:13px">${m.length-6} more</div>`:''}</div>`;};
