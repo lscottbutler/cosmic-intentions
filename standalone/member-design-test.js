@@ -525,7 +525,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  delete menuLabels.gratitude;
  // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
- for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
+ // Scott 23 Nov 2026: back in the ☰ menu (the Big Five '5' button was replaced by ← CITADEL).
  // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
  delete menuLabels['ent-card'];
  // Scott 18 Nov 2026: Entrepreneur Library is already a section inside the Cosmic Library, so it leaves the menu.
@@ -887,6 +887,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
    box.addEventListener('click',e=>{
     if(e.target.closest('[data-focus-edit]'))return focusEditor(box);
+    // Scott 23 Nov 2026: tapping a time of day opens its habits right here in the card.
+    const hpick=e.target.closest('[data-habit-pick]');if(hpick){box.dataset.habitCat=box.dataset.habitCat===hpick.dataset.habitPick?'':hpick.dataset.habitPick;paintHabitPanel(box);return;}
+    const htk=e.target.closest('[data-habit-tick]');if(htk){try{headerNoteFrame.contentWindow.ciHabitToggle(htk.dataset.habitTick);}catch(_){}paintHabitPanel(box);_focusAt=0;return;}
     // Scott 23 Nov 2026: tick a to-do off right here; it's marked done on the TO DO page too.
     const td=e.target.closest('[data-focus-todo]');
     if(td){td.disabled=true;const li=td.closest('li');if(li){li.style.textDecoration='line-through';li.style.opacity='.6';}
@@ -927,7 +930,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    _focusAt=(f.actionsOpen||f.practice?.lastMeditation)?Date.now():Date.now()-27000;
    const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
    const btn=(k,l)=>`<button type="button" data-focus-open="${k}" style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
-   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0;flex:1">${title?`<div style="font:700 12px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555;margin:0 0 4px">${title}</div>`:''}${body}</div>${b}</div>`;
+   const row=(title,body,b)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #e3e3e3"><div style="min-width:0;flex:1">${title?`<div><b style="display:inline-block;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 10px">${title}</b></div>`:''}${body}</div>${b}</div>`;
    const h=f.habits;
    const habits=h.total?(h.left?`<strong>${h.left}</strong> of your ${h.total} habits still to do today.`:`All <strong>${h.total}</strong> habits done today. Well done.`):'No daily habits yet.';
    const acts=f.actions.length?`<ol style="margin:0;padding-left:20px">${f.actions.map(a=>`<li>${esc(a.text)}<span style="color:#888"> — ${esc(a.goal)}</span></li>`).join('')}</ol>${f.actionsOpen>3?`<div style="color:#777;font-size:13px;margin-top:4px">${f.actionsOpen-3} more open actions across your goals.</div>`:''}`:'No open actions. Add the next step to a goal.';
@@ -935,6 +938,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const days=last?Math.floor((Date.now()-last.getTime())/86400000):null;
    const med=last?(days===0?'Meditated today.':days===1?'Last meditated yesterday.':`Last meditated ${days} days ago.`):'No meditation yet.';
    const prac=`${med} Visualizations: <strong>${f.practice.viz}</strong>. Gratitude sessions: <strong>${f.practice.gratitude}</strong>.`;
+   // Scott 23 Nov 2026: time-of-day tiles (same as the Habits page) — tap one to open that part of the day.
+   const HP=hd.ciHabitPeriods||{list:[['MORNING','MORNING'],['DAY','DAY'],['EVENING','EVENING'],['NIGHT','NIGHT'],['BEDTIME','BEFORE SLEEP']],icons:{}};
+   const habitTiles=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0">${HP.list.map(([c,l])=>`<button type="button" data-habit-pick="${c}" style="flex:1 1 96px;min-width:90px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;background:#fff;border:0;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer;font:800 12px/1.2 Arial,sans-serif;letter-spacing:.06em;color:#171717"><span style="width:56px;height:56px;display:grid;place-items:center;overflow:hidden">${(HP.icons[c]||'').replace(/width="64" height="64"/,'width="56" height="56"')}</span>${l}</button>`).join('')}</div>`;
    box.__pf=pf;
    // Scott 20 Nov 2026: signed out = nothing to show; say so plainly instead of an empty picker.
    if(pf&&pf.signedIn===false){box.querySelector('[data-focus-body]').outerHTML='<div data-focus-body style="color:#171717">You are signed out, so your goals can\'t load. <a href="/?signin=1" target="_top" style="display:inline-block;margin-left:8px;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-decoration:none">SIGN IN</a></div>';_focusAt=Date.now()-25000;return;}
@@ -942,7 +948,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
    const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
-   const grp=(lbl,inner)=>`<div style="margin:0 0 30px">${lbl==='GOALS'?`<b style="display:inline-block;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 10px">GOALS</b>`:`<b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>`}${inner}</div>`;
+   const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:table;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 10px">${lbl}</b>${inner}</div>`;
    // Scott 19 Nov 2026: every pinned goal links straight to EDIT / VISUALIZE / TO DO.
    const gBtn=(act,g,l,t)=>`<button type="button" data-goal-act="${act}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:5px 9px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
    const mvB=(d,g,dis)=>`<button type="button" data-focus-move="${d}" data-goal="${esc(g)}" ${dis?'disabled':''} title="Move ${d}" aria-label="Move goal ${d}" style="flex:1;height:26px;padding:0;border:0;background:transparent;color:${dis?'#666':'#fff'};font-size:11px;line-height:1;cursor:${dis?'default':'pointer'}">${d==='up'?'▲':'▼'}</button>`;
@@ -958,10 +964,32 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    // Scott 23 Nov 2026: next 3 open to-dos per goal (notes/journal stay on the TO DO page).
    const todosFor=g=>{const t=(pf.goalTodos||{})[g]||[];if(!t.length)return '<div style="margin:12px 0 0;opacity:.7;font-size:14px">No open to-dos.</div>';return `<ul style="margin:12px 0 0;padding-left:0;font-size:14px;line-height:1.5">${t.slice(0,3).map(x=>`<li style="margin:0 0 8px;list-style:none;display:flex;align-items:flex-start;gap:10px"><input type="checkbox" data-focus-todo="${esc(x)}" data-goal="${esc(g)}" title="Tick this to-do off" style="width:20px;height:20px;flex:0 0 20px;margin:0;accent-color:#000;cursor:pointer"><span>${esc(x)}</span></li>`).join('')}</ul>`;};
    const goalRow=(g,i,a)=>`<div style="display:flex;align-items:center;gap:10px;margin:0 0 ${i<a.length-1?20:0}px;background:${GSH[i%5]};color:${i%5>=2?'#fff':'#000'};padding:16px;border-radius:10px"><div style="min-width:0;flex:1"><button type="button" data-goal-act="open" data-goal="${esc(g)}" title="Open this goal" style="background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px">${esc(g)}</button>${todosFor(g)}</div><span style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;align-self:stretch;flex:0 0 auto">${(()=>{const n=((pf.goalTodos||{})[g]||[]).length-3;return n>0?`<button type="button" data-goal-act="open" data-goal="${esc(g)}" title="See all of this goal’s to-dos" style="background:#c62828;color:#fff;border:0;border-radius:6px;padding:7px 10px;font:700 11px/1.2 Arial,sans-serif;letter-spacing:.06em;cursor:pointer;white-space:nowrap">${n} MORE TO-DOS</button>`:'';})()}<span style="display:flex;flex-direction:column;background:#000;border:1px solid #fff;border-radius:5px;overflow:hidden;width:32px;margin:auto 0">${mvB('up',g,i===0)}${mvB('down',g,i===a.length-1)}</span></span></div>`;
-   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}${pn.skills.length?grp('SKILLS',pn.skills.map(k=>chip(sk(k))).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`:'Nothing pinned yet. Pin up to 5 goals, 3 skills and 5 words.';
+   const pinBody=(pn.goals.length||pn.skills.length||pn.words.length)?`${pn.goals.length?grp('GOALS',pn.goals.map(goalRow).join('')):''}`:'Nothing pinned yet. Pin up to 5 goals, 3 skills and 5 words.';
    const pinBtn=`<button type="button" data-focus-edit style="background:#000;color:#fff;border:0;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">PIN A GOAL TO FOCUS LIST</button>`;
-   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>`,btn('daily-habits','OPEN HABITS'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   // Scott 23 Nov 2026: SKILLS + MY WORDS live in their own box at the bottom of the Citadel.
+   {let sw=rd.getElementById('ci-focus-sw');const has=pn.skills.length||pn.words.length;
+    if(!has)sw?.remove();else{if(!sw){sw=rd.createElement('section');sw.id='ci-focus-sw';sw.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';}
+     sw.innerHTML=`${pn.skills.length?grp('SKILLS',pn.skills.map(k=>`<div>${esc(sk(k))}</div>`).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`;
+     const sh=box.parentElement;if(sh&&sh.lastElementChild!==sw)sh.append(sw);}}
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}<div data-habit-panel></div>`,btn('daily-habits','OPEN HABITS'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   paintHabitPanel(box);
+   // Scott 23 Nov 2026: the meditation player lives under PRACTICE. Kept outside the refreshed body so playback isn't interrupted.
+   if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.append(m);
+    // Show only the meditation player: hide the quote rotation, title and menus of the embedded page, and fit the height.
+    const mf=m.querySelector('iframe');mf.addEventListener('load',()=>{try{const d=mf.contentDocument;const st=d.createElement('style');st.textContent='#capTitle,#siteMenuButton,#citadelNote,#citadelBottomNote,#lfmToolRotation,#lfmBack,#lfmMenu,#standaloneSiteMenu,#homeView,#directoryView{display:none!important}html,body{background:transparent!important;margin:0!important}';d.head.append(st);
+     const fit=()=>{try{const h=Math.max(d.getElementById('experienceView')?.scrollHeight||0,d.documentElement.scrollHeight);if(h>100)mf.style.height=h+'px';}catch(_){}};fit();clearInterval(mf.__fit);mf.__fit=setInterval(fit,1500);}catch(_){}});}
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
+ }
+ function paintHabitPanel(box){
+  const slot=box.querySelector('[data-habit-panel]');if(!slot)return;const cat=box.dataset.habitCat||'';
+  box.querySelectorAll('[data-habit-pick]').forEach(b=>{b.style.outline=b.dataset.habitPick===cat?'3px solid #000':'';});
+  if(!cat){slot.innerHTML='';return;}
+  let list=[];try{list=headerNoteFrame.contentWindow.ciHabitsFor?.(cat)||[];}catch(_){}
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  // Same colours as the Habits page cards (shared/habit-mindset.css).
+  const C={MORNING:['#367ca3','#e1ecf1','MORNING'],DAY:['#967000','#f3edd9','AFTERNOON'],EVENING:['#b6511b','#f4e5dd','EVENING'],NIGHT:['#3d2f6b','#e6e2f0','NIGHT'],BEDTIME:['#101b35','#e2e4ea','BEFORE SLEEP']}[cat]||['#3b3b3b','#f2f2f2',cat];
+  const dn=list.filter(h=>h.done).length;
+  slot.innerHTML=`<div style="margin:14px 0 0;padding:14px;background:${C[1]};border:1px solid rgba(0,0,0,.12);border-radius:12px"><div style="display:flex;justify-content:space-between;align-items:center;background:${C[0]};color:#fff;border-radius:8px;padding:12px 16px;font:800 15px/1 Arial,sans-serif;letter-spacing:.1em"><span>${C[2]}</span><span style="display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#000;font-size:12px;letter-spacing:0">${dn}/${list.length}</span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 16px;margin:14px 0 0">${list.length?list.map(h=>`<div role="button" data-habit-tick="${esc(h.id)}" style="display:flex;align-items:center;gap:12px;cursor:pointer;font:700 14px/1.3 Arial,sans-serif;color:#222;${h.done?'opacity:.55;text-decoration:line-through':''}"><span style="flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:${h.done?C[0]:'#3a3a3a'};display:grid;place-items:center;color:#fff;font-size:16px">${h.done?'✓':'○'}</span><span>${esc(h.name).toUpperCase()}</span></div>`).join(''):'<div style="color:#555">No habits in this part of the day yet.</div>'}</div></div>`;
  }
  setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{

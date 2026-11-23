@@ -17,8 +17,8 @@ function applyFocus() {
   const pg = page(); if (!pg) return;
   pg.querySelectorAll('[data-gp-hide]').forEach(el => el.removeAttribute('data-gp-hide'));
   let st = document.getElementById('ci-goal-focus-style');
-  if (idx == null) { st?.remove(); pg.classList.remove('ci-goal-focus'); document.getElementById('ciGoalPageBar')?.remove(); return; }
-  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}'; document.head.appendChild(st); }
+  if (idx == null) { st?.remove(); pg.classList.remove('ci-goal-focus'); document.getElementById('ciGoalPageBar')?.remove(); document.getElementById('ciGoalPageNext')?.remove(); return; }
+  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}#page-myroadmap.ci-goal-focus .roadmap-goal-entries,#page-myroadmap.ci-goal-focus [id^="wrapRegenBtn-"]{display:none!important}'; document.head.appendChild(st); }
   pg.classList.add('ci-goal-focus');
   const bar0 = document.getElementById('ciGoalPageBar');
   if (!bar0 || bar0.dataset.idx !== String(idx)) renderBar(idx);
@@ -29,11 +29,29 @@ function applyFocus() {
   for (let node = goal; node && node !== pg; node = node.parentElement) {
     if (node.tagName === 'DETAILS') node.open = true;
     for (const sib of node.parentElement.children) {
-      if (sib === node || sib.id === 'ciGoalPageBar' || sib.matches('[data-todo-personal-e-slot],style,script')) continue;
+      if (sib === node || sib.id === 'ciGoalPageBar' || sib.id === 'ciGoalPageNext' || sib.matches('[data-todo-personal-e-slot],style,script')) continue;
       sib.setAttribute('data-gp-hide', '');
     }
   }
   const sum = goal.querySelector(':scope > details > summary'); if (sum) sum.setAttribute('data-gp-hide', '');
+  // Scott 23 Nov 2026: the next goal follows below as a Goal Page card — tap it to open that goal.
+  const nextIdx = intentions.length > 1 ? (idx + 1) % intentions.length : -1;
+  let nx = document.getElementById('ciGoalPageNext');
+  if (nextIdx < 0) { nx?.remove(); return; }
+  if (!nx) { nx = document.createElement('section'); nx.id = 'ciGoalPageNext'; }
+  if (goal.nextElementSibling !== nx) goal.after(nx);
+  if (nx.dataset.idx !== String(nextIdx) || nx.dataset.title !== (intentions[nextIdx].title || '')) {
+    const it = intentions[nextIdx], letter = goalLetter(it, nextIdx);
+    const ci = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : nextIdx;
+    const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+    const date = it.targetDate || it.target_date || '';
+    nx.dataset.idx = String(nextIdx); nx.dataset.title = it.title || '';
+    nx.style.cssText = 'margin:28px 0 16px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif;cursor:pointer';
+    nx.innerHTML = `<div style="font:800 12px/1 Arial,sans-serif;letter-spacing:.12em;color:#555;margin:0 0 10px">NEXT GOAL</div>
+      <div style="display:flex;align-items:flex-start;gap:12px">${goalBadge(letter, gc.bg, gc.text, 40)}<div style="flex:1;min-width:0"><div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}</div></div>
+      <div style="margin:14px 0 0"><button type="button" style="${BTN};background:#000;color:#fff">OPEN THIS GOAL →</button></div>`;
+    nx.onclick = () => openGoalPage(nextIdx);
+  }
 }
 // The Roadmap re-renders itself after every add / tick; keep the focus applied.
 if (typeof window !== 'undefined') setInterval(() => { if (window.__ciGoalFocus != null) applyFocus(); }, 600);
@@ -53,7 +71,6 @@ function renderBar(idx, editing = false) {
   bar.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px">
       <span style="font:800 12px/1 Arial,sans-serif;letter-spacing:.12em;color:#555">GOAL PAGE</span>
-      <button type="button" data-gp="all" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">SHOW ALL GOALS</button>
     </div>
     <div style="display:flex;align-items:flex-start;gap:12px">
       ${goalBadge(letter, gc.bg, gc.text, 40)}
@@ -71,6 +88,7 @@ function renderBar(idx, editing = false) {
     </div>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
+    if (e.target.closest('[data-gp-vizclose]')) { closeGoalViz(); return; }
     const b = e.target.closest('[data-gp]'); if (!b) return;
     const a = b.dataset.gp;
     if (a === 'all') return closeGoalPage();
@@ -83,10 +101,11 @@ function renderBar(idx, editing = false) {
     if (a === 'archive') { await window.ciArchiveGoal?.(idx); return closeGoalPage(); }
     if (a === 'viz') {
       const host = bar.querySelector('[data-gp-viz]');
-      if (host.firstChild) { host.innerHTML = ''; return; }
+      if (host.firstChild) { closeGoalViz(); return; }
       const t = (it.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
       try { localStorage.setItem('ci_goal_title', t); } catch (_) {}
-      host.innerHTML = `<iframe src="players/3min-viz.html?g=${encodeURIComponent(t)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px;background:#000"></iframe>`;
+      try { history.pushState({ ciGoalViz: 1 }, ''); } catch (_) {}
+      host.innerHTML = `<div style="display:flex;justify-content:flex-end;margin-top:14px"><button type="button" data-gp-vizclose style="${BTN};background:#000;color:#fff">✕ CLOSE</button></div><iframe src="players/3min-viz.html?g=${encodeURIComponent(t)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px;background:#000"></iframe>`;
     }
   };
 }
@@ -109,3 +128,13 @@ if (typeof window !== 'undefined') {
   window.ciOpenGoalPage = openGoalPage;
   window.ciCloseGoalPage = closeGoalPage;
 }
+
+// Scott 23 Nov 2026: ✕ CLOSE (or the phone/browser back button) closes the visualization and returns to the to-dos.
+function closeGoalViz(fromBack) {
+  const host = document.querySelector('#ciGoalPageBar [data-gp-viz]');
+  if (!host || !host.firstChild) return;
+  host.innerHTML = '';
+  if (!fromBack && history.state && history.state.ciGoalViz) { try { history.back(); } catch (_) {} }
+  document.getElementById('ciGoalPageBar')?.scrollIntoView({ block: 'start' });
+}
+if (typeof window !== 'undefined') window.addEventListener('popstate', () => closeGoalViz(true));

@@ -84,8 +84,12 @@ export function createHabitPeriodMenu() {
     section.querySelector('summary').focus({ preventScroll: true });
     section.scrollIntoView({ behavior: 'instant', block: 'start' });
   });
+  // Scott 23 Nov 2026: a time-of-day tile tapped on the Citadel opens that part of the day here.
+  try { const pick = localStorage.getItem('ci_habit_pick'); if (pick) { localStorage.removeItem('ci_habit_pick'); setTimeout(() => nav.querySelector(`[data-habit-period="${pick}"]`)?.click(), 400); } } catch (_) {}
   return nav;
 }
+if (typeof window !== 'undefined') window.ciHabitPeriods = { list: HABIT_PERIODS, icons: HABIT_PERIOD_ICONS };
+if (typeof window !== 'undefined') { window.ciHabitsFor = cat => { const d = _done(); return getHabitList().filter(h => _cat(h) === cat).map(h => ({ id: h.id, name: h.name, done: !!d[h.id] })); }; window.ciHabitToggle = id => habitToggle(id); }
 
 function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }
