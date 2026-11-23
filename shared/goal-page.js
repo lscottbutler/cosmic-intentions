@@ -18,7 +18,7 @@ function applyFocus() {
   pg.querySelectorAll('[data-gp-hide]').forEach(el => el.removeAttribute('data-gp-hide'));
   let st = document.getElementById('ci-goal-focus-style');
   if (idx == null) { st?.remove(); pg.classList.remove('ci-goal-focus'); document.getElementById('ciGoalPageBar')?.remove(); return; }
-  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}'; document.head.appendChild(st); }
+  if (!st) { st = document.createElement('style'); st.id = 'ci-goal-focus-style'; st.textContent = '#page-myroadmap [data-gp-hide]{display:none!important}#page-myroadmap.ci-goal-focus .roadmap-goal-entries,#page-myroadmap.ci-goal-focus [id^="wrapRegenBtn-"]{display:none!important}'; document.head.appendChild(st); }
   pg.classList.add('ci-goal-focus');
   const bar0 = document.getElementById('ciGoalPageBar');
   if (!bar0 || bar0.dataset.idx !== String(idx)) renderBar(idx);
