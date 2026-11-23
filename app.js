@@ -1829,7 +1829,7 @@ export function goalBadge(letter, bg, textColor, px) {
   px = px || 34;
   return '<span style="display:inline-flex;flex-shrink:0;width:' + px + 'px;height:' + px + 'px;line-height:0;vertical-align:middle;">' +
     '<svg width="' + px + '" height="' + px + '" viewBox="0 0 100 100" style="display:block;">' +
-    '<path d="' + _SCALLOP_D + '" fill="' + (bg || '#1D3557') + '"/>' +
+    '<circle cx="50" cy="50" r="50" fill="' + (bg || '#1D3557') + '"/>' +  /* Scott 23 Nov 2026: smooth circle */
     '<text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="' + (textColor || '#fff') + '" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-weight="800" font-size="' + (String(letter ?? '').length > 1 ? 40 : 50) + '">' + (letter == null ? '' : letter) + '</text></svg></span>';
 }
 if (typeof window !== 'undefined') window.goalBadge = goalBadge;
