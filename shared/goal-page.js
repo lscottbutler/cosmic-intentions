@@ -80,11 +80,11 @@ function renderBar(idx, editing = false) {
              <div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-gp="save" style="${BTN};background:#000;color:#fff">SAVE</button><button type="button" data-gp="cancel" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">CANCEL</button></div>`
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}`}
       </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0">
-      <button type="button" data-gp="viz" style="${BTN};background:#1e90ff;color:#fff;padding:12px 18px">👁 VISUALIZE</button>
+      <div style="display:flex;flex-direction:column;align-items:stretch;gap:8px;flex:0 0 auto">
+      <button type="button" data-gp="viz" style="${BTN};background:#1e90ff;color:#fff;">👁 VISUALIZE</button>
       <button type="button" data-gp="edit" style="${BTN};background:#000;color:#fff">✎ EDIT</button>
       <button type="button" data-gp="archive" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">ARCHIVE</button>
+      </div>
     </div>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
