@@ -89,4 +89,6 @@
   for(const button of menu.querySelectorAll('[data-med-time],[data-med-mode]'))button.setAttribute('aria-pressed',String(button.classList.contains('active')));
   note.hidden=!expanded;
  });
+ // Scott 23 Nov 2026: picking an option closes its dropdown, so the player is ready to press Play.
+ for(const g of groups)g.choices.addEventListener('click',e=>{if(e.target.closest('button'))setTimeout(()=>setGroup(g,false),150);});
 })();
