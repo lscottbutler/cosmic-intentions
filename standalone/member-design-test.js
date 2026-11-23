@@ -974,7 +974,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}<div data-habit-panel></div>`,btn('daily-habits','OPEN HABITS'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
    paintHabitPanel(box);
    // Scott 23 Nov 2026: the meditation player lives under PRACTICE. Kept outside the refreshed body so playback isn't interrupted.
-   if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.append(m);}
+   if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.append(m);
+    // Show only the meditation player: hide the quote rotation, title and menus of the embedded page, and fit the height.
+    const mf=m.querySelector('iframe');mf.addEventListener('load',()=>{try{const d=mf.contentDocument;const st=d.createElement('style');st.textContent='#capTitle,#siteMenuButton,#citadelNote,#citadelBottomNote,#lfmToolRotation,#lfmBack,#lfmMenu,#standaloneSiteMenu,#homeView,#directoryView{display:none!important}html,body{background:transparent!important;margin:0!important}';d.head.append(st);
+     const fit=()=>{try{const h=Math.max(d.getElementById('experienceView')?.scrollHeight||0,d.documentElement.scrollHeight);if(h>100)mf.style.height=h+'px';}catch(_){}};fit();clearInterval(mf.__fit);mf.__fit=setInterval(fit,1500);}catch(_){}});}
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
  function paintHabitPanel(box){
