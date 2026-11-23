@@ -88,6 +88,7 @@ function renderBar(idx, editing = false) {
     </div>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
+    if (e.target.closest('[data-gp-vizclose]')) { closeGoalViz(); return; }
     const b = e.target.closest('[data-gp]'); if (!b) return;
     const a = b.dataset.gp;
     if (a === 'all') return closeGoalPage();
@@ -100,10 +101,11 @@ function renderBar(idx, editing = false) {
     if (a === 'archive') { await window.ciArchiveGoal?.(idx); return closeGoalPage(); }
     if (a === 'viz') {
       const host = bar.querySelector('[data-gp-viz]');
-      if (host.firstChild) { host.innerHTML = ''; return; }
+      if (host.firstChild) { closeGoalViz(); return; }
       const t = (it.title || 'My Vision').replace(/^(i am)\s+/i, 'I AM ');
       try { localStorage.setItem('ci_goal_title', t); } catch (_) {}
-      host.innerHTML = `<iframe src="players/3min-viz.html?g=${encodeURIComponent(t)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px;background:#000"></iframe>`;
+      try { history.pushState({ ciGoalViz: 1 }, ''); } catch (_) {}
+      host.innerHTML = `<div style="display:flex;justify-content:flex-end;margin-top:14px"><button type="button" data-gp-vizclose style="${BTN};background:#000;color:#fff">✕ CLOSE</button></div><iframe src="players/3min-viz.html?g=${encodeURIComponent(t)}&_=${Date.now()}" title="3-minute visualization" allow="autoplay; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px;background:#000"></iframe>`;
     }
   };
 }
@@ -126,3 +128,13 @@ if (typeof window !== 'undefined') {
   window.ciOpenGoalPage = openGoalPage;
   window.ciCloseGoalPage = closeGoalPage;
 }
+
+// Scott 23 Nov 2026: ✕ CLOSE (or the phone/browser back button) closes the visualization and returns to the to-dos.
+function closeGoalViz(fromBack) {
+  const host = document.querySelector('#ciGoalPageBar [data-gp-viz]');
+  if (!host || !host.firstChild) return;
+  host.innerHTML = '';
+  if (!fromBack && history.state && history.state.ciGoalViz) { try { history.back(); } catch (_) {} }
+  document.getElementById('ciGoalPageBar')?.scrollIntoView({ block: 'start' });
+}
+if (typeof window !== 'undefined') window.addEventListener('popstate', () => closeGoalViz(true));
