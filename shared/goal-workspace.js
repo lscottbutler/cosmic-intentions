@@ -267,6 +267,21 @@ export function setupTodoDisclosure(host) {
         title.insertBefore(grip, title.firstChild);
       }
     }
+    // Scott 23 Nov 2026: goal actions live here — VISUALIZE, ✎ EDIT GOAL (My Thoughts), ARCHIVE (goal done).
+    if (goalObj && !group.querySelector(':scope > .todo-goal-actions')) {
+      const bar = document.createElement('div'); bar.className = 'todo-goal-actions';
+      bar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px';
+      const mk = (label, bg, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+        b.style.cssText = `background:${bg};color:#fff;border:0;border-radius:5px;padding:7px 12px;font:800 12px/1 Arial,sans-serif;letter-spacing:.06em;cursor:pointer`;
+        b.addEventListener('click', e => { e.stopPropagation(); fn(); }); return b; };
+      const gt = goalObj.title || '';
+      const topAct = act => { try { window.top.ciGoalAction?.(act, gt); } catch (_) {} };
+      bar.append(
+        mk('👁 VISUALIZE', '#1e90ff', () => topAct('viz')),
+        mk('✎ EDIT GOAL', '#000', () => topAct('edit')),
+        mk('ARCHIVE', '#8b1a1a', () => { const idx = intentions.indexOf(goalObj); if (idx < 0) return; if (!confirm('Archive this goal? Its to-dos, notes and journal entries go to the Archive. You can restore it later.')) return; Promise.resolve(window.ciArchiveGoal?.(idx)).then(() => renderGoalWorkspace()).catch(() => {}); }));
+      title.after(bar);
+    }
     // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.
     // The eight action buttons were removed at Scott's request (6 Nov 2026).
     const trough = document.createElement('div');
