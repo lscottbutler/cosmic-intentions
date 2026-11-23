@@ -257,13 +257,15 @@ export async function getFocusPins() {
     pins = { ...empty, ...(_pj(data?.body) || {}) };
   }
   let goals = (intentions || []).map(i => i.title).filter(Boolean);
+  let todoRows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
   if (!goals.length && currentUser) {
-    const { data } = await sb.from('intentions').select('title,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+    const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
     goals = (data || []).map(r => r.title).filter(Boolean);
+    todoRows = (data || []).map(r => ({ title: r.title, rai: _pj(r.roadmap_ai) || {} }));
   }
   const { ENT_CARDS } = await import('./ent-library-content.js');
   const goalIds = Object.fromEntries((intentions || []).map(i => [i.title, String(i.id)]));
-  const goalTodos = Object.fromEntries((intentions || []).map(i => [i.title, _openTasks(i.roadmapAI || {}, i.title).map(t => t.text)]));
+  const goalTodos = Object.fromEntries(todoRows.map(r => [r.title, _openTasks(r.rai, r.title).map(t => t.text)]));
   return { signedIn: !!currentUser, pins, goalIds, goalTodos, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
 }
 export async function saveFocusPins(p) {
