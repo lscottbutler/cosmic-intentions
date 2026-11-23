@@ -89,6 +89,7 @@ export function createHabitPeriodMenu() {
   return nav;
 }
 if (typeof window !== 'undefined') window.ciHabitPeriods = { list: HABIT_PERIODS, icons: HABIT_PERIOD_ICONS };
+if (typeof window !== 'undefined') { window.ciHabitsFor = cat => { const d = _done(); return getHabitList().filter(h => _cat(h) === cat).map(h => ({ id: h.id, name: h.name, done: !!d[h.id] })); }; window.ciHabitToggle = id => habitToggle(id); }
 
 function _todayKey() { return dayKey(); }
 function _doneKey()  { return `ci_habits_${_todayKey()}`; }

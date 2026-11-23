@@ -887,7 +887,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.addEventListener('click',e=>{const b=e.target.closest('[data-focus-open]');if(b)openFeature(b.dataset.focusOpen);});
    box.addEventListener('click',e=>{
     if(e.target.closest('[data-focus-edit]'))return focusEditor(box);
-    const hpick=e.target.closest('[data-habit-pick]');if(hpick){try{localStorage.setItem('ci_habit_pick',hpick.dataset.habitPick);}catch(_){}openFeature('daily-habits');return;}
+    // Scott 23 Nov 2026: tapping a time of day opens its habits right here in the card.
+    const hpick=e.target.closest('[data-habit-pick]');if(hpick){box.dataset.habitCat=box.dataset.habitCat===hpick.dataset.habitPick?'':hpick.dataset.habitPick;paintHabitPanel(box);return;}
+    const htk=e.target.closest('[data-habit-tick]');if(htk){try{headerNoteFrame.contentWindow.ciHabitToggle(htk.dataset.habitTick);}catch(_){}paintHabitPanel(box);_focusAt=0;return;}
     // Scott 23 Nov 2026: tick a to-do off right here; it's marked done on the TO DO page too.
     const td=e.target.closest('[data-focus-todo]');
     if(td){td.disabled=true;const li=td.closest('li');if(li){li.style.textDecoration='line-through';li.style.opacity='.6';}
@@ -969,8 +971,17 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     if(!has)sw?.remove();else{if(!sw){sw=rd.createElement('section');sw.id='ci-focus-sw';sw.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';}
      sw.innerHTML=`${pn.skills.length?grp('SKILLS',pn.skills.map(k=>`<div>${esc(sk(k))}</div>`).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`;
      const sh=box.parentElement;if(sh&&sh.lastElementChild!==sw)sh.append(sw);}}
-   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}`,btn('daily-habits','OPEN HABITS'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}<div data-habit-panel></div>`,btn('daily-habits','OPEN HABITS'))}${row('PRACTICE',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   paintHabitPanel(box);
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
+ }
+ function paintHabitPanel(box){
+  const slot=box.querySelector('[data-habit-panel]');if(!slot)return;const cat=box.dataset.habitCat||'';
+  box.querySelectorAll('[data-habit-pick]').forEach(b=>{b.style.outline=b.dataset.habitPick===cat?'3px solid #000':'';});
+  if(!cat){slot.innerHTML='';return;}
+  let list=[];try{list=headerNoteFrame.contentWindow.ciHabitsFor?.(cat)||[];}catch(_){}
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  slot.innerHTML=`<div style="margin:14px 0 0;padding:14px 16px;background:#f6f6f6;border-radius:12px">${list.length?list.map(h=>`<label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 10px;cursor:pointer;${h.done?'opacity:.55;text-decoration:line-through':''}"><input type="checkbox" data-habit-tick="${esc(h.id)}"${h.done?' checked':''} style="width:20px;height:20px;flex:0 0 20px;margin:0;accent-color:#000;cursor:pointer"><span>${esc(h.name)}</span></label>`).join(''):'<div style="color:#666">No habits in this part of the day yet.</div>'}</div>`;
  }
  setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{
