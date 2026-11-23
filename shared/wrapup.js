@@ -54,8 +54,8 @@ function _ensureGoalLetters() {
 }
 const _goalLetter = (idx) => {
   const it = (intentions || [])[idx];
-  if (it && it.id && _goalLetterCache[it.id]) return _goalLetterCache[it.id];
-  return _letterAt(idx);   // fallback before assignment / for id-less goals
+  // Scott 23 Nov 2026: goals are numbered 1, 2, 3… (letters + paper-journal codes retired).
+  return String(idx + 1);   // fallback before assignment / for id-less goals
 };
 
 // One overflow-menu item / separator.
@@ -96,8 +96,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       ${!showLinkedEntries && noteContext ? `<button type="button" class="task-priority" aria-label="Priority task ${esc(code)}" aria-pressed="${!!taskIsPriority(noteContext)}" onclick="wrapTogglePriority('${encodeURIComponent(taskNoteKey(noteContext)).replace(/'/g,'%27')}')" title="Toggle priority" style="flex-shrink:0;width:32px;height:32px;border:2px solid #4e4e4e;border-radius:50%;background:${taskIsPriority(noteContext) ? '#4e4e4e' : '#fff'};color:${taskIsPriority(noteContext) ? '#fff' : '#4e4e4e'};font-weight:700;cursor:pointer;">P</button>` : ''}
       ${taskNoteButton(noteContext)}
       ${!showLinkedEntries ? `<div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
-        <span style="display:flex;align-items:center;justify-content:center;padding:7px 4px 5px;color:${shade.text};font-family:var(--vault-mono);font-size:13px;font-weight:800;letter-spacing:.4px;line-height:1;">${esc(code)}</span>
-        <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;border-top:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:16px;line-height:1;padding:3px 0 5px;">⋯</button>
+        <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">⋯</button>
       </div>` : ''}
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
