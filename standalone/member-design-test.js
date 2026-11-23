@@ -972,13 +972,28 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     if(!has)sw?.remove();else{if(!sw){sw=rd.createElement('section');sw.id='ci-focus-sw';sw.style.cssText='margin:16px 16px 50px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';}
      sw.innerHTML=`${pn.skills.length?grp('SKILLS',pn.skills.map(k=>`<div>${esc(sk(k))}</div>`).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`;
      const sh=box.parentElement;if(sh&&sh.lastElementChild!==sw)sh.append(sw);}}
-   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}<div data-habit-panel></div>`,btn('daily-habits','OPEN HABITS'))}${row('MEDITATION',`<div>${prac}</div>`,`<div style="display:flex;flex-direction:column;gap:6px">${btn('meditation','MEDITATE')}${btn('super-viz','VISUALIZE')}${btn('new-gratitude','GRATITUDE')}</div>`)}</div>`;
+   box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${row('',`<div style="width:100%">${pinBody}</div>`,'')}${row('TODAY’S HABITS',`<div>${habits}</div>${habitTiles}<div data-habit-panel></div>`,btn('daily-habits','OPEN HABITS'))}${row('MEDITATION',`<div>${prac}</div>`,'')}</div>`;
    paintHabitPanel(box);
    // Scott 23 Nov 2026: the meditation player lives under PRACTICE. Kept outside the refreshed body so playback isn't interrupted.
    if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.append(m);
     // Show only the meditation player: hide the quote rotation, title and menus of the embedded page, and fit the height.
     const mf=m.querySelector('iframe');mf.addEventListener('load',()=>{try{const d=mf.contentDocument;const st=d.createElement('style');st.textContent='#capTitle,#siteMenuButton,#citadelNote,#citadelBottomNote,#lfmToolRotation,#lfmBack,#lfmMenu,#standaloneSiteMenu,#homeView,#directoryView{display:none!important}html,body{background:transparent!important;margin:0!important}';d.head.append(st);
      const fit=()=>{try{const h=Math.max(d.getElementById('experienceView')?.scrollHeight||0,d.documentElement.scrollHeight);if(h>100)mf.style.height=h+'px';}catch(_){}};fit();clearInterval(mf.__fit);mf.__fit=setInterval(fit,1500);}catch(_){}});}
+   // Scott 23 Nov 2026: Gratitude and Visualize players live on the Citadel too (kept outside the refreshed body).
+   const TAGS='display:table;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 12px';
+   if(!box.querySelector('#ci-focus-grat')){const g=rd.createElement('div');g.id='ci-focus-grat';g.style.cssText='margin:26px 0 0;padding:16px 0 0;border-top:1px solid #e3e3e3';g.innerHTML=`<b style="${TAGS}">GRATITUDE</b><iframe src="/standalone/gratitude-v2/index.html?module=gratitude-v2" title="Gratitude" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:640px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>`;box.append(g);}
+   let vz=box.querySelector('#ci-focus-viz');
+   if(!vz){vz=rd.createElement('div');vz.id='ci-focus-viz';vz.style.cssText='margin:26px 0 0;padding:16px 0 0;border-top:1px solid #e3e3e3';box.append(vz);
+    vz.innerHTML=`<b style="${TAGS}">VISUALIZE</b><iframe data-viz-frame title="Visualize" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:640px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>
+     <div style="max-width:720px;margin:14px auto 0"><div style="display:flex;gap:8px;margin:0 0 10px"><button type="button" data-viz-kind="goal" style="flex:1;border:0;border-radius:6px;padding:10px;font:800 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">GOAL</button><button type="button" data-viz-kind="aff" style="flex:1;border:0;border-radius:6px;padding:10px;font:800 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">AFFIRMATION</button></div>
+     <select data-viz-pick aria-label="What to visualize" style="width:100%;padding:10px;border:1px solid #999;border-radius:6px;font:400 15px/1.3 Arial,sans-serif;text-transform:uppercase"></select></div>`;
+    const fr=vz.querySelector('[data-viz-frame]'),sel=vz.querySelector('[data-viz-pick]');
+    const load=t=>{if(t)fr.src='/players/3min-viz.html?g='+encodeURIComponent(t);};
+    const fill=kind=>{vz.dataset.kind=kind;vz.querySelectorAll('[data-viz-kind]').forEach(b=>{const on=b.dataset.vizKind===kind;b.style.background=on?'#000':'#e6e6e6';b.style.color=on?'#fff':'#000';});
+     const P=box.__pf||{},list=kind==='goal'?(P.options?.goals||[]):(P.options?.skills||[]).map(x=>x.title).filter(Boolean);
+     sel.innerHTML=list.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')||'<option value="">Nothing to choose yet</option>';load(sel.value);};
+    vz.querySelectorAll('[data-viz-kind]').forEach(b=>b.onclick=()=>fill(b.dataset.vizKind));
+    sel.onchange=()=>load(sel.value);fill('goal');}
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
  function paintHabitPanel(box){
