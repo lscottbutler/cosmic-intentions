@@ -938,7 +938,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const chip=t=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 0;font-size:13px">${esc(t)}</span>`;
    // Scott 19 Nov 2026: tick box per pinned goal = "worked on it today" (resets daily, saved in this browser); 30px between groups.
    const dk=new Date().toLocaleDateString('en-CA'),doneKey='ci_focus_goal_done_'+dk;let doneG=[];try{doneG=JSON.parse(localStorage.getItem(doneKey)||'[]');}catch(_){}
-   const grp=(lbl,inner)=>`<div style="margin:0 0 30px"><b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>${inner}</div>`;
+   const grp=(lbl,inner)=>`<div style="margin:0 0 30px">${lbl==='GOALS'?`<b style="display:inline-block;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 10px">GOALS</b>`:`<b style="display:block;font-size:12px;color:#555;margin:0 0 6px">${lbl}</b>`}${inner}</div>`;
    // Scott 19 Nov 2026: every pinned goal links straight to EDIT / VISUALIZE / TO DO.
    const gBtn=(act,g,l,t)=>`<button type="button" data-goal-act="${act}" data-goal="${esc(g)}" title="${t}" style="background:#000;color:#fff;border:0;border-radius:5px;padding:5px 9px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap">${l}</button>`;
    const mvB=(d,g,dis)=>`<button type="button" data-focus-move="${d}" data-goal="${esc(g)}" ${dis?'disabled':''} title="Move ${d}" aria-label="Move goal ${d}" style="flex:1;height:22px;padding:0;border:0;background:transparent;color:${dis?'#666':'#fff'};font-size:11px;line-height:1;cursor:${dis?'default':'pointer'}">${d==='up'?'▲':'▼'}</button>`;
