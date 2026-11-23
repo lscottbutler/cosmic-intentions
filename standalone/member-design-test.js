@@ -525,7 +525,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  }
  delete menuLabels.gratitude;
  // Scott 6 Nov 2026: the Big Five (Action Plan, Goals, Habits, Meditate, Visualize) leave the ☰ menu; they live on the 5 and the bottom bar.
- for(const k of ['action-plan','goals','daily-habits','meditation','super-viz'])delete menuLabels[k];
+ // Scott 23 Nov 2026: back in the ☰ menu (the Big Five '5' button was replaced by ← CITADEL).
  // Scott 16 Nov 2026: Entrepreneur Cards is reached from the Entrepreneur Library (or search), not the menu.
  delete menuLabels['ent-card'];
  // Scott 18 Nov 2026: Entrepreneur Library is already a section inside the Cosmic Library, so it leaves the menu.
