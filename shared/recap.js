@@ -11,7 +11,7 @@
      · localStorage ci_habit_list + ci_habits_<date> — habit ticks per day
      · localStorage ci_wins / ci_streak / ci_best_streak / ci_*_plays
 ────────────────────────────────────────────────────────── */
-import { sb, LS, intentions, dayKey, esc, currentUser, saveIntentions } from '../app.js';
+import { sb, LS, intentions, dayKey, esc, currentUser, saveIntentions, goalBadge, goalLetter, GOAL_COLORS } from '../app.js';
 
 function _habitTickCount(dateKey) {
   return Object.keys(LS.get('ci_habits_' + dateKey) || {}).length;
@@ -227,7 +227,7 @@ function _openTasks(rai, goal) {
 export async function getFocusToday() {
   let rows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
   if (!rows.length && currentUser) {
-    const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+    const { data } = await sb.from('intentions').select('id,title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
     rows = (data || []).map(r => ({ title: r.title, rai: _pj(r.roadmap_ai) || {} }));
   }
   const actions = [];
@@ -257,16 +257,18 @@ export async function getFocusPins() {
     pins = { ...empty, ...(_pj(data?.body) || {}) };
   }
   let goals = (intentions || []).map(i => i.title).filter(Boolean);
-  let todoRows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
+  let todoRows = (intentions || []).map(i => ({ id: i.id, title: i.title, rai: i.roadmapAI || {} }));
   if (!goals.length && currentUser) {
-    const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+    const { data } = await sb.from('intentions').select('id,title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
     goals = (data || []).map(r => r.title).filter(Boolean);
-    todoRows = (data || []).map(r => ({ title: r.title, rai: _pj(r.roadmap_ai) || {} }));
+    todoRows = (data || []).map(r => ({ id: r.id, title: r.title, rai: _pj(r.roadmap_ai) || {} }));
   }
   const { ENT_CARDS } = await import('./ent-library-content.js');
   const goalIds = Object.fromEntries((intentions || []).map(i => [i.title, String(i.id)]));
   const goalTodos = Object.fromEntries(todoRows.map(r => [r.title, _openTasks(r.rai, r.title).map(t => t.text)]));
-  return { signedIn: !!currentUser, pins, goalIds, goalTodos, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
+  // Scott 23 Nov 2026: same letter badge as the Roadmap.
+  const goalBadges = Object.fromEntries(todoRows.map((r, i) => { const L = goalLetter({ id: r.id }, i); const ci = /^[A-Z]$/.test(L) ? L.charCodeAt(0) - 65 : i; const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' }; return [r.title, goalBadge(L, gc.bg, gc.text, 34)]; }));
+  return { signedIn: !!currentUser, pins, goalIds, goalTodos, goalBadges, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
 }
 export async function saveFocusPins(p) {
   if (!currentUser) throw new Error('Not signed in');
