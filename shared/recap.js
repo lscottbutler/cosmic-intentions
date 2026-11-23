@@ -11,7 +11,7 @@
      · localStorage ci_habit_list + ci_habits_<date> — habit ticks per day
      · localStorage ci_wins / ci_streak / ci_best_streak / ci_*_plays
 ────────────────────────────────────────────────────────── */
-import { sb, LS, intentions, dayKey, esc, currentUser } from '../app.js';
+import { sb, LS, intentions, dayKey, esc, currentUser, saveIntentions } from '../app.js';
 
 function _habitTickCount(dateKey) {
   return Object.keys(LS.get('ci_habits_' + dateKey) || {}).length;
@@ -309,3 +309,33 @@ export async function getDayCard() {
   return card;
 }
 if (typeof window !== 'undefined') window.ciDayCard = getDayCard;
+
+/* Scott 23 Nov 2026: tick a to-do off from MY FOCUS TODAY. Marks the first open to-do with that
+   text done (same data the TO DO page uses) and saves to the account. */
+function _markDone(rai, goal, text) {
+  let hit = false;
+  const walk = nodes => (nodes || []).some(n => { if (!n.done && n.text === text) { n.done = true; return (hit = true); } return walk(n.children); });
+  walk(rai.userTasks);
+  if (!hit && (!rai.intention || String(rai.intention).trim() === String(goal || '').trim())) {
+    (rai.tasks || []).some((t, k) => { const txt = typeof t === 'string' ? t : (t && (t.text || t.title || t.task)); if (txt === text && !(rai.done || {})[k]) { rai.done = rai.done || {}; rai.done[k] = true; return (hit = true); } return false; });
+  }
+  return hit;
+}
+export async function completeFocusTodo(goalTitle, text) {
+  if (!currentUser) throw new Error('Not signed in');
+  const it = (intentions || []).find(i => i.title === goalTitle);
+  if (it) {
+    it.roadmapAI = it.roadmapAI || {};
+    if (!_markDone(it.roadmapAI, goalTitle, text)) return false;
+    await saveIntentions();
+    return true;
+  }
+  const { data } = await sb.from('intentions').select('id,roadmap_ai').eq('user_id', currentUser.id).eq('title', goalTitle).limit(1).maybeSingle();
+  if (!data) return false;
+  const rai = _pj(data.roadmap_ai) || {};
+  if (!_markDone(rai, goalTitle, text)) return false;
+  const { error } = await sb.from('intentions').update({ roadmap_ai: rai }).eq('id', data.id);
+  if (error) throw error;
+  return true;
+}
+if (typeof window !== 'undefined') window.ciCompleteFocusTodo = completeFocusTodo;
