@@ -156,7 +156,10 @@ setTimeout(() => { window.__ciSessionChecked = true; window.__ciSessionResolve?.
 // Preview mode never checks a session — don't make pages wait.
 if (new URLSearchParams(location.search).get('preview') === '1' && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__ciSessionChecked = true;
 export const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
+  // Scott 24 Nov 2026: only ONE frame runs the background token refresh — the top window, or the shell's
+  // header frame. Every other frame still refreshes on demand if its token has expired (under the shared
+  // lock), but no longer runs its own timer, so frames don't race each other refreshing the same login.
+  auth: { persistSession: true, autoRefreshToken: (() => { try { return window.self === window.top || window.frameElement?.id === 'header-admin-note-frame'; } catch (_) { return true; } })(), storageKey: 'ci-auth', storage: authStorage },
 });
 
 // ── STORAGE RECLAIM — runs at load, BEFORE Supabase refreshes the token.
