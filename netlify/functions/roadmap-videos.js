@@ -99,7 +99,7 @@ exports.handler = async (event) => {
       }),
     });
     const raw = await r.text();
-    if (!r.ok) return { statusCode: 502, headers, body: JSON.stringify({ error: raw }) };
+    if (!r.ok) { console.error('[roadmap-videos] OpenAI ' + r.status + ': ' + raw.slice(0, 500)); return { statusCode: 502, headers, body: JSON.stringify({ error: raw }) }; }
     plan = JSON.parse(JSON.parse(raw).choices?.[0]?.message?.content || '{}');
   } catch (e) {
     return { statusCode: 502, headers, body: JSON.stringify({ error: 'plan step failed: ' + (e.message || e) }) };

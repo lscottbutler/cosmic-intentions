@@ -38,7 +38,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ model: 'gpt-4o-mini', temperature, max_tokens, messages }),
     });
     const raw = await res.text();
-    if (!res.ok) throw new Error(raw);
+    if (!res.ok) { console.error('[wrapup-ai] OpenAI ' + res.status + ': ' + raw.slice(0, 500)); throw new Error(raw); }
     return (JSON.parse(raw).choices?.[0]?.message?.content || '').trim();
   };
 
