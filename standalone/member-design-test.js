@@ -842,7 +842,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const sum=c.querySelector('summary');if(!sum||sum.querySelector('[data-goal-btns]'))return;
    const n=+c.id.replace('pb-goal-',''),title=goals[n];
    const wrap=d.createElement('span');wrap.setAttribute('data-goal-btns','');wrap.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0';
-   [['open','OPEN GOAL PAGE'],['edit','✎ EDIT'],['viz','👁 VISUALIZE'],['todo','✓ TO DO']].forEach(([a,l])=>{const b=d.createElement('button');b.type='button';b.textContent=l;
+   [['open','ROADMAP'],['edit','✎ EDIT'],['viz','👁 VISUALIZE'],['todo','✓ TO DO']].forEach(([a,l])=>{const b=d.createElement('button');b.type='button';b.textContent=l;
     b.style.cssText='background:#000;color:#fff;border:0;border-radius:5px;padding:6px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
     b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();goalAction(a,title,goals);});wrap.append(b);});
    (sum.querySelector('.pb-goal-title')?.parentElement||sum).append(wrap);
