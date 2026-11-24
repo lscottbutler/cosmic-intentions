@@ -385,7 +385,12 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   exitBtn.addEventListener('click',leave);document.body.append(exitBtn);
   const sync=()=>{const on=!!fsEl();exitBtn.hidden=!on;btn.setAttribute('aria-pressed',String(on));document.body.classList.toggle('ci-fullscreen',on);};
   document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);
-  const mount=()=>{const five=document.getElementById('big-five-trigger')||trigger;if(five.parentElement&&btn.nextElementSibling!==five)five.before(btn);};
+  // Scott 24 Nov 2026: full screen sits just below the ☰ menu button.
+  const mount=()=>{if(trigger.parentElement&&btn.previousElementSibling!==trigger)trigger.after(btn);place();};
+  const place=()=>{if(!trigger.offsetParent)return;const sameParent=btn.offsetParent===trigger.offsetParent;if(!sameParent)return;
+   btn.style.setProperty('position','absolute','important');btn.style.setProperty('transform','none','important');btn.style.setProperty('margin','0','important');
+   btn.style.setProperty('left',(trigger.offsetLeft+(trigger.offsetWidth-btn.offsetWidth)/2)+'px','important');btn.style.setProperty('top',(trigger.offsetTop+trigger.offsetHeight+8)+'px','important');btn.style.setProperty('bottom','auto','important');btn.style.setProperty('right','auto','important');};
+  addEventListener('resize',place);setInterval(place,1000);
   mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
  })();
  // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Visualize, Action Plan.
