@@ -660,7 +660,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const css=[];
    for(const sh of doc.styleSheets){let rules;try{rules=sh.cssRules;}catch(_){continue;}
     for(const r of rules){if(r.selectorText&&/ci-page-welcome/.test(r.selectorText))css.push(r.cssText.replace(/html\.ci-header-note\s+/g,''));}}
-   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\nhtml body .ci-admin-page-box.ci-page-welcome.ci-page-welcome{margin:0 0 14px!important;border:2px solid #303030!important;border-radius:12px!important;padding:18px 22px!important;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.08)!important;box-sizing:border-box!important}';
+   const st=targetDoc.createElement('style');st.id='ci-moved-welcome-style';st.textContent=css.join('\n')+'\nhtml body .ci-admin-page-box.ci-page-welcome.ci-page-welcome{margin:0 0 14px!important;border:2px solid #303030!important;border-radius:12px!important;padding:18px 22px!important;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.08)!important;box-sizing:border-box!important}\nhtml.ci-on-citadel body .ci-admin-page-box.ci-page-welcome.ci-page-welcome{border:0!important;box-shadow:none!important}';
    targetDoc.head.appendChild(st);
   }
   const tmp=targetDoc.createElement('div');tmp.innerHTML=w.html;const box=tmp.firstElementChild;box.dataset.ciPage=current;slot.appendChild(box);
@@ -1085,7 +1085,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 28px/1.1 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
    b.style.color='#171717';b.innerHTML=`<p style="margin:4px 0 14px;font-size:16px;line-height:1.5">${esc(st.message)}</p><div style="display:flex;gap:10px;flex-wrap:wrap">${tile(st.streak+(st.streak?' 🔥':''),'DAY STREAK')}${tile(st.vizWeek,'VISUALIZATIONS THIS WEEK')}${tile(st.viewsWeek,'GOAL VIEWS THIS WEEK')}${tile(st.todosDone+' / '+st.todosTotal,'TO-DOS DONE')}</div>`;}).catch(()=>{_statsAt=0;});
  }
- setInterval(()=>{ensureStatsCard();ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
+ setInterval(()=>{try{headerNoteFrame.contentDocument?.documentElement.classList.toggle('ci-on-citadel',current==='home');}catch(_){}   // Scott 24 Nov 2026: no border on the Citadel admin message
+ ensureStatsCard();ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
