@@ -1021,7 +1021,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   async function paint(){
    if(!S){ov.innerHTML='<div style="padding:40px;text-align:center">Loading… try again in a moment.</div>';return;}
    try{st=await S.read();}catch(e){ov.innerHTML='<div style="padding:40px">Could not load My Study.</div>';return;}
-   const gs=S.goals();
+   let gs=[];try{gs=await S.goals();}catch(_){}
    const row=(x)=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #e6e6e6;${x.done?'opacity:.55':''}">
      ${x.thumbnail?`<img src="${esc(x.thumbnail)}" alt="" style="width:96px;height:54px;object-fit:cover;border-radius:6px;flex-shrink:0">`:`<span style="width:96px;text-align:center;font-size:28px;flex-shrink:0">${ICON[x.type]||'🔗'}</span>`}
      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:17px;line-height:1.35">${esc(x.title)}</div><div style="font-size:14px;color:#666">${esc(x.subtitle||x.type||'')}</div></div>

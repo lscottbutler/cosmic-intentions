@@ -31,9 +31,10 @@ async function write(st) {
 // One time: items hearted in LEARN FROM THE GREATS (saved in this browser) move into My Study.
 async function migrateHearts(items) {
   let favs = []; try { favs = JSON.parse(localStorage.getItem('ci_favorites') || '[]'); } catch (_) {}
+  if (!_rows && !(intentions || []).length) await goals();
   favs.filter(f => f && f.type === 'video' && f.target).forEach(f => {
     if (items.some(x => x.url === f.target)) return;
-    const g = (intentions || []).find(it => (it.roadmapAI?.resources || []).some(r => r && r.url === f.target));
+    const g = _goalRows().find(it => (it.roadmapAI?.resources || []).some(r => r && r.url === f.target));
     const r = g ? (g.roadmapAI.resources || []).find(x => x && x.url === f.target) : null;
     items.push({ id: 's' + Date.now() + Math.random().toString(36).slice(2, 6), goalId: g ? String(g.id) : '', goal: g ? g.title : '',
       type: r?.type || 'video', title: f.title || f.target, subtitle: f.subtitle || r?.subtitle || '', url: f.target,
@@ -41,10 +42,19 @@ async function migrateHearts(items) {
   });
 }
 
-function goals() { return (intentions || []).map((it, i) => ({ id: String(it.id), title: it.title || '', n: i + 1 })); }
+// The header frame may not have loaded goals yet — fall back to the account (same as MY FOCUS TODAY).
+let _rows = null;
+async function goals() {
+  if ((intentions || []).length) { _rows = intentions.map(it => ({ id: it.id, title: it.title, roadmapAI: it.roadmapAI })); return intentions.map((it, i) => ({ id: String(it.id), title: it.title || '', n: i + 1 })); }
+  if (!currentUser) return [];
+  const { data } = await sb.from('intentions').select('id,title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
+  _rows = (data || []).map(r => { let rai = r.roadmap_ai; if (typeof rai === 'string') { try { rai = JSON.parse(rai); } catch (_) { rai = {}; } } return { id: r.id, title: r.title, roadmapAI: rai || {} }; });
+  return _rows.map((it, i) => ({ id: String(it.id), title: it.title || '', n: i + 1 }));
+}
+const _goalRows = () => ((intentions || []).length ? intentions : (_rows || []));
 
 async function find(goalTitle) {
-  const it = (intentions || []).find(g => g.title === goalTitle);
+  const it = _goalRows().find(g => g.title === goalTitle);
   const userActions = (it?.roadmapAI?.userTasks || []).map(u => u && u.text).filter(Boolean);
   const data = await window.ciApiJson('roadmap-videos', { intention: goalTitle || '', userActions });
   return (data && data.resources) || [];
@@ -53,7 +63,7 @@ async function find(goalTitle) {
 async function save(goalTitle, r) {
   const st = await read();
   if (st.items.some(x => x.url === r.url)) return st;
-  const g = (intentions || []).find(x => x.title === goalTitle);
+  const g = _goalRows().find(x => x.title === goalTitle);
   st.items.push({ id: 's' + Date.now() + Math.random().toString(36).slice(2, 6), goalId: g ? String(g.id) : '', goal: goalTitle || '',
     type: r.type || 'video', title: r.title || r.url, subtitle: r.subtitle || '', url: r.url, thumbnail: r.thumbnail || '', done: false, savedAt: Date.now() });
   await write(st); return st;
