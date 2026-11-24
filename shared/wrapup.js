@@ -81,7 +81,8 @@ function _shade(hex, f) {
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false, deleteCall, railColor }) {
   // To-do lists retain provenance colors; Roadmap cards match their green tab.
   // The code chip retains the goal's shade.
-  const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : '#000');
+  // Scott 24 Nov 2026: My Actions cards use the goal's colour (same as the MY ACTIONS button).
+  const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : (railColor || '#000'));
   // Scott 10 Nov 2026: tag each task card with its priority so the TO DO P/S
   // buttons can filter without re-rendering.
   const isPri = noteContext ? (taskIsPriority(noteContext) ? '1' : '0') : '';
