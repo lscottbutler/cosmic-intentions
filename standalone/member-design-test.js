@@ -507,6 +507,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  const usageLink=document.createElement('a');usageLink.href='/usage-board.html';usageLink.textContent='My Usage';usageLink.style.cssText='display:block;padding:16px;color:inherit;font:inherit';const menuItems=document.getElementById('review-menu-items');
  const archLink=document.createElement('button');archLink.type='button';archLink.className='review-menu-item';archLink.textContent='Archive';archLink.style.cssText=usageLink.style.cssText;archLink.addEventListener('click',async()=>{try{document.getElementById('review-menu')?.close();}catch(_){}await openFeature('thoughts');for(let i=0;i<60;i++){try{const d=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentDocument;const el=d?.querySelector('#page-notes.active #ciArchive');if(el){let y=el.getBoundingClientRect().top,win=d.defaultView;while(win&&win!==window){y+=win.frameElement.getBoundingClientRect().top;win=win.frameElement.ownerDocument.defaultView;}window.scrollBy({top:y-100});return;}}catch(_){}await new Promise(r=>setTimeout(r,250));}});menuItems.append(archLink);
  const instrLink=document.createElement('button');instrLink.type='button';instrLink.className='review-menu-item';instrLink.textContent='Instructions';instrLink.style.cssText=usageLink.style.cssText;instrLink.addEventListener('click',()=>location.assign('/standalone/instructions.html'));menuItems.append(instrLink);// My Usage now lives at the bottom of Citadel (Scott 17 Nov 2026) — not in the menu.
+ const studyLink=document.createElement('button');studyLink.type='button';studyLink.className='review-menu-item';studyLink.textContent='My Study';studyLink.style.cssText=usageLink.style.cssText;studyLink.addEventListener('click',()=>{try{document.getElementById('review-menu')?.close();}catch(_){}window.ciOpenStudy();});menuItems.append(studyLink);
  const paletteLink=document.createElement('a');paletteLink.href='/standalone/palettes.html';paletteLink.textContent='Design Library';paletteLink.style.cssText=usageLink.style.cssText;menuItems.append(paletteLink);
  // Scott 6 Nov 2026: iPhone/iPad only — "Get the App" shows how to add CI to the Home Screen (Share → Add to Home Screen).
  // Android and PC browsers offer their own Install option, so this item is hidden there; also hidden once opened as the app.
@@ -1007,6 +1008,56 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const dn=list.filter(h=>h.done).length;
   slot.innerHTML=`<div style="margin:14px 0 0;padding:14px;background:${C[1]};border:1px solid rgba(0,0,0,.12);border-radius:12px"><div style="display:flex;justify-content:space-between;align-items:center;background:${C[0]};color:#fff;border-radius:8px;padding:12px 16px;font:800 15px/1 Arial,sans-serif;letter-spacing:.1em"><span>${C[2]}</span><span style="display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#000;font-size:12px;letter-spacing:0">${dn}/${list.length}</span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 16px;margin:14px 0 0">${list.length?list.map(h=>`<div role="button" data-habit-tick="${esc(h.id)}" style="display:flex;align-items:center;gap:12px;cursor:pointer;font:700 14px/1.3 Arial,sans-serif;color:#222;${h.done?'opacity:.55;text-decoration:line-through':''}"><span style="flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:${h.done?C[0]:'#3a3a3a'};display:grid;place-items:center;color:#fff;font-size:16px">${h.done?'✓':'○'}</span><span>${esc(h.name).toUpperCase()}</span></div>`).join(''):'<div style="color:#555">No habits in this part of the day yet.</div>'}</div></div>`;
  }
+ // ── MY STUDY (Scott 24 Nov 2026): saved videos/articles per goal, outside the to-do list ──
+ window.ciOpenStudy=async function(focusGoal){
+  const hd=headerNoteFrame.contentWindow,S=hd&&hd.ciStudy;
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let ov=document.getElementById('ci-study');
+  if(!ov){ov=document.createElement('div');ov.id='ci-study';ov.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#f2ede6;overflow:auto;-webkit-overflow-scrolling:touch;font:400 16px/1.5 Arial,sans-serif;color:#171717';document.body.append(ov);}
+  ov.style.display='block';
+  const BTN='border:0;border-radius:6px;padding:9px 12px;font:800 12px/1.2 Arial,sans-serif;letter-spacing:.06em;cursor:pointer';
+  const ICON={video:'▶',site:'🌐',article:'📄',podcast:'🎧'};
+  let st={items:[]},sugg={};
+  async function paint(){
+   if(!S){ov.innerHTML='<div style="padding:40px;text-align:center">Loading… try again in a moment.</div>';return;}
+   try{st=await S.read();}catch(e){ov.innerHTML='<div style="padding:40px">Could not load My Study.</div>';return;}
+   const gs=S.goals();
+   const row=(x)=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #e6e6e6;${x.done?'opacity:.55':''}">
+     ${x.thumbnail?`<img src="${esc(x.thumbnail)}" alt="" style="width:96px;height:54px;object-fit:cover;border-radius:6px;flex-shrink:0">`:`<span style="width:96px;text-align:center;font-size:28px;flex-shrink:0">${ICON[x.type]||'🔗'}</span>`}
+     <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:17px;line-height:1.35">${esc(x.title)}</div><div style="font-size:14px;color:#666">${esc(x.subtitle||x.type||'')}</div></div>
+     <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+      <a href="${esc(x.url)}" target="_blank" rel="noopener" style="${BTN};background:#000;color:#fff;text-decoration:none;text-align:center">${x.type==='video'?'WATCH':x.type==='podcast'?'LISTEN':'READ'}</a>
+      <button type="button" data-st-done="${esc(x.id)}" style="${BTN};background:${x.done?'#fff':'#2e7d32'};color:${x.done?'#2e7d32':'#fff'};${x.done?'border:2px solid #2e7d32':''}">${x.done?'↺ UNDO':'✓ DONE'}</button>
+      <button type="button" data-st-del="${esc(x.id)}" style="${BTN};background:#fff;color:#8b1a1a;border:2px solid #8b1a1a">✕ REMOVE</button>
+     </div></div>`;
+   const sec=g=>{const mine=st.items.filter(x=>x.goalId===g.id||(!x.goalId&&x.goal===g.title)),open=mine.filter(x=>!x.done),done=mine.filter(x=>x.done),sg=sugg[g.title];
+    return `<section data-st-goal="${esc(g.title)}" style="background:#fff;border:2px solid #303030;border-radius:12px;padding:18px 20px;margin:0 0 18px">
+     <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1"><span style="display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#000;color:#fff;font-weight:800;flex-shrink:0">${g.n}</span><b style="font-size:17px;text-transform:uppercase">${esc(g.title)}</b></div>
+     <button type="button" data-st-find="${esc(g.title)}" style="${BTN};background:#1e90ff;color:#fff">${sg==='loading'?'FINDING…':'✦ FIND MORE'}</button></div>
+     ${open.length?open.map(row).join(''):'<div style="padding:12px 0 0;color:#777">Nothing saved yet — tap ✦ FIND MORE.</div>'}
+     ${Array.isArray(sg)&&sg.length?`<div style="margin:14px 0 0;padding:12px;background:#eef5fb;border-radius:10px"><b style="font-size:13px;letter-spacing:.08em">SUGGESTIONS — SAVE THE ONES YOU WANT</b>${sg.map((r,k)=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #d8e6f2">${r.thumbnail?`<img src="${esc(r.thumbnail)}" alt="" style="width:80px;height:45px;object-fit:cover;border-radius:6px;flex-shrink:0">`:`<span style="width:80px;text-align:center;font-size:24px;flex-shrink:0">${ICON[r.type]||'🔗'}</span>`}<div style="flex:1;min-width:0"><div style="font-weight:700">${esc(r.title)}</div><div style="font-size:13px;color:#666">${esc(r.subtitle||r.type||'')}</div></div>${st.items.some(x=>x.url===r.url)?'<span style="font:800 12px Arial;color:#2e7d32">✓ SAVED</span>':`<button type="button" data-st-save="${esc(g.title)}" data-st-k="${k}" style="${BTN};background:#000;color:#fff">+ SAVE</button>`}</div>`).join('')}</div>`:''}
+     ${done.length?`<details style="margin:10px 0 0"><summary style="cursor:pointer;font-weight:700;color:#555">Done (${done.length})</summary>${done.map(row).join('')}</details>`:''}
+    </section>`;};
+   ov.innerHTML=`<div style="max-width:860px;margin:0 auto;padding:18px 16px 60px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 16px"><b style="font-size:24px;letter-spacing:.1em">📚 MY STUDY</b><button type="button" data-st-close style="${BTN};background:#000;color:#fff">✕ CLOSE</button></div>
+    ${st.signedIn?(gs.length?gs.map(sec).join(''):'<div>No goals yet.</div>'):'<div style="padding:20px;background:#fff;border-radius:12px">Sign in to see My Study.</div>'}</div>`;
+   if(focusGoal){const el=[...ov.querySelectorAll('[data-st-goal]')].find(e=>e.dataset.stGoal===focusGoal);if(el)el.scrollIntoView({block:'start'});focusGoal='';}
+  }
+  async function onClick(e){
+   const b=e.target.closest('button');if(!b)return;
+   if(b.hasAttribute('data-st-close')){ov.style.display='none';return;}
+   const S2=headerNoteFrame.contentWindow.ciStudy;
+   try{
+    if(b.dataset.stDone){const x=st.items.find(i=>i.id===b.dataset.stDone);await S2.update(b.dataset.stDone,{done:!x?.done});}
+    else if(b.dataset.stDel){await S2.remove(b.dataset.stDel);}
+    else if(b.dataset.stFind){const g=b.dataset.stFind;sugg[g]='loading';await paint();try{sugg[g]=await S2.find(g);}catch(_){sugg[g]=[];alert('Could not reach the source finder — try again.');}}
+    else if(b.dataset.stSave){const g=b.dataset.stSave,r=(sugg[g]||[])[+b.dataset.stK];if(r)await S2.save(g,r);}
+    else return;
+   }catch(_){alert('Could not save. Are you signed in?');}
+   const y=ov.scrollTop;await paint();ov.scrollTop=y;
+  }
+  if(ov.__h)ov.removeEventListener('click',ov.__h);ov.__h=onClick;ov.addEventListener('click',onClick);await paint();
+ };
  setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;

@@ -693,22 +693,8 @@ function _todayChecklist() {
     // official sites, articles, podcasts). Pin ones you love; refresh swaps the rest.
     const res = Array.isArray(rai.resources) ? rai.resources : [];
     const _rIcon = { video: '🎬', source: '🌐', article: '📄', podcast: '🎧' };
-    const resourcesBlock = `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 2px 6px;">
-        <span style="font-family:var(--vault-mono);font-size:14px;font-weight:800;letter-spacing:1px;color:#1C2230;">▶ LEARN FROM THE GREATS</span>
-        <button id="wrapVidBtn-${idx}" onclick="wrapGenResources(${idx})" style="flex-shrink:0;background:#1C2230;border:none;border-radius:6px;padding:6px 10px;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">${res.length ? '↻ REFRESH' : '▶ FIND SOURCES'}</button>
-      </div>
-      ${res.length ? res.map((r, i) => `<div style="display:flex;gap:8px;align-items:center;padding:5px 2px;border-top:1px solid rgba(28,34,48,0.14);">
-        ${r.type === 'video' && r.thumbnail ? `<img src="${esc(r.thumbnail)}" alt="" style="width:88px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0;">` : `<span style="width:44px;text-align:center;font-size:24px;flex-shrink:0;">${_rIcon[r.type] || '🔗'}</span>`}
-        <a href="${esc(r.url)}" target="_blank" rel="noopener" style="flex:1;min-width:0;text-decoration:none;">
-          <span style="display:block;font-size:16px;line-height:1.35;color:#12251f;font-weight:600;">${esc(r.title)}</span>
-          <span style="display:block;font-size:13px;color:#3e4a4c;">${esc(r.subtitle || '')}</span>
-        </a>
-        <button onclick="wrapFavResource(${idx},${i})" title="${_isResFav(r.url) ? 'Unfavorite' : 'Favorite — save to your Favorites panel'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:22px;line-height:1;opacity:${_isResFav(r.url) ? '1' : '0.4'};padding:2px 4px;color:#e0102b;">${_isResFav(r.url) ? '♥' : '♡'}</button>
-        <button onclick="wrapPinResource(${idx},${i})" title="${r.pinned ? 'Unpin' : 'Pin — keep this on refresh'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:20px;opacity:${r.pinned ? '1' : '0.35'};padding:2px 4px;">📌</button>
-        <span style="flex-shrink:0;color:#e0102b;font-size:22px;">↗</span>
-      </div>`).join('') : `<div style="font-size:14px;color:rgba(28,34,48,0.65);padding:2px;">Real videos, official sites, articles &amp; podcasts from people who've done this.</div>`}
-    </div>`;
+    // Scott 24 Nov 2026: sources live on the MY STUDY page, not in the middle of the to-do list.
+    const resourcesBlock = `<button type="button" onclick="(window.top.ciOpenStudy||function(){})(${JSON.stringify(String(it.title||'')).replace(/"/g,'&quot;')})" style="display:block;width:100%;margin-top:10px;background:#1C2230;color:#fff;border:0;border-radius:8px;padding:12px;font:800 14px/1.2 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">📚 MY STUDY — videos &amp; articles for this goal</button>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
     rows += `<div class="wgoal" data-goal-idx="${idx}">

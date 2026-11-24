@@ -16,6 +16,7 @@ import { createHabitMindsetCard } from './shared/habit-mindset.js';
 import { renderWins, archiveTaskToWins } from './shared/wins.js';
 import { renderArchivePage } from './shared/archive.js';
 import './shared/goal-page.js';
+import './shared/study.js';
 // Scott 13 Nov 2026: per-page "where you stand" recap inside the admin welcome box.
 import { renderPageRecap } from './shared/recap.js';
 // Scott 11 Nov 2026: inline onclick on the TO DO ARCHIVE button calls this.
