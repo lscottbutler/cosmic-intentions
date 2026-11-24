@@ -669,19 +669,19 @@ function _todayChecklist() {
     const _rIcon = { video: '🎬', source: '🌐', article: '📄', podcast: '🎧' };
     const resourcesBlock = `<div style="background:#8ba6a9;border:1px solid #6f8a8d;border-radius:8px;padding:7px 9px;margin-top:9px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 2px 6px;">
-        <span style="font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:1px;color:#1C2230;">▶ LEARN FROM THE GREATS</span>
-        <button id="wrapVidBtn-${idx}" onclick="wrapGenResources(${idx})" style="flex-shrink:0;background:#1C2230;border:none;border-radius:6px;padding:6px 10px;font-family:var(--vault-mono);font-size:9px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">${res.length ? '↻ REFRESH' : '▶ FIND SOURCES'}</button>
+        <span style="font-family:var(--vault-mono);font-size:14px;font-weight:800;letter-spacing:1px;color:#1C2230;">▶ LEARN FROM THE GREATS</span>
+        <button id="wrapVidBtn-${idx}" onclick="wrapGenResources(${idx})" style="flex-shrink:0;background:#1C2230;border:none;border-radius:6px;padding:6px 10px;font-family:var(--vault-mono);font-size:12px;font-weight:800;letter-spacing:0.5px;color:#fff;cursor:pointer;">${res.length ? '↻ REFRESH' : '▶ FIND SOURCES'}</button>
       </div>
       ${res.length ? res.map((r, i) => `<div style="display:flex;gap:8px;align-items:center;padding:5px 2px;border-top:1px solid rgba(28,34,48,0.14);">
-        ${r.type === 'video' && r.thumbnail ? `<img src="${esc(r.thumbnail)}" alt="" style="width:52px;height:30px;object-fit:cover;border-radius:4px;flex-shrink:0;">` : `<span style="width:30px;text-align:center;font-size:16px;flex-shrink:0;">${_rIcon[r.type] || '🔗'}</span>`}
+        ${r.type === 'video' && r.thumbnail ? `<img src="${esc(r.thumbnail)}" alt="" style="width:88px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0;">` : `<span style="width:44px;text-align:center;font-size:24px;flex-shrink:0;">${_rIcon[r.type] || '🔗'}</span>`}
         <a href="${esc(r.url)}" target="_blank" rel="noopener" style="flex:1;min-width:0;text-decoration:none;">
-          <span style="display:block;font-size:11px;line-height:1.3;color:#12251f;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.title)}</span>
-          <span style="display:block;font-size:9px;color:#3e4a4c;">${esc(r.subtitle || '')}</span>
+          <span style="display:block;font-size:16px;line-height:1.35;color:#12251f;font-weight:600;">${esc(r.title)}</span>
+          <span style="display:block;font-size:13px;color:#3e4a4c;">${esc(r.subtitle || '')}</span>
         </a>
-        <button onclick="wrapFavResource(${idx},${i})" title="${_isResFav(r.url) ? 'Unfavorite' : 'Favorite — save to your Favorites panel'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:15px;line-height:1;opacity:${_isResFav(r.url) ? '1' : '0.4'};padding:2px 4px;color:#e0102b;">${_isResFav(r.url) ? '♥' : '♡'}</button>
-        <button onclick="wrapPinResource(${idx},${i})" title="${r.pinned ? 'Unpin' : 'Pin — keep this on refresh'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:14px;opacity:${r.pinned ? '1' : '0.35'};padding:2px 4px;">📌</button>
-        <span style="flex-shrink:0;color:#e0102b;font-size:15px;">↗</span>
-      </div>`).join('') : `<div style="font-size:11px;color:rgba(28,34,48,0.65);padding:2px;">Real videos, official sites, articles &amp; podcasts from people who've done this.</div>`}
+        <button onclick="wrapFavResource(${idx},${i})" title="${_isResFav(r.url) ? 'Unfavorite' : 'Favorite — save to your Favorites panel'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:22px;line-height:1;opacity:${_isResFav(r.url) ? '1' : '0.4'};padding:2px 4px;color:#e0102b;">${_isResFav(r.url) ? '♥' : '♡'}</button>
+        <button onclick="wrapPinResource(${idx},${i})" title="${r.pinned ? 'Unpin' : 'Pin — keep this on refresh'}" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:20px;opacity:${r.pinned ? '1' : '0.35'};padding:2px 4px;">📌</button>
+        <span style="flex-shrink:0;color:#e0102b;font-size:22px;">↗</span>
+      </div>`).join('') : `<div style="font-size:14px;color:rgba(28,34,48,0.65);padding:2px;">Real videos, official sites, articles &amp; podcasts from people who've done this.</div>`}
     </div>`;
 
     const activeTab = _activeTab.get(idx) || 'my';   // which tab shows by default
