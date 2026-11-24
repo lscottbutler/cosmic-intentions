@@ -341,3 +341,36 @@ export async function completeFocusTodo(goalTitle, text) {
   return true;
 }
 if (typeof window !== 'undefined') window.ciCompleteFocusTodo = completeFocusTodo;
+
+/* MY FOCUS TODAY stats (Scott 24 Nov 2026): day streak, visualizations this week, goal views
+   this week, to-dos done — plus one line of encouragement (fixed messages, no AI cost). */
+export async function getFocusStats() {
+  let rows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
+  if (!rows.length && currentUser) {
+    const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id);
+    rows = (data || []).map(r => ({ title: r.title, rai: _pj(r.roadmap_ai) || {} }));
+  }
+  let todosDone = 0, todosTotal = 0;
+  const walk = ns => (ns || []).forEach(n => { if (!n) return; todosTotal++; if (n.done) todosDone++; walk(n.children); });
+  rows.forEach(r => walk(r.rai.userTasks));
+  const a = await _activity();
+  const DAY = 864e5, now = Date.now(), weekAgo = now - 7 * DAY;
+  const vizWeek = a.filter(r => r.event_type === 'visualize' && Date.parse(r.created_at) >= weekAgo).length;
+  const key = t => { const d = new Date(t); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); };
+  const days = new Set(a.map(r => key(r.created_at)));
+  let views = []; try { views = JSON.parse(localStorage.getItem('ci_goal_views') || '[]'); } catch (_) {}
+  views.forEach(t => days.add(key(t)));
+  const viewsWeek = views.filter(t => t >= weekAgo).length;
+  let streak = 0, cur = new Date(); if (!days.has(key(cur))) cur = new Date(now - DAY);
+  while (days.has(key(cur))) { streak++; cur = new Date(cur.getTime() - DAY); }
+  const name = String((LS.get('ci_pegboard') || {})['pb-name'] || '').trim().split(/\s+/)[0];
+  const hi = name ? name + ', ' : '';
+  let message;
+  if (streak >= 7) message = `${hi}${streak} days in a row. This is who you are now — keep showing up as the person you intend to be.`;
+  else if (streak >= 2) message = `${hi}${streak} days running. Momentum is building — one small action today keeps it alive.`;
+  else if (vizWeek > 0) message = `${hi}you visualized ${vizWeek} time${vizWeek > 1 ? 's' : ''} this week. Pick one to-do below and act on it.`;
+  else if (todosDone > 0) message = `${hi}${todosDone} to-dos done so far. Start today with one visualization, then tick one more off.`;
+  else message = `${hi}today is a fresh start. Three minutes of visualization, then one to-do — that's the whole job.`;
+  return { streak, vizWeek, viewsWeek, todosDone, todosTotal, message };
+}
+if (typeof window !== 'undefined') window.ciFocusStats = getFocusStats;

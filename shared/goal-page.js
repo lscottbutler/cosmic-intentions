@@ -111,6 +111,7 @@ function renderBar(idx, editing = false) {
 }
 
 export function openGoalPage(idx) {
+  try { const v = JSON.parse(localStorage.getItem('ci_goal_views') || '[]'); v.push(Date.now()); localStorage.setItem('ci_goal_views', JSON.stringify(v.slice(-500))); } catch (_) {}   // MY FOCUS TODAY stats
   if (!intentions[idx]) return;
   window.__ciGoalFocus = idx;
   wrapupGoalToggle(idx, true);   // this goal's section open
