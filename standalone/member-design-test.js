@@ -387,6 +387,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);
   const mount=()=>{const five=document.getElementById('big-five-trigger')||trigger;if(five.parentElement&&btn.nextElementSibling!==five)five.before(btn);};
   mount();new MutationObserver(mount).observe(document.querySelector('.orientation'),{childList:true,subtree:true});
+  // Scott 24 Nov 2026: on phones, full screen sits just below the ☰ button. Style-only (never moves the button in the page),
+  // so it can't fight the other buttons.
+  const place=()=>{try{const narrow=innerWidth<700;
+   if(!narrow){['position','left','top','transform','margin','z-index'].forEach(k=>btn.style.removeProperty(k));return;}
+   btn.style.setProperty('position','absolute','important');btn.style.setProperty('transform','none','important');btn.style.setProperty('margin','0','important');btn.style.setProperty('z-index','5','important');
+   const op=btn.offsetParent;if(!op)return;const t=trigger.getBoundingClientRect(),o=op.getBoundingClientRect(),w=btn.offsetWidth||t.width;
+   const L=Math.round(t.left-o.left+op.scrollLeft+(t.width-w)/2)+'px',T=Math.round(t.bottom-o.top+op.scrollTop+8)+'px';
+   if(btn.style.left!==L)btn.style.setProperty('left',L,'important');if(btn.style.top!==T)btn.style.setProperty('top',T,'important');}catch(_){}};
+  addEventListener('resize',place);setInterval(place,800);place();
  })();
  // THE BIG FIVE menu (Scott 2026-10-29): "5" button from The_Five PSD beside the ☰ menu; opens Meditate, Habits, Goals, Visualize, Action Plan.
  (()=>{const keys=['action-plan','goals','daily-habits','meditation','super-viz'];const trigger=document.getElementById('review-menu-trigger');if(!trigger)return;
