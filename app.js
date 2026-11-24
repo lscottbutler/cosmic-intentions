@@ -1465,7 +1465,22 @@ if (typeof window !== 'undefined') {
   window.addEventListener('pagehide', _bgSync);
 }
 
-async function syncFromSupabase() {
+
+// Scott 24 Nov 2026 (smooth loading): on load the auth listener AND init both asked for the same
+// profile + goals (3 identical requests each). One request at a time; repeats within 3s reuse it.
+function _singleFlight(fn) {
+  let p = null, at = 0;
+  return () => {
+    if (p) return p;
+    if (Date.now() - at < 1500) return Promise.resolve();
+    p = Promise.resolve().then(fn).finally(() => { p = null; at = Date.now(); });
+    return p;
+  };
+}
+const syncFromSupabase = _singleFlight(() => _syncFromSupabaseRaw());
+const syncIntentionsFromSupabase = _singleFlight(() => _syncIntentionsFromSupabaseRaw());
+
+async function _syncFromSupabaseRaw() {
   if (!currentUser) return;
   syncPending = true;
   try {
@@ -1665,7 +1680,7 @@ export async function uploadVisionImage(intentionId, b64) {
   }
 }
 
-async function syncIntentionsFromSupabase() {
+async function _syncIntentionsFromSupabaseRaw() {
   if (!currentUser) return;
   try {
     const { data, error } = await sb
