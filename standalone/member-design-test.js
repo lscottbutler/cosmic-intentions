@@ -459,6 +459,15 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   box.innerHTML=html;box.querySelectorAll('a').forEach(a=>{a.style.color='#6b6f78';a.target='_blank';a.rel='noopener';});
  });
  window.addEventListener('popstate',event=>{const a=event.state?.ciFeature||new URLSearchParams(location.search).get('feature')||'home';if(features[a])openFeature(a,{fromHistory:true});});
+ // Scott 24 Nov 2026 (smooth loading): keep the page faded until its layout stops changing
+ // (late cards, carousel, usage board, players) — then show it all at once, top to bottom.
+ async function waitStable(maxMs=4500){
+  const sample=()=>{const v=[document.documentElement.scrollHeight,frame.style.height,headerNoteFrame?.style.height];
+   try{const d=frame.contentDocument;v.push(d?.documentElement.scrollHeight);const e=d?.getElementById('experienceFrame')?.contentDocument;v.push(e?.documentElement.scrollHeight);}catch(_){}
+   return v.join('|');};
+  const t0=performance.now();let last=sample(),same=0;
+  while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last){if(++same>=6)return;}else{same=0;last=now;}}
+ }
  async function openFeature(action,options={}){
   if(!features[action])return;
   const version=++navigationVersion;
@@ -488,6 +497,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   };
   const started=performance.now();
   while(version===navigationVersion&&!ready()&&performance.now()-started<15000)await new Promise(resolve=>setTimeout(resolve,50));
+  if(version!==navigationVersion)return;
+  await waitStable();
   if(version!==navigationVersion)return;
   pageNavigationPending=false;
   if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
@@ -1569,6 +1580,8 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  });
  window.addEventListener('resize',schedule);
  renderFeature('home');
+ // First load: start faded, reveal once the layout has settled (same as page changes).
+ if(contentCard){contentCard.style.opacity=0;if(orientationCard)orientationCard.style.opacity=0;setTimeout(async()=>{await waitStable(6000);if(!pageNavigationPending)await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);},300);}
  const initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
