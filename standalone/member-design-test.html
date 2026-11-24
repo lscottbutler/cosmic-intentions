@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="ci-loading">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="/standalone/ci.webmanifest" crossorigin="use-credentials">
@@ -10,6 +10,8 @@
 <title>CI member design test</title>
 <link rel="stylesheet" href="member-design-test.css?v=ux-20261113a">
 <script src="member-design-test.js?v=ux-20261113a" defer></script>
+<style>html.ci-loading .member-player-columns,html.ci-loading .orientation{opacity:0!important}</style>
+<script>setTimeout(function(){document.documentElement.classList.remove("ci-loading")},8000)</script>
 </head>
 <body>
 <main>

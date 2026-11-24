@@ -504,6 +504,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
   contentCard.inert=false;contentCard.removeAttribute('aria-busy');
   glideBar(startBarTop);
+  document.documentElement.classList.remove('ci-loading');
   await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);
  }
  function navigateFeature(action){
@@ -1581,7 +1582,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  window.addEventListener('resize',schedule);
  renderFeature('home');
  // First load: start faded, reveal once the layout has settled (same as page changes).
- if(contentCard){contentCard.style.opacity=0;if(orientationCard)orientationCard.style.opacity=0;setTimeout(async()=>{await waitStable(6000);if(!pageNavigationPending)await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);},300);}
+ if(contentCard){contentCard.style.opacity=0;if(orientationCard)orientationCard.style.opacity=0;setTimeout(async()=>{await waitStable(6000);document.documentElement.classList.remove('ci-loading');if(!pageNavigationPending)await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);},300);}
  const initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
