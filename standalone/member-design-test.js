@@ -974,7 +974,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      sw.innerHTML=`${pn.skills.length?grp('SKILLS',pn.skills.map(k=>`<div>${esc(sk(k))}</div>`).join('')):''}${pn.words.length?grp('MY WORDS',pn.words.map(w=>`<div style="font-style:italic">“${esc(w)}”</div>`).join('')):''}`;
      const sh=box.parentElement;if(sh&&sh.lastElementChild!==sw)sh.append(sw);}}
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${pinBody}</div>`;
-   box.querySelector('[data-card-habits]').innerHTML=`<button type="button" data-focus-open="daily-habits" style="border:0;cursor:pointer;display:inline-block;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em">TODAY’S HABITS →</button><div style="margin:10px 0 0">${habits}</div>${habitTiles}<div data-habit-panel></div>`;
+   box.querySelector('[data-card-habits]').innerHTML=`<button type="button" data-focus-open="daily-habits" style="border:0;cursor:pointer;display:inline-block;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em">DAILY HABITS →</button><div style="margin:10px 0 0">${habits}</div>${habitTiles}<div data-habit-panel></div>`;
    box.querySelector('[data-med-text]').innerHTML=prac;
    paintHabitPanel(box);
    // Scott 24 Nov 2026: MY FOCUS TODAY = where you stand + one line of encouragement.
