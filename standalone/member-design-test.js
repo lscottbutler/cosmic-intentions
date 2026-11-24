@@ -989,7 +989,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      <div style="max-width:720px;margin:14px auto 0"><div style="display:flex;gap:8px;margin:0 0 10px"><button type="button" data-viz-kind="goal" style="flex:1;border:0;border-radius:6px;padding:10px;font:800 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">GOAL</button><button type="button" data-viz-kind="aff" style="flex:1;border:0;border-radius:6px;padding:10px;font:800 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer">AFFIRMATION</button></div>
      <select data-viz-pick aria-label="What to visualize" style="width:100%;padding:10px;border:1px solid #999;border-radius:6px;font:400 15px/1.3 Arial,sans-serif;text-transform:uppercase"></select></div>`;
     const fr=vz.querySelector('[data-viz-frame]'),sel=vz.querySelector('[data-viz-pick]');
-    const load=t=>{if(t)fr.src='/players/3min-viz.html?g='+encodeURIComponent(t);};
+    const load=t=>{if(t)fr.src='/players/3min-viz.html?autoplay=0&g='+encodeURIComponent(t);};
     const fill=kind=>{vz.dataset.kind=kind;vz.querySelectorAll('[data-viz-kind]').forEach(b=>{const on=b.dataset.vizKind===kind;b.style.background=on?'#000':'#e6e6e6';b.style.color=on?'#fff':'#000';});
      const P=box.__pf||{},list=kind==='goal'?(P.options?.goals||[]):(P.options?.skills||[]).map(x=>x.title).filter(Boolean);
      sel.innerHTML=list.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')||'<option value="">Nothing to choose yet</option>';load(sel.value);};

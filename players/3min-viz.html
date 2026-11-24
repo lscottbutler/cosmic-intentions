@@ -392,7 +392,7 @@
     tts(welcomeB).then(a=>VO.welcomeB=a),
     tts(releaseText).then(a=>VO.release=a),
     ...Object.entries(VOTEXT).map(([k,t])=>tts(t).then(a=>VO[k]=a)),
-  ]).finally(()=>{ setTimeout(()=>setPlaying(true), 400); });
+  ]).finally(()=>{ if(P.get('autoplay')!=='0') setTimeout(()=>setPlaying(true), 400); });   // Scott 24 Nov 2026: ?autoplay=0 waits for Play (Citadel)
   </script>
 </body>
 </html>
