@@ -588,9 +588,34 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
       ].join('');
       const noteContext = taskNoteContext(it, 'roadmap', JSON.stringify([cnum, t]), code, t);
       if(priorityOnly && (d || (priorityOnly === 'nonpriority' ? taskIsPriority(noteContext) : !taskIsPriority(noteContext)))) return '';
-      return _card({ shade, code, text: t, done: d, toggleCall: `toggleRoadmapTaskDone(${idx},${i})`, items, variant: 'roadmap', noteContext, showLinkedEntries, deleteCall: `deleteRoadmapTask(${idx},${i})` });
+      // Scott 24 Nov 2026: Roadmap items are AI SUGGESTIONS — just the text and "+ ADD TO MY TO DO LIST".
+      // P / pen / ⋯ / NOTE / JOURNAL only exist on My Actions (the user's real to-dos).
+      const added = !!(rai.adopted || {})[i] || (it.roadmapAI?.userTasks || []).some(u => u && u.text === String(t).slice(0, 160));
+      const tx = typeof t === 'string' ? t : (t && (t.text || t.title || t.task)) || '';
+      return `<div class="wcard wcard-suggest" style="display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:14px 14px 14px 18px;background:#fff;border:1px solid #e3e3e3;border-left:8px solid ${ROADMAP_COLOR};border-radius:12px;${added ? 'opacity:.6;' : ''}">
+        <span style="flex:1;min-width:0;font-size:17px;line-height:1.4;color:#171717">${esc(tx)}</span>
+        ${added
+          ? `<span style="flex-shrink:0;font:800 12px/1 Arial,sans-serif;letter-spacing:.06em;color:${ROADMAP_COLOR}">✓ ON MY TO DO LIST</span>`
+          : `<button type="button" onclick="wrapAdoptRoadmap(${idx},${i})" style="flex-shrink:0;background:${ROADMAP_COLOR};color:#fff;border:0;border-radius:6px;padding:9px 12px;font:800 12px/1.2 Arial,sans-serif;letter-spacing:.06em;cursor:pointer">+ ADD TO MY TO DO LIST</button>`}
+      </div>`;
     });
 }
+
+/* Copy a Roadmap suggestion into the goal's own to-do list (My Actions). */
+export function wrapAdoptRoadmap(idx, i) {
+  const it = intentions[idx]; if (!it) return;
+  if (!it.roadmapAI) it.roadmapAI = { intention: it.title || '', tasks: [], userTasks: [] };
+  const r = it.roadmapAI; const t = (r.tasks || [])[i];
+  const text = String(typeof t === 'string' ? t : (t && (t.text || t.title || t.task)) || '').trim().slice(0, 160);
+  if (!text) return;
+  if (!Array.isArray(r.userTasks)) r.userTasks = [];
+  if (r.userTasks.length >= 25) { toast('Max 25 of your own actions per goal.', 'error'); return; }
+  if (!r.userTasks.some(u => u && u.text === text)) r.userTasks.push({ id: Date.now(), text, done: false });
+  r.adopted = { ...(r.adopted || {}), [i]: true };
+  saveIntentions(); renderWrapup();
+  if (typeof toast === 'function') toast('Added to your to-do list.', 'success');
+}
+if (typeof window !== 'undefined') window.wrapAdoptRoadmap = wrapAdoptRoadmap;
 
 function _todayChecklist() {
   // Show EVERY real goal — even ones with no roadmap yet (e.g. a goal just
