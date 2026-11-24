@@ -1064,7 +1064,25 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   }
   if(ov.__h)ov.removeEventListener('click',ov.__h);ov.__h=onClick;ov.addEventListener('click',onClick);await paint();
  };
- setInterval(()=>{ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
+ // Scott 24 Nov 2026: the MY FOCUS TODAY stats card also sits on Visualize, Meditation, Habits and Gratitude.
+ let _statsAt=0;
+ function ensureStatsCard(){
+  let rd;try{rd=document.getElementById('ci-review-frame')?.contentDocument;}catch(_){return;}
+  if(!rd?.body)return;
+  const PAGES=['super-viz','visualization','meditation','daily-habits','new-gratitude','gratitude'];
+  let el=rd.getElementById('ci-stats-card');
+  if(!PAGES.includes(current)){el?.remove();return;}
+  const shell=rd.querySelector('.shell');if(!shell)return;
+  if(!el){el=rd.createElement('section');el.id='ci-stats-card';el.style.cssText='margin:16px 16px 18px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:400 15px/1.5 Arial,sans-serif;box-sizing:border-box';
+   el.innerHTML='<b style="font:800 15px/1.3 Arial,sans-serif;letter-spacing:.1em">MY FOCUS TODAY</b><div data-stats-body style="color:#777;margin-top:8px">Loading…</div>';shell.prepend(el);_statsAt=0;}
+  if(Date.now()-_statsAt<60000)return;_statsAt=Date.now();
+  const hd=headerNoteFrame.contentWindow;
+  Promise.resolve(hd&&hd.ciFocusStats&&hd.ciFocusStats()).then(st=>{const b=el.querySelector('[data-stats-body]');if(!b||!st)return;
+   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+   const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 28px/1.1 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
+   b.style.color='#171717';b.innerHTML=`<p style="margin:4px 0 14px;font-size:16px;line-height:1.5">${esc(st.message)}</p><div style="display:flex;gap:10px;flex-wrap:wrap">${tile(st.streak+(st.streak?' 🔥':''),'DAY STREAK')}${tile(st.vizWeek,'VISUALIZATIONS THIS WEEK')}${tile(st.viewsWeek,'GOAL VIEWS THIS WEEK')}${tile(st.todosDone+' / '+st.todosTotal,'TO-DOS DONE')}</div>`;}).catch(()=>{_statsAt=0;});
+ }
+ setInterval(()=>{ensureStatsCard();ensureReview();ensureInstructionsTop();ensureFocus();ensureUsage();ensureJournalTabs();ensureCitadelBack();ensureGoalButtons();ensureGoalsSide();hidePersonalE();},1000);
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==headerNoteFrame.contentWindow)return;
   if(event.data?.type==='ci-personal-e-ready'){
