@@ -10,6 +10,7 @@ import { sb, currentUser, intentions } from '../app.js';
 const PAGE = 'study';
 
 async function read() {
+  if (!window.__ciSessionChecked) await window.__ciSessionReady;   // don't report 'signed out' before the saved session is restored
   if (!currentUser) return { items: [], signedIn: false };
   const { data, error } = await sb.from('player_personal_notes').select('body')
     .eq('user_id', currentUser.id).eq('page_id', PAGE).maybeSingle();
@@ -45,6 +46,7 @@ async function migrateHearts(items) {
 // The header frame may not have loaded goals yet — fall back to the account (same as MY FOCUS TODAY).
 let _rows = null;
 async function goals() {
+  if (!window.__ciSessionChecked) await window.__ciSessionReady;   // don't report 'signed out' before the saved session is restored
   if ((intentions || []).length) { _rows = intentions.map(it => ({ id: it.id, title: it.title, roadmapAI: it.roadmapAI })); return intentions.map((it, i) => ({ id: String(it.id), title: it.title || '', n: i + 1 })); }
   if (!currentUser) return [];
   const { data } = await sb.from('intentions').select('id,title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });

@@ -150,6 +150,11 @@ const authStorage = (() => {
 })();
 // persistSession + autoRefreshToken keep the login on this device across
 // refreshes/restarts so testing doesn't require a fresh sign-in each visit.
+// Resolves once the saved session has been checked (see init). navTo waits on it before asking anyone to sign in.
+if (!window.__ciSessionReady) window.__ciSessionReady = new Promise(r => { window.__ciSessionResolve = r; });
+setTimeout(() => { window.__ciSessionChecked = true; window.__ciSessionResolve?.(); }, 20000);   // never wait forever
+// Preview mode never checks a session — don't make pages wait.
+if (new URLSearchParams(location.search).get('preview') === '1' && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__ciSessionChecked = true;
 export const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'ci-auth', storage: authStorage },
 });
@@ -693,6 +698,12 @@ export function navTo(id) {
   }
   // Must be logged in for any non-home page
   const auth_required = ['dashboard','dailyfocus','notes','setup','habits','wins','vizlibrary','vizgoal','myroadmap','entcard','admin'];
+  // Scott 24 Nov 2026: never show the sign-in box while the saved session is still being restored —
+  // wait for the check, then decide. (A slow check used to pop "Sign in" at members who were signed in.)
+  if (auth_required.includes(id) && !currentUser && !window.__ciSessionChecked) {
+    (window.__ciSessionReady || Promise.resolve()).then(() => navTo(id));
+    return;
+  }
   if (auth_required.includes(id) && !currentUser) {
     closeDrawer();
     openAuth('signin');
@@ -6597,11 +6608,17 @@ export async function init() {
   ]);
 
   // Check existing session (skipped in localhost preview mode)
+  const _markSession = () => { window.__ciSessionChecked = true; window.__ciSessionResolve?.(); };
   try {
     if (!_preview) {
-      const { data: { session } } = await withTimeout(sb.auth.getSession(), 6000, 'getSession');
+      // Several frames share one saved session; a busy moment can make the first read slow.
+      // Try twice before treating the member as signed out.
+      let session = null;
+      try { ({ data: { session } } = await withTimeout(sb.auth.getSession(), 6000, 'getSession')); }
+      catch (_) { ({ data: { session } } = await withTimeout(sb.auth.getSession(), 10000, 'getSession retry')); }
       if (session?.user) {
         updateUI(session.user);
+        _markSession();
         await withTimeout(syncFromSupabase(), 8000, 'syncFromSupabase');
         await withTimeout(syncIntentionsFromSupabase(), 8000, 'syncIntentionsFromSupabase');
         logDailyLogin();
@@ -6621,6 +6638,7 @@ export async function init() {
     updateUI(null);
   }
 
+  _markSession();
   renderDashboard();
 
   // Backfill vision images for any goals that don't have one yet.

@@ -225,6 +225,7 @@ function _openTasks(rai, goal) {
   return out;
 }
 export async function getFocusToday() {
+  if (!window.__ciSessionChecked) await window.__ciSessionReady;   // don't report 'signed out' before the saved session is restored
   let rows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
   if (!rows.length && currentUser) {
     const { data } = await sb.from('intentions').select('id,title,roadmap_ai,position').eq('user_id', currentUser.id).order('position', { ascending: true });
@@ -250,6 +251,7 @@ if (typeof window !== 'undefined') window.ciFocusToday = getFocusToday;
 /* PIN TO FOCUS (Scott 16 Nov 2026): member's own pinned goals (max 5), skills (max 3)
    and words (max 5). Saved to the member's account: player_personal_notes page 'focus-pins'. */
 export async function getFocusPins() {
+  if (!window.__ciSessionChecked) await window.__ciSessionReady;   // don't report 'signed out' before the saved session is restored
   const empty = { goals: [], skills: [], words: [] };
   let pins = empty;
   if (currentUser) {
@@ -345,6 +347,7 @@ if (typeof window !== 'undefined') window.ciCompleteFocusTodo = completeFocusTod
 /* MY FOCUS TODAY stats (Scott 24 Nov 2026): day streak, visualizations this week, goal views
    this week, to-dos done — plus one line of encouragement (fixed messages, no AI cost). */
 export async function getFocusStats() {
+  if (!window.__ciSessionChecked) await window.__ciSessionReady;   // don't report 'signed out' before the saved session is restored
   let rows = (intentions || []).map(i => ({ title: i.title, rai: i.roadmapAI || {} }));
   if (!rows.length && currentUser) {
     const { data } = await sb.from('intentions').select('title,roadmap_ai,position').eq('user_id', currentUser.id);
