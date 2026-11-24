@@ -6676,6 +6676,8 @@ export async function init() {
     if (_tabs) _tabs.style.setProperty('display', 'none', 'important');
     const _inlineGoal = new URLSearchParams(location.search).get('goal');
     openMasterDestination(_masterInlineAction, _inlineGoal);
+    // Tell the page shell this frame has its data and has drawn its page (smooth loading).
+    requestAnimationFrame(() => setTimeout(() => { window.__ciAppReady = true; }, 250));
   } else {
     // The standalone Master Player may have handed us a destination. Wait until
     // session restoration above is complete before navigating, otherwise navTo()

@@ -465,8 +465,10 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const sample=()=>{const v=[document.documentElement.scrollHeight,frame.style.height,headerNoteFrame?.style.height];
    try{const d=frame.contentDocument;v.push(d?.documentElement.scrollHeight);const e=d?.getElementById('experienceFrame')?.contentDocument;v.push(e?.documentElement.scrollHeight);}catch(_){}
    return v.join('|');};
+  // An embedded app page (Roadmap, Goals, Notes…) must have finished loading its data first.
+  const appReady=()=>{try{const ew=frame.contentDocument?.getElementById('experienceFrame')?.contentWindow;if(!ew||!ew.location||ew.location.href==='about:blank')return true;if(!/masterInline=/.test(ew.location.search))return true;return !!ew.__ciAppReady;}catch(_){return true;}};
   const t0=performance.now();let last=sample(),same=0;
-  while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last){if(++same>=6)return;}else{same=0;last=now;}}
+  while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last&&appReady()){if(++same>=6)return;}else{same=0;last=now;}}
  }
  async function openFeature(action,options={}){
   if(!features[action])return;
@@ -498,7 +500,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const started=performance.now();
   while(version===navigationVersion&&!ready()&&performance.now()-started<15000)await new Promise(resolve=>setTimeout(resolve,50));
   if(version!==navigationVersion)return;
-  await waitStable();
+  await waitStable(7000);
   if(version!==navigationVersion)return;
   pageNavigationPending=false;
   if(headerNoteFrame.dataset.noteSource)queueHeaderChange(headerNoteFrame.dataset.noteSource);
