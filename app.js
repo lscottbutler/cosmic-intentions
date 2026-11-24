@@ -6255,6 +6255,7 @@ async function initCitadelNoteFrame(nextPage) {
     if (renderVersion !== citadelNoteRenderVersion) return;
     if (pageInstructions.error) throw pageInstructions.error;
     currentUser = auth.data?.user || null;
+    window.__ciSessionChecked = true; window.__ciSessionResolve?.();   // this frame's session check is done
     window.ciOwnerAccess = currentUser?.email === 'lscottbutler@gmail.com';
     if(window.ciOwnerAccess)installOwnerLabels(window);
     // A genuinely separate owner-controlled instruction card lives above the
@@ -6507,9 +6508,9 @@ async function initCitadelNoteFrame(nextPage) {
 }
 
 export async function init() {
-  if(new URLSearchParams(location.search).get('usageBridge')==='1')return;
+  if(new URLSearchParams(location.search).get('usageBridge')==='1'){ sb.auth.getSession().then(({data})=>{ currentUser = data?.session?.user || null; }).finally(()=>{ window.__ciSessionChecked = true; window.__ciSessionResolve?.(); }); return; }
   if (new URLSearchParams(location.search).get('masterInline') === 'citadel-note') {
-    await initCitadelNoteFrame();
+    try { await initCitadelNoteFrame(); } finally { window.__ciSessionChecked = true; window.__ciSessionResolve?.(); }
     return;
   }
   // Shared read-only roadmap link (?r=<encoded>) — render a standalone public view and
