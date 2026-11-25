@@ -1016,6 +1016,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.querySelector('[data-card-habits]').innerHTML=`<button type="button" data-focus-open="daily-habits" style="border:0;cursor:pointer;background:none;padding:0">${window.ciTiles('DAILY HABITS')}</button><div style="margin:10px 0 0">${habits}</div>${habitTiles}<div data-habit-panel></div>`;
    box.querySelector('[data-med-text]').innerHTML=prac;
    paintHabitPanel(box);
+   // Scott 25 Nov 2026 (phones): the grey GOALS card fills the frame edge to edge, no border.
+   if(!rd.getElementById('ci-focus-mobile-css')){const st=rd.createElement('style');st.id='ci-focus-mobile-css';st.textContent='@media (max-width:600px){#ci-my-focus{margin-left:0!important;margin-right:0!important}#ci-my-focus [data-card-goals]{border:0!important;border-radius:0!important;padding-left:12px!important;padding-right:12px!important}}';rd.head.append(st);}
    box.style.opacity='1';
    // Scott 24 Nov 2026: MY FOCUS TODAY = where you stand + one line of encouragement.
    Promise.resolve(hd.ciFocusStats?.()).then(st=>{const el=box.querySelector('[data-stats-body]');if(!el||!st)return;
