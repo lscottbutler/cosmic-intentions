@@ -480,3 +480,6 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 /* Scott 13 Nov 2026: blue circle replaced by the black HIDE / SHOW OVERVIEW button in the button column. */
 .orientation .shortcuts>button#ci-info-trigger{width:auto!important;height:auto!important;min-height:0!important;border-radius:6px!important;background:#000!important;color:#fff!important;padding:10px 14px!important;font:700 13px/1 Arial,Helvetica,sans-serif!important;font-style:normal!important;letter-spacing:.08em!important;white-space:nowrap!important;box-shadow:none!important;display:inline-block!important}
 .orientation .shortcuts>button#ci-info-trigger[aria-pressed="true"]{box-shadow:none!important}
+
+/* Scott 25 Nov 2026: To Do / Goals shortcut icons removed from the header (use the menu) */
+.header-icon-pair{display:none!important}
