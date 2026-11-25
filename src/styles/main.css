@@ -4881,3 +4881,10 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 #page-dashboard .citadel-letter-card:nth-child(odd){background:#4a4a4a!important}
 #page-dashboard .citadel-letter-card:nth-child(even){background:#171717!important}
 .hp-wrap{display:flex;flex-direction:column;gap:inherit}
+
+/* Scott 25 Nov 2026: on phones the quote under the page image was too small to read — about double the
+   size, and the grey band grows to fit it instead of shrinking the text. */
+@media (max-width:700px){
+  .ci-carousel-caption.ci-carousel-quote{height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;font-size:22px!important;line-height:1.45!important;padding:18px 6% 20px!important}
+  .ci-carousel-quote .ci-q-author{font-size:16px!important}
+}
