@@ -489,3 +489,6 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 
 /* Scott 25 Nov 2026: no empty white strip under the page image (encouragement sticker is hidden) */
 .orientation{padding-bottom:8px!important;row-gap:0!important}
+
+/* Scott 25 Nov 2026: smaller gap between the page header card and the page content (was 60px) */
+.member-player-columns{margin-top:12px!important}
