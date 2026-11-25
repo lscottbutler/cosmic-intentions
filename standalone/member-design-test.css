@@ -486,3 +486,6 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 
 /* Scott 25 Nov 2026: rocket / team encouragement sticker hidden for now */
 #header-encouragement{display:none!important}
+
+/* Scott 25 Nov 2026: no empty white strip under the page image (encouragement sticker is hidden) */
+.orientation{padding-bottom:8px!important;row-gap:0!important}
