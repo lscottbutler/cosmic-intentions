@@ -1025,7 +1025,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe loading="lazy" src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.querySelector('[data-card-med]').append(m);
     // Show only the meditation player: hide the quote rotation, title and menus of the embedded page, and fit the height.
     const mf=m.querySelector('iframe');mf.addEventListener('load',()=>{try{const d=mf.contentDocument;const st=d.createElement('style');st.textContent='#capTitle,#siteMenuButton,#citadelNote,#citadelBottomNote,#lfmToolRotation,#lfmBack,#lfmMenu,#standaloneSiteMenu,#homeView,#directoryView{display:none!important}html,body{background:transparent!important;margin:0!important}';d.head.append(st);
-     const fit=()=>{try{const h=Math.max(d.getElementById('experienceView')?.scrollHeight||0,d.documentElement.scrollHeight);if(h>100)mf.style.height=h+'px';}catch(_){}};fit();clearInterval(mf.__fit);mf.__fit=setInterval(fit,1500);}catch(_){}});}
+     const fit=()=>{try{const h=Math.max(d.getElementById('experienceView')?.scrollHeight||0,d.documentElement.scrollHeight);if(h>100)mf.style.height=h+'px';}catch(_){}};fit();}catch(_){}});}
    // Scott 23 Nov 2026: Gratitude and Visualize players live on the Citadel too (kept outside the refreshed body).
    const TAGS='display:table;background:#000;color:#fff;border-radius:6px;padding:7px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;margin:0 0 12px';
    if(!box.querySelector('#ci-focus-grat')){const g=rd.createElement('div');g.id='ci-focus-grat';g.style.cssText='';g.innerHTML=`<button type="button" data-focus-open="new-gratitude" style="border:0;cursor:pointer;background:none;padding:0;margin:0 0 12px">${window.ciTiles('GRATITUDE')}</button><iframe loading="lazy" src="/standalone/gratitude-v2/index.html?module=gratitude-v2" title="Gratitude" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:640px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>`;box.querySelector('[data-card-grat]').append(g);}
@@ -1041,6 +1041,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      sel.innerHTML=list.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')||'<option value="">Nothing to choose yet</option>';load(sel.value);};
     vz.querySelectorAll('[data-viz-kind]').forEach(b=>b.onclick=()=>fill(b.dataset.vizKind));
     sel.onchange=()=>load(sel.value);fill('goal');}
+   // Scott 25 Nov 2026: each player box is only as tall as the player shows right now — it grows when its
+   // controls open and shrinks back when they close (no big empty box).
+   if(!box.__fitPlayers){box.__fitPlayers=setInterval(()=>{box.querySelectorAll('#ci-focus-med iframe,#ci-focus-grat iframe,[data-viz-frame]').forEach(f=>{try{const d=f.contentDocument;if(!d?.body)return;let b=0;[...d.body.children].forEach(e=>{const cs=getComputedStyle(e);if(cs.position==='fixed'||cs.display==='none'||e.tagName==='SCRIPT')return;b=Math.max(b,e.getBoundingClientRect().bottom+(d.defaultView.scrollY||0));});if(b>120){const h=Math.ceil(b)+4+'px';if(f.style.height!==h)f.style.height=h;}}catch(_){}});},700);}
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
  function paintHabitPanel(box){
