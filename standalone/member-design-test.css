@@ -492,3 +492,8 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 
 /* Scott 25 Nov 2026: smaller gap between the page header card and the page content (was 60px) */
 .member-player-columns{margin-top:12px!important}
+
+/* Scott 25 Nov 2026: iPhone Safari stretches an iframe to its content width, which made the page wider than
+   the phone (sideways scroll). width:1px + min-width:100% keeps every frame exactly as wide as the screen. */
+#ci-review-frame,#header-admin-note-frame{width:1px!important;min-width:100%!important}
+html,body{overflow-x:hidden}
