@@ -68,23 +68,21 @@ function renderBar(idx, editing = false) {
   const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   const date = it.targetDate || it.target_date || '';
   bar.style.cssText = 'margin:0 0 16px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
+  // Scott 25 Nov 2026: no "GOAL PAGE" label; number on the right; VISUALIZE / EDIT / ARCHIVE in a row at the bottom.
   bar.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px">
-      <span style="font:800 12px/1 Arial,sans-serif;letter-spacing:.12em;color:#555">GOAL PAGE</span>
-    </div>
     <div style="display:flex;align-items:flex-start;gap:12px">
-      ${goalBadge(letter, gc.bg, gc.text, 40)}
       <div style="flex:1;min-width:0">
         ${editing
           ? `<textarea data-gp-text maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #bbb;border-radius:8px;font:18px/1.4 Arial,sans-serif">${esc(it.title || '')}</textarea>
              <div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-gp="save" style="${BTN};background:#000;color:#fff">SAVE</button><button type="button" data-gp="cancel" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">CANCEL</button></div>`
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}`}
       </div>
-      <div style="display:flex;flex-direction:column;align-items:stretch;gap:8px;flex:0 0 auto">
-      <button type="button" data-gp="viz" style="${BTN};background:#1e90ff;color:#fff;">👁 VISUALIZE</button>
-      <button type="button" data-gp="edit" style="${BTN};background:#000;color:#fff">✎ EDIT</button>
-      <button type="button" data-gp="archive" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">ARCHIVE</button>
-      </div>
+      ${goalBadge(letter, gc.bg, gc.text, 40)}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0">
+      <button type="button" data-gp="viz" style="${BTN};flex:1;background:#1e90ff;color:#fff;">👁 VISUALIZE</button>
+      <button type="button" data-gp="edit" style="${BTN};flex:1;background:#000;color:#fff">✎ EDIT</button>
+      <button type="button" data-gp="archive" style="${BTN};flex:1;background:#fff;color:#171717;border:2px solid #171717">ARCHIVE</button>
     </div>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
