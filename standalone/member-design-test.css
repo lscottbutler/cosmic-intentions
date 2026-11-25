@@ -483,3 +483,6 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
 
 /* Scott 25 Nov 2026: To Do / Goals shortcut icons removed from the header (use the menu) */
 .header-icon-pair{display:none!important}
+
+/* Scott 25 Nov 2026: rocket / team encouragement sticker hidden for now */
+#header-encouragement{display:none!important}
