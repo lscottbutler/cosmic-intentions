@@ -36,7 +36,7 @@ window.ciTiles=function(t,px){px=px||20;let i=0;return '<span style="display:inl
   'goal-workspace':['TO DO','Keep a goal’s notes, actions and journal entries together.',''],
   'cosmic-library':['Cosmic Library','Explore your existing collection of ideas and lessons.','Search by topic, or clear your filters to return to the full collection.'],
   'entrepreneur-library':['Entrepreneur Library','Explore your existing entrepreneur skills.','Choose a skill card to open its individual experience.'],
-  'ent-card':['Entrepreneur Cards','Work with the selected skill.','Use the existing tabs for Mindset, Go Deeper and My Notes.'],
+  'ent-card':['Entrepreneur Cards','Work with the selected skill.',''],
   admin:['Admin','Your existing administrator workspace.','Owner access is required. Member presentation changes do not apply here.']
  };
 
