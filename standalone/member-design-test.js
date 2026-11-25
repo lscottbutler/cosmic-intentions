@@ -380,6 +380,8 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const btn=document.createElement('button');btn.type='button';btn.id='fullscreen-trigger';btn.setAttribute('aria-label','Full screen');btn.title='Full screen';
   btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
   btn.addEventListener('click',()=>fsEl()?leave():enter());
+  window.ciToggleFullscreen=()=>fsEl()?leave():enter();
+  btn.style.setProperty('display','none','important');   // Scott 25 Nov 2026: Full screen now lives at the top of the ☰ menu
   const exitBtn=document.createElement('button');exitBtn.type='button';exitBtn.id='fullscreen-exit';exitBtn.setAttribute('aria-label','Exit full screen');exitBtn.title='Exit full screen';exitBtn.hidden=true;
   exitBtn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
   exitBtn.addEventListener('click',leave);document.body.append(exitBtn);
@@ -570,6 +572,17 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
  setInterval(styleAdmin,1000);
  const sortMenu=()=>{styleAdmin();const items=[...menuItems.children],sorted=[...items].sort((a,b)=>(isAdminItem(a)-isAdminItem(b))||a.textContent.trim().localeCompare(b.textContent.trim(),'en',{sensitivity:'base'}));if(sorted.some((el,i)=>el!==items[i]))menuItems.append(...sorted);};
  sortMenu();new MutationObserver(sortMenu).observe(menuItems,{childList:true});
+ // Scott 25 Nov 2026: FULL SCREEN at the top of the menu; the 3 colour schemes at the bottom.
+ {const fs=document.createElement('button');fs.type='button';fs.className='review-menu-item';fs.textContent='⛶ Full screen';fs.style.cssText=usageLink.style.cssText;
+  fs.addEventListener('click',()=>{try{menu.close();}catch(_){}window.ciToggleFullscreen?.();});menuItems.before(fs);
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin:14px 0 4px';
+  const apply=t=>{try{localStorage.setItem('ci_theme',t);}catch(_){}const walk=w=>{try{w.document.documentElement.setAttribute('data-theme',t);}catch(_){return}for(let i=0;i<w.frames.length;i++)walk(w.frames[i]);};walk(window);paint();};
+  const cur=()=>{try{return localStorage.getItem('ci_theme')||'dark';}catch(_){return 'dark';}};
+  const opts=[['dark','☾','Night'],['light','☀','Day'],['kids','★','Kids']];
+  const paint=()=>row.querySelectorAll('button').forEach(b=>{const on=b.dataset.t===cur();b.style.background=on?'#000':'#fff';b.style.color=on?'#fff':'#000';});
+  opts.forEach(([t,ic,l])=>{const b=document.createElement('button');b.type='button';b.dataset.t=t;b.title=l+' colours';b.innerHTML=ic+' '+l.toUpperCase();b.style.cssText='flex:1;border:2px solid #000;border-radius:8px;padding:10px 6px;font:800 12px/1 Arial,sans-serif;letter-spacing:.06em;cursor:pointer';b.addEventListener('click',()=>apply(t));row.append(b);});
+  menuItems.after(row);paint();}
+
  document.getElementById('close-menu').addEventListener('click',()=>menu.close());
  menu.addEventListener('close',()=>{if(enabled)menuTrigger.focus();else frame.contentDocument?.getElementById('siteMenuButton')?.focus();});
  const overlayCss=`
