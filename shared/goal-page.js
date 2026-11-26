@@ -71,6 +71,7 @@ function renderBar(idx, editing = false) {
   // Scott 25 Nov 2026: no "GOAL PAGE" label; number on the right; VISUALIZE / EDIT / ARCHIVE in a row at the bottom.
   bar.innerHTML = `
     <div style="display:flex;align-items:flex-start;gap:12px">
+      ${goalBadge(letter, gc.bg, gc.text, 40)}
       <div style="flex:1;min-width:0">
         ${editing
           ? `<textarea data-gp-text maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #bbb;border-radius:8px;font:18px/1.4 Arial,sans-serif">${esc(it.title || '')}</textarea>
@@ -78,10 +79,9 @@ function renderBar(idx, editing = false) {
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}`}
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto">
-        ${goalBadge(letter, gc.bg, gc.text, 40)}
         <button type="button" data-gp="vizplayer" title="Open the Visualize player for this goal" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#1e90ff">
-          <svg width="44" height="30" viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6"/></svg>
-          <span style="font:800 10px/1 Arial,sans-serif;letter-spacing:.08em">VISUALIZE</span>
+          <svg width="66" height="45" viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6"/></svg>
+          <span style="font:800 15px/1 Arial,sans-serif;letter-spacing:.08em">VISUALIZE</span>
         </button>
       </div>
     </div>
