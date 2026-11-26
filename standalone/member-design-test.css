@@ -497,3 +497,7 @@ body.ci-admin-feature .orientation #review-menu-items{display:none!important}
    the phone (sideways scroll). width:1px + min-width:100% keeps every frame exactly as wide as the screen. */
 #ci-review-frame,#header-admin-note-frame{width:1px!important;min-width:100%!important}
 html,body{overflow-x:hidden}
+
+/* Scott 26 Nov 2026: plain white page background (no beige/grey) */
+:root{--paper:#fff}
+body{background:#fff!important}
