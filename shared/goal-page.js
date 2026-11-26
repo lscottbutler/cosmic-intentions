@@ -76,7 +76,7 @@ function renderBar(idx, editing = false) {
         ${editing
           ? `<textarea data-gp-text maxlength="150" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #bbb;border-radius:8px;font:18px/1.4 Arial,sans-serif">${esc(it.title || '')}</textarea>
              <div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-gp="save" style="${BTN};background:#000;color:#fff">SAVE</button><button type="button" data-gp="cancel" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">CANCEL</button></div>`
-          : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}`}
+          : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>`}
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto">
         <button type="button" data-gp="vizplayer" title="Open the Visualize player for this goal" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#1e90ff">
