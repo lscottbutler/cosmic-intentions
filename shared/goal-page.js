@@ -77,12 +77,13 @@ function renderBar(idx, editing = false) {
              <div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-gp="save" style="${BTN};background:#000;color:#fff">SAVE</button><button type="button" data-gp="cancel" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">CANCEL</button></div>`
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>${date ? `<div style="font-size:13px;color:#666;margin-top:2px">Target: ${esc(date)}</div>` : ''}`}
       </div>
-      ${goalBadge(letter, gc.bg, gc.text, 40)}
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0">
-      <button type="button" data-gp="viz" style="${BTN};flex:1;background:#1e90ff;color:#fff;">👁 VISUALIZE</button>
-      <button type="button" data-gp="edit" style="${BTN};flex:1;background:#000;color:#fff">✎ EDIT</button>
-      <button type="button" data-gp="archive" style="${BTN};flex:1;background:#fff;color:#171717;border:2px solid #171717">ARCHIVE</button>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto">
+        ${goalBadge(letter, gc.bg, gc.text, 40)}
+        <button type="button" data-gp="vizplayer" title="Open the Visualize player for this goal" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#1e90ff">
+          <svg width="44" height="30" viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6"/></svg>
+          <span style="font:800 10px/1 Arial,sans-serif;letter-spacing:.08em">VISUALIZE</span>
+        </button>
+      </div>
     </div>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
@@ -90,6 +91,7 @@ function renderBar(idx, editing = false) {
     const b = e.target.closest('[data-gp]'); if (!b) return;
     const a = b.dataset.gp;
     if (a === 'all') return closeGoalPage();
+    if (a === 'vizplayer') { try { (window.top.ciGoalAction || (() => {}))('viz', it.title || ''); } catch (_) {} return; }
     if (a === 'edit') return renderBar(idx, true);
     if (a === 'cancel') return renderBar(idx, false);
     if (a === 'save') {
