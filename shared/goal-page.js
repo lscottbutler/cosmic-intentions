@@ -67,7 +67,7 @@ function renderBar(idx, editing = false) {
   const ci = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : idx;
   const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   const date = it.targetDate || it.target_date || '';
-  bar.style.cssText = 'margin:0 0 16px;padding:18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
+  bar.style.cssText = 'position:relative;margin:0 0 16px;padding:18px 64px 18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
   // Scott 25 Nov 2026: no "GOAL PAGE" label; number on the right; VISUALIZE / EDIT / ARCHIVE in a row at the bottom.
   bar.innerHTML = `
     <div style="display:flex;align-items:flex-start;gap:12px">
@@ -78,13 +78,8 @@ function renderBar(idx, editing = false) {
              <div style="display:flex;gap:8px;margin-top:8px"><button type="button" data-gp="save" style="${BTN};background:#000;color:#fff">SAVE</button><button type="button" data-gp="cancel" style="${BTN};background:#fff;color:#171717;border:2px solid #171717">CANCEL</button></div>`
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>`}
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto">
-        <button type="button" data-gp="vizplayer" title="Open the Visualize player for this goal" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#1e90ff">
-          <svg width="66" height="45" viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6"/></svg>
-          <span style="font:800 15px/1 Arial,sans-serif;letter-spacing:.08em">VISUALIZE</span>
-        </button>
-      </div>
     </div>
+    <button type="button" data-gp="vizplayer" title="Visualize this goal" aria-label="Visualize this goal" style="position:absolute;right:14px;bottom:14px;width:42px;height:42px;border-radius:50%;border:0;background:#1e90ff;cursor:pointer;display:grid;place-items:center;padding:0"><svg width="26" height="18" viewBox="0 0 44 30" fill="none" stroke="#ffd84d" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6" fill="#ffd84d"/></svg></button>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
     if (e.target.closest('[data-gp-vizclose]')) { closeGoalViz(); return; }
