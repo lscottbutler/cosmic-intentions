@@ -269,7 +269,7 @@ export async function getFocusPins() {
   const goalIds = Object.fromEntries((intentions || []).map(i => [i.title, String(i.id)]));
   const goalTodos = Object.fromEntries(todoRows.map(r => [r.title, _openTasks(r.rai, r.title).map(t => t.text)]));
   // Scott 23 Nov 2026: same letter badge as the Roadmap.
-  const goalBadges = Object.fromEntries(todoRows.map((r, i) => { const L = goalLetter({ id: r.id }, i); const ci = /^[A-Z]$/.test(L) ? L.charCodeAt(0) - 65 : i; const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' }; return [r.title, goalBadge(L, gc.bg, gc.text, 51)]; }));
+  const goalBadges = Object.fromEntries(todoRows.map((r, i) => { const L = goalLetter({ id: r.id }, i); const ci = /^[A-Z]$/.test(L) ? L.charCodeAt(0) - 65 : i; const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' }; return [r.title, goalBadge(L, gc.bg, gc.text, 36)]; }));
   return { signedIn: !!currentUser, pins, goalIds, goalTodos, goalBadges, options: { goals, skills: ENT_CARDS.map(c => ({ key: c.key, title: c.title })) } };
 }
 export async function saveFocusPins(p) {
