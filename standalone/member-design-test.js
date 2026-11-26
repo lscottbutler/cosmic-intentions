@@ -1037,7 +1037,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    box.style.opacity='1';
    // Scott 24 Nov 2026: MY FOCUS TODAY = where you stand + one line of encouragement.
    Promise.resolve(hd.ciFocusStats?.()).then(st=>{const el=box.querySelector('[data-stats-body]');if(!el||!st)return;
-    const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 28px/1.1 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
+    const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 16px/1.3 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
     el.style.color='#171717';el.innerHTML=`<p style="margin:4px 0 14px;font-size:16px;line-height:1.5">${esc(st.message)}</p><div style="display:flex;gap:10px;flex-wrap:wrap">${tile(st.streak+(st.streak?' 🔥':''),'DAY STREAK')}${tile(st.vizWeek,'VISUALIZATIONS THIS WEEK')}${tile(st.viewsWeek,'GOAL VIEWS THIS WEEK')}${tile(st.todosDone+' / '+st.todosTotal,'TO-DOS DONE')}</div>`;}).catch(()=>{});
    // Scott 23 Nov 2026: the meditation player lives under PRACTICE. Kept outside the refreshed body so playback isn't interrupted.
    if(!box.querySelector('#ci-focus-med')){const m=rd.createElement('div');m.id='ci-focus-med';m.style.cssText='margin:4px 0 0';m.innerHTML='<iframe loading="lazy" src="/players/master-player.html?preview=1&start=meditation" title="Meditation" allow="autoplay; fullscreen" style="width:100%;max-width:720px;height:560px;border:0;display:block;margin:0 auto;border-radius:8px"></iframe>';box.querySelector('[data-card-med]').append(m);
@@ -1140,7 +1140,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const hd=headerNoteFrame.contentWindow;
   Promise.resolve(hd&&hd.ciFocusStats&&hd.ciFocusStats()).then(st=>{const b=el.querySelector('[data-stats-body]');if(!b||!st)return;
    const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-   const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 28px/1.1 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
+   const tile=(n,l)=>`<div style="flex:1 1 120px;background:#f4f1ec;border-radius:10px;padding:12px;text-align:center"><div style="font:800 16px/1.3 Arial,sans-serif;color:#000">${n}</div><div style="font:700 11px/1.3 Arial,sans-serif;letter-spacing:.08em;color:#555;margin-top:4px">${l}</div></div>`;
    b.style.color='#171717';b.innerHTML=`<p style="margin:4px 0 14px;font-size:16px;line-height:1.5">${esc(st.message)}</p><div style="display:flex;gap:10px;flex-wrap:wrap">${tile(st.streak+(st.streak?' 🔥':''),'DAY STREAK')}${tile(st.vizWeek,'VISUALIZATIONS THIS WEEK')}${tile(st.viewsWeek,'GOAL VIEWS THIS WEEK')}${tile(st.todosDone+' / '+st.todosTotal,'TO-DOS DONE')}</div>`;}).catch(()=>{_statsAt=0;});
  }
  setInterval(()=>{try{const docs=[headerNoteFrame.contentDocument,document.getElementById('ci-review-frame')?.contentDocument];let ex;try{ex=document.getElementById('ci-review-frame').contentDocument.getElementById('experienceFrame')?.contentDocument;}catch(_){}docs.push(ex);
