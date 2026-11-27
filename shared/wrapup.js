@@ -102,7 +102,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
     ${taskNotePanel(noteContext)}
-    ${noteContext ? `<div class="task-add-entry" style="display:flex;justify-content:flex-end;gap:14px;margin:8px 0 0">${[['note','NOTE','#000',`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v11l-5 5H4z" fill="#ffd84d"/><path d="M15 20v-5h5" fill="#e0b400"/></svg>`],['journal','JOURNAL','#4e4e4e',`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M7 8h6M7 12h6M7 16h3"/><path d="M20 6l-6.5 9.5-2 .8.3-2.1L18.3 4.7z" fill="#fff" stroke="none"/></svg>`]].map(([k,l,c,ic]) => `<button type="button" onclick="taskEntryOpen(this,'${k}')" title="Add a ${l.toLowerCase()}" aria-label="Add a ${l.toLowerCase()}" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:36px;height:36px;border-radius:50%;background:${c};display:grid;place-items:center">${ic}</span><span style="font:800 9px/1 Arial,sans-serif;letter-spacing:.06em;color:#333">${l}</span></button>`).join('')}</div>` : ''}
+    ${noteContext ? `<div class="task-add-entry" style="display:flex;justify-content:flex-end;gap:14px;margin:8px 0 0">${[['note','NOTE','#000',`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v11l-5 5H4z" fill="#ffd84d"/><path d="M15 20v-5h5" fill="#e0b400"/></svg>`]].map(([k,l,c,ic]) => `<button type="button" onclick="taskEntryOpen(this,'${k}')" title="Add a ${l.toLowerCase()}" aria-label="Add a ${l.toLowerCase()}" style="background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:36px;height:36px;border-radius:50%;background:${c};display:grid;place-items:center">${ic}</span><span style="font:800 9px/1 Arial,sans-serif;letter-spacing:.06em;color:#333">${l}</span></button>`).join('')}</div>` : ''}
     ${noteContext ? `<div class="goal-action-records" data-task-context="${esc(JSON.stringify(noteContext))}">${taskLinkedEntriesHTML(noteContext)}</div>` : ''}
   </div>`;
 }
@@ -806,8 +806,8 @@ export function masterPriorityTaskMarkup(priority = true) {
     _ensureGoalLetters();
     if (_ensureCodes(goal)) saveIntentions();
     // Scott 22 Nov 2026: TO DO page uses the same card format as the Goal Page (P, pen, code box); notes/journal show under each card.
-    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, false, filter)
-      + _roadmapCards(goal, idx, false, filter).join('');
+    // Scott 27 Nov 2026: Roadmap items are AI suggestions — the TO DO list shows only the member's own to-dos.
+    const rows = _renderUserTree(goal.roadmapAI?.userTasks, [], idx, undefined, false, filter);
     const shade = GREY_SHADES[idx % GREY_SHADES.length];
     const letter = _goalLetter(idx), colorIndex = /^[A-Z]$/.test(letter) ? letter.charCodeAt(0) - 65 : idx;
     const color = GOAL_COLORS[colorIndex % GOAL_COLORS.length];

@@ -1,4 +1,4 @@
-import { esc, intentions, goalLetter, openMasterDestination, sb, saveIntentions } from '../app.js';
+import { esc, intentions, goalLetter, openMasterDestination, sb, saveIntentions, goalBadge, GOAL_COLORS } from '../app.js';
 import { readNotes, _saveNotes, NOTES_CAP } from './notes.js';
 import { linkedGoalId, editorHTML, taskNoteKey, taskLinkedEntriesHTML } from './task-notes.js';
 import { masterPriorityTaskMarkup, goalWorkspaceTaskMarkup, goalWorkspaceTaskContexts, wrapGoalAddAction } from './wrapup.js';
@@ -187,62 +187,56 @@ const todoGoalPriorityMode = new Map();
 
 export function setupTodoDisclosure(host) {
   if (!host) return;
-  // Scott 4 Nov 2026: each goal is one bordered group in its own colour. The heading bar runs the full width;
-  // the goal letter sits straight above the task code boxes (A1, A2…), and the open/close triangle is to its right.
+  // Scott 27 Nov 2026: TO DO page redesigned to match the Citadel — light grey page, one white card per goal,
+  // number circle + underlined CAPS title (opens the Goal Page), drag handle top right, Visualize eye bottom right,
+  // every open to-do listed (no P/S filter, no open/close chevron, no image, no button rows).
+  const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
+  imp(host, 'background', '#ececec'); imp(host, 'padding', '12px'); imp(host, 'border-radius', '12px');
   host.querySelectorAll(':scope > section[data-workspace-goal]').forEach(group => {
-    const cards = [...group.querySelectorAll('.wcard')];
     const title = group.querySelector(':scope > h3');
-    if (!title || !cards.length || group.querySelector(':scope > .todo-goal-chevron')) return;
-    const key = (host.id || '') + ':' + group.dataset.workspaceGoal;
-    // Scott 6 Nov 2026: on TO DO every goal is dark grey with white text (no per-goal colours).
-    const color = '#4e4e4e';
-    const imp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
-    imp(title, 'background', color); imp(title, 'border-color', color); imp(title, 'color', '#fff');
-    // Scott 11-12 Nov 2026: unbold. h3 default is 700; we want medium weight.
-    imp(title, 'font-weight', '400');
-    Object.assign(group.style, { position: 'relative', border: '3px solid ' + color, borderRadius: '12px', padding: '0 56px 10px 10px', margin: '0 0 18px', boxSizing: 'border-box' });
-    imp(title, 'margin', '0 -56px 10px -10px'); imp(title, 'max-width', 'none'); imp(title, 'width', 'auto');
-    imp(title, 'border-radius', '8px 8px 0 0'); imp(title, 'padding-right', '140px'); imp(title, 'min-height', '56px');
-    // Goal letter box, styled like the task code boxes.
-    const codeLeaf = [...cards[0].querySelectorAll('span,div')].find(e => !e.children.length && /^[A-Z]+\d/.test(e.textContent.trim()));
-    const codeBox = codeLeaf && codeLeaf.parentElement;
-    const letter = codeLeaf ? codeLeaf.textContent.trim().match(/^[A-Z]+/)[0] : '';
-    const goalBox = document.createElement('div');
-    goalBox.className = 'todo-goal-letter'; goalBox.textContent = letter; goalBox.setAttribute('aria-hidden', 'true');
-    goalBox.style.cssText = 'position:absolute;z-index:2;display:grid;place-items:center;height:40px;border-radius:6px;background:#f2f4f6;color:#15161a;font:800 18px/1 "Roboto Condensed",Arial,sans-serif';
-    const button = document.createElement('button');
-    button.type = 'button'; button.className = 'todo-goal-chevron';
-    button.style.cssText = 'position:absolute;right:6px;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;cursor:pointer';
-    // Scott 10 Nov 2026: P (priority) and S (standard) filter buttons for this goal.
-    // The pair sits to the LEFT of the open/close chevron and visually mirrors it.
-    const pBtn = document.createElement('button');
-    pBtn.type = 'button'; pBtn.className = 'todo-goal-p'; pBtn.textContent = 'P';
-    pBtn.style.cssText = 'position:absolute;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font:800 16px/1 Arial,sans-serif;cursor:pointer';
-    const sBtn = document.createElement('button');
-    sBtn.type = 'button'; sBtn.className = 'todo-goal-s'; sBtn.textContent = 'S';
-    sBtn.style.cssText = 'position:absolute;z-index:2;display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:2px solid #fff;border-radius:50%;background:#000;color:#fff;font:800 16px/1 Arial,sans-serif;cursor:pointer';
-    group.append(goalBox, pBtn, sBtn, button);
-    // Scott 22 Nov 2026: drag handle (left of the goal image) — press and drag to move the goal up/down.
+    if (!title || group.dataset.ciStyled) return;
+    group.dataset.ciStyled = '1';
+    const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
+    const idx = goalObj ? intentions.indexOf(goalObj) : -1;
+    const gt = goalObj?.title || title.textContent.trim();
+    Object.assign(group.style, { position: 'relative', background: '#fff', border: '0', borderRadius: '10px', padding: '16px 52px 16px 16px', margin: '0 0 12px', boxSizing: 'border-box', boxShadow: 'none' });
+    // Title row: number circle + underlined title (tap → Goal Page).
+    const L = goalLetter(goalObj || {}, idx < 0 ? 0 : idx);
+    const gc = GOAL_COLORS[((idx < 0 ? 0 : idx) % GOAL_COLORS.length + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
+    const head = document.createElement('div');
+    head.style.cssText = 'display:flex;align-items:flex-start;gap:12px;margin:0 0 12px';
+    head.innerHTML = goalBadge(L, gc.bg, gc.text, 36);
+    const link = document.createElement('button');
+    link.type = 'button'; link.textContent = gt; link.title = 'Open this goal';
+    link.style.cssText = 'background:none;border:0;padding:0;text-align:left;cursor:pointer;color:#000;font:400 16px/calc(1.5em + 5px) Arial,sans-serif;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px';
+    link.addEventListener('click', () => { try { window.top.ciGoalAction?.('open', gt); } catch (_) {} });
+    head.append(link);
+    title.replaceWith(head);
+    // Visualize: blue circle with a yellow eye, bottom right.
+    const eye = document.createElement('button');
+    eye.type = 'button'; eye.title = 'Visualize this goal'; eye.setAttribute('aria-label', 'Visualize this goal');
+    eye.style.cssText = 'position:absolute;right:10px;bottom:12px;width:36px;height:36px;border-radius:50%;border:0;background:#1e90ff;cursor:pointer;display:grid;place-items:center;padding:0';
+    eye.innerHTML = '<svg width="22" height="15" viewBox="0 0 44 30" fill="none" stroke="#ffd84d" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6" fill="#ffd84d"/></svg>';
+    eye.addEventListener('click', () => { try { window.top.ciGoalAction?.('viz', gt); } catch (_) {} });
+    // Drag handle, top right — press and drag to reorder goals (saved to the account).
     const grip = document.createElement('button');
     grip.type = 'button'; grip.className = 'todo-goal-grip'; grip.title = 'Drag to move this goal'; grip.setAttribute('aria-label', 'Drag to move this goal');
-    grip.innerHTML = '<svg width="16" height="22" viewBox="0 0 16 22" fill="#fff" aria-hidden="true"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="4" cy="11" r="2"/><circle cx="12" cy="11" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="12" cy="18" r="2"/></svg>';
-    grip.style.cssText = 'flex:0 0 28px;width:28px;height:44px;margin-right:8px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;display:inline-grid;place-items:center';
-    title.style.setProperty('display', 'flex', 'important'); title.style.setProperty('align-items', 'center', 'important');
-    title.insertBefore(grip, title.firstChild);
+    grip.innerHTML = '<svg width="18" height="26" viewBox="0 0 16 22" fill="#000" aria-hidden="true"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="4" cy="11" r="2"/><circle cx="12" cy="11" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="12" cy="18" r="2"/></svg>';
+    grip.style.cssText = 'position:absolute;right:10px;top:12px;width:32px;height:36px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;display:grid;place-items:center';
+    group.append(grip, eye);
     grip.addEventListener('pointerdown', ev => {
       ev.preventDefault(); grip.setPointerCapture(ev.pointerId); grip.style.cursor = 'grabbing';
-      const startY = ev.clientY; group.style.zIndex = '5'; group.style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; group.style.transition = 'none';
+      const startY = ev.clientY; group.style.zIndex = '5'; group.style.boxShadow = '0 10px 26px rgba(0,0,0,.25)';
       const move = e => { group.style.transform = `translateY(${e.clientY - startY}px)`; };
       const up = e => {
         grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up);
-        group.style.transform = ''; group.style.zIndex = ''; group.style.boxShadow = ''; grip.style.cursor = 'grab';
+        group.style.transform = ''; group.style.zIndex = ''; group.style.boxShadow = 'none'; grip.style.cursor = 'grab';
         const groups = [...host.querySelectorAll(':scope > section[data-workspace-goal]')];
         const others = groups.filter(g => g !== group);
         let at = others.findIndex(g => { const r = g.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
         if (at < 0) at = others.length;
         const order = others.map(g => g.dataset.workspaceGoal); order.splice(at, 0, group.dataset.workspaceGoal);
         if (order.join() === groups.map(g => g.dataset.workspaceGoal).join()) return;
-        // Reorder the shown goals among themselves; goals not on this list keep their slots.
         const shownIdx = intentions.map((g, i) => order.includes(String(g.id)) ? i : -1).filter(i => i >= 0);
         const byId = Object.fromEntries(intentions.map(g => [String(g.id), g]));
         shownIdx.forEach((slot, k) => { intentions[slot] = byId[order[k]]; });
@@ -250,120 +244,8 @@ export function setupTodoDisclosure(host) {
       };
       grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up);
     });
-    // Scott 9 Nov 2026 — Goal image thumbnail in the grey title bar (no coloured bars).
-    const goalObj = intentions.find(g => String(g.id) === String(group.dataset.workspaceGoal));
-    const proto = null;
-    if (goalObj) {
-      const img = goalObj.imageUrl || '';
-      if (img) {
-        const thumb = document.createElement('img');
-        thumb.className = 'tp-thumb';
-        thumb.src = img;
-        thumb.alt = '';
-        thumb.style.cssText = 'width:80px;height:56px;object-fit:cover;border-radius:4px;margin-right:10px;flex-shrink:0;float:left';
-        title.style.setProperty('display', 'flex', 'important');
-        title.style.setProperty('align-items', 'center', 'important');
-        title.insertBefore(thumb, title.firstChild);
-        title.insertBefore(grip, title.firstChild);
-      }
-    }
-    // Scott 23 Nov 2026: goal actions live here — VISUALIZE, ✎ EDIT GOAL (My Thoughts), ARCHIVE (goal done).
-    if (goalObj && !group.querySelector(':scope > .todo-goal-actions')) {
-      const bar = document.createElement('div'); bar.className = 'todo-goal-actions';
-      bar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px';
-      const mk = (label, bg, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label;
-        b.style.cssText = `background:${bg};color:#fff;border:0;border-radius:5px;padding:7px 12px;font:800 12px/1 Arial,sans-serif;letter-spacing:.06em;cursor:pointer`;
-        b.addEventListener('click', e => { e.stopPropagation(); fn(); }); return b; };
-      const gt = goalObj.title || '';
-      const topAct = act => { try { window.top.ciGoalAction?.(act, gt); } catch (_) {} };
-      bar.append(
-        mk('👁 VISUALIZE', '#1e90ff', () => topAct('viz')),
-        mk('✎ EDIT GOAL', '#000', () => topAct('edit')),
-        mk('ARCHIVE', '#8b1a1a', () => { const idx = intentions.indexOf(goalObj); if (idx < 0) return; if (!confirm('Archive this goal? Its to-dos, notes and journal entries go to the Archive. You can restore it later.')) return; Promise.resolve(window.ciArchiveGoal?.(idx)).then(() => renderGoalWorkspace()).catch(() => {}); }));
-      title.after(bar);
-    }
-    // Goal trough (Scott, 5–6 Nov 2026): a plain strip in the goal's colour closes the box at the bottom.
-    // The eight action buttons were removed at Scott's request (6 Nov 2026).
-    const trough = document.createElement('div');
-    trough.className = 'todo-goal-trough';
-    trough.style.cssText = 'height:16px;margin:10px -56px 0 -10px;background:' + color + ';border-radius:0 0 8px 8px';
-    group.append(trough);
-    const place = () => {
-      const head = title;
-      const g = group.getBoundingClientRect(), tTop = head.offsetTop, tH = head.offsetHeight;
-      const cy = Math.round(tTop + (tH - 42) / 2);
-      button.style.top = cy + 'px';
-      // P/S buttons sit to the LEFT of the chevron.
-      sBtn.style.top = cy + 'px'; sBtn.style.right = '58px';
-      pBtn.style.top = cy + 'px'; pBtn.style.right = '108px';
-      goalBox.style.top = Math.round(tTop + (tH - 40) / 2) + 'px';
-      if (codeBox && codeBox.getBoundingClientRect().width) {
-        const c = codeBox.getBoundingClientRect();
-        goalBox.style.left = Math.round(c.left - g.left - group.clientLeft) + 'px'; goalBox.style.width = Math.round(c.width) + 'px'; goalBox.hidden = !letter;
-      } else { goalBox.style.left = 'auto'; goalBox.style.right = '158px'; goalBox.style.width = '46px'; goalBox.hidden = !letter; }
-    };
-    // Scott 10 Nov 2026: default to Priority mode on first render for every goal.
-    // Scott 22 Nov 2026: if a goal has no priority tasks, open on S so its to-dos show without tapping.
-    if (!todoGoalPriorityMode.has(key)) todoGoalPriorityMode.set(key, cards.some(c => c.dataset.taskPriority === '1') ? 'P' : 'S');
-    function paintPriorityButtons() {
-      const mode = todoGoalPriorityMode.get(key);
-      const on = mode === 'P' ? pBtn : sBtn;
-      const off = mode === 'P' ? sBtn : pBtn;
-      on.style.background = '#fff'; on.style.color = '#000';
-      off.style.background = '#000'; off.style.color = '#fff';
-      pBtn.setAttribute('aria-pressed', String(mode === 'P'));
-      sBtn.setAttribute('aria-pressed', String(mode === 'S'));
-      pBtn.setAttribute('aria-label', 'Show priority tasks' + (mode === 'P' ? ' (currently showing)' : ''));
-      sBtn.setAttribute('aria-label', 'Show standard tasks' + (mode === 'S' ? ' (currently showing)' : ''));
-    }
-    function visibleForMode() {
-      const want = todoGoalPriorityMode.get(key) === 'P' ? '1' : '0';
-      return cards.filter(c => c.dataset.taskPriority === want);
-    }
-    // Scott 11 Nov 2026: empty-state placeholder when the current P/S filter has no tasks.
-    // Lets the user know the goal has tasks in the OTHER mode rather than looking broken.
-    let emptyNote = group.querySelector(':scope > .todo-goal-empty-mode');
-    if (!emptyNote) {
-      emptyNote = document.createElement('p');
-      emptyNote.className = 'todo-goal-empty-mode';
-      emptyNote.style.cssText = 'margin:8px 0 10px;padding:8px 12px;font:400 13px/1.4 Arial,sans-serif;color:#4e4e4e;background:#f6f6f6;border-radius:6px';
-      group.appendChild(emptyNote);
-    }
-    function paint() {
-      const toggled = expandedTodoGoals.has(key);
-      const vis = visibleForMode();
-      const visMany = vis.length > 5;
-      // Hide every card outside the current P/S filter; apply the collapse rule to the visible set.
-      cards.forEach(card => { card.hidden = true; });
-      vis.forEach((card, index) => { card.hidden = visMany ? (!toggled && index >= 5) : toggled; });
-      const other = cards.filter(c => c.dataset.taskPriority === (todoGoalPriorityMode.get(key) === 'P' ? '0' : '1'));
-      const otherLabel = todoGoalPriorityMode.get(key) === 'P' ? 'Standard' : 'Priority';
-      emptyNote.textContent = vis.length === 0 && other.length > 0
-        ? 'No ' + (todoGoalPriorityMode.get(key) === 'P' ? 'priority' : 'standard') + ' tasks for this goal — tap ' + (todoGoalPriorityMode.get(key) === 'P' ? 'S' : 'P') + ' to see ' + other.length + ' ' + otherLabel.toLowerCase() + ' task' + (other.length === 1 ? '' : 's') + '.'
-        : '';
-      emptyNote.hidden = !emptyNote.textContent;
-      const open = visMany ? toggled : !toggled;
-      button.textContent = open ? '\u25B2' : '\u25BC';
-      button.setAttribute('aria-expanded', String(open));
-      const label = visMany ? (toggled ? 'Show first five tasks' : `Show all ${vis.length} tasks`) : (toggled ? 'Show tasks' : 'Hide tasks');
-      button.setAttribute('aria-label', label); button.title = label;
-      const anyOpen = vis.some(c => !c.hidden);
-      // Closed: no white strip under the heading — the box is just the coloured bar (Scott, 5 Nov 2026).
-      imp(title, 'margin-bottom', anyOpen ? '10px' : '0');
-      group.style.paddingBottom = '0';
-      trough.hidden = !anyOpen;
-      imp(title, 'border-radius', anyOpen ? '8px 8px 0 0' : '8px');
-      paintPriorityButtons();
-      requestAnimationFrame(place);
-    }
-    button.addEventListener('click', () => {
-      if (expandedTodoGoals.has(key)) expandedTodoGoals.delete(key); else expandedTodoGoals.add(key);
-      paint();
-    });
-    pBtn.addEventListener('click', () => { todoGoalPriorityMode.set(key, 'P'); paint(); });
-    sBtn.addEventListener('click', () => { todoGoalPriorityMode.set(key, 'S'); paint(); });
-    paint();
-    if ('ResizeObserver' in window) new ResizeObserver(place).observe(group);
+    // Every open to-do is shown.
+    group.querySelectorAll('.wcard').forEach(c => { c.hidden = false; });
   });
 }
 

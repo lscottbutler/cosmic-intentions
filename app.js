@@ -1441,6 +1441,7 @@ export async function syncNotesToSupabase() {
     if (error) console.warn('[Supabase] notes sync skipped (run the add-column SQL?):', error.message);
   } catch (e) { console.warn('[Supabase] syncNotesToSupabase failed:', e); }
 }
+window.ciSyncNotes = syncNotesToSupabase;   // Scott 27 Nov 2026: Citadel daily journal saves sync to the account
 
 /* Favorites / Daily-Focus autoplay pins (ci_favorites) → cloud. Stored as a
    `favorites` JSONB column on profiles. Resilient: no-ops if the column is
