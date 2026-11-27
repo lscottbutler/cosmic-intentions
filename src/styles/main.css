@@ -4915,3 +4915,7 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 #page-myroadmap .task-add-entry{margin:2px 0 4px!important}
 /* Scott 27 Nov 2026: one daily journal lives on the Citadel — no MY JOURNAL quick button on pages. */
 .ci-rm-quick [data-ci-open="journal"]{display:none!important}
+/* Scott 27 Nov 2026: goal title centred across the Roadmap goal card (number above). */
+#page-myroadmap .wgoal > details > summary{position:relative!important;justify-content:center!important;padding:4px 30px!important}
+#page-myroadmap .wgoal > details > summary > span:first-child{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important}
+#page-myroadmap .wgoal > details > summary > span:last-child{position:absolute!important;right:0;top:4px}

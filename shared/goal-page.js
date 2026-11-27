@@ -67,10 +67,10 @@ function renderBar(idx, editing = false) {
   const ci = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : idx;
   const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   const date = it.targetDate || it.target_date || '';
-  bar.style.cssText = 'position:relative;margin:0 0 16px;padding:18px 64px 18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
+  bar.style.cssText = 'position:relative;margin:0 0 16px;padding:18px 64px 18px 64px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
   // Scott 25 Nov 2026: no "GOAL PAGE" label; number on the right; VISUALIZE / EDIT / ARCHIVE in a row at the bottom.
   bar.innerHTML = `
-    <div style="display:flex;align-items:${editing ? "flex-start" : "center"};gap:12px">
+    <div style="display:flex;${editing ? "align-items:flex-start" : "flex-direction:column;align-items:center;text-align:center"};gap:10px">
       ${goalBadge(letter, gc.bg, gc.text, 40)}
       <div style="flex:1;min-width:0">
         ${editing
