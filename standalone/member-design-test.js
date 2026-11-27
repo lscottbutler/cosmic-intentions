@@ -8,7 +8,7 @@ window.ciTiles=function(t,px){px=px||20;let i=0;return '<span style="display:inl
  /* Scott 27 Nov 2026: Runthrough steps are links — on the Citadel they jump to that card, elsewhere they open the page. */
  window.ciRunthroughGo=k=>{const card={meditation:'[data-card-med]',habits:'[data-card-habits]',goals:'[data-card-goals]',journal:'[data-card-journal]',gratitude:'[data-card-grat]'}[k];const feat={meditation:'meditation',habits:'habits',goals:'action-plan',journal:'journal',gratitude:'gratitude'}[k];
   try{const f=document.getElementById('ci-review-frame');const c=f&&f.contentDocument&&f.contentDocument.querySelector('#ci-my-focus '+card);if(c&&c.getClientRects().length){window.scrollTo({top:window.scrollY+f.getBoundingClientRect().top+c.getBoundingClientRect().top-12,behavior:'smooth'});return;}}catch(_){}
-  if(feat)openFeature(feat);};
+  if(feat&&window.__ciOpenFeature)window.__ciOpenFeature(feat);};
  window.ciRunthroughHTML=st=>{const S=st.steps||{};const L=[['meditation','Meditate','clear your head first thing'],['habits','Habits','see what needs doing today'],['goals','Goals','pick the actions that move you forward'],['journal','Journal','where you are, where you are going'],['gratitude','Gratitude','finish empowered']];
   const n=L.filter(x=>S[x[0]]).length,perfect=n===5;
   const row=([k,t,d],i)=>`<li onclick="top.ciRunthroughGo&&top.ciRunthroughGo('${k}')" role="link" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:8px 0;${i<4?'border-bottom:1px solid #eee;':''}"><span style="flex:0 0 28px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:800 14px/1 Arial,sans-serif;${S[k]?'background:#2e7d32;color:#fff;border:3px solid #2e7d32':'background:#fff;color:#999;border:3px solid #bbb'};box-sizing:border-box">${S[k]?'✓':i+1}</span><span style="font:400 15px/1.35 Arial,sans-serif;color:#171717"><b style="text-decoration:underline;text-underline-offset:3px">${t}</b> — ${d}</span><span aria-hidden="true" style="margin-left:auto;font:700 18px/1 Arial,sans-serif;color:#999">›</span></li>`;
@@ -486,6 +486,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   const t0=performance.now();let last=sample(),same=0;
   while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last&&appReady()){if(++same>=(current==='home'?10:6))return;}else{same=0;last=now;}}
  }
+ window.__ciOpenFeature=(...a)=>openFeature(...a);
  async function openFeature(action,options={}){
   if(!features[action])return;
   const version=++navigationVersion;
