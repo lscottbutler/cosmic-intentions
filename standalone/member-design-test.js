@@ -1040,7 +1040,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
      if(!sw.__skillClick){sw.__skillClick=1;sw.addEventListener('click',e=>{const b=e.target.closest('[data-skill-open]');if(!b)return;playerAction='ent-card';frame.contentWindow.postMessage({type:'ci-lfm-select',action:'ent-card',entKey:b.dataset.skillOpen},location.origin);renderFeature('ent-card');try{window.scrollTo(0,0);}catch(_){}});}
      const sh=box.parentElement;if(sh&&sh.lastElementChild!==sw)sh.append(sw);}}
    box.querySelector('[data-focus-body]').outerHTML=`<div data-focus-body style="color:#171717">${pinBody}</div>`;
-   box.querySelector('[data-card-habits]').innerHTML=`<button type="button" data-focus-open="daily-habits" style="border:0;cursor:pointer;background:none;padding:0">${window.ciTiles('DAILY HABITS')}</button><div style="margin:10px 0 0">${habits}</div>${habitTiles}<div data-habit-panel></div>`;
+   box.querySelector('[data-card-habits]').innerHTML=`<button type="button" data-focus-open="daily-habits" style="border:0;cursor:pointer;background:none;padding:0">${window.ciTiles('HABITS')}</button><div style="margin:10px 0 0">${habits}</div>${habitTiles}<div data-habit-panel></div>`;
    box.querySelector('[data-med-text]').innerHTML=prac;
    paintHabitPanel(box);
    // Scott 25 Nov 2026 (phones): the grey GOALS card fills the frame edge to edge, no border.
