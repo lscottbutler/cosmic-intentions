@@ -99,7 +99,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       ${/* Scott 26 Nov 2026: P (priority) and pen removed from to-do cards — + NOTE / + JOURNAL cover it */ ''}
 
       ${!showLinkedEntries ? `<div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
-        <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">⋯</button>
+        ${deleteCall ? `<button class="wcard-more wcard-del" onclick="event.stopPropagation();if(confirm('Delete this to-do?')){${deleteCall}}" title="Delete" aria-label="Delete to-do" style="border:none;background:transparent;color:#999;cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">✕</button>` : `<button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">⋯</button>`}
       </div>` : ''}
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
@@ -537,8 +537,7 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const items = [
-      // Scott 27 Nov 2026: ⋯ menu = Favorite + Delete only (Move/Break down/Make a goal removed).
-      _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
+      // Scott 27 Nov 2026: no ⋯ menu on to-dos — favorites are for the autoplay reel; just a ✕ delete.
       // ⋯ Delete only where the card has no black × (Scott 5 Nov 2026: no duplicate delete on To Do)
       showLinkedEntries ? '' : _mSep(),
       showLinkedEntries ? '' : _mItem(deleteCall, '✕', 'Delete', true),
@@ -579,7 +578,6 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
       const code = letter + cnum;
       const items = [
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
-        _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
         showLinkedEntries ? '' : _mSep(),
         showLinkedEntries ? '' : _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
