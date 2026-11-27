@@ -4913,3 +4913,5 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 #page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > div:last-child{width:auto!important;background:transparent!important;box-shadow:none!important}
 #page-myroadmap .wcard-more{background:transparent!important;padding:2px 6px!important;font-size:18px!important}
 #page-myroadmap .task-add-entry{margin:2px 0 4px!important}
+/* Scott 27 Nov 2026: one daily journal lives on the Citadel — no MY JOURNAL quick button on pages. */
+.ci-rm-quick [data-ci-open="journal"]{display:none!important}
