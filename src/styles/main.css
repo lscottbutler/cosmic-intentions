@@ -4917,3 +4917,6 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 .ci-rm-quick [data-ci-open="journal"]{display:none!important}
 /* Scott 27 Nov 2026: TO DO page retired (Roadmap shows the same to-dos) — no TO DO quick button. */
 .ci-rm-quick [data-ci-open="goal-workspace"]{display:none!important}
+/* Scott 27 Nov 2026: no Notes / Journal sections at the bottom of goals — notes live under each to-do,
+   journal lives on the Citadel (daily) and the My Journal page. */
+#page-myroadmap .roadmap-goal-entries{display:none!important}
