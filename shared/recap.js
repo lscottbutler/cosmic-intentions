@@ -327,6 +327,7 @@ function _markDone(rai, goal, text) {
 }
 export async function completeFocusTodo(goalTitle, text) {
   if (!currentUser) throw new Error('Not signed in');
+  try { localStorage.setItem('ci_pd_goals', new Date().toLocaleDateString('en-CA')); } catch (_) {}
   const it = (intentions || []).find(i => i.title === goalTitle);
   if (it) {
     it.roadmapAI = it.roadmapAI || {};
@@ -374,6 +375,26 @@ export async function getFocusStats() {
   else if (vizWeek > 0) message = `${hi}you visualized ${vizWeek} time${vizWeek > 1 ? 's' : ''} this week. Pick one to-do below and act on it.`;
   else if (todosDone > 0) message = `${hi}${todosDone} to-dos done so far. Start today with one visualization, then tick one more off.`;
   else message = `${hi}today is a fresh start. Three minutes of visualization, then one to-do — that's the whole job.`;
-  return { streak, vizWeek, viewsWeek, todosDone, todosTotal, message };
+  // Scott 27 Nov 2026: THE PERFECT DAY — Meditate, Habits, Goals, Journal, Gratitude, all five today.
+  const sod = new Date(); sod.setHours(0, 0, 0, 0); const t0 = sod.getTime();
+  const today = r => Date.parse(r.created_at) >= t0;
+  const dk = new Date().toLocaleDateString('en-CA');
+  let notes = []; try { notes = JSON.parse(localStorage.getItem('ci_notes') || '[]'); } catch (_) {}
+  let habitsDone = false; try { habitsDone = Object.values(LS.get('ci_habits_' + dayKey()) || {}).some(Boolean); } catch (_) {}
+  const steps = {
+    meditation: a.some(r => r.event_type === 'meditation' && today(r)),
+    habits: habitsDone,
+    goals: views.some(t => t >= t0) || localStorage.getItem('ci_pd_goals') === dk,
+    journal: Array.isArray(notes) && notes.some(n => n && n.cat === 'note' && (n.day === dk || (n.ts || 0) >= t0)),
+    gratitude: a.some(r => r.event_type === 'gratitude' && today(r)),
+  };
+  return { streak, vizWeek, viewsWeek, todosDone, todosTotal, message, steps };
 }
 if (typeof window !== 'undefined') window.ciFocusStats = getFocusStats;
+// Scott 27 Nov 2026: log a meditation / gratitude session (once per day) so the Perfect Day can tick it.
+if (typeof window !== 'undefined') window.ciLogPractice = async type => {
+  if (!currentUser || !['meditation', 'gratitude'].includes(type)) return false;
+  const k = 'ci_pd_logged_' + type, dk = new Date().toLocaleDateString('en-CA');
+  if (localStorage.getItem(k) === dk) return true;
+  try { const { error } = await sb.from('activity_log').insert({ user_id: currentUser.id, event_type: type, metadata: { source: 'citadel' }, points: 10, created_at: new Date().toISOString() }); if (error) return false; localStorage.setItem(k, dk); return true; } catch (_) { return false; }
+};
