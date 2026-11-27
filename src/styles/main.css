@@ -4920,3 +4920,5 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 /* Scott 27 Nov 2026: no Notes / Journal sections at the bottom of goals — notes live under each to-do,
    journal lives on the Citadel (daily) and the My Journal page. */
 #page-myroadmap .roadmap-goal-entries{display:none!important}
+/* Scott 27 Nov 2026: NOTES quick button removed too — the whole quick-button row is gone. */
+.ci-rm-quick{display:none!important}
