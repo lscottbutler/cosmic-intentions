@@ -487,7 +487,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last&&appReady()){if(++same>=(current==='home'?10:6))return;}else{same=0;last=now;}}
  }
  window.__ciOpenFeature=(...a)=>openFeature(...a);
- async function openFeature(action,options={}){
+ async function openFeature(action,options={}){if(action==='goal-workspace')action='action-plan';   /* Scott 27 Nov 2026: TO DO page retired — the Roadmap shows the same to-dos */
   if(!features[action])return;
   const version=++navigationVersion;
   pageNavigationPending=true;
@@ -808,7 +808,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
   try{const f=box.querySelector('iframe'),h=f.contentDocument?.documentElement?.scrollHeight;if(h&&Math.abs(f.offsetHeight-h)>4)f.style.height=h+'px';}catch(_){}
  }
  // MY JOURNAL tabs (Scott 18 Nov 2026): Journal, TO DO and Notes share one page via tabs.
- const JOURNAL_TABS=[['journal','JOURNAL'],['goal-workspace','TO DO'],['task-notes','NOTES']];
+ const JOURNAL_TABS=[['journal','JOURNAL'],['task-notes','NOTES']];   /* TO DO tab retired 27 Nov 2026 */
  // Scott 19 Nov 2026: inside the journal/notes/to-do card the order is admin message → 3 tabs → content.
  const JOURNAL_PAGES={journal:'page-mynotes','task-notes':'page-tasknotes','goal-workspace':'page-goalworkspace'};
  function ensureJournalTabs(){
@@ -1645,7 +1645,7 @@ html.ci-review-test .shell.home-mode .nav:is([data-action="meditation"],[data-ac
  renderFeature('home');
  // First load: start faded, reveal once the layout has settled (same as page changes).
  if(contentCard){contentCard.style.opacity=0;if(orientationCard)orientationCard.style.opacity=0;setTimeout(async()=>{await waitStable(6000);document.documentElement.classList.remove('ci-loading');if(!pageNavigationPending)await Promise.all([fadeContent(1,300),fadeHeader(1,300)]);},300);}
- const initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;
+ let initialFeature=new URLSearchParams(location.search).get('feature')||document.body.dataset.initialFeature;if(initialFeature==='goal-workspace')initialFeature='action-plan';
  if(initialFeature&&features[initialFeature]){
   playerAction=initialFeature;
   if(initialFeature==='new-gratitude'||initialFeature==='gratitude'||initialFeature==='super-viz')openFeature(initialFeature);

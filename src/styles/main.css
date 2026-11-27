@@ -4915,3 +4915,5 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 #page-myroadmap .task-add-entry{margin:2px 0 4px!important}
 /* Scott 27 Nov 2026: one daily journal lives on the Citadel — no MY JOURNAL quick button on pages. */
 .ci-rm-quick [data-ci-open="journal"]{display:none!important}
+/* Scott 27 Nov 2026: TO DO page retired (Roadmap shows the same to-dos) — no TO DO quick button. */
+.ci-rm-quick [data-ci-open="goal-workspace"]{display:none!important}
