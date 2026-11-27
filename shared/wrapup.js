@@ -1008,7 +1008,8 @@ export function renderWrapup() {
   // so it only appears once you open a goal — not floating at the top.
   const todayEl = document.getElementById('todayWillWidget');
   if (todayEl) {
-    todayEl.innerHTML = chk ? `
+    // Scott 27 Nov 2026: skip identical re-renders (they rebuilt the list ~9 times after load and made the page jump).
+    const _twHtml = chk ? `
       <div style="padding:0;margin-bottom:8px;">
         <details class="rm-drop" open>
           <summary style="display:none;">
@@ -1023,6 +1024,7 @@ export function renderWrapup() {
           </div>
         </details>
       </div>` : '';
+    if (todayEl.__ciHtml !== _twHtml) { todayEl.__ciHtml = _twHtml; todayEl.innerHTML = _twHtml; }
     // Feed the My Roadmap monitor chips with the real Action Plan counts.
     if (chk) {
       const _rs = document.getElementById('rmStepCount'); if (_rs) _rs.textContent = chk.total;
