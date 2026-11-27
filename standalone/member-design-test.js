@@ -1069,7 +1069,7 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
     sel.onchange=()=>load(sel.value);fill('goal');}
    // Scott 25 Nov 2026: each player box is only as tall as the player shows right now — it grows when its
    // controls open and shrinks back when they close (no big empty box).
-   if(!box.__fitPlayers){box.__fitPlayers=setInterval(()=>{box.querySelectorAll('#ci-focus-med iframe,#ci-focus-grat iframe,[data-viz-frame]').forEach(f=>{try{const d=f.contentDocument;if(!d?.body)return;let b=0;[...d.body.children].forEach(e=>{const cs=getComputedStyle(e);if(cs.position==='fixed'||cs.display==='none'||e.tagName==='SCRIPT')return;b=Math.max(b,e.getBoundingClientRect().bottom+(d.defaultView.scrollY||0));});if(b>120){const h=Math.ceil(b)+4+'px';if(f.style.height!==h)f.style.height=h;}}catch(_){}});},700);}
+   if(!box.__fitPlayers){box.__fitPlayers=setInterval(()=>{box.querySelectorAll('#ci-focus-med iframe,#ci-focus-grat iframe,[data-viz-frame]').forEach(f=>{try{const d=f.contentDocument;if(!d?.body)return;let b=0;[...d.body.children].forEach(e=>{const cs=getComputedStyle(e);if(cs.position==='fixed'||cs.display==='none'||e.tagName==='SCRIPT')return;b=Math.max(b,e.getBoundingClientRect().bottom+(d.defaultView.scrollY||0));});if(b>120){const n=Math.ceil(b)+4,o=parseFloat(f.style.height)||0;if(Math.abs(n-o)>12)f.style.height=n+'px';} /* Scott 27 Nov 2026: ignore small changes (stops page jumping) */}catch(_){}});},700);}
   }).catch(()=>{}).finally(()=>{_focusBusy=false;});
  }
  function paintHabitPanel(box){
