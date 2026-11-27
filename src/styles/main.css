@@ -4892,7 +4892,7 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 /* Scott 27 Nov 2026: TO DO page to-dos look like the Citadel list — plain rows, round tick, no card boxes or coloured rails. */
 #masterPriorityTasks .wcard{border:0!important;box-shadow:none!important;border-radius:0!important;background:transparent!important;padding:6px 0 6px 7px!important;margin:0 0 2px!important;overflow:visible!important}
 #masterPriorityTasks .wcard > span:first-child{display:none!important}
-#masterPriorityTasks .wcard > div:first-of-type > button:first-child{border:3px solid var(--rail,#333)!important;width:31px!important;height:31px!important;font-size:16px!important}
+#masterPriorityTasks .wcard > div:first-of-type > button:first-child{border:6px solid var(--rail,#333)!important;width:31px!important;height:31px!important;font-size:16px!important}
 #masterPriorityTasks .wcard > div:first-of-type > span{font:400 14px/1.45 Arial,sans-serif!important;color:#000!important}
 #masterPriorityTasks .wcard > div:first-of-type > div:last-child{width:auto!important;background:transparent!important;box-shadow:none!important}
 #masterPriorityTasks .wcard-more{background:transparent!important;padding:2px 6px!important;font-size:18px!important}
@@ -4908,7 +4908,7 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 #page-myroadmap .wgoal > details > summary > span:first-child > span:last-child{text-decoration:underline;text-underline-offset:3px}
 #page-myroadmap .wcard:not(.wcard-suggest){border:0!important;box-shadow:none!important;border-radius:0!important;background:transparent!important;padding:6px 0 6px 7px!important;margin:0 0 2px!important;overflow:visible!important}
 #page-myroadmap .wcard:not(.wcard-suggest) > span:first-child{display:none!important}
-#page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > button:first-child{border:3px solid var(--rail,#333)!important;width:31px!important;height:31px!important;font-size:16px!important}
+#page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > button:first-child{border:6px solid var(--rail,#333)!important;width:31px!important;height:31px!important;font-size:16px!important}
 #page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > span{font:400 14px/1.45 Arial,sans-serif!important;color:#000!important}
 #page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > div:last-child{width:auto!important;background:transparent!important;box-shadow:none!important}
 #page-myroadmap .wcard-more{background:transparent!important;padding:2px 6px!important;font-size:18px!important}
