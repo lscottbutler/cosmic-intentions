@@ -4924,5 +4924,5 @@ html.ci-header-note .ci-player-personal-e-box,html.ci-header-note .ci-player-per
 .ci-rm-quick{display:none!important}
 /* Scott 27 Nov 2026: NOTE icon sits beside the ✕ on the to-do row (less space between to-dos). */
 #page-myroadmap .wcard:not(.wcard-suggest){position:relative!important;min-height:52px!important;box-sizing:border-box!important}
-#page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type{padding-right:50px!important}
+#page-myroadmap .wcard:not(.wcard-suggest) > div:first-of-type > span{margin-right:50px!important}
 #page-myroadmap .wcard:not(.wcard-suggest) > .task-add-entry{position:absolute!important;top:2px!important;right:46px!important;margin:0!important}
