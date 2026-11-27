@@ -29,13 +29,13 @@ function applyFocus() {
   for (let node = goal; node && node !== pg; node = node.parentElement) {
     if (node.tagName === 'DETAILS') node.open = true;
     for (const sib of node.parentElement.children) {
-      if (sib === node || sib.id === 'ciGoalPageBar' || sib.id === 'ciGoalPageNext' || sib.matches('[data-todo-personal-e-slot],style,script')) continue;
+      if (sib === node || sib.id === 'ciGoalPageBar' || sib.id === 'ciGoalPageNext' || sib.matches('[data-todo-personal-e-slot],style,script,.wgoal')) continue;   // Scott 27 Nov 2026: all goals stay listed (chevron to open/close)
       sib.setAttribute('data-gp-hide', '');
     }
   }
   const sum = goal.querySelector(':scope > details > summary'); if (sum) sum.setAttribute('data-gp-hide', '');
   // Scott 23 Nov 2026: the next goal follows below as a Goal Page card — tap it to open that goal.
-  const nextIdx = intentions.length > 1 ? (idx + 1) % intentions.length : -1;
+  const nextIdx = -1;   // Scott 27 Nov 2026: NEXT GOAL card retired — every goal is listed below with its chevron
   let nx = document.getElementById('ciGoalPageNext');
   if (nextIdx < 0) { nx?.remove(); return; }
   if (!nx) { nx = document.createElement('section'); nx.id = 'ciGoalPageNext'; }
@@ -109,7 +109,7 @@ export function openGoalPage(idx) {
   try { const v = JSON.parse(localStorage.getItem('ci_goal_views') || '[]'); v.push(Date.now()); localStorage.setItem('ci_goal_views', JSON.stringify(v.slice(-500))); } catch (_) {}   // MY FOCUS TODAY stats
   if (!intentions[idx]) return;
   window.__ciGoalFocus = idx;
-  wrapupGoalToggle(idx, true);   // this goal's section open
+  intentions.forEach((_, i) => wrapupGoalToggle(i, i === idx));   // this goal open, the others folded (chevron opens them)
   renderWrapup();
   applyFocus();
   page()?.scrollIntoView?.({ block: 'start' });
