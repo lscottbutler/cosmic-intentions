@@ -537,10 +537,7 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const items = [
-      i > 0                 ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',-1)`, '▲', 'Move up') : '',
-      i < tasks.length - 1  ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',1)`,  '▼', 'Move down') : '',
-      _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
-      depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
+      // Scott 27 Nov 2026: ⋯ menu = Favorite + Delete only (Move/Break down/Make a goal removed).
       _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
       // ⋯ Delete only where the card has no black × (Scott 5 Nov 2026: no duplicate delete on To Do)
       showLinkedEntries ? '' : _mSep(),
@@ -581,8 +578,6 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
       const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (i + 1);
       const code = letter + cnum;
       const items = [
-        i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
-        i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
         _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
         showLinkedEntries ? '' : _mSep(),
