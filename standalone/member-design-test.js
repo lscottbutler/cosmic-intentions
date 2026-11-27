@@ -468,9 +468,9 @@ const headerCalendar=document.createElement('div');headerCalendar.id='header-cal
    try{const d=frame.contentDocument;v.push(d?.documentElement.scrollHeight);const e=d?.getElementById('experienceFrame')?.contentDocument;v.push(e?.documentElement.scrollHeight);}catch(_){}
    return v.join('|');};
   // An embedded app page (Roadmap, Goals, Notes…) must have finished loading its data first.
-  const appReady=()=>{try{const ew=frame.contentDocument?.getElementById('experienceFrame')?.contentWindow;if(!ew||!ew.location||ew.location.href==='about:blank')return true;if(!/masterInline=/.test(ew.location.search))return true;return !!ew.__ciAppReady;}catch(_){return true;}};
+  const appReady=()=>{try{if(current==='home'){const fb=frame.contentDocument?.getElementById('ci-my-focus');if(!fb||fb.style.opacity!=='1')return false;}const ew=frame.contentDocument?.getElementById('experienceFrame')?.contentWindow;if(!ew||!ew.location||ew.location.href==='about:blank')return true;if(!/masterInline=/.test(ew.location.search))return true;return !!ew.__ciAppReady;}catch(_){return true;}};
   const t0=performance.now();let last=sample(),same=0;
-  while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last&&appReady()){if(++same>=6)return;}else{same=0;last=now;}}
+  while(performance.now()-t0<maxMs){await new Promise(r=>setTimeout(r,80));const now=sample();if(now===last&&appReady()){if(++same>=(current==='home'?10:6))return;}else{same=0;last=now;}}
  }
  async function openFeature(action,options={}){
   if(!features[action])return;
