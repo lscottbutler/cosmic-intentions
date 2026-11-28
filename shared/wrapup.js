@@ -78,11 +78,13 @@ function _shade(hex, f) {
 // The menu is IN-FLOW (expands inside the card, pushing the next card down) —
 // deliberately NOT an absolute popover, so it can never be clipped by the goal
 // dropdown's `overflow:hidden` (details-content) and needs no position math.
+const MY_ACTIONS_COLOR = '#e84040';
 function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = false, variant = 'my', noteContext, showLinkedEntries = false, deleteCall, railColor }) {
   // To-do lists retain provenance colors; Roadmap cards match their green tab.
   // The code chip retains the goal's shade.
   // Scott 24 Nov 2026: My Actions cards use the goal's colour (same as the MY ACTIONS button).
-  const rail = showLinkedEntries ? (railColor || '#292929') : (variant === 'roadmap' ? ROADMAP_COLOR : (railColor || '#000'));
+  // Scott 27 Nov 2026: My Actions are always RED, Roadmap always GREEN (not the goal colour).
+  const rail = variant === 'roadmap' ? ROADMAP_COLOR : MY_ACTIONS_COLOR;
   // Scott 10 Nov 2026: tag each task card with its priority so the TO DO P/S
   // buttons can filter without re-rendering.
   const isPri = noteContext ? (taskIsPriority(noteContext) ? '1' : '0') : '';
@@ -97,7 +99,7 @@ function _card({ shade, code, text, done, toggleCall, items, indent = 0, fade = 
       ${/* Scott 26 Nov 2026: P (priority) and pen removed from to-do cards — + NOTE / + JOURNAL cover it */ ''}
 
       ${!showLinkedEntries ? `<div style="flex-shrink:0;display:flex;flex-direction:column;width:46px;border-radius:9px;overflow:hidden;background:${shade.bg};box-shadow:0 1px 2px rgba(0,0,0,.15);">
-        <button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">⋯</button>
+        ${deleteCall ? `<button class="wcard-more wcard-del" onclick="event.stopPropagation();if(confirm('Delete this to-do?')){${deleteCall}}" title="Delete" aria-label="Delete to-do" style="border:none;background:transparent;color:#999;cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">✕</button>` : `<button class="wcard-more" onclick="wrapCardMenu(event,this)" title="More actions" aria-label="More actions" style="border:none;background:rgba(0,0,0,.13);color:${shade.text};cursor:pointer;font-size:18px;line-height:1;padding:8px 0;">⋯</button>`}
       </div>` : ''}
     </div>
     <div class="wcard-menu"><div style="margin:9px -3px -3px;padding:6px 3px 3px;border-top:1px solid #eee;">${items}</div></div>
@@ -535,11 +537,7 @@ function _renderUserTree(tasks, path, idx, codePrefix, showLinkedEntries = false
     const toggleCall = depth === 0 ? `toggleRoadmapUserTaskDone(${idx},${u.id})` : `wrapSubToggle(${idx},'${pStr}')`;
     const deleteCall = depth === 0 ? `deleteRoadmapUserTask(${idx},${u.id})`     : `wrapSubDelete(${idx},'${pStr}')`;
     const items = [
-      i > 0                 ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',-1)`, '▲', 'Move up') : '',
-      i < tasks.length - 1  ? _mItem(`wrapMoveUserTask(${idx},'${pStr}',1)`,  '▼', 'Move down') : '',
-      _mItem(`wrapDrillDown(${idx},'${pStr}',this)`, '↳', 'Break down'),
-      depth === 0 ? _mItem(`wrapPromoteToGoal(${idx},${u.id})`, '◎', 'Make a goal') : '',
-      _mItem(`wrapFavTask(${idx},'${code}','${_qFav(u.text)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
+      // Scott 27 Nov 2026: no ⋯ menu on to-dos — favorites are for the autoplay reel; just a ✕ delete.
       // ⋯ Delete only where the card has no black × (Scott 5 Nov 2026: no duplicate delete on To Do)
       showLinkedEntries ? '' : _mSep(),
       showLinkedEntries ? '' : _mItem(deleteCall, '✕', 'Delete', true),
@@ -579,10 +577,7 @@ function _roadmapCards(it, idx, showLinkedEntries = false, priorityOnly = false)
       const cnum = (rai.codes && typeof rai.codes[i] === 'number') ? rai.codes[i] : (i + 1);
       const code = letter + cnum;
       const items = [
-        i > 0                ? _mItem(`wrapMoveRoadmapTask(${idx},${i},-1)`, '▲', 'Move up') : '',
-        i < _arr.length - 1  ? _mItem(`wrapMoveRoadmapTask(${idx},${i},1)`,  '▼', 'Move down') : '',
         _mItem(`toggleRoadmapLock(${idx},${i})`, locked ? '🔒' : '🔓', locked ? 'Unlock' : 'Lock'),
-        _mItem(`wrapFavTask(${idx},'${code}','${_qFav(t)}')`, _isTaskFav(idx, code) ? '★' : '☆', _isTaskFav(idx, code) ? 'Unfavorite' : 'Favorite'),
         showLinkedEntries ? '' : _mSep(),
         showLinkedEntries ? '' : _mItem(`deleteRoadmapTask(${idx},${i})`, '✕', 'Delete', true),
       ].join('');
@@ -707,7 +702,7 @@ function _todayChecklist() {
         <section class="roadmap-goal-section roadmap-goal-todo" data-goal-section="todo">
           <h3>TO DO</h3>
       <div class="wtabs">
-        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:${gc.bg};color:${gc.text};" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
+        <button id="wtab-my-${idx}" class="wtab${activeTab === 'my' ? ' wtab-active' : ''}" style="background:${MY_ACTIONS_COLOR};color:#fff;" aria-pressed="${activeTab === 'my'}" onclick="wrapTab(${idx},'my')">MY ACTIONS${uTasks.length ? ` ${uTasks.length}` : ''}</button>
         <button id="wtab-both-${idx}" class="wtab-combine${activeTab === 'both' ? ' wtab-active' : ''}" onclick="wrapTab(${idx},'both')" title="Show My Actions and Roadmap together" aria-label="Show My Actions and Roadmap together" aria-pressed="${activeTab === 'both'}">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
@@ -715,7 +710,7 @@ function _todayChecklist() {
       </div>
         <div id="wtab-panel-my-${idx}" style="display:${activeTab === 'my' ? 'block' : 'none'};">${userHtml}${addBox}<button id="wrapRegenBtn-${idx}" onclick="wrapRegenRoadmap(${idx})" style="width:100%;margin-top:2px;background:rgba(139,166,169,0.14);border:1px solid #8ba6a9;border-radius:6px;padding:10px 12px;font-family:var(--vault-mono);font-size:10px;font-weight:800;letter-spacing:0.5px;color:#8ba6a9;cursor:pointer;">✦ REGENERATE ROADMAP FROM MY ACTIONS</button></div>
         <div id="wtab-panel-both-${idx}" style="display:${activeTab === 'both' ? 'block' : 'none'};">
-          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:${gc.text};background:${gc.bg};border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
+          <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:${MY_ACTIONS_COLOR};border-radius:5px;padding:5px 10px;margin:2px 0 10px;">◆ MY ACTIONS</div>
           ${userHtml || '<div style="font-size:12px;color:#9a9a9a;padding:2px 2px 10px;">No custom actions yet — add some on the My Actions tab.</div>'}
           <div style="font-family:var(--vault-mono);font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#fff;background:${ROADMAP_COLOR};border:1px solid ${ROADMAP_COLOR};border-radius:5px;padding:5px 10px;margin:16px 0 10px;">◇ ROADMAP</div>
           ${roadmapBox}

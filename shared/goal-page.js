@@ -5,7 +5,7 @@
    and below it that goal's own TO DO (add box), NOTES (add box) and JOURNAL (add box),
    which already live in each goal's Roadmap section — so every add / tick / save keeps
    working exactly as before. SHOW ALL GOALS returns to the normal Roadmap. */
-import { intentions, saveIntentions, esc, goalBadge, goalLetter, GOAL_COLORS } from '../app.js';
+import { intentions, saveIntentions, esc, goalBadge, goalLetter, GOAL_COLORS, toggleGoalFavorite } from '../app.js';
 import { renderWrapup, wrapupGoalToggle } from './wrapup.js';
 
 const BTN = 'border:0;border-radius:8px;padding:10px 14px;font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;white-space:nowrap';
@@ -29,13 +29,13 @@ function applyFocus() {
   for (let node = goal; node && node !== pg; node = node.parentElement) {
     if (node.tagName === 'DETAILS') node.open = true;
     for (const sib of node.parentElement.children) {
-      if (sib === node || sib.id === 'ciGoalPageBar' || sib.id === 'ciGoalPageNext' || sib.matches('[data-todo-personal-e-slot],style,script')) continue;
+      if (sib === node || sib.id === 'ciGoalPageBar' || sib.id === 'ciGoalPageNext' || sib.matches('[data-todo-personal-e-slot],style,script,.wgoal')) continue;   // Scott 27 Nov 2026: all goals stay listed (chevron to open/close)
       sib.setAttribute('data-gp-hide', '');
     }
   }
   const sum = goal.querySelector(':scope > details > summary'); if (sum) sum.setAttribute('data-gp-hide', '');
   // Scott 23 Nov 2026: the next goal follows below as a Goal Page card — tap it to open that goal.
-  const nextIdx = intentions.length > 1 ? (idx + 1) % intentions.length : -1;
+  const nextIdx = -1;   // Scott 27 Nov 2026: NEXT GOAL card retired — every goal is listed below with its chevron
   let nx = document.getElementById('ciGoalPageNext');
   if (nextIdx < 0) { nx?.remove(); return; }
   if (!nx) { nx = document.createElement('section'); nx.id = 'ciGoalPageNext'; }
@@ -67,7 +67,7 @@ function renderBar(idx, editing = false) {
   const ci = (typeof letter === 'string' && /^[A-Z]$/.test(letter)) ? letter.charCodeAt(0) - 65 : idx;
   const gc = GOAL_COLORS[((ci % GOAL_COLORS.length) + GOAL_COLORS.length) % GOAL_COLORS.length] || { bg: '#1D3557', text: '#fff' };
   const date = it.targetDate || it.target_date || '';
-  bar.style.cssText = 'position:relative;margin:0 0 16px;padding:18px 64px 18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
+  bar.style.cssText = 'position:relative;margin:0 0 16px;padding:18px 116px 18px 20px;background:#fff;border:2px solid #303030;border-radius:12px;color:#171717;font:15px/1.5 Arial,sans-serif';
   // Scott 25 Nov 2026: no "GOAL PAGE" label; number on the right; VISUALIZE / EDIT / ARCHIVE in a row at the bottom.
   bar.innerHTML = `
     <div style="display:flex;align-items:${editing ? "flex-start" : "center"};gap:12px">
@@ -79,6 +79,7 @@ function renderBar(idx, editing = false) {
           : `<div style="font:700 20px/1.35 Arial,sans-serif">${esc(it.title || '')}</div>`}
       </div>
     </div>
+    ${(() => { let fv = false; try { fv = (JSON.parse(localStorage.getItem('ci_favorites') || '[]') || []).some(f => f && f.player === 'mindset' && ((it.id != null && f.goalId === it.id) || f.goal === idx)); } catch (_) {} return `<button type="button" data-gp="fav" title="${fv ? 'Remove from' : 'Add to'} My Favorites Reel" aria-label="Favorite" style="position:absolute;right:66px;bottom:14px;width:42px;height:42px;border-radius:50%;border:0;background:#000;color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .15s,background .2s" onmousedown="this.style.transform='scale(.88)'" onmouseup="this.style.transform=''"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.5 1.2 4.4 2.5C11.9 6.2 13.3 5 15.4 5 19 5 21 8.6 19.6 11.8 17.5 16.4 12 21 12 21z" fill="${fv ? '#e84040' : 'none'}" stroke="${fv ? '#e84040' : '#fff'}" stroke-width="2" stroke-linejoin="round"/></svg></button>`; })()}
     <button type="button" data-gp="vizplayer" title="Visualize this goal" aria-label="Visualize this goal" style="position:absolute;right:14px;bottom:14px;width:42px;height:42px;border-radius:50%;border:0;background:#1e90ff;cursor:pointer;display:grid;place-items:center;padding:0"><svg width="26" height="18" viewBox="0 0 44 30" fill="none" stroke="#ffd84d" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M3 15 C10 4 34 4 41 15 C34 26 10 26 3 15 Z"/><circle cx="22" cy="15" r="6" fill="#ffd84d"/></svg></button>
     <div data-gp-viz></div>`;
   bar.onclick = async e => {
@@ -94,6 +95,7 @@ function renderBar(idx, editing = false) {
       intentions[idx].title = v; await saveIntentions(); renderWrapup(); return renderBar(idx, false);
     }
     if (a === 'archive') { await window.ciArchiveGoal?.(idx); return closeGoalPage(); }
+    if (a === 'fav') { toggleGoalFavorite(idx); renderBar(idx); return; }   // Scott 27 Nov 2026: ♥ adds this goal to My Favorites Reel
     if (a === 'viz') {
       const host = bar.querySelector('[data-gp-viz]');
       if (host.firstChild) { closeGoalViz(); return; }
@@ -109,7 +111,7 @@ export function openGoalPage(idx) {
   try { const v = JSON.parse(localStorage.getItem('ci_goal_views') || '[]'); v.push(Date.now()); localStorage.setItem('ci_goal_views', JSON.stringify(v.slice(-500))); } catch (_) {}   // MY FOCUS TODAY stats
   if (!intentions[idx]) return;
   window.__ciGoalFocus = idx;
-  wrapupGoalToggle(idx, true);   // this goal's section open
+  intentions.forEach((_, i) => wrapupGoalToggle(i, i === idx));   // this goal open, the others folded (chevron opens them)
   renderWrapup();
   applyFocus();
   page()?.scrollIntoView?.({ block: 'start' });

@@ -28,7 +28,7 @@ export function taskLinkedEntriesHTML(context, records = readNotes()) {
     { label: 'JOURNAL', color: '#1e90ff', entries: linked.filter(n => n.cat === 'note'), empty: 'No journal entry yet.' }]
     .map(group => `<section class="goal-action-entry" data-linked-kind="${group.label.toLowerCase()}"${group.entries.length && group.label === 'NOTE' ? '' : ' hidden'}>
       <h4 title="${group.label}" aria-label="${group.label}" style="margin:0 0 6px;display:flex;align-items:center;gap:8px"><span style="width:34px;height:34px;border-radius:50%;background:${group.label === 'NOTE' ? '#000' : '#4e4e4e'};display:grid;place-items:center">${group.label === 'NOTE' ? `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v11l-5 5H4z" fill="#ffd84d"/><path d="M15 20v-5h5" fill="#e0b400"/></svg>` : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M7 8h6M7 12h6M7 16h3"/><path d="M20 6l-6.5 9.5-2 .8.3-2.1L18.3 4.7z" fill="#fff" stroke="none"/></svg>`}</span><span style="font:800 10px/1 Arial,sans-serif;letter-spacing:.06em;color:#333">${group.label}</span></h4>
-      ${group.entries.length ? group.entries.map(n => `<p>${esc(n.text)}</p>`).join('') : `<p>${group.empty}</p>`}
+      ${group.entries.length ? group.entries.map(n => `<div class="ci-tn-entry" data-note-id="${esc(n.id || '')}" style="display:flex;align-items:flex-start;gap:10px"><p style="flex:1;margin:0 0 8px;white-space:pre-wrap">${esc(n.text)}</p>${n.id ? `<button type="button" onclick="event.stopPropagation();ciTaskNoteEdit(this)" style="flex:0 0 auto;border:1px solid #bbb;background:#fff;border-radius:5px;padding:4px 8px;font:700 10px/1 Arial,sans-serif;letter-spacing:.06em;cursor:pointer">EDIT</button>` : ''}</div>`).join('') : `<p>${group.empty}</p>`}
     </section>`).join('');
 }
 
@@ -184,4 +184,22 @@ if (typeof window !== 'undefined') window.taskEntryOpen = (btn, kind) => {
   const save = editor.querySelector('.task-note-footer button'); if (save) save.textContent = kind === 'journal' ? 'Save journal entry' : 'Save note';
   if (!panel.classList.contains('is-open')) { panel.classList.add('is-open'); panel.inert = false; panel.setAttribute('aria-hidden', 'false'); }
   ta.value = ''; ta.focus({ preventScroll: true });
+};
+
+// Scott 27 Nov 2026: saved to-do notes can be edited (or deleted) right where they show.
+if (typeof window !== 'undefined') window.ciTaskNoteEdit = btn => {
+  const row = btn.closest('.ci-tn-entry'); if (!row) return;
+  const id = row.dataset.noteId; const all = readNotes(); const n = all.find(x => x && x.id === id); if (!n) return;
+  const B = 'border:0;border-radius:5px;padding:7px 10px;font:700 11px/1 Arial,sans-serif;letter-spacing:.06em;cursor:pointer';
+  row.innerHTML = `<div style="flex:1"><textarea rows="3" style="width:100%;box-sizing:border-box;border:1px solid #bbb;border-radius:6px;padding:8px;font:400 14px/1.4 Arial,sans-serif">${esc(n.text)}</textarea><div style="display:flex;gap:8px;justify-content:flex-end;margin:6px 0 8px"><button type="button" data-a="del" style="${B};background:#fff;color:#c62828;border:1px solid #c62828">DELETE</button><button type="button" data-a="cancel" style="${B};background:#eee;color:#000">CANCEL</button><button type="button" data-a="save" style="${B};background:#000;color:#fff">SAVE</button></div></div>`;
+  const ta = row.querySelector('textarea'); ta.focus();
+  const redraw = () => { try { window.renderWrapup?.(); } catch (_) {} try { window.dispatchEvent(new Event('ci-notes-changed')); } catch (_) {} };
+  row.onclick = e => {
+    const a = e.target.closest('button')?.dataset.a; if (!a) return; e.stopPropagation();
+    const list = readNotes(); const i = list.findIndex(x => x && x.id === id); if (i < 0) return;
+    if (a === 'save') { const t = ta.value.trim(); if (!t) return ta.focus(); list[i] = { ...list[i], text: t, updatedAt: Date.now() }; _saveNotes(list); }
+    else if (a === 'del') { if (!confirm('Delete this note?')) return; list.splice(i, 1); _saveNotes(list); }
+    redraw();
+    if (a === 'cancel' || !window.renderWrapup) { const p = document.createElement('p'); p.style.cssText = 'flex:1;margin:0 0 8px;white-space:pre-wrap'; p.textContent = a === 'del' ? '' : (a === 'save' ? ta.value.trim() : n.text); row.innerHTML = ''; if (a !== 'del') { row.append(p); const b = document.createElement('button'); b.type = 'button'; b.textContent = 'EDIT'; b.style.cssText = btn.style.cssText; b.onclick = ev => { ev.stopPropagation(); window.ciTaskNoteEdit(b); }; row.append(b); } else row.remove(); row.onclick = null; }
+  };
 };
